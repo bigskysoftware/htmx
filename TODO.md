@@ -1,4 +1,4 @@
-# </> ExtHTML 
+# <X/> ExtHTML 
 *Extended HTML*
 
 ## GOALS
@@ -13,11 +13,11 @@
 
 * create project layout (node)
 * figure out testing infrastructure
-* create https://exhtml.org
+* create https://exthtml.org
 
 ## RESOURCES
 
 * http://youmightnotneedjquery.com/
 * http://intercoolerjs.org/docs.html
 * http://intercoolerjs.org/reference.html
-* 
+
