@@ -1,2 +1,2 @@
-# </> ExHTML
+# </> ExtHTML
 Extended HTML
