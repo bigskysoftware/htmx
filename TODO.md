@@ -1,4 +1,4 @@
-# <X/> ExtHTML 
+# &lt;x/> ExtHTML 
 *Extended HTML*
 
 ## GOALS
