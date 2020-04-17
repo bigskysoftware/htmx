@@ -1,2 +1,2 @@
-# </> ExtHTML
-Extended HTML
+# </> HTMx
+HTML Extensions
