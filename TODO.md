@@ -1,5 +1,5 @@
-# &lt;x/> ExtHTML 
-*Extended HTML*
+# &lt;x/> HTMx 
+*HTML Extensions*
 
 ## GOALS
 
