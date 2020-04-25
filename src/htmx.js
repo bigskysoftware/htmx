@@ -33,7 +33,7 @@ var HTMx = HTMx || (function()
 
     function swapResponse(elt, resp) {
         let target = getTarget(elt);
-        let swapStyle = getClosestAttributeValue(elt, "hx-swap-style");
+        let swapStyle = getClosestAttributeValue(elt, "hx-swap");
         if (swapStyle === "outerHTML") {
             target.outerHTML = resp;
             processElement(target);
@@ -74,7 +74,7 @@ var HTMx = HTMx || (function()
                 if (this.status != 204) {
                     // Success!
                     let resp = this.response;
-                    swapResponse(elt, resp);
+                     swapResponse(elt, resp);
                 }
             }
             else 
@@ -91,8 +91,9 @@ var HTMx = HTMx || (function()
     // DOM element processing
     function processElement(elt) {
         if(elt.getAttribute('hx-get')) {
-            elt.addEventListener("click", function(){
-                issueAjaxRequest(elt, elt.getAttribute('hx-get'))
+            elt.addEventListener("click", function(evt){
+                issueAjaxRequest(elt, elt.getAttribute('hx-get'));
+                evt.stopPropagation();
             });
         }
         for (let i = 0; i < elt.children.length; i++) {

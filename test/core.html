@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+<div id="mocha"></div>
+
+<script src="../node_modules/chai/chai.js"></script>
+<script src="../node_modules/mocha/mocha.js"></script>
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../src/htmx.js"></script>
+<script class="mocha-init">
+    mocha.setup('bdd');
+    mocha.checkLeaks();
+    chai.should();
+</script>
+
+<script>
+    /* Utilities */
+    function byId(id) {
+        return document.getElementById(id);
+    }
+</script>
+
+<script>
+    describe("Core HTMx Tests", function(){
+        beforeEach(function() {
+            this.server = sinon.fakeServer.create();
+        });
+        afterEach(function()  {
+            this.server.restore();
+        });
+
+        // bootstrap test
+        it('issues a GET request on click and swaps content', function() {
+            this.server.respondWith("GET", "/btn-1", [200, {}, "Clicked!"]);
+            byId("btn-1").click();
+            this.server.respond();
+            byId("btn-1").innerHTML.should.equal("Clicked!");
+        });
+
+        it('processes inner content properly', function() {
+            this.server.respondWith("GET", "/div-1", [200, {}, '<a id="a-1" hx-get="/a-1">Click Me</a>']);
+            this.server.respondWith("GET", "/a-1", [200, {}, "Clicked!"]);
+            byId("div-1").click();
+            this.server.respond();
+            byId("div-1").innerHTML.should.equal('<a id="a-1" hx-get="/a-1">Click Me</a>');
+            byId("a-1").click();
+            this.server.respond();
+            byId("a-1").innerHTML.should.equal('Clicked!');
+        });
+
+
+    })
+</script>
+
+<button id="btn-1" hx-get="/btn-1">Click Me!</button>
+
+<div id="div-1" hx-get="/div-1"></div>
+
+<script class="mocha-exec">
+    mocha.run();
+</script>
+</body>
+</html>

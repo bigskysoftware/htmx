@@ -6,7 +6,7 @@
         max-width: 740px;
         line-height: 1.6;
         font-size: 18px;
-        color: #444;
+        color: #333;
         padding: 0 10px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
     }
@@ -16,10 +16,13 @@
     h1 {
         text-align: center;
         font-size: 4em
+    }
+    .flair {
+        color: rgb(52, 101, 164);
     }</style>
 </head>
 <body>
-<h1>&lt;/&gt; HTM<sub>x</sub></h1>
+<h1>&lt;<span class="flair">/</span>&gt; HTM<sub class="flair">x</sub></h1>
 <section>
     <p>HTMx is a set of extensions to HTML that bring many of the useful features of modern web browsers directly
         into HTML. It fills gaps in functionality found in standard HTML, dramatically expanding its expressiveness while
@@ -32,7 +35,7 @@
         dependency free implementation of the same concept.</p>
 </section>
 <section>
-    <h2>&lt;/&gt; Attributes</h2>
+    <h2>&lt;<span class="flair">/</span>&gt; Attributes</h2>
     <table>
         <thead>
         <tr>
@@ -50,14 +53,14 @@
             <td>Specifies the target element that should be swapped</td>
         </tr>
         <tr>
-            <td>hx-swap-style</td>
+            <td>hx-swap</td>
             <td>Specifies how target element should be swapped: innerHTML, outerHTML, append</td>
         </tr>
         </tbody>
     </table>
 </section>
 <section>
-    <h2>&lt;/&gt; Events</h2>
+    <h2>&lt;<span class="flair">/</span>&gt; Events</h2>
     <table>
         <thead>
         <tr>
@@ -70,7 +73,7 @@
     </table>
 </section>
 <section>
-    <h2>&lt;/&gt; HTTP Headers</h2>
+    <h2>&lt;<span class="flair">/</span>&gt;HTTP Headers</h2>
     <h3>Request Headers</h3>
     <table>
         <thead>

@@ -1,0 +1,29 @@
+{
+  "name": "htmx",
+  "version": "0.0.1",
+  "description": "HTML Extensions",
+  "main": "htmx.js",
+  "scripts": {
+    "test": "mocha-chrome test/core.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bigskysoftware/htmx.git"
+  },
+  "keywords": [
+    "AJAX",
+    "HTML"
+  ],
+  "author": "Carson Gross",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bigskysoftware/htmx/issues"
+  },
+  "homepage": "https://htmx.org",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "mocha-chrome": "^2.2.0",
+    "sinon": "^9.0.2"
+  }
+}
