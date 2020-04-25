@@ -26,7 +26,7 @@ var HTMx = HTMx || (function()
         }
     }
 
-    function makeNode(resp) {
+    function makeFragment(resp) {
         let range = document.createRange();
         return range.createContextualFragment(resp);
     }
@@ -37,10 +37,20 @@ var HTMx = HTMx || (function()
         if (swapStyle === "outerHTML") {
             target.outerHTML = resp;
             processElement(target);
+        } else if (swapStyle === "prepend") {
+            let fragment = makeFragment(resp);
+            for (let i = fragment.children.length - 1; i >= 0; i--) {
+                const child = fragment.children[i];
+                processElement(child);
+                target.insertBefore(child, target.firstChild);
+            }
         } else if (swapStyle === "append") {
-            let newChild = makeNode(resp);
-            processElement(elt);
-            target.appendChild(newChild)
+            let fragment = makeFragment(resp);
+            for (let i = 0; i < fragment.children.length; i++) {
+                const child = fragment.children[i];
+                processElement(child);
+                target.appendChild(child);
+            }
         } else {
             target.innerHTML = resp;
             for (let i = 0; i < target.children.length; i++) {
@@ -60,10 +70,13 @@ var HTMx = HTMx || (function()
         {
             if (this.status >= 200 && this.status < 400)
             {
-                // Success!
-                let resp = this.response;
-                swapResponse(elt, resp);
-            } 
+                // don't process 'No Content' response
+                if (this.status != 204) {
+                    // Success!
+                    let resp = this.response;
+                    swapResponse(elt, resp);
+                }
+            }
             else 
             {
                 elt.innerHTML = "ERROR";
