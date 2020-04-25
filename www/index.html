@@ -1,20 +1,34 @@
 <html lang="en">
 <head>
     <title>HTMx - Teaching HTML new tricks</title>
-    <style type="text/css">body{margin:40px auto;max-width:740px;line-height:1.6;font-size:18px;color:#444;padding:0 10px;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif}h1,h2,h3{line-height:1.2}h1{text-align: center; font-size: 4em}</style>
+    <style type="text/css">body {
+        margin: 40px auto;
+        max-width: 740px;
+        line-height: 1.6;
+        font-size: 18px;
+        color: #444;
+        padding: 0 10px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
+    }
+    h1, h2, h3 {
+        line-height: 1.2
+    }
+    h1 {
+        text-align: center;
+        font-size: 4em
+    }</style>
 </head>
 <body>
 <h1>&lt;/&gt; HTM<sub>x</sub></h1>
 <section>
-    <p>HTMx is a set of extensions to HTML that allows you to web applications that would normally require javascript
-        with only HTML attributes.  It fills a gap in functionality that has been inexplicably left out of
-        standard HTML, and allows you to use the full range of HTTP and HTML expressiveness originally
-        envisioned for the web.</p>
+    <p>HTMx is a set of extensions to HTML that bring many of the useful features of modern web browsers directly
+        into HTML, rather than requiring javascript. It fills gaps in functionality found in
+        standard HTML, dramatically expanding the expressiveness of HTTP and HTML.</p>
     <p>Here is a simple example of HTMx in action:</p>
     <pre>&lt;button hx-get="/example" hx-target="#myDiv"&gt;Click Me&lt;/button&gt;</pre>
     <p>This example issues an AJAX request to <code>/example</code> when a user clicks on it, and swaps the response
-    HTML into the element with the id <code>myDiv</code></p>
-    <p>HTMx was inspired by <a href="http://intercoolerjs.org">intercooler.js</a>, and aims to be a minimalist &amp;
+        HTML into the element with the id <code>myDiv</code></p>
+    <p>HTMx is inspired by <a href="http://intercoolerjs.org">intercooler.js</a>, and aims to be a minimalist &amp;
         dependency free implementation of the same concept.</p>
 </section>
 <section>
