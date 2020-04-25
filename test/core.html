@@ -8,7 +8,6 @@
 </head>
 <body>
 <div id="mocha"></div>
-
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
@@ -37,15 +36,15 @@
 
         // bootstrap test
         it('issues a GET request on click and swaps content', function() {
-            this.server.respondWith("GET", "/btn-1", [200, {}, "Clicked!"]);
+            this.server.respondWith("GET", "/btn-1", "Clicked!");
             byId("btn-1").click();
             this.server.respond();
             byId("btn-1").innerHTML.should.equal("Clicked!");
         });
 
         it('processes inner content properly', function() {
-            this.server.respondWith("GET", "/div-1", [200, {}, '<a id="a-1" hx-get="/a-1">Click Me</a>']);
-            this.server.respondWith("GET", "/a-1", [200, {}, "Clicked!"]);
+            this.server.respondWith("GET", "/div-1", '<a id="a-1" hx-get="/a-1">Click Me</a>');
+            this.server.respondWith("GET", "/a-1", "Clicked!");
             byId("div-1").click();
             this.server.respond();
             byId("div-1").innerHTML.should.equal('<a id="a-1" hx-get="/a-1">Click Me</a>');
