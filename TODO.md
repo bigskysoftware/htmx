@@ -11,9 +11,10 @@
 
 ## TODOS
 
-* create project layout (node)
+* create project layout
 * figure out testing infrastructure
-* create https://exthtml.org
+* create https://htmx.org
+* distribute on https://unpkg.com/
 
 ## RESOURCES
 

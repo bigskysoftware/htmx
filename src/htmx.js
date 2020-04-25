@@ -36,10 +36,17 @@ var HTMx = HTMx || (function()
         let swapStyle = getClosestAttributeValue(elt, "hx-swap-style");
         if (swapStyle === "outerHTML") {
             target.outerHTML = resp;
+            processElement(target);
         } else if (swapStyle === "append") {
-            target.appendChild(makeNode(resp))
+            let newChild = makeNode(resp);
+            processElement(elt);
+            target.appendChild(newChild)
         } else {
             target.innerHTML = resp;
+            for (let i = 0; i < target.children.length; i++) {
+                const child = target.children[i];
+                processElement(child);
+            }
         }
     }
 

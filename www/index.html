@@ -1,6 +1,7 @@
 <html lang="en">
 <head>
     <title>HTMx - Teaching HTML new tricks</title>
+    <style type="text/css">body{margin:40px auto;max-width:740px;line-height:1.6;font-size:18px;color:#444;padding:0 10px}h1,h2,h3{line-height:1.2}</style>
 </head>
 <body>
 <section>
@@ -10,9 +11,7 @@
         standard HTML, and allows you to use the full range of HTTP and HTML expressiveness originally
         envisioned for the web.</p>
     <p>Here is a simple example of HTMx in action:</p>
-    <pre>
-                &lt;button hx-get="/example" hx-target="#myDiv"&gt;Click Me&lt;/button&gt;
-            </pre>
+    <pre>&lt;button hx-get="/example" hx-target="#myDiv"&gt;Click Me&lt;/button&gt;</pre>
     <p>This example issues an AJAX request to <code>/example</code> when a user clicks on it, and swaps the response
     HTML into the element with the id <code>myDiv</code></p>
     <p>HTMx was inspired by <a href="http://intercoolerjs.org">intercooler.js</a>, and aims to be a minimalist &amp;
@@ -42,12 +41,27 @@
         </tr>
         </tbody>
     </table>
-</section><section>
+</section>
+<section>
     <h1>&lt;/&gt; Events</h1>
     <table>
         <thead>
         <tr>
             <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</section>
+<section>
+    <h1>&lt;/&gt; HTTP Headers</h1>
+    <h3>Request Headers</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Header</th>
             <th>Description</th>
         </tr>
         </thead>
