@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <title>HTMx - Teaching HTML new tricks</title>
+</head>
+<body>
+<section>
+    <h1>&lt;/&gt; HTMx</h1>
+    <p>HTMx is a set of extensions to HTML that allows you to build AJAX powered applications using HTML attributes.
+        It fills a gap in functionality that has been inexplicably left out of
+        standard HTML, and allows you to use the full range of HTTP and HTML expressiveness originally
+        envisioned for the web.</p>
+    <p>Here is a simple example of HTMx in action:</p>
+    <pre>
+                &lt;button hx-get="/example" hx-target="#myDiv"&gt;Click Me&lt;/button&gt;
+            </pre>
+    <p>This example issues an AJAX request to <code>/example</code> when a user clicks on it, and swaps the response
+    HTML into the element with the id <code>myDiv</code></p>
+    <p>HTMx was inspired by <a href="http://intercoolerjs.org">intercooler.js</a>, and aims to be a minimalist &amp;
+        dependency free implementation of the same concept.</p>
+</section>
+<section>
+    <h1>&lt;/&gt; Attributes</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>hx-get</td>
+            <td>Issues an HTTP GET to the given URL</td>
+        </tr>
+        <tr>
+            <td>hx-target</td>
+            <td>Specifies the target element that should be swapped</td>
+        </tr>
+        <tr>
+            <td>hx-swap-style</td>
+            <td>Specifies how target element should be swapped: innerHTML, outerHTML, append</td>
+        </tr>
+        </tbody>
+    </table>
+</section><section>
+    <h1>&lt;/&gt; Events</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>

@@ -1,17 +1,61 @@
 var HTMx = HTMx || (function()
 {
+    function getClosestAttributeValue(elt, attributeName)
+    {
+        let attribute = elt.getAttribute(attributeName);
+        if(attribute)
+        {
+            return attribute;
+        }
+        else if (elt.parentElement)
+        {
+            return getClosestAttributeValue(elt.parentElement, attributeName);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    function getTarget(elt) {
+        let targetVal = getClosestAttributeValue(elt, "hx-target");
+        if (targetVal) {
+            return document.querySelector(targetVal);
+        } else {
+            return elt;
+        }
+    }
+
+    function makeNode(resp) {
+        let range = document.createRange();
+        return range.createContextualFragment(resp);
+    }
+
+    function swapResponse(elt, resp) {
+        let target = getTarget(elt);
+        let swapStyle = getClosestAttributeValue(elt, "hx-swap-style");
+        if (swapStyle === "outerHTML") {
+            target.outerHTML = resp;
+        } else if (swapStyle === "append") {
+            target.appendChild(makeNode(resp))
+        } else {
+            target.innerHTML = resp;
+        }
+    }
+
     // core ajax request
     function issueAjaxRequest(elt, url)
     {
-        var request = new XMLHttpRequest();
+        let request = new XMLHttpRequest();
+        // TODO - support more request types POST, PUT, DELETE, etc.
         request.open('GET', url, true);
         request.onload = function()
         {
-            if (this.status >= 200 && this.status < 400) 
+            if (this.status >= 200 && this.status < 400)
             {
                 // Success!
-                var resp = this.response;
-                elt.innerHTML = resp;
+                let resp = this.response;
+                swapResponse(elt, resp);
             } 
             else 
             {
@@ -38,7 +82,7 @@ var HTMx = HTMx || (function()
     }
 
     function ready(fn) {
-        if (document.readyState != 'loading'){
+        if (document.readyState !== 'loading'){
             fn();
         } else {
             document.addEventListener('DOMContentLoaded', fn);

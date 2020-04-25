@@ -9,7 +9,21 @@
 
 <h1>Scratch Page</h1>
 
-<button hx-get="foo.html">Trigger</button>
+<div>
+    <button hx-get="foo.html">Trigger</button>
+</div>
+
+<div>
+<button hx-get="foo.html" hx-target="#bar">Trigger 2</button><span id="bar">Bar</span>
+</div>
+
+<div>
+    <button hx-get="foo.html" hx-target="#bar2" hx-swap-style="append">Trigger 3</button><span id="bar2">Bar</span>
+</div>
+
+<div>
+    <button hx-get="foo.html" hx-swap-style="outerHTML">Trigger 4</button>
+</div>
 
 <form hx-post="/foo">
     <input name="bar" type="text"/>
