@@ -1,13 +1,13 @@
 var HTMx = HTMx || (function()
 {
     // resolve with both hx and data-hx prefixes
-    function getAttribute(elt, qualifiedName) {
+    function getAttributeValue(elt, qualifiedName) {
         return elt.getAttribute(qualifiedName) || elt.getAttribute("data-" + qualifiedName);
     }
 
     function getClosestAttributeValue(elt, attributeName)
     {
-        let attribute = getAttribute(elt, attributeName);
+        let attribute = getAttributeValue(elt, attributeName);
         if(attribute)
         {
             return attribute;
@@ -102,7 +102,7 @@ var HTMx = HTMx || (function()
     function processElement(elt) {
         if(elt.getAttribute('hx-get')) {
             elt.addEventListener("click", function(evt){
-                issueAjaxRequest(elt, getAttribute(elt, 'hx-get'));
+                issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
                 evt.stopPropagation();
             });
         }
