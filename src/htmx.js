@@ -1,8 +1,13 @@
 var HTMx = HTMx || (function()
 {
+    // resolve with both hx and data-hx prefixes
+    function getAttribute(elt, qualifiedName) {
+        return elt.getAttribute(qualifiedName) || elt.getAttribute("data-" + qualifiedName);
+    }
+
     function getClosestAttributeValue(elt, attributeName)
     {
-        let attribute = elt.getAttribute(attributeName);
+        let attribute = getAttribute(elt, attributeName);
         if(attribute)
         {
             return attribute;
@@ -35,8 +40,13 @@ var HTMx = HTMx || (function()
         let target = getTarget(elt);
         let swapStyle = getClosestAttributeValue(elt, "hx-swap");
         if (swapStyle === "outerHTML") {
-            target.outerHTML = resp;
-            processElement(target);
+            let fragment = makeFragment(resp);
+            for (let i = fragment.children.length - 1; i >= 0; i--) {
+                const child = fragment.children[i];
+                processElement(child);
+                target.parentElement.insertBefore(child, target.firstChild);
+            }
+            target.parentElement.removeChild(target);
         } else if (swapStyle === "prepend") {
             let fragment = makeFragment(resp);
             for (let i = fragment.children.length - 1; i >= 0; i--) {
@@ -88,11 +98,11 @@ var HTMx = HTMx || (function()
         request.send();
     }
 
-    // DOM element processing
+// DOM element processing
     function processElement(elt) {
         if(elt.getAttribute('hx-get')) {
             elt.addEventListener("click", function(evt){
-                issueAjaxRequest(elt, elt.getAttribute('hx-get'));
+                issueAjaxRequest(elt, getAttribute(elt, 'hx-get'));
                 evt.stopPropagation();
             });
         }
@@ -117,6 +127,7 @@ var HTMx = HTMx || (function()
 
     // public API
     return {
+        processElement : processElement,
         version : "0.0.1"
     }
 })();

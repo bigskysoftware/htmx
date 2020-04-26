@@ -2,7 +2,7 @@
   "name": "htmx",
   "version": "0.0.1",
   "description": "HTML Extensions",
-  "main": "htmx.js",
+  "main": "src/htmx.js",
   "scripts": {
     "test": "mocha-chrome test/core.html"
   },

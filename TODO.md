@@ -7,7 +7,7 @@
 * Minimalist functionality, rely heavily on built in functionality
 ** CSS transitions only
 ** Pluggable event model
-* Smaller than TurboPascal https://prog21.dadgum.com/116.html
+* Smaller than TurboPascal (39.7kb) https://prog21.dadgum.com/116.html
 
 ## TODOS
 
