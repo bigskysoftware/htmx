@@ -98,10 +98,32 @@ var HTMx = HTMx || (function()
         request.send();
     }
 
+    function matches(el, selector) {
+        return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+    }
+
+
+    function getTrigger(elt) {
+        let explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
+        if (explicitTrigger) {
+            return explicitTrigger;
+        } else {
+            if (matches(elt, 'button')) {
+                return 'click';
+            } else if (matches(elt, 'form')) {
+                return 'submit';
+            } else if (matches(elt, 'input, textarea, select')) {
+                return 'change';
+            } else {
+                return 'click';
+            }
+        }
+    }
+
 // DOM element processing
     function processElement(elt) {
         if(elt.getAttribute('hx-get')) {
-            elt.addEventListener("click", function(evt){
+            elt.addEventListener(getTrigger(elt), function(evt){
                 issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
                 evt.stopPropagation();
             });
@@ -125,7 +147,7 @@ var HTMx = HTMx || (function()
         processElement(document.body);
     })
 
-    // public API
+    // Public API
     return {
         processElement : processElement,
         version : "0.0.1"
