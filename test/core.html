@@ -239,6 +239,16 @@
             btn.innerHTML.should.equal("Focused!");
         });
 
+        it('handles hx-trigger with load event', function()
+        {
+            this.server.respondWith("GET", "/test", "Loaded!");
+
+            let div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
+            div.innerHTML.should.equal("Load Me!");
+            this.server.respond();
+            div.innerHTML.should.equal("Loaded!");
+        });
+
     })
 </script>
 

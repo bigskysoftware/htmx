@@ -7,7 +7,7 @@ var HTMx = HTMx || (function()
 
     function getClosestAttributeValue(elt, attributeName)
     {
-        let attribute = getAttributeValue(elt, attributeName);
+        var attribute = getAttributeValue(elt, attributeName);
         if(attribute)
         {
             return attribute;
@@ -23,7 +23,7 @@ var HTMx = HTMx || (function()
     }
 
     function getTarget(elt) {
-        let targetVal = getClosestAttributeValue(elt, "hx-target");
+        var targetVal = getClosestAttributeValue(elt, "hx-target");
         if (targetVal) {
             return document.querySelector(targetVal);
         } else {
@@ -32,39 +32,39 @@ var HTMx = HTMx || (function()
     }
 
     function makeFragment(resp) {
-        let range = document.createRange();
+        var range = document.createRange();
         return range.createContextualFragment(resp);
     }
 
     function swapResponse(elt, resp) {
-        let target = getTarget(elt);
-        let swapStyle = getClosestAttributeValue(elt, "hx-swap");
+        var target = getTarget(elt);
+        var swapStyle = getClosestAttributeValue(elt, "hx-swap");
         if (swapStyle === "outerHTML") {
-            let fragment = makeFragment(resp);
-            for (let i = fragment.children.length - 1; i >= 0; i--) {
-                const child = fragment.children[i];
+            var fragment = makeFragment(resp);
+            for (var i = fragment.children.length - 1; i >= 0; i--) {
+                var child = fragment.children[i];
                 processElement(child);
                 target.parentElement.insertBefore(child, target.firstChild);
             }
             target.parentElement.removeChild(target);
         } else if (swapStyle === "prepend") {
-            let fragment = makeFragment(resp);
-            for (let i = fragment.children.length - 1; i >= 0; i--) {
-                const child = fragment.children[i];
+            var fragment = makeFragment(resp);
+            for (var i = fragment.children.length - 1; i >= 0; i--) {
+                var child = fragment.children[i];
                 processElement(child);
                 target.insertBefore(child, target.firstChild);
             }
         } else if (swapStyle === "append") {
-            let fragment = makeFragment(resp);
-            for (let i = 0; i < fragment.children.length; i++) {
-                const child = fragment.children[i];
+            var fragment = makeFragment(resp);
+            for (var i = 0; i < fragment.children.length; i++) {
+                var child = fragment.children[i];
                 processElement(child);
                 target.appendChild(child);
             }
         } else {
             target.innerHTML = resp;
-            for (let i = 0; i < target.children.length; i++) {
-                const child = target.children[i];
+            for (var i = 0; i < target.children.length; i++) {
+                var child = target.children[i];
                 processElement(child);
             }
         }
@@ -73,8 +73,8 @@ var HTMx = HTMx || (function()
     // core ajax request
     function issueAjaxRequest(elt, url)
     {
-        let request = new XMLHttpRequest();
-        // TODO - support more request types POST, PUT, DELETE, etc.
+        var request = new XMLHttpRequest();
+        // TODO - support more request types POST, PUT, DEvarE, etc.
         request.open('GET', url, true);
         request.onload = function()
         {
@@ -83,7 +83,7 @@ var HTMx = HTMx || (function()
                 // don't process 'No Content' response
                 if (this.status != 204) {
                     // Success!
-                    let resp = this.response;
+                    var resp = this.response;
                      swapResponse(elt, resp);
                 }
             }
@@ -104,7 +104,7 @@ var HTMx = HTMx || (function()
 
 
     function getTrigger(elt) {
-        let explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
+        var explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
         if (explicitTrigger) {
             return explicitTrigger;
         } else {
@@ -123,13 +123,18 @@ var HTMx = HTMx || (function()
 // DOM element processing
     function processElement(elt) {
         if(elt.getAttribute('hx-get')) {
-            elt.addEventListener(getTrigger(elt), function(evt){
+            var trigger = getTrigger(elt);
+            if (trigger === 'load') {
                 issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
-                evt.stopPropagation();
-            });
+            } else {
+                elt.addEventListener(trigger, function(evt){
+                    issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
+                    evt.stopPropagation();
+                });
+            }
         }
-        for (let i = 0; i < elt.children.length; i++) {
-            const child = elt.children[i];
+        for (var i = 0; i < elt.children.length; i++) {
+            var child = elt.children[i];
             processElement(child);
         }
     }

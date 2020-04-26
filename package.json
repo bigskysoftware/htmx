@@ -4,7 +4,9 @@
   "description": "HTML Extensions",
   "main": "src/htmx.js",
   "scripts": {
-    "test": "mocha-chrome test/core.html"
+    "test": "mocha-chrome test/core.html",
+    "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
+    "uglify": "uglifyjs -m -o dist/htmx.min.js dist/htmx.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,8 @@
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
     "mocha-chrome": "^2.2.0",
-    "sinon": "^9.0.2"
-  }
+    "sinon": "^9.0.2",
+    "uglify-js": "^3.9.1"
+  },
+  "dependencies": {}
 }
