@@ -1,28 +1,11 @@
 <html lang="en">
 <head>
     <title>HTMx - Teaching HTML new tricks</title>
-    <style type="text/css">body {
-        margin: 40px auto;
-        max-width: 740px;
-        line-height: 1.6;
-        font-size: 18px;
-        color: #333;
-        padding: 0 10px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
-    }
-    h1, h2, h3 {
-        line-height: 1.2
-    }
-    h1 {
-        text-align: center;
-        font-size: 4em
-    }
-    .flair {
-        color: rgb(52, 101, 164);
-    }</style>
+    <link rel="stylesheet" href="css/site.css"/>
+    <script src="js/htmx.js"></script>
 </head>
 <body>
-<h1>&lt;<span class="flair">/</span>&gt; HTM<sub class="flair">x</sub></h1>
+<h1 class="hero" hx-add-class="settle">&lt;<span class="flair">/</span>&gt; HTM<sub class="flair">x</sub></h1>
 <section>
     <p>HTMx is a set of extensions to HTML that bring many of the useful features of modern web browsers directly
         into HTML. It fills gaps in functionality found in standard HTML, dramatically expanding its expressiveness while
