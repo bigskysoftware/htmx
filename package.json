@@ -4,7 +4,7 @@
   "description": "HTML Extensions",
   "main": "src/htmx.js",
   "scripts": {
-    "test": "mocha-chrome test/core.html",
+    "test": "mocha-chrome test/index.html",
     "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
     "uglify": "uglifyjs -m -o dist/htmx.min.js dist/htmx.js"
   },

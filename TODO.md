@@ -12,9 +12,7 @@
 
 ## TODOS
 
-* create project layout
-* figure out testing infrastructure
-* create https://htmx.org
+* implement properties using https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
 * distribute on https://unpkg.com/
 
 ## RESOURCES
@@ -22,4 +20,5 @@
 * http://youmightnotneedjquery.com/
 * http://intercoolerjs.org/docs.html
 * http://intercoolerjs.org/reference.html
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
 
