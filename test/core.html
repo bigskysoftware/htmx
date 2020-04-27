@@ -45,7 +45,7 @@
 </script>
 
 <script>
-    describe("Core HTMx Tests", function(){
+    describe("HTMx AJAX Tests", function(){
         beforeEach(function() {
             this.server = sinon.fakeServer.create();
             clearWorkArea();
@@ -182,7 +182,6 @@
             let i = 0;
             this.server.respondWith("GET", "/test", function(xhr){
                 i++;
-                console.log(xhr);
                 xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
             });
             this.server.respondWith("GET", "/test2", "*");
@@ -261,8 +260,7 @@
             clearWorkArea();
         });
 
-        // bootstrap test
-        it('add classes properly', function(done)
+        it('adds classes properly', function(done)
         {
             let div = make('<div hx-add-class="c1">Click Me!</div>')
             should.equal(div.classList.length, 0);
@@ -272,6 +270,17 @@
             }, 100);
         });
 
+        it('removes classes properly', function(done)
+        {
+            let div = make('<div class="foo bar" hx-remove-class="bar">Click Me!</div>')
+            should.equal(div.classList.contains("foo"), true);
+            should.equal(div.classList.contains("bar"), true);
+            setTimeout(function(){
+                should.equal(div.classList.contains("foo"), true);
+                should.equal(div.classList.contains("bar"), false);
+                done();
+            }, 100);
+        });
 
     })
 </script>
@@ -282,7 +291,6 @@
 <em>Work Area</em>
 <hr/>
 <div id="work-area">
-
 </div>
 </body>
 </html>

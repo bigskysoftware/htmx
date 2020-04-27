@@ -133,23 +133,33 @@ var HTMx = HTMx || (function()
     }
 
 // DOM element processing
-    function parseAndApplyClass(classInfo, elt, operation) {
-        var cssClass = "";
-        var delay = 50;
-        if (classInfo.indexOf(":") > 0) {
-            var split = classInfo.split(':');
-            cssClass = split[0];
-            delay = parseInterval(split[1]);
-        } else {
-            cssClass = classInfo;
+    function processClassList(elt, classList, operation) {
+        console.log(elt);
+        var values = classList.split(",");
+        for (var i = 0; i < values.length; i++) {
+            var cssClass = "";
+            var delay = 50;
+            if (values[i].trim().indexOf(":") > 0) {
+                var split = values[i].trim().split(':');
+                cssClass = split[0];
+                delay = parseInterval(split[1]);
+            } else {
+                cssClass = values[i].trim();
+            }
+            console.log(elt);
+            console.log(operation);
+            console.log(cssClass);
+            setTimeout(function () {
+                console.log(elt);
+                console.log(operation);
+                console.log(cssClass);
+                elt.classList[operation].call(elt.classList, cssClass);
+            }, delay);
         }
-        setTimeout(function() {
-            elt.classList[operation].call(elt.classList, cssClass)
-        }, delay);
     }
 
     function processElement(elt) {
-        if(elt.getAttribute('hx-get')) {
+        if(getAttributeValue(elt,'hx-get')) {
             var trigger = getTrigger(elt);
             if (trigger === 'load') {
                 issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
@@ -160,11 +170,11 @@ var HTMx = HTMx || (function()
                 });
             }
         }
-        if (elt.getAttribute('hx-add-class')) {
-            var values = elt.getAttribute('hx-add-class').split(",");
-            for (var i = 0; i < values.length; i++) {
-                parseAndApplyClass(values[i].trim(), elt, 'add');
-            }
+        if (getAttributeValue(elt, 'hx-add-class')) {
+            processClassList(elt, getAttributeValue(elt,'hx-add-class'), "add");
+        }
+        if (getAttributeValue(elt, 'hx-remove-class')) {
+            processClassList(elt, getAttributeValue(elt,'hx-remove-class'), "remove");
         }
         for (var i = 0; i < elt.children.length; i++) {
             var child = elt.children[i];
