@@ -134,7 +134,6 @@ var HTMx = HTMx || (function()
 
 // DOM element processing
     function processClassList(elt, classList, operation) {
-        console.log(elt);
         var values = classList.split(",");
         for (var i = 0; i < values.length; i++) {
             var cssClass = "";
@@ -146,13 +145,7 @@ var HTMx = HTMx || (function()
             } else {
                 cssClass = values[i].trim();
             }
-            console.log(elt);
-            console.log(operation);
-            console.log(cssClass);
             setTimeout(function () {
-                console.log(elt);
-                console.log(operation);
-                console.log(cssClass);
                 elt.classList[operation].call(elt.classList, cssClass);
             }, delay);
         }
