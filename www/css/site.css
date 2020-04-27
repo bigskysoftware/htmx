@@ -19,10 +19,13 @@ h1 {
 .hero {
     text-align: center;
     font-size: 4em;
-    opacity: 75%;
-    transition: 300ms ease-in;
+    opacity: 5%;
+    position: relative;
+    top: -20px;
 }
 
 .hero.settle {
+    top: 0px;
     opacity: 100%;
+    transition: 500ms ease-in;
 }
