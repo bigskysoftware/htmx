@@ -1,5 +1,7 @@
 var HTMx = HTMx || (function()
 {
+    'use strict';
+
     function parseInterval(str) {
         if (str === "null" || str === "false" || str === "") {
             return null;
@@ -82,6 +84,40 @@ var HTMx = HTMx || (function()
         }
     }
 
+    function triggerEvent(elt, eventName, details) {
+        details["elt"] = elt;
+        if (window.CustomEvent && typeof window.CustomEvent === 'function') {
+            var event = new CustomEvent(eventName, {detail: details});
+        } else {
+            var event = document.createEvent('CustomEvent');
+            event.initCustomEvent(eventName, true, true, details);
+        }
+        elt.dispatchEvent(event);
+    }
+
+    function isRawObject(o){
+        return Object.prototype.toString.call(o) === "[object Object]";
+    }
+
+    function handleTrigger(elt, trigger) {
+        if (trigger) {
+            if (trigger.indexOf("{") === 0) {
+                var triggers = JSON.parse(trigger);
+                for (var eventName in triggers) {
+                    if (triggers.hasOwnProperty(eventName)) {
+                        var details = triggers[eventName];
+                        if (!isRawObject(details)) {
+                            details = {"value": details}
+                        }
+                        triggerEvent(elt, eventName, details);
+                    }
+                }
+            } else {
+                triggerEvent(elt, trigger, []);
+            }
+        }
+    }
+
     // core ajax request
     function issueAjaxRequest(elt, url)
     {
@@ -90,6 +126,8 @@ var HTMx = HTMx || (function()
         request.open('GET', url, true);
         request.onload = function()
         {
+            var trigger = this.getResponseHeader("X-HX-Trigger");
+            handleTrigger(elt, trigger);
             if (this.status >= 200 && this.status < 400)
             {
                 // don't process 'No Content' response
@@ -101,10 +139,12 @@ var HTMx = HTMx || (function()
             }
             else 
             {
+                // TODO error handling
                 elt.innerHTML = "ERROR";
             }
         };
         request.onerror = function () {
+            // TODO error handling
             // There was a connection error of some sort
         };
         request.send();
