@@ -50,37 +50,34 @@ var HTMx = HTMx || (function()
         return range.createContextualFragment(resp);
     }
 
+    function processResponseNodes(parent, target, text) {
+        var fragment = makeFragment(text);
+        for (var i = fragment.childNodes.length - 1; i >= 0; i--) {
+            var child = fragment.childNodes[i];
+            parent.insertBefore(child, target);
+            if (child.nodeType != Node.TEXT_NODE) {
+                processElement(child);
+            }
+        }
+    }
+
     function swapResponse(elt, resp) {
         var target = getTarget(elt);
         var swapStyle = getClosestAttributeValue(elt, "hx-swap");
         if (swapStyle === "outerHTML") {
-            var fragment = makeFragment(resp);
-            for (var i = fragment.children.length - 1; i >= 0; i--) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.parentElement.insertBefore(child, target.firstChild);
-            }
+            processResponseNodes(target.parentElement, target, resp);
             target.parentElement.removeChild(target);
         } else if (swapStyle === "prepend") {
-            var fragment = makeFragment(resp);
-            for (var i = fragment.children.length - 1; i >= 0; i--) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.insertBefore(child, target.firstChild);
-            }
+            processResponseNodes(target, target.firstChild, resp);
+        } else if (swapStyle === "prependBefore") {
+            processResponseNodes(target.parentElement, target, resp);
         } else if (swapStyle === "append") {
-            var fragment = makeFragment(resp);
-            for (var i = 0; i < fragment.children.length; i++) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.appendChild(child);
-            }
+            processResponseNodes(target, null, resp);
+        } else if (swapStyle === "appendAfter") {
+            processResponseNodes(target.parentElement, target.nextSibling, resp);
         } else {
-            target.innerHTML = resp;
-            for (var i = 0; i < target.children.length; i++) {
-                var child = target.children[i];
-                processElement(child);
-            }
+            target.innerHTML = "";
+            processResponseNodes(target, null, resp);
         }
     }
 
@@ -122,7 +119,7 @@ var HTMx = HTMx || (function()
     function issueAjaxRequest(elt, url)
     {
         var request = new XMLHttpRequest();
-        // TODO - support more request types POST, PUT, DEvarE, etc.
+        // TODO - support more request types POST, PUT, DELETE, etc.
         request.open('GET', url, true);
         request.onload = function()
         {

@@ -13,7 +13,7 @@ describe("HTMx AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        let btn = make('<button hx-get="/test">Click Me!</button>')
+        var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
@@ -24,11 +24,11 @@ describe("HTMx AJAX Tests", function(){
         this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
 
-        let div = make('<div hx-get="/test"></div>')
+        var div = make('<div hx-get="/test"></div>')
         div.click();
         this.server.respond();
         div.innerHTML.should.equal('<a hx-get="/test2">Click Me</a>');
-        let a = div.querySelector('a');
+        var a = div.querySelector('a');
         a.click();
         this.server.respond();
         a.innerHTML.should.equal('Clicked!');
@@ -39,7 +39,7 @@ describe("HTMx AJAX Tests", function(){
         this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
 
-        let div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
+        var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
         div.click();
         should.equal(byId("d1"), div);
         this.server.respond();
@@ -49,16 +49,46 @@ describe("HTMx AJAX Tests", function(){
         byId("a1").innerHTML.should.equal('Clicked!');
     });
 
-    it('handles prepend properly', function()
+    it('handles prependBefore properly', function()
     {
-        let i = 0;
+        var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        let div = make('<div hx-get="/test" hx-swap="prepend">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="prependBefore">*</div>')
+        var parent = div.parentElement;
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("*");
+        parent.innerText.replace(/\s/g, "").should.equal("1*");
+
+        byId("a1").click();
+        this.server.respond();
+        parent.innerText.replace(/\s/g, "").should.equal("**");
+
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("*");
+        parent.innerText.replace(/\s/g, "").should.equal("*2*");
+
+        byId("a2").click();
+        this.server.respond();
+        parent.innerText.replace(/\s/g, "").should.equal("***");
+    });
+
+    it('handles prepend properly', function()
+    {
+        var i = 0;
+        this.server.respondWith("GET", "/test", function(xhr){
+            i++;
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+        });
+        this.server.respondWith("GET", "/test2", "*");
+
+        var div = make('<div hx-get="/test" hx-swap="prepend">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1*");
@@ -78,14 +108,14 @@ describe("HTMx AJAX Tests", function(){
 
     it('handles prepend properly with no initial content', function()
     {
-        let i = 0;
+        var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        let div = make('<div hx-get="/test" hx-swap="prepend"></div>')
+        var div = make('<div hx-get="/test" hx-swap="prepend"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
@@ -103,16 +133,46 @@ describe("HTMx AJAX Tests", function(){
         div.innerText.should.equal("**");
     });
 
-    it('handles append properly', function()
+    it('handles appendAfter properly', function()
     {
-        let i = 0;
+        var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        let div = make('<div hx-get="/test" hx-swap="append">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="appendAfter">*</div>')
+        var parent = div.parentElement;
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("*");
+        parent.innerText.replace(/\s/g, "").should.equal("*1");
+
+        byId("a1").click();
+        this.server.respond();
+        parent.innerText.replace(/\s/g, "").should.equal("**");
+
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("*");
+        parent.innerText.replace(/\s/g, "").should.equal("*2*");
+
+        byId("a2").click();
+        this.server.respond();
+        parent.innerText.replace(/\s/g, "").should.equal("***");
+    });
+
+    it('handles append properly', function()
+    {
+        var i = 0;
+        this.server.respondWith("GET", "/test", function(xhr){
+            i++;
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+        });
+        this.server.respondWith("GET", "/test2", "*");
+
+        var div = make('<div hx-get="/test" hx-swap="append">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("*1");
@@ -132,14 +192,14 @@ describe("HTMx AJAX Tests", function(){
 
     it('handles append properly with no initial content', function()
     {
-        let i = 0;
+        var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        let div = make('<div hx-get="/test" hx-swap="append"></div>')
+        var div = make('<div hx-get="/test" hx-swap="append"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
@@ -161,8 +221,8 @@ describe("HTMx AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        let btn = make('<button hx-get="/test" hx-target="#s1">Click Me!</button>');
-        let target = make('<span id="s1">Initial</span>');
+        var btn = make('<button hx-get="/test" hx-target="#s1">Click Me!</button>');
+        var target = make('<span id="s1">Initial</span>');
         btn.click();
         target.innerHTML.should.equal("Initial");
         this.server.respond();
@@ -173,7 +233,7 @@ describe("HTMx AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", [204, {}, "No Content!"]);
 
-        let btn = make('<button hx-get="/test">Click Me!</button>');
+        var btn = make('<button hx-get="/test">Click Me!</button>');
         btn.click();
         btn.innerHTML.should.equal("Click Me!");
         this.server.respond();
@@ -184,7 +244,7 @@ describe("HTMx AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", "Focused!");
 
-        let btn = make('<button hx-get="/test" hx-trigger="focus">Focus Me!</button>');
+        var btn = make('<button hx-get="/test" hx-trigger="focus">Focus Me!</button>');
         btn.focus();
         btn.innerHTML.should.equal("Focus Me!");
         this.server.respond();
@@ -195,7 +255,7 @@ describe("HTMx AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", "Loaded!");
 
-        let div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
+        var div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
         div.innerHTML.should.equal("Loaded!");
