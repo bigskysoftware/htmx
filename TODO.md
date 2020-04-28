@@ -14,25 +14,28 @@
 
 * event model for pluggability
 * history support
-** Implement LRU
-** Issue GET to restore content if there isn't a copy locally
+  * Implement LRU
+  * Issue GET to restore content if there isn't a copy locally
 * sse support
 * polling (ic-trigger="every 2s")
+* delay (ic-trigger="keyup delay 1s")
 * implement element properties using https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
-** make node handling idempotent
-** don't cancel trigger events, but don't process additional events
+  * make node handling idempotent
+  * don't cancel trigger events, but don't process additional events
+  * don't issue multiple requests on multiple clicks
 * distribute on https://unpkg.com/
 * build website with 11ty
-** landing page
-** docs page
-** examples page (steal intercooler)
-** attributes page
-** events page
-** headers page
+  * landing page
+  * docs page 
+  * examples page (steal intercooler)
+  * attributes page
+  * events page
+  * headers page
 
-## Features Dropping From Intercooler
+## Unsupported Intercooler Features
 
 * local actions
+* all request parameters
 * all response headers except X-*-Trigger
 * dependencies
 * macros
