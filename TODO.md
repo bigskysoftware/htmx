@@ -14,6 +14,8 @@
 
 * event model for pluggability
 * history support
+** Implement LRU
+** Issue GET to restore content if there isn't a copy locally
 * sse support
 * polling (ic-trigger="every 2s")
 * implement element properties using https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap

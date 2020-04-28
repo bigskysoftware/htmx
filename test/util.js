@@ -4,11 +4,11 @@ function byId(id) {
 }
 
 function make(htmlStr) {
-    let range = document.createRange();
-    let fragment = range.createContextualFragment(htmlStr);
-    let wa = getWorkArea();
-    for (let i = fragment.children.length - 1; i >= 0; i--) {
-        const child = fragment.children[i];
+    var  range = document.createRange();
+    var  fragment = range.createContextualFragment(htmlStr);
+    var  wa = getWorkArea();
+    for (var  i = fragment.children.length - 1; i >= 0; i--) {
+        var child = fragment.children[i];
         HTMx.processElement(child);
         wa.appendChild(child);
     }
@@ -21,4 +21,8 @@ function getWorkArea() {
 
 function clearWorkArea() {
     getWorkArea().innerHTML = "";
+}
+
+function removeWhiteSpace(str) {
+    return str.replace(/\s/g, "");
 }

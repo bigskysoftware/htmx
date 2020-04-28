@@ -63,20 +63,20 @@ describe("HTMx AJAX Tests", function(){
         div.click();
         this.server.respond();
         div.innerText.should.equal("*");
-        parent.innerText.replace(/\s/g, "").should.equal("1*");
+        removeWhiteSpace(parent.innerText).should.equal("1*");
 
         byId("a1").click();
         this.server.respond();
-        parent.innerText.replace(/\s/g, "").should.equal("**");
+        removeWhiteSpace(parent.innerText).should.equal("**");
 
         div.click();
         this.server.respond();
         div.innerText.should.equal("*");
-        parent.innerText.replace(/\s/g, "").should.equal("*2*");
+        removeWhiteSpace(parent.innerText).should.equal("*2*");
 
         byId("a2").click();
         this.server.respond();
-        parent.innerText.replace(/\s/g, "").should.equal("***");
+        removeWhiteSpace(parent.innerText).should.equal("***");
     });
 
     it('handles prepend properly', function()
@@ -147,20 +147,20 @@ describe("HTMx AJAX Tests", function(){
         div.click();
         this.server.respond();
         div.innerText.should.equal("*");
-        parent.innerText.replace(/\s/g, "").should.equal("*1");
+        removeWhiteSpace(parent.innerText).should.equal("*1");
 
         byId("a1").click();
         this.server.respond();
-        parent.innerText.replace(/\s/g, "").should.equal("**");
+        removeWhiteSpace(parent.innerText).should.equal("**");
 
         div.click();
         this.server.respond();
         div.innerText.should.equal("*");
-        parent.innerText.replace(/\s/g, "").should.equal("*2*");
+        removeWhiteSpace(parent.innerText).should.equal("*2*");
 
         byId("a2").click();
         this.server.respond();
-        parent.innerText.replace(/\s/g, "").should.equal("***");
+        removeWhiteSpace(parent.innerText).should.equal("***");
     });
 
     it('handles append properly', function()
