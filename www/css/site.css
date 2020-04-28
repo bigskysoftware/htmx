@@ -29,3 +29,19 @@ h1 {
     opacity: 100%;
     transition: 500ms ease-in;
 }
+
+.nav {
+    margin: 12px;
+    position: absolute;
+    top: 180px;
+    left: 10px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.nav ul {
+    padding-left: 12px;
+    list-style: none;
+}

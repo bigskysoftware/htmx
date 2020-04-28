@@ -1,5 +1,7 @@
 var HTMx = HTMx || (function()
 {
+    'use strict';
+
     function parseInterval(str) {
         if (str === "null" || str === "false" || str === "") {
             return null;
@@ -48,36 +50,67 @@ var HTMx = HTMx || (function()
         return range.createContextualFragment(resp);
     }
 
+    function processResponseNodes(parent, target, text) {
+        var fragment = makeFragment(text);
+        for (var i = fragment.childNodes.length - 1; i >= 0; i--) {
+            var child = fragment.childNodes[i];
+            parent.insertBefore(child, target);
+            if (child.nodeType != Node.TEXT_NODE) {
+                processElement(child);
+            }
+        }
+    }
+
     function swapResponse(elt, resp) {
         var target = getTarget(elt);
         var swapStyle = getClosestAttributeValue(elt, "hx-swap");
         if (swapStyle === "outerHTML") {
-            var fragment = makeFragment(resp);
-            for (var i = fragment.children.length - 1; i >= 0; i--) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.parentElement.insertBefore(child, target.firstChild);
-            }
+            processResponseNodes(target.parentElement, target, resp);
             target.parentElement.removeChild(target);
         } else if (swapStyle === "prepend") {
-            var fragment = makeFragment(resp);
-            for (var i = fragment.children.length - 1; i >= 0; i--) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.insertBefore(child, target.firstChild);
-            }
+            processResponseNodes(target, target.firstChild, resp);
+        } else if (swapStyle === "prependBefore") {
+            processResponseNodes(target.parentElement, target, resp);
         } else if (swapStyle === "append") {
-            var fragment = makeFragment(resp);
-            for (var i = 0; i < fragment.children.length; i++) {
-                var child = fragment.children[i];
-                processElement(child);
-                target.appendChild(child);
-            }
+            processResponseNodes(target, null, resp);
+        } else if (swapStyle === "appendAfter") {
+            processResponseNodes(target.parentElement, target.nextSibling, resp);
         } else {
-            target.innerHTML = resp;
-            for (var i = 0; i < target.children.length; i++) {
-                var child = target.children[i];
-                processElement(child);
+            target.innerHTML = "";
+            processResponseNodes(target, null, resp);
+        }
+    }
+
+    function triggerEvent(elt, eventName, details) {
+        details["elt"] = elt;
+        if (window.CustomEvent && typeof window.CustomEvent === 'function') {
+            var event = new CustomEvent(eventName, {detail: details});
+        } else {
+            var event = document.createEvent('CustomEvent');
+            event.initCustomEvent(eventName, true, true, details);
+        }
+        elt.dispatchEvent(event);
+    }
+
+    function isRawObject(o){
+        return Object.prototype.toString.call(o) === "[object Object]";
+    }
+
+    function handleTrigger(elt, trigger) {
+        if (trigger) {
+            if (trigger.indexOf("{") === 0) {
+                var triggers = JSON.parse(trigger);
+                for (var eventName in triggers) {
+                    if (triggers.hasOwnProperty(eventName)) {
+                        var details = triggers[eventName];
+                        if (!isRawObject(details)) {
+                            details = {"value": details}
+                        }
+                        triggerEvent(elt, eventName, details);
+                    }
+                }
+            } else {
+                triggerEvent(elt, trigger, []);
             }
         }
     }
@@ -86,25 +119,29 @@ var HTMx = HTMx || (function()
     function issueAjaxRequest(elt, url)
     {
         var request = new XMLHttpRequest();
-        // TODO - support more request types POST, PUT, DEvarE, etc.
+        // TODO - support more request types POST, PUT, DELETE, etc.
         request.open('GET', url, true);
         request.onload = function()
         {
+            var trigger = this.getResponseHeader("X-HX-Trigger");
+            handleTrigger(elt, trigger);
             if (this.status >= 200 && this.status < 400)
             {
                 // don't process 'No Content' response
                 if (this.status != 204) {
                     // Success!
                     var resp = this.response;
-                     swapResponse(elt, resp);
+                    swapResponse(elt, resp);
                 }
             }
-            else 
+            else
             {
+                // TODO error handling
                 elt.innerHTML = "ERROR";
             }
         };
         request.onerror = function () {
+            // TODO error handling
             // There was a connection error of some sort
         };
         request.send();
@@ -134,7 +171,6 @@ var HTMx = HTMx || (function()
 
 // DOM element processing
     function processClassList(elt, classList, operation) {
-        console.log(elt);
         var values = classList.split(",");
         for (var i = 0; i < values.length; i++) {
             var cssClass = "";
@@ -146,13 +182,7 @@ var HTMx = HTMx || (function()
             } else {
                 cssClass = values[i].trim();
             }
-            console.log(elt);
-            console.log(operation);
-            console.log(cssClass);
             setTimeout(function () {
-                console.log(elt);
-                console.log(operation);
-                console.log(cssClass);
                 elt.classList[operation].call(elt.classList, cssClass);
             }, delay);
         }
@@ -171,10 +201,10 @@ var HTMx = HTMx || (function()
             }
         }
         if (getAttributeValue(elt, 'hx-add-class')) {
-            processClassList(elt, getAttributeValue('hx-add-class'), "add");
+            processClassList(elt, getAttributeValue(elt,'hx-add-class'), "add");
         }
         if (getAttributeValue(elt, 'hx-remove-class')) {
-            processClassList(elt, getAttributeValue('hx-remove-class'), "remove");
+            processClassList(elt, getAttributeValue(elt,'hx-remove-class'), "remove");
         }
         for (var i = 0; i < elt.children.length; i++) {
             var child = elt.children[i];

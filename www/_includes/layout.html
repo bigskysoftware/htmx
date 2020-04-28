@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <title>HTMx - Teaching HTML new tricks</title>
+    <link rel="stylesheet" href="/css/site.css"/>
+    <link rel="stylesheet" href="/css/prism-theme.css"/>
+    <script src="/js/htmx.js"></script>
+</head>
+<body>
+<h1 class="hero" hx-add-class="settle">&lt;<span class="flair">/</span>&gt; HTM<sub class="flair">x</sub></h1>
+<div class="nav">
+    <h3>Navigation</h3>
+    <ul>
+        <li>
+            <a href="/">Home</a>
+        </li>
+        <li>
+            <a href="/docs">Docs</a>
+            <ul>
+                <li>
+                    <a href="/docs/attributes">Attributes</a>
+                </li>
+                <li>
+                    <a href="/docs/attributes">Events</a>
+                </li>
+                <li>
+                    <a href="/docs/attributes">Headers</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div id="content">
+{{ content | safe }}
+</div>
+</body>
+</html>

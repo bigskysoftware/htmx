@@ -23,6 +23,8 @@
   },
   "homepage": "https://htmx.org",
   "devDependencies": {
+    "@11ty/eleventy": "^0.10.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.1",
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
     "mocha-chrome": "^2.2.0",
