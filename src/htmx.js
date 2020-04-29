@@ -252,7 +252,7 @@ var HTMx = HTMx || (function () {
             }
         }
 
-// DOM element processing
+        // DOM element processing
         function processClassList(elt, classList, operation) {
             var values = classList.split(",");
             for (var i = 0; i < values.length; i++) {
@@ -271,11 +271,31 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function processPolling(elt, action) {
+            var trigger = getTrigger(elt);
+            if (trigger.trim().indexOf("every ") === 0) {
+                var args = trigger.split(/\s+/);
+                var intervalStr = args[1];
+                if (intervalStr) {
+                    var interval = parseInterval(intervalStr);
+                    // TODO store for cancelling
+                    var timeout = setTimeout(function () {
+                        if (document.body.contains(elt)) {
+                            issueAjaxRequest(elt, getAttributeValue(elt, action));
+                            processPolling(elt, action);
+                        }
+                    }, interval);
+                }
+            }
+        }
+
         function processElement(elt) {
             if (getAttributeValue(elt, 'hx-get')) {
                 var trigger = getTrigger(elt);
                 if (trigger === 'load') {
                     issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
+                } else if (trigger.trim().indexOf('every ') === 0) {
+                    processPolling(elt, 'hx-get');
                 } else {
                     elt.addEventListener(trigger, function (evt) {
                         issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));

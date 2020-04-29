@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Scratch File</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../src/htmx.js"></script>
+
+<script>
+    var server = sinon.fakeServer.create();
+    server.autoRespond = true;
+    server.respondWith("GET", "/test", "<li>FOO</li>");
+</script>
+
+<em>Work Area</em>
+<hr/>
+<div id="work-area" class="hx-history-element">
+    <ul hx-get="/test" hx-swap="append" hx-trigger="every 1s">
+
+    </ul>
+</div>
+</body>
+</html>
