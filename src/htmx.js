@@ -182,6 +182,26 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function addRequestIndicatorClasses(elt) {
+            mutateRequestIndicatorClasses(elt, "add");
+        }
+
+        function removeRequestIndicatorClasses(elt) {
+            mutateRequestIndicatorClasses(elt, "remove");
+        }
+
+        function mutateRequestIndicatorClasses(elt, action) {
+            var indicator = getClosestAttributeValue(elt, 'hx-indicator');
+            if (indicator) {
+                var indicators = document.querySelectorAll(indicator);
+            } else {
+                indicators = [elt];
+            }
+            for (var i = 0; i < indicators.length; i++) {
+                indicators[i].classList[action].call(indicators[i].classList, "hx-show-indicator");
+            }
+        }
+
         // core ajax request
         function issueAjaxRequest(elt, url) {
             var target = getTarget(elt);
@@ -222,11 +242,14 @@ var HTMx = HTMx || (function () {
                     // TODO error handling
                     elt.innerHTML = "ERROR";
                 }
+                removeRequestIndicatorClasses(elt);
             };
             xhr.onerror = function () {
+                removeIndicatorClasses(elt);
                 // TODO error handling
                 // There was a connection error of some sort
             };
+            addRequestIndicatorClasses(elt);
             xhr.send();
         }
 

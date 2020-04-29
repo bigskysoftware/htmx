@@ -4,6 +4,18 @@
     <title>Scratch File</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <style>
+        .indicator {
+            opacity: 0;
+            transition: all 200ms ease-in;
+        }
+        .hx-show-indicator .indicator {
+            opacity: 100%;
+        }
+        body {
+            background-color: #6272a4;
+        }
+    </style>
 </head>
 <body>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
@@ -11,16 +23,15 @@
 
 <script>
     var server = sinon.fakeServer.create();
-    server.autoRespond = true;
     server.respondWith("GET", "/test", "<li>FOO</li>");
 </script>
 
-<em>Work Area</em>
+
+<button onclick="server.respond()">Server Respond</button><em>Work Area</em>
 <hr/>
 <div id="work-area" class="hx-history-element">
-    <ul hx-get="/test" hx-swap="append" hx-trigger="every 1s">
-
-    </ul>
+    <button hx-indicator="#work-area" hx-get="/test">Click Me</button>
+    <img  src="spinning-circles.svg" class="indicator">
 </div>
 </body>
 </html>

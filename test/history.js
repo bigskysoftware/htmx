@@ -22,13 +22,13 @@ describe("HTMx History Tests", function() {
         var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
         div.click();
         this.server.respond();
-        getWorkArea().innerHTML.should.equal("<div hx-push-url=\"true\" hx-get=\"/test\">second</div>")
+        getWorkArea().textContent.should.equal("second")
         history.back();
         setTimeout(function(){
-            getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">first</div>");
+            getWorkArea().textContent.should.equal("first");
             done();
         }, 20);
-    })
+    });
 
     it("should handle two forward clicks then back twice", function (done) {
         var i = 0;
@@ -37,22 +37,22 @@ describe("HTMx History Tests", function() {
             xhr.respond(200, {}, "" + i);
         });
 
-        getWorkArea().innerHTML.should.be.equal("");
-        var div = make('<div hx-push-url="true" hx-get="/test">0</div>');
+        getWorkArea().innerHTML.should.equal("");
+        var div = make('<div hx-push-url="true" hx-get="/test" class="">0</div>');
         div.click();
         this.server.respond();
-        getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">1</div>")
+        getWorkArea().textContent.should.equal("1")
 
         div.click();
         this.server.respond();
-        getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">2</div>")
+        getWorkArea().textContent.should.equal("2")
 
         history.back();
         setTimeout(function(){
-            getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">1</div>");
+            getWorkArea().textContent.should.equal("1");
             history.back();
             setTimeout(function(){
-                getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">0</div>");
+                getWorkArea().textContent.should.equal("0");
                 done();
             }, 20);
         }, 20);
@@ -61,20 +61,20 @@ describe("HTMx History Tests", function() {
     it("should handle a back, forward, back button click", function (done) {
         this.server.respondWith("GET", "/test", "second");
 
-        getWorkArea().innerHTML.should.be.equal("");
-        var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
+        getWorkArea().innerHTML.should.equal("");
+        var div = make('<div hx-push-url="true" hx-get="/test" class="">first</div>');
         div.click();
         this.server.respond();
-        getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">second</div>")
+        getWorkArea().textContent.should.equal("second")
         history.back();
         setTimeout(function(){
-            getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">first</div>");
+            getWorkArea().textContent.should.equal("first");
             history.forward();
             setTimeout(function() {
-                getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">second</div>");
+                getWorkArea().textContent.should.equal("second");
                 history.back();
                 setTimeout(function() {
-                    getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">first</div>");
+                    getWorkArea().textContent.should.equal("first");
                     done();
                 }, 20);
             }, 20);
