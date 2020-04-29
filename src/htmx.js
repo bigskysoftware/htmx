@@ -57,8 +57,7 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        function swapResponse(elt, resp, after) {
-            var target = getTarget(elt);
+        function swapResponse(target, elt, resp, after) {
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
             if (swapStyle === "outerHTML") {
                 processResponseNodes(target.parentElement, target, resp, after);
@@ -185,10 +184,27 @@ var HTMx = HTMx || (function () {
 
         // core ajax request
         function issueAjaxRequest(elt, url) {
-            var request = new XMLHttpRequest();
+            var target = getTarget(elt);
+            if (getClosestAttributeValue(elt, "hx-prompt")) {
+                var prompt = prompt(getClosestAttributeValue(elt, "hx-prompt"));
+            }
+
+            var xhr = new XMLHttpRequest();
             // TODO - support more request types POST, PUT, DELETE, etc.
-            request.open('GET', url, true);
-            request.onload = function () {
+            //         all should use POST and use the X-HTTP-Method-Override header
+            xhr.open('GET', url, true);
+
+            // request headers
+            xhr.setRequestHeader("X-HX-Request", "true");
+            xhr.setRequestHeader("X-HX-Trigger-Id", elt.getAttribute("id") || "");
+            xhr.setRequestHeader("X-HX-Trigger-Name", elt.getAttribute("name") || "");
+            xhr.setRequestHeader("X-HX-Target-Id", target.getAttribute("id") || "");
+            xhr.setRequestHeader("X-HX-Current-URL", document.location.href);
+            if (prompt) {
+                xhr.setRequestHeader("X-HX-Prompt", prompt);
+            }
+
+            xhr.onload = function () {
                 snapshotForCurrentHistoryEntry(elt, url);
                 var trigger = this.getResponseHeader("X-HX-Trigger");
                 handleTrigger(elt, trigger);
@@ -198,7 +214,7 @@ var HTMx = HTMx || (function () {
                     if (this.status != 204) {
                         // Success!
                         var resp = this.response;
-                        swapResponse(elt, resp, function(){
+                        swapResponse(target, elt, resp, function(){
                             updateCurrentHistoryContent();
                         });
                     }
@@ -207,11 +223,11 @@ var HTMx = HTMx || (function () {
                     elt.innerHTML = "ERROR";
                 }
             };
-            request.onerror = function () {
+            xhr.onerror = function () {
                 // TODO error handling
                 // There was a connection error of some sort
             };
-            request.send();
+            xhr.send();
         }
 
         function matches(el, selector) {
