@@ -18,7 +18,7 @@
   * Issue GET to restore content if there isn't a copy locally
 * sse support
 * polling (ic-trigger="every 2s")
-* delay (ic-trigger="keyup delay 1s")
+* delay (ic-trigger="keyup" ic-delay="1s")
 * implement element properties using https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
   * make node handling idempotent
   * don't cancel trigger events, but don't process additional events

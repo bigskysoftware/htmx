@@ -1,4 +1,11 @@
 describe("HTMx History Tests", function() {
+
+    if (document.location.href.indexOf("file:") === 0) {
+        it("HISTORY TESTING SKIPPED IN HEADLESS MODE"), function() {
+        }
+        return;
+    }
+
     beforeEach(function () {
         this.server = sinon.fakeServer.create();
         clearWorkArea();
@@ -15,7 +22,7 @@ describe("HTMx History Tests", function() {
         var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
         div.click();
         this.server.respond();
-        getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">second</div>")
+        getWorkArea().innerHTML.should.equal("<div hx-push-url=\"true\" hx-get=\"/test\">second</div>")
         history.back();
         setTimeout(function(){
             getWorkArea().innerHTML.should.be.equal("<div hx-push-url=\"true\" hx-get=\"/test\">first</div>");
