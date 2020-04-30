@@ -1,6 +1,6 @@
 describe("HTMx AJAX Headers Tests", function() {
     beforeEach(function () {
-        this.server = sinon.fakeServer.create();
+        this.server = makeServer();
         clearWorkArea();
     });
     afterEach(function () {

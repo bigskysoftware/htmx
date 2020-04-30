@@ -1,6 +1,6 @@
 describe("HTMx AJAX Tests", function(){
     beforeEach(function() {
-        this.server = sinon.fakeServer.create();
+        this.server = makeServer();
         clearWorkArea();
     });
     afterEach(function()  {
@@ -254,11 +254,21 @@ describe("HTMx AJAX Tests", function(){
     it('handles hx-trigger with load event', function()
     {
         this.server.respondWith("GET", "/test", "Loaded!");
-
         var div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
         div.innerHTML.should.equal("Loaded!");
+    });
+
+    it('sets the content type of the request properly', function (done) {
+        this.server.respondWith("GET", "/test", function(xhr){
+            xhr.respond(200, {}, "done");
+            xhr.overriddenMimeType.should.equal("text/html");
+            done();
+        });
+        var div = make('<div hx-get="/test">Click Me!</div>');
+        div.click();
+        this.server.respond();
     });
 
 })

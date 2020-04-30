@@ -26,3 +26,14 @@ function clearWorkArea() {
 function removeWhiteSpace(str) {
     return str.replace(/\s/g, "");
 }
+
+function makeServer(){
+    var server = sinon.fakeServer.create({logger:function(msg) {
+            console.log(msg);
+        }});
+    server.fakeHTTPMethods = true;
+    server.getHTTPMethod = function(xhr) {
+        return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
+    }
+    return server;
+}

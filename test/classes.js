@@ -1,6 +1,6 @@
 describe("HTMx class modification attributes", function(){
     beforeEach(function() {
-        this.server = sinon.fakeServer.create();
+        this.server = makeServer();
         clearWorkArea();
     });
     afterEach(function()  {
@@ -10,7 +10,7 @@ describe("HTMx class modification attributes", function(){
 
     it('adds classes properly', function(done)
     {
-        let div = make('<div hx-add-class="c1">Click Me!</div>')
+        var div = make('<div hx-add-class="c1">Click Me!</div>')
         should.equal(div.classList.length, 0);
         setTimeout(function(){
             should.equal(div.classList.contains("c1"), true);
@@ -20,7 +20,7 @@ describe("HTMx class modification attributes", function(){
 
     it('removes classes properly', function(done)
     {
-        let div = make('<div class="foo bar" hx-remove-class="bar">Click Me!</div>')
+        var div = make('<div class="foo bar" hx-remove-class="bar">Click Me!</div>')
         should.equal(div.classList.contains("foo"), true);
         should.equal(div.classList.contains("bar"), true);
         setTimeout(function(){

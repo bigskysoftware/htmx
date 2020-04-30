@@ -20,17 +20,23 @@
 <body>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../src/htmx.js"></script>
+<script src="util.js"></script>
 
 <script>
-    var server = sinon.fakeServer.create();
-    server.respondWith("GET", "/test", "<li>FOO</li>");
+    var server = makeServer();
+    server.respondWith("GET", "/test", "get");
+    server.respondWith("POST", "/test", "post");
+    server.respondWith("PUT", "/test", "put");
+    server.respondWith("PATCH", "/test", "patch");
+    server.respondWith("DELETE", "/test", "delete");
+    server.autoRespond = true;
 </script>
 
 
 <button onclick="server.respond()">Server Respond</button><em>Work Area</em>
 <hr/>
 <div id="work-area" class="hx-history-element">
-    <button hx-indicator="#work-area" hx-get="/test">Click Me</button>
+    <button hx-indicator="#work-area" hx-delete="/test">Click Me</button>
     <img  src="spinning-circles.svg" class="indicator">
 </div>
 </body>

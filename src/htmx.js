@@ -1,6 +1,8 @@
 var HTMx = HTMx || (function () {
         'use strict';
 
+        var VERBS = ['get', 'post', 'put', 'delete', 'patch']
+
         function parseInterval(str) {
             if (str === "null" || str === "false" || str === "") {
                 return null;
@@ -203,16 +205,27 @@ var HTMx = HTMx || (function () {
         }
 
         // core ajax request
-        function issueAjaxRequest(elt, url) {
+        function issueAjaxRequest(elt, verb, path) {
             var target = getTarget(elt);
             if (getClosestAttributeValue(elt, "hx-prompt")) {
                 var prompt = prompt(getClosestAttributeValue(elt, "hx-prompt"));
             }
 
             var xhr = new XMLHttpRequest();
-            // TODO - support more request types POST, PUT, DELETE, etc.
-            //         all should use POST and use the X-HTTP-Method-Override header
-            xhr.open('GET', url, true);
+
+            // request type
+            if (verb === 'get') {
+                xhr.open('GET', path, true);
+            } else {
+                xhr.open('POST', path, true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                if (verb !== 'post') {
+                    xhr.setRequestHeader('X-HTTP-Method-Override', verb.toUpperCase());
+                }
+            }
+
+            // TODO  IE10 compatibility?
+            xhr.overrideMimeType("text/html");
 
             // request headers
             xhr.setRequestHeader("X-HX-Request", "true");
@@ -224,11 +237,14 @@ var HTMx = HTMx || (function () {
                 xhr.setRequestHeader("X-HX-Prompt", prompt);
             }
 
+            // request variables
+
+
             xhr.onload = function () {
-                snapshotForCurrentHistoryEntry(elt, url);
+                snapshotForCurrentHistoryEntry(elt, path);
                 var trigger = this.getResponseHeader("X-HX-Trigger");
                 handleTrigger(elt, trigger);
-                initNewHistoryEntry(elt, url);
+                initNewHistoryEntry(elt, path);
                 if (this.status >= 200 && this.status < 400) {
                     // don't process 'No Content' response
                     if (this.status != 204) {
@@ -246,6 +262,7 @@ var HTMx = HTMx || (function () {
             };
             xhr.onerror = function () {
                 removeIndicatorClasses(elt);
+                elt.innerHTML = "ERROR";
                 // TODO error handling
                 // There was a connection error of some sort
             };
@@ -294,7 +311,7 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        function processPolling(elt, action) {
+        function processPolling(elt, verb, path) {
             var trigger = getTrigger(elt);
             if (trigger.trim().indexOf("every ") === 0) {
                 var args = trigger.split(/\s+/);
@@ -304,8 +321,8 @@ var HTMx = HTMx || (function () {
                     // TODO store for cancelling
                     var timeout = setTimeout(function () {
                         if (document.body.contains(elt)) {
-                            issueAjaxRequest(elt, getAttributeValue(elt, action));
-                            processPolling(elt, action);
+                            issueAjaxRequest(elt, verb, path);
+                            processPolling(elt, verb, getAttributeValue(etl, "hx-" + verb));
                         }
                     }, interval);
                 }
@@ -313,17 +330,22 @@ var HTMx = HTMx || (function () {
         }
 
         function processElement(elt) {
-            if (getAttributeValue(elt, 'hx-get')) {
-                var trigger = getTrigger(elt);
-                if (trigger === 'load') {
-                    issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
-                } else if (trigger.trim().indexOf('every ') === 0) {
-                    processPolling(elt, 'hx-get');
-                } else {
-                    elt.addEventListener(trigger, function (evt) {
-                        issueAjaxRequest(elt, getAttributeValue(elt, 'hx-get'));
-                        evt.stopPropagation();
-                    });
+            for (var i = 0; i < VERBS.length; i++) {
+                var verb = VERBS[i];
+                var path = getAttributeValue(elt, 'hx-' + verb);
+                if (path) {
+                    var trigger = getTrigger(elt);
+                    if (trigger === 'load') {
+                        issueAjaxRequest(elt, verb, path);
+                    } else if (trigger.trim().indexOf('every ') === 0) {
+                        processPolling(elt, action);
+                    } else {
+                        elt.addEventListener(trigger, function (evt) {
+                            issueAjaxRequest(elt, verb, path);
+                            evt.stopPropagation();
+                        });
+                    }
+                    break;
                 }
             }
             if (getAttributeValue(elt, 'hx-add-class')) {
@@ -354,10 +376,15 @@ var HTMx = HTMx || (function () {
             };
         })
 
+        function internalEval(str){
+            return eval(str);
+        }
+
         // Public API
         return {
             processElement: processElement,
-            version: "0.0.1"
+            version: "0.0.1",
+            _:internalEval
         }
     }
 
