@@ -3,6 +3,10 @@ var HTMx = HTMx || (function () {
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch']
 
+        //====================================================================
+        // Utilities
+        //====================================================================
+
         function parseInterval(str) {
             if (str === "null" || str === "false" || str === "") {
                 return null;
@@ -11,7 +15,7 @@ var HTMx = HTMx || (function () {
             } else if (str.lastIndexOf("s") === str.length - 1) {
                 return parseFloat(str.substr(0, str.length - 1)) * 1000;
             } else {
-                return 1000;
+                return parseFloat(str);
             }
         }
 
@@ -31,6 +35,28 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function matches(elt, selector) {
+            return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
+        }
+
+        function closest (elt, selector) {
+            do if (elt == null || matches(elt, selector)) return elt;
+            while (elt = elt && elt.parentElement);
+        }
+
+        function makeFragment(resp) {
+            var range = document.createRange();
+            return range.createContextualFragment(resp);
+        }
+
+        function isRawObject(o) {
+            return Object.prototype.toString.call(o) === "[object Object]";
+        }
+
+        //====================================================================
+        // Node processing
+        //====================================================================
+
         function getTarget(elt) {
             var targetVal = getClosestAttributeValue(elt, "hx-target");
             if (targetVal) {
@@ -38,11 +64,6 @@ var HTMx = HTMx || (function () {
             } else {
                 return elt;
             }
-        }
-
-        function makeFragment(resp) {
-            var range = document.createRange();
-            return range.createContextualFragment(resp);
         }
 
         function processResponseNodes(parent, target, text, after) {
@@ -89,10 +110,6 @@ var HTMx = HTMx || (function () {
             elt.dispatchEvent(event);
         }
 
-        function isRawObject(o) {
-            return Object.prototype.toString.call(o) === "[object Object]";
-        }
-
         function handleTrigger(elt, trigger) {
             if (trigger) {
                 if (trigger.indexOf("{") === 0) {
@@ -111,6 +128,95 @@ var HTMx = HTMx || (function () {
                 }
             }
         }
+
+
+        function getTrigger(elt) {
+            var explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
+            if (explicitTrigger) {
+                return explicitTrigger;
+            } else {
+                if (matches(elt, 'button')) {
+                    return 'click';
+                } else if (matches(elt, 'form')) {
+                    return 'submit';
+                } else if (matches(elt, 'input, textarea, select')) {
+                    return 'change';
+                } else {
+                    return 'click';
+                }
+            }
+        }
+
+        function processClassList(elt, classList, operation) {
+            var values = classList.split(",");
+            for (var i = 0; i < values.length; i++) {
+                var cssClass = "";
+                var delay = 50;
+                if (values[i].trim().indexOf(":") > 0) {
+                    var split = values[i].trim().split(':');
+                    cssClass = split[0];
+                    delay = parseInterval(split[1]);
+                } else {
+                    cssClass = values[i].trim();
+                }
+                setTimeout(function () {
+                    elt.classList[operation].call(elt.classList, cssClass);
+                }, delay);
+            }
+        }
+
+        function processPolling(elt, verb, path) {
+            var trigger = getTrigger(elt);
+            if (trigger.trim().indexOf("every ") === 0) {
+                var args = trigger.split(/\s+/);
+                var intervalStr = args[1];
+                if (intervalStr) {
+                    var interval = parseInterval(intervalStr);
+                    // TODO store for cancelling
+                    var timeout = setTimeout(function () {
+                        if (document.body.contains(elt)) {
+                            issueAjaxRequest(elt, verb, path);
+                            processPolling(elt, verb, getAttributeValue(etl, "hx-" + verb));
+                        }
+                    }, interval);
+                }
+            }
+        }
+
+        function processElement(elt) {
+            for (var i = 0; i < VERBS.length; i++) {
+                var verb = VERBS[i];
+                var path = getAttributeValue(elt, 'hx-' + verb);
+                if (path) {
+                    var trigger = getTrigger(elt);
+                    if (trigger === 'load') {
+                        issueAjaxRequest(elt, verb, path);
+                    } else if (trigger.trim().indexOf('every ') === 0) {
+                        processPolling(elt, action);
+                    } else {
+                        elt.addEventListener(trigger, function (evt) {
+                            issueAjaxRequest(elt, verb, path);
+                            evt.stopPropagation();
+                        });
+                    }
+                    break;
+                }
+            }
+            if (getAttributeValue(elt, 'hx-add-class')) {
+                processClassList(elt, getAttributeValue(elt, 'hx-add-class'), "add");
+            }
+            if (getAttributeValue(elt, 'hx-remove-class')) {
+                processClassList(elt, getAttributeValue(elt, 'hx-remove-class'), "remove");
+            }
+            for (var i = 0; i < elt.children.length; i++) {
+                var child = elt.children[i];
+                processElement(child);
+            }
+        }
+
+        //====================================================================
+        // History Support
+        //====================================================================
 
         function makeHistoryId() {
             return Math.random().toString(36).substr(3, 9);
@@ -204,7 +310,97 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        // core ajax request
+        //====================================================================
+        // Input Value Processing
+        //====================================================================
+
+        function haveSeenNode(processed, elt) {
+            for (var i = 0; i < processed.length; i++) {
+                var node = processed[i];
+                if (node.isSameNode(elt)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function processInputValue(processed, values, elt) {
+            if (elt == null || haveSeenNode(processed, elt)) {
+                return;
+            } else {
+                processed.push(elt);
+            }
+            var name = elt.getAttribute("name");
+            var value = elt.value;
+            if (name && value) {
+                var current = values[name];
+                if(current) {
+                    if (Array.isArray(current)) {
+                        current.push(value);
+                    } else {
+                        values[name] = [current, value];
+                    }
+                } else {
+                    values[name] = value;
+                }
+            }
+            if (matches(elt, 'form')) {
+                var inputs = elt.elements;
+                for (var i = 0; i < inputs.length; i++) {
+                    processInputValue(processed, values, inputs[i]);
+                }
+            }
+        }
+
+        function getInputValues(elt) {
+            var processed = [];
+            var values = {};
+            // include the element itself
+            processInputValue(processed, values, elt);
+
+            // include any explicit includes
+            var includes = getAttributeValue(elt, "hx-include");
+            if (includes) {
+                var nodes = document.querySelectorAll(includes);
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    processInputValue(processed, values, node);
+                }
+            }
+
+            // include the closest form
+            processInputValue(processed, values, closest(elt, 'form'));
+            return Object.keys(values).length == 0 ? null : values;
+        }
+
+        function urlEncode(values) {
+            var returnStr = "";
+            for (var name in values) {
+                if (values.hasOwnProperty(name)) {
+                    var value = values[name];
+                    if (Array.isArray(value)) {
+                        for (var i = 0; i < value.length; i++) {
+                            var realValue = value[i];
+                            if (returnStr != "") {
+                                returnStr += "&";
+                            }
+                            returnStr += encodeURIComponent(name) + "=" + encodeURIComponent(realValue);
+                        }
+                    } else {
+                        if (returnStr != "") {
+                            returnStr += "&";
+                        }
+                        returnStr += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+                    }
+                }
+            }
+            return returnStr;
+        }
+
+        //====================================================================
+        // Ajax
+        //====================================================================
+
         function issueAjaxRequest(elt, verb, path) {
             var target = getTarget(elt);
             if (getClosestAttributeValue(elt, "hx-prompt")) {
@@ -213,9 +409,11 @@ var HTMx = HTMx || (function () {
 
             var xhr = new XMLHttpRequest();
 
+            var inputVals = getInputValues(elt);
+
             // request type
             if (verb === 'get') {
-                xhr.open('GET', path, true);
+                xhr.open('GET', path + (inputVals ? "?" + urlEncode(inputVals) : ""), true);
             } else {
                 xhr.open('POST', path, true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -267,98 +465,12 @@ var HTMx = HTMx || (function () {
                 // There was a connection error of some sort
             };
             addRequestIndicatorClasses(elt);
-            xhr.send();
+            xhr.send(verb === 'get' ? null : urlEncode(inputVals));
         }
 
-        function matches(el, selector) {
-            return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
-        }
-
-
-        function getTrigger(elt) {
-            var explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
-            if (explicitTrigger) {
-                return explicitTrigger;
-            } else {
-                if (matches(elt, 'button')) {
-                    return 'click';
-                } else if (matches(elt, 'form')) {
-                    return 'submit';
-                } else if (matches(elt, 'input, textarea, select')) {
-                    return 'change';
-                } else {
-                    return 'click';
-                }
-            }
-        }
-
-        // DOM element processing
-        function processClassList(elt, classList, operation) {
-            var values = classList.split(",");
-            for (var i = 0; i < values.length; i++) {
-                var cssClass = "";
-                var delay = 50;
-                if (values[i].trim().indexOf(":") > 0) {
-                    var split = values[i].trim().split(':');
-                    cssClass = split[0];
-                    delay = parseInterval(split[1]);
-                } else {
-                    cssClass = values[i].trim();
-                }
-                setTimeout(function () {
-                    elt.classList[operation].call(elt.classList, cssClass);
-                }, delay);
-            }
-        }
-
-        function processPolling(elt, verb, path) {
-            var trigger = getTrigger(elt);
-            if (trigger.trim().indexOf("every ") === 0) {
-                var args = trigger.split(/\s+/);
-                var intervalStr = args[1];
-                if (intervalStr) {
-                    var interval = parseInterval(intervalStr);
-                    // TODO store for cancelling
-                    var timeout = setTimeout(function () {
-                        if (document.body.contains(elt)) {
-                            issueAjaxRequest(elt, verb, path);
-                            processPolling(elt, verb, getAttributeValue(etl, "hx-" + verb));
-                        }
-                    }, interval);
-                }
-            }
-        }
-
-        function processElement(elt) {
-            for (var i = 0; i < VERBS.length; i++) {
-                var verb = VERBS[i];
-                var path = getAttributeValue(elt, 'hx-' + verb);
-                if (path) {
-                    var trigger = getTrigger(elt);
-                    if (trigger === 'load') {
-                        issueAjaxRequest(elt, verb, path);
-                    } else if (trigger.trim().indexOf('every ') === 0) {
-                        processPolling(elt, action);
-                    } else {
-                        elt.addEventListener(trigger, function (evt) {
-                            issueAjaxRequest(elt, verb, path);
-                            evt.stopPropagation();
-                        });
-                    }
-                    break;
-                }
-            }
-            if (getAttributeValue(elt, 'hx-add-class')) {
-                processClassList(elt, getAttributeValue(elt, 'hx-add-class'), "add");
-            }
-            if (getAttributeValue(elt, 'hx-remove-class')) {
-                processClassList(elt, getAttributeValue(elt, 'hx-remove-class'), "remove");
-            }
-            for (var i = 0; i < elt.children.length; i++) {
-                var child = elt.children[i];
-                processElement(child);
-            }
-        }
+        //====================================================================
+        // Initialization
+        //====================================================================
 
         function ready(fn) {
             if (document.readyState !== 'loading') {
@@ -377,6 +489,7 @@ var HTMx = HTMx || (function () {
         })
 
         function internalEval(str){
+            // get eval reflectively so uglifyjs doesn't de-optimize name munging
             return eval(str);
         }
 

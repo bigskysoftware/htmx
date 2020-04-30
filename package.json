@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
-    "uglify": "uglifyjs -m -o dist/htmx.min.js dist/htmx.js"
+    "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
   "repository": {
     "type": "git",

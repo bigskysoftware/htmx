@@ -28,8 +28,8 @@ function removeWhiteSpace(str) {
 }
 
 function makeServer(){
-    var server = sinon.fakeServer.create({logger:function(msg) {
-            console.log(msg);
+    var server = sinon.fakeServer.create({logger:function(val) {
+            console.log(val);
         }});
     server.fakeHTTPMethods = true;
     server.getHTTPMethod = function(xhr) {
