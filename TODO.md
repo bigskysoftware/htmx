@@ -12,6 +12,10 @@
 
 ## TODOS
 
+* hx-boost
+* hx-swap="merge"
+* hx-swap-direct="merge"
+* hx-error-url
 * transition model for content swaps
 * history support
   * Implement LRU

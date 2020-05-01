@@ -21,7 +21,7 @@ var HTMx = HTMx || (function () {
 
         // resolve with both hx and data-hx prefixes
         function getAttributeValue(elt, qualifiedName) {
-            return elt.getAttribute(qualifiedName) || elt.getAttribute("data-" + qualifiedName);
+            return elt.getAttribute && (elt.getAttribute(qualifiedName) || elt.getAttribute("data-" + qualifiedName));
         }
 
         function getClosestAttributeValue(elt, attributeName) {
@@ -62,8 +62,16 @@ var HTMx = HTMx || (function () {
             return data;
         }
 
+        function toArray(object) {
+            var arr = [];
+            for (var i = 0; i < object.length; i++) {
+                arr.push(object[i])
+            }
+            return arr;
+        }
         function forEach(arr, func) {
             for (var i = 0; i < arr.length; i++) {
+
                 func(arr[i]);
             }
         }
@@ -81,18 +89,32 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        function processResponseNodes(parent, target, text, after) {
-            var fragment = makeFragment(text);
-            for (var i = fragment.childNodes.length - 1; i >= 0; i--) {
-                var child = fragment.childNodes[i];
-                parent.insertBefore(child, target);
-                triggerEvent(target || parent, 'load.hx', {parent:parent, target:target, node:child});
-                if (child.nodeType !== Node.TEXT_NODE) {
-                    processElement(child);
+        function directSwap(child) {
+            if (getAttributeValue(child, 'ic-swap-direct')) {
+                var target = document.getElementById(child.getAttribute('id'));
+                if (target) {
+                    var newParent = target.parentElement;
+                    newParent.insertBefore(child, target);
+                    newParent.removeChild(target);
+                    return true;
                 }
             }
-            if(after) {
-                after.call();
+            return false;
+        }
+
+        function processResponseNodes(parentNode, insertBefore, text, executeAfter) {
+            var fragment = makeFragment(text);
+            forEach(toArray(fragment.childNodes), function(child){
+                if (!directSwap(child)) {
+                    parentNode.insertBefore(child, insertBefore);
+                }
+                if (child.nodeType !== Node.TEXT_NODE) {
+                    triggerEvent(child, 'load.hx', {parent:child.parentElement});
+                    processElement(child);
+                }
+            })
+            if(executeAfter) {
+                executeAfter.call();
             }
         }
 
