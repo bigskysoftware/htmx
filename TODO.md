@@ -13,18 +13,12 @@
 ## TODOS
 
 * transition model for content swaps
-* event model for pluggability
 * history support
   * Implement LRU
   * Issue GET to restore content if there isn't a copy locally
 * sse support
 * delay (ic-trigger="keyup" ic-delay="1s")
 * change support
-* implement element properties using https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
-  * make node handling idempotent
-  * don't cancel trigger events, but don't process additional events
-  * don't issue multiple requests on multiple clicks
-  * change support
 * distribute on https://unpkg.com/
 * build website with 11ty
   * landing page

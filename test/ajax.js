@@ -271,4 +271,19 @@ describe("HTMx AJAX Tests", function(){
         this.server.respond();
     });
 
+    it('doesnt issue two requests when clicked twice before response', function()
+    {
+        var i = 1;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "click " + i);
+            i++
+        });
+        var div = make('<div hx-get="/test"></div>');
+        div.click();
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("click 1");
+    });
+
+
 })
