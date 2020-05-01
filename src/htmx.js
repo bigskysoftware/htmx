@@ -118,9 +118,67 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function findMatch(elt, possible) {
+            for (var i = 0; i < possible.length; i++) {
+                var candidate = possible[i];
+                if (elt.hasAttribute("id") && elt.id === candidate.id) {
+                    return candidate;
+                }
+                if (!candidate.hasAttribute("id") && elt.tagName === candidate.tagName) {
+                    return candidate;
+                }
+            }
+            return null;
+        }
+
+        function cloneAttributes(mergeTo, mergeFrom) {
+            forEach(mergeTo.attributes, function (attr) {
+                if (!mergeFrom.hasAttribute(attr.name)) {
+                    mergeTo.removeAttribute(attr.name)
+                }
+            });
+            forEach(mergeFrom.attributes, function (attr) {
+                mergeTo.setAttribute(attr.name, attr.value);
+            });
+        }
+
+        function mergeChildren(mergeTo, mergeFrom) {
+            var oldChildren = toArray(mergeTo.children);
+            var marker = document.createElement("span");
+            mergeTo.insertBefore(marker, mergeTo.firstChild);
+            forEach(mergeFrom.childNodes, function (newChild) {
+                var match = findMatch(newChild, oldChildren);
+                if (match) {
+                    while (marker.nextSibling && marker.nextSibling !== match) {
+                        mergeTo.removeChild(marker.nextSibling);
+                    }
+                    mergeTo.insertBefore(marker, match.nextSibling);
+                    mergeInto(match, newChild);
+                } else {
+                    mergeTo.insertBefore(newChild, marker);
+                }
+            });
+            while (marker.nextSibling) {
+                mergeTo.removeChild(marker.nextSibling);
+            }
+            mergeTo.removeChild(marker);
+        }
+
+        function mergeInto(mergeTo, mergeFrom) {
+            cloneAttributes(mergeTo, mergeFrom);
+            mergeChildren(mergeTo, mergeFrom);
+        }
+
+        function mergeResponse(target, resp) {
+            var fragment = makeFragment(resp);
+            mergeInto(target, fragment.firstElementChild);
+        }
+
         function swapResponse(target, elt, resp, after) {
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
-            if (swapStyle === "outerHTML") {
+            if (swapStyle === "merge") {
+                mergeResponse(target, resp);
+            } else if (swapStyle === "outerHTML") {
                 processResponseNodes(target.parentElement, target, resp, after);
                 target.parentElement.removeChild(target);
             } else if (swapStyle === "prepend") {

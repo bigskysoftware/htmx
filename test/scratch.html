@@ -8,6 +8,14 @@
         .hx-show-indicator .indicator {
             opacity: 100%;
         }
+
+        div {
+            transition: all 1000ms ease-in;
+        }
+        div.foo {
+            color: red;
+            transition: all 1000ms ease-in;
+        }
     </style>
 </head>
 <body>
@@ -17,8 +25,8 @@
 <script src="scratch_server.js"></script>
 
 <script>
-    this.server.respondWith("GET", "/test", "Clicked<div id='d1' ic-swap-direct='true'>Swapped</div>");
-    var div = make('<div hx-get="/test">click me</div>');
+    this.server.respondWith("GET", "/test", "<div hx-get='test' hx-swap='merge'><div class='foo'>[Hello]</div></div>");
+    var div = make('<div hx-get="/test" hx-swap="merge"><div>Hello</div></div>');
 </script>
 
 
