@@ -8,12 +8,6 @@ describe("HTMx Value Handling", function() {
         clearWorkArea();
     });
 
-    it('No values evaluates to null', function () {
-        var div = make('<div></div>');
-        var vals = HTMx._('getInputValues')(div);
-        should.equal(vals, null);
-    })
-
     it('Input includes value', function () {
         var input = make('<input name="foo" value="bar"/>');
         var vals = HTMx._('getInputValues')(input);

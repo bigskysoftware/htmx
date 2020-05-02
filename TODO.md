@@ -12,7 +12,6 @@
 
 ## TODOS
 
-* 'revealed' event
 * history support
   * Implement LRU
   * Issue GET to restore content if there isn't a copy locally
@@ -36,10 +35,6 @@
 ## Delegate
 
 * sse support
-
-## Maybes
-
-* hx-error-url
 
 ## Unsupported Intercooler Features
 

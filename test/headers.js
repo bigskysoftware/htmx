@@ -40,7 +40,6 @@ describe("HTMx AJAX Headers Tests", function() {
 
     it("should include the X-HX-Target-Id header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            console.log(xhr.requestHeaders);
             xhr.requestHeaders['X-HX-Target-Id'].should.equal('d1');
             xhr.respond(200, {}, "");
         });

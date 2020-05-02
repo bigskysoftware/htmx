@@ -1,4 +1,11 @@
 /* Test Utilities */
+
+HTMx.logger = function(elt, event, data) {
+    if(console) {
+        console.log(event, elt, data);
+    }
+}
+
 function byId(id) {
     return document.getElementById(id);
 }
