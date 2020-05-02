@@ -1,5 +1,7 @@
 describe("HTMx Boost Tests", function() {
 
+    if (!fullTestSuite()) return;
+
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

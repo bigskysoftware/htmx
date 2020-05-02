@@ -1,7 +1,8 @@
 {
-  "name": "htmx",
+  "name": "htmx.org",
   "description": "HTML Extensions",
   "keywords": [
+    "htmx",
     "AJAX",
     "HTML"
   ],
@@ -21,6 +22,7 @@
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
+    "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
   "repository": {
@@ -34,6 +36,7 @@
     "mocha": "^7.1.1",
     "mocha-chrome": "^2.2.0",
     "sinon": "^9.0.2",
-    "uglify-js": "^3.9.1"
+    "uglify-js": "^3.9.1",
+    "fs-extra": "^9.0.0"
   }
 }

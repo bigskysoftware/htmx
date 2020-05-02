@@ -18,10 +18,10 @@
 * polling cancellation API 
 * Testing
   * polling
-  * history
   * merge
-  * hx-boost
   * hx-select
+  * history
+  * hx-boost
   * transition model for content swaps
 * distribute on https://unpkg.com/
 * build website with 11ty
