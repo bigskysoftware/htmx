@@ -3,7 +3,7 @@ var fs = require('fs-extra');
 
 console.log(config.version)
 
-var testRoot = "www/_/" + config.version;
+var testRoot = "www/v/" + config.version;
 fs.ensureDirSync(testRoot);
 fs.copySync("node_modules/mocha/mocha.js", testRoot + "/node_modules/mocha/mocha.js");
 fs.copySync("node_modules/mocha/mocha.css", testRoot + "/node_modules/mocha/mocha.css");
