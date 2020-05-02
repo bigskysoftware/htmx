@@ -352,17 +352,32 @@ var HTMx = HTMx || (function () {
             var eventListener = function (evt) {
                 if(cancel) evt.preventDefault();
                 var eventData = getInternalData(evt);
+                var elementData = getInternalData(elt);
                 if (!eventData.handled) {
                     eventData.handled = true;
-                    if (eventData.delayed) {
-                        clearTimeout(eventData.delayed);
+                    if (getAttributeValue(elt, "hx-trigger-once") === "true") {
+                        if (elementData.triggeredOnce) {
+                            return;
+                        } else {
+                            elementData.triggeredOnce = true;
+                        }
                     }
-                    var eventDelay = getAttributeValue(elt, "hx-delay");
+                    if (getAttributeValue(elt, "hx-trigger-changed-only") === "true") {
+                        if (elementData.lastValue === elt.value) {
+                            return;
+                        } else {
+                            elementData.lastValue = elt.value;
+                        }
+                    }
+                    if (elementData.delayed) {
+                        clearTimeout(elementData.delayed);
+                    }
+                    var eventDelay = getAttributeValue(elt, "hx-trigger-delay");
                     var issueRequest = function(){
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
                     if (eventDelay) {
-                        eventData.delayed = setTimeout(issueRequest, parseInterval(eventDelay));
+                        elementData.delayed = setTimeout(issueRequest, parseInterval(eventDelay));
                     } else {
                         issueRequest();
                     }

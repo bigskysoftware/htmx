@@ -13,11 +13,10 @@
 ## TODOS
 
 * 'revealed' event
-* sse support
 * history support
   * Implement LRU
   * Issue GET to restore content if there isn't a copy locally
-* change support
+* polling cancellation API 
 * Testing
   * polling
   * history
@@ -34,10 +33,13 @@
   * events page
   * headers page
 
+## Delegate
+
+* sse support
+
 ## Maybes
 
 * hx-error-url
-
 
 ## Unsupported Intercooler Features
 
