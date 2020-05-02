@@ -43,9 +43,7 @@ function removeWhiteSpace(str) {
 }
 
 function makeServer(){
-    var server = sinon.fakeServer.create({logger:function(val) {
-            console.log(val);
-        }});
+    var server = sinon.fakeServer.create();
     server.fakeHTTPMethods = true;
     server.getHTTPMethod = function(xhr) {
         return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;

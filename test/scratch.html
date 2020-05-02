@@ -5,6 +5,7 @@
             opacity: 0;
             transition: all 200ms ease-in;
         }
+
         .hx-show-indicator .indicator {
             opacity: 100%;
         }
@@ -12,11 +13,14 @@
         div {
             transition: all 1000ms ease-in;
         }
+
         div.foo {
             color: red;
             transition: all 1000ms ease-in;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
 </head>
 <body>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
@@ -25,8 +29,9 @@
 <script src="scratch_server.js"></script>
 
 <script>
-    this.server.respondWith("GET", "/test", "<div hx-get='test' hx-swap='merge'><div class='foo'>[Hello]</div></div>");
-    var div = make('<div hx-get="/test" hx-swap="merge"><div>Hello</div></div>');
+    this.server.respondWith("GET", "/test", "Clicked<div id='d1' ic-swap-direct='true'>Swapped</div>");
+    var div = make('<div hx-get="/test">click me</div>');
+    make('<div id="d1"></div>');
 </script>
 
 

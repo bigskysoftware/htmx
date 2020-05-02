@@ -1,3 +1,4 @@
+// noinspection JSUnusedAssignment
 var HTMx = HTMx || (function () {
         'use strict';
 
@@ -19,33 +20,46 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function getRawAttribute(elt, name) {
+            return elt.getAttribute && elt.getAttribute(name);
+        }
+
         // resolve with both hx and data-hx prefixes
         function getAttributeValue(elt, qualifiedName) {
-            return elt.getAttribute && (elt.getAttribute(qualifiedName) || elt.getAttribute("data-" + qualifiedName));
+            return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
+        }
+
+        function parentElt(elt) {
+            return elt.parentElement;
+        }
+
+        function getDocument() {
+            return document;
         }
 
         function getClosestAttributeValue(elt, attributeName) {
             var attribute = getAttributeValue(elt, attributeName);
             if (attribute) {
                 return attribute;
-            } else if (elt.parentElement) {
-                return getClosestAttributeValue(elt.parentElement, attributeName);
+            } else if (parentElt(elt)) {
+                return getClosestAttributeValue(parentElt(elt, attributeName));
             } else {
                 return null;
             }
         }
 
         function matches(elt, selector) {
+            // noinspection JSUnresolvedVariable
             return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
         }
 
         function closest (elt, selector) {
             do if (elt == null || matches(elt, selector)) return elt;
-            while (elt = elt && elt.parentElement);
+            while (elt = elt && parentElt(elt));
         }
 
         function makeFragment(resp) {
-            var range = document.createRange();
+            var range = getDocument().createRange();
             return range.createContextualFragment(resp);
         }
 
@@ -83,20 +97,25 @@ var HTMx = HTMx || (function () {
         function getTarget(elt) {
             var targetVal = getClosestAttributeValue(elt, "hx-target");
             if (targetVal) {
-                return document.querySelector(targetVal);
+                return getDocument().querySelector(targetVal);
             } else {
                 return elt;
             }
         }
 
         function directSwap(child) {
-            if (getAttributeValue(child, 'ic-swap-direct')) {
-                var target = document.getElementById(child.getAttribute('id'));
+            var swapDirect = getAttributeValue(child, 'hx-swap-direct');
+            if (swapDirect) {
+                var target = getDocument().getElementById(getRawAttribute(child,'id'));
                 if (target) {
-                    var newParent = target.parentElement;
-                    newParent.insertBefore(child, target);
-                    newParent.removeChild(target);
-                    return true;
+                    if (swapDirect === "merge") {
+                        mergeInto(target, child);
+                    } else {
+                        var newParent = parentElt(target);
+                        newParent.insertBefore(child, target);
+                        newParent.removeChild(target);
+                        return true;
+                    }
                 }
             }
             return false;
@@ -109,7 +128,7 @@ var HTMx = HTMx || (function () {
                     parentNode.insertBefore(child, insertBefore);
                 }
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    triggerEvent(child, 'load.hx', {parent:child.parentElement});
+                    triggerEvent(child, 'load.hx', {parent:parentElt(child)});
                     processElement(child);
                 }
             })
@@ -144,7 +163,7 @@ var HTMx = HTMx || (function () {
 
         function mergeChildren(mergeTo, mergeFrom) {
             var oldChildren = toArray(mergeTo.children);
-            var marker = document.createElement("span");
+            var marker = getDocument().createElement("span");
             mergeTo.insertBefore(marker, mergeTo.firstChild);
             forEach(mergeFrom.childNodes, function (newChild) {
                 var match = findMatch(newChild, oldChildren);
@@ -179,16 +198,16 @@ var HTMx = HTMx || (function () {
             if (swapStyle === "merge") {
                 mergeResponse(target, resp);
             } else if (swapStyle === "outerHTML") {
-                processResponseNodes(target.parentElement, target, resp, after);
-                target.parentElement.removeChild(target);
+                processResponseNodes(parentElt(target), target, resp, after);
+                parentElt(target).removeChild(target);
             } else if (swapStyle === "prepend") {
                 processResponseNodes(target, target.firstChild, resp, after);
             } else if (swapStyle === "prependBefore") {
-                processResponseNodes(target.parentElement, target, resp, after);
+                processResponseNodes(parentElt(target), target, resp, after);
             } else if (swapStyle === "append") {
                 processResponseNodes(target, null, resp, after);
             } else if (swapStyle === "appendAfter") {
-                processResponseNodes(target.parentElement, target.nextSibling, resp, after);
+                processResponseNodes(parentElt(target), target.nextSibling, resp, after);
             } else {
                 target.innerHTML = "";
                 processResponseNodes(target, null, resp, after);
@@ -197,10 +216,11 @@ var HTMx = HTMx || (function () {
 
         function triggerEvent(elt, eventName, details) {
             details["elt"] = elt;
+            var event;
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-                var event = new CustomEvent(eventName, {detail: details});
+                 event = new CustomEvent(eventName, {detail: details});
             } else {
-                var event = document.createEvent('CustomEvent');
+                event = getDocument().createEvent('CustomEvent');
                 event.initCustomEvent(eventName, true, true, details);
             }
             return elt.dispatchEvent(event);
@@ -270,13 +290,12 @@ var HTMx = HTMx || (function () {
                 var intervalStr = args[1];
                 if (intervalStr) {
                     var interval = parseInterval(intervalStr);
-                    var timeout = setTimeout(function () {
-                        if (document.body.contains(elt)) {
+                    nodeData.timeout = setTimeout(function () {
+                        if (getDocument().body.contains(elt)) {
                             issueAjaxRequest(elt, verb, path);
-                            processPolling(elt, verb, getAttributeValue(etl, "hx-" + verb));
+                            processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb));
                         }
                     }, interval);
-                    nodeData.timeout = timeout;
                 }
             }
         }
@@ -299,7 +318,7 @@ var HTMx = HTMx || (function () {
                         }
                     } else if (trigger.trim().indexOf('every ') === 0) {
                         nodeData.polling = true;
-                        processPolling(elt, action, path);
+                        processPolling(elt, verb, path);
                     } else {
                         var eventListener = function (evt) {
                             var eventData = getInternalData(evt);
@@ -312,7 +331,6 @@ var HTMx = HTMx || (function () {
                         nodeData.eventListener = eventListener;
                         elt.addEventListener(trigger, eventListener);
                     }
-                    return;
                 }
             });
             if (getAttributeValue(elt, 'hx-add-class')) {
@@ -333,11 +351,11 @@ var HTMx = HTMx || (function () {
         }
 
         function getHistoryElement() {
-            var historyElt = document.getElementsByClassName('hx-history-element');
+            var historyElt = getDocument().getElementsByClassName('hx-history-element');
             if (historyElt.length > 0) {
                 return historyElt[0];
             } else {
-                return document.body;
+                return getDocument().body;
             }
         }
 
@@ -347,11 +365,12 @@ var HTMx = HTMx || (function () {
 
         function getLocalHistoryData() {
             var historyEntry = localStorage.getItem('hx-history');
+            var historyData;
             if (historyEntry) {
-                var historyData = JSON.parse(historyEntry);
+                historyData = JSON.parse(historyEntry);
             } else {
                 var initialId = makeHistoryId();
-                var historyData = {"current": initialId, "slots": [initialId]};
+                historyData = {"current": initialId, "slots": [initialId]};
                 saveLocalHistoryData(historyData);
             }
             return historyData;
@@ -373,7 +392,7 @@ var HTMx = HTMx || (function () {
         function updateCurrentHistoryContent() {
             var elt = getHistoryElement();
             var historyData = getLocalHistoryData();
-            history.replaceState({"hx-history-key": historyData.current}, document.title, window.location.href);
+            history.replaceState({"hx-history-key": historyData.current}, getDocument().title, window.location.href);
             localStorage.setItem('hx-history-' + historyData.current, elt.innerHTML);
         }
 
@@ -387,7 +406,7 @@ var HTMx = HTMx || (function () {
 
         function snapshotForCurrentHistoryEntry(elt) {
             if (getClosestAttributeValue(elt, "hx-push-url") === "true") {
-                // TODO event to allow deinitialization of HTML elements in target
+                // TODO event to allow de-initialization of HTML elements in target
                 updateCurrentHistoryContent();
             }
         }
@@ -411,7 +430,7 @@ var HTMx = HTMx || (function () {
         function mutateRequestIndicatorClasses(elt, action) {
             var indicator = getClosestAttributeValue(elt, 'hx-indicator');
             if (indicator) {
-                var indicators = document.querySelectorAll(indicator);
+                var indicators = getDocument().querySelectorAll(indicator);
             } else {
                 indicators = [elt];
             }
@@ -440,7 +459,7 @@ var HTMx = HTMx || (function () {
             } else {
                 processed.push(elt);
             }
-            var name = elt.getAttribute("name");
+            var name = getRawAttribute(elt,"name");
             var value = elt.value;
             if (name && value) {
                 var current = values[name];
@@ -471,7 +490,7 @@ var HTMx = HTMx || (function () {
             // include any explicit includes
             var includes = getAttributeValue(elt, "hx-include");
             if (includes) {
-                var nodes = document.querySelectorAll(includes);
+                var nodes = getDocument().querySelectorAll(includes);
                 for (var i = 0; i < nodes.length; i++) {
                     var node = nodes[i];
                     processInputValue(processed, values, node);
@@ -540,12 +559,12 @@ var HTMx = HTMx || (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var inputVals = getInputValues(elt);
-            if(!triggerEvent(elt, 'values.hx', {values: inputVals, target:target})) return endRequestLock();
+            var inputValues = getInputValues(elt);
+            if(!triggerEvent(elt, 'values.hx', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
             if (verb === 'get') {
-                xhr.open('GET', path + (inputVals ? "?" + urlEncode(inputVals) : ""), true);
+                xhr.open('GET', path + (inputValues ? "?" + urlEncode(inputValues) : ""), true);
             } else {
                 xhr.open('POST', path, true);
                 setHeader(xhr,'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8', true);
@@ -559,20 +578,20 @@ var HTMx = HTMx || (function () {
 
             // request headers
             setHeader(xhr, "Request", "true");
-            setHeader(xhr,"Trigger-Id", elt.getAttribute("id"));
-            setHeader(xhr,"Trigger-Name", elt.getAttribute("name"));
-            setHeader(xhr,"Target-Id", target.getAttribute("id"));
-            setHeader(xhr,"Current-URL", document.location.href);
+            setHeader(xhr,"Trigger-Id", getRawAttribute(elt,"id"));
+            setHeader(xhr,"Trigger-Name", getRawAttribute(elt, "name"));
+            setHeader(xhr,"Target-Id", getRawAttribute(target,"id"));
+            setHeader(xhr,"Current-URL", getDocument().location.href);
             if (prompt) {
                 setHeader(xhr,"Prompt", prompt);
             }
             if (eventTarget) {
-                setHeader(xhr,"Event-Target", eventTarget.getAttribute("id"));
+                setHeader(xhr,"Event-Target", getRawAttribute(eventTarget,"id"));
             }
-            if (document.activeElement) {
-                setHeader(xhr,"Active-Element", document.activeElement.getAttribute("id"));
-                if (document.activeElement.value) {
-                    setHeader(xhr,"Active-Element-Value", document.activeElement.value);
+            if (getDocument().activeElement) {
+                setHeader(xhr,"Active-Element", getRawAttribute(getDocument().activeElement,"id"));
+                if (getDocument().activeElement.value) {
+                    setHeader(xhr,"Active-Element-Value", getDocument().activeElement.value);
                 }
             }
 
@@ -585,7 +604,7 @@ var HTMx = HTMx || (function () {
                     initNewHistoryEntry(elt, path);
                     if (this.status >= 200 && this.status < 400) {
                         // don't process 'No Content' response
-                        if (this.status != 204) {
+                        if (this.status !== 204) {
                             // Success!
                             var resp = this.response;
                             if(!triggerEvent(elt, 'beforeSwap.hx', {xhr:xhr, target:target})) return;
@@ -609,9 +628,9 @@ var HTMx = HTMx || (function () {
                 endRequestLock();
             };
 
-            if(!triggerEvent(elt, 'beforeRequest.hx', {xhr:xhr, values: inputVals, target:target})) return endRequestLock();
+            if(!triggerEvent(elt, 'beforeRequest.hx', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
             addRequestIndicatorClasses(elt);
-            xhr.send(verb === 'get' ? null : urlEncode(inputVals));
+            xhr.send(verb === 'get' ? null : urlEncode(inputValues));
         }
 
         //====================================================================
@@ -619,16 +638,16 @@ var HTMx = HTMx || (function () {
         //====================================================================
 
         function ready(fn) {
-            if (document.readyState !== 'loading') {
+            if (getDocument().readyState !== 'loading') {
                 fn();
             } else {
-                document.addEventListener('DOMContentLoaded', fn);
+                getDocument().addEventListener('DOMContentLoaded', fn);
             }
         }
 
         // initialize the document
         ready(function () {
-            processElement(document.body);
+            processElement(getDocument().body);
             window.onpopstate = function (event) {
                 restoreHistory(event.state);
             };
