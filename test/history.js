@@ -2,6 +2,7 @@ describe("HTMx History Tests", function() {
 
     if (document.location.href.indexOf("file:") === 0) {
         it("HISTORY TESTING SKIPPED IN HEADLESS MODE"), function() {
+            should.equal(true, true);
         }
         return;
     }

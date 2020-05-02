@@ -1,4 +1,4 @@
-# &lt;x/> HTMx 
+# &lt;/> HTMx 
 *HTML Extensions*
 
 ## GOALS
@@ -12,14 +12,13 @@
 
 ## TODOS
 
-* hx-error-url
 * hx-select (select from response)
 * transition model for content swaps
+* sse support
+* delay (ic-trigger="keyup" ic-delay="1s")
 * history support
   * Implement LRU
   * Issue GET to restore content if there isn't a copy locally
-* sse support
-* delay (ic-trigger="keyup" ic-delay="1s")
 * change support
 * Testing
   * polling
@@ -34,6 +33,11 @@
   * attributes page
   * events page
   * headers page
+
+## Maybes
+
+* hx-error-url
+
 
 ## Unsupported Intercooler Features
 

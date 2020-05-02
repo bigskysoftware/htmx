@@ -139,9 +139,15 @@ var HTMx = HTMx || (function () {
             return false;
         }
 
-        function processResponseNodes(parentNode, insertBefore, text, executeAfter) {
+        function processResponseNodes(parentNode, insertBefore, text, executeAfter, selector) {
             var fragment = makeFragment(text);
-            forEach(toArray(fragment.childNodes), function(child){
+            var nodesToProcess;
+            if (selector) {
+                nodesToProcess = toArray(fragment.querySelectorAll(selector));
+            } else {
+                nodesToProcess = toArray(fragment.childNodes);
+            }
+            forEach(nodesToProcess, function(child){
                 if (!directSwap(child)) {
                     parentNode.insertBefore(child, insertBefore);
                 }
@@ -149,7 +155,7 @@ var HTMx = HTMx || (function () {
                     triggerEvent(child, 'load.hx', {parent:parentElt(child)});
                     processNode(child);
                 }
-            })
+            });
             if(executeAfter) {
                 executeAfter.call();
             }
@@ -206,29 +212,30 @@ var HTMx = HTMx || (function () {
             mergeChildren(mergeTo, mergeFrom);
         }
 
-        function mergeResponse(target, resp) {
+        function mergeResponse(target, resp, selector) {
             var fragment = makeFragment(resp);
-            mergeInto(target, fragment.firstElementChild);
+            mergeInto(target, selector ? fragment.querySelector(selector) : fragment.firstElementChild);
         }
 
         function swapResponse(target, elt, resp, after) {
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
+            var selector = getClosestAttributeValue(elt, "hx-select");
             if (swapStyle === "merge") {
-                mergeResponse(target, resp);
+                mergeResponse(target, resp, selector);
             } else if (swapStyle === "outerHTML") {
-                processResponseNodes(parentElt(target), target, resp, after);
+                processResponseNodes(parentElt(target), target, resp, after, selector);
                 parentElt(target).removeChild(target);
             } else if (swapStyle === "prepend") {
-                processResponseNodes(target, target.firstChild, resp, after);
+                processResponseNodes(target, target.firstChild, resp, after, selector);
             } else if (swapStyle === "prependBefore") {
-                processResponseNodes(parentElt(target), target, resp, after);
+                processResponseNodes(parentElt(target), target, resp, after, selector);
             } else if (swapStyle === "append") {
-                processResponseNodes(target, null, resp, after);
+                processResponseNodes(target, null, resp, after, selector);
             } else if (swapStyle === "appendAfter") {
-                processResponseNodes(parentElt(target), target.nextSibling, resp, after);
+                processResponseNodes(parentElt(target), target.nextSibling, resp, after, selector);
             } else {
                 target.innerHTML = "";
-                processResponseNodes(target, null, resp, after);
+                processResponseNodes(target, null, resp, after, selector);
             }
         }
 
@@ -377,7 +384,7 @@ var HTMx = HTMx || (function () {
                         }
                     }
                 });
-                if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") == "true") {
+                if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, trigger);
                 }
                 if (getAttributeValue(elt, 'hx-add-class')) {
@@ -642,6 +649,7 @@ var HTMx = HTMx || (function () {
             }
             if (getDocument().activeElement) {
                 setHeader(xhr,"Active-Element", getRawAttribute(getDocument().activeElement,"id"));
+                // noinspection JSUnresolvedVariable
                 if (getDocument().activeElement.value) {
                     setHeader(xhr,"Active-Element-Value", getDocument().activeElement.value);
                 }

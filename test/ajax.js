@@ -285,5 +285,25 @@ describe("HTMx AJAX Tests", function(){
         div.innerHTML.should.equal("click 1");
     });
 
+    it('properly handles hx-select for basic situation', function()
+    {
+        var i = 1;
+        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        var div = make('<div hx-get="/test" hx-select="#d1"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
+    });
+
+    it('properly handles hx-select for full html document situation', function()
+    {
+        var i = 1;
+        this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
+        var div = make('<div hx-get="/test" hx-select="#d1"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
+    });
+
 
 })
