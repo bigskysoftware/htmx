@@ -12,10 +12,8 @@
 
 ## TODOS
 
-* hx-swap="merge"
-* hx-swap-direct="merge"
-* hx-boost
 * hx-error-url
+* hx-select (select from response)
 * transition model for content swaps
 * history support
   * Implement LRU
@@ -23,6 +21,11 @@
 * sse support
 * delay (ic-trigger="keyup" ic-delay="1s")
 * change support
+* Testing
+  * polling
+  * history
+  * merge
+  * hx-boost
 * distribute on https://unpkg.com/
 * build website with 11ty
   * landing page

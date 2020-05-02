@@ -29,9 +29,9 @@
 <script src="scratch_server.js"></script>
 
 <script>
-    this.server.respondWith("GET", "/test", "Clicked<div id='d1' ic-swap-direct='true'>Swapped</div>");
-    var div = make('<div hx-get="/test">click me</div>');
-    make('<div id="d1"></div>');
+    this.server.respondWith("POST", "/test", "Boosted");
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>');
+    var btn = byId('b1');
 </script>
 
 

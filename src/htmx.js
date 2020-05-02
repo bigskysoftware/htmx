@@ -37,20 +37,28 @@ var HTMx = HTMx || (function () {
             return document;
         }
 
-        function getClosestAttributeValue(elt, attributeName) {
-            var attribute = getAttributeValue(elt, attributeName);
-            if (attribute) {
-                return attribute;
+        function getClosestMatch(elt, condition) {
+            if (condition(elt)) {
+                return elt;
             } else if (parentElt(elt)) {
-                return getClosestAttributeValue(parentElt(elt, attributeName));
+                return getClosestMatch(parentElt(elt), condition);
             } else {
                 return null;
             }
         }
 
+        function getClosestAttributeValue(elt, attributeName) {
+            var closestAttr = null;
+            getClosestMatch(elt, function (e) {
+                return closestAttr = getRawAttribute(e, attributeName);
+            });
+            return closestAttr;
+        }
+
         function matches(elt, selector) {
             // noinspection JSUnresolvedVariable
-            return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
+            return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
+                || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
         }
 
         function closest (elt, selector) {
@@ -78,14 +86,13 @@ var HTMx = HTMx || (function () {
 
         function toArray(object) {
             var arr = [];
-            for (var i = 0; i < object.length; i++) {
-                arr.push(object[i])
-            }
+            forEach(object, function(elt) {
+                arr.push(elt)
+            });
             return arr;
         }
         function forEach(arr, func) {
             for (var i = 0; i < arr.length; i++) {
-
                 func(arr[i]);
             }
         }
@@ -95,11 +102,22 @@ var HTMx = HTMx || (function () {
         //====================================================================
 
         function getTarget(elt) {
-            var targetVal = getClosestAttributeValue(elt, "hx-target");
-            if (targetVal) {
-                return getDocument().querySelector(targetVal);
+            var explicitTarget = getClosestMatch(elt, function(e){return getRawAttribute(e,"hx-target") !== null});
+
+            if (explicitTarget) {
+                var targetStr = getRawAttribute(explicitTarget, "hx-target");
+                if (targetStr === "this") {
+                    return explicitTarget;
+                } else {
+                    return getDocument().querySelector(targetStr);
+                }
             } else {
-                return elt;
+                var data = getInternalData(elt);
+                if (data.boosted) {
+                    return getDocument().body;
+                } else {
+                    return elt;
+                }
             }
         }
 
@@ -129,7 +147,7 @@ var HTMx = HTMx || (function () {
                 }
                 if (child.nodeType !== Node.TEXT_NODE) {
                     triggerEvent(child, 'load.hx', {parent:parentElt(child)});
-                    processElement(child);
+                    processNode(child);
                 }
             })
             if(executeAfter) {
@@ -300,46 +318,76 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        function processElement(elt) {
-            var nodeData = getInternalData(elt);
-            if (nodeData.processed) {
-                return;
-            } else {
-                nodeData.processed = true;
-            }
-            forEach(VERBS, function(verb){
-                var path = getAttributeValue(elt, 'hx-' + verb);
-                if (path) {
-                    var trigger = getTrigger(elt);
-                    if (trigger === 'load') {
-                        if (!nodeData.loaded) {
-                            nodeData.loaded = true;
-                            issueAjaxRequest(elt, verb, path);
-                        }
-                    } else if (trigger.trim().indexOf('every ') === 0) {
-                        nodeData.polling = true;
-                        processPolling(elt, verb, path);
-                    } else {
-                        var eventListener = function (evt) {
-                            var eventData = getInternalData(evt);
-                            if (!eventData.handled) {
-                                eventData.handled = true;
-                                issueAjaxRequest(elt, verb, path, evt.target);
-                            }
-                        };
-                        nodeData.trigger = trigger;
-                        nodeData.eventListener = eventListener;
-                        elt.addEventListener(trigger, eventListener);
-                    }
+        function isLocalLink(elt) {
+            return location.hostname === elt.hostname &&
+                getRawAttribute(elt,'href') &&
+                !getRawAttribute(elt,'href').startsWith("#")
+        }
+
+        function boostElement(elt, nodeData, trigger) {
+            if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
+                nodeData.boosted = true;
+                var verb, path;
+                if (elt.tagName === "A") {
+                    verb = "get";
+                    path = getRawAttribute(elt, 'href');
+                } else {
+                    var rawAttribute = getRawAttribute(elt, "method");
+                    verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
+                    path = getRawAttribute(elt, 'action');
                 }
-            });
-            if (getAttributeValue(elt, 'hx-add-class')) {
-                processClassList(elt, getAttributeValue(elt, 'hx-add-class'), "add");
+                addEventListener(elt, verb, path, nodeData, trigger, true);
             }
-            if (getAttributeValue(elt, 'hx-remove-class')) {
-                processClassList(elt, getAttributeValue(elt, 'hx-remove-class'), "remove");
+        }
+
+        function addEventListener(elt, verb, path, nodeData, trigger, cancel) {
+            var eventListener = function (evt) {
+                if(cancel) evt.preventDefault();
+                var eventData = getInternalData(evt);
+                if (!eventData.handled) {
+                    eventData.handled = true;
+                    issueAjaxRequest(elt, verb, path, evt.target);
+                }
+            };
+            nodeData.trigger = trigger;
+            nodeData.eventListener = eventListener;
+            elt.addEventListener(trigger, eventListener);
+        }
+
+        function processNode(elt) {
+            var nodeData = getInternalData(elt);
+            if (!nodeData.processed) {
+                nodeData.processed = true;
+                var trigger = getTrigger(elt);
+                var explicitAction = false;
+                forEach(VERBS, function(verb){
+                    var path = getAttributeValue(elt, 'hx-' + verb);
+                    if (path) {
+                        explicitAction = true;
+                        if (trigger === 'load') {
+                            if (!nodeData.loaded) {
+                                nodeData.loaded = true;
+                                issueAjaxRequest(elt, verb, path);
+                            }
+                        } else if (trigger.trim().indexOf('every ') === 0) {
+                            nodeData.polling = true;
+                            processPolling(elt, verb, path);
+                        } else {
+                            addEventListener(elt, verb, path, nodeData, trigger);
+                        }
+                    }
+                });
+                if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") == "true") {
+                    boostElement(elt, nodeData, trigger);
+                }
+                if (getAttributeValue(elt, 'hx-add-class')) {
+                    processClassList(elt, getAttributeValue(elt, 'hx-add-class'), "add");
+                }
+                if (getAttributeValue(elt, 'hx-remove-class')) {
+                    processClassList(elt, getAttributeValue(elt, 'hx-remove-class'), "remove");
+                }
             }
-            forEach(elt.children, function(child) { processElement(child) });
+            forEach(elt.children, function(child) { processNode(child) });
         }
 
         //====================================================================
@@ -404,15 +452,20 @@ var HTMx = HTMx || (function () {
             processResponseNodes(elt, null, content);
         }
 
+        function shouldPush(elt) {
+            return getClosestAttributeValue(elt, "hx-push-url") === "true" ||
+                (elt.tagName === "A" && getInternalData(elt).boosted);
+        }
+
         function snapshotForCurrentHistoryEntry(elt) {
-            if (getClosestAttributeValue(elt, "hx-push-url") === "true") {
+            if (shouldPush(elt)) {
                 // TODO event to allow de-initialization of HTML elements in target
                 updateCurrentHistoryContent();
             }
         }
 
         function initNewHistoryEntry(elt, url) {
-            if (getClosestAttributeValue(elt, "hx-push-url") === "true") {
+            if (shouldPush(elt)) {
                 newHistoryData();
                 history.pushState({}, "", url);
                 updateCurrentHistoryContent();
@@ -475,9 +528,9 @@ var HTMx = HTMx || (function () {
             }
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
-                for (var i = 0; i < inputs.length; i++) {
-                    processInputValue(processed, values, inputs[i]);
-                }
+                forEach(inputs, function(input) {
+                    processInputValue(processed, values, input);
+                });
             }
         }
 
@@ -491,10 +544,9 @@ var HTMx = HTMx || (function () {
             var includes = getAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
-                for (var i = 0; i < nodes.length; i++) {
-                    var node = nodes[i];
+                forEach(nodes, function(node) {
                     processInputValue(processed, values, node);
-                }
+                });
             }
 
             // include the closest form
@@ -516,9 +568,9 @@ var HTMx = HTMx || (function () {
                 if (values.hasOwnProperty(name)) {
                     var value = values[name];
                     if (Array.isArray(value)) {
-                        for (var i = 0; i < value.length; i++) {
-                            returnStr = appendParam(returnStr, name, value[i]);
-                        }
+                        forEach(value, function(v) {
+                            returnStr = appendParam(returnStr, name, v);
+                        });
                     } else {
                         returnStr = appendParam(returnStr, name, value);
                     }
@@ -647,7 +699,7 @@ var HTMx = HTMx || (function () {
 
         // initialize the document
         ready(function () {
-            processElement(getDocument().body);
+            processNode(getDocument().body);
             window.onpopstate = function (event) {
                 restoreHistory(event.state);
             };
@@ -659,7 +711,7 @@ var HTMx = HTMx || (function () {
 
         // Public API
         return {
-            processElement: processElement,
+            processElement: processNode,
             version: "0.0.1",
             _:internalEval
         }
