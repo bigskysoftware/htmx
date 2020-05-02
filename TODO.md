@@ -12,10 +12,8 @@
 
 ## TODOS
 
-* hx-select (select from response)
-* transition model for content swaps
+* 'revealed' event
 * sse support
-* delay (ic-trigger="keyup" ic-delay="1s")
 * history support
   * Implement LRU
   * Issue GET to restore content if there isn't a copy locally
@@ -25,6 +23,8 @@
   * history
   * merge
   * hx-boost
+  * hx-select
+  * transition model for content swaps
 * distribute on https://unpkg.com/
 * build website with 11ty
   * landing page

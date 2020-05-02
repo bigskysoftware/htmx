@@ -218,6 +218,7 @@ var HTMx = HTMx || (function () {
         }
 
         function swapResponse(target, elt, resp, after) {
+
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
             var selector = getClosestAttributeValue(elt, "hx-select");
             if (swapStyle === "merge") {
@@ -353,7 +354,18 @@ var HTMx = HTMx || (function () {
                 var eventData = getInternalData(evt);
                 if (!eventData.handled) {
                     eventData.handled = true;
-                    issueAjaxRequest(elt, verb, path, evt.target);
+                    if (eventData.delayed) {
+                        clearTimeout(eventData.delayed);
+                    }
+                    var eventDelay = getAttributeValue(elt, "hx-delay");
+                    var issueRequest = function(){
+                        issueAjaxRequest(elt, verb, path, evt.target);
+                    }
+                    if (eventDelay) {
+                        eventData.delayed = setTimeout(issueRequest, parseInterval(eventDelay));
+                    } else {
+                        issueRequest();
+                    }
                 }
             };
             nodeData.trigger = trigger;
@@ -668,10 +680,20 @@ var HTMx = HTMx || (function () {
                             // Success!
                             var resp = this.response;
                             if(!triggerEvent(elt, 'beforeSwap.hx', {xhr:xhr, target:target})) return;
-                            swapResponse(target, elt, resp, function(){
-                                updateCurrentHistoryContent();
-                                triggerEvent(elt, 'afterSwap.hx', {xhr:xhr, target:target});
-                            });
+                            target.classList.add("hx-swapping");
+                            var doSwap = function(){
+                                swapResponse(target, elt, resp, function(){
+                                    target.classList.remove("hx-swapping");
+                                    updateCurrentHistoryContent();
+                                    triggerEvent(elt, 'afterSwap.hx', {xhr:xhr, target:target});
+                                });
+                            }
+                            var swapDelayStr = getAttributeValue(elt, "hx-swap-delay");
+                            if (swapDelayStr) {
+                                setTimeout(doSwap(), parseInterval(swapDelayStr))
+                            } else {
+                                doSwap();
+                            }
                         }
                     } else {
                         triggerEvent(elt, 'errorResponse.hx', {xhr:xhr, response: xhr.response, status: xhr.status, target:target});
