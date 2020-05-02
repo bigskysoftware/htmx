@@ -113,6 +113,10 @@ var HTMx = HTMx || (function () {
             return elemTop < window.innerHeight && elemBottom >= 0;
         }
 
+        function bodyContains(elt) {
+            return getDocument().body.contains(elt);
+        }
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -320,7 +324,7 @@ var HTMx = HTMx || (function () {
                 if (intervalStr) {
                     var interval = parseInterval(intervalStr);
                     nodeData.timeout = setTimeout(function () {
-                        if (getDocument().body.contains(elt)) {
+                        if (bodyContains(elt)) {
                             issueAjaxRequest(elt, verb, path);
                             processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb));
                         }
@@ -411,6 +415,27 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                elt.sseSource.close();
+                return true;
+            }
+        }
+
+        function initSSESource(elt, sseSrc) {
+            var details = {
+               initializer: function() { new EventSource(sseSrc, details.config) },
+               config:{withCredentials: true}
+            };
+            triggerEvent(elt, "initSSE.mx", {config:details})
+            var source = details.initializer();
+            source.onerror = function (e) {
+                triggerEvent(elt, "sseError.mx", {error:e, source:source});
+                maybeCloseSSESource(elt);
+            };
+            getInternalData(elt).sseSource = source;
+        }
+
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
@@ -423,7 +448,24 @@ var HTMx = HTMx || (function () {
                         nodeData.path = path;
                         nodeData.verb = verb;
                         explicitAction = true;
-                        if (trigger === 'revealed') {
+                        if (trigger.indexOf("sse:") === 0) {
+                            var sseEventName = trigger.substr(4);
+                            var sseSource = getClosestMatch(elt, function(parent) {return parent.sseSource;});
+                            if (sseSource) {
+                                var sseListener = function () {
+                                    if (!maybeCloseSSESource(sseSource)) {
+                                        if (bodyContains(elt)) {
+                                            issueAjaxRequest(elt, verb, path);
+                                        } else {
+                                            sseSource.sseSource.removeEventListener(sseEventName, sseListener);
+                                        }
+                                    }
+                                };
+                                sseSource.sseSource.addEventListener(sseEventName, sseListener);
+                            } else {
+                                triggerEvent(elt, "noSSESourceError.mx")
+                            }
+                        } if (trigger === 'revealed') {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (trigger === 'load') {
@@ -442,11 +484,17 @@ var HTMx = HTMx || (function () {
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, trigger);
                 }
-                if (getAttributeValue(elt, 'hx-add-class')) {
-                    processClassList(elt, getAttributeValue(elt, 'hx-add-class'), "add");
+                var sseSrc = getAttributeValue(elt, 'hx-sse-source');
+                if (sseSrc) {
+                    initSSESource(elt, sseSrc);
                 }
-                if (getAttributeValue(elt, 'hx-remove-class')) {
-                    processClassList(elt, getAttributeValue(elt, 'hx-remove-class'), "remove");
+                var addClass = getAttributeValue(elt, 'hx-add-class');
+                if (addClass) {
+                    processClassList(elt, addClass, "add");
+                }
+                var removeClass = getAttributeValue(elt, 'hx-remove-class');
+                if (removeClass) {
+                    processClassList(elt, removeClass, "remove");
                 }
             }
             forEach(elt.children, function(child) { processNode(child) });

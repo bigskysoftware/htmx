@@ -32,9 +32,6 @@
   * events page
   * headers page
 
-## Delegate
-
-* sse support
 
 ## Unsupported Intercooler Features
 
