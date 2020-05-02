@@ -1,8 +1,23 @@
 {
   "name": "htmx",
-  "version": "0.0.1",
   "description": "HTML Extensions",
-  "main": "src/htmx.js",
+  "keywords": [
+    "AJAX",
+    "HTML"
+  ],
+  "version": "0.0.1",
+  "homepage": "https://htmx.org/",
+  "bugs": {
+    "url": "https://github.com/bigskysoftware/htmx/issues"
+  },
+  "license": "BSD 2-Clause",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/*.js"
+  ],
+  "main": "dist/htmx.min.js",
+  "unpkg": "dist/htmx.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
@@ -12,16 +27,6 @@
     "type": "git",
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
-  "keywords": [
-    "AJAX",
-    "HTML"
-  ],
-  "author": "Carson Gross",
-  "license": "BSD 2-Clause",
-  "bugs": {
-    "url": "https://github.com/bigskysoftware/htmx/issues"
-  },
-  "homepage": "https://htmx.org",
   "devDependencies": {
     "@11ty/eleventy": "^0.10.0",
     "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.1",
@@ -30,6 +35,5 @@
     "mocha-chrome": "^2.2.0",
     "sinon": "^9.0.2",
     "uglify-js": "^3.9.1"
-  },
-  "dependencies": {}
+  }
 }
