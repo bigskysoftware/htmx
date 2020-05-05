@@ -67,8 +67,11 @@ var HTMx = HTMx || (function () {
         }
 
         function makeFragment(resp) {
-            var range = getDocument().createRange();
-            return range.createContextualFragment(resp);
+            // var range = getDocument().createRange();
+            // return range.createContextualFragment(resp);
+            var parser = new DOMParser();
+            var responseDoc = parser.parseFromString(resp, "text/html");
+            return responseDoc.body;
         }
 
         function isType(o, type) {
