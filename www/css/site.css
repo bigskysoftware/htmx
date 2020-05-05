@@ -41,18 +41,6 @@ blockquote {
     line-height: 1em;
 }
 
-.root .hero {
-    opacity: 5%;
-    position: relative;
-    top: -20px;
-}
-
-.root .hero.settle {
-    top: 0px;
-    opacity: 100%;
-    transition: 500ms ease-in;
-}
-
 a {
   text-decoration: none;
   color:rgb(52, 101, 164)
@@ -84,25 +72,6 @@ a {
     }
     .nav ul {
         padding: 0;
-    }
-    .hamburger {
-        display: inline;
-        margin-left: 10px;
-        margin-top: -5px;
-    }
-    .collapse * {
-        height: 0;
-        padding: 0;
-        margin: 0;
-        opacity: 0;
-    }
-
-    .show.collapse * {
-        height: auto;
-        padding: auto;
-        margin: auto;
-        opacity: 100%;
-        transition: opacity ease-in 300ms;
     }
     .hero {
         font-size: 2.5em;
