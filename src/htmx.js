@@ -584,8 +584,8 @@ var HTMx = HTMx || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().getElementsByClassName('hx-history-element');
-            return historyElt.length > 0 ? historyElt[0] : getDocument().body;
+            var historyElt = getDocument().querySelector('.hx-history-element');
+            return historyElt || getDocument().body;
         }
 
         function purgeOldestPaths(paths, historyTimestamps) {
@@ -628,13 +628,30 @@ var HTMx = HTMx || (function () {
             }
         }
 
+        function loadHistoryFromServer(pathAndSearch) {
+            triggerEvent(getDocument().body, "historyCacheMiss.hx", {path: pathAndSearch});
+            var request = new XMLHttpRequest();
+            request.open('GET', pathAndSearch, true);
+            request.onload = function () {
+                triggerEvent(getDocument().body, "historyCacheMissLoad.hx", {path: pathAndSearch});
+                if (this.status >= 200 && this.status < 400) {
+                    var fragment = makeFragment(this.response);
+                    fragment = fragment.querySelector('.hx-history-element') || fragment;
+                    swapInnerHTML(getHistoryElement(), fragment);
+                }
+            };
+        }
+
         function restoreHistory() {
             var pathAndSearch = location.pathname+location.search;
             triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
-            bumpHistoryAccessDate(pathAndSearch);
             var content = localStorage.getItem('hx-history-content-' + pathAndSearch);
-            var elt = getHistoryElement();
-            swapInnerHTML(elt, makeFragment(content));
+            if (content) {
+                bumpHistoryAccessDate(pathAndSearch);
+                swapInnerHTML(getHistoryElement(), makeFragment(content));
+            } else {
+                loadHistoryFromServer(pathAndSearch);
+            }
         }
 
         function shouldPush(elt) {

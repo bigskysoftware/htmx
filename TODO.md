@@ -12,10 +12,12 @@
 
 ## TODOS
 
-* history support
-  * Implement LRU
-  * Issue GET to restore content if there isn't a copy locally
-* polling cancellation API 
+* settle formalization
+  * focus recapture
+* polling cancellation API 205 code
+* meta config tag
+* simple logging API
+
 * Testing
   * polling
   * merge
@@ -23,7 +25,6 @@
   * history
   * hx-boost
   * transition model for content swaps
-* distribute on https://unpkg.com/
 * build website with 11ty
   * landing page
   * docs page 
