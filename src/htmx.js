@@ -583,65 +583,56 @@ var HTMx = HTMx || (function () {
         //====================================================================
         // History Support
         //====================================================================
-
-        function makeHistoryId() {
-            return Math.random().toString(36).substr(3, 9);
-        }
-
         function getHistoryElement() {
             var historyElt = getDocument().getElementsByClassName('hx-history-element');
-            if (historyElt.length > 0) {
-                return historyElt[0];
-            } else {
-                return getDocument().body;
+            return historyElt.length > 0 ? historyElt[0] : getDocument().body;
+        }
+
+        function purgeOldestPaths(paths, historyTimestamps) {
+            var paths = paths.sort(function (path1, path2) {
+                return historyTimestamps[path2] - historyTimestamps[path1]
+            });
+            var slot = 0;
+            forEach(paths, function (path) {
+                slot++;
+                if (slot > 20) {
+                    delete historyTimestamps[path];
+                    localStorage.removeItem(path);
+                }
+            });
+        }
+
+        function bumpHistoryAccessDate(pathAndSearch) {
+            var historyTimestamps = JSON.parse(localStorage.getItem("hx-history-timestamps")) || {};
+            historyTimestamps[pathAndSearch] = Date.now;
+            var paths = Object.keys(historyTimestamps);
+            if (paths.length > 20) {
+                purgeOldestPaths(paths, historyTimestamps);
             }
+            localStorage.setItem("hx-history-timestamps", JSON.stringify(historyTimestamps));
         }
 
-        function saveLocalHistoryData(historyData) {
-            triggerEvent(getDocument().body, "historySave.hx", {data:historyData});
-            localStorage.setItem('hx-history', JSON.stringify(historyData));
-        }
-
-        function getHistoryMetadata() {
-            var historyEntry = localStorage.getItem('hx-history');
-            var historyData;
-            if (historyEntry) {
-                historyData = JSON.parse(historyEntry);
-            } else {
-                var initialId = makeHistoryId();
-                historyData = {"current": initialId, "slots": [initialId]};
-                saveLocalHistoryData(historyData);
-            }
-            return historyData;
-        }
-
-        function newHistoryData() {
-            var historyData = getHistoryMetadata();
-            var newId = makeHistoryId();
-            var slots = historyData.slots;
-            triggerEvent(getDocument().body, "historyNew.hx", {data:historyData});
-            if (slots.length > 20) {
-                var toEvict = slots.shift();
-                localStorage.removeItem('hx-history-' + toEvict);
-            }
-            slots.push(newId);
-            historyData.current = newId;
-            saveLocalHistoryData(historyData);
-        }
-
-        function updateCurrentHistoryContent() {
+        function saveForHistory() {
             var elt = getHistoryElement();
-            var historyData = getHistoryMetadata();
-            triggerEvent(getDocument().body, "historyUpdate.hx", {data:historyData});
-            history.replaceState({"hx-history-key": historyData.current}, getDocument().title, window.location.href);
-            localStorage.setItem('hx-history-' + historyData.current, elt.innerHTML);
+            var pathAndSearch = location.pathname+location.search;
+            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
+            history.replaceState({}, getDocument().title, window.location.href);
+            localStorage.setItem('hx-history-content-' + pathAndSearch, elt.innerHTML);
+            bumpHistoryAccessDate(pathAndSearch);
         }
 
-        function restoreHistory(data) {
-            updateCurrentHistoryContent();
-            var historyKey = data['hx-history-key'];
-            triggerEvent(getDocument().body, "historyUpdate.hx", {data:historyKey});
-            var content = localStorage.getItem('hx-history-' + historyKey);
+        function initNewHistoryEntry(elt, url) {
+            if (shouldPush(elt)) {
+                history.pushState({}, "", url );
+                saveForHistory();
+            }
+        }
+
+        function restoreHistory() {
+            var pathAndSearch = location.pathname+location.search;
+            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
+            bumpHistoryAccessDate(pathAndSearch);
+            var content = localStorage.getItem('hx-history-content-' + pathAndSearch);
             var elt = getHistoryElement();
             swapInnerHTML(elt, makeFragment(content));
         }
@@ -654,17 +645,10 @@ var HTMx = HTMx || (function () {
         function snapshotForCurrentHistoryEntry(elt) {
             if (shouldPush(elt)) {
                 // TODO event to allow de-initialization of HTML elements in target
-                updateCurrentHistoryContent();
+                saveForHistory();
             }
         }
 
-        function initNewHistoryEntry(elt, url) {
-            if (shouldPush(elt)) {
-                newHistoryData();
-                history.pushState({}, "", url);
-                updateCurrentHistoryContent();
-            }
-        }
 
         function addRequestIndicatorClasses(elt) {
             mutateRequestIndicatorClasses(elt, "add");
@@ -861,7 +845,7 @@ var HTMx = HTMx || (function () {
                                 try {
                                     swapResponse(target, elt, resp, function () {
                                         target.classList.remove("hx-swapping");
-                                        updateCurrentHistoryContent();
+                                        setTimeout(saveForHistory, 200);
                                         triggerEvent(elt, 'afterSwap.hx', {xhr: xhr, target: target});
                                     });
                                 } catch (e) {
@@ -913,7 +897,7 @@ var HTMx = HTMx || (function () {
         ready(function () {
             processNode(getDocument().body);
             window.onpopstate = function (event) {
-                restoreHistory(event.state);
+                restoreHistory();
             };
         })
 
