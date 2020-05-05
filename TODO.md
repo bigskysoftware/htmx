@@ -17,6 +17,7 @@
 * polling cancellation API 205 code
 * meta config tag
 * simple logging API
+* hx-toggle-class
 
 * Testing
   * polling

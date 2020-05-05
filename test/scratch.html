@@ -24,11 +24,13 @@
 <script src="scratch_server.js"></script>
 
 <script>
-    // this.server.respondWith("GET", "/test", "Clicked!");
-    // var btn = make('<button hx-get="/test">Click Me!</button>')
+    this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
+    this.server.respondWith("GET", "/test2", "Clicked!");
 
-    this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
-    make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
+    make('<div hx-get="/test">dd</div>')
+
+    // this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
+    // make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
 </script>
 
 

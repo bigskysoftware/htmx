@@ -117,6 +117,10 @@ var HTMx = HTMx || (function () {
             return getDocument().body.contains(elt);
         }
 
+        function concat(arr1, arr2) {
+            return arr1.concat(arr2);
+        }
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -152,19 +156,21 @@ var HTMx = HTMx || (function () {
         }
 
         function handleOutOfBandSwaps(fragment) {
+            var settleTasks = [];
             forEach(fragment.children, function(child){
                 if (getAttributeValue(child, "hx-swap-oob") === "true") {
                     var target = getDocument().getElementById(child.id);
                     if (target) {
                         var fragment = new DocumentFragment()
                         fragment.append(child);
-                        swapOuterHTML(target, fragment);
+                        settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
                         triggerEvent(getDocument().body, "oobErrorNoTarget.hx", {id:child.id, content:child})
                     }
                 }
             })
+            return settleTasks;
         }
 
         function handleAttributes(parentNode, fragment) {
@@ -179,15 +185,11 @@ var HTMx = HTMx || (function () {
                     });
                 }
             });
-            setTimeout(function () {
-                forEach(attributeSwaps, function (swap) {
-                    swap.call();
-                });
-            }, 100);
+            return attributeSwaps;
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment) {
-            handleAttributes(parentNode, fragment);
+            var settleTasks = handleAttributes(parentNode, fragment);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
@@ -196,36 +198,45 @@ var HTMx = HTMx || (function () {
                     processNode(child);
                 }
             }
+            return settleTasks;
         }
 
         function swapOuterHTML(target, fragment) {
             if (target.tagName === "BODY") {
-                swapInnerHTML(target, fragment);
+                return swapInnerHTML(target, fragment);
             } else {
-                insertNodesBefore(parentElt(target), target, fragment);
+                var settleTasks = insertNodesBefore(parentElt(target), target, fragment);
                 parentElt(target).removeChild(target);
+                return settleTasks;
             }
         }
 
         function swapPrepend(target, fragment) {
-            insertNodesBefore(target, target.firstChild, fragment);
+            return insertNodesBefore(target, target.firstChild, fragment);
         }
 
         function swapPrependBefore(target, fragment) {
-            insertNodesBefore(parentElt(target), target, fragment);
+            return insertNodesBefore(parentElt(target), target, fragment);
         }
 
         function swapAppend(target, fragment) {
-            insertNodesBefore(target, null, fragment);
+            return insertNodesBefore(target, null, fragment);
         }
 
         function swapAppendAfter(target, fragment) {
-            insertNodesBefore(parentElt(target), target.nextSibling, fragment);
+            return insertNodesBefore(parentElt(target), target.nextSibling, fragment);
         }
 
         function swapInnerHTML(target, fragment) {
-            target.innerHTML = "";
-            insertNodesBefore(target, null, fragment);
+            var firstChild = target.firstChild;
+            var settleTasks = insertNodesBefore(target, firstChild, fragment);
+            if (firstChild) {
+                while (firstChild.nextSibling) {
+                    target.removeChild(firstChild.nextSibling);
+                }
+                target.removeChild(firstChild);
+            }
+            return settleTasks;
         }
 
         function maybeSelectFromResponse(elt, fragment) {
@@ -240,30 +251,20 @@ var HTMx = HTMx || (function () {
             return fragment;
         }
 
-        function swapResponse(target, elt, responseText, callBack) {
-
+        function swapResponse(target, elt, responseText) {
             var fragment = makeFragment(responseText);
-            handleOutOfBandSwaps(fragment);
+            var settleTasks = handleOutOfBandSwaps(fragment);
 
             fragment = maybeSelectFromResponse(elt, fragment);
 
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
-            if (swapStyle === "outerHTML") {
-                swapOuterHTML(target, fragment);
-            } else if (swapStyle === "prepend") {
-                swapPrepend(target, fragment);
-            } else if (swapStyle === "prependBefore") {
-                swapPrependBefore(target, fragment);
-            } else if (swapStyle === "append") {
-                swapAppend(target, fragment);
-            } else if (swapStyle === "appendAfter") {
-                swapAppendAfter(target, fragment);
-            } else {
-                swapInnerHTML(target, fragment);
-            }
-
-            if(callBack) {
-                callBack.call();
+            switch(swapStyle) {
+                case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
+                case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
+                case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
+                case "append": return concat(settleTasks, swapAppend(target, fragment));
+                case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                default: return concat(settleTasks, swapInnerHTML(target, fragment));
             }
         }
 
@@ -604,7 +605,7 @@ var HTMx = HTMx || (function () {
 
         function bumpHistoryAccessDate(pathAndSearch) {
             var historyTimestamps = JSON.parse(localStorage.getItem("hx-history-timestamps")) || {};
-            historyTimestamps[pathAndSearch] = Date.now;
+            historyTimestamps[pathAndSearch] = Date.now();
             var paths = Object.keys(historyTimestamps);
             if (paths.length > 20) {
                 purgeOldestPaths(paths, historyTimestamps);
@@ -612,20 +613,23 @@ var HTMx = HTMx || (function () {
             localStorage.setItem("hx-history-timestamps", JSON.stringify(historyTimestamps));
         }
 
-        function saveForHistory() {
+        function saveHistory() {
             var elt = getHistoryElement();
             var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
+            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch, historyElement:elt});
             history.replaceState({}, getDocument().title, window.location.href);
-            localStorage.setItem('hx-history-content-' + pathAndSearch, elt.innerHTML);
+            localStorage.setItem('hx-history:' + pathAndSearch, elt.innerHTML);
             bumpHistoryAccessDate(pathAndSearch);
         }
 
-        function initNewHistoryEntry(elt, url) {
-            if (shouldPush(elt)) {
-                history.pushState({}, "", url );
-                saveForHistory();
-            }
+        function pushUrlIntoHistory(url) {
+            history.pushState({}, "", url );
+        }
+
+        function settleImmediately(settleTasks) {
+            forEach(settleTasks, function (task) {
+                task.call();
+            });
         }
 
         function loadHistoryFromServer(pathAndSearch) {
@@ -637,18 +641,18 @@ var HTMx = HTMx || (function () {
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('.hx-history-element') || fragment;
-                    swapInnerHTML(getHistoryElement(), fragment);
+                    settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };
         }
 
         function restoreHistory() {
             var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
-            var content = localStorage.getItem('hx-history-content-' + pathAndSearch);
+            triggerEvent(getDocument().body, "historyRestore.hx", {path:pathAndSearch});
+            var content = localStorage.getItem('hx-history:' + pathAndSearch);
             if (content) {
                 bumpHistoryAccessDate(pathAndSearch);
-                swapInnerHTML(getHistoryElement(), makeFragment(content));
+                settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(content)));
             } else {
                 loadHistoryFromServer(pathAndSearch);
             }
@@ -658,14 +662,6 @@ var HTMx = HTMx || (function () {
             return getClosestAttributeValue(elt, "hx-push-url") === "true" ||
                 (elt.tagName === "A" && getInternalData(elt).boosted);
         }
-
-        function snapshotForCurrentHistoryEntry(elt) {
-            if (shouldPush(elt)) {
-                // TODO event to allow de-initialization of HTML elements in target
-                saveForHistory();
-            }
-        }
-
 
         function addRequestIndicatorClasses(elt) {
             mutateRequestIndicatorClasses(elt, "add");
@@ -810,11 +806,14 @@ var HTMx = HTMx || (function () {
             if(!triggerEvent(elt, 'values.hx', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
+            var requestURL;
             if (verb === 'get') {
                 var noValues = Object.keys(inputValues).length === 0;
-                xhr.open('GET', path + (noValues ? "" : "?" + urlEncode(inputValues)), true);
+                requestURL = path + (noValues ? "" : "?" + urlEncode(inputValues));
+                xhr.open('GET', requestURL, true);
             } else {
-                xhr.open('POST', path, true);
+                requestURL = path;
+                xhr.open('POST', requestURL, true);
                 setHeader(xhr,'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8', true);
                 if (verb !== 'post') {
                     setHeader(xhr, 'X-HTTP-Method-Override', verb.toUpperCase(), true);
@@ -847,29 +846,57 @@ var HTMx = HTMx || (function () {
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.hx', {xhr: xhr, target: target})) return;
-                    snapshotForCurrentHistoryEntry(elt, path);
-                    var trigger = this.getResponseHeader("X-HX-Trigger");
-                    handleTrigger(elt, trigger);
-                    initNewHistoryEntry(elt, path);
+
+                    handleTrigger(elt, this.getResponseHeader("X-HX-Trigger"));
+                    var pushedUrl = this.getResponseHeader("X-HX-Push")
+
+                    var shouldSaveHistory = shouldPush(elt) || pushedUrl;
+
                     if (this.status >= 200 && this.status < 400) {
                         // don't process 'No Content' response
                         if (this.status !== 204) {
                             // Success!
                             var resp = this.response;
                             if (!triggerEvent(elt, 'beforeSwap.hx', {xhr: xhr, target: target})) return;
+
+                            // Save current page
+                            if (shouldSaveHistory) {
+                                saveHistory();
+                            }
+
                             target.classList.add("hx-swapping");
                             var doSwap = function () {
                                 try {
-                                    swapResponse(target, elt, resp, function () {
-                                        target.classList.remove("hx-swapping");
-                                        setTimeout(saveForHistory, 200);
-                                        triggerEvent(elt, 'afterSwap.hx', {xhr: xhr, target: target});
-                                    });
+                                    var settleTasks = swapResponse(target, elt, resp);
+                                    target.classList.remove("hx-swapping");
+                                    target.classList.add("hx-settling");
+                                    triggerEvent(elt, 'afterSwap.hx', {xhr: xhr, target: target});
+
+                                    var doSettle = function(){
+                                        forEach(settleTasks, function (settleTask) {
+                                            settleTask.call();
+                                        });
+                                        target.classList.remove("hx-settling");
+                                        // push URL and save new page
+                                        if (shouldSaveHistory) {
+                                            pushUrlIntoHistory(pushedUrl || requestURL );
+                                            saveHistory();
+                                        }
+                                        triggerEvent(elt, 'afterSettle.hx', {xhr: xhr, target: target});
+                                    }
+
+                                    var settleDelayStr = getAttributeValue(elt, "hx-settle-delay") || "100ms";
+                                    if (settleDelayStr) {
+                                        setTimeout(doSettle, parseInterval(settleDelayStr))
+                                    } else {
+                                        doSettle();
+                                    }
                                 } catch (e) {
                                     triggerEvent(elt, 'swapError.hx', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
                                     throw e;
                                 }
                             };
+
                             var swapDelayStr = getAttributeValue(elt, "hx-swap-delay");
                             if (swapDelayStr) {
                                 setTimeout(doSwap, parseInterval(swapDelayStr))
