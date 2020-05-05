@@ -53,13 +53,6 @@ blockquote {
     transition: 500ms ease-in;
 }
 
-.nav {
-    margin: 12px;
-    /*position: absolute;*/
-    top: 180px;
-    left: 10px;
-}
-
 a {
   text-decoration: none;
   color:rgb(52, 101, 164)
@@ -74,6 +67,10 @@ a {
     padding-left: 12px;
 }
 
+.hamburger {
+    display: none;
+}
+
 /* customized version of lit.css */
 * + *{
     box-sizing: border-box;
@@ -83,13 +80,32 @@ a {
 @media(max-width:45em) {
     .nav {
         text-align: center;
+        font-size: 22px;
     }
     .nav ul {
         padding: 0;
-        font-size: 22px;
     }
-    .nav li {
+    .hamburger {
+        display: inline;
+        margin-left: 10px;
+        margin-top: -5px;
+    }
+    .collapse * {
+        height: 0;
+        padding: 0;
+        margin: 0;
+        opacity: 0;
+    }
 
+    .show.collapse * {
+        height: auto;
+        padding: auto;
+        margin: auto;
+        opacity: 100%;
+        transition: opacity ease-in 300ms;
+    }
+    .hero {
+        font-size: 2.5em;
     }
 }
 

@@ -781,6 +781,27 @@ var HTMx = HTMx || (function () {
             xhr.setRequestHeader((noPrefix ? "" : "X-HX-") + name, value || "");
         }
 
+        function setRequestHeaders(xhr, elt, target, prompt, eventTarget) {
+            setHeader(xhr, "Request", "true");
+            setHeader(xhr, "Trigger-Id", getRawAttribute(elt, "id"));
+            setHeader(xhr, "Trigger-Name", getRawAttribute(elt, "name"));
+            setHeader(xhr, "Target-Id", getRawAttribute(target, "id"));
+            setHeader(xhr, "Current-URL", getDocument().location.href);
+            if (prompt) {
+                setHeader(xhr, "Prompt", prompt);
+            }
+            if (eventTarget) {
+                setHeader(xhr, "Event-Target", getRawAttribute(eventTarget, "id"));
+            }
+            if (getDocument().activeElement) {
+                setHeader(xhr, "Active-Element", getRawAttribute(getDocument().activeElement, "id"));
+                // noinspection JSUnresolvedVariable
+                if (getDocument().activeElement.value) {
+                    setHeader(xhr, "Active-Element-Value", getDocument().activeElement.value);
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
@@ -827,24 +848,7 @@ var HTMx = HTMx || (function () {
             xhr.overrideMimeType("text/html");
 
             // request headers
-            setHeader(xhr, "Request", "true");
-            setHeader(xhr,"Trigger-Id", getRawAttribute(elt,"id"));
-            setHeader(xhr,"Trigger-Name", getRawAttribute(elt, "name"));
-            setHeader(xhr,"Target-Id", getRawAttribute(target,"id"));
-            setHeader(xhr,"Current-URL", getDocument().location.href);
-            if (prompt) {
-                setHeader(xhr,"Prompt", prompt);
-            }
-            if (eventTarget) {
-                setHeader(xhr,"Event-Target", getRawAttribute(eventTarget,"id"));
-            }
-            if (getDocument().activeElement) {
-                setHeader(xhr,"Active-Element", getRawAttribute(getDocument().activeElement,"id"));
-                // noinspection JSUnresolvedVariable
-                if (getDocument().activeElement.value) {
-                    setHeader(xhr,"Active-Element-Value", getDocument().activeElement.value);
-                }
-            }
+            setRequestHeaders(xhr, elt, target, prompt, eventTarget);
 
             xhr.onload = function () {
                 try {
