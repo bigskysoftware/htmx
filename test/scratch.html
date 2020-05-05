@@ -1,23 +1,18 @@
 <html lang="en">
 <head>
     <style>
+        div {
+            transition: all 1000ms ease-in;
+        }
+
         .indicator {
             opacity: 0;
-            transition: all 200ms ease-in;
         }
 
         .hx-show-indicator .indicator {
             opacity: 100%;
         }
 
-        div {
-            transition: all 1000ms ease-in;
-        }
-
-        div.foo {
-            color: red;
-            transition: all 1000ms ease-in;
-        }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
@@ -29,9 +24,11 @@
 <script src="scratch_server.js"></script>
 
 <script>
-    this.server.respondWith("POST", "/test", "Boosted");
-    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>');
-    var btn = byId('b1');
+    // this.server.respondWith("GET", "/test", "Clicked!");
+    // var btn = make('<button hx-get="/test">Click Me!</button>')
+
+    this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
+    make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
 </script>
 
 
@@ -45,6 +42,7 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 <hr/>
 
 <div id="work-area" class="hx-history-element">
+
 </div>
 
 </body>

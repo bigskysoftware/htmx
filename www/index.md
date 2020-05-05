@@ -1,22 +1,29 @@
 ---
-layout: layout.html
+layout: layout.njk
 title: HTMx - HTML Extensions
 ---
 
-HTMx is a set of extensions to HTML that bring many of the useful features of modern web browsers directly
-into HTML. It fills gaps in functionality found in standard HTML, dramatically expanding its expressiveness while
-retaining the fundamental simplicity of declarative hypertext.</p>
+## Introduction
 
-Here is a simple example of HTMx in action:
+HTMx is a small (<12Kb) &amp; dependency-free library that surfaces the features of modern browsers using HTML 
+attributes.  Using HTMx you can implement many [UX patterns](/demo) that would typically require writing javascript.  
+
+HTMx is unobtrusive, plays well with other tools, can be adopted incrementally with no up-front rewrites.
+
+## Quick Start
 
 ``` html
-  <button hx-get="/example" hx-target="#myDiv">
-    Click Me
-  </button>
+    <!-- Load from unpkg -->
+    <script src="https://unpkg.com/htmx.org@0.0.1"></script>
+
+    <!-- enhance a button -->
+    <button hx-get="/example">Click Me</button>
 ```
 
-This example issues an AJAX request to <code>/example</code> when a user clicks on it, and swaps the response
-HTML into the element with the id `myDiv`
+This code tells HTMx that:
 
-HTMx is based on [intercooler.js](http://intercoolerjs.org), and aims to be a minimalist &amp;
-dependency free successor to that project.
+> "When a user clicks on this button, issue an AJAX request to /example, and load the content into the body
+>  of the button"
+
+HTMx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+

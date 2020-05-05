@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <title>HTMx - Teaching HTML new tricks</title>
+    <link rel="stylesheet" href="/css/site.css"/>
+    <link rel="stylesheet" href="/css/prism-theme.css"/>
+    <script src="/js/htmx.js"></script>
+</head>
+<body>
+<div class="c">
+    <div class="{% if page.url == '/' %}root{% endif %} top-nav">
+        <h1 class="hero" hx-add-class="settle">&lt;<a>/</a>&gt; HTM<sub><a>x</a></sub></h1>
+        <div class="row center">
+            <div class="1 col">
+                <a href="/">home</a>
+            </div>
+            <div class="1 col">
+                <a href="/docs">docs</a>
+            </div>
+            <div class="1 col">
+                <a href="/docs/attributes">attributes</a>
+            </div>
+            <div class="1 col">
+                <a href="/docs/attributes">events</a>
+            </div>
+            <div class="1 col">
+                <a href="/docs/attributes">headers</a>
+            </div>
+            <div class="1 col">
+                <a href="https://github.com/bigskysoftware/htmx">github</a>
+            </div>
+        </div>
+    </div>
+    <div id="content">
+        {{ content | safe }}
+    </div>
+</div>
+</body>
+</html>

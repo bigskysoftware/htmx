@@ -123,7 +123,6 @@ var HTMx = HTMx || (function () {
 
         function getTarget(elt) {
             var explicitTarget = getClosestMatch(elt, function(e){return getRawAttribute(e,"hx-target") !== null});
-
             if (explicitTarget) {
                 var targetStr = getRawAttribute(explicitTarget, "hx-target");
                 if (targetStr === "this") {
@@ -141,59 +140,6 @@ var HTMx = HTMx || (function () {
             }
         }
 
-        function directSwap(child) {
-            var swapDirect = getAttributeValue(child, 'hx-swap-direct');
-            if (swapDirect) {
-                var target = getDocument().getElementById(getRawAttribute(child,'id'));
-                if (target) {
-                    if (swapDirect === "merge") {
-                        mergeInto(target, child);
-                    } else {
-                        var newParent = parentElt(target);
-                        newParent.insertBefore(child, target);
-                        newParent.removeChild(target);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function processResponseNodes(parentNode, insertBefore, text, executeAfter, selector) {
-            var fragment = makeFragment(text);
-            var nodesToProcess;
-            if (selector) {
-                nodesToProcess = toArray(fragment.querySelectorAll(selector));
-            } else {
-                nodesToProcess = toArray(fragment.childNodes);
-            }
-            forEach(nodesToProcess, function(child){
-                if (!directSwap(child)) {
-                    parentNode.insertBefore(child, insertBefore);
-                }
-                if (child.nodeType !== Node.TEXT_NODE) {
-                    triggerEvent(child, 'load.hx', {parent:parentElt(child)});
-                    processNode(child);
-                }
-            });
-            if(executeAfter) {
-                executeAfter.call();
-            }
-        }
-
-        function findMatch(elt, possible) {
-            for (var i = 0; i < possible.length; i++) {
-                var candidate = possible[i];
-                if (elt.hasAttribute("id") && elt.id === candidate.id) {
-                    return candidate;
-                }
-                if (!candidate.hasAttribute("id") && elt.tagName === candidate.tagName) {
-                    return candidate;
-                }
-            }
-            return null;
-        }
-
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
                 if (!mergeFrom.hasAttribute(attr.name)) {
@@ -205,58 +151,119 @@ var HTMx = HTMx || (function () {
             });
         }
 
-        function mergeChildren(mergeTo, mergeFrom) {
-            var oldChildren = toArray(mergeTo.children);
-            var marker = getDocument().createElement("span");
-            mergeTo.insertBefore(marker, mergeTo.firstChild);
-            forEach(mergeFrom.childNodes, function (newChild) {
-                var match = findMatch(newChild, oldChildren);
-                if (match) {
-                    while (marker.nextSibling && marker.nextSibling !== match) {
-                        mergeTo.removeChild(marker.nextSibling);
+        function handleOutOfBandSwaps(fragment) {
+            forEach(fragment.children, function(child){
+                if (getAttributeValue(child, "hx-swap-oob") === "true") {
+                    var target = getDocument().getElementById(child.id);
+                    if (target) {
+                        var fragment = new DocumentFragment()
+                        fragment.append(child);
+                        swapOuterHTML(target, fragment);
+                    } else {
+                        child.parentNode.removeChild(child);
+                        triggerEvent(getDocument().body, "oobErrorNoTarget.hx", {id:child.id, content:child})
                     }
-                    mergeTo.insertBefore(marker, match.nextSibling);
-                    mergeInto(match, newChild);
-                } else {
-                    mergeTo.insertBefore(newChild, marker);
+                }
+            })
+        }
+
+        function handleAttributes(parentNode, fragment) {
+            var attributeSwaps = [];
+            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
+                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
+                if (oldNode) {
+                    var newAttributes = newNode.cloneNode();
+                    cloneAttributes(newNode, oldNode);
+                    attributeSwaps.push(function () {
+                        cloneAttributes(newNode, newAttributes);
+                    });
                 }
             });
-            while (marker.nextSibling) {
-                mergeTo.removeChild(marker.nextSibling);
+            setTimeout(function () {
+                forEach(attributeSwaps, function (swap) {
+                    swap.call();
+                });
+            }, 100);
+        }
+
+        function insertNodesBefore(parentNode, insertBefore, fragment) {
+            handleAttributes(parentNode, fragment);
+            while(fragment.childNodes.length > 0){
+                var child = fragment.firstChild;
+                parentNode.insertBefore(child, insertBefore);
+                if (child.nodeType !== Node.TEXT_NODE) {
+                    triggerEvent(child, 'load.hx', {elt:child, parent:parentElt(child)});
+                    processNode(child);
+                }
             }
-            mergeTo.removeChild(marker);
         }
 
-        function mergeInto(mergeTo, mergeFrom) {
-            cloneAttributes(mergeTo, mergeFrom);
-            mergeChildren(mergeTo, mergeFrom);
+        function swapOuterHTML(target, fragment) {
+            if (target.tagName === "BODY") {
+                swapInnerHTML(target, fragment);
+            } else {
+                insertNodesBefore(parentElt(target), target, fragment);
+                parentElt(target).removeChild(target);
+            }
         }
 
-        function mergeResponse(target, resp, selector) {
-            var fragment = makeFragment(resp);
-            mergeInto(target, selector ? fragment.querySelector(selector) : fragment.firstElementChild);
+        function swapPrepend(target, fragment) {
+            insertNodesBefore(target, target.firstChild, fragment);
         }
 
-        function swapResponse(target, elt, resp, after) {
+        function swapPrependBefore(target, fragment) {
+            insertNodesBefore(parentElt(target), target, fragment);
+        }
+
+        function swapAppend(target, fragment) {
+            insertNodesBefore(target, null, fragment);
+        }
+
+        function swapAppendAfter(target, fragment) {
+            insertNodesBefore(parentElt(target), target.nextSibling, fragment);
+        }
+
+        function swapInnerHTML(target, fragment) {
+            target.innerHTML = "";
+            insertNodesBefore(target, null, fragment);
+        }
+
+        function maybeSelectFromResponse(elt, fragment) {
+            var selector = getClosestAttributeValue(elt, "hx-select");
+            if (selector) {
+                var newFragment = new DocumentFragment();
+                forEach(fragment.querySelectorAll(selector), function (node) {
+                    newFragment.append(node);
+                });
+                fragment = newFragment;
+            }
+            return fragment;
+        }
+
+        function swapResponse(target, elt, responseText, callBack) {
+
+            var fragment = makeFragment(responseText);
+            handleOutOfBandSwaps(fragment);
+
+            fragment = maybeSelectFromResponse(elt, fragment);
 
             var swapStyle = getClosestAttributeValue(elt, "hx-swap");
-            var selector = getClosestAttributeValue(elt, "hx-select");
-            if (swapStyle === "merge") {
-                mergeResponse(target, resp, selector);
-            } else if (swapStyle === "outerHTML") {
-                processResponseNodes(parentElt(target), target, resp, after, selector);
-                parentElt(target).removeChild(target);
+            if (swapStyle === "outerHTML") {
+                swapOuterHTML(target, fragment);
             } else if (swapStyle === "prepend") {
-                processResponseNodes(target, target.firstChild, resp, after, selector);
+                swapPrepend(target, fragment);
             } else if (swapStyle === "prependBefore") {
-                processResponseNodes(parentElt(target), target, resp, after, selector);
+                swapPrependBefore(target, fragment);
             } else if (swapStyle === "append") {
-                processResponseNodes(target, null, resp, after, selector);
+                swapAppend(target, fragment);
             } else if (swapStyle === "appendAfter") {
-                processResponseNodes(parentElt(target), target.nextSibling, resp, after, selector);
+                swapAppendAfter(target, fragment);
             } else {
-                target.innerHTML = "";
-                processResponseNodes(target, null, resp, after, selector);
+                swapInnerHTML(target, fragment);
+            }
+
+            if(callBack) {
+                callBack.call();
             }
         }
 
@@ -436,51 +443,67 @@ var HTMx = HTMx || (function () {
             getInternalData(elt).sseSource = source;
         }
 
+        function processSSETrigger(sseEventName, elt, verb, path) {
+            var sseSource = getClosestMatch(elt, function (parent) {
+                return parent.sseSource;
+            });
+            if (sseSource) {
+                var sseListener = function () {
+                    if (!maybeCloseSSESource(sseSource)) {
+                        if (bodyContains(elt)) {
+                            issueAjaxRequest(elt, verb, path);
+                        } else {
+                            sseSource.sseSource.removeEventListener(sseEventName, sseListener);
+                        }
+                    }
+                };
+                sseSource.sseSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerEvent(elt, "noSSESourceError.mx")
+            }
+        }
+
+        function loadImmediately(nodeData, elt, verb, path) {
+            if (!nodeData.loaded) {
+                nodeData.loaded = true;
+                issueAjaxRequest(elt, verb, path);
+            }
+        }
+
+        function processVerbs(elt, nodeData, trigger) {
+            var explicitAction = false;
+            forEach(VERBS, function (verb) {
+                var path = getAttributeValue(elt, 'hx-' + verb);
+                if (path) {
+                    explicitAction = true;
+                    nodeData.path = path;
+                    nodeData.verb = verb;
+                    if (trigger.indexOf("sse:") === 0) {
+                        processSSETrigger(trigger.substr(4), elt, verb, path);
+                    } else if (trigger === 'revealed') {
+                        initScrollHandler();
+                        maybeReveal(elt);
+                    } else if (trigger === 'load') {
+                        loadImmediately(nodeData, elt, verb, path);
+                    } else if (trigger.trim().indexOf('every ') === 0) {
+                        nodeData.polling = true;
+                        processPolling(elt, verb, path);
+                    } else {
+                        addEventListener(elt, verb, path, nodeData, trigger);
+                    }
+                }
+            });
+            return explicitAction;
+        }
+
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
                 nodeData.processed = true;
+
                 var trigger = getTrigger(elt);
-                var explicitAction = false;
-                forEach(VERBS, function(verb){
-                    var path = getAttributeValue(elt, 'hx-' + verb);
-                    if (path) {
-                        nodeData.path = path;
-                        nodeData.verb = verb;
-                        explicitAction = true;
-                        if (trigger.indexOf("sse:") === 0) {
-                            var sseEventName = trigger.substr(4);
-                            var sseSource = getClosestMatch(elt, function(parent) {return parent.sseSource;});
-                            if (sseSource) {
-                                var sseListener = function () {
-                                    if (!maybeCloseSSESource(sseSource)) {
-                                        if (bodyContains(elt)) {
-                                            issueAjaxRequest(elt, verb, path);
-                                        } else {
-                                            sseSource.sseSource.removeEventListener(sseEventName, sseListener);
-                                        }
-                                    }
-                                };
-                                sseSource.sseSource.addEventListener(sseEventName, sseListener);
-                            } else {
-                                triggerEvent(elt, "noSSESourceError.mx")
-                            }
-                        } if (trigger === 'revealed') {
-                            initScrollHandler();
-                            maybeReveal(elt);
-                        } else if (trigger === 'load') {
-                            if (!nodeData.loaded) {
-                                nodeData.loaded = true;
-                                issueAjaxRequest(elt, verb, path);
-                            }
-                        } else if (trigger.trim().indexOf('every ') === 0) {
-                            nodeData.polling = true;
-                            processPolling(elt, verb, path);
-                        } else {
-                            addEventListener(elt, verb, path, nodeData, trigger);
-                        }
-                    }
-                });
+                var explicitAction = processVerbs(elt, nodeData, trigger);
+
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, trigger);
                 }
@@ -575,10 +598,11 @@ var HTMx = HTMx || (function () {
         }
 
         function saveLocalHistoryData(historyData) {
+            triggerEvent(getDocument().body, "historySave.hx", {data:historyData});
             localStorage.setItem('hx-history', JSON.stringify(historyData));
         }
 
-        function getLocalHistoryData() {
+        function getHistoryMetadata() {
             var historyEntry = localStorage.getItem('hx-history');
             var historyData;
             if (historyEntry) {
@@ -592,9 +616,10 @@ var HTMx = HTMx || (function () {
         }
 
         function newHistoryData() {
-            var historyData = getLocalHistoryData();
+            var historyData = getHistoryMetadata();
             var newId = makeHistoryId();
             var slots = historyData.slots;
+            triggerEvent(getDocument().body, "historyNew.hx", {data:historyData});
             if (slots.length > 20) {
                 var toEvict = slots.shift();
                 localStorage.removeItem('hx-history-' + toEvict);
@@ -606,17 +631,19 @@ var HTMx = HTMx || (function () {
 
         function updateCurrentHistoryContent() {
             var elt = getHistoryElement();
-            var historyData = getLocalHistoryData();
+            var historyData = getHistoryMetadata();
+            triggerEvent(getDocument().body, "historyUpdate.hx", {data:historyData});
             history.replaceState({"hx-history-key": historyData.current}, getDocument().title, window.location.href);
             localStorage.setItem('hx-history-' + historyData.current, elt.innerHTML);
         }
 
         function restoreHistory(data) {
+            updateCurrentHistoryContent();
             var historyKey = data['hx-history-key'];
+            triggerEvent(getDocument().body, "historyUpdate.hx", {data:historyKey});
             var content = localStorage.getItem('hx-history-' + historyKey);
             var elt = getHistoryElement();
-            elt.innerHTML = "";
-            processResponseNodes(elt, null, content);
+            swapInnerHTML(elt, makeFragment(content));
         }
 
         function shouldPush(elt) {

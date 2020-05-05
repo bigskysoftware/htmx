@@ -1,5 +1,5 @@
 ---
-layout: layout.html
+layout: layout.njk
 title: HTMx - HTML Extensions / Attributes
 ---
 

@@ -21,7 +21,7 @@
   "unpkg": "dist/htmx.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
-    "dist": "cp src/htmx.js dist/ && npm run-script uglify && exit",
+    "dist": "cp src/htmx.js dist/ && npm run-script uglify && gzip -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },

@@ -1,30 +1,53 @@
 body {
-    margin: 40px auto;
-    max-width: 740px;
+    margin: 0px;
     line-height: 1.6;
     font-size: 18px;
     color: #333;
-    padding: 0 10px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
-h1, h2, h3 {
-    line-height: 1.2
-}
-h1 {
-}
-.flair {
+
+h2 {
+    border-bottom: 2px solid whitesmoke;
     color: rgb(52, 101, 164);
+}
+
+#content {
+    margin-top: 32px
+}
+
+p {
+    margin: 16px;
+}
+
+pre[class*="language-"] {
+    font-size: 16px;
+    margin-top: 24px !important;
+    margin-bottom: 24px !important;
+    margin-left: 48px !important;
+    margin-right: 48px !important;
+}
+
+blockquote {
+    border-left: 4px solid whitesmoke;
+    margin-left: 32px;
+    margin-right: 32px;
 }
 
 .hero {
     text-align: center;
-    font-size: 4em;
+    font-size: 5em;
+    margin: 0;
+    line-height: 1em;
+}
+
+.root .hero {
     opacity: 5%;
     position: relative;
     top: -20px;
 }
 
-.hero.settle {
+.root .hero.settle {
     top: 0px;
     opacity: 100%;
     transition: 500ms ease-in;
@@ -32,16 +55,125 @@ h1 {
 
 .nav {
     margin: 12px;
-    position: absolute;
+    /*position: absolute;*/
     top: 180px;
     left: 10px;
 }
 
 a {
   text-decoration: none;
+  color:rgb(52, 101, 164)
+}
+
+.center {
+    text-align: center;
 }
 
 .nav ul {
-    padding-left: 12px;
     list-style: none;
+    padding-left: 12px;
+}
+
+/* customized version of lit.css */
+* + *{
+    box-sizing: border-box;
+    margin: .5em 0;
+}
+
+@media(max-width:45em) {
+    .nav {
+        text-align: center;
+    }
+    .nav ul {
+        padding: 0;
+        font-size: 22px;
+    }
+    .nav li {
+
+    }
+}
+
+@media(min-width:45em) {
+    .col {
+        display: table-cell;
+    }
+    .\31 {
+        width: 5%;
+    }
+    .\33 {
+        width: 22%;
+    }
+    .\34 {
+        width: 30%;
+    }
+    .\35 {
+        width: 40%;
+    }
+    .\32 {
+        width: 15%;
+    }
+    .row {
+        display: table;
+        border-spacing: 1em 0;
+    }
+}
+
+.w-100,
+.row {
+    width: 100%;
+}
+
+.card:focus {
+    outline: 0;
+    border: solid rgb(52, 101, 164);
+}
+
+hr {
+    outline: 0;
+}
+
+.card {
+    padding: 1em;
+    border: solid #eee;
+}
+
+a[href]:hover, .btn:hover {
+    opacity: .6;
+}
+
+.c {
+    max-width: 55em;
+    padding: 1em;
+    margin: auto;
+}
+
+.btn.primary {
+    color: white;
+    background: rgb(52, 101, 164);
+    border: solid rgb(52, 101, 164);
+}
+
+td {
+    padding: 1em;
+    text-align: left;
+    border-bottom: solid #eee;
+}
+
+th {
+    padding: 1em;
+    text-align: left;
+    border-bottom: solid #eee;
+}
+
+.btn {
+    padding: 1em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    background: white;
+    border: solid;
+    cursor:pointer;
+}
+
+pre {
+    overflow: auto;
 }
