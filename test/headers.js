@@ -1,4 +1,4 @@
-describe("HTMx AJAX Headers Tests", function() {
+describe("kutty AJAX Headers Tests", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -8,50 +8,50 @@ describe("HTMx AJAX Headers Tests", function() {
         clearWorkArea();
     });
 
-    it("should include the X-HX-Request header", function(){
+    it("should include the X-KT-Request header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-HX-Request'].should.be.equal('true');
+            xhr.requestHeaders['X-KT-Request'].should.be.equal('true');
             xhr.respond(200, {}, "");
         });
-        var div = make('<div hx-get="/test"></div>');
+        var div = make('<div kt-get="/test"></div>');
         div.click();
         this.server.respond();
     })
 
-    it("should include the X-HX-Trigger-Id header", function(){
+    it("should include the X-KT-Trigger-Id header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-HX-Trigger-Id'].should.equal('d1');
+            xhr.requestHeaders['X-KT-Trigger-Id'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
-        var div = make('<div id="d1" hx-get="/test"></div>');
+        var div = make('<div id="d1" kt-get="/test"></div>');
         div.click();
         this.server.respond();
     })
 
-    it("should include the X-HX-Trigger-Name header", function(){
+    it("should include the X-KT-Trigger-Name header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-HX-Trigger-Name'].should.equal('n1');
+            xhr.requestHeaders['X-KT-Trigger-Name'].should.equal('n1');
             xhr.respond(200, {}, "");
         });
-        var div = make('<button name="n1" hx-get="/test"></button>');
+        var div = make('<button name="n1" kt-get="/test"></button>');
         div.click();
         this.server.respond();
     })
 
-    it("should include the X-HX-Target-Id header", function(){
+    it("should include the X-KT-Target-Id header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-HX-Target-Id'].should.equal('d1');
+            xhr.requestHeaders['X-KT-Target-Id'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
-        var div = make('<div hx-target="#d1" hx-get="/test"></div><div id="d1" ></div>');
+        var div = make('<div kt-target="#d1" kt-get="/test"></div><div id="d1" ></div>');
         div.click();
         this.server.respond();
     })
 
-    it("should handle simple string X-HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"X-HX-Trigger" : "foo"}, ""]);
+    it("should handle simple string X-KT-Trigger response header properly", function(){
+        this.server.respondWith("GET", "/test", [200, {"X-KT-Trigger" : "foo"}, ""]);
 
-        var div = make('<div hx-get="/test"></div>');
+        var div = make('<div kt-get="/test"></div>');
         var invokedEvent = false;
         div.addEventListener("foo", function (evt) {
             invokedEvent = true;
@@ -61,10 +61,10 @@ describe("HTMx AJAX Headers Tests", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle basic JSON X-HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"X-HX-Trigger" : "{\"foo\":null}"}, ""]);
+    it("should handle basic JSON X-KT-Trigger response header properly", function(){
+        this.server.respondWith("GET", "/test", [200, {"X-KT-Trigger" : "{\"foo\":null}"}, ""]);
 
-        var div = make('<div hx-get="/test"></div>');
+        var div = make('<div kt-get="/test"></div>');
         var invokedEvent = false;
         div.addEventListener("foo", function (evt) {
             invokedEvent = true;
@@ -76,10 +76,10 @@ describe("HTMx AJAX Headers Tests", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle JSON with array arg X-HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"X-HX-Trigger" : "{\"foo\":[1, 2, 3]}"}, ""]);
+    it("should handle JSON with array arg X-KT-Trigger response header properly", function(){
+        this.server.respondWith("GET", "/test", [200, {"X-KT-Trigger" : "{\"foo\":[1, 2, 3]}"}, ""]);
 
-        var div = make('<div hx-get="/test"></div>');
+        var div = make('<div kt-get="/test"></div>');
         var invokedEvent = false;
         div.addEventListener("foo", function (evt) {
             invokedEvent = true;
@@ -91,10 +91,10 @@ describe("HTMx AJAX Headers Tests", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle JSON with array arg X-HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"X-HX-Trigger" : "{\"foo\":{\"a\":1, \"b\":2}}"}, ""]);
+    it("should handle JSON with array arg X-KT-Trigger response header properly", function(){
+        this.server.respondWith("GET", "/test", [200, {"X-KT-Trigger" : "{\"foo\":{\"a\":1, \"b\":2}}"}, ""]);
 
-        var div = make('<div hx-get="/test"></div>');
+        var div = make('<div kt-get="/test"></div>');
         var invokedEvent = false;
         div.addEventListener("foo", function (evt) {
             invokedEvent = true;

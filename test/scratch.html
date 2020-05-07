@@ -9,7 +9,7 @@
             opacity: 0;
         }
 
-        .hx-show-indicator .indicator {
+        .kt-show-indicator .indicator {
             opacity: 100%;
         }
 
@@ -19,18 +19,18 @@
 </head>
 <body>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
-<script src="../src/htmx.js"></script>
+<script src="../src/kutty.js"></script>
 <script src="util.js"></script>
 <script src="scratch_server.js"></script>
 
 <script>
-    // this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
+    // this.server.respondWith("GET", "/test", '<a kt-get="/test2">Click Me</a>');
     // this.server.respondWith("GET", "/test2", "Clicked!");
     //
-    // make('<div hx-get="/test">dd</div>')
+    // make('<div kt-get="/test">dd</div>')
 
     this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
-    make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
+    make('<div kt-swap="outerHTML" kt-get="/test" kt-push-url="true" id="d1">Foo</div>');
 </script>
 
 
@@ -43,7 +43,7 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 <em>Work Area</em>
 <hr/>
 
-<div id="work-area" class="hx-history-element">
+<div id="work-area" class="kt-history-element">
 
 </div>
 

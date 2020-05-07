@@ -1,12 +1,9 @@
-# </> HTMx
-HTML Extensions
+# </> kutty
+*High power tools for HTML*
 
 ## Overview
 
-HTMx allows you to issue AJAX requests from HTML without needing to write any javascript.  It is a set of extensions
-to HTML (attributes, request headers, etc.) that allow you to use markup for more complex user interfaces and 
-features, while at the same time retaining the simplicity of the original web programming model. 
+Kutty is a set of HTML extensions (attributes, request headers, etc.) that allow you to use markup for complex user 
+interfaces and features, while retaining the simplicity and power of the hypertext we all know and love. 
 
-## Background
-
-HTMx is inspired by [intercooler.js](http://intercoolerjs.org), but aims to simplify that library and include no dependencies.
+Kutty is the successor to [intercooler.js](http://intercoolerjs.org)

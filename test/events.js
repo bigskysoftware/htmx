@@ -1,4 +1,4 @@
-describe("HTMx Events", function() {
+describe("kutty Events", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

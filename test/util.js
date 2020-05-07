@@ -1,6 +1,6 @@
 /* Test Utilities */
 
-HTMx.logger = function(elt, event, data) {
+kutty.logger = function(elt, event, data) {
     if(console) {
         console.log(event, elt, data);
     }
@@ -17,7 +17,7 @@ function make(htmlStr) {
         var  wa = getWorkArea();
         for (var  i = fragment.children.length - 1; i >= 0; i--) {
             var child = fragment.children[i];
-            HTMx.processElement(child);
+            kutty.processElement(child);
             wa.appendChild(child);
         }
         return wa.lastChild;

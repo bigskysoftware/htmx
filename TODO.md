@@ -1,14 +1,8 @@
-# &lt;/> HTMx 
-*HTML Extensions*
-
 ## GOALS
 
-* Dependency-free implementation of intercooler.js-like HTML-driven AJAX functionality
-* Minimalist functionality, rely heavily on built in functionality
-* Support IE10+
-** CSS transitions only
-** Pluggable event model
-* < 10k in .min form
+* Dependency-free implementation of intercooler.js
+* Support IE11 (stretch: IE10)
+* < 10k in .min.gz form
 
 ## TODOS
 
@@ -21,9 +15,9 @@
 * Testing
   * polling
   * merge
-  * hx-select
+  * kt-select
   * history
-  * hx-boost
+  * kt-boost
   * transition model for content swaps
 * build website with 11ty
   * landing page
@@ -48,4 +42,3 @@
 * http://intercoolerjs.org/docs.html
 * http://intercoolerjs.org/reference.html
 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
-

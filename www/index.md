@@ -1,29 +1,37 @@
 ---
-layout: layout.njk
+layout: core_layout.njk
 title: HTMx - HTML Extensions
 ---
 
+<div class="dark-hero">
+  <span class="logo dark" kt-add-class="settle">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+  <sub><i>high powered tools for HTML</i></sub>
+</div>
+
+<div class="c">
+
 ## Introduction
 
-HTMx is a small (<12Kb) &amp; dependency-free library that surfaces the features of modern browsers using HTML 
-attributes.  Using HTMx you can implement many [UX patterns](/demo) that would typically require writing javascript.  
+Kutty is a set of HTML extensions (attributes, request headers, etc.) that allow you to use markup to build 
+[powerful UX](/demo), while keeping the simplicity of the hypertext we all know and love. 
 
-HTMx is unobtrusive, plays well with other tools, can be adopted incrementally with no up-front rewrites.
+Kutty is a small (<6Kb min.gz'd), dependency-free, and can be adopted incrementally without a huge rewrite.
 
 ## Quick Start
 
 ``` html
     <!-- Load from unpkg -->
-    <script src="https://unpkg.com/htmx.org@0.0.1"></script>
-
-    <!-- enhance a button -->
-    <button hx-get="/example">Click Me</button>
+    <script src="https://unpkg.com/kutty.org@0.0.1"></script>
+    <!-- have a button POST a click via AJAX -->
+    <button kt-post="/clicked" kt-swap="outerHTML">Click Me</button>
 ```
 
-This code tells HTMx that:
+This annotation tells kutty:
 
-> "When a user clicks on this button, issue an AJAX request to /example, and load the content into the body
->  of the button"
+> "When a user clicks on this button, issue an AJAX request to /example, and replace the button with the response"
 
-HTMx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
+
+Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+
+</div>

@@ -1,4 +1,4 @@
-describe("HTMx History Tests", function() {
+describe("kutty History Tests", function() {
 
     beforeEach(function () {
         this.server = makeServer();
@@ -13,7 +13,7 @@ describe("HTMx History Tests", function() {
         this.server.respondWith("GET", "/test", "second");
 
         getWorkArea().innerHTML.should.be.equal("");
-        var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
+        var div = make('<div kt-push-url="true" kt-get="/test">first</div>');
         div.click();
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
@@ -32,7 +32,7 @@ describe("HTMx History Tests", function() {
         });
 
         getWorkArea().innerHTML.should.equal("");
-        var div = make('<div hx-push-url="true" hx-get="/test" class="">0</div>');
+        var div = make('<div kt-push-url="true" kt-get="/test" class="">0</div>');
         div.click();
         this.server.respond();
         getWorkArea().textContent.should.equal("1")
@@ -56,7 +56,7 @@ describe("HTMx History Tests", function() {
         this.server.respondWith("GET", "/test", "second");
 
         getWorkArea().innerHTML.should.equal("");
-        var div = make('<div hx-push-url="true" hx-get="/test" class="">first</div>');
+        var div = make('<div kt-push-url="true" kt-get="/test" class="">first</div>');
         div.click();
         this.server.respond();
         getWorkArea().textContent.should.equal("second")

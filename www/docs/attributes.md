@@ -13,15 +13,15 @@ title: HTMx - HTML Extensions / Attributes
 </thead>
 <tbody>
 <tr>
-    <td>hx-get</td>
+    <td>kt-get</td>
     <td>Issues an HTTP GET to the given URL</td>
 </tr>
 <tr>
-    <td>hx-target</td>
+    <td>kt-target</td>
     <td>Specifies the target element that should be swapped</td>
 </tr>
 <tr>
-    <td>hx-swap</td>
+    <td>kt-swap</td>
     <td>Specifies how target element should be swapped: innerHTML, outerHTML, append</td>
 </tr>
 </tbody>

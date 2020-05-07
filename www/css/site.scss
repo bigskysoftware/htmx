@@ -1,19 +1,47 @@
+$mainBlue: #3465a4;
+$lightBlue: #3d72d7;
+
 body {
     margin: 0px;
-    line-height: 1.6;
+    line-height: 1.4em;
     font-size: 18px;
     color: #333;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
-h2 {
-    border-bottom: 2px solid whitesmoke;
-    color: rgb(52, 101, 164);
+.logo {
+    font-size: 28px;
+    font-weight: bold;
 }
 
-#content {
-    margin-top: 32px
+.light {
+}
+
+.top-nav {
+    line-height: 30px;
+    border-bottom: 1px solid whitesmoke;
+    margin: 0px;
+}
+
+.dark-hero {
+    background-image: linear-gradient(#1f1f1f, #2d2d2d);
+    height: 240px;
+    line-height: 240px;
+    margin: 0;
+    text-align: center;
+    vertical-align: center;
+    color: whitesmoke;
+    .logo {
+        font-size: 100px;
+    }
+    a {
+        color: $lightBlue;
+    }
+    box-shadow:
+            inset 0px 11px 8px -10px #262626,
+            inset 0px -11px 8px -10px #262626;
+    border-bottom: 1px solid whitesmoke;
 }
 
 p {
@@ -43,20 +71,26 @@ blockquote {
 
 a {
   text-decoration: none;
-  color:rgb(52, 101, 164)
+  color: $mainBlue
 }
 
 .center {
     text-align: center;
 }
 
-.nav ul {
-    list-style: none;
-    padding-left: 12px;
+.nav {
+    ul {
+        list-style: none;
+        padding-left: 12px;
+    }
 }
 
 .hamburger {
     display: none;
+}
+
+h2:not(:first-of-type) {
+    margin-top: 16px;
 }
 
 /* customized version of lit.css */
@@ -110,7 +144,7 @@ a {
 
 .card:focus {
     outline: 0;
-    border: solid rgb(52, 101, 164);
+    border: solid $mainBlue;
 }
 
 hr {
@@ -134,8 +168,8 @@ a[href]:hover, .btn:hover {
 
 .btn.primary {
     color: white;
-    background: rgb(52, 101, 164);
-    border: solid rgb(52, 101, 164);
+    background: $mainBlue;
+    border: solid $mainBlue;
 }
 
 td {

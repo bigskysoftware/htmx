@@ -1,52 +1,6 @@
-<html lang="en">
-<head>
-    <title>HTMx - teaching good ol' HTML some new tricks</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/site.css"/>
-    <link rel="stylesheet" href="/css/prism-theme.css"/>
-    <script src="/js/htmx.js"></script>
-    <script>
-        HTMx.logger = function(elt, event, data) {
-            if(console) {
-                console.log(event, elt, data);
-            }
-        }
-    </script>
-</head>
-<body>
-<div class="c">
-    <div class="{% if page.url == '/' %}root{% endif %} top-nav">
-        <h1 class="hero" hx-add-class="settle">&lt;<a>/</a>&gt; HTM<sub><a>x</a></sub>
-            <svg onclick="document.getElementById('main-nav').classList.toggle('show')" class="hamburger" viewBox="0 0 100 80" width="30" height="30" style="margin-bottom:-8px">
-                <rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-                <rect y="30" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-                <rect y="60" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-            </svg>
-        </h1>
-        <div id="main-nav" class="row center nav collapse" hx-boost="true">
-            <div class="1 col">
-                <a href="/">home</a>
-            </div>
-            <div class="1 col">
-                <a href="/docs">docs</a>
-            </div>
-            <div class="1 col">
-                <a href="/docs/attributes">attributes</a>
-            </div>
-            <div class="1 col">
-                <a href="/docs/attributes">events</a>
-            </div>
-            <div class="1 col">
-                <a href="/docs/attributes">headers</a>
-            </div>
-            <div class="1 col">
-                <a href="https://github.com/bigskysoftware/htmx">github</a>
-            </div>
-        </div>
-    </div>
-    <div id="content">
-        {{ content | safe }}
-    </div>
+---
+layout: core_layout.njk
+---
+<div class="content c">
+    {{ content | safe }}
 </div>
-</body>
-</html>

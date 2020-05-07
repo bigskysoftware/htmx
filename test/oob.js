@@ -1,4 +1,4 @@
-describe("HTMx Direct Swap", function () {
+describe("kutty Direct Swap", function () {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -9,8 +9,8 @@ describe("HTMx Direct Swap", function () {
     });
 
     it('handles basic response properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped</div>");
-        var div = make('<div hx-get="/test">click me</div>');
+        this.server.respondWith("GET", "/test", "Clicked<div id='d1' kt-swap-oob='true'>Swapped</div>");
+        var div = make('<div kt-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
         this.server.respond();
@@ -19,8 +19,8 @@ describe("HTMx Direct Swap", function () {
     })
 
     it('handles no id match properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped</div>");
-        var div = make('<div hx-get="/test">click me</div>');
+        this.server.respondWith("GET", "/test", "Clicked<div id='d1' kt-swap-oob='true'>Swapped</div>");
+        var div = make('<div kt-get="/test">click me</div>');
         div.click();
         this.server.respond();
         div.innerText.should.equal("Clicked");
