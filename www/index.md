@@ -12,10 +12,10 @@ title: HTMx - HTML Extensions
 
 ## Introduction
 
-Kutty is a set of HTML extensions (attributes, request headers, etc.) that allow you to use markup to build 
-[powerful UX](/demo), while keeping the simplicity of the hypertext we all know and love. 
+Kutty is a set of HTML extensions (attributes, request headers, etc.) that let you use markup to build 
+[advanced UX](/demo) with the simplicity of the hypertext we all know and love. 
 
-Kutty is a small (<6Kb min.gz'd), dependency-free, and can be adopted incrementally without a huge rewrite.
+Kutty is a small (<6Kb min.gz'd), dependency-free & you can try it out quickly, without a huge rewrite.
 
 ## Quick Start
 
@@ -29,8 +29,6 @@ Kutty is a small (<6Kb min.gz'd), dependency-free, and can be adopted incrementa
 This annotation tells kutty:
 
 > "When a user clicks on this button, issue an AJAX request to /example, and replace the button with the response"
-
-
 
 Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
