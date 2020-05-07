@@ -528,7 +528,9 @@ var kutty = kutty || (function () {
                     processClassList(elt, removeClass, "remove");
                 }
             }
-            forEach(elt.children, function(child) { processNode(child) });
+            if (elt.children) { // IE
+                forEach(elt.children, function(child) { processNode(child) });
+            }
         }
 
         //====================================================================

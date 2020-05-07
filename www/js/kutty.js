@@ -104,8 +104,10 @@ var kutty = kutty || (function () {
         }
 
         function forEach(arr, func) {
-            for (var i = 0; i < arr.length; i++) {
-                func(arr[i]);
+            if (arr) {
+                for (var i = 0; i < arr.length; i++) {
+                    func(arr[i]);
+                }
             }
         }
 
@@ -160,19 +162,19 @@ var kutty = kutty || (function () {
 
         function handleOutOfBandSwaps(fragment) {
             var settleTasks = [];
-            forEach(fragment.children, function(child){
+            forEach(fragment.children, function (child) {
                 if (getAttributeValue(child, "kt-swap-oob") === "true") {
                     var target = getDocument().getElementById(child.id);
                     if (target) {
-                        var fragment = new DocumentFragment()
-                        fragment.append(child);
+                        var fragment = getDocument().createDocumentFragment();
+                        fragment.appendChild(child);
                         settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
-                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {id:child.id, content:child})
+                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {id: child.id, content: child})
                     }
                 }
-            })
+            });
             return settleTasks;
         }
 
@@ -245,9 +247,9 @@ var kutty = kutty || (function () {
         function maybeSelectFromResponse(elt, fragment) {
             var selector = getClosestAttributeValue(elt, "kt-select");
             if (selector) {
-                var newFragment = new DocumentFragment();
+                var newFragment = getDocument().createDocumentFragment();
                 forEach(fragment.querySelectorAll(selector), function (node) {
-                    newFragment.append(node);
+                    newFragment.appendChild(node);
                 });
                 fragment = newFragment;
             }
@@ -256,18 +258,20 @@ var kutty = kutty || (function () {
 
         function swapResponse(target, elt, responseText) {
             var fragment = makeFragment(responseText);
-            var settleTasks = handleOutOfBandSwaps(fragment);
+            if (fragment) {
+                var settleTasks = handleOutOfBandSwaps(fragment);
 
-            fragment = maybeSelectFromResponse(elt, fragment);
+                fragment = maybeSelectFromResponse(elt, fragment);
 
-            var swapStyle = getClosestAttributeValue(elt, "kt-swap");
-            switch(swapStyle) {
-                case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
-                case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
-                case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
-                case "append": return concat(settleTasks, swapAppend(target, fragment));
-                case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
-                default: return concat(settleTasks, swapInnerHTML(target, fragment));
+                var swapStyle = getClosestAttributeValue(elt, "kt-swap");
+                switch(swapStyle) {
+                    case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
+                    case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
+                    case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
+                    case "append": return concat(settleTasks, swapAppend(target, fragment));
+                    case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                    default: return concat(settleTasks, swapInnerHTML(target, fragment));
+                }
             }
         }
 
@@ -524,7 +528,7 @@ var kutty = kutty || (function () {
                     processClassList(elt, removeClass, "remove");
                 }
             }
-            if(elt.children) {
+            if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
             }
         }
