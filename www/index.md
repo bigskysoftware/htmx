@@ -1,14 +1,13 @@
 ---
-layout: core_layout.njk
+layout: layout.njk
 title: </> kutty - high power tools for html
 ---
 
-<div class="dark-hero" kt-add-class="appear">
-  <span class="logo dark">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
-  <sub><i>high powered tools for HTML</i></sub>
+<div class="dark-hero full-width" kt-add-class="appear">
+  <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">k<a>u</a>tty</span></span>
+  <sub class="no-mobile"><i>high powered tools for HTML</i></sub>
 </div>
 
-<div class="c">
 
 ## Introduction
 
@@ -34,4 +33,3 @@ This annotation tells kutty:
 
 Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
-</div>

@@ -10,6 +10,11 @@ body {
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
+.full-width {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
 .logo {
     font-size: 28px;
     font-weight: bold;
@@ -30,10 +35,10 @@ body {
     background-image: linear-gradient(#1f1f1f, #2d2d2d);
     height: 240px;
     line-height: 240px;
-    margin: 0;
     text-align: center;
     vertical-align: center;
     color: whitesmoke;
+    margin-top: -1em;
     * {
         opacity: 0;
         transition: all 500ms ease-in;
@@ -106,8 +111,8 @@ a {
     display: none;
 }
 
-h2:not(:first-of-type) {
-    margin-top: 62px;
+h2 {
+    margin-top: 32px;
 }
 
 /* customized version of lit.css */
@@ -126,6 +131,14 @@ h2:not(:first-of-type) {
     }
     .hero {
         font-size: 2.5em;
+    }
+    pre[class*="language-"]  {
+        margin-left: calc(50% - 50vw) !important;
+        margin-right: calc(50% - 50vw) !important;
+        overflow-x: scroll !important;
+    }
+    .no-mobile {
+        display: none !important;
     }
 }
 
