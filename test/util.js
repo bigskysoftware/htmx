@@ -15,8 +15,8 @@ function make(htmlStr) {
         var  range = document.createRange();
         var  fragment = range.createContextualFragment(htmlStr);
         var  wa = getWorkArea();
-        for (var  i = fragment.children.length - 1; i >= 0; i--) {
-            var child = fragment.children[i];
+        for (var  i = fragment.childNodes.length - 1; i >= 0; i--) {
+            var child = fragment.childNodes[i];
             kutty.processElement(child);
             wa.appendChild(child);
         }
