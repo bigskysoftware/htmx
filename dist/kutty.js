@@ -1,5 +1,5 @@
 // noinspection JSUnusedAssignment
-var HTMx = HTMx || (function () {
+var kutty = kutty || (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch']
@@ -24,7 +24,7 @@ var HTMx = HTMx || (function () {
             return elt.getAttribute && elt.getAttribute(name);
         }
 
-        // resolve with both hx and data-hx prefixes
+        // resolve with both kt and data-kt prefixes
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -67,8 +67,11 @@ var HTMx = HTMx || (function () {
         }
 
         function makeFragment(resp) {
-            var range = getDocument().createRange();
-            return range.createContextualFragment(resp);
+            // var range = getDocument().createRange();
+            // return range.createContextualFragment(resp);
+            var parser = new DOMParser();
+            var responseDoc = parser.parseFromString(resp, "text/html");
+            return responseDoc.body;
         }
 
         function isType(o, type) {
@@ -84,7 +87,7 @@ var HTMx = HTMx || (function () {
         }
 
         function getInternalData(elt) {
-            var dataProp = 'hx-data-internal';
+            var dataProp = 'kutty-internal-data';
             var data = elt[dataProp];
             if (!data) {
                 data = elt[dataProp] = {};
@@ -92,17 +95,11 @@ var HTMx = HTMx || (function () {
             return data;
         }
 
-        function toArray(object) {
-            var arr = [];
-            forEach(object, function(elt) {
-                arr.push(elt)
-            });
-            return arr;
-        }
-
         function forEach(arr, func) {
-            for (var i = 0; i < arr.length; i++) {
-                func(arr[i]);
+            if (arr) {
+                for (var i = 0; i < arr.length; i++) {
+                    func(arr[i]);
+                }
             }
         }
 
@@ -126,9 +123,9 @@ var HTMx = HTMx || (function () {
         //====================================================================
 
         function getTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getRawAttribute(e,"hx-target") !== null});
+            var explicitTarget = getClosestMatch(elt, function(e){return getRawAttribute(e,"kt-target") !== null});
             if (explicitTarget) {
-                var targetStr = getRawAttribute(explicitTarget, "hx-target");
+                var targetStr = getRawAttribute(explicitTarget, "kt-target");
                 if (targetStr === "this") {
                     return explicitTarget;
                 } else {
@@ -157,19 +154,19 @@ var HTMx = HTMx || (function () {
 
         function handleOutOfBandSwaps(fragment) {
             var settleTasks = [];
-            forEach(fragment.children, function(child){
-                if (getAttributeValue(child, "hx-swap-oob") === "true") {
+            forEach(fragment.children, function (child) {
+                if (getAttributeValue(child, "kt-swap-oob") === "true") {
                     var target = getDocument().getElementById(child.id);
                     if (target) {
-                        var fragment = new DocumentFragment()
-                        fragment.append(child);
+                        var fragment = getDocument().createDocumentFragment();
+                        fragment.appendChild(child);
                         settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
-                        triggerEvent(getDocument().body, "oobErrorNoTarget.hx", {id:child.id, content:child})
+                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {id: child.id, content: child})
                     }
                 }
-            })
+            });
             return settleTasks;
         }
 
@@ -189,15 +186,16 @@ var HTMx = HTMx || (function () {
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment) {
-            handleAttributes(parentNode, fragment);
+            var settleTasks = handleAttributes(parentNode, fragment);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    triggerEvent(child, 'load.hx', {elt:child, parent:parentElt(child)});
+                    triggerEvent(child, 'load.kutty', {elt:child, parent:parentElt(child)});
                     processNode(child);
                 }
             }
+            return settleTasks;
         }
 
         function swapOuterHTML(target, fragment) {
@@ -228,19 +226,22 @@ var HTMx = HTMx || (function () {
 
         function swapInnerHTML(target, fragment) {
             var firstChild = target.firstChild;
-            return insertNodesBefore(target, firstChild, fragment);
-            while (firstChild.nextSibling) {
-                target.removeChild(firstChild.nextSibling);
+            var settleTasks = insertNodesBefore(target, firstChild, fragment);
+            if (firstChild) {
+                while (firstChild.nextSibling) {
+                    target.removeChild(firstChild.nextSibling);
+                }
+                target.removeChild(firstChild);
             }
-            target.removeChild(firstChild);
+            return settleTasks;
         }
 
         function maybeSelectFromResponse(elt, fragment) {
-            var selector = getClosestAttributeValue(elt, "hx-select");
+            var selector = getClosestAttributeValue(elt, "kt-select");
             if (selector) {
-                var newFragment = new DocumentFragment();
+                var newFragment = getDocument().createDocumentFragment();
                 forEach(fragment.querySelectorAll(selector), function (node) {
-                    newFragment.append(node);
+                    newFragment.appendChild(node);
                 });
                 fragment = newFragment;
             }
@@ -249,18 +250,20 @@ var HTMx = HTMx || (function () {
 
         function swapResponse(target, elt, responseText) {
             var fragment = makeFragment(responseText);
-            var settleTasks = handleOutOfBandSwaps(fragment);
+            if (fragment) {
+                var settleTasks = handleOutOfBandSwaps(fragment);
 
-            fragment = maybeSelectFromResponse(elt, fragment);
+                fragment = maybeSelectFromResponse(elt, fragment);
 
-            var swapStyle = getClosestAttributeValue(elt, "hx-swap");
-            switch(swapStyle) {
-                case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
-                case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
-                case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
-                case "append": return concat(settleTasks, swapAppend(target, fragment));
-                case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
-                default: return concat(settleTasks, swapInnerHTML(target, fragment));
+                var swapStyle = getClosestAttributeValue(elt, "kt-swap");
+                switch(swapStyle) {
+                    case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
+                    case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
+                    case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
+                    case "append": return concat(settleTasks, swapAppend(target, fragment));
+                    case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                    default: return concat(settleTasks, swapInnerHTML(target, fragment));
+                }
             }
         }
 
@@ -284,7 +287,7 @@ var HTMx = HTMx || (function () {
         }
 
         function getTrigger(elt) {
-            var explicitTrigger = getClosestAttributeValue(elt, 'hx-trigger');
+            var explicitTrigger = getClosestAttributeValue(elt, 'kt-trigger');
             if (explicitTrigger) {
                 return explicitTrigger;
             } else {
@@ -330,7 +333,7 @@ var HTMx = HTMx || (function () {
                     nodeData.timeout = setTimeout(function () {
                         if (bodyContains(elt)) {
                             issueAjaxRequest(elt, verb, path);
-                            processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb));
+                            processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb));
                         }
                     }, interval);
                 }
@@ -366,14 +369,14 @@ var HTMx = HTMx || (function () {
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
                     eventData.handled = true;
-                    if (getAttributeValue(elt, "hx-trigger-once") === "true") {
+                    if (getAttributeValue(elt, "kt-trigger-once") === "true") {
                         if (elementData.triggeredOnce) {
                             return;
                         } else {
                             elementData.triggeredOnce = true;
                         }
                     }
-                    if (getAttributeValue(elt, "hx-trigger-changed-only") === "true") {
+                    if (getAttributeValue(elt, "kt-trigger-changed-only") === "true") {
                         if (elementData.lastValue === elt.value) {
                             return;
                         } else {
@@ -383,7 +386,7 @@ var HTMx = HTMx || (function () {
                     if (elementData.delayed) {
                         clearTimeout(elementData.delayed);
                     }
-                    var eventDelay = getAttributeValue(elt, "hx-trigger-delay");
+                    var eventDelay = getAttributeValue(elt, "kt-trigger-delay");
                     var issueRequest = function(){
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
@@ -400,13 +403,13 @@ var HTMx = HTMx || (function () {
         }
 
         function initScrollHandler() {
-            if (!window['hxScrollHandler']) {
+            if (!window['kuttyScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='reveal']"), function (elt) {
+                    forEach(getDocument().querySelectorAll("[kt-trigger='reveal']"), function (elt) {
                         maybeReveal(elt);
                     });
                 };
-                window['hxScrollHandler'] = scrollHandler;
+                window['kuttyScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
             }
         }
@@ -428,13 +431,13 @@ var HTMx = HTMx || (function () {
 
         function initSSESource(elt, sseSrc) {
             var details = {
-               initializer: function() { new EventSource(sseSrc, details.config) },
-               config:{withCredentials: true}
+                initializer: function() { new EventSource(sseSrc, details.config) },
+                config:{withCredentials: true}
             };
-            triggerEvent(elt, "initSSE.mx", {config:details})
+            triggerEvent(elt, "initSSE.kutty", {config:details})
             var source = details.initializer();
             source.onerror = function (e) {
-                triggerEvent(elt, "sseError.mx", {error:e, source:source});
+                triggerEvent(elt, "sseError.kutty", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
             getInternalData(elt).sseSource = source;
@@ -456,7 +459,7 @@ var HTMx = HTMx || (function () {
                 };
                 sseSource.sseSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerEvent(elt, "noSSESourceError.mx")
+                triggerEvent(elt, "noSSESourceError.kutty")
             }
         }
 
@@ -470,7 +473,7 @@ var HTMx = HTMx || (function () {
         function processVerbs(elt, nodeData, trigger) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
-                var path = getAttributeValue(elt, 'hx-' + verb);
+                var path = getAttributeValue(elt, 'kt-' + verb);
                 if (path) {
                     explicitAction = true;
                     nodeData.path = path;
@@ -501,23 +504,25 @@ var HTMx = HTMx || (function () {
                 var trigger = getTrigger(elt);
                 var explicitAction = processVerbs(elt, nodeData, trigger);
 
-                if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
+                if (!explicitAction && getClosestAttributeValue(elt, "kt-boost") === "true") {
                     boostElement(elt, nodeData, trigger);
                 }
-                var sseSrc = getAttributeValue(elt, 'hx-sse-source');
+                var sseSrc = getAttributeValue(elt, 'kt-sse-source');
                 if (sseSrc) {
                     initSSESource(elt, sseSrc);
                 }
-                var addClass = getAttributeValue(elt, 'hx-add-class');
+                var addClass = getAttributeValue(elt, 'kt-add-class');
                 if (addClass) {
                     processClassList(elt, addClass, "add");
                 }
-                var removeClass = getAttributeValue(elt, 'hx-remove-class');
+                var removeClass = getAttributeValue(elt, 'kt-remove-class');
                 if (removeClass) {
                     processClassList(elt, removeClass, "remove");
                 }
             }
-            forEach(elt.children, function(child) { processNode(child) });
+            if (elt.children) { // IE
+                forEach(elt.children, function(child) { processNode(child) });
+            }
         }
 
         //====================================================================
@@ -525,7 +530,7 @@ var HTMx = HTMx || (function () {
         //====================================================================
 
         function sendError(elt, eventName, details) {
-            var errorURL = getClosestAttributeValue(elt, "hx-error-url");
+            var errorURL = getClosestAttributeValue(elt, "kt-error-url");
             if (errorURL) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", errorURL);
@@ -548,22 +553,22 @@ var HTMx = HTMx || (function () {
         function triggerEvent(elt, eventName, details) {
             details["elt"] = elt;
             var event = makeEvent(eventName, details);
-            if (HTMx.logger) {
-                HTMx.logger(elt, eventName, details);
+            if (kutty.logger) {
+                kutty.logger(elt, eventName, details);
                 if (eventName.indexOf("Error") > 0) {
                     sendError(elt, eventName, details);
                 }
             }
             var eventResult = elt.dispatchEvent(event);
-            var allResult = elt.dispatchEvent(makeEvent("all.hx", {elt:elt, originalDetails:details, originalEvent: event}));
+            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetails:details, originalEvent: event}));
             return eventResult && allResult;
         }
 
-        function addHTMxEventListener(arg1, arg2, arg3) {
+        function addKuttyEventListener(arg1, arg2, arg3) {
             var target, event, listener;
             if (isFunction(arg1)) {
                 target = getDocument().body;
-                event = "all.hx";
+                event = "all.kutty";
                 listener = arg1;
             } else if (isFunction(arg2)) {
                 target = getDocument().body;
@@ -581,12 +586,12 @@ var HTMx = HTMx || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('.hx-history-element');
+            var historyElt = getDocument().querySelector('.kt-history-element');
             return historyElt || getDocument().body;
         }
 
         function purgeOldestPaths(paths, historyTimestamps) {
-            var paths = paths.sort(function (path1, path2) {
+            paths = paths.sort(function (path1, path2) {
                 return historyTimestamps[path2] - historyTimestamps[path1]
             });
             var slot = 0;
@@ -600,21 +605,21 @@ var HTMx = HTMx || (function () {
         }
 
         function bumpHistoryAccessDate(pathAndSearch) {
-            var historyTimestamps = JSON.parse(localStorage.getItem("hx-history-timestamps")) || {};
-            historyTimestamps[pathAndSearch] = Date.now;
+            var historyTimestamps = JSON.parse(localStorage.getItem("kt-history-timestamps")) || {};
+            historyTimestamps[pathAndSearch] = Date.now();
             var paths = Object.keys(historyTimestamps);
             if (paths.length > 20) {
                 purgeOldestPaths(paths, historyTimestamps);
             }
-            localStorage.setItem("hx-history-timestamps", JSON.stringify(historyTimestamps));
+            localStorage.setItem("kt-history-timestamps", JSON.stringify(historyTimestamps));
         }
 
         function saveHistory() {
             var elt = getHistoryElement();
             var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch, historyElement:elt});
+            triggerEvent(getDocument().body, "historyUpdate.kutty", {path:pathAndSearch, historyElement:elt});
             history.replaceState({}, getDocument().title, window.location.href);
-            localStorage.setItem('hx-history-content-' + pathAndSearch, elt.innerHTML);
+            localStorage.setItem('kt-history:' + pathAndSearch, elt.innerHTML);
             bumpHistoryAccessDate(pathAndSearch);
         }
 
@@ -629,14 +634,14 @@ var HTMx = HTMx || (function () {
         }
 
         function loadHistoryFromServer(pathAndSearch) {
-            triggerEvent(getDocument().body, "historyCacheMiss.hx", {path: pathAndSearch});
+            triggerEvent(getDocument().body, "historyCacheMiss.kutty", {path: pathAndSearch});
             var request = new XMLHttpRequest();
             request.open('GET', pathAndSearch, true);
             request.onload = function () {
-                triggerEvent(getDocument().body, "historyCacheMissLoad.hx", {path: pathAndSearch});
+                triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('.hx-history-element') || fragment;
+                    fragment = fragment.querySelector('.kt-history-element') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };
@@ -644,8 +649,8 @@ var HTMx = HTMx || (function () {
 
         function restoreHistory() {
             var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.hx", {path:pathAndSearch});
-            var content = localStorage.getItem('hx-history-content-' + pathAndSearch);
+            triggerEvent(getDocument().body, "historyRestore.kutty", {path:pathAndSearch});
+            var content = localStorage.getItem('kt-history:' + pathAndSearch);
             if (content) {
                 bumpHistoryAccessDate(pathAndSearch);
                 settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(content)));
@@ -655,7 +660,7 @@ var HTMx = HTMx || (function () {
         }
 
         function shouldPush(elt) {
-            return getClosestAttributeValue(elt, "hx-push-url") === "true" ||
+            return getClosestAttributeValue(elt, "kt-push-url") === "true" ||
                 (elt.tagName === "A" && getInternalData(elt).boosted);
         }
 
@@ -668,14 +673,14 @@ var HTMx = HTMx || (function () {
         }
 
         function mutateRequestIndicatorClasses(elt, action) {
-            var indicator = getClosestAttributeValue(elt, 'hx-indicator');
+            var indicator = getClosestAttributeValue(elt, 'kt-indicator');
             if (indicator) {
                 var indicators = getDocument().querySelectorAll(indicator);
             } else {
                 indicators = [elt];
             }
             forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, "hx-show-indicator");
+                ic.classList[action].call(ic.classList, "kutty-show-indicator");
             });
         }
 
@@ -728,7 +733,7 @@ var HTMx = HTMx || (function () {
             processInputValue(processed, values, elt);
 
             // include any explicit includes
-            var includes = getAttributeValue(elt, "hx-include");
+            var includes = getAttributeValue(elt, "kt-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
@@ -771,7 +776,28 @@ var HTMx = HTMx || (function () {
         //====================================================================
 
         function setHeader(xhr, name, value, noPrefix) {
-            xhr.setRequestHeader((noPrefix ? "" : "X-HX-") + name, value || "");
+            xhr.setRequestHeader((noPrefix ? "" : "X-KT-") + name, value || "");
+        }
+
+        function setRequestHeaders(xhr, elt, target, prompt, eventTarget) {
+            setHeader(xhr, "Request", "true");
+            setHeader(xhr, "Trigger-Id", getRawAttribute(elt, "id"));
+            setHeader(xhr, "Trigger-Name", getRawAttribute(elt, "name"));
+            setHeader(xhr, "Target-Id", getRawAttribute(target, "id"));
+            setHeader(xhr, "Current-URL", getDocument().location.href);
+            if (prompt) {
+                setHeader(xhr, "Prompt", prompt);
+            }
+            if (eventTarget) {
+                setHeader(xhr, "Event-Target", getRawAttribute(eventTarget, "id"));
+            }
+            if (getDocument().activeElement) {
+                setHeader(xhr, "Active-Element", getRawAttribute(getDocument().activeElement, "id"));
+                // noinspection JSUnresolvedVariable
+                if (getDocument().activeElement.value) {
+                    setHeader(xhr, "Active-Element-Value", getDocument().activeElement.value);
+                }
+            }
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
@@ -785,13 +811,13 @@ var HTMx = HTMx || (function () {
                 eltData.requestInFlight = false
             }
             var target = getTarget(elt);
-            var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
+            var promptQuestion = getClosestAttributeValue(elt, "kt-prompt");
             if (promptQuestion) {
                 var prompt = prompt(promptQuestion);
-                if(!triggerEvent(elt, 'prompt.hx', {prompt: prompt, target:target})) return endRequestLock();
+                if(!triggerEvent(elt, 'prompt.kutty', {prompt: prompt, target:target})) return endRequestLock();
             }
 
-            var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
+            var confirmQuestion = getClosestAttributeValue(elt, "kt-confirm");
             if (confirmQuestion) {
                 if(!confirm(confirmQuestion)) return endRequestLock();
             }
@@ -799,7 +825,7 @@ var HTMx = HTMx || (function () {
             var xhr = new XMLHttpRequest();
 
             var inputValues = getInputValues(elt);
-            if(!triggerEvent(elt, 'values.hx', {values: inputValues, target:target})) return endRequestLock();
+            if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
             var requestURL;
@@ -820,31 +846,14 @@ var HTMx = HTMx || (function () {
             xhr.overrideMimeType("text/html");
 
             // request headers
-            setHeader(xhr, "Request", "true");
-            setHeader(xhr,"Trigger-Id", getRawAttribute(elt,"id"));
-            setHeader(xhr,"Trigger-Name", getRawAttribute(elt, "name"));
-            setHeader(xhr,"Target-Id", getRawAttribute(target,"id"));
-            setHeader(xhr,"Current-URL", getDocument().location.href);
-            if (prompt) {
-                setHeader(xhr,"Prompt", prompt);
-            }
-            if (eventTarget) {
-                setHeader(xhr,"Event-Target", getRawAttribute(eventTarget,"id"));
-            }
-            if (getDocument().activeElement) {
-                setHeader(xhr,"Active-Element", getRawAttribute(getDocument().activeElement,"id"));
-                // noinspection JSUnresolvedVariable
-                if (getDocument().activeElement.value) {
-                    setHeader(xhr,"Active-Element-Value", getDocument().activeElement.value);
-                }
-            }
+            setRequestHeaders(xhr, elt, target, prompt, eventTarget);
 
             xhr.onload = function () {
                 try {
-                    if (!triggerEvent(elt, 'beforeOnLoad.hx', {xhr: xhr, target: target})) return;
+                    if (!triggerEvent(elt, 'beforeOnLoad.kutty', {xhr: xhr, target: target})) return;
 
-                    handleTrigger(elt, this.getResponseHeader("X-HX-Trigger"));
-                    var pushedUrl = this.getResponseHeader("X-HX-Push")
+                    handleTrigger(elt, this.getResponseHeader("X-KT-Trigger"));
+                    var pushedUrl = this.getResponseHeader("X-KT-Push")
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
@@ -853,45 +862,47 @@ var HTMx = HTMx || (function () {
                         if (this.status !== 204) {
                             // Success!
                             var resp = this.response;
-                            if (!triggerEvent(elt, 'beforeSwap.hx', {xhr: xhr, target: target})) return;
+                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target})) return;
 
                             // Save current page
                             if (shouldSaveHistory) {
                                 saveHistory();
                             }
 
-                            target.classList.add("hx-swapping");
+                            target.classList.add("kutty-swapping");
                             var doSwap = function () {
                                 try {
                                     var settleTasks = swapResponse(target, elt, resp);
-                                    target.classList.remove("hx-swapping");
-                                    target.classList.add("hx-settling");
-                                    triggerEvent(elt, 'afterSwap.hx', {xhr: xhr, target: target});
+                                    target.classList.remove("kutty-swapping");
+                                    target.classList.add("kutty-settling");
+                                    triggerEvent(elt, 'afterSwap.kutty', {xhr: xhr, target: target});
 
                                     var doSettle = function(){
-                                        forEach(settleTasks, function (task) {
-                                            task.call();
+                                        forEach(settleTasks, function (settleTask) {
+                                            settleTask.call();
                                         });
-                                        target.classList.remove("hx-settling");
+                                        target.classList.remove("kutty-settling");
                                         // push URL and save new page
-                                        pushUrlIntoHistory(pushedUrl || requestURL );
-                                        saveHistory();
-                                        triggerEvent(elt, 'afterSettle.hx', {xhr: xhr, target: target});
+                                        if (shouldSaveHistory) {
+                                            pushUrlIntoHistory(pushedUrl || requestURL );
+                                            saveHistory();
+                                        }
+                                        triggerEvent(elt, 'afterSettle.kutty', {xhr: xhr, target: target});
                                     }
 
-                                    var settleDelayStr = getAttributeValue(elt, "hx-settle-delay") || "100ms";
+                                    var settleDelayStr = getAttributeValue(elt, "kt-settle-delay") || "100ms";
                                     if (settleDelayStr) {
                                         setTimeout(doSettle, parseInterval(settleDelayStr))
                                     } else {
                                         doSettle();
                                     }
                                 } catch (e) {
-                                    triggerEvent(elt, 'swapError.hx', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                                    triggerEvent(elt, 'swapError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
                                     throw e;
                                 }
                             };
 
-                            var swapDelayStr = getAttributeValue(elt, "hx-swap-delay") || "100ms";
+                            var swapDelayStr = getAttributeValue(elt, "kt-swap-delay");
                             if (swapDelayStr) {
                                 setTimeout(doSwap, parseInterval(swapDelayStr))
                             } else {
@@ -899,22 +910,22 @@ var HTMx = HTMx || (function () {
                             }
                         }
                     } else {
-                        triggerEvent(elt, 'responseError.hx', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                        triggerEvent(elt, 'responseError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
                     }
                 } catch (e) {
-                    triggerEvent(elt, 'onLoadError.hx', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                    triggerEvent(elt, 'onLoadError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
                     endRequestLock();
-                    triggerEvent(elt, 'afterOnLoad.hx', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                    triggerEvent(elt, 'afterOnLoad.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'loadError.hx', {xhr:xhr});
+                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', {xhr:xhr});
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'beforeRequest.hx', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
+            if(!triggerEvent(elt, 'beforeRequest.kutty', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
             addRequestIndicatorClasses(elt);
             xhr.send(verb === 'get' ? null : urlEncode(inputValues));
         }
@@ -934,7 +945,8 @@ var HTMx = HTMx || (function () {
         // initialize the document
         ready(function () {
             processNode(getDocument().body);
-            window.onpopstate = function (event) {
+            triggerEvent(elt, 'load.kutty', {elt: getDocument().body});
+            window.onpopstate = function () {
                 restoreHistory();
             };
         })
@@ -943,11 +955,19 @@ var HTMx = HTMx || (function () {
             return eval(str);
         }
 
+        function onLoadHelper(callback) {
+            kutty.on("load.kutty", function(evt) {
+                callback(evt.details.elt);
+            });
+        }
+
+
         // Public API
         return {
             processElement: processNode,
-            on: addHTMxEventListener,
-            version: "0.0.2",
+            on: addKuttyEventListener,
+            onLoad: onLoadHelper,
+            version: "0.0.1",
             _:internalEval
         }
     }

@@ -4,6 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/site.css"/>
     <link rel="stylesheet" href="/css/prism-theme.css"/>
+    {% if page.url.indexOf("/patterns/" == 0 %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.4.4/dist/css/uikit.min.css" />
+    {% endif %}
     <script src="/js/kutty.js"></script>
     <script>
         kutty.logger = function(elt, event, data) {
@@ -35,7 +38,7 @@
                         <a href="/docs/headers">headers</a>
                     </div>
                     <div class="1 col">
-                        <a href="/docs/headers">patterns</a>
+                        <a href="/patterns">patterns</a>
                     </div>
                     <div class="1 col">
                         <a href="https://github.com/bigskysoftware/kutty">github</a>
