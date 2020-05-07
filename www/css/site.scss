@@ -1,4 +1,4 @@
-$mainBlue: #3465a4;
+$midBlue: #3465a4;
 $lightBlue: #3d72d7;
 
 body {
@@ -35,7 +35,7 @@ body {
     vertical-align: center;
     color: whitesmoke;
     * {
-        opacity: 0%;
+        opacity: 0;
         transition: all 500ms ease-in;
     }
     sub {
@@ -45,7 +45,7 @@ body {
     }
     &.appear {
         * {
-            opacity: 100%;
+            opacity: 1;
             top: 10px;
         }
     }
@@ -88,7 +88,7 @@ blockquote {
 
 a {
   text-decoration: none;
-  color: $mainBlue
+  color: $midBlue
 }
 
 .center {
@@ -161,7 +161,7 @@ h2:not(:first-of-type) {
 
 .card:focus {
     outline: 0;
-    border: solid $mainBlue;
+    border: solid $midBlue;
 }
 
 hr {
@@ -185,8 +185,8 @@ a[href]:hover, .btn:hover {
 
 .btn.primary {
     color: white;
-    background: $mainBlue;
-    border: solid $mainBlue;
+    background: $midBlue;
+    border: solid $midBlue;
 }
 
 td {
