@@ -20,7 +20,7 @@
   "unpkg": "dist/kutty.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
-    "dist": "cp src/cutty.js dist/ && npm run-script uglify && gzip -k -f dist/cutty.min.js > dist/kutty.min.js.gz && exit",
+    "dist": "cp src/kutty.js dist/ && npm run-script uglify && gzip -k -f dist/kutty.min.js > dist/kutty.min.js.gz && exit",
     "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/kutty.min.js dist/kutty.js"
   },
