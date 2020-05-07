@@ -236,6 +236,7 @@ attribute with a CSS selector to do so:
       <img class="indicator" src="/spinner.gif"/>  
   </div>
 ```
+
 ### <a name="targets"></a> [Targets](#targets)
 
 If you want the response to be loaded into a different element other than the one that made the request, you can
@@ -326,7 +327,17 @@ Careful: this element will need to be on all pages or restoring from history won
 
 ## <a name="requests">[Requests &amp; Responses](#requests)
 
-### Request Headers
+Kutty expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML 
+document, matched with a [kt-select](/attributes/kt-select) tag can be useful too).  Kutty will then swap the returned
+HTML into the document at the target specified and with the swap strategy specified.
+
+Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side event ([see below](#response-headers)).
+For this situation you can return a `204 - No Content` response code, and kutty will ignore the content of the response.
+
+In the event of an error response from the server (e.g. a 404 or a 501), kutty will trigger the [`responseError.kutty`](#events)
+event, which you can handle.  In the event of a connection error, the `sendError.kutty` will be triggered.
+
+### <a name="request-header"></a> [Request Headers](#request-headers)
 
 kutty includes a number of useful headers in requests:
 
@@ -340,7 +351,7 @@ kutty includes a number of useful headers in requests:
 * `X-KT-Active-Element` - the id of the current active element
 * `X-KT-Active-Element-Value` - the value of the current active element
 
-### Response Headers
+### <a name="response-header"></a> [Response Headers](#response-headers)
 
 kutty supports two special response headers:
 
@@ -356,21 +367,82 @@ The order of operations in a kutty request are:
   * The `kutty-show-indicator` class is applied to the appropriate elements
   * The request is then issued asynchronously via AJAX
     * Upon getting a response the target element is marked with the `kutty-swapping` class
-    * An optional swap delay is done (default: no delay)
+    * An optional swap delay is applied (see the [kt-swap-delay](/attributes/kt-swap-delay) attribute)
     * The actual content swap is done
+        * the `kutty-swapping` class is removed from the target
+        * the `kutty-settling` class is applied to the target
         * A settle delay  is done (default: 100ms)
         * The DOM is settled
+        * the `kutty-settling` class is removed from the target
 
+You can use the `kutty-swapping` and `kutty-settling` classes to create 
+[CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
 ## Miscellaneous Attributes
 
+In addition to the core AJAX functionality, kutty also has a few other tricks up its sleeve that help you build
+nice interfaces without javascript.
+
 ### Class Swapping
+
+Kutty supports two attributes, [kt-add-class](/attributes/kt-add-class) and [kt-remove-class](/attributes/kt-remove-class)
+that allow you to add or remove classes after a delay.  This can be used to create CSS transition effects.
 
 ### Timed Removal
 
+Kutty has another attribute, [kt-remove](/attributes/kt-add-class) that supports the timed removal of an element.  This
+can be useful, for examples, if you are flashing a message to the user and want it to disappear.
+
 ### Boosting
 
+Kutty supports "boosting" regular HTML anchors and forms with the [kt-boost](/attributes/kt-boost) attribute.  This
+attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
+This is similar to Turbolinks, but isn't quite as magical and is more configurable.
+
 ## <a name="events"></a> [Events & Logging](#events)
+
+Kutty has an extensive events mechanism, which doubles as the logging system.  
+
+If you want to register for a given kutty event you can use the following javascript:
+
+```javascript
+  kutty.on("load.kutty", function(evt) {
+        myJavascriptLib.init(evt.details.elt);  
+  });
+```
+
+This event is fired every time an element is loaded into the DOM by kutty, and is effectively the load event.  In
+fact this is so common, you can use the helper function:
+
+```javascript
+  kutty.onLoad(function(target) {
+        myJavascriptLib.init(target);  
+  });
+```
+This does the same thing as the first example, but is a little cleaner.  
+
+The full set of events can be seen [on the events page](/docs/events).
+
+### Logging
+
+If you set a logger at `kutty.logger`, every event will be logged.  This can be very useful for troubleshooting:
+
+```javascript
+    kutty.logger = function(elt, event, data) {
+        if(console) {
+            console.log(event, elt, data);
+        }
+    }
+```
+
+Kutty can also send errors to a URL that is specified with the [kt-error-url](/attributes/kt-error-url) attributes.  If
+this attribute is set on a parent element all events that have the word `Error` in their name will be sent to the given 
+URL as a JSON POST.  This can be useful for debugging client-side issues.
+
+
+### Conclusion
+
+That's it!  Have fun with kutty, you can accomplish [quite a bit](/patterns) with very little code!
 
 </div>
 </div>

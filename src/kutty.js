@@ -95,14 +95,6 @@ var kutty = kutty || (function () {
             return data;
         }
 
-        function toArray(object) {
-            var arr = [];
-            forEach(object, function(elt) {
-                arr.push(elt)
-            });
-            return arr;
-        }
-
         function forEach(arr, func) {
             if (arr) {
                 for (var i = 0; i < arr.length; i++) {
@@ -439,8 +431,8 @@ var kutty = kutty || (function () {
 
         function initSSESource(elt, sseSrc) {
             var details = {
-               initializer: function() { new EventSource(sseSrc, details.config) },
-               config:{withCredentials: true}
+                initializer: function() { new EventSource(sseSrc, details.config) },
+                config:{withCredentials: true}
             };
             triggerEvent(elt, "initSSE.kutty", {config:details})
             var source = details.initializer();
@@ -599,7 +591,7 @@ var kutty = kutty || (function () {
         }
 
         function purgeOldestPaths(paths, historyTimestamps) {
-            var paths = paths.sort(function (path1, path2) {
+            paths = paths.sort(function (path1, path2) {
                 return historyTimestamps[path2] - historyTimestamps[path1]
             });
             var slot = 0;
@@ -930,7 +922,7 @@ var kutty = kutty || (function () {
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'loadError.kutty', {xhr:xhr});
+                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', {xhr:xhr});
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'beforeRequest.kutty', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
@@ -953,7 +945,8 @@ var kutty = kutty || (function () {
         // initialize the document
         ready(function () {
             processNode(getDocument().body);
-            window.onpopstate = function (event) {
+            triggerEvent(elt, 'load.kutty', {elt: getDocument().body});
+            window.onpopstate = function () {
                 restoreHistory();
             };
         })
@@ -962,10 +955,18 @@ var kutty = kutty || (function () {
             return eval(str);
         }
 
+        function onLoadHelper(callback) {
+            kutty.on("load.kutty", function(evt) {
+                callback(evt.details.elt);
+            });
+        }
+
+
         // Public API
         return {
             processElement: processNode,
             on: addKuttyEventListener,
+            onLoad: onLoadHelper,
             version: "0.0.1",
             _:internalEval
         }

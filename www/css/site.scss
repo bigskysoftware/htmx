@@ -84,6 +84,10 @@ blockquote {
     margin-right: 32px;
 }
 
+table {
+    width: 100%;
+}
+
 .hero {
     text-align: center;
     font-size: 5em;
@@ -206,13 +210,13 @@ a[href]:hover, .btn:hover {
 td {
     padding: 1em;
     text-align: left;
-    border-bottom: solid #eee;
+    border-bottom: 1px solid #eee;
 }
 
 th {
     padding: 1em;
     text-align: left;
-    border-bottom: solid #eee;
+    border-bottom: 2px solid #eee;
 }
 
 .btn {

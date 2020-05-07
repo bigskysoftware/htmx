@@ -930,7 +930,7 @@ var kutty = kutty || (function () {
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'loadError.kutty', {xhr:xhr});
+                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', {xhr:xhr});
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'beforeRequest.kutty', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
@@ -953,6 +953,7 @@ var kutty = kutty || (function () {
         // initialize the document
         ready(function () {
             processNode(getDocument().body);
+            triggerEvent(elt, 'load.kutty', {elt: getDocument().body});
             window.onpopstate = function (event) {
                 restoreHistory();
             };
@@ -962,10 +963,18 @@ var kutty = kutty || (function () {
             return eval(str);
         }
 
+        function onLoadHelper(callback) {
+            kutty.on("load.kutty", function(evt) {
+                callback(evt.details.elt);
+            });
+        }
+
+
         // Public API
         return {
             processElement: processNode,
             on: addKuttyEventListener,
+            onLoad: onLoadHelper,
             version: "0.0.1",
             _:internalEval
         }
