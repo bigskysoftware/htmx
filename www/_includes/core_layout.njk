@@ -4,8 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/site.css"/>
     <link rel="stylesheet" href="/css/prism-theme.css"/>
-    <script src="/js/htmx.js"></script>
+    <script src="/js/kutty.js"></script>
     <script>
+
         kutty.logger = function(elt, event, data) {
             if(console) {
                 console.log(event, elt, data);
@@ -17,14 +18,11 @@
 <div class="top-nav">
     <div class="c">
         <div class="row">
-            <div class="2 col">
+            <div class="2 col" kt-get="/" kt-target="body" kt-push-url="true">
                 <span class="logo light" kt-add-class="settle">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
             </div>
-            <div class="10 col nav">
+            <div class="10 col nav" kt-boost="true">
                 <div class="row">
-                    <div class="1 col">
-                        <a href="/">home</a>
-                    </div>
                     <div class="1 col">
                         <a href="/docs">docs</a>
                     </div>
@@ -32,14 +30,15 @@
                         <a href="/docs/attributes">attributes</a>
                     </div>
                     <div class="1 col">
-                        <a href="/docs/attributes">events</a>
+                        <a href="/docs/events">events</a>
                     </div>
                     <div class="1 col">
-                        <a href="/docs/attributes">headers</a>
+                        <a href="/docs/headers">headers</a>
                     </div>
                     <div class="1 col">
                         <a href="https://github.com/bigskysoftware/kutty">github</a>
                     </div>
+                    <div class="6 col"></div>
                 </div>
             </div>
         </div>

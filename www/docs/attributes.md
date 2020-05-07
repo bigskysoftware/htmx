@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: HTMx - HTML Extensions / Attributes
+title: </> kutty - Attributes
 ---
 
 ## &lt;<span class="flair">/</span>&gt; Attributes</h2>

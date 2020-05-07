@@ -20,8 +20,10 @@ body {
 
 .top-nav {
     line-height: 30px;
-    border-bottom: 1px solid whitesmoke;
+    border-bottom: 1px solid #d0d0d0;
     margin: 0px;
+    background-image: linear-gradient(#fff, #f4f5f5);
+    box-shadow: 0px 4px 15px 0px rgb(239, 239, 239);
 }
 
 .dark-hero {
@@ -32,6 +34,21 @@ body {
     text-align: center;
     vertical-align: center;
     color: whitesmoke;
+    * {
+        opacity: 0%;
+        transition: all 500ms ease-in;
+    }
+    sub {
+        display: inline-block;
+        position: relative;
+        top: 40px;
+    }
+    &.appear {
+        * {
+            opacity: 100%;
+            top: 10px;
+        }
+    }
     .logo {
         font-size: 100px;
     }
@@ -90,7 +107,7 @@ a {
 }
 
 h2:not(:first-of-type) {
-    margin-top: 16px;
+    margin-top: 62px;
 }
 
 /* customized version of lit.css */

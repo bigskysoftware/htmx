@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: HTMx - HTML Extensions
+title: </> kutty - high power tools for html
 ---
 <div class="row">
 <div class="2 col nav">
@@ -61,18 +61,18 @@ This tells kutty:
 > "When a user clicks on this div, issue an HTTP POST request to '/clicked' and load the response content into the inner 
 > html of this element"
 
-So kutty extends the basic idea of that anchor tag: 
+Kutty extends the basic idea of that anchor tag, but opens up many more possibilities: 
 
 * Any element can issue a HTTP request
 * Any event can trigger the request (not just clicks or form submissions)
-* The HTTP request is done via AJAX
+* HTTP requests are done via AJAX
 * Different HTTP verbs can used
 * The response replaces the content of the element, rather than the entire page
 
-When you are using kutty, you respond to the AJAX calls with *HTML* rather than *JSON*, often a small amount of
+When you are using kutty, you respond to the AJAX calls with *HTML* rather than *JSON*, often just a small amount of
 HTML rather than the whole page.
 
-If you prefer, you can use the `data-` prefix when using kutty:
+Note that if you prefer, you can use the `data-` prefix when using kutty:
 
 ``` html
   <a data-kt-post="/click">Click Me!</a>
@@ -80,10 +80,8 @@ If you prefer, you can use the `data-` prefix when using kutty:
 
 ## <a name="installing"></a> [Installing](#installing)
 
-HTMx is a dependency-free javascript library.  
-
-It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or downloaded or included 
-from [unpkg](https://unpkg.com/browse/kutty.org/):
+Kutty is a dependency-free javascript library.  It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or 
+downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/):
 
 ``` html
     <script src="https://unpkg.com/kutty.org@0.0.1"></script>
@@ -91,13 +89,13 @@ from [unpkg](https://unpkg.com/browse/kutty.org/):
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-One of the primary features HTMx provides are attributes to allow you to issue AJAX requests directly from HTML:
+One of the primary features kutty provides are attributes to allow you to issue AJAX requests directly from HTML:
 
 * [kt-get](/attributes/kt-get) - Issues a `GET` request to the given URL
 * [kt-post](/attributes/kt-post) - Issues a `POST` request to the given URL
-* [kt-put](/attributes/kt-put) - Issues a `PUT` request to the given URL (see [details](#htmx-request-details))
-* [kt-patch](/attributes/kt-patch) - Issues a `PATCH` request to the given URL  (see [details](#htmx-request-details))
-* [kt-delete](/attributes/kt-delete) - Issues a `GET` request to the given URL (see [details](#htmx-request-details))
+* [kt-put](/attributes/kt-put) - Issues a `PUT` request to the given URL (see [details](#kutty-request-details))
+* [kt-patch](/attributes/kt-patch) - Issues a `PATCH` request to the given URL  (see [details](#kutty-request-details))
+* [kt-delete](/attributes/kt-delete) - Issues a `GET` request to the given URL (see [details](#kutty-request-details))
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -141,7 +139,7 @@ There are two additional modifiers you can use for trigger:
 
 * [kt-trigger-changed-only](/attributes/kt-trigger-changed-only) - when set to `true` the element will only issue a
 request if its value has changed
-*  [kt-trigger-delay](/attributes/kt-trigger-delay) - tells HTMx to wait the given amount of time (e.g. `1s`) before
+*  [kt-trigger-delay](/attributes/kt-trigger-delay) - tells kutty to wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
 
 You can use these two attributes to implement a common UX pattern, [Live Search](/demo/live-search):
@@ -160,7 +158,7 @@ into the `div#search-results`.
 
 #### <a name="special-events"></a> [Special Events](#special-events)
 
-HTMx provides a few special events for use in [kt-trigger](/attributes/kt-trigger):
+kutty provides a few special events for use in [kt-trigger](/attributes/kt-trigger):
 
 * `load` - fires once when the element is first loaded
 * `revealed` - fires once when an element first scrolls into the viewport
@@ -175,7 +173,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
   <div kt-get="/news" trigger="every 2s"></div>
 ```
 
-This tells HTMx
+This tells kutty
 
 > Every 2 seconds, issue a GET to /news and load the response into the div
 
@@ -185,7 +183,7 @@ This tells HTMx
 a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
 server and the browser than websockets.
 
-If you want an element to respond to a Server Sent Event via HTMx, you need to do two things:
+If you want an element to respond to a Server Sent Event via kutty, you need to do two things:
 
 1. Define an SSE source.  To do this, add a [kt-sse-src](/attributes/kt-sse-src) attribute on a parent element
 that specifies the URL from which Server Sent Events will be received.
@@ -206,7 +204,7 @@ notify the div if there was new news to get, rather than the steady requests tha
 ### <a name="indicators"></a> [Request Indicators](#indicators)
 
 When an AJAX request is issued it is often good to let the user know that something is happening, since the browser
-will not give them any feedback.  You can accomplish this in HTMx by using the [kt-indicator](/attributes/kt-indicator)
+will not give them any feedback.  You can accomplish this in kutty by using the [kt-indicator](/attributes/kt-indicator)
 attribute, the `kutty-show-indicator` class and some CSS.
 
 By default the `kutty-show-indicator` class will be put on the element issuing the request.  This can be used to show a
@@ -257,7 +255,7 @@ input tag.
 
 ### <a name="swapping"></a> [Swapping](#swapping)
 
-HTMx offers a few different ways to swap the HTML returned into the DOM.  By default, the content replaces the
+kutty offers a few different ways to swap the HTML returned into the DOM.  By default, the content replaces the
 `innerHTML` of the target element.  You can modify this by using the [kt-swap](/attributes/kt-swap) attribute 
 with any of the following values:
 
@@ -298,12 +296,12 @@ in the form will be included in the request.
 If you wish to include the values of other elements, you can use the [kt-include](/attributes/kt-include) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-Finally, if you want to programatically modify the arguments, you can use the [values.hx](/events/values.hx) event to
+Finally, if you want to programatically modify the arguments, you can use the [values.kutty](/events/values.kutty) event to
 do so.
 
 ## <a name="history"></a> [History Support](#history)
 
-HTMx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
+kutty provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
 If you want a given element to push its request into the browser navigation bar and add the current state of the page
 to the browser's history, include the [kt-push](/attributes/kt-push) attribute:
@@ -312,15 +310,15 @@ to the browser's history, include the [kt-push](/attributes/kt-push) attribute:
     <a kt-get="/Blog" kt-push="true">Blog</a>
 ```
   
-When a user clicks on this link, HTMx will snapshot the current DOM and store it before it makes a request to /blog. 
+When a user clicks on this link, kutty will snapshot the current DOM and store it before it makes a request to /blog. 
 It then does the swap and pushes a new location onto the history stack.
 
-When a user hits the back button, HTMx will retrieve the old content from storage and swap it back into the target,
+When a user hits the back button, kutty will retrieve the old content from storage and swap it back into the target,
  simulating "going back" to the previous state.
 
 ### Specifying History Snapshot Element
 
-By default, HTMx will use the `body` to take and restore the history snapshop from.  This is usually the right thing, but
+By default, kutty will use the `body` to take and restore the history snapshop from.  This is usually the right thing, but
 if you want to use a narrower element for snapshotting you can use the [kt-history-element](/attributes/kt-history-element)
 attribute to specify a different one.  
 
@@ -330,7 +328,7 @@ Careful: this element will need to be on all pages or restoring from history won
 
 ### Request Headers
 
-HTMx includes a number of useful headers in requests:
+kutty includes a number of useful headers in requests:
 
 * `X-KT-Request` - will be set to "true"
 * `X-KT-Trigger-Id` - will be set to the id of the element that triggered the request
@@ -344,14 +342,14 @@ HTMx includes a number of useful headers in requests:
 
 ### Response Headers
 
-HTMx supports two special response headers:
+kutty supports two special response headers:
 
 * `X-KT-Trigger` - can be used to trigger client side events, see the [documentation](/events/X-KT-trigger) for examples.
 * `X-KT-Push` - can be used to push a new URL into the browsers address bar
 
 ### Request Order of Operations
 
-The order of operations in a HTMx request are:
+The order of operations in a kutty request are:
 
 * The element is triggered and begins a request
   * Values are gathered for the request

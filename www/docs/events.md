@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: HTMx - HTML Extensions / Attributes
+title: </> kutty - Events
 ---
 
 ## &lt;<span class="flair">/</span>&gt; Events
