@@ -362,9 +362,15 @@ var kutty = kutty || (function () {
             }
         }
 
-        function addEventListener(elt, verb, path, nodeData, trigger, cancel) {
+        function shouldCancel(elt) {
+            return elt.tagName === "FORM" ||
+                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
+                (elt.tagName = "A" && elt.href && elt.href.indexOf('#') != 0);
+        }
+
+        function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {
             var eventListener = function (evt) {
-                if(cancel) evt.preventDefault();
+                if(explicitCancel || shouldCancel(elt)) evt.preventDefault();
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
@@ -830,8 +836,9 @@ var kutty = kutty || (function () {
             // request type
             var requestURL;
             if (verb === 'get') {
-                var noValues = Object.keys(inputValues).length === 0;
-                requestURL = path + (noValues ? "" : "?" + urlEncode(inputValues));
+                var includeQueryParams = getClosestAttributeValue("kt-get-params") === "true";
+                // TODO allow get parameter filtering
+                requestURL = path + (includeQueryParams ? "?" + urlEncode(inputValues) : "");
                 xhr.open('GET', requestURL, true);
             } else {
                 requestURL = path;
@@ -944,8 +951,9 @@ var kutty = kutty || (function () {
 
         // initialize the document
         ready(function () {
-            processNode(getDocument().body);
-            triggerEvent(elt, 'load.kutty', {elt: getDocument().body});
+            var body = getDocument().body;
+            processNode(body);
+            triggerEvent(body, 'load.kutty', {elt: body});
             window.onpopstate = function () {
                 restoreHistory();
             };

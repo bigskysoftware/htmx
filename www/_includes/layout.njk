@@ -4,8 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/site.css"/>
     <link rel="stylesheet" href="/css/prism-theme.css"/>
-    {% if page.url.indexOf("/patterns/" == 0 %}
+    {% if page.url.indexOf("/patterns/") == 0 %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.4.4/dist/css/uikit.min.css" />
+    <script src="https://unpkg.com/sinon@9.0.2/pkg/sinon.js"></script>
     {% endif %}
     <script src="/js/kutty.js"></script>
     <script>
