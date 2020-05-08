@@ -1,157 +1,90 @@
 ---
-layout: layout.njk
-title: </> kutty - UX Patterns
+layout: demo_layout.njk
 ---
-
-## Implementing A Click To Edit UI
-
-This pattern shows an inline click-to-edit UI for a contact. When you click the button below the current UI will
- be replaced with an editing UI, without a full browser refresh. You can then update the user information 
- or cancel the edit.
-
-### Demo
-
-<script>
-    var server = sinon.fakeServer.create();
-    server.fakeHTTPMethods = true;
-    server.getHTTPMethod = function(xhr) {
-        return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
-    };
-    server.autoRespond=true;
-    
-    var contact = {
-      "firstName" : "Joe",
-      "lastName" : "Blow",
-      "email" : "joe@blow.com"
-     };
-    
-    function parseParams(str) {
-          var re = /([^&=]+)=?([^&]*)/g;
-          var decode = function (str) {
-            return decodeURIComponent(str.replace(/\+/g, ' '));
-          };
-          var params = {}, e;
-          if (str) {
-            if (str.substr(0, 1) == '?') {
-              str = str.substr(1);
-            }
-            while (e = re.exec(str)) {
-              var k = decode(e[1]);
-              var v = decode(e[2]);
-              if (params[k] !== undefined) {
-                if (!$.isArray(params[k])) {
-                  params[k] = [params[k]];
-                }
-                params[k].push(v);
-              } else {
-                params[k] = v;
-              }
-            }
-          }
-          return params;
-        }
+<div class="demo" style="display: flex; flex-flow:column; height: 93%">
+<div id="demo-header" style="flex: 0 1 auto;">
         
-    server.respondWith("PUT", "/contact/1", function(request){
-        var params = parseParams(request.requestBody);
-        contact.firstName = params['firstName'];
-        contact.lastName = params['lastName'];
-        contact.email = params['email'];
-        request.respond(200, {}, renderDisplay(contact));
-        });
-    
-    server.respondWith("GET", "/contact/1/edit", function(request){
-        request.respond(200, {}, renderForm(contact));
-        });
-    
-    server.respondWith("GET", "/contact/1", function(request){
-        request.respond(200, {}, renderDisplay(contact));
-     });
-    
-    function renderForm(contact) {
-      return `<form class="uk-form-stacked" kt-put="/contact/1" kt-target="#contact-div">
-                <div>
-                  <label class="uk-form-label">First Name</label>
-                  <input type="text" class="uk-form-controls" name="firstName" value="${contact.firstName}">
-                </div>
-                <div>
-                  <label class="uk-form-label">Last Name</label>
-                  <input type="text" class="uk-form-controls" name="lastName" value="${contact.lastName}">
-                </div>
-                <div>
-                  <label class="uk-form-label">Email address</label>
-                  <input type="email" class="uk-form-controls" name="email" value="${contact.email}">
-                </div>
-                <button class="uk-button uk-button-primary">Submit</button>
-                <button kt-get="/contact/1" 
-                        kt-target="#contact-div" 
-                        class="uk-button uk-button-danger">Cancel</button>
-              </form>`;
-     }
-     
-     function renderDisplay(contact) {
-       return `    <div><strong>First Name</strong>: ${contact.firstName}</div>
-                   <div><strong>Last Name</strong>: ${contact.lastName}</div>
-                   <div><strong>Email</strong>: ${contact.email}</div>
-                   <button kt-target="#contact-div" kt-get="/contact/1/edit" class="btn btn-default">
-                     Click To Edit
-                   </button>
-               `;
-     } 
-</script>
+## Kutty Pattern: Click To Edit
 
+The click to edit pattern provides a way to offer inline editing of all or part of a record without a page refresh.
 
-<div id="contact-div">
+* It starts with a div that shows the details of a contact.  The div has a button that will get the editing UI for the contact from `/contacts/1/edit`
+* This returns a form that can be used to edit the contact
+* The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
+
+## Activity
+<div id="demo-activity" class="row">
+<div id="demo-timeline" class="3 col" style="vertical-align: top">
+</div>
+<div id="demo-current-request" class="9 col">
+</div>
+</div>
+
+## Demo Canvas
+<hr class="full-width"/>
+</div>
+<div id="demo-canvas" style="flex:1 1 auto;overflow: scroll;margin-right: calc(50% - 50vw);">
+</div>
 </div>
 
 <script>
-  document.getElementById("contact-div").innerHTML = renderDisplay(contact)
-</script>
 
-### Code
+    //=========================================================================
+    // Fake Server Side Code
+    //=========================================================================
 
-#### Display HTML
+    // data
+    var contact = {
+        "firstName" : "Joe",
+        "lastName" : "Blow",
+        "email" : "joe@blow.com"
+    };
 
-```html
-  <div id="contact-div">
-    <div><strong>First Name</strong>: Joe</div>
-    <div><strong>Last Name</strong>: Smith</div>
-    <div><strong>Email</strong>: joesmith@example.com</div>
-    <button kt-target="#contact-div" kt-get="/contact/1/edit" class="btn btn-default">
-      Click To Edit
-    </button>
+    // routes
+    init("/contact/1", function(request){
+        return displayTemplate(contact);
+    });
+
+    onGet("/contact/1/edit", function(request){
+        return formTemplate(contact);
+    });
+
+    onPut("/contact/1", function (req, params) {
+        contact.firstName = params['firstName'];
+        contact.lastName = params['lastName'];
+        contact.email = params['email'];
+        return displayTemplate(contact);
+    });
+
+    // templates
+    function formTemplate(contact) {
+return `<form kt-put="/contact/1" kt-target="this" kt-swap="outerHTML">
+  <div>
+    <label>First Name</label>
+    <input type="text" name="firstName" value="${contact.firstName}">
   </div>
-```
+  <div class="form-group">
+    <label>Last Name</label>
+    <input type="text" name="lastName" value="${contact.lastName}">
+  </div>
+  <div class="form-group">
+    <label>Email address</label>
+    <input type="email" name="email" value="${contact.email}">
+  </div>
+  <button class="btn">Submit</button>
+  <button class="btn" kt-get="/contact/1">Cancel</button>
+</form>`
+    }
 
-#### Edit HTML
+    function displayTemplate(contact) {
+        return `<div kt-target="this" kt-swap="outerHTML">
+    <div><label>First Name</label>: ${contact.firstName}</div>
+    <div><label>Last Name</label>: ${contact.lastName}</div>
+    <div><label>Email</label>: ${contact.email}</div>
+    <button kt-get="/contact/1/edit" class="btn btn-primary">
+    Click To Edit
+    </button>
+</div>`;
+    }
 
-```html
-    <form class="uk-form-stacked" kt-put="/contact/1" kt-target="#contact-div">
-      <div>
-        <label class="uk-form-label">First Name</label>
-        <input type="text" class="uk-form-controls" name="firstName" value="${mockUser.firstName}">
-      </div>
-      <div>
-        <label class="uk-form-label">Last Name</label>
-        <input type="text" class="uk-form-controls" name="lastName" value="${mockUser.lastName}">
-      </div>
-      <div>
-        <label class="uk-form-label">Email address</label>
-        <input type="email" class="uk-form-controls" name="email" value="${mockUser.email}">
-      </div>
-      <button class="uk-button uk-button-primary">Submit</button>
-      <button kt-get"/contact/1" kt-target="#contact-div" class="uk-button uk-button-danger">Cancel</button>
-    </form>
-```
-
-### Explanation
-
-The 'Click To Edit' button uses [kt-get](/attributes/kt-get) to issue a `GET` to `/contact/1/edit`, and targets the div 
-surrounding the entire Contact UI using [kt-target](/attributes/kt-target).
-
-The server returns a form that replaces the content of the div. The form uses the [kt-put](/attributes/kt-put) to issue a 
-`PUT` to `/contact/1` and targets the same enclosing div.
-
-The 'Cancel' button uses [kt-get](/attributes/kt-get)  to issue a `GET` to `/contact/1` and targets the same div. 
-
-
-
+</script>
