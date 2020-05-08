@@ -365,7 +365,7 @@ var kutty = kutty || (function () {
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName = "A" && elt.href && elt.href.indexOf('#') != 0);
+                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') != 0);
         }
 
         function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {

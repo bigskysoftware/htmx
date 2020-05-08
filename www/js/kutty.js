@@ -273,11 +273,11 @@ var kutty = kutty || (function () {
                     var triggers = JSON.parse(trigger);
                     for (var eventName in triggers) {
                         if (triggers.hasOwnProperty(eventName)) {
-                            var details = triggers[eventName];
-                            if (!isRawObject(details)) {
-                                details = {"value": details}
+                            var detail = triggers[eventName];
+                            if (!isRawObject(detail)) {
+                                detail = {"value": detail}
                             }
-                            triggerEvent(elt, eventName, details);
+                            triggerEvent(elt, eventName, detail);
                         }
                     }
                 } else {
@@ -365,7 +365,7 @@ var kutty = kutty || (function () {
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName = "A" && elt.href && elt.href.indexOf('#') != 0);
+                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') != 0);
         }
 
         function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {
@@ -436,12 +436,12 @@ var kutty = kutty || (function () {
         }
 
         function initSSESource(elt, sseSrc) {
-            var details = {
-                initializer: function() { new EventSource(sseSrc, details.config) },
+            var detail = {
+                initializer: function() { new EventSource(sseSrc, detail.config) },
                 config:{withCredentials: true}
             };
-            triggerEvent(elt, "initSSE.kutty", {config:details})
-            var source = details.initializer();
+            triggerEvent(elt, "initSSE.kutty", {config:detail})
+            var source = detail.initializer();
             source.onerror = function (e) {
                 triggerEvent(elt, "sseError.kutty", {error:e, source:source});
                 maybeCloseSSESource(elt);
@@ -535,57 +535,63 @@ var kutty = kutty || (function () {
         // Event/Log Support
         //====================================================================
 
-        function sendError(elt, eventName, details) {
+        function sendError(elt, eventName, detail) {
             var errorURL = getClosestAttributeValue(elt, "kt-error-url");
             if (errorURL) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", errorURL);
                 xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "details" : details }));
+                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "detail" : detail }));
             }
         }
 
-        function makeEvent(eventName, details) {
+        function makeEvent(eventName, detail) {
             var evt;
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-                evt = new CustomEvent(eventName, {detail: details});
+                evt = new CustomEvent(eventName, {bubbles: true, cancelable: true, detail: detail});
             } else {
                 evt = getDocument().createEvent('CustomEvent');
-                evt.initCustomEvent(eventName, true, true, details);
+                evt.initCustomEvent(eventName, true, true, detail);
             }
             return evt;
         }
 
-        function triggerEvent(elt, eventName, details) {
-            details["elt"] = elt;
-            var event = makeEvent(eventName, details);
+        function triggerEvent(elt, eventName, detail) {
+            detail["elt"] = elt;
+            var event = makeEvent(eventName, detail);
             if (kutty.logger) {
-                kutty.logger(elt, eventName, details);
+                kutty.logger(elt, eventName, detail);
                 if (eventName.indexOf("Error") > 0) {
-                    sendError(elt, eventName, details);
+                    sendError(elt, eventName, detail);
                 }
             }
             var eventResult = elt.dispatchEvent(event);
-            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetails:details, originalEvent: event}));
+            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetail:detail, originalEvent: event}));
             return eventResult && allResult;
         }
 
         function addKuttyEventListener(arg1, arg2, arg3) {
             var target, event, listener;
             if (isFunction(arg1)) {
-                target = getDocument().body;
-                event = "all.kutty";
-                listener = arg1;
+                ready(function(){
+                    target = getDocument().body;
+                    event = "all.kutty";
+                    listener = arg1;
+                    target.addEventListener(event, listener);
+                })
             } else if (isFunction(arg2)) {
-                target = getDocument().body;
-                event = arg1;
-                listener = arg2;
+                ready(function () {
+                    target = getDocument().body;
+                    event = arg1;
+                    listener = arg2;
+                    target.addEventListener(event, listener);
+                })
             } else {
                 target = arg1;
                 event = arg2;
                 listener = arg3;
+                target.addEventListener(event, listener);
             }
-            return target.addEventListener(event, listener);
         }
 
         //====================================================================
@@ -869,7 +875,7 @@ var kutty = kutty || (function () {
                         if (this.status !== 204) {
                             // Success!
                             var resp = this.response;
-                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target})) return;
+                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target, response:resp})) return;
 
                             // Save current page
                             if (shouldSaveHistory) {
@@ -965,10 +971,9 @@ var kutty = kutty || (function () {
 
         function onLoadHelper(callback) {
             kutty.on("load.kutty", function(evt) {
-                callback(evt.details.elt);
+                callback(evt.detail.elt);
             });
         }
-
 
         // Public API
         return {

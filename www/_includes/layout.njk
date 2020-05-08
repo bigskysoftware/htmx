@@ -4,17 +4,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/site.css"/>
     <link rel="stylesheet" href="/css/prism-theme.css"/>
-    {% if page.url.indexOf("/patterns/") == 0 %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.4.4/dist/css/uikit.min.css" />
-    <script src="https://unpkg.com/sinon@9.0.2/pkg/sinon.js"></script>
-    {% endif %}
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
+    <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="/js/kutty.js"></script>
     <script>
         kutty.logger = function(elt, event, data) {
             if(console) {
-                console.log(event, elt, data);
+                //console.log(event, elt, data);
             }
         }
+        kutty.onLoad(function(){
+            Prism.highlightAll();
+        })
     </script>
 </head>
 <body>
@@ -24,7 +26,11 @@
             <div class="2 col" kt-get="/" kt-target="body" kt-push-url="true">
                 <span class="logo light" kt-add-class="settle">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
             </div>
+            {% if page.url.indexOf("/patterns/") == 0 %}
+            <div class="10 col nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
+            {% else %}
             <div class="10 col nav" kt-boost="true">
+            {% endif %}
                 <div class="row">
                     <div class="1 col">
                         <a href="/docs">docs</a>
@@ -50,10 +56,10 @@
         </div>
     </div>
 </div>
+</div>
 
 <div class="content c">
     {{ content | safe }}
 </div>
-
 </body>
 </html>
