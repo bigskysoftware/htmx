@@ -118,6 +118,10 @@ var kutty = kutty || (function () {
             return arr1.concat(arr2);
         }
 
+        function splitOnWhitespace(trigger) {
+            return trigger.split(/\s+/);
+        }
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -208,19 +212,19 @@ var kutty = kutty || (function () {
             }
         }
 
-        function swapPrepend(target, fragment) {
+        function swapAfterBegin(target, fragment) {
             return insertNodesBefore(target, target.firstChild, fragment);
         }
 
-        function swapPrependBefore(target, fragment) {
+        function swapBeforeBegin(target, fragment) {
             return insertNodesBefore(parentElt(target), target, fragment);
         }
 
-        function swapAppend(target, fragment) {
+        function swapBeforeEnd(target, fragment) {
             return insertNodesBefore(target, null, fragment);
         }
 
-        function swapAppendAfter(target, fragment) {
+        function swapAfterEnd(target, fragment) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment);
         }
 
@@ -248,20 +252,19 @@ var kutty = kutty || (function () {
             return fragment;
         }
 
-        function swapResponse(target, elt, responseText) {
+        function swapResponse(swapStyle, target, elt, responseText) {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 var settleTasks = handleOutOfBandSwaps(fragment);
 
                 fragment = maybeSelectFromResponse(elt, fragment);
 
-                var swapStyle = getClosestAttributeValue(elt, "kt-swap");
                 switch(swapStyle) {
                     case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
-                    case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
-                    case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
-                    case "append": return concat(settleTasks, swapAppend(target, fragment));
-                    case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                    case "afterbegin": return concat(settleTasks, swapAfterBegin(target, fragment));
+                    case "beforebegin": return concat(settleTasks, swapBeforeBegin(target, fragment));
+                    case "beforeend": return concat(settleTasks, swapBeforeEnd(target, fragment));
+                    case "afterend": return concat(settleTasks, swapAfterEnd(target, fragment));
                     default: return concat(settleTasks, swapInnerHTML(target, fragment));
                 }
             }
@@ -286,58 +289,104 @@ var kutty = kutty || (function () {
             }
         }
 
-        function getTrigger(elt) {
+        function getTriggerSpec(elt) {
+
+            var triggerSpec = {
+                "trigger" : "click"
+            }
             var explicitTrigger = getClosestAttributeValue(elt, 'kt-trigger');
             if (explicitTrigger) {
-                return explicitTrigger;
-            } else {
-                if (matches(elt, 'button')) {
-                    return 'click';
-                } else if (matches(elt, 'form')) {
-                    return 'submit';
-                } else if (matches(elt, 'input, textarea, select')) {
-                    return 'change';
-                } else {
-                    return 'click';
+                var tokens = splitOnWhitespace(explicitTrigger);
+                if (tokens.length > 0) {
+                    var trigger = tokens[0];
+                    if (trigger === "every") {
+                        triggerSpec.pollInterval = parseInterval(tokens[1]);
+                    } else if (trigger.indexOf("sse:") === 0) {
+                        triggerSpec.sseEvent = trigger.substr(4);
+                    } else {
+                        triggerSpec['trigger'] = trigger;
+                        for (var i = 1; i < tokens.length; i++) {
+                            var token = tokens[i].trim();
+                            if (token === "changed") {
+                                triggerSpec.changed = true;
+                            }
+                            if (token === "once") {
+                                triggerSpec.once = true;
+                            }
+                            if (token.indexOf("delay:") === 0) {
+                                triggerSpec.delay = parseInterval(token.substr(6));
+                            }
+                        }
+                    }
                 }
+            } else {
+                if (matches(elt, 'form')) {
+                    triggerSpec['trigger'] = 'submit';
+                } else if (matches(elt, 'input, textarea, select')) {
+                    triggerSpec['trigger'] = 'change';
+                }
+            }
+            return triggerSpec;
+        }
+
+        function parseClassOperation(trimmedValue) {
+            var split = splitOnWhitespace(trimmedValue);
+            if (split.length > 1) {
+                var operation = split[0];
+                var classDef = split[1].trim();
+                var cssClass;
+                var delay;
+                if (classDef.indexOf(":") > 0) {
+                    var splitCssClass = classDef.split(':');
+                    cssClass = splitCssClass[0];
+                    delay = parseInterval(splitCssClass[1]);
+                } else {
+                    cssClass = classDef;
+                    delay = 100;
+                }
+                return {
+                    operation:operation,
+                    cssClass:cssClass,
+                    delay:delay
+                }
+            } else {
+                return null;
             }
         }
 
         function processClassList(elt, classList, operation) {
-            var values = classList.split(",");
-            forEach(values, function(value){
-                var cssClass = "";
-                var delay = 50;
-                var trimmedValue = value.trim();
-                if (trimmedValue.indexOf(":") > 0) {
-                    var split = trimmedValue.split(':');
-                    cssClass = split[0];
-                    delay = parseInterval(split[1]);
-                } else {
-                    cssClass = trimmedValue;
-                }
-                setTimeout(function () {
-                    elt.classList[operation].call(elt.classList, cssClass);
-                }, delay);
+            forEach(classList.split("&"), function (run) {
+                var currentRunTime = 0;
+                forEach(run.split(","), function(value){
+                    var trimmedValue = value.trim();
+                    var classOperation = parseClassOperation(trimmedValue);
+                    if (classOperation) {
+                        if (classOperation.operation === "toggle") {
+                            setTimeout(function () {
+                                setInterval(function () {
+                                    elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                                }, classOperation.delay);
+                            }, currentRunTime);
+                            currentRunTime = currentRunTime + classOperation.delay;
+                        } else {
+                            currentRunTime = currentRunTime + classOperation.delay;
+                            setTimeout(function () {
+                                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                            }, currentRunTime);
+                        }
+                    }
+                });
             });
         }
 
-        function processPolling(elt, verb, path) {
-            var trigger = getTrigger(elt);
+        function processPolling(elt, verb, path, interval) {
             var nodeData = getInternalData(elt);
-            if (trigger.trim().indexOf("every ") === 0) {
-                var args = trigger.split(/\s+/);
-                var intervalStr = args[1];
-                if (intervalStr) {
-                    var interval = parseInterval(intervalStr);
-                    nodeData.timeout = setTimeout(function () {
-                        if (bodyContains(elt)) {
-                            issueAjaxRequest(elt, verb, path);
-                            processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb));
-                        }
-                    }, interval);
+            nodeData.timeout = setTimeout(function () {
+                if (bodyContains(elt)) {
+                    issueAjaxRequest(elt, verb, path);
+                    processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb), interval);
                 }
-            }
+            }, interval);
         }
 
         function isLocalLink(elt) {
@@ -346,7 +395,7 @@ var kutty = kutty || (function () {
                 !getRawAttribute(elt,'href').startsWith("#")
         }
 
-        function boostElement(elt, nodeData, trigger) {
+        function boostElement(elt, nodeData, triggerSpec) {
             if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
@@ -358,31 +407,31 @@ var kutty = kutty || (function () {
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
                     path = getRawAttribute(elt, 'action');
                 }
-                addEventListener(elt, verb, path, nodeData, trigger, true);
+                addEventListener(elt, verb, path, nodeData, triggerSpec, true);
             }
         }
 
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') != 0);
+                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') !== 0);
         }
 
-        function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {
+        function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
                 if(explicitCancel || shouldCancel(elt)) evt.preventDefault();
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
                     eventData.handled = true;
-                    if (getAttributeValue(elt, "kt-trigger-once") === "true") {
+                    if (triggerSpec.once) {
                         if (elementData.triggeredOnce) {
                             return;
                         } else {
                             elementData.triggeredOnce = true;
                         }
                     }
-                    if (getAttributeValue(elt, "kt-trigger-changed-only") === "true") {
+                    if (triggerSpec.changed) {
                         if (elementData.lastValue === elt.value) {
                             return;
                         } else {
@@ -392,20 +441,19 @@ var kutty = kutty || (function () {
                     if (elementData.delayed) {
                         clearTimeout(elementData.delayed);
                     }
-                    var eventDelay = getAttributeValue(elt, "kt-trigger-delay");
                     var issueRequest = function(){
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
-                    if (eventDelay) {
-                        elementData.delayed = setTimeout(issueRequest, parseInterval(eventDelay));
+                    if (triggerSpec.delay) {
+                        elementData.delayed = setTimeout(issueRequest, parseInterval(triggerSpec.delay));
                     } else {
                         issueRequest();
                     }
                 }
             };
-            nodeData.trigger = trigger;
+            nodeData.trigger = triggerSpec.trigger;
             nodeData.eventListener = eventListener;
-            elt.addEventListener(trigger, eventListener);
+            elt.addEventListener(triggerSpec.trigger, eventListener);
         }
 
         function initScrollHandler() {
@@ -476,7 +524,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function processVerbs(elt, nodeData, trigger) {
+        function processVerbs(elt, nodeData, triggerSpec) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
                 var path = getAttributeValue(elt, 'kt-' + verb);
@@ -484,18 +532,18 @@ var kutty = kutty || (function () {
                     explicitAction = true;
                     nodeData.path = path;
                     nodeData.verb = verb;
-                    if (trigger.indexOf("sse:") === 0) {
-                        processSSETrigger(trigger.substr(4), elt, verb, path);
-                    } else if (trigger === 'revealed') {
+                    if (triggerSpec.sseEvent) {
+                        processSSETrigger(triggerSpec.sseEvent, elt, verb, path);
+                    } else if (triggerSpec.trigger === "revealed") {
                         initScrollHandler();
                         maybeReveal(elt);
-                    } else if (trigger === 'load') {
+                    } else if (triggerSpec.trigger === "load") {
                         loadImmediately(nodeData, elt, verb, path);
-                    } else if (trigger.trim().indexOf('every ') === 0) {
+                    } else if (triggerSpec.pollInterval) {
                         nodeData.polling = true;
-                        processPolling(elt, verb, path);
+                        processPolling(elt, verb, path, triggerSpec.pollInterval);
                     } else {
-                        addEventListener(elt, verb, path, nodeData, trigger);
+                        addEventListener(elt, verb, path, nodeData, triggerSpec);
                     }
                 }
             });
@@ -507,23 +555,19 @@ var kutty = kutty || (function () {
             if (!nodeData.processed) {
                 nodeData.processed = true;
 
-                var trigger = getTrigger(elt);
-                var explicitAction = processVerbs(elt, nodeData, trigger);
+                var triggerSpec = getTriggerSpec(elt);
+                var explicitAction = processVerbs(elt, nodeData, triggerSpec);
 
                 if (!explicitAction && getClosestAttributeValue(elt, "kt-boost") === "true") {
-                    boostElement(elt, nodeData, trigger);
+                    boostElement(elt, nodeData, triggerSpec);
                 }
                 var sseSrc = getAttributeValue(elt, 'kt-sse-source');
                 if (sseSrc) {
                     initSSESource(elt, sseSrc);
                 }
-                var addClass = getAttributeValue(elt, 'kt-add-class');
+                var addClass = getAttributeValue(elt, 'kt-classes');
                 if (addClass) {
-                    processClassList(elt, addClass, "add");
-                }
-                var removeClass = getAttributeValue(elt, 'kt-remove-class');
-                if (removeClass) {
-                    processClassList(elt, removeClass, "remove");
+                    processClassList(elt, addClass);
                 }
             }
             if (elt.children) { // IE
@@ -598,7 +642,7 @@ var kutty = kutty || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('.kt-history-element');
+            var historyElt = getDocument().querySelector('.kt-history-elt');
             return historyElt || getDocument().body;
         }
 
@@ -653,7 +697,7 @@ var kutty = kutty || (function () {
                 triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('.kt-history-element') || fragment;
+                    fragment = fragment.querySelector('.kt-history-elt') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };
@@ -812,6 +856,61 @@ var kutty = kutty || (function () {
             }
         }
 
+        function filterValues(inputValues, elt, verb) {
+            var paramsValue = getClosestAttributeValue(elt, "kt-params");
+            if (paramsValue) {
+                if (paramsValue === "none") {
+                    return {};
+                } else if (paramsValue === "*") {
+                    return inputValues;
+                } else if(paramsValue.indexOf("not ") === 0) {
+                    forEach(paramsValue.substr(4).split(","), function (value) {
+                        value = value.trim();
+                        delete inputValues[value];
+                    });
+                    return inputValues;
+                } else {
+                    var newValues = {}
+                    forEach(paramsValue.split(","), function (value) {
+                        newValues[value] = inputValues[value];
+                    });
+                    return newValues;
+                }
+            } else {
+                // By default GET does not include parameters
+                if (verb === 'get') {
+                    return {};
+                } else {
+                    return inputValues;
+                }
+            }
+        }
+
+        function getSwapSpecification(elt) {
+            var swapInfo = getClosestAttributeValue(elt, "kt-swap");
+            var swapSpec = {
+                "swapStyle" : "innerHTML",
+                "swapDelay" : 0,
+                "settleDelay" : 100
+            }
+            if (swapInfo) {
+                var split = splitOnWhitespace(swapInfo);
+                if (split.length > 0) {
+                    swapSpec["swapStyle"] = split[0];
+                    for (var i = 1; i < swapSpec.length; i++) {
+                        var modifier = swapSpec[i];
+                        if (modifier.indexOf("swap:") === 0) {
+                            swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
+                        }
+                        if (modifier.indexOf("settle:") === 0) {
+                            swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
+                        }
+                    }
+                }
+            }
+            return swapSpec;
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
@@ -836,16 +935,17 @@ var kutty = kutty || (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var inputValues = getInputValues(elt);
+            var inputValues = getInputValues(elt, verb);
+
+            inputValues = filterValues(inputValues, elt, verb);
+
             if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
             var requestURL;
             if (verb === 'get') {
-                var includeQueryParams = getClosestAttributeValue("kt-get-params") === "true";
-                // TODO allow get parameter filtering
-                requestURL = path + (includeQueryParams ? "?" + urlEncode(inputValues) : "");
-                xhr.open('GET', requestURL, true);
+                var noValues = Object.keys(inputValues).length === 0;
+                xhr.open('GET', path + (noValues ? "" : "?" + urlEncode(inputValues)), true);
             } else {
                 requestURL = path;
                 xhr.open('POST', requestURL, true);
@@ -882,10 +982,12 @@ var kutty = kutty || (function () {
                                 saveHistory();
                             }
 
+                            var swapSpec = getSwapSpecification(elt);
+
                             target.classList.add("kutty-swapping");
                             var doSwap = function () {
                                 try {
-                                    var settleTasks = swapResponse(target, elt, resp);
+                                    var settleTasks = swapResponse(swapSpec.swapStyle, target, elt, resp);
                                     target.classList.remove("kutty-swapping");
                                     target.classList.add("kutty-settling");
                                     triggerEvent(elt, 'afterSwap.kutty', {xhr: xhr, target: target});
@@ -903,9 +1005,8 @@ var kutty = kutty || (function () {
                                         triggerEvent(elt, 'afterSettle.kutty', {xhr: xhr, target: target});
                                     }
 
-                                    var settleDelayStr = getAttributeValue(elt, "kt-settle-delay") || "100ms";
-                                    if (settleDelayStr) {
-                                        setTimeout(doSettle, parseInterval(settleDelayStr))
+                                    if (swapSpec.settleDelay > 0) {
+                                        setTimeout(doSettle, swapSpec.settleDelay)
                                     } else {
                                         doSettle();
                                     }
@@ -915,9 +1016,8 @@ var kutty = kutty || (function () {
                                 }
                             };
 
-                            var swapDelayStr = getAttributeValue(elt, "kt-swap-delay");
-                            if (swapDelayStr) {
-                                setTimeout(doSwap, parseInterval(swapDelayStr))
+                            if (swapSpec.swapDelay > 0) {
+                                setTimeout(doSwap, parseInterval(swapSpec.swapDelay))
                             } else {
                                 doSwap();
                             }

@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> kutty - high power tools for html
 ---
 
-<div class="dark-hero full-width" kt-add-class="appear">
+<div class="dark-hero full-width" kt-classes="add appear">
   <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">k<a>u</a>tty</span></span>
   <sub class="no-mobile"><i>high powered tools for HTML</i></sub>
 </div>
