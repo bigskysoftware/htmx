@@ -113,7 +113,7 @@ function showTimelineEntry(id) {
 }
 
 function pushActivityChip(name, id, content) {
-    document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<div id="${id}-link"><a onclick="showTimelineEntry('${id}')">${name}</a></div>`);
+    document.getElementById("demo-timeline").insertAdjacentHTML("beforeend", `<li id="${id}-link"><a onclick="showTimelineEntry('${id}')">${name}</a></li>`);
     document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", `<div id="${id}">${content}</div>`);
     showTimelineEntry(id);
     Prism.highlightAll();
@@ -132,7 +132,6 @@ function escapeHtml(string) {
 
 function demoInitialStateTemplate(html){
     return `<span class="activity initial">
-  <div class="activity-header">Initial State</div>
   <b>HTML</b>
   <pre class="language-html"><code class="language-html">${escapeHtml(html)}</code></pre>
 </span>`

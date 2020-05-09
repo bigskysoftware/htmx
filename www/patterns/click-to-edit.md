@@ -1,8 +1,6 @@
 ---
 layout: demo_layout.njk
 ---
-<div class="demo" style="display: flex; flex-flow:column; height: 93%">
-<div id="demo-header" style="flex: 0 1 auto;">
         
 ## Kutty Pattern: Click To Edit
 
@@ -12,23 +10,25 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 * This returns a form that can be used to edit the contact
 * The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
 
-## Activity
-<div id="demo-activity" class="row">
-<div id="demo-timeline" class="3 col" style="vertical-align: top">
+<div style="padding:8px;position:fixed;bottom: 0;right:0;left:0;height:300px;background-color: whitesmoke;border-top: 2px solid gray;overflow: scroll;margin: 0px;">
+
+<div>Server Requests</div>
+
+<div id="demo-activity" class="row" style="height:300px;">
+<div class="3 col" style="vertical-align: top">
+<ol id="demo-timeline">
+</ol>
 </div>
 <div id="demo-current-request" class="9 col">
 </div>
 </div>
+</div>
 
-## Demo Canvas
-<hr class="full-width"/>
-</div>
-<div id="demo-canvas" style="flex:1 1 auto;overflow: scroll;margin-right: calc(50% - 50vw);">
-</div>
+## Demo
+<div id="demo-canvas" style="margin-bottom: 300px;">
 </div>
 
 <script>
-
     //=========================================================================
     // Fake Server Side Code
     //=========================================================================
@@ -86,5 +86,4 @@ return `<form kt-put="/contact/1" kt-target="this" kt-swap="outerHTML">
     </button>
 </div>`;
     }
-
 </script>
