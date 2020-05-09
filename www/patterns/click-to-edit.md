@@ -10,13 +10,13 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 * This returns a form that can be used to edit the contact
 * The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
 
-<div style="padding:8px;position:fixed;bottom: 0;right:0;left:0;height:300px;background-color: whitesmoke;border-top: 2px solid gray;overflow: scroll;margin: 0px;">
+<div style="padding:8px;position:fixed;bottom: 0;right:0;left:0;max-height:35vh;height:500px;background-color: whitesmoke;border-top: 2px solid gray;overflow: scroll;margin: 0px;">
 
 <div>Server Requests</div>
 
 <div id="demo-activity" class="row" style="height:300px;">
 <div class="3 col" style="vertical-align: top">
-<ol id="demo-timeline">
+<ol id="demo-timeline" reversed>
 </ol>
 </div>
 <div id="demo-current-request" class="9 col">
