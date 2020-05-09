@@ -1,0 +1,41 @@
+<style>
+    #demo-server-info {
+        padding: 8px;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        max-height: 35vh;
+        height: 500px;
+        background-color: whitesmoke;
+        border-top: 2px solid gray;
+        overflow: scroll;
+        margin: 0px;
+    }
+    #demo-activity {
+        height:300px
+    }
+
+    #demo-activity div {
+        vertical-align: top
+    }
+
+    #demo-canvas {
+        margin-bottom: 500px;
+    }
+</style>
+<div id="demo-server-info">
+    <div>Server Requests</div>
+    <div id="demo-activity" class="row">
+        <div class="3 col" >
+            <ol id="demo-timeline" reversed>
+            </ol>
+        </div>
+        <div id="demo-current-request" class="9 col">
+        </div>
+    </div>
+</div>
+
+## Demo
+<div id="demo-canvas">
+</div>
