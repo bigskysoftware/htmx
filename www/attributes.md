@@ -13,7 +13,7 @@ title: </> kutty - Attributes
 | kt-delete | TODO - Description
 | kt-error-url | TODO - Description
 | [kt-get](/attributes/kt-get) | issue a `GET` to the specified URL
-| kt-history-element | TODO - Description
+| kt-history-elt | TODO - Description
 | kt-include | TODO - Description
 | kt-indicator | TODO - Description
 | kt-patch | TODO - Description
@@ -28,6 +28,3 @@ title: </> kutty - Attributes
 | kt-swap-oob | TODO - Description
 | kt-target | TODO - Description
 | kt-trigger | TODO - Description
-| kt-trigger-changed-only | TODO - Description
-| kt-trigger-delay | TODO - Description
-| kt-trigger-once | TODO - Description

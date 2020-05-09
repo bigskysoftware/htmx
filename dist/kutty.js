@@ -289,21 +289,44 @@ var kutty = kutty || (function () {
             }
         }
 
-        function getTrigger(elt) {
+        function getTriggerSpec(elt) {
+
+            var triggerSpec = {
+                "trigger" : "click"
+            }
             var explicitTrigger = getClosestAttributeValue(elt, 'kt-trigger');
             if (explicitTrigger) {
-                return explicitTrigger;
+                var tokens = splitOnWhitespace(explicitTrigger);
+                if (tokens.length > 0) {
+                    var trigger = tokens[0];
+                    if (trigger === "every") {
+                        triggerSpec.pollInterval = parseInterval(tokens[1]);
+                    } else if (trigger.indexOf("sse:") === 0) {
+                        triggerSpec.sseEvent = trigger.substr(4);
+                    } else {
+                        triggerSpec['trigger'] = trigger;
+                        for (var i = 1; i < tokens.length; i++) {
+                            var token = tokens[i].trim();
+                            if (token === "changed") {
+                                triggerSpec.changed = true;
+                            }
+                            if (token === "once") {
+                                triggerSpec.once = true;
+                            }
+                            if (token.indexOf("delay:") === 0) {
+                                triggerSpec.delay = parseInterval(token.substr(6));
+                            }
+                        }
+                    }
+                }
             } else {
-                if (matches(elt, 'button')) {
-                    return 'click';
-                } else if (matches(elt, 'form')) {
-                    return 'submit';
+                if (matches(elt, 'form')) {
+                    triggerSpec['trigger'] = 'submit';
                 } else if (matches(elt, 'input, textarea, select')) {
-                    return 'change';
-                } else {
-                    return 'click';
+                    triggerSpec['trigger'] = 'change';
                 }
             }
+            return triggerSpec;
         }
 
         function parseClassOperation(trimmedValue) {
@@ -335,7 +358,6 @@ var kutty = kutty || (function () {
             forEach(classList.split("&"), function (run) {
                 var currentRunTime = 0;
                 forEach(run.split(","), function(value){
-                    var cssClass = "";
                     var trimmedValue = value.trim();
                     var classOperation = parseClassOperation(trimmedValue);
                     if (classOperation) {
@@ -357,22 +379,14 @@ var kutty = kutty || (function () {
             });
         }
 
-        function processPolling(elt, verb, path) {
-            var trigger = getTrigger(elt);
+        function processPolling(elt, verb, path, interval) {
             var nodeData = getInternalData(elt);
-            if (trigger.trim().indexOf("every ") === 0) {
-                var args = splitOnWhitespace(trigger);
-                var intervalStr = args[1];
-                if (intervalStr) {
-                    var interval = parseInterval(intervalStr);
-                    nodeData.timeout = setTimeout(function () {
-                        if (bodyContains(elt)) {
-                            issueAjaxRequest(elt, verb, path);
-                            processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb));
-                        }
-                    }, interval);
+            nodeData.timeout = setTimeout(function () {
+                if (bodyContains(elt)) {
+                    issueAjaxRequest(elt, verb, path);
+                    processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb), interval);
                 }
-            }
+            }, interval);
         }
 
         function isLocalLink(elt) {
@@ -381,7 +395,7 @@ var kutty = kutty || (function () {
                 !getRawAttribute(elt,'href').startsWith("#")
         }
 
-        function boostElement(elt, nodeData, trigger) {
+        function boostElement(elt, nodeData, triggerSpec) {
             if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
@@ -393,31 +407,31 @@ var kutty = kutty || (function () {
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
                     path = getRawAttribute(elt, 'action');
                 }
-                addEventListener(elt, verb, path, nodeData, trigger, true);
+                addEventListener(elt, verb, path, nodeData, triggerSpec, true);
             }
         }
 
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') != 0);
+                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') !== 0);
         }
 
-        function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {
+        function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
                 if(explicitCancel || shouldCancel(elt)) evt.preventDefault();
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
                     eventData.handled = true;
-                    if (getAttributeValue(elt, "kt-trigger-once") === "true") {
+                    if (triggerSpec.once) {
                         if (elementData.triggeredOnce) {
                             return;
                         } else {
                             elementData.triggeredOnce = true;
                         }
                     }
-                    if (getAttributeValue(elt, "kt-trigger-changed-only") === "true") {
+                    if (triggerSpec.changed) {
                         if (elementData.lastValue === elt.value) {
                             return;
                         } else {
@@ -427,20 +441,19 @@ var kutty = kutty || (function () {
                     if (elementData.delayed) {
                         clearTimeout(elementData.delayed);
                     }
-                    var eventDelay = getAttributeValue(elt, "kt-trigger-delay");
                     var issueRequest = function(){
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
-                    if (eventDelay) {
-                        elementData.delayed = setTimeout(issueRequest, parseInterval(eventDelay));
+                    if (triggerSpec.delay) {
+                        elementData.delayed = setTimeout(issueRequest, parseInterval(triggerSpec.delay));
                     } else {
                         issueRequest();
                     }
                 }
             };
-            nodeData.trigger = trigger;
+            nodeData.trigger = triggerSpec.trigger;
             nodeData.eventListener = eventListener;
-            elt.addEventListener(trigger, eventListener);
+            elt.addEventListener(triggerSpec.trigger, eventListener);
         }
 
         function initScrollHandler() {
@@ -511,7 +524,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function processVerbs(elt, nodeData, trigger) {
+        function processVerbs(elt, nodeData, triggerSpec) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
                 var path = getAttributeValue(elt, 'kt-' + verb);
@@ -519,18 +532,18 @@ var kutty = kutty || (function () {
                     explicitAction = true;
                     nodeData.path = path;
                     nodeData.verb = verb;
-                    if (trigger.indexOf("sse:") === 0) {
-                        processSSETrigger(trigger.substr(4), elt, verb, path);
-                    } else if (trigger === 'revealed') {
+                    if (triggerSpec.sseEvent) {
+                        processSSETrigger(triggerSpec.sseEvent, elt, verb, path);
+                    } else if (triggerSpec.trigger === "revealed") {
                         initScrollHandler();
                         maybeReveal(elt);
-                    } else if (trigger === 'load') {
+                    } else if (triggerSpec.trigger === "load") {
                         loadImmediately(nodeData, elt, verb, path);
-                    } else if (trigger.trim().indexOf('every ') === 0) {
+                    } else if (triggerSpec.pollInterval) {
                         nodeData.polling = true;
-                        processPolling(elt, verb, path);
+                        processPolling(elt, verb, path, triggerSpec.pollInterval);
                     } else {
-                        addEventListener(elt, verb, path, nodeData, trigger);
+                        addEventListener(elt, verb, path, nodeData, triggerSpec);
                     }
                 }
             });
@@ -542,11 +555,11 @@ var kutty = kutty || (function () {
             if (!nodeData.processed) {
                 nodeData.processed = true;
 
-                var trigger = getTrigger(elt);
-                var explicitAction = processVerbs(elt, nodeData, trigger);
+                var triggerSpec = getTriggerSpec(elt);
+                var explicitAction = processVerbs(elt, nodeData, triggerSpec);
 
                 if (!explicitAction && getClosestAttributeValue(elt, "kt-boost") === "true") {
-                    boostElement(elt, nodeData, trigger);
+                    boostElement(elt, nodeData, triggerSpec);
                 }
                 var sseSrc = getAttributeValue(elt, 'kt-sse-source');
                 if (sseSrc) {
@@ -629,7 +642,7 @@ var kutty = kutty || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('.kt-history-element');
+            var historyElt = getDocument().querySelector('.kt-history-elt');
             return historyElt || getDocument().body;
         }
 
@@ -684,7 +697,7 @@ var kutty = kutty || (function () {
                 triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('.kt-history-element') || fragment;
+                    fragment = fragment.querySelector('.kt-history-elt') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };
@@ -881,7 +894,7 @@ var kutty = kutty || (function () {
                 "settleDelay" : 100
             }
             if (swapInfo) {
-                var split = splitOnWhitespace(swapSpec);
+                var split = splitOnWhitespace(swapInfo);
                 if (split.length > 0) {
                     swapSpec["swapStyle"] = split[0];
                     for (var i = 1; i < swapSpec.length; i++) {
@@ -895,6 +908,7 @@ var kutty = kutty || (function () {
                     }
                 }
             }
+            return swapSpec;
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
@@ -922,7 +936,8 @@ var kutty = kutty || (function () {
             var xhr = new XMLHttpRequest();
 
             var inputValues = getInputValues(elt, verb);
-            var inputValues = filterValues(inputValues, elt, verb);
+
+            inputValues = filterValues(inputValues, elt, verb);
 
             if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
