@@ -208,19 +208,19 @@ var kutty = kutty || (function () {
             }
         }
 
-        function swapPrepend(target, fragment) {
+        function swapAfterBegin(target, fragment) {
             return insertNodesBefore(target, target.firstChild, fragment);
         }
 
-        function swapPrependBefore(target, fragment) {
+        function swapBeforeBegin(target, fragment) {
             return insertNodesBefore(parentElt(target), target, fragment);
         }
 
-        function swapAppend(target, fragment) {
+        function swapBeforeEnd(target, fragment) {
             return insertNodesBefore(target, null, fragment);
         }
 
-        function swapAppendAfter(target, fragment) {
+        function swapAfterEnd(target, fragment) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment);
         }
 
@@ -258,10 +258,10 @@ var kutty = kutty || (function () {
                 var swapStyle = getClosestAttributeValue(elt, "kt-swap");
                 switch(swapStyle) {
                     case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
-                    case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
-                    case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
-                    case "append": return concat(settleTasks, swapAppend(target, fragment));
-                    case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                    case "afterbegin": return concat(settleTasks, swapAfterBegin(target, fragment));
+                    case "beforebegin": return concat(settleTasks, swapBeforeBegin(target, fragment));
+                    case "beforeend": return concat(settleTasks, swapBeforeEnd(target, fragment));
+                    case "afterend": return concat(settleTasks, swapAfterEnd(target, fragment));
                     default: return concat(settleTasks, swapInnerHTML(target, fragment));
                 }
             }

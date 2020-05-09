@@ -49,7 +49,7 @@ describe("kutty AJAX Tests", function(){
         byId("a1").innerHTML.should.equal('Clicked!');
     });
 
-    it('handles prependBefore properly', function()
+    it('handles beforebegin properly', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -58,7 +58,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="prependBefore">*</div>')
+        var div = make('<div kt-get="/test" kt-swap="beforebegin">*</div>')
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -79,7 +79,7 @@ describe("kutty AJAX Tests", function(){
         removeWhiteSpace(parent.innerText).should.equal("***");
     });
 
-    it('handles prepend properly', function()
+    it('handles afterbegin properly', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -88,7 +88,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="prepend">*</div>')
+        var div = make('<div kt-get="/test" kt-swap="afterbegin">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1*");
@@ -106,7 +106,7 @@ describe("kutty AJAX Tests", function(){
         div.innerText.should.equal("***");
     });
 
-    it('handles prepend properly with no initial content', function()
+    it('handles afterbegin properly with no initial content', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -115,7 +115,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="prepend"></div>')
+        var div = make('<div kt-get="/test" kt-swap="afterbegin"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
@@ -133,7 +133,7 @@ describe("kutty AJAX Tests", function(){
         div.innerText.should.equal("**");
     });
 
-    it('handles appendAfter properly', function()
+    it('handles afterend properly', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -142,7 +142,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="appendAfter">*</div>')
+        var div = make('<div kt-get="/test" kt-swap="afterend">*</div>')
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -163,7 +163,7 @@ describe("kutty AJAX Tests", function(){
         removeWhiteSpace(parent.innerText).should.equal("***");
     });
 
-    it('handles append properly', function()
+    it('handles beforeend properly', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -172,7 +172,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="append">*</div>')
+        var div = make('<div kt-get="/test" kt-swap="beforeend">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("*1");
@@ -190,7 +190,7 @@ describe("kutty AJAX Tests", function(){
         div.innerText.should.equal("***");
     });
 
-    it('handles append properly with no initial content', function()
+    it('handles beforeend properly with no initial content', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
@@ -199,7 +199,7 @@ describe("kutty AJAX Tests", function(){
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="append"></div>')
+        var div = make('<div kt-get="/test" kt-swap="beforeend"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");

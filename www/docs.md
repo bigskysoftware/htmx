@@ -262,10 +262,10 @@ with any of the following values:
 
 * `innerHTML` - the default, puts the content inside the target element
 * `outerHTML` - replaces the entire target element with the returned content
-* `prepend` - prepends the content before the first child inside the target
-* `prependBefore` - prepends the content before the target in the targets parent element
-* `append` - appends the content after the last child inside the target
-* `appendAfter` - appends the content after the target in the targets parent element
+* `afterbegin` - prepends the content before the first child inside the target
+* `beforebegin` - prepends the content before the target in the targets parent element
+* `beforeend` - appends the content after the last child inside the target
+* `afterend` - appends the content after the target in the targets parent element
 
 #### Out of Band Swaps
 
