@@ -1,4 +1,4 @@
-describe("kutty class modification attributes", function(){
+describe("kutty classes modification attribute", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
@@ -10,7 +10,7 @@ describe("kutty class modification attributes", function(){
 
     it('adds classes properly', function(done)
     {
-        var div = make('<div kt-add-class="c1">Click Me!</div>')
+        var div = make('<div kt-classes="add c1">Click Me!</div>')
         should.equal(div.classList.length, 0);
         setTimeout(function(){
             should.equal(div.classList.contains("c1"), true);
@@ -20,7 +20,7 @@ describe("kutty class modification attributes", function(){
 
     it('removes classes properly', function(done)
     {
-        var div = make('<div class="foo bar" kt-remove-class="bar">Click Me!</div>')
+        var div = make('<div class="foo bar" kt-classes="remove bar">Click Me!</div>')
         should.equal(div.classList.contains("foo"), true);
         should.equal(div.classList.contains("bar"), true);
         setTimeout(function(){

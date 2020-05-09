@@ -118,6 +118,10 @@ var kutty = kutty || (function () {
             return arr1.concat(arr2);
         }
 
+        function splitOnWhitespace(trigger) {
+            return trigger.split(/\s+/);
+        }
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -303,22 +307,54 @@ var kutty = kutty || (function () {
             }
         }
 
-        function processClassList(elt, classList, operation) {
-            var values = classList.split(",");
-            forEach(values, function(value){
-                var cssClass = "";
-                var delay = 50;
-                var trimmedValue = value.trim();
-                if (trimmedValue.indexOf(":") > 0) {
-                    var split = trimmedValue.split(':');
-                    cssClass = split[0];
-                    delay = parseInterval(split[1]);
+        function parseClassOperation(trimmedValue) {
+            var split = splitOnWhitespace(trimmedValue);
+            if (split.length > 1) {
+                var operation = split[0];
+                var classDef = split[1].trim();
+                var cssClass;
+                var delay;
+                if (classDef.indexOf(":") > 0) {
+                    var splitCssClass = classDef.split(':');
+                    cssClass = splitCssClass[0];
+                    delay = parseInterval(splitCssClass[1]);
                 } else {
-                    cssClass = trimmedValue;
+                    cssClass = classDef;
+                    delay = 100;
                 }
-                setTimeout(function () {
-                    elt.classList[operation].call(elt.classList, cssClass);
-                }, delay);
+                return {
+                    operation:operation,
+                    cssClass:cssClass,
+                    delay:delay
+                }
+            } else {
+                return null;
+            }
+        }
+
+        function processClassList(elt, classList, operation) {
+            forEach(classList.split("&"), function (run) {
+                var currentRunTime = 0;
+                forEach(run.split(","), function(value){
+                    var cssClass = "";
+                    var trimmedValue = value.trim();
+                    var classOperation = parseClassOperation(trimmedValue);
+                    if (classOperation) {
+                        if (classOperation.operation === "toggle") {
+                            setTimeout(function () {
+                                setInterval(function () {
+                                    elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                                }, classOperation.delay);
+                            }, currentRunTime);
+                            currentRunTime = currentRunTime + classOperation.delay;
+                        } else {
+                            currentRunTime = currentRunTime + classOperation.delay;
+                            setTimeout(function () {
+                                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                            }, currentRunTime);
+                        }
+                    }
+                });
             });
         }
 
@@ -326,7 +362,7 @@ var kutty = kutty || (function () {
             var trigger = getTrigger(elt);
             var nodeData = getInternalData(elt);
             if (trigger.trim().indexOf("every ") === 0) {
-                var args = trigger.split(/\s+/);
+                var args = splitOnWhitespace(trigger);
                 var intervalStr = args[1];
                 if (intervalStr) {
                     var interval = parseInterval(intervalStr);
@@ -517,13 +553,9 @@ var kutty = kutty || (function () {
                 if (sseSrc) {
                     initSSESource(elt, sseSrc);
                 }
-                var addClass = getAttributeValue(elt, 'kt-add-class');
+                var addClass = getAttributeValue(elt, 'kt-classes');
                 if (addClass) {
-                    processClassList(elt, addClass, "add");
-                }
-                var removeClass = getAttributeValue(elt, 'kt-remove-class');
-                if (removeClass) {
-                    processClassList(elt, removeClass, "remove");
+                    processClassList(elt, addClass);
                 }
             }
             if (elt.children) { // IE

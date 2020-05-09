@@ -7,8 +7,8 @@ title: </> kutty - Attributes
 
 | Attribute | Description |
 |-----------|-------------|
-| kt-add-class | TODO - Description
 | kt-boost | TODO - Description
+| [kt-classes](/attributes/kt-classes) | timed modification of classes on an element
 | kt-confirm | TODO - Description
 | kt-delete | TODO - Description
 | kt-error-url | TODO - Description
@@ -22,11 +22,10 @@ title: </> kutty - Attributes
 | kt-prompt | TODO - Description
 | kt-push-url | TODO - Description
 | kt-put | TODO - Description
-| kt-remove-class | TODO - Description
 | kt-select | TODO - Description
 | kt-settle-delay | TODO - Description
 | kt-sse-src | TODO - Description
-| kt-swap | TODO - Description
+| [kt-swap](/attributes/kt-swap) | TODO - Description
 | kt-swap-delay | TODO - Description
 | kt-swap-oob | TODO - Description
 | kt-target | TODO - Description
