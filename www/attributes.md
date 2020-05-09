@@ -12,11 +12,12 @@ title: </> kutty - Attributes
 | kt-confirm | TODO - Description
 | kt-delete | TODO - Description
 | kt-error-url | TODO - Description
-| kt-get | TODO - Description
+| [kt-get](/attributes/kt-get) | issue a `GET` to the specified URL
 | kt-history-element | TODO - Description
 | kt-include | TODO - Description
 | kt-indicator | TODO - Description
 | kt-patch | TODO - Description
+| [kt-params](/attributes/kt-params) | filter the parameters that will be submitted with a request
 | kt-post | TODO - Description
 | kt-prompt | TODO - Description
 | kt-push-url | TODO - Description

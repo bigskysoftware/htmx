@@ -42,7 +42,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 
 * The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
 
-{% include demo_ui %}
+{% include demo_ui.html.liquid %}
 
 <script>
     //=========================================================================

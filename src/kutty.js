@@ -812,6 +812,36 @@ var kutty = kutty || (function () {
             }
         }
 
+        function filterValues(inputValues, elt, verb) {
+            var paramsValue = getClosestAttributeValue(elt, "kt-params");
+            if (paramsValue) {
+                if (paramsValue === "none") {
+                    return {};
+                } else if (paramsValue === "*") {
+                    return inputValues;
+                } else if(paramsValue.indexOf("not ") === 0) {
+                    forEach(paramsValue.substr(4).split(","), function (value) {
+                        value = value.trim();
+                        delete inputValues[value];
+                    });
+                    return inputValues;
+                } else {
+                    var newValues = {}
+                    forEach(paramsValue.split(","), function (value) {
+                        newValues[value] = inputValues[value];
+                    });
+                    return newValues;
+                }
+            } else {
+                // By default GET does not include parameters
+                if (verb === 'get') {
+                    return {};
+                } else {
+                    return inputValues;
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
@@ -836,16 +866,16 @@ var kutty = kutty || (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var inputValues = getInputValues(elt);
+            var inputValues = getInputValues(elt, verb);
+            var inputValues = filterValues(inputValues, elt, verb);
+
             if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
             var requestURL;
             if (verb === 'get') {
-                var includeQueryParams = getClosestAttributeValue("kt-get-params") === "true";
-                // TODO allow get parameter filtering
-                requestURL = path + (includeQueryParams ? "?" + urlEncode(inputValues) : "");
-                xhr.open('GET', requestURL, true);
+                var noValues = Object.keys(inputValues).length === 0;
+                xhr.open('GET', path + (noValues ? "" : "?" + urlEncode(inputValues)), true);
             } else {
                 requestURL = path;
                 xhr.open('POST', requestURL, true);
