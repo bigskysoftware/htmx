@@ -11,9 +11,9 @@ title: </> kutty - Attributes
 | [kt-classes](/attributes/kt-classes) | timed modification of classes on an element
 | [kt-confirm](/attributes/kt-confirm) | shows a confim() dialog before issuing a request
 | [kt-delete](/attributes/kt-delete) | issue a `DELETE` to the specified URL
-| kt-error-url | TODO - Description
+| [kt-error-url](/attributes/kt-error-url) | a URL to send client-side errors to
 | [kt-get](/attributes/kt-get) | issue a `GET` to the specified URL
-| kt-history-elt | TODO - Description
+| [kt-history-elt](/attributes/kt-history-elt) | the element to use for history snap-shotting & restoration
 | kt-include | TODO - Description
 | kt-indicator | TODO - Description
 | [kt-patch](/attributes/kt-patch) | TODO - Description
