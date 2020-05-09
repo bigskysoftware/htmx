@@ -118,6 +118,10 @@ var kutty = kutty || (function () {
             return arr1.concat(arr2);
         }
 
+        function splitOnWhitespace(trigger) {
+            return trigger.split(/\s+/);
+        }
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -208,19 +212,19 @@ var kutty = kutty || (function () {
             }
         }
 
-        function swapPrepend(target, fragment) {
+        function swapAfterBegin(target, fragment) {
             return insertNodesBefore(target, target.firstChild, fragment);
         }
 
-        function swapPrependBefore(target, fragment) {
+        function swapBeforeBegin(target, fragment) {
             return insertNodesBefore(parentElt(target), target, fragment);
         }
 
-        function swapAppend(target, fragment) {
+        function swapBeforeEnd(target, fragment) {
             return insertNodesBefore(target, null, fragment);
         }
 
-        function swapAppendAfter(target, fragment) {
+        function swapAfterEnd(target, fragment) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment);
         }
 
@@ -248,20 +252,19 @@ var kutty = kutty || (function () {
             return fragment;
         }
 
-        function swapResponse(target, elt, responseText) {
+        function swapResponse(swapStyle, target, elt, responseText) {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 var settleTasks = handleOutOfBandSwaps(fragment);
 
                 fragment = maybeSelectFromResponse(elt, fragment);
 
-                var swapStyle = getClosestAttributeValue(elt, "kt-swap");
                 switch(swapStyle) {
                     case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
-                    case "prepend": return concat(settleTasks, swapPrepend(target, fragment));
-                    case "prependBefore": return concat(settleTasks, swapPrependBefore(target, fragment));
-                    case "append": return concat(settleTasks, swapAppend(target, fragment));
-                    case "appendAfter": return concat(settleTasks, swapAppendAfter(target, fragment));
+                    case "afterbegin": return concat(settleTasks, swapAfterBegin(target, fragment));
+                    case "beforebegin": return concat(settleTasks, swapBeforeBegin(target, fragment));
+                    case "beforeend": return concat(settleTasks, swapBeforeEnd(target, fragment));
+                    case "afterend": return concat(settleTasks, swapAfterEnd(target, fragment));
                     default: return concat(settleTasks, swapInnerHTML(target, fragment));
                 }
             }
@@ -273,11 +276,11 @@ var kutty = kutty || (function () {
                     var triggers = JSON.parse(trigger);
                     for (var eventName in triggers) {
                         if (triggers.hasOwnProperty(eventName)) {
-                            var details = triggers[eventName];
-                            if (!isRawObject(details)) {
-                                details = {"value": details}
+                            var detail = triggers[eventName];
+                            if (!isRawObject(detail)) {
+                                detail = {"value": detail}
                             }
-                            triggerEvent(elt, eventName, details);
+                            triggerEvent(elt, eventName, detail);
                         }
                     }
                 } else {
@@ -303,22 +306,54 @@ var kutty = kutty || (function () {
             }
         }
 
-        function processClassList(elt, classList, operation) {
-            var values = classList.split(",");
-            forEach(values, function(value){
-                var cssClass = "";
-                var delay = 50;
-                var trimmedValue = value.trim();
-                if (trimmedValue.indexOf(":") > 0) {
-                    var split = trimmedValue.split(':');
-                    cssClass = split[0];
-                    delay = parseInterval(split[1]);
+        function parseClassOperation(trimmedValue) {
+            var split = splitOnWhitespace(trimmedValue);
+            if (split.length > 1) {
+                var operation = split[0];
+                var classDef = split[1].trim();
+                var cssClass;
+                var delay;
+                if (classDef.indexOf(":") > 0) {
+                    var splitCssClass = classDef.split(':');
+                    cssClass = splitCssClass[0];
+                    delay = parseInterval(splitCssClass[1]);
                 } else {
-                    cssClass = trimmedValue;
+                    cssClass = classDef;
+                    delay = 100;
                 }
-                setTimeout(function () {
-                    elt.classList[operation].call(elt.classList, cssClass);
-                }, delay);
+                return {
+                    operation:operation,
+                    cssClass:cssClass,
+                    delay:delay
+                }
+            } else {
+                return null;
+            }
+        }
+
+        function processClassList(elt, classList, operation) {
+            forEach(classList.split("&"), function (run) {
+                var currentRunTime = 0;
+                forEach(run.split(","), function(value){
+                    var cssClass = "";
+                    var trimmedValue = value.trim();
+                    var classOperation = parseClassOperation(trimmedValue);
+                    if (classOperation) {
+                        if (classOperation.operation === "toggle") {
+                            setTimeout(function () {
+                                setInterval(function () {
+                                    elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                                }, classOperation.delay);
+                            }, currentRunTime);
+                            currentRunTime = currentRunTime + classOperation.delay;
+                        } else {
+                            currentRunTime = currentRunTime + classOperation.delay;
+                            setTimeout(function () {
+                                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+                            }, currentRunTime);
+                        }
+                    }
+                });
             });
         }
 
@@ -326,7 +361,7 @@ var kutty = kutty || (function () {
             var trigger = getTrigger(elt);
             var nodeData = getInternalData(elt);
             if (trigger.trim().indexOf("every ") === 0) {
-                var args = trigger.split(/\s+/);
+                var args = splitOnWhitespace(trigger);
                 var intervalStr = args[1];
                 if (intervalStr) {
                     var interval = parseInterval(intervalStr);
@@ -362,9 +397,15 @@ var kutty = kutty || (function () {
             }
         }
 
-        function addEventListener(elt, verb, path, nodeData, trigger, cancel) {
+        function shouldCancel(elt) {
+            return elt.tagName === "FORM" ||
+                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
+                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') != 0);
+        }
+
+        function addEventListener(elt, verb, path, nodeData, trigger, explicitCancel) {
             var eventListener = function (evt) {
-                if(cancel) evt.preventDefault();
+                if(explicitCancel || shouldCancel(elt)) evt.preventDefault();
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
@@ -430,12 +471,12 @@ var kutty = kutty || (function () {
         }
 
         function initSSESource(elt, sseSrc) {
-            var details = {
-                initializer: function() { new EventSource(sseSrc, details.config) },
+            var detail = {
+                initializer: function() { new EventSource(sseSrc, detail.config) },
                 config:{withCredentials: true}
             };
-            triggerEvent(elt, "initSSE.kutty", {config:details})
-            var source = details.initializer();
+            triggerEvent(elt, "initSSE.kutty", {config:detail})
+            var source = detail.initializer();
             source.onerror = function (e) {
                 triggerEvent(elt, "sseError.kutty", {error:e, source:source});
                 maybeCloseSSESource(elt);
@@ -511,13 +552,9 @@ var kutty = kutty || (function () {
                 if (sseSrc) {
                     initSSESource(elt, sseSrc);
                 }
-                var addClass = getAttributeValue(elt, 'kt-add-class');
+                var addClass = getAttributeValue(elt, 'kt-classes');
                 if (addClass) {
-                    processClassList(elt, addClass, "add");
-                }
-                var removeClass = getAttributeValue(elt, 'kt-remove-class');
-                if (removeClass) {
-                    processClassList(elt, removeClass, "remove");
+                    processClassList(elt, addClass);
                 }
             }
             if (elt.children) { // IE
@@ -529,57 +566,63 @@ var kutty = kutty || (function () {
         // Event/Log Support
         //====================================================================
 
-        function sendError(elt, eventName, details) {
+        function sendError(elt, eventName, detail) {
             var errorURL = getClosestAttributeValue(elt, "kt-error-url");
             if (errorURL) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", errorURL);
                 xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "details" : details }));
+                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "detail" : detail }));
             }
         }
 
-        function makeEvent(eventName, details) {
+        function makeEvent(eventName, detail) {
             var evt;
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-                evt = new CustomEvent(eventName, {detail: details});
+                evt = new CustomEvent(eventName, {bubbles: true, cancelable: true, detail: detail});
             } else {
                 evt = getDocument().createEvent('CustomEvent');
-                evt.initCustomEvent(eventName, true, true, details);
+                evt.initCustomEvent(eventName, true, true, detail);
             }
             return evt;
         }
 
-        function triggerEvent(elt, eventName, details) {
-            details["elt"] = elt;
-            var event = makeEvent(eventName, details);
+        function triggerEvent(elt, eventName, detail) {
+            detail["elt"] = elt;
+            var event = makeEvent(eventName, detail);
             if (kutty.logger) {
-                kutty.logger(elt, eventName, details);
+                kutty.logger(elt, eventName, detail);
                 if (eventName.indexOf("Error") > 0) {
-                    sendError(elt, eventName, details);
+                    sendError(elt, eventName, detail);
                 }
             }
             var eventResult = elt.dispatchEvent(event);
-            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetails:details, originalEvent: event}));
+            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetail:detail, originalEvent: event}));
             return eventResult && allResult;
         }
 
         function addKuttyEventListener(arg1, arg2, arg3) {
             var target, event, listener;
             if (isFunction(arg1)) {
-                target = getDocument().body;
-                event = "all.kutty";
-                listener = arg1;
+                ready(function(){
+                    target = getDocument().body;
+                    event = "all.kutty";
+                    listener = arg1;
+                    target.addEventListener(event, listener);
+                })
             } else if (isFunction(arg2)) {
-                target = getDocument().body;
-                event = arg1;
-                listener = arg2;
+                ready(function () {
+                    target = getDocument().body;
+                    event = arg1;
+                    listener = arg2;
+                    target.addEventListener(event, listener);
+                })
             } else {
                 target = arg1;
                 event = arg2;
                 listener = arg3;
+                target.addEventListener(event, listener);
             }
-            return target.addEventListener(event, listener);
         }
 
         //====================================================================
@@ -800,6 +843,60 @@ var kutty = kutty || (function () {
             }
         }
 
+        function filterValues(inputValues, elt, verb) {
+            var paramsValue = getClosestAttributeValue(elt, "kt-params");
+            if (paramsValue) {
+                if (paramsValue === "none") {
+                    return {};
+                } else if (paramsValue === "*") {
+                    return inputValues;
+                } else if(paramsValue.indexOf("not ") === 0) {
+                    forEach(paramsValue.substr(4).split(","), function (value) {
+                        value = value.trim();
+                        delete inputValues[value];
+                    });
+                    return inputValues;
+                } else {
+                    var newValues = {}
+                    forEach(paramsValue.split(","), function (value) {
+                        newValues[value] = inputValues[value];
+                    });
+                    return newValues;
+                }
+            } else {
+                // By default GET does not include parameters
+                if (verb === 'get') {
+                    return {};
+                } else {
+                    return inputValues;
+                }
+            }
+        }
+
+        function getSwapSpecification(elt) {
+            var swapInfo = getClosestAttributeValue(elt, "kt-swap");
+            var swapSpec = {
+                "swapStyle" : "innerHTML",
+                "swapDelay" : 0,
+                "settleDelay" : 100
+            }
+            if (swapInfo) {
+                var split = splitOnWhitespace(swapSpec);
+                if (split.length > 0) {
+                    swapSpec["swapStyle"] = split[0];
+                    for (var i = 1; i < swapSpec.length; i++) {
+                        var modifier = swapSpec[i];
+                        if (modifier.indexOf("swap:") === 0) {
+                            swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
+                        }
+                        if (modifier.indexOf("settle:") === 0) {
+                            swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
+                        }
+                    }
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
@@ -824,15 +921,16 @@ var kutty = kutty || (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var inputValues = getInputValues(elt);
+            var inputValues = getInputValues(elt, verb);
+            var inputValues = filterValues(inputValues, elt, verb);
+
             if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
             // request type
             var requestURL;
             if (verb === 'get') {
                 var noValues = Object.keys(inputValues).length === 0;
-                requestURL = path + (noValues ? "" : "?" + urlEncode(inputValues));
-                xhr.open('GET', requestURL, true);
+                xhr.open('GET', path + (noValues ? "" : "?" + urlEncode(inputValues)), true);
             } else {
                 requestURL = path;
                 xhr.open('POST', requestURL, true);
@@ -862,17 +960,19 @@ var kutty = kutty || (function () {
                         if (this.status !== 204) {
                             // Success!
                             var resp = this.response;
-                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target})) return;
+                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target, response:resp})) return;
 
                             // Save current page
                             if (shouldSaveHistory) {
                                 saveHistory();
                             }
 
+                            var swapSpec = getSwapSpecification(elt);
+
                             target.classList.add("kutty-swapping");
                             var doSwap = function () {
                                 try {
-                                    var settleTasks = swapResponse(target, elt, resp);
+                                    var settleTasks = swapResponse(swapSpec.swapStyle, target, elt, resp);
                                     target.classList.remove("kutty-swapping");
                                     target.classList.add("kutty-settling");
                                     triggerEvent(elt, 'afterSwap.kutty', {xhr: xhr, target: target});
@@ -890,9 +990,8 @@ var kutty = kutty || (function () {
                                         triggerEvent(elt, 'afterSettle.kutty', {xhr: xhr, target: target});
                                     }
 
-                                    var settleDelayStr = getAttributeValue(elt, "kt-settle-delay") || "100ms";
-                                    if (settleDelayStr) {
-                                        setTimeout(doSettle, parseInterval(settleDelayStr))
+                                    if (swapSpec.settleDelay > 0) {
+                                        setTimeout(doSettle, swapSpec.settleDelay)
                                     } else {
                                         doSettle();
                                     }
@@ -902,9 +1001,8 @@ var kutty = kutty || (function () {
                                 }
                             };
 
-                            var swapDelayStr = getAttributeValue(elt, "kt-swap-delay");
-                            if (swapDelayStr) {
-                                setTimeout(doSwap, parseInterval(swapDelayStr))
+                            if (swapSpec.swapDelay > 0) {
+                                setTimeout(doSwap, parseInterval(swapSpec.swapDelay))
                             } else {
                                 doSwap();
                             }
@@ -944,8 +1042,9 @@ var kutty = kutty || (function () {
 
         // initialize the document
         ready(function () {
-            processNode(getDocument().body);
-            triggerEvent(elt, 'load.kutty', {elt: getDocument().body});
+            var body = getDocument().body;
+            processNode(body);
+            triggerEvent(body, 'load.kutty', {elt: body});
             window.onpopstate = function () {
                 restoreHistory();
             };
@@ -957,10 +1056,9 @@ var kutty = kutty || (function () {
 
         function onLoadHelper(callback) {
             kutty.on("load.kutty", function(evt) {
-                callback(evt.details.elt);
+                callback(evt.detail.elt);
             });
         }
-
 
         // Public API
         return {

@@ -252,14 +252,13 @@ var kutty = kutty || (function () {
             return fragment;
         }
 
-        function swapResponse(target, elt, responseText) {
+        function swapResponse(swapStyle, target, elt, responseText) {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 var settleTasks = handleOutOfBandSwaps(fragment);
 
                 fragment = maybeSelectFromResponse(elt, fragment);
 
-                var swapStyle = getClosestAttributeValue(elt, "kt-swap");
                 switch(swapStyle) {
                     case "outerHTML": return concat(settleTasks, swapOuterHTML(target, fragment));
                     case "afterbegin": return concat(settleTasks, swapAfterBegin(target, fragment));
@@ -874,6 +873,31 @@ var kutty = kutty || (function () {
             }
         }
 
+        function getSwapSpecification(elt) {
+            var swapInfo = getClosestAttributeValue(elt, "kt-swap");
+            var swapSpec = {
+                "swapStyle" : "innerHTML",
+                "swapDelay" : 0,
+                "settleDelay" : 100
+            }
+            if (swapInfo) {
+                var split = splitOnWhitespace(swapInfo);
+                if (split.length > 0) {
+                    swapSpec["swapStyle"] = split[0];
+                    for (var i = 1; i < swapSpec.length; i++) {
+                        var modifier = swapSpec[i];
+                        if (modifier.indexOf("swap:") === 0) {
+                            swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
+                        }
+                        if (modifier.indexOf("settle:") === 0) {
+                            swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
+                        }
+                    }
+                }
+            }
+            return swapSpec;
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
@@ -899,7 +923,8 @@ var kutty = kutty || (function () {
             var xhr = new XMLHttpRequest();
 
             var inputValues = getInputValues(elt, verb);
-            var inputValues = filterValues(inputValues, elt, verb);
+
+            inputValues = filterValues(inputValues, elt, verb);
 
             if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
 
@@ -944,10 +969,12 @@ var kutty = kutty || (function () {
                                 saveHistory();
                             }
 
+                            var swapSpec = getSwapSpecification(elt);
+
                             target.classList.add("kutty-swapping");
                             var doSwap = function () {
                                 try {
-                                    var settleTasks = swapResponse(target, elt, resp);
+                                    var settleTasks = swapResponse(swapSpec.swapStyle, target, elt, resp);
                                     target.classList.remove("kutty-swapping");
                                     target.classList.add("kutty-settling");
                                     triggerEvent(elt, 'afterSwap.kutty', {xhr: xhr, target: target});
@@ -965,9 +992,8 @@ var kutty = kutty || (function () {
                                         triggerEvent(elt, 'afterSettle.kutty', {xhr: xhr, target: target});
                                     }
 
-                                    var settleDelayStr = getAttributeValue(elt, "kt-settle-delay") || "100ms";
-                                    if (settleDelayStr) {
-                                        setTimeout(doSettle, parseInterval(settleDelayStr))
+                                    if (swapSpec.settleDelay > 0) {
+                                        setTimeout(doSettle, swapSpec.settleDelay)
                                     } else {
                                         doSettle();
                                     }
@@ -977,9 +1003,8 @@ var kutty = kutty || (function () {
                                 }
                             };
 
-                            var swapDelayStr = getAttributeValue(elt, "kt-swap-delay");
-                            if (swapDelayStr) {
-                                setTimeout(doSwap, parseInterval(swapDelayStr))
+                            if (swapSpec.swapDelay > 0) {
+                                setTimeout(doSwap, parseInterval(swapSpec.swapDelay))
                             } else {
                                 doSwap();
                             }

@@ -23,10 +23,8 @@ title: </> kutty - Attributes
 | kt-push-url | TODO - Description
 | kt-put | TODO - Description
 | kt-select | TODO - Description
-| kt-settle-delay | TODO - Description
 | kt-sse-src | TODO - Description
 | [kt-swap](/attributes/kt-swap) | TODO - Description
-| kt-swap-delay | TODO - Description
 | kt-swap-oob | TODO - Description
 | kt-target | TODO - Description
 | kt-trigger | TODO - Description
