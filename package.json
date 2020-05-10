@@ -14,7 +14,7 @@
   "files": [
     "LICENSE",
     "README.md",
-    "dist/*.js"
+    "dist/*.js",
     "dist/*.js.gz"
   ],
   "main": "dist/kutty.min.js",
