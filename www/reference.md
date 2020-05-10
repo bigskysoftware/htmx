@@ -7,36 +7,36 @@ title: </> kutty - Attributes
 
 | Attribute | Description |
 |-----------|-------------|
-| [kt-boost](/attributes/kt-boost) | converts anchors and forms to use AJAX requests
-| [kt-classes](/attributes/kt-classes) | timed modification of classes on an element
-| [kt-confirm](/attributes/kt-confirm) | shows a confim() dialog before issuing a request
-| [kt-delete](/attributes/kt-delete) | issues a `DELETE` to the specified URL
-| [kt-error-url](/attributes/kt-error-url) | a URL to send client-side errors to
-| [kt-get](/attributes/kt-get) | issues a `GET` to the specified URL
-| [kt-history-elt](/attributes/kt-history-elt) | the element to snapshot and restore during history navigation
-| [kt-include](/attributes/kt-include) | includes additional data in AJAX requests
-| [kt-indicator](/attributes/kt-indicator) | the element to put the `kutty-request` class on during the AJAX request
-| [kt-patch](/attributes/kt-patch) | issues a `PATCH` to the specified URL
-| [kt-params](/attributes/kt-params) | filters the parameters that will be submitted with a request
-| [kt-post](/attributes/kt-post) | issues a `POST` to the specified URL
-| [kt-prompt](/attributes/kt-prompt) | shows a prompt before submitting a request
-| [kt-push-url](/attributes/kt-push-url) | pushes the URL into the location bar, creating a new history entry
-| [kt-put](/attributes/kt-put) | issues a `PUT` to the specified URL
-| [kt-select](/attributes/kt-select) | selects a subset of the server response to process
-| [kt-sse-src](/attributes/kt-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
-| [kt-swap](/attributes/kt-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
-| [kt-swap-oob](/attributes/kt-swap) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
-| [kt-target](/attributes/kt-target) | specifies the target element to be swapped
-| [kt-trigger](/attributes/kt-trigger) | specifies the event that triggers the request
+| [`kt-boost`](/attributes/kt-boost) | converts anchors and forms to use AJAX requests
+| [`kt-classes`](/attributes/kt-classes) | timed modification of classes on an element
+| [`kt-confirm`](/attributes/kt-confirm) | shows a confim() dialog before issuing a request
+| [`kt-delete`](/attributes/kt-delete) | issues a `DELETE` to the specified URL
+| [`kt-error-url`](/attributes/kt-error-url) | a URL to send client-side errors to
+| [`kt-get`](/attributes/kt-get) | issues a `GET` to the specified URL
+| [`kt-history-elt`](/attributes/kt-history-elt) | the element to snapshot and restore during history navigation
+| [`kt-include`](/attributes/kt-include) | includes additional data in AJAX requests
+| [`kt-indicator`](/attributes/kt-indicator) | the element to put the `kutty-request` class on during the AJAX request
+| [`kt-patch`](/attributes/kt-patch) | issues a `PATCH` to the specified URL
+| [`kt-params`](/attributes/kt-params) | filters the parameters that will be submitted with a request
+| [`kt-post`](/attributes/kt-post) | issues a `POST` to the specified URL
+| [`kt-prompt`](/attributes/kt-prompt) | shows a prompt before submitting a request
+| [`kt-push-url`](/attributes/kt-push-url) | pushes the URL into the location bar, creating a new history entry
+| [`kt-put`](/attributes/kt-put) | issues a `PUT` to the specified URL
+| [`kt-select`](/attributes/kt-select) | selects a subset of the server response to process
+| [`kt-sse-src`](/attributes/kt-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
+| [`kt-swap`](/attributes/kt-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
+| [`kt-swap-oob`](/attributes/kt-swap) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
+| [`kt-target`](/attributes/kt-target) | specifies the target element to be swapped
+| [`kt-trigger`](/attributes/kt-trigger) | specifies the event that triggers the request
 
 ## CSS Class Reference
 
 | Class | Description |
 |-----------|-------------|
-| kutty-request | TODO
-| kutty-indicator | TODO
-| kutty-swapping | TODO
-| kutty-settling | TODO
+| `kutty-request` | Applied to either the element or the element specified with [`kt-indicator`](/attributes/kt-indicator) while a request is ongoing
+| `kutty-indicator` | A dynamically generated class that will toggle visible (opacity:1) when a `kutty-request` class is present
+| `kutty-swapping` | Applied to a target before any content is swapped, removed after it is swapped
+| `kutty-settling` | Applied to a target after content is swapped, removed after it is settled
 
 
 ## HTTP Header Reference

@@ -11,10 +11,11 @@ title: </> kutty - high power tools for html
 
 ## Introduction
 
-Kutty is a set of HTML extensions (attributes, request headers, etc.) that help you build 
-[advanced UX](/demo) with the simplicity and power of the hypertext we all know and love. 
+Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
+[advanced UX](/demo) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Kutty is a small (<6Kb min.gz'd), dependency-free & you can try it out quickly, without a huge rewrite.
+Kutty is small (<6Kb min.gz'd), dependency-free & you can try it out quickly, without a huge rewrite.
 
 ## Quick Start
 
@@ -27,9 +28,9 @@ Kutty is a small (<6Kb min.gz'd), dependency-free & you can try it out quickly, 
   </button>
 ```
 
-This annotation tells kutty:
+The `kt-post` and `kt-swap` attributes tell kutty:
 
-> "When a user clicks on this button, issue an AJAX request to /example, and replace the button with the response"
+> "When a user clicks on this button, issue an AJAX request to /example, and replace the entire button with the response"
 
 Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 

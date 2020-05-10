@@ -26,6 +26,7 @@ title: </> kutty - high power tools for html
 * [events & logging](#events)
 
 </div>
+
 </div>
 <div class="10 col">
 

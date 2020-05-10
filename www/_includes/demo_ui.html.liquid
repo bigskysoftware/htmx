@@ -28,9 +28,7 @@
         margin-bottom: 500px;
         padding-top: 12px;
     }
-    #request-info-toggler {
-        float: right;
-    }
+
 </style>
 <script>
     function toggleRequestInfo() {
@@ -44,10 +42,10 @@
     }
 </script>
 <div id="demo-server-info">
-    <div>Server Requests <a id="request-info-toggler" onclick="toggleRequestInfo()">&uparrow; Show</a></div>
+    <div>Server Requests<span id="request-count"></span> <a id="request-info-toggler" onclick="toggleRequestInfo()">&uparrow; Show</a></div>
     <div id="demo-activity" class="row">
         <div class="3 col" >
-            <ol id="demo-timeline" reversed>
+            <ol id="demo-timeline" reversed start="1">
             </ol>
         </div>
         <div id="demo-current-request" class="9 col">
