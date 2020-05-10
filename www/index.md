@@ -12,10 +12,10 @@ title: </> kutty - high power tools for html
 ## Introduction
 
 Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
-[advanced UX](/demo) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+[advanced UX](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Kutty is small (<6Kb min.gz'd), dependency-free & you can try it out quickly, without a huge rewrite.
+Kutty is small ([<6Kb min.gz'd](https://unpkg.com/kutty.org/dist/), dependency-free & you can try it out quickly, without a huge rewrite.
 
 ## Quick Start
 
