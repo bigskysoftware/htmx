@@ -1,0 +1,61 @@
+---
+layout: demo_layout.njk
+---
+        
+## Lazy Loading
+
+This example shows how to lazily load an element on a page.  We start with an initial
+state that looks like this:
+
+```html
+<div kt-get="/graph" kt-trigger="load">
+  <img class="kutty-indicator" width="200" src="/img/bars.svg"/>
+</div>
+```
+
+Which shows a progress indicator as we are loading the graph.  The graph is then
+loaded and faded gently into view via a settling CSS transition:
+
+```css
+.kutty-settling img {
+  opacity: 0;
+}
+img {
+ transition: opacity 300ms ease-in;
+}
+```
+
+<style>
+.kutty-settling img {
+  opacity: 0;
+}
+img {
+ transition: opacity 300ms ease-in;
+}
+</style>
+
+{% include demo_ui.html.liquid %}
+
+<script>
+    server.autoRespondAfter = 2000; // longer response for more drama
+
+    //=========================================================================
+    // Fake Server Side Code
+    //=========================================================================
+
+    // routes
+    init("/demo", function(request, params){
+      return lazyTemplate();
+    });
+    
+    onGet("/graph", function(request, params){
+      return "<img  src='/img/tokyo.png'>";
+    });
+    
+    // templates
+    function lazyTemplate(page) {
+      return `<div kt-get="/graph" kt-trigger="load">
+  <img class="kutty-indicator" width="200" src="/img/bars.svg"/>
+</div>`;
+    }
+</script>
