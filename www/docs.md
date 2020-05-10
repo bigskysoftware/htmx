@@ -205,15 +205,15 @@ notify the div if there was new news to get, rather than the steady requests tha
 
 When an AJAX request is issued it is often good to let the user know that something is happening, since the browser
 will not give them any feedback.  You can accomplish this in kutty by using the [kt-indicator](/attributes/kt-indicator)
-attribute, the `kutty-show-indicator` class and some CSS.
+attribute, the `kutty-request` class and some CSS.
 
-By default the `kutty-show-indicator` class will be put on the element issuing the request.  This can be used to show a
+By default the `kutty-request` class will be put on the element issuing the request.  This can be used to show a
 spinner gif, for example:
 
 ```html
   <style>
     .indicator { display: none }
-    .kutty-show-indicator .indicator { display: inline }
+    .kutty-request .indicator { display: inline }
   </style>
   <button kt-get="/click">
       Click Me!
@@ -221,13 +221,13 @@ spinner gif, for example:
   </button>
 ```
 
-If you want the `kutty-show-indicator` class added to a different element, you can use the [kt-indicator](/attributes/kt-indicator)
+If you want the `kutty-request` class added to a different element, you can use the [kt-indicator](/attributes/kt-indicator)
 attribute with a CSS selector to do so:
 
 ```html
   <style>
     .indicator { display: none }
-    .kutty-show-indicator .indicator { display: inline }
+    .kutty-request .indicator { display: inline }
   </style>
   <div id="parent-div">
       <button kt-get="/click" kt-indicator="#parent-div">
@@ -364,7 +364,7 @@ The order of operations in a kutty request are:
 
 * The element is triggered and begins a request
   * Values are gathered for the request
-  * The `kutty-show-indicator` class is applied to the appropriate elements
+  * The `kutty-request` class is applied to the appropriate elements
   * The request is then issued asynchronously via AJAX
     * Upon getting a response the target element is marked with the `kutty-swapping` class
     * An optional swap delay is applied (see the [kt-swap-delay](/attributes/kt-swap-delay) attribute)

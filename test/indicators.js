@@ -13,9 +13,9 @@ describe("kutty Indicator Tests", function(){
         this.server.respondWith("GET", "/test", "Clicked!");
         var btn = make('<button kt-get="/test">Click Me!</button>')
         btn.click();
-        btn.classList.contains("kutty-show-indicator").should.equal(true);
+        btn.classList.contains("kutty-request").should.equal(true);
         this.server.respond();
-        btn.classList.contains("kutty-show-indicator").should.equal(false);
+        btn.classList.contains("kutty-request").should.equal(false);
     });
 
     it('Indicator classes are properly put on element with explicit indicator', function()
@@ -25,12 +25,12 @@ describe("kutty Indicator Tests", function(){
         var a1 = make('<a id="a1"></a>')
         var a2 = make('<a id="a2"></a>')
         btn.click();
-        btn.classList.contains("kutty-show-indicator").should.equal(false);
-        a1.classList.contains("kutty-show-indicator").should.equal(true);
-        a2.classList.contains("kutty-show-indicator").should.equal(true);
+        btn.classList.contains("kutty-request").should.equal(false);
+        a1.classList.contains("kutty-request").should.equal(true);
+        a2.classList.contains("kutty-request").should.equal(true);
         this.server.respond();
-        btn.classList.contains("kutty-show-indicator").should.equal(false);
-        a1.classList.contains("kutty-show-indicator").should.equal(false);
-        a2.classList.contains("kutty-show-indicator").should.equal(false);
+        btn.classList.contains("kutty-request").should.equal(false);
+        a1.classList.contains("kutty-request").should.equal(false);
+        a2.classList.contains("kutty-request").should.equal(false);
     });
 })

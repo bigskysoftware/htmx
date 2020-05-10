@@ -736,7 +736,7 @@ var kutty = kutty || (function () {
                 indicators = [elt];
             }
             forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, "kutty-show-indicator");
+                ic.classList[action].call(ic.classList, "kutty-request");
             });
         }
 
