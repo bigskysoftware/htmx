@@ -7,6 +7,7 @@ server.getHTTPMethod = function(xhr) {
     return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
 }
 server.autoRespond = true;
+server.autoRespondAfter = 300;
 
 //====================================
 // Request Handling

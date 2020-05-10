@@ -9,12 +9,13 @@
         width: 100vw;
         background-color: whitesmoke;
         border-top: 2px solid gray;
-        overflow: scroll;
+        overflow: hide;
         margin: 0px;
     }
     #demo-server-info.show {
         max-height: 45vh;
         height: 500px;
+        overflow: scroll;
     }
     #demo-activity {
         height:300px
@@ -45,7 +46,7 @@
     <div>Server Requests<span id="request-count"></span> <a id="request-info-toggler" onclick="toggleRequestInfo()">&uparrow; Show</a></div>
     <div id="demo-activity" class="row">
         <div class="3 col" >
-            <ol id="demo-timeline" reversed start="1">
+            <ol id="demo-timeline" reversed>
             </ol>
         </div>
         <div id="demo-current-request" class="9 col">

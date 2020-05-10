@@ -804,6 +804,7 @@ var kutty = kutty || (function () {
             if (elt.type === "checkbox" || elt.type === "radio" ) {
                 return elt.checked;
             }
+            return true;
         }
 
         function processInputValue(processed, values, elt) {
