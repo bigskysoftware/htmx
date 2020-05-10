@@ -4,9 +4,73 @@ layout: demo_layout.njk
         
 ## Bulk Update
 
-The click to edit pattern provides a way to offer inline editing of all or part of a record without a page refresh.
+This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is 
+accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
+values in `POST`'s to two different endpoints: `activate` and `deactivate`:
 
-* The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
+```html
+<div kt-include="#checked-contacts" kt-target="#tbody">
+  <a class="btn" kt-put="/activate">Activate</a>
+  <a class="btn" kt-put="/deactivate">Deactivate</a>
+</div>
+
+<form id="checked-contacts">
+    <table>
+      <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="">
+          <td><input type='checkbox' name='ids' value='0'></td>
+          <td>Joe Smith</td>
+          <td>joe@smith.org</td>
+          <td>Active</td>
+        </tr>
+        <tr class="">
+          <td><input type='checkbox' name='ids' value='1'></td>
+          <td>Angie MacDowell</td>
+          <td>angie@macdowell.org</td>
+          <td>Active</td>
+        </tr>
+        <tr class="">
+          <td><input type='checkbox' name='ids' value='2'></td>
+          <td>Fuqua Tarkenton</td>
+          <td>fuqua@tarkenton.org</td>
+          <td>Active</td>
+        </tr>
+        <tr class="">
+          <td><input type='checkbox' name='ids' value='3'></td>
+          <td>Kim Yee</td>
+          <td>kim@yee.org</td>
+          <td>Inactive</td>
+        </tr>
+      </tbody>
+    </table>
+</form>
+```
+
+The server will either activate or deactivate the checked users and then rerender the `tbody` tag with
+updated rows.  It will apply the class `activate` or `deactivate` to rows that have been mutated.  This allows
+us to use a bit of CSS to flash a color helping the user see what happened:
+
+```css
+  .kutty-settling tr.deactivate td {
+    background: lightcoral;
+  }
+  .kutty-settling tr.activate td {
+    background: darkseagreen;
+  }
+  tr td {
+    transition: all 1.2s;
+  }
+```
+
+You can see a working examle of this code below.
 
 <style scoped="">
   .kutty-settling tr.deactivate td {
