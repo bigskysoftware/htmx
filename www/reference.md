@@ -27,7 +27,7 @@ title: </> kutty - Attributes
 | [kt-swap](/attributes/kt-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [kt-swap-oob](/attributes/kt-swap) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [kt-target](/attributes/kt-target) | specifies the target element to be swapped
-| kt-trigger | TODO - Description
+| [kt-trigger](/attributes/kt-trigger) | specifies the event that triggers the request
 
 ## CSS Class Reference
 
