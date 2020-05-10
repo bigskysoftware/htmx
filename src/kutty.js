@@ -999,7 +999,8 @@ var kutty = kutty || (function () {
             var requestURL;
             if (verb === 'get') {
                 var noValues = Object.keys(inputValues).length === 0;
-                xhr.open('GET', path + (noValues ? "" : "?" + urlEncode(inputValues)), true);
+                requestURL = path + (noValues ? "" : "?" + urlEncode(inputValues));
+                xhr.open('GET', requestURL, true);
             } else {
                 requestURL = path;
                 xhr.open('POST', requestURL, true);
