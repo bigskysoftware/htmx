@@ -6,13 +6,8 @@ title: </> kutty - high power tools for html
 <div class="2 col nav">
 
 **Contents** 
-<svg onclick="document.getElementById('contents').classList.toggle('show')" class="hamburger" viewBox="0 0 100 80" width="25" height="25" style="margin-bottom:-5px">
-<rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-<rect y="30" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-<rect y="60" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
-</svg>
 
-<div id="contents" class="collapse">
+<div id="contents">
 
 * [introduction](#introduction)
 * [installing](#installing)
@@ -81,7 +76,7 @@ Note that if you prefer, you can use the `data-` prefix when using kutty:
 ## <a name="installing"></a> [Installing](#installing)
 
 Kutty is a dependency-free javascript library.  It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or 
-downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/):
+downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/) or your other favorite NPM-based CDN:
 
 ``` html
     <script src="https://unpkg.com/kutty.org@0.0.1"></script>
@@ -89,7 +84,7 @@ downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/):
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-One of the primary features kutty provides are attributes to allow you to issue AJAX requests directly from HTML:
+One of the primary features kutty provides are attributes that allow you to issue AJAX requests directly from HTML:
 
 * [kt-get](/attributes/kt-get) - Issues a `GET` request to the given URL
 * [kt-post](/attributes/kt-post) - Issues a `POST` request to the given URL
@@ -126,20 +121,18 @@ when a mouse enters it:
    </div>
 ```
 
-If you want a request to only happen once, you can use the [kt-trigger-once](/attributes/kt-trigger-once) attribute:
+If you want a request to only happen once, you can use the `once` modifier for the trigger:
 
 ```html
-   <div kt-post="/mouse_entered" kt-trigger="mouseenter" 
-        kt-trigger-once="true">
+   <div kt-post="/mouse_entered" kt-trigger="mouseenter once"">
      [Here Mouse, Mouse!]
    </div>
 ```
 
-There are two additional modifiers you can use for trigger:
+There are few other modifiers you can use for trigger:
 
-* [kt-trigger-changed-only](/attributes/kt-trigger-changed-only) - when set to `true` the element will only issue a
-request if its value has changed
-*  [kt-trigger-delay](/attributes/kt-trigger-delay) - tells kutty to wait the given amount of time (e.g. `1s`) before
+* `changed` - only issue a request if the value of the element has changed
+*  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
 
 You can use these two attributes to implement a common UX pattern, [Live Search](/demo/live-search):
@@ -147,9 +140,9 @@ You can use these two attributes to implement a common UX pattern, [Live Search]
 ```html
    <input type="text" name="q" 
           kt-get="/trigger_delay" 
-          kt-trigger="keyup" 
+          kt-trigger="keyup changed delay:500ms" 
           kt-target="#search-results" 
-          kt-trigger-delay="500ms" placeholder="Search..."/>
+          placeholder="Search..."/>
     <div id="search-results"></div>
 ```
 
@@ -167,7 +160,8 @@ You can also use custom events to trigger requests if you have an advanced use c
 
 #### <a name="polling"></a> [Polling](#polling)
 
-If you want an element to poll the given URL rather than wait for an event, you can use the `every` syntax:
+If you want an element to poll the given URL rather than wait for an event, you can use the `every` syntax
+with [`ik-trigger`](/attributes/kt-trigger/):
 
 ```html
   <div kt-get="/news" trigger="every 2s"></div>
@@ -204,36 +198,42 @@ notify the div if there was new news to get, rather than the steady requests tha
 ### <a name="indicators"></a> [Request Indicators](#indicators)
 
 When an AJAX request is issued it is often good to let the user know that something is happening, since the browser
-will not give them any feedback.  You can accomplish this in kutty by using the [kt-indicator](/attributes/kt-indicator)
-attribute, the `kutty-request` class and some CSS.
+will not give them any feedback.  You can accomplish this in kutty by using `kutty-indicator` class:
 
-By default the `kutty-request` class will be put on the element issuing the request.  This can be used to show a
-spinner gif, for example:
+By default the `kutty-request` class will be put on the element issuing the request.  When paired with the `kutty-indicator`
+class this will end up showing the element with the `kutty-indicator` class on it during the request:
 
 ```html
-  <style>
-    .indicator { display: none }
-    .kutty-request .indicator { display: inline }
-  </style>
   <button kt-get="/click">
       Click Me!
-     <img class="indicator" src="/spinner.gif"/>
+     <img class="kutty-indicator" src="/spinner.gif"/>
   </button>
+```
+
+The `kutty-indicator` class uses opacity to hide and show the progress indicator.  If you would prefer another mechanism
+you can create your own CSS transition like so:
+
+```css
+    .kutty-indicator{
+        display:none;
+    }
+    .kutty-request .my-indicator{
+        display:inline;
+    }
+    .kutty-request.my-indicator{
+        display:inline;
+    }
 ```
 
 If you want the `kutty-request` class added to a different element, you can use the [kt-indicator](/attributes/kt-indicator)
 attribute with a CSS selector to do so:
 
 ```html
-  <style>
-    .indicator { display: none }
-    .kutty-request .indicator { display: inline }
-  </style>
-  <div id="parent-div">
-      <button kt-get="/click" kt-indicator="#parent-div">
+  <div>
+      <button kt-get="/click" kt-indicator="#indicator">
         Click Me!
       </button>
-      <img class="indicator" src="/spinner.gif"/>  
+      <img id="indicator" class="kutty-indicator" src="/spinner.gif"/>  
   </div>
 ```
 
@@ -245,9 +245,9 @@ use the  [kt-target](/attributes/kt-target) attribute, which takes a CSS selecto
 ```html
    <input type="text" name="q" 
           kt-get="/trigger_delay" 
-          kt-trigger="keyup" 
-          kt-target="#search-results" 
-          kt-trigger-delay="500ms" placeholder="Search..."/>
+          kt-trigger="keyup delay:500ms changed" 
+          kt-target="#search-results"
+          placeholder="Search..."/>
     <div id="search-results"></div>
 ```
 
@@ -304,7 +304,7 @@ do so.
 
 kutty provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
-If you want a given element to push its request into the browser navigation bar and add the current state of the page
+If you want a given element to push its request URL into the browser navigation bar and add the current state of the page
 to the browser's history, include the [kt-push](/attributes/kt-push) attribute:
 
 ```html
@@ -385,13 +385,23 @@ nice interfaces without javascript.
 
 ### Class Swapping
 
-Kutty supports two attributes, [kt-add-class](/attributes/kt-add-class) and [kt-remove-class](/attributes/kt-remove-class)
-that allow you to add or remove classes after a delay.  This can be used to create CSS transition effects.
+Kutty supports an attribute, [kt-classes](/attributes/kt-classes) that allows you to add, remove and toggle classes after 
+a delay.  This can be used to create CSS transition effects.
 
-### Timed Removal
+Here are some examples:
+Here are some examples:
 
-Kutty has another attribute, [kt-remove](/attributes/kt-add-class) that supports the timed removal of an element.  This
-can be useful, for examples, if you are flashing a message to the user and want it to disappear.
+```html
+<div kt-classes="add foo"/> <!-- adds the class "foo" after 100ms -->
+<div kt-classes="remove bar:1s"/> <!-- removes the class "bar" after 1s -->
+<div kt-classes="remove bar:1s, add foo:1s"/> <!-- removes the class "bar" after 1s
+                                               then adds the class "foo" 1s after that -->
+<div kt-classes="remove bar:1s & add foo:1s"/> <!-- removes the class "bar" and adds 
+                                                    class "foo" after 1s  -->
+<div kt-classes="toggle foo:1s"/> <!-- toggles the class "foo" every 1s -->
+```
+
+Full documentation is available [on the documentation page.](/attributes/kt-classes)
 
 ### Boosting
 
@@ -439,10 +449,9 @@ Kutty can also send errors to a URL that is specified with the [kt-error-url](/a
 this attribute is set on a parent element all events that have the word `Error` in their name will be sent to the given 
 URL as a JSON POST.  This can be useful for debugging client-side issues.
 
-
 ### Conclusion
 
-That's it!  Have fun with kutty, you can accomplish [quite a bit](/patterns) with very little code!
+And that's it!  Have fun with kutty: you can accomplish [quite a bit](/examples) without a lot of code.
 
 </div>
 </div>
