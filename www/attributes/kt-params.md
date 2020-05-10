@@ -23,5 +23,6 @@ and included in the URL, as per usual with a `GET`.
 
 ### Notes
 
+* `kt-params` is inherited and can be placed on a parent element
 * The default value for all `GET`'s is `none`, to avoid polluting URLs
 * All other requests default to `*`

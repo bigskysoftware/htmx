@@ -19,6 +19,7 @@ This example will cause the `button` to issue a `PATCH` to `/account` and swap t
  
 ### Notes
 
+* `kt-patch` is not inherited
 * Since most browsers do not support issuing an actual `PATCH`, the request will actually be issued
   as a `POST`, with the [`X-HTTP-Method-Override`](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields) header set to `DELETE`.
 * You can control the target of the swap using the [kt-target](/attributes/kt-target) attribute

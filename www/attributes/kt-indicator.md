@@ -79,5 +79,6 @@ This simulates what a spinner might look like in that situation:
 
 ### Notes
 
+* `kt-indicator` is inherited and can be placed on a parent element
 * In the absence of an explicit indicator, the `kutty-request` class will be added to the element triggering the
   request

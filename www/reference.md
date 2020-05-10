@@ -13,6 +13,7 @@ title: </> kutty - Attributes
 | [kt-delete](/attributes/kt-delete) | issue a `DELETE` to the specified URL
 | [kt-error-url](/attributes/kt-error-url) | a URL to send client-side errors to
 | [kt-get](/attributes/kt-get) | issue a `GET` to the specified URL
+| [kt-history-elt](/attributes/kt-history-elt) | the element to snapshot and restore during history navigation
 | [kt-include](/attributes/kt-include) | include additional data in AJAX requests
 | [kt-indicator](/attributes/kt-indicator) | the element to put the `kutty-request` class on during the AJAX request
 | [kt-patch](/attributes/kt-patch) | TODO - Description
@@ -34,7 +35,6 @@ title: </> kutty - Attributes
 |-----------|-------------|
 | kutty-request | TODO
 | kutty-indicator | TODO
-| kutty-history-elt | TODO
 | kutty-swapping | TODO
 | kutty-settling | TODO
 

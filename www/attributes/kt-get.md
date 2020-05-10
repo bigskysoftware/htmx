@@ -17,6 +17,7 @@ This example will cause the `div` to issue a `GET` to `/example` and swap the re
 
 ### Notes
 
+* `kt-get` is not inherited
 * By default `kt-get` does not include any parameters.  You can use the [kt-params](/attributes/kt-params)
   attribute to change this
 * You can control the target of the swap using the [kt-target](/attributes/kt-target) attribute

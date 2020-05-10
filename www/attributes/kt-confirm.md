@@ -17,3 +17,5 @@ Here is an example:
 ```
 
 ### Notes
+
+* `kt-confirm` is inherited and can be placed on a parent element

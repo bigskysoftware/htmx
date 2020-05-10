@@ -681,7 +681,7 @@ var kutty = kutty || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('.kutty-history-elt');
+            var historyElt = getDocument().querySelector('[kt-history-elt]');
             return historyElt || getDocument().body;
         }
 
@@ -736,7 +736,7 @@ var kutty = kutty || (function () {
                 triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('.kutty-history-elt') || fragment;
+                    fragment = fragment.querySelector('[kt-history-elt]') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };

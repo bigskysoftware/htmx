@@ -29,5 +29,6 @@ Here is an example of some boosted links:
 
 ### Notes
 
+* `kt-boost` is inherited and can be placed on a parent element
 * Only links that are to the same domain and that are not local anchors will be boosted
 * All requests are done via AJAX, so keep that in mind when doing things like redirects

@@ -21,3 +21,4 @@ When a client side error is caught by kutty it will be `POST`-ed to the given UR
 
 ### Notes
 
+* `kt-error-url` is inherited and can be placed on a parent element

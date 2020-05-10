@@ -49,6 +49,7 @@ These attributes can be used to synchronize kutty with the timing of CSS transit
 
 ### Notes
 
+* `kt-swap` is inherited and can be placed on a parent element
 * The default value of this attribute is `innerHTML`
 * The default swap delay is 0ms
 * The default settle delay is 100ms

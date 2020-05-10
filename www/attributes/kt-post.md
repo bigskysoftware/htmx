@@ -19,6 +19,7 @@ This example will cause the `button` to issue a `POST` to `/account/enable` and 
  
 ### Notes
 
+* `kt-post` is not inherited
 * You can control the target of the swap using the [kt-target](/attributes/kt-target) attribute
 * You can control the swap strategy by using the [kt-swa](/attributes/kt-swap) attribute
 * You can control what event triggers the request with the [kt-trigger](/attributes/kt-trigger) attribute

@@ -31,4 +31,5 @@ Here are some examples:
 
 ### Notes
 
+* `kt-classes` is not inherited
 * The default delay if none is specified is 100ms
