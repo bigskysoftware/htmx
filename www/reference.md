@@ -25,7 +25,7 @@ title: </> kutty - Attributes
 | [`kt-select`](/attributes/kt-select) | selects a subset of the server response to process
 | [`kt-sse-src`](/attributes/kt-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
 | [`kt-swap`](/attributes/kt-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
-| [`kt-swap-oob`](/attributes/kt-swap) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
+| [`kt-swap-oob`](/attributes/kt-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`kt-target`](/attributes/kt-target) | specifies the target element to be swapped
 | [`kt-trigger`](/attributes/kt-trigger) | specifies the event that triggers the request
 
