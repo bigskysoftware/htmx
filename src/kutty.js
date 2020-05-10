@@ -66,12 +66,46 @@ var kutty = kutty || (function () {
             while (elt = elt && parentElt(elt));
         }
 
-        function makeFragment(resp) {
-            // var range = getDocument().createRange();
-            // return range.createContextualFragment(resp);
+        function getStartTag(str) {
+            var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
+            var match = tagMatcher.exec( str );
+            if (match) {
+                return match[1].toLowerCase();
+            } else {
+                return "";
+            }
+        }
+
+        function parseHTML(resp, depth) {
             var parser = new DOMParser();
             var responseDoc = parser.parseFromString(resp, "text/html");
-            return responseDoc.body;
+            var responseNode = responseDoc.body;
+            while (depth > 0) {
+                depth--;
+                responseNode = responseNode.firstChild;
+            }
+            return responseNode;
+        }
+
+        function makeFragment(resp) {
+            var startTag = getStartTag(resp);
+            switch (startTag) {
+                case "thead":
+                case "tbody":
+                case "tfoot":
+                case "colgroup":
+                case "caption":
+                    return parseHTML("<table>" + resp + "</table>", 1);
+                case "col":
+                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
+                case "tr":
+                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
+                case "td":
+                case "th":
+                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                default:
+                    return parseHTML(resp, 0);
+            }
         }
 
         function isType(o, type) {
@@ -759,24 +793,39 @@ var kutty = kutty || (function () {
             return false;
         }
 
+        function shouldInclude(elt) {
+            if(elt.name === "" || elt.name == null || elt.disabled) {
+                return false;
+            }
+            // ignore "submitter" types (see jQuery src/serialize.js)
+            if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
+                return false;
+            }
+            if (elt.type === "checkbox" || elt.type === "radio" ) {
+                return elt.checked;
+            }
+        }
+
         function processInputValue(processed, values, elt) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
             } else {
                 processed.push(elt);
             }
-            var name = getRawAttribute(elt,"name");
-            var value = elt.value;
-            if (name && value) {
-                var current = values[name];
-                if(current) {
-                    if (Array.isArray(current)) {
-                        current.push(value);
+            if (shouldInclude(elt)) {
+                var name = getRawAttribute(elt,"name");
+                var value = elt.value;
+                if (name && value) {
+                    var current = values[name];
+                    if(current) {
+                        if (Array.isArray(current)) {
+                            current.push(value);
+                        } else {
+                            values[name] = [current, value];
+                        }
                     } else {
-                        values[name] = [current, value];
+                        values[name] = value;
                     }
-                } else {
-                    values[name] = value;
                 }
             }
             if (matches(elt, 'form')) {
@@ -794,7 +843,7 @@ var kutty = kutty || (function () {
             processInputValue(processed, values, elt);
 
             // include any explicit includes
-            var includes = getAttributeValue(elt, "kt-include");
+            var includes = getClosestAttributeValue(elt, "kt-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {

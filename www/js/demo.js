@@ -26,7 +26,7 @@ function parseParams(str) {
             var k = decode(e[1]);
             var v = decode(e[2]);
             if (params[k] !== undefined) {
-                if (!$.isArray(params[k])) {
+                if (!Array.isArray(params[k])) {
                     params[k] = [params[k]];
                 }
                 params[k].push(v);
@@ -103,7 +103,6 @@ function showTimelineEntry(id) {
     var children = document.getElementById("demo-timeline").children;
     for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        console.log(child.id);
         if (child.id == id + "-link" ) {
             child.classList.add('active');
         } else {
