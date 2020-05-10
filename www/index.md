@@ -5,7 +5,7 @@ title: </> kutty - high power tools for html
 
 <div class="dark-hero full-width" kt-classes="add appear">
   <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">k<a>u</a>tty</span></span>
-  <sub class="no-mobile"><i>high powered tools for HTML</i></sub>
+  <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
 
