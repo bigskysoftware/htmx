@@ -2,16 +2,14 @@
 
 * Dependency-free implementation of intercooler.js
 * Support IE11 (stretch: IE10)
-* < 10k in .min.gz form
+* < 6k in .min.gz form
 
 ## TODOS
 
+* `kutty-requests` class on body
 * polling cancellation API 205 code
 * meta config tag
-* simple logging API
-* hx-toggle-class
 * focus recapture
-
 * Testing
   * polling
   * merge
@@ -23,16 +21,12 @@
   * landing page
   * docs page 
   * examples page (steal intercooler)
-  * attributes page
-  * events page
-  * headers page
-
 
 ## Unsupported Intercooler Features
 
 * local actions
 * all request parameters
-* all response headers except X-*-Trigger
+* all response headers except X-*-Trigger, X-*-Push
 * dependencies
 * macros
 
