@@ -5,12 +5,15 @@
         bottom: 0;
         right: 0;
         left: 0;
-        max-height: 35vh;
-        height: 500px;
+        height: 50px;
         background-color: whitesmoke;
         border-top: 2px solid gray;
         overflow: scroll;
         margin: 0px;
+    }
+    #demo-server-info.show {
+        max-height: 35vh;
+        height: 500px;
     }
     #demo-activity {
         height:300px
@@ -23,9 +26,23 @@
     #demo-canvas {
         margin-bottom: 500px;
     }
+    #request-info-toggler {
+        float: right;
+    }
 </style>
+<script>
+    function toggleRequestInfo() {
+        var classList = document.getElementById("demo-server-info").classList;
+        classList.toggle("show");
+        if (classList.contains('show')) {
+            document.getElementById("request-info-toggler").innerHTML = "&downarrow; Hide"
+        } else {
+            document.getElementById("request-info-toggler").innerHTML = "&uparrow; Show"
+        }
+    }
+</script>
 <div id="demo-server-info">
-    <div>Server Requests</div>
+    <div>Server Requests <a id="request-info-toggler" onclick="toggleRequestInfo()">&uparrow; Show</a></div>
     <div id="demo-activity" class="row">
         <div class="3 col" >
             <ol id="demo-timeline" reversed>

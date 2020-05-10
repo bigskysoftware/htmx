@@ -642,7 +642,7 @@ var kutty = kutty || (function () {
         // History Support
         //====================================================================
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('.kt-history-elt');
+            var historyElt = getDocument().querySelector('.kutty-history-elt');
             return historyElt || getDocument().body;
         }
 
@@ -697,7 +697,7 @@ var kutty = kutty || (function () {
                 triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('.kt-history-elt') || fragment;
+                    fragment = fragment.querySelector('.kutty-history-elt') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 }
             };
@@ -736,7 +736,7 @@ var kutty = kutty || (function () {
                 indicators = [elt];
             }
             forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, "kutty-show-indicator");
+                ic.classList[action].call(ic.classList, "kutty-request");
             });
         }
 
@@ -1054,6 +1054,12 @@ var kutty = kutty || (function () {
                 getDocument().addEventListener('DOMContentLoaded', fn);
             }
         }
+
+        // insert kutty-indicator css rules
+        var sheet = getDocument().styleSheets[0];
+        sheet.insertRule(".kutty-indicator{opacity:0;transition: opacity 500ms ease-in;}\n" +
+            ".kutty-request .kutty-indicator{opacity:1}\n" +
+            ".kutty-request.kutty-indicator{opacity:1}\n", sheet.cssRules.length);
 
         // initialize the document
         ready(function () {
