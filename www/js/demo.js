@@ -122,6 +122,9 @@ function showTimelineEntry(id) {
 
 function pushActivityChip(name, id, content) {
     document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><a onclick="showTimelineEntry('${id}')">${name}</a></li>`);
+    if (content.length > 750) {
+        content = content.substr(0, 750) + "...";
+    }
     document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", `<div id="${id}">${content}</div>`);
     showTimelineEntry(id);
     Prism.highlightAll();

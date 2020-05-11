@@ -484,7 +484,7 @@ var kutty = kutty || (function () {
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
                     if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(issueRequest, parseInterval(triggerSpec.delay));
+                        elementData.delayed = setTimeout(issueRequest, triggerSpec.delay);
                     } else {
                         issueRequest();
                     }
@@ -932,8 +932,8 @@ var kutty = kutty || (function () {
                     return newValues;
                 }
             } else {
-                // By default GET does not include parameters
-                if (verb === 'get') {
+                // By default non-input GETs do not include parameters
+                if (verb === 'get'  && elt.value == null) {
                     return {};
                 } else {
                     return inputValues;
@@ -1136,11 +1136,20 @@ var kutty = kutty || (function () {
             });
         }
 
+        function logAll(){
+            kutty.logger = function(elt, event, data) {
+                if(console) {
+                    console.log(event, elt, data);
+                }
+            }
+        }
+
         // Public API
         return {
             processElement: processNode,
             on: addKuttyEventListener,
             onLoad: onLoadHelper,
+            logAll : logAll,
             version: "0.0.1",
             _:internalEval
         }
