@@ -81,6 +81,13 @@ function onPut(path, response) {
     });
 }
 
+function onPost(path, response) {
+    server.respondWith("POST", path, function(request){
+        let body = response(request, params(request));
+        request.respond(200, {}, body);
+    });
+}
+
 //====================================
 // Activites
 //====================================

@@ -9,7 +9,7 @@ state that looks like this:
 
 ```html
 <div kt-get="/graph" kt-trigger="load">
-  <img class="kutty-indicator" width="200" src="/img/bars.svg"/>
+  <img class="kutty-indicator" width="150" src="/img/bars.svg"/>
 </div>
 ```
 
@@ -55,7 +55,7 @@ img {
     // templates
     function lazyTemplate(page) {
       return `<div kt-get="/graph" kt-trigger="load">
-  <img class="kutty-indicator" width="200" src="/img/bars.svg"/>
+  <img class="kutty-indicator" width="120" src="/img/bars.svg"/>
 </div>`;
     }
 </script>
