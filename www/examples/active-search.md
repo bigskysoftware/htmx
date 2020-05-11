@@ -6,6 +6,44 @@ layout: demo_layout.njk
 
 This example actively searches a contacts database as the user enters text.
 
+We start with a search input and an empty table:
+
+```html
+<h3> 
+  Search Contacts 
+  <span class="kutty-indicator"> 
+    <img src="/img/bars.svg"/> Searching... 
+   </span> 
+</h3>
+<input class="form-control" type="text" 
+       name="search" placeholder="Begin Typing To Search Users..." 
+       kt-get="/search" 
+       kt-trigger="keyup changed delay:500ms" 
+       kt-target="#search-results" 
+       kt-indicator=".kutty-indicator">
+
+<table class="table">
+    <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+    </tr>
+    </thead>
+    <tbody id="search-results">
+    </tbody>
+</table>
+```
+
+The input issues a `GET` to `/search` on the `keyup` event and sets the body of the table to be the resulting content.
+
+We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
+we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
+value of the input (e.g. they hit an arrow key).  
+
+Finally, we show an indicator when the search is in flight with the `kt-indicator` attribute. 
+
+
 {% include demo_ui.html.liquid %}
 
 <script>
