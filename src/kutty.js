@@ -498,7 +498,7 @@ var kutty = kutty || (function () {
         function initScrollHandler() {
             if (!window['kuttyScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[kt-trigger='reveal']"), function (elt) {
+                    forEach(getDocument().querySelectorAll("[kt-trigger='revealed']"), function (elt) {
                         maybeReveal(elt);
                     });
                 };

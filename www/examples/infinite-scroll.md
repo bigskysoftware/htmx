@@ -24,6 +24,8 @@ The last element of the results will itself contain the listener to load the *ne
 {% include demo_ui.html.liquid %}
 
 <script>
+    server.autoRespondAfter = 1000; // longer response for more drama
+
     //=========================================================================
     // Fake Server Side Code
     //=========================================================================
@@ -63,9 +65,9 @@ The last element of the results will itself contain the listener to load the *ne
     
     // templates
     function tableTemplate(contacts) {
-      return `<table><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
+      return `<table kt-indicator=".kutty-indicator"><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
               ${rowsTemplate(1, contacts)}
-              </tbody></table>`
+              </tbody></table><center><img class="kutty-indicator" width="60" src="/img/bars.svg"></center>`
     }
 
     function rowsTemplate(page, contacts) {
