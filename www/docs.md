@@ -49,26 +49,33 @@ This anchor tag tells a browser:
 With that in mind, consider the following bit of HTML:
 
 ``` html
-  <div kt-post="/clicked">Click Me!</div>
+  <div kt-post="/clicked"
+       kt-trigger="clicked"
+       kt-target="#parent-div"
+       kt-swap="outerHTML">
+    Click Me!
+  </div>
 ```
 
 This tells kutty:
 
-> "When a user clicks on this div, issue an HTTP POST request to '/clicked' and load the response content into the inner 
-> html of this element"
+> "When a user clicks on this div, issue an HTTP POST request to '/clicked' and use the content from the response
+>  to replace the element with the id `parent-div` in the DOM"
 
-Kutty extends the basic idea of that anchor tag, but opens up many more possibilities: 
+Kutty extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly 
+within the language: 
 
-* Any element can issue a HTTP request
-* Any event can trigger the request (not just clicks or form submissions)
-* HTTP requests are done via AJAX
-* Different HTTP verbs can used
-* The response replaces the content of the element, rather than the entire page
+* Now any element, not just anchors and forms, can issue a HTTP request
+* Now any event, not just clicks or form submissions, can trigger requests
+* Now any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs), not just `GET` and `POST`, can be used
+* Now any element, not just the entire window, can be the target for update by the request
 
-When you are using kutty, you respond to the AJAX calls with *HTML* rather than *JSON*, often just a small amount of
-HTML rather than the whole page.
+Note that when you are using kutty, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
+within the [original web programming model]((https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)), 
+using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
+without even needing to really understand that concept.
 
-Note that if you prefer, you can use the `data-` prefix when using kutty:
+It's worth mentioning that, if you prefer, you can use the `data-` prefix when using kutty:
 
 ``` html
   <a data-kt-post="/click">Click Me!</a>
@@ -85,7 +92,7 @@ downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/) or your
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-One of the primary features kutty provides are attributes that allow you to issue AJAX requests directly from HTML:
+The primary feature of kutty is attributes that allow you to issue AJAX requests directly from HTML:
 
 * [kt-get](/attributes/kt-get) - Issues a `GET` request to the given URL
 * [kt-post](/attributes/kt-post) - Issues a `POST` request to the given URL
@@ -97,7 +104,9 @@ Each of these attributes takes a URL to issue an AJAX request to.  The element w
 type to the given URL when the element is [triggered](#triggers):
 
 ```html
-  <div kt-put="/messages">Put To Messages</div>
+  <div kt-put="/messages">
+    Put To Messages
+  </div>
 ```
 
 This tells the browser:
@@ -106,7 +115,7 @@ This tells the browser:
 
 ### <a name="triggers"></a> [Triggering Requests](#triggers)
 
-By default AJAX requests are triggered by the "natural" event of an element:
+By default, AJAX requests are triggered by the "natural" event of an element:
 
 * `input`, `textarea` & `select`: the `change` event
 * `form`: the `submit` event
@@ -165,7 +174,8 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with [`ik-trigger`](/attributes/kt-trigger/):
 
 ```html
-  <div kt-get="/news" trigger="every 2s"></div>
+  <div kt-get="/news" trigger="every 2s">
+  </div>
 ```
 
 This tells kutty
@@ -390,7 +400,6 @@ Kutty supports an attribute, [kt-classes](/attributes/kt-classes) that allows yo
 a delay.  This can be used to create CSS transition effects.
 
 Here are some examples:
-Here are some examples:
 
 ```html
 <div kt-classes="add foo"/> <!-- adds the class "foo" after 100ms -->
@@ -432,7 +441,7 @@ fact this is so common, you can use the helper function:
 ```
 This does the same thing as the first example, but is a little cleaner.  
 
-The full set of events can be seen [on the events page](/docs/events).
+The full set of events can be seen [on the reference page](/reference).
 
 ### Logging
 
