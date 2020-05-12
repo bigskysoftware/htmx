@@ -17,7 +17,7 @@ We start with a search input and an empty table:
 </h3>
 <input class="form-control" type="text" 
        name="search" placeholder="Begin Typing To Search Users..." 
-       kt-get="/search" 
+       kt-post="/search" 
        kt-trigger="keyup changed delay:500ms" 
        kt-target="#search-results" 
        kt-indicator=".kutty-indicator">
@@ -35,7 +35,7 @@ We start with a search input and an empty table:
 </table>
 ```
 
-The input issues a `GET` to `/search` on the `keyup` event and sets the body of the table to be the resulting content.
+The input issues a `POST` to `/search` on the `keyup` event and sets the body of the table to be the resulting content.
 
 We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
@@ -57,7 +57,7 @@ Finally, we show an indicator when the search is in flight with the `kt-indicato
       return searchUI();
     });
     
-    onGet(/\/search.*/, function(request, params){
+    onPost(/\/search.*/, function(request, params){
         var search = params['search'];
         var contacts = dataStore.findContactsMatching(search);
         return resultsUI(contacts);
@@ -74,7 +74,7 @@ Search Contacts
 
 <input class="form-control" type="text" 
        name="search" placeholder="Begin Typing To Search Users..." 
-       kt-get="/search" 
+       kt-post="/search" 
        kt-trigger="keyup changed delay:500ms" 
        kt-target="#search-results" 
        kt-indicator=".kutty-indicator">
