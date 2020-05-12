@@ -6,6 +6,7 @@
 
 ## TODOS
 
+* `kutty-on="myEvent: ...""` attribute for handling custom events
 * `kutty-requests` class on body
 * polling cancellation API 205 code
 * meta config tag
@@ -17,10 +18,14 @@
   * history
   * kt-boost
   * transition model for content swaps
-* build website with 11ty
-  * landing page
-  * docs page 
-  * examples page (steal intercooler)
+* kutty javascript API
+  * find
+  * findAll
+  * closest
+  * remove
+  * sequence(op1, op2)
+  * add/remove/toggleClass
+  * trigger
 
 ## Unsupported Intercooler Features
 

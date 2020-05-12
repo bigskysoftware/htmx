@@ -278,7 +278,7 @@ with any of the following values:
 * `beforeend` - appends the content after the last child inside the target
 * `afterend` - appends the content after the target in the targets parent element
 
-#### Out of Band Swaps
+#### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [kt-swap-oob](/attributes/kt-swap-oob) attribute in the *response* html:

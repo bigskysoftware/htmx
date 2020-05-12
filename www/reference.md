@@ -7,7 +7,7 @@ title: </> kutty - Attributes
 
 | Attribute | Description |
 |-----------|-------------|
-| [`kt-boost`](/attributes/kt-boost) | converts anchors and forms to use AJAX requests
+| [`kt-boost`](/attributes/kt-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`kt-classes`](/attributes/kt-classes) | timed modification of classes on an element
 | [`kt-confirm`](/attributes/kt-confirm) | shows a confim() dialog before issuing a request
 | [`kt-delete`](/attributes/kt-delete) | issues a `DELETE` to the specified URL
@@ -59,32 +59,32 @@ title: </> kutty - Attributes
 ### Response Headers
 | Header | Description |
 |-------|-------------|
-| X-KT-Trigger | allows you to trigger client side events, see the [documentation](/headers/x-kt-trigger) for more info
-| X-KT-Push | pushes a new url into the history stack
+| [`X-KT-Trigger`](/headers/x-kt-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-kt-trigger) for more info
+| `X-KT-Push` | pushes a new url into the history stack
 
 ## Event Reference
 
 | Event | Description |
 |-------|-------------|
-| afterOnLoad.kutty | TODO - Description
-| afterSettle.kutty | TODO - Description
-| afterSettle.kutty | TODO - Description
-| afterSwap.kutty | TODO - Description
-| beforeOnLoad.kutty | TODO - Description
-| beforeRequest.kutty | TODO - Description
-| beforeSwap.kutty | TODO - Description
-| historyCacheMiss.kutty | TODO - Description
-| historyCacheMissLoad.kutty | TODO - Description
-| historyRestore.kutty | TODO - Description
-| historyUpdate.kutty | TODO - Description
-| initSSE.kutty | TODO - Description
-| load.kutty | TODO - Description
-| noSSESourceError.kutty | TODO - Description
-| onLoadError.kutty | TODO - Description
-| oobErrorNoTarget.kutty | TODO - Description
-| prompt.kutty | TODO - Description
-| responseError.kutty | TODO - Description
-| sendError.kutty | TODO - Description
-| sseError.kutty | TODO - Description
-| swapError.kutty | TODO - Description
-| values.kutty | TODO - Description
+| [`afterOnLoad.kutty`](/events#afterOnLoad.kutty) | triggered after an AJAX request has finished
+| [`afterSettle.kutty`](/events#afterSettle.kutty)  | triggered after the DOM has settled
+| [`afterSwap.kutty`](/events#afterSwap.kutty)  | triggered after new content has been swapped in
+| [`beforeOnLoad.kutty`](/events#beforeOnLoad.kutty)  | triggered before any response processing occurs
+| [`beforeRequest.kutty`](/events#beforeRequest.kutty)  | triggered before an AJAX request is made
+| [`beforeSwap.kutty`](/events#beforeSwap.kutty)  | triggered before a swap is done
+| [`historyCacheMiss.kutty`](/events#historyCacheMiss.kutty)  | triggered on a cache miss in the history subsystem
+| [`historyCacheMissLoad.kutty`](/events#historyCacheMissLoad.kutty)  | triggered on a succesful remote retrieval 
+| [`historyCacheMissError.kutty`](/events#historyCacheMissError.kutty)  | triggered on a unsuccessful remote retrieval 
+| [`historyRestore.kutty`](/events#historyRestore.kutty)  | triggered when kutty handles a history restoration action
+| [`historyUpdate.kutty`](/events#historyUpdate.kutty)  | triggered when a new history element is added to the local cache
+| [`initSSE.kutty`](/events#initSSE.kutty) | triggered when a new Server Sent Event source is created
+| [`load.kutty`](/events#load.kutty)  | triggered when new content is added to the DOM
+| [`noSSESourceError.kutty`](/events#noSSESourceError.kutty)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
+| [`onLoadError.kutty`](/events#onLoadError.kutty)  | triggered when an exception occurs during the onLoad handling in kutty
+| [`oobErrorNoTarget.kutty`](/events#oobErrorNoTarget.kutty)  | triggered when an out of band element does not have a matching ID in the current DOM
+| [`prompt.kutty`](/events#prompt.kutty)  | triggered after a prompt is shown
+| [`responseError.kutty`](/events#responseError.kutty)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
+| [`sendError.kutty`](/events#sendError.kutty)  | triggered when a network error prevents an HTTP request from happening
+| [`sseError.kutty`](/events#sseError.kutty)  | triggered when an error occurs with a SSE source
+| [`swapError.kutty`](/events#swapError.kutty)  | triggered when an error occurs during the swap phase
+| [`parameters.kutty`](/events#parameters.kutty)  | triggered after parameters have been processed, can be used to include custom parameters
