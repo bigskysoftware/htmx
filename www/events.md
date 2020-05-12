@@ -209,7 +209,7 @@ This event is triggered when an error occurs during the swap phase
 This event is triggered after kutty has collected parameters for inclusion in the request.  It can be
 used to include or update the parameters that kutty will send:
 
-```html
+```javascript
 document.body.addEventListener('parameters.kutty', function(evt) {
     evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
 });

@@ -6,11 +6,6 @@
 
 ## TODOS
 
-* `kutty-on="myEvent: ...""` attribute for handling custom events
-* `kutty-requests` class on body
-* polling cancellation API 205 code
-* meta config tag
-* focus recapture
 * Testing
   * polling
   * merge
@@ -18,6 +13,12 @@
   * history
   * kt-boost
   * transition model for content swaps
+* `kutty-on="myEvent: ...""` attribute for handling custom events
+* `kutty-requests` class on body
+* local references (e.g. kt-get="#foo")
+* polling cancellation API 205 code
+* meta config tag
+* focus recapture
 * kutty javascript API
   * find
   * findAll
