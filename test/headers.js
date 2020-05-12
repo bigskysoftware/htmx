@@ -18,9 +18,9 @@ describe("kutty AJAX Headers Tests", function() {
         this.server.respond();
     })
 
-    it("should include the X-KT-Trigger-Id header", function(){
+    it("should include the X-KT-Trigger header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-KT-Trigger-Id'].should.equal('d1');
+            xhr.requestHeaders['X-KT-Trigger'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
         var div = make('<div id="d1" kt-get="/test"></div>');
@@ -38,9 +38,9 @@ describe("kutty AJAX Headers Tests", function() {
         this.server.respond();
     })
 
-    it("should include the X-KT-Target-Id header", function(){
+    it("should include the X-KT-Target header", function(){
         this.server.respondWith("GET", "/test", function(xhr){
-            xhr.requestHeaders['X-KT-Target-Id'].should.equal('d1');
+            xhr.requestHeaders['X-KT-Target'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
         var div = make('<div kt-target="#d1" kt-get="/test"></div><div id="d1" ></div>');
