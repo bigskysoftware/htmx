@@ -80,4 +80,4 @@ a `GET` to the `/chatroom` url whenever the `chatter` event is seen.
 
 ### Notes
 
-* `kt-target` is inherited and can be placed on a parent element
+* `kt-trigger` is not inherited

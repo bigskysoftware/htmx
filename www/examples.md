@@ -17,4 +17,5 @@ You can copy and paste them and then adjust them for your needs.
 | [Lazy Loading](/examples/lazy-load) | Demonstrates how to lazy load content
 | [Inline Validation](/examples/inline-validation) | Demonstrates how to lazy load content
 | [Infinite Scroll](/examples/infinite-scroll) | Demonstrates infinite scrolling of a page
-| [Active Search](/examples/active-search) | Demonstrates infinite scrolling of a page
+| [Active Search](/examples/active-search) | Demonstrates the active search box pattern
+| [Progress Bar](/examples/progress-bar) | Demonstrates a job-runner like progress bar

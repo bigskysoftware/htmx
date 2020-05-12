@@ -333,7 +333,7 @@ var kutty = kutty || (function () {
             var triggerSpec = {
                 "trigger" : "click"
             }
-            var explicitTrigger = getClosestAttributeValue(elt, 'kt-trigger');
+            var explicitTrigger = getAttributeValue(elt, 'kt-trigger');
             if (explicitTrigger) {
                 var tokens = splitOnWhitespace(explicitTrigger);
                 if (tokens.length > 0) {
@@ -536,7 +536,7 @@ var kutty = kutty || (function () {
             getInternalData(elt).sseSource = source;
         }
 
-        function processSSETrigger(sseEventName, elt, verb, path) {
+        function processSSETrigger(elt, verb, path, sseEventName) {
             var sseSource = getClosestMatch(elt, function (parent) {
                 return parent.sseSource;
             });
@@ -556,10 +556,17 @@ var kutty = kutty || (function () {
             }
         }
 
-        function loadImmediately(nodeData, elt, verb, path) {
-            if (!nodeData.loaded) {
-                nodeData.loaded = true;
-                issueAjaxRequest(elt, verb, path);
+        function loadImmediately(elt, verb, path, nodeData, delay) {
+            var load = function(){
+                if (!nodeData.loaded) {
+                    nodeData.loaded = true;
+                    issueAjaxRequest(elt, verb, path);
+                }
+            }
+            if (delay) {
+                setTimeout(load, delay);
+            } else {
+                load();
             }
         }
 
@@ -572,12 +579,12 @@ var kutty = kutty || (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     if (triggerSpec.sseEvent) {
-                        processSSETrigger(triggerSpec.sseEvent, elt, verb, path);
+                        processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
                     } else if (triggerSpec.trigger === "revealed") {
                         initScrollHandler();
                         maybeReveal(elt);
                     } else if (triggerSpec.trigger === "load") {
-                        loadImmediately(nodeData, elt, verb, path);
+                        loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                     } else if (triggerSpec.pollInterval) {
                         nodeData.polling = true;
                         processPolling(elt, verb, path, triggerSpec.pollInterval);
@@ -933,8 +940,8 @@ var kutty = kutty || (function () {
                     return newValues;
                 }
             } else {
-                // By default non-input GETs do not include parameters
-                if (verb === 'get'  && elt.value == null) {
+                // By default GETs do not include parameters
+                if (verb === 'get') {
                     return {};
                 } else {
                     return inputValues;
