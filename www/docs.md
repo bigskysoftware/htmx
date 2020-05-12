@@ -50,7 +50,7 @@ With that in mind, consider the following bit of HTML:
 
 ``` html
   <div kt-post="/clicked"
-       kt-trigger="clicked"
+       kt-trigger="click"
        kt-target="#parent-div"
        kt-swap="outerHTML">
     Click Me!
@@ -353,20 +353,21 @@ event, which you can handle.  In the event of a connection error, the `sendError
 kutty includes a number of useful headers in requests:
 
 * `X-KT-Request` - will be set to "true"
-* `X-KT-Trigger-Id` - will be set to the id of the element that triggered the request
+* `X-KT-Trigger` - will be set to the id of the element that triggered the request
 * `X-KT-Trigger-Name` - will be set to the name of the element that triggered the request
-* `X-KT-Target-Id` - will be set to the id of the target element
+* `X-KT-Target` - will be set to the id of the target element
 * `X-KT-Current-URL` - will be set to the URL of the browser
 * `X-KT-Prompt` - will be set to the value entered by the user when prompted via [kt-prompt](/attributes/kt-prompt)
 * `X-KT-Event-Target` - the id of the original target of the event that triggered the request
 * `X-KT-Active-Element` - the id of the current active element
+* `X-KT-Active-Element-Name` - the name of the current active element
 * `X-KT-Active-Element-Value` - the value of the current active element
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
 kutty supports two special response headers:
 
-* `X-KT-Trigger` - can be used to trigger client side events, see the [documentation](/events/X-KT-trigger) for examples.
+* `X-KT-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-kt-trigger) for examples.
 * `X-KT-Push` - can be used to push a new URL into the browsers address bar
 
 ### Request Order of Operations

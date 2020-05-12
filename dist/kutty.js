@@ -484,7 +484,7 @@ var kutty = kutty || (function () {
                         issueAjaxRequest(elt, verb, path, evt.target);
                     }
                     if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(issueRequest, parseInterval(triggerSpec.delay));
+                        elementData.delayed = setTimeout(issueRequest, triggerSpec.delay);
                     } else {
                         issueRequest();
                     }
@@ -498,7 +498,7 @@ var kutty = kutty || (function () {
         function initScrollHandler() {
             if (!window['kuttyScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[kt-trigger='reveal']"), function (elt) {
+                    forEach(getDocument().querySelectorAll("[kt-trigger='revealed']"), function (elt) {
                         maybeReveal(elt);
                     });
                 };
@@ -804,6 +804,7 @@ var kutty = kutty || (function () {
             if (elt.type === "checkbox" || elt.type === "radio" ) {
                 return elt.checked;
             }
+            return true;
         }
 
         function processInputValue(processed, values, elt) {
@@ -891,9 +892,9 @@ var kutty = kutty || (function () {
 
         function setRequestHeaders(xhr, elt, target, prompt, eventTarget) {
             setHeader(xhr, "Request", "true");
-            setHeader(xhr, "Trigger-Id", getRawAttribute(elt, "id"));
+            setHeader(xhr, "Trigger", getRawAttribute(elt, "id"));
             setHeader(xhr, "Trigger-Name", getRawAttribute(elt, "name"));
-            setHeader(xhr, "Target-Id", getRawAttribute(target, "id"));
+            setHeader(xhr, "Target", getRawAttribute(target, "id"));
             setHeader(xhr, "Current-URL", getDocument().location.href);
             if (prompt) {
                 setHeader(xhr, "Prompt", prompt);
@@ -903,6 +904,7 @@ var kutty = kutty || (function () {
             }
             if (getDocument().activeElement) {
                 setHeader(xhr, "Active-Element", getRawAttribute(getDocument().activeElement, "id"));
+                setHeader(xhr, "Active-Element-Name", getRawAttribute(getDocument().activeElement, "name"));
                 // noinspection JSUnresolvedVariable
                 if (getDocument().activeElement.value) {
                     setHeader(xhr, "Active-Element-Value", getDocument().activeElement.value);
@@ -931,8 +933,8 @@ var kutty = kutty || (function () {
                     return newValues;
                 }
             } else {
-                // By default GET does not include parameters
-                if (verb === 'get') {
+                // By default non-input GETs do not include parameters
+                if (verb === 'get'  && elt.value == null) {
                     return {};
                 } else {
                     return inputValues;
@@ -1135,11 +1137,20 @@ var kutty = kutty || (function () {
             });
         }
 
+        function logAll(){
+            kutty.logger = function(elt, event, data) {
+                if(console) {
+                    console.log(event, elt, data);
+                }
+            }
+        }
+
         // Public API
         return {
             processElement: processNode,
             on: addKuttyEventListener,
             onLoad: onLoadHelper,
+            logAll : logAll,
             version: "0.0.1",
             _:internalEval
         }

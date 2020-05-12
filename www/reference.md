@@ -44,22 +44,23 @@ title: </> kutty - Attributes
 ### Request Headers 
 | Header | Description |
 |-------|-------------|
-| X-HTTP-Method-Override | TODO - Description
-| X-KT-Request | TODO - Description
-| X-KT-Trigger-Id | TODO - Description
-| X-KT-Trigger-Name | TODO - Description
-| X-KT-Target-Id | TODO - Description
-| X-KT-Current-URL | TODO - Description
-| X-KT-Prompt | TODO - Description
-| X-KT-Event-Target | TODO - Description
-| X-KT-Active-Element | TODO - Description
-| X-KT-Active-Element-Value | TODO - Description
+| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
+| `X-KT-Request` | always `true`
+| `X-KT-Trigger` | the `id` of the triggered element if it exists
+| `X-KT-Trigger-Name` | the `name` of the triggered element if it exists
+| `X-KT-Target` | the `id` of the target element if it exists
+| `X-KT-Current-URL` | the current URL of the browser
+| `X-KT-Prompt` | the user response to an [ic-prompt](/attributes/kt-prompt)
+| `X-KT-Event-Target` | the `id` of the original event target 
+| `X-KT-Active-Element` | the `id` of the active element if it exists
+| `X-KT-Active-Element-Name` | the `name` of the active element if it exists
+| `X-KT-Active-Element-Value` | the `value` of the active element if it exists
 
 ### Response Headers
 | Header | Description |
 |-------|-------------|
-| X-KT-Trigger | TODO - Description
-| X-KT-Push | TODO - Description
+| X-KT-Trigger | allows you to trigger client side events, see the [documentation](/headers/x-kt-trigger) for more info
+| X-KT-Push | pushes a new url into the history stack
 
 ## Event Reference
 

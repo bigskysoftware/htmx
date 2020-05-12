@@ -892,9 +892,9 @@ var kutty = kutty || (function () {
 
         function setRequestHeaders(xhr, elt, target, prompt, eventTarget) {
             setHeader(xhr, "Request", "true");
-            setHeader(xhr, "Trigger-Id", getRawAttribute(elt, "id"));
+            setHeader(xhr, "Trigger", getRawAttribute(elt, "id"));
             setHeader(xhr, "Trigger-Name", getRawAttribute(elt, "name"));
-            setHeader(xhr, "Target-Id", getRawAttribute(target, "id"));
+            setHeader(xhr, "Target", getRawAttribute(target, "id"));
             setHeader(xhr, "Current-URL", getDocument().location.href);
             if (prompt) {
                 setHeader(xhr, "Prompt", prompt);
@@ -904,6 +904,7 @@ var kutty = kutty || (function () {
             }
             if (getDocument().activeElement) {
                 setHeader(xhr, "Active-Element", getRawAttribute(getDocument().activeElement, "id"));
+                setHeader(xhr, "Active-Element-Name", getRawAttribute(getDocument().activeElement, "name"));
                 // noinspection JSUnresolvedVariable
                 if (getDocument().activeElement.value) {
                     setHeader(xhr, "Active-Element-Value", getDocument().activeElement.value);
