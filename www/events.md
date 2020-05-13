@@ -204,13 +204,13 @@ This event is triggered when an error occurs during the swap phase
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
 
-### <a name="parameters.kutty"></a> Event - [`parameters.kutty`](#parameters.kutty)
+### <a name="configRequest.kutty"></a> Event - [`configRequest.kutty`](#configRequest.kutty)
 
 This event is triggered after kutty has collected parameters for inclusion in the request.  It can be
 used to include or update the parameters that kutty will send:
 
 ```javascript
-document.body.addEventListener('parameters.kutty', function(evt) {
+document.body.addEventListener('configRequest.kutty', function(evt) {
     evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
 });
 ```
@@ -221,8 +221,11 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`ic-select`](/attributes/ic-select)
+* `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.verb` - the HTTP verb in use
 
 ### <a name="targetError.kutty"></a> Event - [`targetError.kutty`](#targetError.kutty)
 

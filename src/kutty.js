@@ -1,5 +1,5 @@
 // noinspection JSUnusedAssignment
-var kutty = (function () {
+var kutty = kutty || (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch']
@@ -909,30 +909,28 @@ var kutty = (function () {
         // Ajax
         //====================================================================
 
-        function setHeader(xhr, name, value, noPrefix) {
-            xhr.setRequestHeader((noPrefix ? "" : "X-KT-") + name, value || "");
-        }
-
-        function setRequestHeaders(xhr, elt, target, prompt, eventTarget) {
-            setHeader(xhr, "Request", "true");
-            setHeader(xhr, "Trigger", getRawAttribute(elt, "id"));
-            setHeader(xhr, "Trigger-Name", getRawAttribute(elt, "name"));
-            setHeader(xhr, "Target", getRawAttribute(target, "id"));
-            setHeader(xhr, "Current-URL", getDocument().location.href);
+        function getHeaders(elt, target, prompt, eventTarget) {
+            var headers = {
+                "X-KT-Request" : "true",
+                "X-KT-Trigger" : getRawAttribute(elt, "id"),
+                "X-KT-Trigger-Name" : getRawAttribute(elt, "name"),
+                "X-KT-Target" : getRawAttribute(target, "id"),
+                "Current-URL" : getDocument().location.href,
+            }
             if (prompt) {
-                setHeader(xhr, "Prompt", prompt);
+                headers["X-KT-Prompt"] = prompt;
             }
             if (eventTarget) {
-                setHeader(xhr, "Event-Target", getRawAttribute(eventTarget, "id"));
+                headers["X-KT-Event-Target"] = getRawAttribute(eventTarget, "id");
             }
             if (getDocument().activeElement) {
-                setHeader(xhr, "Active-Element", getRawAttribute(getDocument().activeElement, "id"));
-                setHeader(xhr, "Active-Element-Name", getRawAttribute(getDocument().activeElement, "name"));
-                // noinspection JSUnresolvedVariable
+                headers["X-KT-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
+                headers["X-KT-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
                 if (getDocument().activeElement.value) {
-                    setHeader(xhr, "Active-Element-Value", getDocument().activeElement.value);
+                    headers["X-KT-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
                 }
             }
+            return headers;
         }
 
         function filterValues(inputValues, elt, verb) {
@@ -1019,32 +1017,45 @@ var kutty = (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var inputValues = getInputValues(elt, verb);
+            var headers = getHeaders(elt, target, prompt, eventTarget);
+            var rawParameters = getInputValues(elt, verb);
+            var filteredParameters = filterValues(rawParameters, elt, verb);
 
-            inputValues = filterValues(inputValues, elt, verb);
+            if (verb !== 'get') {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                if (verb !== 'post') {
+                    headers['X-HTTP-Method-Override'] = verb.toUpperCase();
+                }
+            }
 
-            if(!triggerEvent(elt, 'parameters.kutty', {parameters: inputValues, target:target})) return endRequestLock();
+            var requestConfig = {
+                parameters: filteredParameters,
+                unfilteredParameters:rawParameters,
+                headers:headers,
+                target:target,
+                verb:verb
+            };
+            if(!triggerEvent(elt, 'configRequest.kutty', requestConfig)) return endRequestLock();
 
             // request type
             var requestURL;
             if (verb === 'get') {
-                var noValues = Object.keys(inputValues).length === 0;
-                requestURL = path + (noValues ? "" : "?" + urlEncode(inputValues));
+                var noValues = Object.keys(filteredParameters).length === 0;
+                requestURL = path + (noValues ? "" : "?" + urlEncode(filteredParameters));
                 xhr.open('GET', requestURL, true);
             } else {
                 requestURL = path;
                 xhr.open('POST', requestURL, true);
-                setHeader(xhr,'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8', true);
-                if (verb !== 'post') {
-                    setHeader(xhr, 'X-HTTP-Method-Override', verb.toUpperCase(), true);
-                }
             }
 
-            // TODO  IE10 compatibility?
             xhr.overrideMimeType("text/html");
 
             // request headers
-            setRequestHeaders(xhr, elt, target, prompt, eventTarget);
+            for (var header in headers) {
+                if (headers.hasOwnProperty(header)) {
+                    if(headers[header]) xhr.setRequestHeader(header, headers[header]);
+                }
+            }
 
             var eventDetail = {xhr: xhr, target: target};
             xhr.onload = function () {
@@ -1129,7 +1140,7 @@ var kutty = (function () {
             }
             if(!triggerEvent(elt, 'beforeRequest.kutty', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
-            xhr.send(verb === 'get' ? null : urlEncode(inputValues));
+            xhr.send(verb === 'get' ? null : urlEncode(filteredParameters));
         }
 
         //====================================================================
@@ -1204,4 +1215,4 @@ var kutty = (function () {
             _:internalEval
         }
     }
-)() || kutty;
+)();

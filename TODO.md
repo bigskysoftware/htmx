@@ -4,27 +4,34 @@
 * Support IE11 (stretch: IE10)
 * < 6k in .min.gz form
 
-## TODOS
+## Launch TODOS
+
+* Clean up request information gathering
+* Clean up event naming
+* Testing
+  * checkbox inputs
+  * table elements in responses
+  * X-KT-Trigger response header
+  * events
+* Blog Post
+* Move to development branch
+* Publish 0.0.1
+
+## Post-Launch TODOS
 
 * Testing
   * interval parsing
-  * table elements in responses
   * scrolling/'revealed' event
-  * checkbox inputs
   * kt-swap-oob (verify, chrome coverage tool bad?)
-  * X-KT-Trigger response header
   * SSE stuff
   * kt-trigger delay
   * class operation parsing
   * class toggling
   * transition model for content swaps
 
+## Features
 
 * `kutty-on="myEvent: ...""` attribute for handling custom events
-* `kutty-requests` class on body
-* local references (e.g. kt-get="#foo")
-* polling cancellation API 205 code
-* focus recapture
 * kutty javascript API
   * find
   * findAll
@@ -33,6 +40,12 @@
   * sequence(op1, op2)
   * add/remove/toggleClass
   * trigger
+* `kutty-requests` class on body
+* local references (e.g. kt-get="#foo")
+* polling cancellation API 205 code
+* focus recapture
+* Move to weakmap for kutty node info?  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
+* Scroll handler use https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API if available?
 
 ## Unsupported Intercooler Features
 
@@ -47,4 +60,3 @@
 * http://youmightnotneedjquery.com/
 * http://intercoolerjs.org/docs.html
 * http://intercoolerjs.org/reference.html
-* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
