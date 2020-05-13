@@ -305,5 +305,83 @@ describe("GENERAL - kutty AJAX Tests", function(){
         div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
     });
 
+    it('properly handles checkbox inputs', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = parseParams(xhr.requestBody);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form kt-post="/test" kt-trigger="click">' +
+            '<input id="cb1" name="c1" value="cb1" type="checkbox">'+
+            '<input id="cb2" name="c1" value="cb2" type="checkbox">'+
+            '<input id="cb3" name="c1" value="cb3" type="checkbox">'+
+            '<input id="cb4" name="c2" value="cb4"  type="checkbox">'+
+            '<input id="cb5" name="c2" value="cb5"  type="checkbox">'+
+            '<input id="cb6" name="c3" value="cb6"  type="checkbox">'+
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({});
+
+        byId("cb1").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:"cb1"});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb2"]});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = true;
+        byId("cb3").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb2", "cb3"]});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = true;
+        byId("cb3").checked = true;
+        byId("cb4").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb2", "cb3"], c2:"cb4"});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = true;
+        byId("cb3").checked = true;
+        byId("cb4").checked = true;
+        byId("cb5").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb2", "cb3"], c2:["cb4", "cb5"]});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = true;
+        byId("cb3").checked = true;
+        byId("cb4").checked = true;
+        byId("cb5").checked = true;
+        byId("cb6").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb2", "cb3"], c2:["cb4", "cb5"], c3:"cb6"});
+
+        byId("cb1").checked = true;
+        byId("cb2").checked = false;
+        byId("cb3").checked = true;
+        byId("cb4").checked = false;
+        byId("cb5").checked = true;
+        byId("cb6").checked = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({c1:["cb1", "cb3"], c2:"cb5", c3:"cb6"});
+
+    });
+
 
 })

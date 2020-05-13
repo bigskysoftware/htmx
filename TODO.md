@@ -6,7 +6,6 @@
 
 ## Launch TODOS
 
-* Clean up event naming
 * Testing
   * checkbox inputs
   * table elements in responses
@@ -18,6 +17,7 @@
 
 ## Post-Launch TODOS
 
+* Clean up event naming
 * Testing
   * interval parsing
   * scrolling/'revealed' event
@@ -30,6 +30,7 @@
 
 ## Features
 
+* ctrl-click on boosted anchors let's tab open normally
 * `kutty-on="myEvent: ...""` attribute for handling custom events
 * kutty javascript API
   * find
