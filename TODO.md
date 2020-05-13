@@ -6,7 +6,6 @@
 
 ## Launch TODOS
 
-* Clean up request information gathering
 * Clean up event naming
 * Testing
   * checkbox inputs

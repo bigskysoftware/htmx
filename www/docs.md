@@ -25,7 +25,7 @@ title: </> kutty - high power tools for html
 * [requests & responses](#requests)
 * [misc](#misc)
 * [events & logging](#events)
-* [configuring](#configuring)
+* [configuring](#config)
 
 </div>
 
@@ -466,7 +466,7 @@ fact this is so common, you can use the helper function:
 ```
 This does the same thing as the first example, but is a little cleaner.  
 
-The full set of events can be seen [on the reference page](/reference).
+The full set of events can be seen [on the reference page](/reference#events).
 
 ### Logging
 
@@ -484,7 +484,15 @@ Kutty can also send errors to a URL that is specified with the [kt-error-url](/a
 this attribute is set on a parent element all events that have the word `Error` in their name will be sent to the given 
 URL as a JSON POST.  This can be useful for debugging client-side issues.
 
-## <a name="configuring"></a>[Conclusion](#configuring)
+Kutty includes a helper method:
+
+```javascript
+  kutty.logAll();
+```
+
+If you want to log everything while developing.
+
+## <a name="config"></a>[Configuring kutty](#config)
 
 Kutty allows you to configure a few defaults:
 

@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> kutty - Attributes
 ---
 
-## Attribute Reference
+## <a name="attributes"></a> [Attribute Reference](#attributes)
 
 | Attribute | Description |
 |-----------|-------------|
@@ -29,7 +29,7 @@ title: </> kutty - Attributes
 | [`kt-target`](/attributes/kt-target) | specifies the target element to be swapped
 | [`kt-trigger`](/attributes/kt-trigger) | specifies the event that triggers the request
 
-## CSS Class Reference
+## <a name="classes"></a> [CSS Class Reference](#classes)
 
 | Class | Description |
 |-----------|-------------|
@@ -39,9 +39,10 @@ title: </> kutty - Attributes
 | `kutty-swapping` | Applied to a target before any content is swapped, removed after it is swapped
 
 
-## HTTP Header Reference
+## <a name="headers"></a> [HTTP Header Reference](#headers)
 
-### Request Headers 
+### <a name="request_headers"></a> [Request Headers](#request_headers)
+
 | Header | Description |
 |-------|-------------|
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
@@ -56,13 +57,14 @@ title: </> kutty - Attributes
 | `X-KT-Trigger-Name` | the `name` of the triggered element if it exists
 | `X-KT-Trigger` | the `id` of the triggered element if it exists
 
-### Response Headers
+### <a name="response_headers"></a> [Response Headers](#response_headers)
+
 | Header | Description |
 |-------|-------------|
 | `X-KT-Push` | pushes a new url into the history stack
 | [`X-KT-Trigger`](/headers/x-kt-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-kt-trigger) for more info
 
-## Event Reference
+## <a name="events"></a> [Event Reference](#events)
 
 | Event | Description |
 |-------|-------------|
