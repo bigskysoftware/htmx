@@ -1,4 +1,4 @@
-describe("BOOTSTRAP - kutty AJAX Tests", function(){
+describe("GENERAL - kutty AJAX Tests", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();

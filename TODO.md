@@ -7,9 +7,6 @@
 ## TODOS
 
 * Testing
-  * history
-  * polling
-  * kt-boost
   * interval parsing
   * table elements in responses
   * scrolling/'revealed' event
@@ -27,7 +24,6 @@
 * `kutty-requests` class on body
 * local references (e.g. kt-get="#foo")
 * polling cancellation API 205 code
-* meta config tag
 * focus recapture
 * kutty javascript API
   * find

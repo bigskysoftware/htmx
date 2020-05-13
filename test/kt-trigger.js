@@ -67,5 +67,20 @@ describe("kt-trigger attribute", function(){
         div.innerHTML.should.equal("Requests: 1");
     });
 
+    it('polling works', function(complete)
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+            if (requests > 5) {
+                complete();
+            }
+        });
+        this.server.autoRespond = true;
+        this.server.autoRespondAfter = 0;
+        make('<div kt-trigger="every 10ms" kt-get="/test"/>');
+    });
+
 
 })

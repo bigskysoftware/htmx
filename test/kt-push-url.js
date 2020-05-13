@@ -24,14 +24,26 @@ describe("kt-push-url attribute", function() {
     });
 
     it("restore should return old value", function () {
-        this.server.respondWith("GET", "/test", "second");
-        getWorkArea().innerHTML.should.be.equal("");
-        var div = make('<div kt-push-url="true" kt-get="/test">first</div>');
-        div.click();
+        this.server.respondWith("GET", "/test1", '<div id="d2" kt-push-url="true" kt-get="/test2" kt-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2", '<div id="d3" kt-push-url="true" kt-get="/test3" kt-swap="outerHTML settle:0">test2</div>');
+
+        make('<div id="d1" kt-push-url="true" kt-get="/test1" kt-swap="outerHTML settle:0">init</div>');
+
+        byId("d1").click();
         this.server.respond();
-        getWorkArea().textContent.should.equal("second")
-        kutty._('restoreHistory')(location.pathname+location.search)
-        getWorkArea().textContent.should.equal("first")
+        var workArea = getWorkArea();
+        workArea.textContent.should.equal("test1")
+
+        byId("d2").click();
+        this.server.respond();
+        workArea.textContent.should.equal("test2")
+
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+
+        cache.length.should.equal(2);
+        kutty._('restoreHistory')("/test1")
+        this.server.respond();
+        getWorkArea().textContent.should.equal("test1")
     });
 
     it("cache should only store 10 entries", function () {
