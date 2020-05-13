@@ -1,77 +1,77 @@
 describe("kt-push-url attribute", function() {
 
+    var KUTTY_HISTORY_CACHE = "kutty-history-cache";
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
+        localStorage.removeItem(KUTTY_HISTORY_CACHE);
     });
     afterEach(function () {
         this.server.restore();
         clearWorkArea();
+        localStorage.removeItem(KUTTY_HISTORY_CACHE);
     });
 
-    it("should handle a basic back button click", function (done) {
+    it("navigation should push an element into the cache ", function () {
         this.server.respondWith("GET", "/test", "second");
-
         getWorkArea().innerHTML.should.be.equal("");
         var div = make('<div kt-push-url="true" kt-get="/test">first</div>');
         div.click();
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
-        history.back();
-        setTimeout(function(){
-            getWorkArea().textContent.should.equal("first");
-            done();
-        }, 20);
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        cache.length.should.equal(1);
     });
 
-    it("should handle two forward clicks then back twice", function (done) {
-        var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
-            i++;
-            xhr.respond(200, {}, "" + i);
-        });
-
-        getWorkArea().innerHTML.should.equal("");
-        var div = make('<div kt-push-url="true" kt-get="/test" class="">0</div>');
-        div.click();
-        this.server.respond();
-        getWorkArea().textContent.should.equal("1")
-
-        div.click();
-        this.server.respond();
-        getWorkArea().textContent.should.equal("2")
-
-        history.back();
-        setTimeout(function(){
-            getWorkArea().textContent.should.equal("1");
-            history.back();
-            setTimeout(function(){
-                getWorkArea().textContent.should.equal("0");
-                done();
-            }, 20);
-        }, 20);
-    })
-
-    it("should handle a back, forward, back button click", function (done) {
+    it("restore should return old value", function () {
         this.server.respondWith("GET", "/test", "second");
-
-        getWorkArea().innerHTML.should.equal("");
-        var div = make('<div kt-push-url="true" kt-get="/test" class="">first</div>');
+        getWorkArea().innerHTML.should.be.equal("");
+        var div = make('<div kt-push-url="true" kt-get="/test">first</div>');
         div.click();
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
-        history.back();
-        setTimeout(function(){
-            getWorkArea().textContent.should.equal("first");
-            history.forward();
-            setTimeout(function() {
-                getWorkArea().textContent.should.equal("second");
-                history.back();
-                setTimeout(function() {
-                    getWorkArea().textContent.should.equal("first");
-                    done();
-                }, 20);
-            }, 20);
-        }, 20);
-    })
+        kutty._('restoreHistory')(location.pathname+location.search)
+        getWorkArea().textContent.should.equal("first")
+    });
+
+    it("cache should only store 10 entries", function () {
+        var x = 0;
+        this.server.respondWith("GET", /test.*/, function(xhr){
+            x++;
+            xhr.respond(200, {}, '<div id="d1" kt-push-url="true" kt-get="/test' + x + '" kt-swap="outerHTML settle:0"></div>')
+        });
+        getWorkArea().innerHTML.should.be.equal("");
+        make('<div id="d1" kt-push-url="true" kt-get="/test" kt-swap="outerHTML settle:0"></div>');
+        for (var i = 0; i < 20; i++) { // issue 20 requests
+            byId("d1").click();
+            this.server.respond();
+        }
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        cache.length.should.equal(10); // should only be 10 elements
+    });
+
+    it("cache miss should issue another GET", function () {
+        this.server.respondWith("GET", "/test1", '<div id="d2" kt-push-url="true" kt-get="/test2" kt-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2", '<div id="d3" kt-push-url="true" kt-get="/test3" kt-swap="outerHTML settle:0">test2</div>');
+
+        make('<div id="d1" kt-push-url="true" kt-get="/test1" kt-swap="outerHTML settle:0">init</div>');
+
+        byId("d1").click();
+        this.server.respond();
+        var workArea = getWorkArea();
+        workArea.textContent.should.equal("test1")
+
+        byId("d2").click();
+        this.server.respond();
+        workArea.textContent.should.equal("test2")
+
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+
+        cache.length.should.equal(2);
+        localStorage.removeItem(KUTTY_HISTORY_CACHE); // clear cache
+        kutty._('restoreHistory')("/test1")
+        this.server.respond();
+        getWorkArea().textContent.should.equal("test1")
+    });
+
 });

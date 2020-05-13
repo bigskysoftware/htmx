@@ -7,19 +7,19 @@
 ## TODOS
 
 * Testing
+  * history
+  * polling
+  * kt-boost
   * interval parsing
   * table elements in responses
   * scrolling/'revealed' event
   * checkbox inputs
-  * history
-  * kt-boost
   * kt-swap-oob (verify, chrome coverage tool bad?)
   * X-KT-Trigger response header
   * SSE stuff
   * kt-trigger delay
   * class operation parsing
   * class toggling
-  * polling
   * transition model for content swaps
 
 

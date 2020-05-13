@@ -97,7 +97,7 @@ This event is triggered when kutty handles a history restoration action
 
 * `detail.path` - the path and query of the page being restored
 
-### <a name="historyUpdate.kutty"></a> Event - [`historyUpdate.kutty`](#historyUpdate.kutty)
+### <a name="beforeHistorySave.kutty"></a> Event - [`beforeHistorySave.kutty`](#beforeHistorySave.kutty)
 
 This event is triggered when kutty handles a history restoration action
 

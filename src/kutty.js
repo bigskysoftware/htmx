@@ -1,5 +1,5 @@
 // noinspection JSUnusedAssignment
-var kutty = kutty || (function () {
+var kutty = (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch']
@@ -60,7 +60,7 @@ var kutty = kutty || (function () {
             var matchesFunction = elt.matches ||
                 elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
                 || elt.webkitMatchesSelector || elt.oMatchesSelector;
-            return (elt != null) && matchesFunction != null && matchesFunction.call(elt, selector);
+            return matchesFunction && matchesFunction.call(elt, selector);
         }
 
         function closest(elt, selector) {
@@ -395,7 +395,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function processClassList(elt, classList, operation) {
+        function processClassList(elt, classList) {
             forEach(classList.split("&"), function (run) {
                 var currentRunTime = 0;
                 forEach(run.split(","), function(value){
@@ -688,46 +688,49 @@ var kutty = kutty || (function () {
         //====================================================================
         // History Support
         //====================================================================
+        var currentPathForHistory = null;
+
         function getHistoryElement() {
             var historyElt = getDocument().querySelector('[kt-history-elt]');
             return historyElt || getDocument().body;
         }
 
-        function purgeOldestPaths(paths, historyTimestamps) {
-            paths = paths.sort(function (path1, path2) {
-                return historyTimestamps[path2] - historyTimestamps[path1]
-            });
-            var slot = 0;
-            forEach(paths, function (path) {
-                slot++;
-                if (slot > 20) {
-                    delete historyTimestamps[path];
-                    localStorage.removeItem(path);
+        function saveToHistoryCache(url, content, title, scroll) {
+            var historyCache = JSON.parse(localStorage.getItem("kutty-history-cache")) || [];
+            for (var i = 0; i < historyCache.length; i++) {
+                if (historyCache[i].url === url) {
+                    historyCache = historyCache.slice(i, 1);
+                    break;
                 }
-            });
+            }
+            historyCache.push({url:url, content: content, title:title, scroll:scroll})
+            while (historyCache.length > kutty.config.historyCacheSize) {
+                historyCache.shift();
+            }
+            localStorage.setItem("kutty-history-cache", JSON.stringify(historyCache));
         }
 
-        function bumpHistoryAccessDate(pathAndSearch) {
-            var historyTimestamps = JSON.parse(localStorage.getItem("kt-history-timestamps")) || {};
-            historyTimestamps[pathAndSearch] = Date.now();
-            var paths = Object.keys(historyTimestamps);
-            if (paths.length > 20) {
-                purgeOldestPaths(paths, historyTimestamps);
+        function getCachedHistory(url) {
+            var historyCache = JSON.parse(localStorage.getItem("kutty-history-cache")) || [];
+            for (var i = 0; i < historyCache.length; i++) {
+                if (historyCache[i].url === url) {
+                    return historyCache[i];
+                }
             }
-            localStorage.setItem("kt-history-timestamps", JSON.stringify(historyTimestamps));
+            return null;
         }
 
         function saveHistory() {
             var elt = getHistoryElement();
-            var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.kutty", {path:pathAndSearch, historyElt:elt});
-            history.replaceState({}, getDocument().title, window.location.href);
-            localStorage.setItem('kt-history:' + pathAndSearch, elt.innerHTML);
-            bumpHistoryAccessDate(pathAndSearch);
+            var path = currentPathForHistory || location.pathname+location.search;
+            triggerEvent(getDocument().body, "beforeHistorySave.kutty", {path:path, historyElt:elt});
+            if(kutty.config.historyEnabled) history.replaceState({}, getDocument().title, window.location.href);
+            saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
         }
 
-        function pushUrlIntoHistory(url) {
-            history.pushState({}, "", url );
+        function pushUrlIntoHistory(path) {
+            if(kutty.config.historyEnabled)  history.pushState({}, "", path);
+            currentPathForHistory = path;
         }
 
         function settleImmediately(settleTasks) {
@@ -736,17 +739,18 @@ var kutty = kutty || (function () {
             });
         }
 
-        function loadHistoryFromServer(pathAndSearch) {
+        function loadHistoryFromServer(path) {
             var request = new XMLHttpRequest();
-            var details = {path: pathAndSearch, xhr:request};
+            var details = {path: path, xhr:request};
             triggerEvent(getDocument().body, "historyCacheMiss.kutty", details);
-            request.open('GET', pathAndSearch, true);
+            request.open('GET', path, true);
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", details);
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('[kt-history-elt]') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
+                    currentPathForHistory = path;
                 } else {
                     triggerEvent(getDocument().body, "historyCacheMissLoadError.kutty", details);
                 }
@@ -754,15 +758,18 @@ var kutty = kutty || (function () {
             request.send();
         }
 
-        function restoreHistory() {
-            var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyRestore.kutty", {path:pathAndSearch});
-            var content = localStorage.getItem('kt-history:' + pathAndSearch);
-            if (content) {
-                bumpHistoryAccessDate(pathAndSearch);
-                settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(content)));
+        function restoreHistory(path) {
+            saveHistory(currentPathForHistory);
+            path = path || location.pathname+location.search;
+            triggerEvent(getDocument().body, "historyRestore.kutty", {path:path});
+            var cached = getCachedHistory(path);
+            if (cached) {
+                settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(cached.content)));
+                document.title = cached.title;
+                window.scrollTo(0, cached.scroll);
+                currentPathForHistory = path;
             } else {
-                loadHistoryFromServer(pathAndSearch);
+                loadHistoryFromServer(path);
             }
         }
 
@@ -958,9 +965,9 @@ var kutty = kutty || (function () {
         function getSwapSpecification(elt) {
             var swapInfo = getClosestAttributeValue(elt, "kt-swap");
             var swapSpec = {
-                "swapStyle" : "innerHTML",
-                "swapDelay" : 0,
-                "settleDelay" : 100
+                "swapStyle" : kutty.config.defaultSwapStyle,
+                "swapDelay" : kutty.config.defaultSwapDelay,
+                "settleDelay" : kutty.config.defaultSettleDelay
             }
             if (swapInfo) {
                 var split = splitOnWhitespace(swapInfo);
@@ -1075,7 +1082,6 @@ var kutty = kutty || (function () {
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
                                             pushUrlIntoHistory(pushedUrl || requestURL );
-                                            saveHistory();
                                         }
                                         triggerEvent(elt, 'afterSettle.kutty', eventDetail);
                                     }
@@ -1136,8 +1142,19 @@ var kutty = kutty || (function () {
         addRule(".kutty-request .kutty-indicator{opacity:1}");
         addRule(".kutty-request.kutty-indicator{opacity:1}");
 
+        function getConfig() {
+            return Object.assign({
+                historyEnabled:true,
+                historyCacheSize:10,
+                defaultSwapStyle:'innerHTML',
+                defaultSwapDelay:0,
+                defaultSettleDelay:100
+            }, JSON.parse(getDocument().querySelector('meta[name="kutty-config"]').content))
+        }
+
         // initialize the document
         ready(function () {
+            kutty.config = getConfig();
             var body = getDocument().body;
             processNode(body);
             triggerEvent(body, 'load.kutty', {});
@@ -1170,8 +1187,10 @@ var kutty = kutty || (function () {
             on: addKuttyEventListener,
             onLoad: onLoadHelper,
             logAll : logAll,
+            logger : null,
+            config : null,
             version: "0.0.1",
             _:internalEval
         }
     }
-)();
+)() || kutty;

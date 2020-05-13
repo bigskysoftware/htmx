@@ -8,6 +8,21 @@ var kutty = kutty || (function () {
         // Utilities
         //====================================================================
 
+        function makeBrowserHistorySupport() {
+            return {
+                getFullPath: function () {
+                    return location.pathname + location.search;
+                },
+                getLocalStorage: function () {
+                    return localStorage;
+                },
+                getHistory: function () {
+                    return history;
+                }
+            };
+        }
+        var browserHistorySupport = makeBrowserHistorySupport();
+        
         function parseInterval(str) {
             if (str === "null" || str === "false" || str === "") {
                 return null;
@@ -35,6 +50,10 @@ var kutty = kutty || (function () {
 
         function getDocument() {
             return document;
+        }
+        
+        function getBody() {
+            return getDocument().body;
         }
 
         function getClosestMatch(elt, condition) {
@@ -147,7 +166,7 @@ var kutty = kutty || (function () {
         }
 
         function bodyContains(elt) {
-            return getDocument().body.contains(elt);
+            return getBody().contains(elt);
         }
 
         function concat(arr1, arr2) {
@@ -179,7 +198,7 @@ var kutty = kutty || (function () {
             } else {
                 var data = getInternalData(elt);
                 if (data.boosted) {
-                    return getDocument().body;
+                    return getBody();
                 } else {
                     return elt;
                 }
@@ -208,7 +227,7 @@ var kutty = kutty || (function () {
                         settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
-                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {content: child})
+                        triggerEvent(getBody(), "oobErrorNoTarget.kutty", {content: child})
                     }
                 }
             });
@@ -665,14 +684,14 @@ var kutty = kutty || (function () {
             var target, event, listener;
             if (isFunction(arg1)) {
                 ready(function(){
-                    target = getDocument().body;
+                    target = getBody();
                     event = "all.kutty";
                     listener = arg1;
                     target.addEventListener(event, listener);
                 })
             } else if (isFunction(arg2)) {
                 ready(function () {
-                    target = getDocument().body;
+                    target = getBody();
                     event = arg1;
                     listener = arg2;
                     target.addEventListener(event, listener);
@@ -690,7 +709,7 @@ var kutty = kutty || (function () {
         //====================================================================
         function getHistoryElement() {
             var historyElt = getDocument().querySelector('[kt-history-elt]');
-            return historyElt || getDocument().body;
+            return historyElt || getBody();
         }
 
         function purgeOldestPaths(paths, historyTimestamps) {
@@ -702,32 +721,32 @@ var kutty = kutty || (function () {
                 slot++;
                 if (slot > 20) {
                     delete historyTimestamps[path];
-                    localStorage.removeItem(path);
+                    browserHistorySupport.getLocalStorage().removeItem(path);
                 }
             });
         }
 
         function bumpHistoryAccessDate(pathAndSearch) {
-            var historyTimestamps = JSON.parse(localStorage.getItem("kt-history-timestamps")) || {};
+            var historyTimestamps = JSON.parse(browserHistorySupport.getLocalStorage().getItem("kt-history-timestamps")) || {};
             historyTimestamps[pathAndSearch] = Date.now();
             var paths = Object.keys(historyTimestamps);
             if (paths.length > 20) {
                 purgeOldestPaths(paths, historyTimestamps);
             }
-            localStorage.setItem("kt-history-timestamps", JSON.stringify(historyTimestamps));
+            browserHistorySupport.getLocalStorage().setItem("kt-history-timestamps", JSON.stringify(historyTimestamps));
         }
 
         function saveHistory() {
             var elt = getHistoryElement();
-            var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.kutty", {path:pathAndSearch, historyElt:elt});
-            history.replaceState({}, getDocument().title, window.location.href);
-            localStorage.setItem('kt-history:' + pathAndSearch, elt.innerHTML);
+            var pathAndSearch = browserHistorySupport.getFullPath();
+            triggerEvent(getBody(), "historyUpdate.kutty", {path:pathAndSearch, historyElt:elt});
+            browserHistorySupport.getHistory().replaceState({}, getDocument().title);
+            browserHistorySupport.getLocalStorage().setItem('kt-history:' + pathAndSearch, elt.innerHTML);
             bumpHistoryAccessDate(pathAndSearch);
         }
 
         function pushUrlIntoHistory(url) {
-            history.pushState({}, "", url );
+            browserHistorySupport.getHistory().pushState({}, "", url );
         }
 
         function settleImmediately(settleTasks) {
@@ -739,25 +758,25 @@ var kutty = kutty || (function () {
         function loadHistoryFromServer(pathAndSearch) {
             var request = new XMLHttpRequest();
             var details = {path: pathAndSearch, xhr:request};
-            triggerEvent(getDocument().body, "historyCacheMiss.kutty", details);
+            triggerEvent(getBody(), "historyCacheMiss.kutty", details);
             request.open('GET', pathAndSearch, true);
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
-                    triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", details);
+                    triggerEvent(getBody(), "historyCacheMissLoad.kutty", details);
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('[kt-history-elt]') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                 } else {
-                    triggerEvent(getDocument().body, "historyCacheMissLoadError.kutty", details);
+                    triggerEvent(getBody(), "historyCacheMissLoadError.kutty", details);
                 }
             };
             request.send();
         }
 
         function restoreHistory() {
-            var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyRestore.kutty", {path:pathAndSearch});
-            var content = localStorage.getItem('kt-history:' + pathAndSearch);
+            var pathAndSearch = browserHistorySupport.getFullPath();
+            triggerEvent(getBody(), "historyRestore.kutty", {path:pathAndSearch});
+            var content = browserHistorySupport.getLocalStorage().getItem('kt-history:' + pathAndSearch);
             if (content) {
                 bumpHistoryAccessDate(pathAndSearch);
                 settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(content)));
@@ -1138,7 +1157,7 @@ var kutty = kutty || (function () {
 
         // initialize the document
         ready(function () {
-            var body = getDocument().body;
+            var body = getBody();
             processNode(body);
             triggerEvent(body, 'load.kutty', {});
             window.onpopstate = function () {
@@ -1162,6 +1181,14 @@ var kutty = kutty || (function () {
                     console.log(event, elt, data);
                 }
             }
+        }
+
+        function setBrowserHistorySupport(mock) {
+            browserHistorySupport = mock;
+        }
+
+        function restoreBrowserHistorySupport() {
+            browserHistorySupport = browserHistorySupport();
         }
 
         // Public API

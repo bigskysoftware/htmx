@@ -76,7 +76,7 @@ title: </> kutty - Attributes
 | [`historyCacheMissError.kutty`](/events#historyCacheMissError.kutty)  | triggered on a unsuccessful remote retrieval 
 | [`historyCacheMissLoad.kutty`](/events#historyCacheMissLoad.kutty)  | triggered on a succesful remote retrieval 
 | [`historyRestore.kutty`](/events#historyRestore.kutty)  | triggered when kutty handles a history restoration action
-| [`historyUpdate.kutty`](/events#historyUpdate.kutty)  | triggered when a new history element is added to the local cache
+| [`beforeHistorySave.kutty`](/events#beforeHistorySave.kutty)  | triggered before content is saved to the history cache
 | [`initSSE.kutty`](/events#initSSE.kutty) | triggered when a new Server Sent Event source is created
 | [`load.kutty`](/events#load.kutty)  | triggered when new content is added to the DOM
 | [`noSSESourceError.kutty`](/events#noSSESourceError.kutty)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
