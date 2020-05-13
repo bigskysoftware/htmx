@@ -23,43 +23,40 @@
     should = chai.should();
 </script>
 
-<script src="util.js"></script>
+<script src="util/util.js"></script>
 
-<!-- bootstrap tests -->
-<script src="general-ajax.js"></script>
-<script src="general-verbs.js"></script>
-<script src="general-values.js"></script>
+<!-- core tests -->
+<script src="core/ajax.js"></script>
+<script src="core/verbs.js"></script>
+<script src="core/values.js"></script>
+<script src="core/headers.js"></script>
+<script src="core/events.js"></script>
+<script src="core/regressions.js"></script>
 
 <!-- attribute tests -->
-<script src="kt-boost.js"></script>
-<script src="kt-classes.js"></script>
-<script src="kt-delete.js"></script>
-<script src="kt-error-url.js"></script>
-<script src="kt-get.js"></script>
-<script src="kt-include.js"></script>
-<script src="kt-indicator.js"></script>
-<script src="kt-params.js"></script>
-<script src="kt-patch.js"></script>
-<script src="kt-post.js"></script>
-<script src="kt-push-url.js"></script>
-<script src="kt-put.js"></script>
-<script src="kt-swap-oob.js"></script>
-<script src="kt-swap.js"></script>
-<script src="kt-target.js"></script>
-<script src="kt-trigger.js"></script>
+<script src="attributes/kt-boost.js"></script>
+<script src="attributes/kt-classes.js"></script>
+<script src="attributes/kt-delete.js"></script>
+<script src="attributes/kt-error-url.js"></script>
+<script src="attributes/kt-get.js"></script>
+<script src="attributes/kt-include.js"></script>
+<script src="attributes/kt-indicator.js"></script>
+<script src="attributes/kt-params.js"></script>
+<script src="attributes/kt-patch.js"></script>
+<script src="attributes/kt-post.js"></script>
+<script src="attributes/kt-push-url.js"></script>
+<script src="attributes/kt-put.js"></script>
+<script src="attributes/kt-swap-oob.js"></script>
+<script src="attributes/kt-swap.js"></script>
+<script src="attributes/kt-target.js"></script>
+<script src="attributes/kt-trigger.js"></script>
 
-<!-- headers -->
-<script src="x-kt-headers.js"></script>
-
-<!-- events -->
-<script src="events.kutty.js"></script>
-<script src="regressions.js"></script>
 
 <!--TODO figure out how to test stuff w/ history involved-->
 <!--<script src="kt-push-url.js"></script>-->
 <!--<script src="kt-boost.js"></script>-->
 
-<a href="browser-only.html">Run Browser-Only Tests</a>
+<a href="browser-only-tests.html">Run Browser-Only Tests</a>
 
 
 <script class="mocha-exec">
