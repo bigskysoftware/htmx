@@ -72,6 +72,7 @@ title: </> kutty - Attributes
 | [`beforeOnLoad.kutty`](/events#beforeOnLoad.kutty)  | triggered before any response processing occurs
 | [`beforeRequest.kutty`](/events#beforeRequest.kutty)  | triggered before an AJAX request is made
 | [`beforeSwap.kutty`](/events#beforeSwap.kutty)  | triggered before a swap is done
+| [`configRequest.kutty`](/events#configRequest.kutty)  | triggered before the request, allows you to customize parameters, headers
 | [`historyCacheMiss.kutty`](/events#historyCacheMiss.kutty)  | triggered on a cache miss in the history subsystem
 | [`historyCacheMissError.kutty`](/events#historyCacheMissError.kutty)  | triggered on a unsuccessful remote retrieval 
 | [`historyCacheMissLoad.kutty`](/events#historyCacheMissLoad.kutty)  | triggered on a succesful remote retrieval 
@@ -82,7 +83,6 @@ title: </> kutty - Attributes
 | [`noSSESourceError.kutty`](/events#noSSESourceError.kutty)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
 | [`onLoadError.kutty`](/events#onLoadError.kutty)  | triggered when an exception occurs during the onLoad handling in kutty
 | [`oobErrorNoTarget.kutty`](/events#oobErrorNoTarget.kutty)  | triggered when an out of band element does not have a matching ID in the current DOM
-| [`parameters.kutty`](/events#parameters.kutty)  | triggered after parameters have been processed, can be used to include custom parameters
 | [`prompt.kutty`](/events#prompt.kutty)  | triggered after a prompt is shown
 | [`responseError.kutty`](/events#responseError.kutty)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`sendError.kutty`](/events#sendError.kutty)  | triggered when a network error prevents an HTTP request from happening
