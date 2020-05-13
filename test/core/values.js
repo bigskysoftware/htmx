@@ -1,4 +1,4 @@
-describe("GENERAL - kutty Value Handling", function() {
+describe("Core kutty Value Handling", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

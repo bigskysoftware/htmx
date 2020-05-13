@@ -1,4 +1,4 @@
-describe("GENERAL - kutty AJAX Tests", function(){
+describe("Core kutty AJAX Tests", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
@@ -382,6 +382,7 @@ describe("GENERAL - kutty AJAX Tests", function(){
         values.should.deep.equal({c1:["cb1", "cb3"], c2:"cb5", c3:"cb6"});
 
     });
+
 
 
 })

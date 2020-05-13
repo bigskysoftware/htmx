@@ -1,4 +1,4 @@
-describe("GENERAL - kutty AJAX Verbs", function() {
+describe("Core kutty AJAX Verbs", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

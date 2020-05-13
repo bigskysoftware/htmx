@@ -665,28 +665,43 @@ var kutty = kutty || (function () {
             return eventResult && allResult;
         }
 
-        function addKuttyEventListener(arg1, arg2, arg3) {
-            var target, event, listener;
+        function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg1)) {
-                ready(function(){
-                    target = getDocument().body;
-                    event = "all.kutty";
-                    listener = arg1;
-                    target.addEventListener(event, listener);
-                })
+                return {
+                    target: getDocument().body,
+                    event: "all.kutty",
+                    listener: arg1
+                }
             } else if (isFunction(arg2)) {
-                ready(function () {
-                    target = getDocument().body;
-                    event = arg1;
-                    listener = arg2;
-                    target.addEventListener(event, listener);
-                })
+                return {
+                    target: getDocument().body,
+                    event: arg1,
+                    listener: arg2
+                }
             } else {
-                target = arg1;
-                event = arg2;
-                listener = arg3;
-                target.addEventListener(event, listener);
+                return {
+                    target: arg1,
+                    event: arg2,
+                    listener: arg3
+                }
             }
+
+        }
+
+        function addKuttyEventListener(arg1, arg2, arg3) {
+            var eventArgs = processEventArgs(arg1, arg2, arg3);
+            ready(function(){
+                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+            })
+            return eventArgs.listener;
+        }
+
+        function removeKuttyEventListener(arg1, arg2, arg3) {
+            var eventArgs = processEventArgs(arg1, arg2, arg3);
+            ready(function(){
+                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+            })
+            return eventArgs.listener;
         }
 
         //====================================================================
@@ -1199,8 +1214,9 @@ var kutty = kutty || (function () {
 
         // Public API
         return {
-            processElement: processNode,
+            process: processNode,
             on: addKuttyEventListener,
+            off: removeKuttyEventListener,
             onLoad: onLoadHelper,
             logAll : logAll,
             logger : null,

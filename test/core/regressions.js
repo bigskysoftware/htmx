@@ -1,4 +1,4 @@
-describe("kutty Regression Tests", function(){
+describe("Core kutty Regression Tests", function(){
 
     beforeEach(function() {
         this.server = makeServer();

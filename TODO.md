@@ -7,10 +7,8 @@
 ## Launch TODOS
 
 * Testing
-  * checkbox inputs
-  * table elements in responses
-  * X-KT-Trigger response header
   * events
+  * X-KT-Trigger response header
 * Blog Post
 * Move to development branch
 * Publish 0.0.1

@@ -26,11 +26,11 @@
 <script src="util/util.js"></script>
 
 <!-- core tests -->
+<script src="core/internals.js"></script>
 <script src="core/ajax.js"></script>
 <script src="core/verbs.js"></script>
 <script src="core/values.js"></script>
 <script src="core/headers.js"></script>
-<script src="core/events.js"></script>
 <script src="core/regressions.js"></script>
 
 <!-- attribute tests -->
@@ -51,10 +51,9 @@
 <script src="attributes/kt-target.js"></script>
 <script src="attributes/kt-trigger.js"></script>
 
+<!-- events last so they don't screw up other tests -->
+<script src="core/events.js"></script>
 
-<!--TODO figure out how to test stuff w/ history involved-->
-<!--<script src="kt-push-url.js"></script>-->
-<!--<script src="kt-boost.js"></script>-->
 
 <a href="browser-only-tests.html">Run Browser-Only Tests</a>
 
