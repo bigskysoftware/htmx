@@ -74,4 +74,34 @@ describe("kt-push-url attribute", function() {
         getWorkArea().textContent.should.equal("test1")
     });
 
+    function stringRepeat(str, num) {
+        num = Number(num);
+
+        var result = '';
+        while (true) {
+            if (num & 1) { // (1)
+                result += str;
+            }
+            num >>>= 1; // (2)
+            if (num <= 0) break;
+            str += str;
+        }
+
+        return result;
+    }
+
+    it("implementation details should be fast", function(){
+        // create an entry with a large content string (256k) and see how fast we can write and read it
+        // to local storage as a single entry
+        var entry = {url: stringRepeat("x", 32), content:stringRepeat("x", 256*1024)}
+        var array = [];
+        for (var i = 0; i < 10; i++) {
+            array.push(entry);
+        }
+        var string = JSON.stringify(array);
+        localStorage.setItem(KUTTY_HISTORY_CACHE, string);
+        var reReadString = localStorage.getItem(KUTTY_HISTORY_CACHE);
+        var finalJson = JSON.parse(reReadString);
+    })
+
 });
