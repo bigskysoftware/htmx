@@ -7,12 +7,22 @@
 ## TODOS
 
 * Testing
-  * polling
-  * merge
-  * kt-select
+  * interval parsing
+  * table elements in responses
+  * scrolling/'revealed' event
+  * checkbox inputs
   * history
   * kt-boost
+  * kt-swap-oob (verify, chrome coverage tool bad?)
+  * X-KT-Trigger response header
+  * SSE stuff
+  * kt-trigger delay
+  * class operation parsing
+  * class toggling
+  * polling
   * transition model for content swaps
+
+
 * `kutty-on="myEvent: ...""` attribute for handling custom events
 * `kutty-requests` class on body
 * local references (e.g. kt-get="#foo")

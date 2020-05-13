@@ -31,11 +31,11 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.10.0",
+    "chai": "^4.2.0",
     "eleventy-plugin-sass": "^1.0.0",
     "fs-extra": "^9.0.0",
     "mocha": "^7.1.1",
     "mocha-chrome": "^2.2.0",
-    "chai": "^4.2.0",
     "sinon": "^9.0.2",
     "uglify-js": "^3.9.1"
   }

@@ -57,11 +57,13 @@ var kutty = kutty || (function () {
 
         function matches(elt, selector) {
             // noinspection JSUnresolvedVariable
-            return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
-                || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
+            var matchesFunction = elt.matches ||
+                elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
+                || elt.webkitMatchesSelector || elt.oMatchesSelector;
+            return (elt != null) && matchesFunction != null && matchesFunction.call(elt, selector);
         }
 
-        function closest (elt, selector) {
+        function closest(elt, selector) {
             do if (elt == null || matches(elt, selector)) return elt;
             while (elt = elt && parentElt(elt));
         }
@@ -206,7 +208,7 @@ var kutty = kutty || (function () {
                         settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
-                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {id: child.id, content: child})
+                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {content: child})
                     }
                 }
             });
@@ -234,7 +236,7 @@ var kutty = kutty || (function () {
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    triggerEvent(child, 'load.kutty', {elt:child, parent:parentElt(child)});
+                    triggerEvent(child, 'load.kutty', {});
                     processNode(child);
                 }
             }
@@ -333,7 +335,7 @@ var kutty = kutty || (function () {
             var triggerSpec = {
                 "trigger" : "click"
             }
-            var explicitTrigger = getClosestAttributeValue(elt, 'kt-trigger');
+            var explicitTrigger = getAttributeValue(elt, 'kt-trigger');
             if (explicitTrigger) {
                 var tokens = splitOnWhitespace(explicitTrigger);
                 if (tokens.length > 0) {
@@ -524,11 +526,10 @@ var kutty = kutty || (function () {
 
         function initSSESource(elt, sseSrc) {
             var detail = {
-                initializer: function() { new EventSource(sseSrc, detail.config) },
                 config:{withCredentials: true}
             };
-            triggerEvent(elt, "initSSE.kutty", {config:detail})
-            var source = detail.initializer();
+            triggerEvent(elt, "initSSE.kutty", detail);
+            var source = new EventSource(sseSrc, detail.config);
             source.onerror = function (e) {
                 triggerEvent(elt, "sseError.kutty", {error:e, source:source});
                 maybeCloseSSESource(elt);
@@ -536,7 +537,7 @@ var kutty = kutty || (function () {
             getInternalData(elt).sseSource = source;
         }
 
-        function processSSETrigger(sseEventName, elt, verb, path) {
+        function processSSETrigger(elt, verb, path, sseEventName) {
             var sseSource = getClosestMatch(elt, function (parent) {
                 return parent.sseSource;
             });
@@ -556,10 +557,17 @@ var kutty = kutty || (function () {
             }
         }
 
-        function loadImmediately(nodeData, elt, verb, path) {
-            if (!nodeData.loaded) {
-                nodeData.loaded = true;
-                issueAjaxRequest(elt, verb, path);
+        function loadImmediately(elt, verb, path, nodeData, delay) {
+            var load = function(){
+                if (!nodeData.loaded) {
+                    nodeData.loaded = true;
+                    issueAjaxRequest(elt, verb, path);
+                }
+            }
+            if (delay) {
+                setTimeout(load, delay);
+            } else {
+                load();
             }
         }
 
@@ -572,12 +580,12 @@ var kutty = kutty || (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     if (triggerSpec.sseEvent) {
-                        processSSETrigger(triggerSpec.sseEvent, elt, verb, path);
+                        processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
                     } else if (triggerSpec.trigger === "revealed") {
                         initScrollHandler();
                         maybeReveal(elt);
                     } else if (triggerSpec.trigger === "load") {
-                        loadImmediately(nodeData, elt, verb, path);
+                        loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                     } else if (triggerSpec.pollInterval) {
                         nodeData.polling = true;
                         processPolling(elt, verb, path, triggerSpec.pollInterval);
@@ -649,7 +657,7 @@ var kutty = kutty || (function () {
                 }
             }
             var eventResult = elt.dispatchEvent(event);
-            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {elt:elt, originalDetail:detail, originalEvent: event}));
+            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {originalDetail:detail, originalEvent: event}));
             return eventResult && allResult;
         }
 
@@ -712,7 +720,7 @@ var kutty = kutty || (function () {
         function saveHistory() {
             var elt = getHistoryElement();
             var pathAndSearch = location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyUpdate.kutty", {path:pathAndSearch, historyElement:elt});
+            triggerEvent(getDocument().body, "historyUpdate.kutty", {path:pathAndSearch, historyElt:elt});
             history.replaceState({}, getDocument().title, window.location.href);
             localStorage.setItem('kt-history:' + pathAndSearch, elt.innerHTML);
             bumpHistoryAccessDate(pathAndSearch);
@@ -729,17 +737,21 @@ var kutty = kutty || (function () {
         }
 
         function loadHistoryFromServer(pathAndSearch) {
-            triggerEvent(getDocument().body, "historyCacheMiss.kutty", {path: pathAndSearch});
             var request = new XMLHttpRequest();
+            var details = {path: pathAndSearch, xhr:request};
+            triggerEvent(getDocument().body, "historyCacheMiss.kutty", details);
             request.open('GET', pathAndSearch, true);
             request.onload = function () {
-                triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", {path: pathAndSearch});
                 if (this.status >= 200 && this.status < 400) {
+                    triggerEvent(getDocument().body, "historyCacheMissLoad.kutty", details);
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('[kt-history-elt]') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
+                } else {
+                    triggerEvent(getDocument().body, "historyCacheMissLoadError.kutty", details);
                 }
             };
+            request.send();
         }
 
         function restoreHistory() {
@@ -920,21 +932,22 @@ var kutty = kutty || (function () {
                 } else if (paramsValue === "*") {
                     return inputValues;
                 } else if(paramsValue.indexOf("not ") === 0) {
-                    forEach(paramsValue.substr(4).split(","), function (value) {
-                        value = value.trim();
-                        delete inputValues[value];
+                    forEach(paramsValue.substr(4).split(","), function (name) {
+                        name = name.trim();
+                        delete inputValues[name];
                     });
                     return inputValues;
                 } else {
                     var newValues = {}
-                    forEach(paramsValue.split(","), function (value) {
-                        newValues[value] = inputValues[value];
+                    forEach(paramsValue.split(","), function (name) {
+                        name = name.trim();
+                        newValues[name] = inputValues[name];
                     });
                     return newValues;
                 }
             } else {
-                // By default non-input GETs do not include parameters
-                if (verb === 'get'  && elt.value == null) {
+                // By default GETs do not include parameters
+                if (verb === 'get') {
                     return {};
                 } else {
                     return inputValues;
@@ -953,8 +966,8 @@ var kutty = kutty || (function () {
                 var split = splitOnWhitespace(swapInfo);
                 if (split.length > 0) {
                     swapSpec["swapStyle"] = split[0];
-                    for (var i = 1; i < swapSpec.length; i++) {
-                        var modifier = swapSpec[i];
+                    for (var i = 1; i < split.length; i++) {
+                        var modifier = split[i];
                         if (modifier.indexOf("swap:") === 0) {
                             swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
                         }
@@ -968,6 +981,11 @@ var kutty = kutty || (function () {
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
+            var target = getTarget(elt);
+            if (target == null) {
+                triggerEvent(elt, 'targetError.kutty', {target: getRawAttribute(elt, "kt-target")});
+                return;
+            }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 return;
@@ -977,7 +995,6 @@ var kutty = kutty || (function () {
             var endRequestLock = function(){
                 eltData.requestInFlight = false
             }
-            var target = getTarget(elt);
             var promptQuestion = getClosestAttributeValue(elt, "kt-prompt");
             if (promptQuestion) {
                 var prompt = prompt(promptQuestion);
@@ -995,7 +1012,7 @@ var kutty = kutty || (function () {
 
             inputValues = filterValues(inputValues, elt, verb);
 
-            if(!triggerEvent(elt, 'values.kutty', {values: inputValues, target:target})) return endRequestLock();
+            if(!triggerEvent(elt, 'parameters.kutty', {parameters: inputValues, target:target})) return endRequestLock();
 
             // request type
             var requestURL;
@@ -1018,21 +1035,22 @@ var kutty = kutty || (function () {
             // request headers
             setRequestHeaders(xhr, elt, target, prompt, eventTarget);
 
+            var eventDetail = {xhr: xhr, target: target};
             xhr.onload = function () {
                 try {
-                    if (!triggerEvent(elt, 'beforeOnLoad.kutty', {xhr: xhr, target: target})) return;
+                    if (!triggerEvent(elt, 'beforeOnLoad.kutty', eventDetail)) return;
 
                     handleTrigger(elt, this.getResponseHeader("X-KT-Trigger"));
-                    var pushedUrl = this.getResponseHeader("X-KT-Push")
+                    var pushedUrl = this.getResponseHeader("X-KT-Push");
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
                     if (this.status >= 200 && this.status < 400) {
                         // don't process 'No Content' response
                         if (this.status !== 204) {
-                            // Success!
+                            if (!triggerEvent(elt, 'beforeSwap.kutty', eventDetail)) return;
+
                             var resp = this.response;
-                            if (!triggerEvent(elt, 'beforeSwap.kutty', {xhr: xhr, target: target, response:resp})) return;
 
                             // Save current page
                             if (shouldSaveHistory) {
@@ -1047,7 +1065,7 @@ var kutty = kutty || (function () {
                                     var settleTasks = swapResponse(swapSpec.swapStyle, target, elt, resp);
                                     target.classList.remove("kutty-swapping");
                                     target.classList.add("kutty-settling");
-                                    triggerEvent(elt, 'afterSwap.kutty', {xhr: xhr, target: target});
+                                    triggerEvent(elt, 'afterSwap.kutty', eventDetail);
 
                                     var doSettle = function(){
                                         forEach(settleTasks, function (settleTask) {
@@ -1059,7 +1077,7 @@ var kutty = kutty || (function () {
                                             pushUrlIntoHistory(pushedUrl || requestURL );
                                             saveHistory();
                                         }
-                                        triggerEvent(elt, 'afterSettle.kutty', {xhr: xhr, target: target});
+                                        triggerEvent(elt, 'afterSettle.kutty', eventDetail);
                                     }
 
                                     if (swapSpec.settleDelay > 0) {
@@ -1068,7 +1086,7 @@ var kutty = kutty || (function () {
                                         doSettle();
                                     }
                                 } catch (e) {
-                                    triggerEvent(elt, 'swapError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                                    triggerEvent(elt, 'swapError.kutty', eventDetail);
                                     throw e;
                                 }
                             };
@@ -1080,22 +1098,23 @@ var kutty = kutty || (function () {
                             }
                         }
                     } else {
-                        triggerEvent(elt, 'responseError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                        triggerEvent(elt, 'responseError.kutty', eventDetail);
                     }
                 } catch (e) {
-                    triggerEvent(elt, 'onLoadError.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                    eventDetail['exception'] = e;
+                    triggerEvent(elt, 'onLoadError.kutty', eventDetail);
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
                     endRequestLock();
-                    triggerEvent(elt, 'afterOnLoad.kutty', {xhr: xhr, response: xhr.response, status: xhr.status, target: target});
+                    triggerEvent(elt, 'afterOnLoad.kutty', eventDetail);
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', {xhr:xhr});
+                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', eventDetail);
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'beforeRequest.kutty', {xhr:xhr, values: inputValues, target:target})) return endRequestLock();
+            if(!triggerEvent(elt, 'beforeRequest.kutty', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
             xhr.send(verb === 'get' ? null : urlEncode(inputValues));
         }
@@ -1121,7 +1140,7 @@ var kutty = kutty || (function () {
         ready(function () {
             var body = getDocument().body;
             processNode(body);
-            triggerEvent(body, 'load.kutty', {elt: body});
+            triggerEvent(body, 'load.kutty', {});
             window.onpopstate = function () {
                 restoreHistory();
             };
