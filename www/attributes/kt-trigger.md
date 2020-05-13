@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> kutty - kt-trigger
 ---
 
-## `kt-target`
+## `kt-trigger`
 
 The `kt-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger
 value can be one of the following:
@@ -26,10 +26,6 @@ Standard events can also have modifiers that change how they behave.  The modifi
 * `changed` - the event will only change if the value of the element has changed
 * `delay:<timing declaration>` - a delay will occur before an event triggers a request.  If the event
 is seen again it will reset the delay.
-* `swap:<timing declaration>` - delay the time between when a request finishes and a swap occurs.  This can
-be used to synchronize with CSS transitions (e.g. fade out) before elements are removed from the DOM.
-* `settle:<timing declaration>` - delay the time between when swap finishes and the DOM settles.  This can
-be used to synchronize with CSS transitions (e.g. fade out) after elements are added to the DOM.
 
 Here is an example of a search box that searches on `keyup`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:

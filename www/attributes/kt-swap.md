@@ -19,7 +19,7 @@ The possible values of this attribute are:
 
 These options are based on standard DOM naming and the 
 [`Element.insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
-sepcification.
+specification.
 
 So in this code:
 

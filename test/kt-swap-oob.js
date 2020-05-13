@@ -1,4 +1,4 @@
-describe("kutty Direct Swap", function () {
+describe("kt-swap-oob attribute", function () {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -25,7 +25,6 @@ describe("kutty Direct Swap", function () {
         this.server.respond();
         div.innerText.should.equal("Clicked");
     })
-
 
 });
 

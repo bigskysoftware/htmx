@@ -1,4 +1,4 @@
-describe("kutty AJAX Headers Tests", function() {
+describe("kutty AJAX headers", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

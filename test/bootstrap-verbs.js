@@ -1,4 +1,4 @@
-describe("kutty AJAX Verbs", function() {
+describe("BOOTSTRAP - kutty AJAX Verbs", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

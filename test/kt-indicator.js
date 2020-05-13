@@ -1,4 +1,4 @@
-describe("kutty Indicator Tests", function(){
+describe("kt-indicator attribute", function(){
     beforeEach(function() {
         this.server = sinon.fakeServer.create();
         clearWorkArea();

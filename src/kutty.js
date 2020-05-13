@@ -57,8 +57,10 @@ var kutty = kutty || (function () {
 
         function matches(elt, selector) {
             // noinspection JSUnresolvedVariable
-            return (elt != null) &&(elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
-                || elt.webkitMatchesSelector || elt.oMatchesSelector).call(elt, selector);
+            var matchesFunction = elt.matches ||
+                elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
+                || elt.webkitMatchesSelector || elt.oMatchesSelector;
+            return (elt != null) && matchesFunction != null && matchesFunction.call(elt, selector);
         }
 
         function closest(elt, selector) {
@@ -930,15 +932,16 @@ var kutty = kutty || (function () {
                 } else if (paramsValue === "*") {
                     return inputValues;
                 } else if(paramsValue.indexOf("not ") === 0) {
-                    forEach(paramsValue.substr(4).split(","), function (value) {
-                        value = value.trim();
-                        delete inputValues[value];
+                    forEach(paramsValue.substr(4).split(","), function (name) {
+                        name = name.trim();
+                        delete inputValues[name];
                     });
                     return inputValues;
                 } else {
                     var newValues = {}
-                    forEach(paramsValue.split(","), function (value) {
-                        newValues[value] = inputValues[value];
+                    forEach(paramsValue.split(","), function (name) {
+                        name = name.trim();
+                        newValues[name] = inputValues[name];
                     });
                     return newValues;
                 }
@@ -963,8 +966,8 @@ var kutty = kutty || (function () {
                 var split = splitOnWhitespace(swapInfo);
                 if (split.length > 0) {
                     swapSpec["swapStyle"] = split[0];
-                    for (var i = 1; i < swapSpec.length; i++) {
-                        var modifier = swapSpec[i];
+                    for (var i = 1; i < split.length; i++) {
+                        var modifier = split[i];
                         if (modifier.indexOf("swap:") === 0) {
                             swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
                         }
@@ -978,6 +981,11 @@ var kutty = kutty || (function () {
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
+            var target = getTarget(elt);
+            if (target == null) {
+                triggerEvent(elt, 'targetError.kutty', {target: getRawAttribute(elt, "kt-target")});
+                return;
+            }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 return;
@@ -987,7 +995,6 @@ var kutty = kutty || (function () {
             var endRequestLock = function(){
                 eltData.requestInFlight = false
             }
-            var target = getTarget(elt);
             var promptQuestion = getClosestAttributeValue(elt, "kt-prompt");
             if (promptQuestion) {
                 var prompt = prompt(promptQuestion);

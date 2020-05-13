@@ -1,4 +1,4 @@
-describe("kutty History Tests", function() {
+describe("kt-push-url attribute", function() {
 
     beforeEach(function () {
         this.server = makeServer();

@@ -1,4 +1,4 @@
-describe("kutty Value Handling", function() {
+describe("BOOTSTRAP - kutty Value Handling", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

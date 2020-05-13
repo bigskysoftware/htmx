@@ -1,4 +1,4 @@
-describe("kutty Boost Tests", function() {
+describe("kt-boost attribute", function() {
 
     beforeEach(function () {
         this.server = makeServer();

@@ -224,5 +224,13 @@ than a single value.
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
 
+### <a name="targetError.kutty"></a> Event - [`targetError.kutty`](#targetError.kutty)
 
+This event is triggered when a bad selector is used for a [`kt-target`](/attributes/kt-target) attribute (e.g. an
+element id without a preceding `#`)
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+* `detail.target` - the bad CSS selector
 

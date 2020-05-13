@@ -1,4 +1,4 @@
-describe("kutty classes modification attribute", function(){
+describe("kt-classes attribute", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
