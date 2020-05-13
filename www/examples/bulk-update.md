@@ -31,24 +31,7 @@ values in `POST`'s to two different endpoints: `activate` and `deactivate`:
           <td>joe@smith.org</td>
           <td>Active</td>
         </tr>
-        <tr class="">
-          <td><input type='checkbox' name='ids' value='1'></td>
-          <td>Angie MacDowell</td>
-          <td>angie@macdowell.org</td>
-          <td>Active</td>
-        </tr>
-        <tr class="">
-          <td><input type='checkbox' name='ids' value='2'></td>
-          <td>Fuqua Tarkenton</td>
-          <td>fuqua@tarkenton.org</td>
-          <td>Active</td>
-        </tr>
-        <tr class="">
-          <td><input type='checkbox' name='ids' value='3'></td>
-          <td>Kim Yee</td>
-          <td>kim@yee.org</td>
-          <td>Inactive</td>
-        </tr>
+        ...
       </tbody>
     </table>
 </form>
@@ -82,7 +65,7 @@ You can see a working examle of this code below.
   tr td {
     transition: all 1.2s;
   }
-</style>`
+</style>
 
 {% include demo_ui.html.liquid %}
 

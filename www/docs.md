@@ -15,6 +15,7 @@ title: </> kutty - high power tools for html
   * [triggers](#triggers)
     * [special events](#special-events)
     * [polling](#polling)
+    * [load polling](#load_polling)
     * [SSE](#sse)
   * [targets](#targets)
   * [indicators](#indicators)
@@ -24,6 +25,7 @@ title: </> kutty - high power tools for html
 * [requests & responses](#requests)
 * [misc](#misc)
 * [events & logging](#events)
+* [configuring](#configuring)
 
 </div>
 
@@ -181,6 +183,28 @@ with [`ik-trigger`](/attributes/kt-trigger/):
 This tells kutty
 
 > Every 2 seconds, issue a GET to /news and load the response into the div
+
+If you want to stop polling from a server response you can respond with the HTTP response code [`286`](https://en.wikipedia.org/wiki/86_(term))
+and the element will cancel the polling event.
+
+#### <a name="load_polling"></a> [Load Polling](#load_polling)
+
+Another technique that can be used to achieve polling in kutty is "load polling", where an element specifies
+an `load` trigger along with a delay, and replaces itself with the response:
+
+```html
+<div kt-get="/messages" 
+     kt-trigger="load delay:1s"
+     kt-swap="outerHTML">
+     
+</div>
+```
+
+If the `/messages` end point keeps returning a div set up this way, it will keep "polling" back to the URL every
+second.
+
+Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as 
+when you are showing the user a [progress bar](/examples/progress-bar).
 
 #### <a name="sse"></a> [Server Sent Events](#sse)
 
@@ -459,6 +483,22 @@ If you set a logger at `kutty.logger`, every event will be logged.  This can be 
 Kutty can also send errors to a URL that is specified with the [kt-error-url](/attributes/kt-error-url) attributes.  If
 this attribute is set on a parent element all events that have the word `Error` in their name will be sent to the given 
 URL as a JSON POST.  This can be useful for debugging client-side issues.
+
+## <a name="configuring"></a>[Conclusion](#configuring)
+
+Kutty allows you to configure a few defaults:
+
+*  `kutty.config.historyEnabled` - defaults to `true`, really only useful for testing
+*  `kutty.config.historyCacheSize` - defaults to 10
+*  `kutty.config.defaultSwapStyle` - defaults to `innerHTML`
+*  `kutty.config.defaultSwapDelay` - defaults to 0
+*  `kutty.config.defaultSettleDelay` - defaults to 100
+
+You can set them directly in javascript, or you can use a `meta` tag:
+
+```html
+    <meta name="kutty-config" content='{"defaultSwapStyle":"outerHTML"}'>
+```
 
 ### Conclusion
 

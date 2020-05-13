@@ -72,9 +72,12 @@ describe("kt-trigger attribute", function(){
         var requests = 0;
         this.server.respondWith("GET", "/test", function (xhr) {
             requests++;
-            xhr.respond(200, {}, "Requests: " + requests);
             if (requests > 5) {
                 complete();
+                // cancel polling with a
+                xhr.respond(286, {}, "Requests: " + requests);
+            } else {
+                xhr.respond(200, {}, "Requests: " + requests);
             }
         });
         this.server.autoRespond = true;

@@ -420,10 +420,14 @@ var kutty = (function () {
             });
         }
 
+        function cancelPolling(elt) {
+            getInternalData(elt).cancelled = true;
+        }
+
         function processPolling(elt, verb, path, interval) {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
-                if (bodyContains(elt)) {
+                if (bodyContains(elt) && nodeData.cancelled !== true) {
                     issueAjaxRequest(elt, verb, path);
                     processPolling(elt, verb, getAttributeValue(elt, "kt-" + verb), interval);
                 }
@@ -1053,6 +1057,9 @@ var kutty = (function () {
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
                     if (this.status >= 200 && this.status < 400) {
+                        if (this.status === 286) {
+                            cancelPolling(elt);
+                        }
                         // don't process 'No Content' response
                         if (this.status !== 204) {
                             if (!triggerEvent(elt, 'beforeSwap.kutty', eventDetail)) return;
@@ -1142,19 +1149,17 @@ var kutty = (function () {
         addRule(".kutty-request .kutty-indicator{opacity:1}");
         addRule(".kutty-request.kutty-indicator{opacity:1}");
 
-        function getConfig() {
-            return Object.assign({
-                historyEnabled:true,
-                historyCacheSize:10,
-                defaultSwapStyle:'innerHTML',
-                defaultSwapDelay:0,
-                defaultSettleDelay:100
-            }, JSON.parse(getDocument().querySelector('meta[name="kutty-config"]').content))
+        function mergeMetaConfig() {
+            var element = getDocument().querySelector('meta[name="kutty-config"]');
+            if (element) {
+                var source = JSON.parse(element.content);
+                kutty.config = Object.assign(kutty.config , source)
+            }
         }
 
         // initialize the document
         ready(function () {
-            kutty.config = getConfig();
+            mergeMetaConfig();
             var body = getDocument().body;
             processNode(body);
             triggerEvent(body, 'load.kutty', {});
@@ -1188,7 +1193,13 @@ var kutty = (function () {
             onLoad: onLoadHelper,
             logAll : logAll,
             logger : null,
-            config : null,
+            config : {
+                historyEnabled:true,
+                historyCacheSize:10,
+                defaultSwapStyle:'innerHTML',
+                defaultSwapDelay:0,
+                defaultSettleDelay:100
+            },
             version: "0.0.1",
             _:internalEval
         }
