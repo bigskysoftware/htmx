@@ -263,22 +263,20 @@ var kutty = kutty || (function () {
         }
 
         function addKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
             ready(function(){
+                var eventArgs = processEventArgs(arg1, arg2, arg3);
                 eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
             })
-            return eventArgs.listener;
+            return isFunction(arg2) ? arg2 : arg3;
         }
 
         function removeKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
             ready(function(){
-                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+                var eventArgs = processEventArgs(arg1, arg2, arg3);
+                eventArgs.target.removeEventListener(eventArgs.event, eventArgs.listener);
             })
-            return eventArgs.listener;
+            return isFunction(arg2) ? arg2 : arg3;
         }
-
-
 
         //====================================================================
         // Node processing
@@ -1214,7 +1212,7 @@ var kutty = kutty || (function () {
                             };
 
                             if (swapSpec.swapDelay > 0) {
-                                setTimeout(doSwap, parseInterval(swapSpec.swapDelay))
+                                setTimeout(doSwap, swapSpec.swapDelay)
                             } else {
                                 doSwap();
                             }

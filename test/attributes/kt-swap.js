@@ -222,4 +222,28 @@ describe("kt-swap attribute", function(){
         swapSpec(make("<div kt-swap='innerHTML   nonsense   settle:11   swap:10  '/>")).settleDelay.should.equal(11)
     })
 
+    it('works with a swap delay', function(done) {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make("<div kt-get='/test' kt-swap='innerHTML swap:10ms'></div>");
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("");
+        setTimeout(function () {
+            div.innerText.should.equal("Clicked!");
+            done();
+        }, 30);
+    });
+
+    it('works with a settle delay', function(done) {
+        this.server.respondWith("GET", "/test", "<div id='d1' class='foo' kt-get='/test' kt-swap='outerHTML settle:10ms'></div>");
+        var div = make("<div id='d1' kt-get='/test' kt-swap='outerHTML settle:10ms'></div>");
+        div.click();
+        this.server.respond();
+        div.classList.contains('foo').should.equal(false);
+        setTimeout(function () {
+            byId('d1').classList.contains('foo').should.equal(true);
+            done();
+        }, 30);
+    });
+
 })
