@@ -9,8 +9,8 @@ The `kt-params` attribute allows you to filter the parameters that will be submi
 
 The possible values of this attribute are:
 
+* `*` - Include all parameters (default)
 * `none` - Include no parameters
-* `*` - Include all parameters
 * `not <param-list>` - Include all except the comma separated list of parameter names
 * `<param-list>` - Include all the comma separated list of parameter names
 
@@ -24,5 +24,3 @@ and included in the URL, as per usual with a `GET`.
 ### Notes
 
 * `kt-params` is inherited and can be placed on a parent element
-* The default value for `GET`'s is `none`, to avoid polluting URLs
-* All other requests default to `*`

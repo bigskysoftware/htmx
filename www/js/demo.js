@@ -125,7 +125,8 @@ function pushActivityChip(name, id, content) {
     if (content.length > 750) {
         content = content.substr(0, 750) + "...";
     }
-    document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", `<div id="${id}">${content}</div>`);
+    var contentDiv = `<div id="${id}">${content}</div>`;
+    document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", contentDiv);
     showTimelineEntry(id);
     Prism.highlightAll();
 }
@@ -158,7 +159,7 @@ function demoResponseTemplate(details){
   </div>
   <div>
   <b>Response</b>
-  <pre class="language-html"><code class="language-html">${escapeHtml(details.response)}</code> </pre>  
+  <pre class="language-html"><code class="language-html">${escapeHtml(details.xhr.response)}</code> </pre>  
   </div>
 </span>`;
 }

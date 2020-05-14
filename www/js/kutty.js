@@ -956,7 +956,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function getInputValues(elt) {
+        function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
             // include the element itself
@@ -971,8 +971,10 @@ var kutty = kutty || (function () {
                 });
             }
 
-            // include the closest form
-            processInputValue(processed, values, closest(elt, 'form'));
+            // for a non-GET include the closest form
+            if (verb !== 'get') {
+                processInputValue(processed, values, closest(elt, 'form'));
+            }
             return values;
         }
 
@@ -1051,12 +1053,7 @@ var kutty = kutty || (function () {
                     return newValues;
                 }
             } else {
-                // By default GETs do not include parameters
-                if (verb === 'get') {
-                    return {};
-                } else {
-                    return inputValues;
-                }
+                return inputValues;
             }
         }
 

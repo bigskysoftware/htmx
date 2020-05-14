@@ -24,4 +24,4 @@ the value automatically, but it demonstrates the concept.
 
 ### Notes
 
-* `kt-indicator` is inherited and can be placed on a parent element
+* `kt-include` is inherited and can be placed on a parent element

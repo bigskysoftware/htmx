@@ -110,10 +110,14 @@ describe("kt-push-url attribute", function() {
         for (var i = 0; i < 10; i++) {
             array.push(entry);
         }
+        var start = performance.now();
         var string = JSON.stringify(array);
         localStorage.setItem(KUTTY_HISTORY_CACHE, string);
         var reReadString = localStorage.getItem(KUTTY_HISTORY_CACHE);
         var finalJson = JSON.parse(reReadString);
+        var end = performance.now();
+        var timeInMs = end - start;
+        chai.assert(timeInMs < 300, "Should take less than 300ms on most platforms");
     })
 
 });

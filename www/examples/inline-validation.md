@@ -80,8 +80,6 @@ Below is a working demo of this example.  The only email that will be accepted i
 
 <script>
 
-    server.autoRespondAfter = 2000; // longer response for more drama
-
     //=========================================================================
     // Fake Server Side Code
     //=========================================================================
@@ -95,7 +93,7 @@ Below is a working demo of this example.  The only email that will be accepted i
       return formTemplate();
     });
     
-    onPost("/contact/email", function(request, params){
+    onGet(/\/contact\/email.*/, function(request, params){
         var email = params['email'];
         if(!/\S+@\S+\.\S+/.test(email)) {
           return emailInputTemplate(email, "Please enter a valid email address");
@@ -111,7 +109,7 @@ Below is a working demo of this example.  The only email that will be accepted i
       return `<h3>Signup Form</h3><form ic-post-to="/contact">
   <div kt-target="this" kt-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" kt-post="/contact/email" kt-indicator="#ind">
+    <input name="email" kt-get="/contact/email" kt-indicator="#ind">
     <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
   </div>
   <div class="form-group">
@@ -129,7 +127,7 @@ Below is a working demo of this example.  The only email that will be accepted i
         function emailInputTemplate(val, errorMsg) {
             return `<div kt-target="this" kt-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
-  <input name="email" kt-post="/contact/email" kt-indicator="#ind" value="${val}">
+  <input name="email" kt-get="/contact/email" kt-indicator="#ind" value="${val}">
   <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
   ${errorMsg ? ("<div class='error-message'>" + errorMsg + "</div>") : ""}
 </div>`;

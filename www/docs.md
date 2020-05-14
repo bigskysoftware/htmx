@@ -20,7 +20,7 @@ title: </> kutty - high power tools for html
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
-  * [forms](#forms)
+  * [parameters](#parameters)
 * [history](#history)
 * [requests & responses](#requests)
 * [misc](#misc)
@@ -337,21 +337,21 @@ Note that out of band elements must be in the top level of the response, and not
 If you want to select a subset of the response HTML to swap into the target, you can use the [kt-select](/attributes/kt-select)
 attribute, which takes a CSS selector and selects the matching elements from the response.
 
-### <a name="forms"></a> [Forms & Input Values](#forms)
+### <a name="parameters"></a> [Parameters](#parameters)
 
-By default, an element that causes a request will include its value if it has one.  
+By default, an element that causes a request will include its value if it has one.  If the element is a form it
+will include the values of all inputs within it.
 
-Additionally, if the element is within a form, the values of all the inputs in the form will be included in the request.
+Additionally, if the element causes a non-`GET` request, the values of all the inputs of the nearest enclosing form
+will be included.
 
 If you wish to include the values of other elements, you can use the [kt-include](/attributes/kt-include) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-If you wish to filter out some of the parameters that will be included you can use the [kt-parameters](/attributes/kt-parameters)
-attribute to do so.  Note that by default all `GET` requests will filter out all parameters (this avoids accidentally
-polluting URLs).
+If you wish to filter out some parameters you can use the [kt-parameters](/attributes/kt-parameters) attribute.
 
-Finally, if you want to programatically modify the arguments, you can use the [configRequest.kutty](/events#configRequest.kutty) event to
-do so.
+Finally, if you want to programatically modify the parameters, you can use the [configRequest.kutty](/events#configRequest.kutty) 
+event.
 
 ## <a name="history"></a> [History Support](#history)
 
