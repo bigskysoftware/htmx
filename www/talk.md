@@ -7,7 +7,7 @@ title: </> kutty - high power tools for html
 
 Right now the best place to talk about kutty is the [intercooler gitter room](https://gitter.im/intercooler-js/Lobby)
 
-I'll be setting up a forum and 
+I'll be setting up a forum and chat room at some point.
 
 ## Blog & Announcements
 
