@@ -3,9 +3,9 @@ layout: layout.njk
 title: </> kutty - UX Patterns
 ---
 
-## UX Pattern Reference
+## UI Examples
 
-Below are a set of UX patterns implemented in kutty.  
+Below are a set of UX patterns implemented in kutty with minimal HTML and styling.
 
 You can copy and paste them and then adjust them for your needs.
 

@@ -24,7 +24,6 @@ body {
 }
 
 .content{
-    padding: 0 1em 1em 1em !important;
 }
 
 .top-nav {
@@ -131,7 +130,7 @@ a {
     display: none;
 }
 
-h2 {
+h2:not(:first-child) {
     margin-top: 42px;
 }
 h3 {
