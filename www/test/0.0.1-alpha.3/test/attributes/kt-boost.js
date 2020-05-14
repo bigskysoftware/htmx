@@ -16,7 +16,6 @@ describe("kt-boost attribute", function() {
         a.click();
         this.server.respond();
         div.innerHTML.should.equal("Boosted");
-        history.back();
     })
 
 
@@ -28,7 +27,6 @@ describe("kt-boost attribute", function() {
         btn.click();
         this.server.respond();
         div.innerHTML.should.equal("Boosted");
-        history.back();
     })
 
     it('handles basic form get properly', function () {
@@ -38,7 +36,6 @@ describe("kt-boost attribute", function() {
         btn.click();
         this.server.respond();
         div.innerHTML.should.equal("Boosted");
-        history.back();
     })
 
     it('handles basic form with no explicit method property', function () {
@@ -48,7 +45,6 @@ describe("kt-boost attribute", function() {
         btn.click();
         this.server.respond();
         div.innerHTML.should.equal("Boosted");
-        history.back();
     })
 
 
