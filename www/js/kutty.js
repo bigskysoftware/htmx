@@ -281,6 +281,8 @@ var kutty = kutty || (function () {
                 var targetStr = getRawAttribute(explicitTarget, "kt-target");
                 if (targetStr === "this") {
                     return explicitTarget;
+                } else if (targetStr.indexOf("closest ") === 0) {
+                    return closest(elt, targetStr.substr(8));
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
