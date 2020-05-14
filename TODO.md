@@ -24,7 +24,7 @@
 
 ## Features
 
-* ctrl-click on boosted anchors let's tab open normally
+* ctrl-click on boosted anchors: tab opens normally
 * `kutty-on="myEvent: ...""` attribute for handling custom events
 * `kutty-requests` class on body
 * local references (e.g. kt-get="#foo")
@@ -39,9 +39,3 @@
 * all response headers except X-*-Trigger, X-*-Push
 * dependencies
 * macros
-
-## RESOURCES
-
-* http://youmightnotneedjquery.com/
-* http://intercoolerjs.org/docs.html
-* http://intercoolerjs.org/reference.html
