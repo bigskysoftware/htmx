@@ -85,8 +85,10 @@ It's worth mentioning that, if you prefer, you can use the `data-` prefix when u
 
 ## <a name="installing"></a> [Installing](#installing)
 
-Kutty is a dependency-free javascript library.  It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or 
-downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/) or your other favorite NPM-based CDN:
+Kutty is a dependency-free javascript library.  
+
+It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or downloaded or included from 
+[unpkg](https://unpkg.com/browse/kutty.org/) or your other favorite NPM-based CDN:
 
 ``` html
     <script src="https://unpkg.com/kutty.org@0.0.1"></script>
@@ -94,7 +96,7 @@ downloaded or included from [unpkg](https://unpkg.com/browse/kutty.org/) or your
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-The primary feature of kutty is attributes that allow you to issue AJAX requests directly from HTML:
+The core feature of kutty is a set of attributes that allow you to issue AJAX requests directly from HTML:
 
 * [kt-get](/attributes/kt-get) - Issues a `GET` request to the given URL
 * [kt-post](/attributes/kt-post) - Issues a `POST` request to the given URL
@@ -113,19 +115,20 @@ type to the given URL when the element is [triggered](#triggers):
 
 This tells the browser:
 
-> When a user clicks on this div, PUT to the URL /messages and load the response into the div
+> When a user clicks on this div, issue a PUT request to the URL /messages and load the response into the div
 
 ### <a name="triggers"></a> [Triggering Requests](#triggers)
 
 By default, AJAX requests are triggered by the "natural" event of an element:
 
-* `input`, `textarea` & `select`: the `change` event
-* `form`: the `submit` event
-* everything else: the `click` event
+* `input`, `textarea` & `select` are triggered on the `change` event
+* `form` is triggered on the `submit` event
+* everything else is triggered by the `click` event
 
-If you don't want the request to happen on the default event, you can use the [kt-trigger](/attributes/kt-trigger)
-attribute to specify the event of interest.  Here is a `div` that posts to `/mouse_entered`
-when a mouse enters it:
+If you want different behavior you can use the [kt-trigger](/attributes/kt-trigger)
+attribute to specify which event will cause the request.  
+
+Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 
 ```html
    <div kt-post="/mouse_entered" kt-trigger="mouseenter">
@@ -158,8 +161,8 @@ You can use these two attributes to implement a common UX pattern, [Live Search]
     <div id="search-results"></div>
 ```
 
-This input will issue a request 500 milliseconds after a key up event if the input has been changed and puts the results
-into the `div#search-results`.
+This input will issue a request 500 milliseconds after a key up event if the input has been changed and inserts the results
+into the `div` with the id `search-results`.
 
 #### <a name="special-events"></a> [Special Events](#special-events)
 
@@ -173,7 +176,7 @@ You can also use custom events to trigger requests if you have an advanced use c
 #### <a name="polling"></a> [Polling](#polling)
 
 If you want an element to poll the given URL rather than wait for an event, you can use the `every` syntax
-with [`ik-trigger`](/attributes/kt-trigger/):
+with the [`kt-trigger`](/attributes/kt-trigger/) attribute:
 
 ```html
   <div kt-get="/news" trigger="every 2s">
@@ -185,7 +188,7 @@ This tells kutty
 > Every 2 seconds, issue a GET to /news and load the response into the div
 
 If you want to stop polling from a server response you can respond with the HTTP response code [`286`](https://en.wikipedia.org/wiki/86_(term))
-and the element will cancel the polling event.
+and the element will cancel the polling.
 
 #### <a name="load_polling"></a> [Load Polling](#load_polling)
 
@@ -232,11 +235,15 @@ notify the div if there was new news to get, rather than the steady requests tha
 
 ### <a name="indicators"></a> [Request Indicators](#indicators)
 
-When an AJAX request is issued it is often good to let the user know that something is happening, since the browser
-will not give them any feedback.  You can accomplish this in kutty by using `kutty-indicator` class:
+When an AJAX request is issued it is often good to let the user know that something is happening since the browser
+will not give them any feedback.  You can accomplish this in kutty by using `kutty-indicator` class.
 
-By default the `kutty-request` class will be put on the element issuing the request.  When paired with the `kutty-indicator`
-class this will end up showing the element with the `kutty-indicator` class on it during the request:
+The `kutty-indicator` class is defined so that the opacity of any element with this class is 0 by default, making it invisible
+but present in the DOM.  
+
+When kutty issues a request, it will put a `kutty-request` class onto an element (either the requesting element or
+another element, if specified).  The `kutty-request` class will cause a child element with the `kutty-indicator` class
+on it to transition to an opacity of 1, showing the indicator.
 
 ```html
   <button kt-get="/click">
@@ -245,7 +252,10 @@ class this will end up showing the element with the `kutty-indicator` class on i
   </button>
 ```
 
-The `kutty-indicator` class uses opacity to hide and show the progress indicator.  If you would prefer another mechanism
+Here we have a button.  When it is clicked the `kutty-request` class will be added to it, which will reveal the spinner
+gif element.  (I like [SVG spinners](http://samherbert.net/svg-loaders/) these days.)
+
+While the `kutty-indicator` class uses opacity to hide and show the progress indicator, if you would prefer another mechanism
 you can create your own CSS transition like so:
 
 ```css
@@ -271,6 +281,9 @@ attribute with a CSS selector to do so:
       <img id="indicator" class="kutty-indicator" src="/spinner.gif"/>  
   </div>
 ```
+
+Here we call out the indicator explicitly by id.  Note that we could have placed the class on the parent `div` as well
+and had the same effect.
 
 ### <a name="targets"></a> [Targets](#targets)
 
@@ -326,24 +339,29 @@ attribute, which takes a CSS selector and selects the matching elements from the
 
 ### <a name="forms"></a> [Forms & Input Values](#forms)
 
-By default, an element will include its value if it has one.  Additionally, if the element is in a form, all values
-in the form will be included in the request.
+By default, an element that causes a request will include its value if it has one.  
+
+Additionally, if the element is within a form, the values of all the inputs in the form will be included in the request.
 
 If you wish to include the values of other elements, you can use the [kt-include](/attributes/kt-include) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-Finally, if you want to programatically modify the arguments, you can use the [values.kutty](/events/values.kutty) event to
+If you wish to filter out some of the parameters that will be included you can use the [kt-parameters](/attributes/kt-parameters)
+attribute to do so.  Note that by default all `GET` requests will filter out all parameters (this avoids accidentally
+polluting URLs).
+
+Finally, if you want to programatically modify the arguments, you can use the [configRequest.kutty](/events#configRequest.kutty) event to
 do so.
 
 ## <a name="history"></a> [History Support](#history)
 
-kutty provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
+Kutty provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
 If you want a given element to push its request URL into the browser navigation bar and add the current state of the page
 to the browser's history, include the [kt-push](/attributes/kt-push) attribute:
 
 ```html
-    <a kt-get="/Blog" kt-push="true">Blog</a>
+    <a kt-get="/blog" kt-push="true">Blog</a>
 ```
   
 When a user clicks on this link, kutty will snapshot the current DOM and store it before it makes a request to /blog. 
@@ -369,8 +387,10 @@ HTML into the document at the target specified and with the swap strategy specif
 Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side event ([see below](#response-headers)).
 For this situation you can return a `204 - No Content` response code, and kutty will ignore the content of the response.
 
-In the event of an error response from the server (e.g. a 404 or a 501), kutty will trigger the [`responseError.kutty`](#events)
-event, which you can handle.  In the event of a connection error, the `sendError.kutty` will be triggered.
+In the event of an error response from the server (e.g. a 404 or a 501), kutty will trigger the [`responseError.kutty`](/events#responseError.kutty)
+event, which you can handle.  
+
+In the event of a connection error, the `sendError.kutty` event will be triggered.
 
 ### <a name="request-header"></a> [Request Headers](#request-headers)
 
@@ -442,7 +462,8 @@ Full documentation is available [on the documentation page.](/attributes/kt-clas
 
 Kutty supports "boosting" regular HTML anchors and forms with the [kt-boost](/attributes/kt-boost) attribute.  This
 attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
-This is similar to Turbolinks, but isn't quite as magical and is more configurable.
+
+This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks).
 
 ## <a name="events"></a> [Events & Logging](#events)
 
@@ -480,9 +501,7 @@ If you set a logger at `kutty.logger`, every event will be logged.  This can be 
     }
 ```
 
-Kutty can also send errors to a URL that is specified with the [kt-error-url](/attributes/kt-error-url) attributes.  If
-this attribute is set on a parent element all events that have the word `Error` in their name will be sent to the given 
-URL as a JSON POST.  This can be useful for debugging client-side issues.
+Kutty can also send errors to a URL that is specified with the [kt-error-url](/attributes/kt-error-url) attributes. This can be useful for debugging client-side issues.
 
 Kutty includes a helper method:
 
@@ -490,7 +509,7 @@ Kutty includes a helper method:
   kutty.logAll();
 ```
 
-If you want to log everything while developing.
+if you want to log everything while developing.
 
 ## <a name="config"></a>[Configuring kutty](#config)
 
