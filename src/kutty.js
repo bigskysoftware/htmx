@@ -760,7 +760,7 @@ var kutty = kutty || (function () {
         }
 
         function triggerErrorEvent(elt, eventName, detail) {
-            triggerEvent(elt, eventName, Object.assign({isError:true}, details));
+            triggerEvent(elt, eventName, Object.assign({isError:true}, detail));
         }
 
         function triggerEvent(elt, eventName, detail) {
