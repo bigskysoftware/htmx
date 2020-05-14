@@ -23,6 +23,10 @@ body {
 .light {
 }
 
+.content{
+    padding: 0 1em 1em 1em !important;
+}
+
 .top-nav {
     line-height: 30px;
     border-bottom: 1px solid #d0d0d0;
@@ -128,6 +132,9 @@ a {
 }
 
 h2 {
+    margin-top: 42px;
+}
+h3 {
     margin-top: 32px;
 }
 

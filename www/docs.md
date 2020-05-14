@@ -447,13 +447,22 @@ a delay.  This can be used to create CSS transition effects.
 Here are some examples:
 
 ```html
-<div kt-classes="add foo"/> <!-- adds the class "foo" after 100ms -->
-<div kt-classes="remove bar:1s"/> <!-- removes the class "bar" after 1s -->
-<div kt-classes="remove bar:1s, add foo:1s"/> <!-- removes the class "bar" after 1s
-                                               then adds the class "foo" 1s after that -->
-<div kt-classes="remove bar:1s & add foo:1s"/> <!-- removes the class "bar" and adds 
-                                                    class "foo" after 1s  -->
-<div kt-classes="toggle foo:1s"/> <!-- toggles the class "foo" every 1s -->
+<!-- adds the class "foo" after 100ms -->
+<div kt-classes="add foo"/> 
+
+<!-- removes the class "bar" after 1s -->
+<div kt-classes="remove bar:1s"/> 
+
+<!-- removes the class "bar" after 1s
+     then adds the class "foo" 1s after that -->
+<div kt-classes="remove bar:1s, add foo:1s"/> 
+
+<!-- removes the class "bar" and adds 
+     class "foo" after 1s  -->
+<div kt-classes="remove bar:1s & add foo:1s"/> 
+
+<!-- toggles the class "foo" every 1s -->
+<div kt-classes="toggle foo:1s"/>
 ```
 
 Full documentation is available [on the documentation page.](/attributes/kt-classes)
