@@ -63,11 +63,6 @@ var kutty = kutty || (function () {
             return matchesFunction && matchesFunction.call(elt, selector);
         }
 
-        function closest(elt, selector) {
-            do if (elt == null || matches(elt, selector)) return elt;
-            while (elt = elt && parentElt(elt));
-        }
-
         function getStartTag(str) {
             var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
             var match = tagMatcher.exec( str );
@@ -163,6 +158,119 @@ var kutty = kutty || (function () {
             sheet.insertRule(rule, sheet.cssRules.length);
         }
 
+        //==========================================================================================
+        // public API
+        //==========================================================================================
+
+        function internalEval(str){
+            return eval(str);
+        }
+
+        function onLoadHelper(callback) {
+            kutty.on("load.kutty", function(evt) {
+                callback(evt.detail.elt);
+            });
+        }
+
+        function logAll(){
+            kutty.logger = function(elt, event, data) {
+                if(console) {
+                    console.log(event, elt, data);
+                }
+            }
+        }
+
+        function find(eltOrSelector, selector) {
+            if (selector) {
+                eltOrSelector.querySelector(eltOrSelector);
+            } else {
+                getDocument().body.querySelector(eltOrSelector);
+            }
+        }
+
+        function findAll(eltOrSelector, selector) {
+            if (selector) {
+                eltOrSelector.querySelectorAll(eltOrSelector);
+            } else {
+                getDocument().body.querySelectorAll(eltOrSelector);
+            }
+        }
+
+        function removeElement(elt, delay) {
+            if (delay) {
+                setTimeout(function(){removeElement(elt);}, delay)
+            } else {
+                elt.parentElement.removeChild(elt);
+            }
+        }
+
+        function addClassToElement(elt, clazz, delay) {
+            if (delay) {
+                setTimeout(function(){addClassToElement(elt, clazz);}, delay)
+            } else {
+                elt.classList.add(clazz);
+            }
+        }
+
+        function removeClassFromElement(elt, clazz) {
+            if (delay) {
+                setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
+            } else {
+                elt.classList.remove(clazz);
+            }
+        }
+
+        function toggleClassOnElement(elt, clazz) {
+            elt.classList.toggle(clazz);
+        }
+
+        function takeClassForElement(elt, clazz) {
+            forEach(elt.parent.children, function(child){
+                removeClassFromElement(child, clazz);
+            })
+            addClassToElement(elt, clazz);
+        }
+
+        function closest(elt, selector) {
+            do if (elt == null || matches(elt, selector)) return elt;
+            while (elt = elt && parentElt(elt));
+        }
+
+        function processEventArgs(arg1, arg2, arg3) {
+            if (isFunction(arg2)) {
+                return {
+                    target: getDocument().body,
+                    event: arg1,
+                    listener: arg2
+                }
+            } else {
+                return {
+                    target: arg1,
+                    event: arg2,
+                    listener: arg3
+                }
+            }
+
+        }
+
+        function addKuttyEventListener(arg1, arg2, arg3) {
+            var eventArgs = processEventArgs(arg1, arg2, arg3);
+            ready(function(){
+                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+            })
+            return eventArgs.listener;
+        }
+
+        function removeKuttyEventListener(arg1, arg2, arg3) {
+            var eventArgs = processEventArgs(arg1, arg2, arg3);
+            ready(function(){
+                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+            })
+            return eventArgs.listener;
+        }
+
+
+
         //====================================================================
         // Node processing
         //====================================================================
@@ -208,7 +316,7 @@ var kutty = kutty || (function () {
                         settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
                     } else {
                         child.parentNode.removeChild(child);
-                        triggerEvent(getDocument().body, "oobErrorNoTarget.kutty", {content: child})
+                        triggerErrorEvent(getDocument().body, "oobErrorNoTarget.kutty", {content: child})
                     }
                 }
             });
@@ -535,7 +643,7 @@ var kutty = kutty || (function () {
             triggerEvent(elt, "initSSE.kutty", detail);
             var source = new EventSource(sseSrc, detail.config);
             source.onerror = function (e) {
-                triggerEvent(elt, "sseError.kutty", {error:e, source:source});
+                triggerErrorEvent(elt, "sseError.kutty", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
             getInternalData(elt).sseSource = source;
@@ -557,7 +665,7 @@ var kutty = kutty || (function () {
                 };
                 sseSource.sseSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerEvent(elt, "noSSESourceError.kutty")
+                triggerErrorEvent(elt, "noSSESourceError.kutty")
             }
         }
 
@@ -651,57 +759,21 @@ var kutty = kutty || (function () {
             return evt;
         }
 
+        function triggerErrorEvent(elt, eventName, detail) {
+            triggerEvent(elt, eventName, Object.assign({isError:true}, details));
+        }
+
         function triggerEvent(elt, eventName, detail) {
             detail["elt"] = elt;
             var event = makeEvent(eventName, detail);
             if (kutty.logger) {
                 kutty.logger(elt, eventName, detail);
-                if (eventName.indexOf("Error") > 0) {
+                if (detail.isError) {
                     sendError(elt, eventName, detail);
                 }
             }
             var eventResult = elt.dispatchEvent(event);
-            var allResult = elt.dispatchEvent(makeEvent("all.kutty", {originalDetail:detail, originalEvent: event}));
-            return eventResult && allResult;
-        }
-
-        function processEventArgs(arg1, arg2, arg3) {
-            if (isFunction(arg1)) {
-                return {
-                    target: getDocument().body,
-                    event: "all.kutty",
-                    listener: arg1
-                }
-            } else if (isFunction(arg2)) {
-                return {
-                    target: getDocument().body,
-                    event: arg1,
-                    listener: arg2
-                }
-            } else {
-                return {
-                    target: arg1,
-                    event: arg2,
-                    listener: arg3
-                }
-            }
-
-        }
-
-        function addKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
-            ready(function(){
-                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
-            })
-            return eventArgs.listener;
-        }
-
-        function removeKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
-            ready(function(){
-                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
-            })
-            return eventArgs.listener;
+            return eventResult;
         }
 
         //====================================================================
@@ -771,7 +843,7 @@ var kutty = kutty || (function () {
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                     currentPathForHistory = path;
                 } else {
-                    triggerEvent(getDocument().body, "historyCacheMissLoadError.kutty", details);
+                    triggerErrorEvent(getDocument().body, "historyCacheMissLoadError.kutty", details);
                 }
             };
             request.send();
@@ -1007,7 +1079,7 @@ var kutty = kutty || (function () {
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
-                triggerEvent(elt, 'targetError.kutty', {target: getRawAttribute(elt, "kt-target")});
+                triggerErrorEvent(elt, 'targetError.kutty', {target: getRawAttribute(elt, "kt-target")});
                 return;
             }
             var eltData = getInternalData(elt);
@@ -1125,7 +1197,7 @@ var kutty = kutty || (function () {
                                         doSettle();
                                     }
                                 } catch (e) {
-                                    triggerEvent(elt, 'swapError.kutty', eventDetail);
+                                    triggerErrorEvent(elt, 'swapError.kutty', eventDetail);
                                     throw e;
                                 }
                             };
@@ -1137,11 +1209,11 @@ var kutty = kutty || (function () {
                             }
                         }
                     } else {
-                        triggerEvent(elt, 'responseError.kutty', eventDetail);
+                        triggerErrorEvent(elt, 'responseError.kutty', eventDetail);
                     }
                 } catch (e) {
                     eventDetail['exception'] = e;
-                    triggerEvent(elt, 'onLoadError.kutty', eventDetail);
+                    triggerErrorEvent(elt, 'onLoadError.kutty', eventDetail);
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
@@ -1150,7 +1222,8 @@ var kutty = kutty || (function () {
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);triggerEvent(elt, 'sendError.kutty', eventDetail);
+                removeRequestIndicatorClasses(elt);
+                triggerErrorEvent(elt, 'sendError.kutty', eventDetail);
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'beforeRequest.kutty', eventDetail)) return endRequestLock();
@@ -1194,30 +1267,21 @@ var kutty = kutty || (function () {
             };
         })
 
-        function internalEval(str){
-            return eval(str);
-        }
-
-        function onLoadHelper(callback) {
-            kutty.on("load.kutty", function(evt) {
-                callback(evt.detail.elt);
-            });
-        }
-
-        function logAll(){
-            kutty.logger = function(elt, event, data) {
-                if(console) {
-                    console.log(event, elt, data);
-                }
-            }
-        }
-
         // Public API
         return {
+            onLoad: onLoadHelper,
             process: processNode,
             on: addKuttyEventListener,
             off: removeKuttyEventListener,
-            onLoad: onLoadHelper,
+            trigger : triggerEvent,
+            find : find,
+            findAll : findAll,
+            closest : closest,
+            remove : removeElement,
+            addClass : addClassToElement,
+            removeClass : removeClassFromElement,
+            toggleClass : toggleClassOnElement,
+            takeClass : takeClassForElement,
             logAll : logAll,
             logger : null,
             config : {

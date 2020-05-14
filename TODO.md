@@ -6,9 +6,6 @@
 
 ## Launch TODOS
 
-* Testing
-  * events
-  * X-KT-Trigger response header
 * Blog Post
 * Move to development branch
 * Publish 0.0.1
@@ -30,17 +27,8 @@
 
 * ctrl-click on boosted anchors let's tab open normally
 * `kutty-on="myEvent: ...""` attribute for handling custom events
-* kutty javascript API
-  * find
-  * findAll
-  * closest
-  * remove
-  * sequence(op1, op2)
-  * add/remove/toggleClass
-  * trigger
 * `kutty-requests` class on body
 * local references (e.g. kt-get="#foo")
-* polling cancellation API 205 code
 * focus recapture
 * Move to weakmap for kutty node info?  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
 * Scroll handler use https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API if available?
