@@ -1,4 +1,4 @@
-![</> kutty](https://github.com/bigskysoftware/kutty/raw/master/www/img/kutty_logo.png "high power tools for HTML")
+![</> kutty](https://github.com/bigskysoftware/kutty/raw/master/www/img/kutty_logo.1.png "high power tools for HTML")
 
 *high power tools for HTML*
 
