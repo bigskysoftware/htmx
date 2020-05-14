@@ -2,7 +2,7 @@
 layout: demo_layout.njk
 ---
         
-## Dependent Select
+## Value Select
 
 In this example we show how to make the values in one `select` depend on the value selected in another `select`.
 
