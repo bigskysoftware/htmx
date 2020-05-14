@@ -28,6 +28,26 @@ describe("kt-target attribute", function(){
         div1.innerHTML.should.equal("Clicked!");
     });
 
+    it('targets a `this` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div1 = make('<div kt-target="this"><button id="b1" kt-get="/test">Click Me!</button></div>')
+        var btn = byId("b1")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+    });
+
+    it('targets a `closest` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div1 = make('<div><p><i><button id="b1" kt-target="closest div" kt-get="/test">Click Me!</button></i></p></div>')
+        var btn = byId("b1")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+    });
+
     it('targets an inner element properly', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
