@@ -1,9 +1,35 @@
-# </> kutty
-*High power tools for HTML*
+![</> kutty](https://github.com/bigskysoftware/kutty/raw/master/www/img/kutty_logo.png "high power tools for HTML")
 
-## Overview
+*high power tools for HTML*
 
-Kutty is a set of HTML extensions (attributes, request headers, etc.) that allow you to use markup for complex user 
-interfaces and features, while retaining the simplicity and power of the hypertext we all know and love. 
+## Introduction
 
-Kutty is the successor to [intercooler.js](http://intercoolerjs.org)
+Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
+[modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
+
+Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), [dependency-free](https://github.com/bigskysoftware/kutty/blob/master/package.json) 
+& you can try it out quickly, without a huge rewrite.
+
+## Quick Start
+
+```html
+  <!-- Load from unpkg -->
+  <script src="https://unpkg.com/kutty.org@0.0.1"></script>
+  <!-- have a button POST a click via AJAX -->
+  <button kt-post="/clicked" kt-swap="outerHTML">
+    Click Me
+  </button>
+```
+
+The `kt-post` and `kt-swap` attributes tell kutty:
+
+> "When a user clicks on this button, issue an AJAX request to /example, and replace the entire button with the response"
+
+Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+
+## Website & Docs
+
+[https://kutty.org](https://kutty.org)
+
+[https://kutty.org/docs](https://kutty.org/docs)

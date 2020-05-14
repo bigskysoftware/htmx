@@ -20,7 +20,7 @@ Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), [dependency-
 
 ## Quick Start
 
-``` html
+```html
   <!-- Load from unpkg -->
   <script src="https://unpkg.com/kutty.org@0.0.1"></script>
   <!-- have a button POST a click via AJAX -->
