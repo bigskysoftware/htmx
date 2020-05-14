@@ -158,6 +158,15 @@ var kutty = kutty || (function () {
             sheet.insertRule(rule, sheet.cssRules.length);
         }
 
+        function mergeObjects(obj1, obj2) {
+            for (var key in obj2) {
+                if (obj2.hasOwnProperty(key)) {
+                    obj1[key] = obj2[key];
+                }
+            }
+            return obj1;
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -545,7 +554,7 @@ var kutty = kutty || (function () {
         function isLocalLink(elt) {
             return location.hostname === elt.hostname &&
                 getRawAttribute(elt,'href') &&
-                !getRawAttribute(elt,'href').startsWith("#")
+                getRawAttribute(elt,'href').indexOf("#") !== 0;
         }
 
         function boostElement(elt, nodeData, triggerSpec) {
@@ -760,7 +769,7 @@ var kutty = kutty || (function () {
         }
 
         function triggerErrorEvent(elt, eventName, detail) {
-            triggerEvent(elt, eventName, Object.assign({isError:true}, detail));
+            triggerEvent(elt, eventName, mergeObjects({isError:true}, detail));
         }
 
         function triggerEvent(elt, eventName, detail) {
@@ -1252,7 +1261,7 @@ var kutty = kutty || (function () {
             var element = getDocument().querySelector('meta[name="kutty-config"]');
             if (element) {
                 var source = JSON.parse(element.content);
-                kutty.config = Object.assign(kutty.config , source)
+                kutty.config = mergeObjects(kutty.config , source)
             }
         }
 
