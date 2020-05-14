@@ -3,15 +3,21 @@ layout: layout.njk
 title: </> kutty - high power tools for html
 ---
 
-## Talk Kutty
+## Kutty Talk
 
 Right now the best place to talk about kutty is the [intercooler gitter room](https://gitter.im/intercooler-js/Lobby)
 
 I'll be setting up a forum and 
 
-## Announcements
+## Blog & Announcements
 
-I'm trying to set up a blog [here](/posts)
+<div>
+<ul>
+{%- for post in collections.post -%}
+  <li><a href="{{ post.data.url }}">{{ post.data.title }}</a>🔥🔥</li>
+{%- endfor -%}
+</ul>
+</div>
 
 
 
