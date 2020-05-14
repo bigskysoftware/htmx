@@ -14,7 +14,7 @@ I'll be setting up a forum and
 <div>
 <ul>
 {%- for post in collections.post -%}
-  <li><a href="{{ post.data.url }}">{{ post.data.title }}</a>🔥🔥</li>
+  <li><a href="{{ post.url }}">{{ post.data.title }}</a>🔥🔥</li>
 {%- endfor -%}
 </ul>
 </div>

@@ -6,9 +6,8 @@
 
 ## Launch TODOS
 
-* Blog Post
-* Move to development branch
 * Publish 0.0.1
+* Move to development branch
 
 ## Post-Launch TODOS
 
