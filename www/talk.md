@@ -11,7 +11,7 @@ I'll be setting up a forum and chat room at some point.
 
 ## Features & Bug Reports
 
-(https://github.com/bigskysoftware/kutty/issues)[https://github.com/bigskysoftware/kutty/issues
+[https://github.com/bigskysoftware/kutty/issues](https://github.com/bigskysoftware/kutty/issues)
 
 ## Twitter
 
