@@ -5,7 +5,7 @@
 ## Introduction
 
 Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
-[modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+[modern UI](https://kutty.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
 Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/kutty/blob/master/package.json) 

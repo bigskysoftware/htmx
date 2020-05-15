@@ -150,7 +150,7 @@ There are few other modifiers you can use for trigger:
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
 
-You can use these two attributes to implement a common UX pattern, [Active Search](/demo/active-search):
+You can use these two attributes to implement a common UX pattern, [Active Search](/examples/active-search):
 
 ```html
    <input type="text" name="q" 
