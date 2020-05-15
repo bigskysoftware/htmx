@@ -23,7 +23,11 @@
     <div class="c">
         <div class="row">
             <div class="2 col">
-                <span kt-get="/" kt-target="body" kt-push-url="true" class="logo light">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+                {% if page.url.indexOf("/examples/") == 0 %}
+                    <span onclick="document.location = '/';" class="logo light">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+                {% else %}
+                    <span kt-get="/" kt-target="body" kt-push-url="true" class="logo light">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+                {% endif %}
                 <svg onclick="document.getElementById('nav').classList.toggle('show')" class="hamburger" viewBox="0 0 100 80" width="25" height="25" style="margin-bottom:-5px">
                     <rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
                     <rect y="30" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
