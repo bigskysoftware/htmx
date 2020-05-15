@@ -31,7 +31,7 @@ Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), IE11 compati
 
 The `kt-post` and `kt-swap` attributes tell kutty:
 
-> "When a user clicks on this button, issue an AJAX request to /example, and replace the entire button with the response"
+> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
 
 Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
