@@ -158,6 +158,15 @@ var kutty = kutty || (function () {
             sheet.insertRule(rule, sheet.cssRules.length);
         }
 
+        function mergeObjects(obj1, obj2) {
+            for (var key in obj2) {
+                if (obj2.hasOwnProperty(key)) {
+                    obj1[key] = obj2[key];
+                }
+            }
+            return obj1;
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -167,9 +176,10 @@ var kutty = kutty || (function () {
         }
 
         function onLoadHelper(callback) {
-            kutty.on("load.kutty", function(evt) {
+            var value = kutty.on("load.kutty", function(evt) {
                 callback(evt.detail.elt);
             });
+            return value;
         }
 
         function logAll(){
@@ -182,17 +192,17 @@ var kutty = kutty || (function () {
 
         function find(eltOrSelector, selector) {
             if (selector) {
-                eltOrSelector.querySelector(eltOrSelector);
+                return eltOrSelector.querySelector(selector);
             } else {
-                getDocument().body.querySelector(eltOrSelector);
+                return getDocument().body.querySelector(eltOrSelector);
             }
         }
 
         function findAll(eltOrSelector, selector) {
             if (selector) {
-                eltOrSelector.querySelectorAll(eltOrSelector);
+                return eltOrSelector.querySelectorAll(selector);
             } else {
-                getDocument().body.querySelectorAll(eltOrSelector);
+                return getDocument().body.querySelectorAll(eltOrSelector);
             }
         }
 
@@ -212,7 +222,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function removeClassFromElement(elt, clazz) {
+        function removeClassFromElement(elt, clazz, delay) {
             if (delay) {
                 setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
             } else {
@@ -225,7 +235,7 @@ var kutty = kutty || (function () {
         }
 
         function takeClassForElement(elt, clazz) {
-            forEach(elt.parent.children, function(child){
+            forEach(elt.parentElement.children, function(child){
                 removeClassFromElement(child, clazz);
             })
             addClassToElement(elt, clazz);
@@ -254,22 +264,21 @@ var kutty = kutty || (function () {
         }
 
         function addKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
             ready(function(){
+                var eventArgs = processEventArgs(arg1, arg2, arg3);
                 eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
             })
-            return eventArgs.listener;
+            var b = isFunction(arg2);
+            return b ? arg2 : arg3;
         }
 
         function removeKuttyEventListener(arg1, arg2, arg3) {
-            var eventArgs = processEventArgs(arg1, arg2, arg3);
             ready(function(){
-                eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
+                var eventArgs = processEventArgs(arg1, arg2, arg3);
+                eventArgs.target.removeEventListener(eventArgs.event, eventArgs.listener);
             })
-            return eventArgs.listener;
+            return isFunction(arg2) ? arg2 : arg3;
         }
-
-
 
         //====================================================================
         // Node processing
@@ -281,6 +290,8 @@ var kutty = kutty || (function () {
                 var targetStr = getRawAttribute(explicitTarget, "kt-target");
                 if (targetStr === "this") {
                     return explicitTarget;
+                } else if (targetStr.indexOf("closest ") === 0) {
+                    return closest(elt, targetStr.substr(8));
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
@@ -545,7 +556,7 @@ var kutty = kutty || (function () {
         function isLocalLink(elt) {
             return location.hostname === elt.hostname &&
                 getRawAttribute(elt,'href') &&
-                !getRawAttribute(elt,'href').startsWith("#")
+                getRawAttribute(elt,'href').indexOf("#") !== 0;
         }
 
         function boostElement(elt, nodeData, triggerSpec) {
@@ -760,7 +771,7 @@ var kutty = kutty || (function () {
         }
 
         function triggerErrorEvent(elt, eventName, detail) {
-            triggerEvent(elt, eventName, Object.assign({isError:true}, details));
+            triggerEvent(elt, eventName, mergeObjects({isError:true}, detail));
         }
 
         function triggerEvent(elt, eventName, detail) {
@@ -947,7 +958,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function getInputValues(elt) {
+        function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
             // include the element itself
@@ -962,8 +973,10 @@ var kutty = kutty || (function () {
                 });
             }
 
-            // include the closest form
-            processInputValue(processed, values, closest(elt, 'form'));
+            // for a non-GET include the closest form
+            if (verb !== 'get') {
+                processInputValue(processed, values, closest(elt, 'form'));
+            }
             return values;
         }
 
@@ -1042,12 +1055,7 @@ var kutty = kutty || (function () {
                     return newValues;
                 }
             } else {
-                // By default GETs do not include parameters
-                if (verb === 'get') {
-                    return {};
-                } else {
-                    return inputValues;
-                }
+                return inputValues;
             }
         }
 
@@ -1203,7 +1211,7 @@ var kutty = kutty || (function () {
                             };
 
                             if (swapSpec.swapDelay > 0) {
-                                setTimeout(doSwap, parseInterval(swapSpec.swapDelay))
+                                setTimeout(doSwap, swapSpec.swapDelay)
                             } else {
                                 doSwap();
                             }
@@ -1252,7 +1260,7 @@ var kutty = kutty || (function () {
             var element = getDocument().querySelector('meta[name="kutty-config"]');
             if (element) {
                 var source = JSON.parse(element.content);
-                kutty.config = Object.assign(kutty.config , source)
+                kutty.config = mergeObjects(kutty.config , source)
             }
         }
 

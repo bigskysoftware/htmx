@@ -176,9 +176,10 @@ var kutty = kutty || (function () {
         }
 
         function onLoadHelper(callback) {
-            kutty.on("load.kutty", function(evt) {
+            var value = kutty.on("load.kutty", function(evt) {
                 callback(evt.detail.elt);
             });
+            return value;
         }
 
         function logAll(){
@@ -191,17 +192,17 @@ var kutty = kutty || (function () {
 
         function find(eltOrSelector, selector) {
             if (selector) {
-                eltOrSelector.querySelector(eltOrSelector);
+                return eltOrSelector.querySelector(selector);
             } else {
-                getDocument().body.querySelector(eltOrSelector);
+                return getDocument().body.querySelector(eltOrSelector);
             }
         }
 
         function findAll(eltOrSelector, selector) {
             if (selector) {
-                eltOrSelector.querySelectorAll(eltOrSelector);
+                return eltOrSelector.querySelectorAll(selector);
             } else {
-                getDocument().body.querySelectorAll(eltOrSelector);
+                return getDocument().body.querySelectorAll(eltOrSelector);
             }
         }
 
@@ -221,7 +222,7 @@ var kutty = kutty || (function () {
             }
         }
 
-        function removeClassFromElement(elt, clazz) {
+        function removeClassFromElement(elt, clazz, delay) {
             if (delay) {
                 setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
             } else {
@@ -234,7 +235,7 @@ var kutty = kutty || (function () {
         }
 
         function takeClassForElement(elt, clazz) {
-            forEach(elt.parent.children, function(child){
+            forEach(elt.parentElement.children, function(child){
                 removeClassFromElement(child, clazz);
             })
             addClassToElement(elt, clazz);
@@ -267,7 +268,8 @@ var kutty = kutty || (function () {
                 var eventArgs = processEventArgs(arg1, arg2, arg3);
                 eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
             })
-            return isFunction(arg2) ? arg2 : arg3;
+            var b = isFunction(arg2);
+            return b ? arg2 : arg3;
         }
 
         function removeKuttyEventListener(arg1, arg2, arg3) {
