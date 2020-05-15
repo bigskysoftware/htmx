@@ -1,4 +1,4 @@
-describe("Core kutty Value Handling", function() {
+describe("Core kutty Parameter Handling", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -14,6 +14,12 @@ describe("Core kutty Value Handling", function() {
         vals['foo'].should.equal('bar');
     })
 
+    it('Input includes value on get', function () {
+        var input = make('<input name="foo" value="bar"/>');
+        var vals = kutty._('getInputValues')(input, "get");
+        vals['foo'].should.equal('bar');
+    })
+
     it('Input includes form', function () {
         var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/></form>');
         var input = byId('i1');
@@ -22,9 +28,38 @@ describe("Core kutty Value Handling", function() {
         vals['do'].should.equal('rey');
     })
 
-    it('Basic form works', function () {
+    it('Input doesnt include form on get', function () {
         var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/></form>');
-        var vals = kutty._('getInputValues')(form);
+        var input = byId('i1');
+        var vals = kutty._('getInputValues')(input, 'get');
+        vals['foo'].should.equal('bar');
+        should.equal(vals['do'], undefined);
+    })
+
+    it('non-input includes form', function () {
+        var form = make('<form><div id="d1"/><input id="i2" name="do" value="rey"/></form>');
+        var div = byId('d1');
+        var vals = kutty._('getInputValues')(div, "post");
+        vals['do'].should.equal('rey');
+    })
+
+    it('non-input doesnt include form on get', function () {
+        var form = make('<form><div id="d1"/><input id="i2" name="do" value="rey"/></form>');
+        var div = byId('d1');
+        var vals = kutty._('getInputValues')(div, "get");
+        should.equal(vals['do'], undefined);
+    })
+
+    it('Basic form works on get', function () {
+        var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/></form>');
+        var vals = kutty._('getInputValues')(form, 'get');
+        vals['foo'].should.equal('bar');
+        vals['do'].should.equal('rey');
+    })
+
+    it('Basic form works on non-get', function () {
+        var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/></form>');
+        var vals = kutty._('getInputValues')(form, 'post');
         vals['foo'].should.equal('bar');
         vals['do'].should.equal('rey');
     })
