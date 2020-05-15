@@ -18,6 +18,9 @@ body {
 .logo {
     font-size: 28px;
     font-weight: bold;
+    &:hover{
+        cursor: pointer;
+    }
 }
 
 .light {
