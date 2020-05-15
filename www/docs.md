@@ -348,7 +348,7 @@ will be included.
 If you wish to include the values of other elements, you can use the [kt-include](/attributes/kt-include) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-If you wish to filter out some parameters you can use the [kt-parameters](/attributes/kt-parameters) attribute.
+If you wish to filter out some parameters you can use the [kt-params](/attributes/kt-params) attribute.
 
 Finally, if you want to programatically modify the parameters, you can use the [configRequest.kutty](/events#configRequest.kutty) 
 event.
