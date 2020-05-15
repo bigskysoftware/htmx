@@ -6,7 +6,6 @@
 
 ## Launch TODOS
 
-* Publish 0.0.1
 * Move to development branch
 
 ## Post-Launch TODOS
@@ -24,6 +23,7 @@
 
 ## Features
 
+* logrithmic back off on history cache size on QuotaExceededError
 * ctrl-click on boosted anchors: tab opens normally
 * `kutty-on="myEvent: ...""` attribute for handling custom events
 * `kutty-requests` class on body
