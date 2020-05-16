@@ -1299,7 +1299,7 @@ var kutty = kutty || (function () {
                 defaultSwapDelay:0,
                 defaultSettleDelay:100
             },
-            version: "0.0.1",
+            version: "0.0.2",
             _:internalEval
         }
     }

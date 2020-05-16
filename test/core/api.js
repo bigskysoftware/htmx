@@ -9,7 +9,7 @@ describe("Core kutty API test", function(){
     });
 
     it('version is correct', function(){
-      kutty.version.should.equal("0.0.1");
+      kutty.version.should.equal("0.0.2");
     });
 
     it('onLoad is called... onLoad', function(){

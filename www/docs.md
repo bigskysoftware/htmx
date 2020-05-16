@@ -91,7 +91,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`kutty.org`" or downloaded 
 [unpkg](https://unpkg.com/browse/kutty.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/kutty.org@0.0.1"></script>
+    <script src="https://unpkg.com/kutty.org@0.0.2"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)

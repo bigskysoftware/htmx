@@ -15,7 +15,7 @@ Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), IE11 compati
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/kutty.org@0.0.1"></script>
+  <script src="https://unpkg.com/kutty.org@0.0.2"></script>
   <!-- have a button POST a click via AJAX -->
   <button kt-post="/clicked" kt-swap="outerHTML">
     Click Me
