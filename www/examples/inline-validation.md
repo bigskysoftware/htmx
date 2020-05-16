@@ -11,7 +11,8 @@ and updates the DOM with the validation results.
 We start with this form:
 
 ```html
-<h3>Signup Form</h3><form ic-post-to="/contact">
+<h3>Signup Form</h3>
+<form kt-post="/contact">
   <div kt-target="this" kt-swap="outerHTML">
     <label>Email Address</label>
     <input name="email" kt-post="/contact/email" kt-indicator="#ind">

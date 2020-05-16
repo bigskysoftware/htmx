@@ -1111,8 +1111,8 @@ var kutty = kutty || (function () {
             }
             var promptQuestion = getClosestAttributeValue(elt, "kt-prompt");
             if (promptQuestion) {
-                var prompt = prompt(promptQuestion);
-                if(!triggerEvent(elt, 'prompt.kutty', {prompt: prompt, target:target})) return endRequestLock();
+                var promptResponse = prompt(promptQuestion);
+                if(!triggerEvent(elt, 'prompt.kutty', {prompt: promptResponse, target:target})) return endRequestLock();
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "kt-confirm");
@@ -1122,7 +1122,7 @@ var kutty = kutty || (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var headers = getHeaders(elt, target, prompt, eventTarget);
+            var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var rawParameters = getInputValues(elt, verb);
             var filteredParameters = filterValues(rawParameters, elt, verb);
 

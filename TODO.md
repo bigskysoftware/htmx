@@ -4,10 +4,6 @@
 * Support IE11 (stretch: IE10)
 * < 6k in .min.gz form
 
-## Launch TODOS
-
-* Move to development branch
-
 ## Post-Launch TODOS
 
 * Clean up event naming
