@@ -11,8 +11,35 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta name="kutty-config" content='{"historyEnabled":false}'>
 </head>
-<body>
-<div id="mocha"></div>
+<body style="padding:20px;font-family: sans-serif">
+
+<h1>kutty.js test suite</h1>
+
+<h2>Scratch Page</h2>
+<ul>
+    <li>
+        <a href="scratch.html">Scratch Page</a>
+    </li>
+</ul>
+
+<h2>Manual Tests</h2>
+<ul>
+    <li>
+        <a href="manual/browser-only-tests.html">Core Browser-Only Tests</a>
+    </li>
+    <li>
+        <a href="manual/yes-indicator-css.html">Include Indicator CSS Test</a>
+    </li>
+    <li>
+        <a href="manual/no-indicator-css.html">Exclude Indicator CSS Test</a>
+    </li>
+    <li>
+        <a href="manual/confirm-and-prompt.html">Confirm & Prompt Test</a>
+    </li>
+</ul>
+
+<h2>Mocha Test Suite</h2>
+
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
@@ -56,8 +83,7 @@
 <script src="core/events.js"></script>
 
 
-<a href="browser-only-tests.html">Run Browser-Only Tests</a>
-
+<div id="mocha"></div>
 
 <script class="mocha-exec">
     mocha.run();

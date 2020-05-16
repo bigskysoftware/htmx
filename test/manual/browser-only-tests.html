@@ -3,21 +3,21 @@
     <meta charset="utf-8" />
     <title>Mocha Tests</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
 </head>
-<body>
+<body style="padding:20px;font-family: sans-serif">
 <div id="mocha"></div>
-<script src="../node_modules/chai/chai.js"></script>
-<script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/sinon/pkg/sinon.js"></script>
-<script src="../src/kutty.js"></script>
+<script src="../../node_modules/chai/chai.js"></script>
+<script src="../../node_modules/mocha/mocha.js"></script>
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/kutty.js"></script>
 <script class="mocha-init">
     mocha.setup('bdd');
     mocha.checkLeaks();
     should = chai.should();
 </script>
 
-<script src="util/util.js"></script>
+<script src="../util/util.js"></script>
 <script>
     describe("Browser Only Tests", function() {
 
