@@ -126,6 +126,16 @@ var kutty = kutty || (function () {
             return data;
         }
 
+        function toArray(arr) {
+            var returnArr = [];
+            if (arr) {
+                for (var i = 0; i < arr.length; i++) {
+                    returnArr.push(arr[i]);
+                }
+            }
+            return returnArr
+        }
+
         function forEach(arr, func) {
             if (arr) {
                 for (var i = 0; i < arr.length; i++) {
@@ -318,7 +328,7 @@ var kutty = kutty || (function () {
 
         function handleOutOfBandSwaps(fragment) {
             var settleTasks = [];
-            forEach(fragment.children, function (child) {
+            forEach(toArray(fragment.children), function (child) {
                 if (getAttributeValue(child, "kt-swap-oob") === "true") {
                     var target = getDocument().getElementById(child.id);
                     if (target) {
