@@ -1121,6 +1121,11 @@ var kutty = kutty || (function () {
                 if (verb !== 'post') {
                     headers['X-HTTP-Method-Override'] = verb.toUpperCase();
                 }
+
+                var dataEncoding = getClosestAttributeValue(elt, "kt-data-encoding");
+                if (dataEncoding == "json") {
+                    headers['Content-Type'] = 'application/json';
+                }
             }
 
             var requestConfig = {
@@ -1143,7 +1148,9 @@ var kutty = kutty || (function () {
                 xhr.open('POST', requestURL, true);
             }
 
-            xhr.overrideMimeType("text/html");
+            if (dataEncoding != "json") {
+                xhr.overrideMimeType("text/html");
+            }
 
             // request headers
             for (var header in headers) {
@@ -1236,7 +1243,12 @@ var kutty = kutty || (function () {
             }
             if(!triggerEvent(elt, 'beforeRequest.kutty', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
-            xhr.send(verb === 'get' ? null : urlEncode(filteredParameters));
+           
+            if (dataEncoding == "json") {
+                xhr.send(JSON.stringify(filteredParameters));
+            } else {
+                xhr.send(verb === 'get' ? null : urlEncode(filteredParameters));
+            }
         }
 
         //====================================================================
