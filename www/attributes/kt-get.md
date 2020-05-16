@@ -21,5 +21,5 @@ This example will cause the `div` to issue a `GET` to `/example` and swap the re
 * By default `kt-get` does not include any parameters.  You can use the [kt-params](/attributes/kt-params)
   attribute to change this
 * You can control the target of the swap using the [kt-target](/attributes/kt-target) attribute
-* You can control the swap strategy by using the [kt-swa](/attributes/kt-swap) attribute
+* You can control the swap strategy by using the [kt-swap](/attributes/kt-swap) attribute
 * You can control what event triggers the request with the [kt-trigger](/attributes/kt-trigger) attribute

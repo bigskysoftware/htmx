@@ -67,7 +67,7 @@ This tells kutty:
 Kutty extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly 
 within the language: 
 
-* Now any element, not just anchors and forms, can issue a HTTP request
+* Now any element, not just anchors and forms, can issue an HTTP request
 * Now any event, not just clicks or form submissions, can trigger requests
 * Now any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs), not just `GET` and `POST`, can be used
 * Now any element, not just the entire window, can be the target for update by the request
@@ -100,9 +100,12 @@ The core feature of kutty is a set of attributes that allow you to issue AJAX re
 
 * [kt-get](/attributes/kt-get) - Issues a `GET` request to the given URL
 * [kt-post](/attributes/kt-post) - Issues a `POST` request to the given URL
-* [kt-put](/attributes/kt-put) - Issues a `PUT` request to the given URL (see [details](#kutty-request-details))
-* [kt-patch](/attributes/kt-patch) - Issues a `PATCH` request to the given URL  (see [details](#kutty-request-details))
-* [kt-delete](/attributes/kt-delete) - Issues a `GET` request to the given URL (see [details](#kutty-request-details))
+* [kt-put](/attributes/kt-put) - Issues a `PUT` request to the given URL
+* [kt-patch](/attributes/kt-patch) - Issues a `PATCH` request to the given URL
+* [kt-delete](/attributes/kt-delete) - Issues a `DELETE` request to the given URL
+
+(Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
+actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.)
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -406,6 +409,7 @@ kutty includes a number of useful headers in requests:
 * `X-KT-Active-Element` - the id of the current active element
 * `X-KT-Active-Element-Name` - the name of the current active element
 * `X-KT-Active-Element-Value` - the value of the current active element
+* `X-HTTP-Method-Override` - the HTTP verb for non-`GET` and `POST` requests
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
