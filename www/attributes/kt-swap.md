@@ -13,9 +13,9 @@ The possible values of this attribute are:
 * `innerHTML` - The default, replace the inner html of the target element
 * `outerHTML` - Replace the entire target element with the response
 * `beforebegin` - Insert the response before the target element
-* `afterdegin` - Insert the response before the first child target element
-* `beforeend` - Insert the response after the last child of target element
-* `afterend` - Insert the response after target element
+* `afterbegin` - Insert the response before the first child of the target element
+* `beforeend` - Insert the response after the last child of the target element
+* `afterend` - Insert the response after the target element
 
 These options are based on standard DOM naming and the 
 [`Element.insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
