@@ -261,3 +261,8 @@ th {
 pre {
     overflow: auto;
 }
+
+table.delete-row-example .kutty-swapping {
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
+}

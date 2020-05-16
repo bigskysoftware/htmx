@@ -2,11 +2,11 @@
 layout: demo_layout.njk
 ---
         
-## Kutty Pattern: Infinite scroll
+## Infinite scroll
 
 The infinite scroll pattern provides a way to load content dynamically on user scrolling action.
 
-Let's focus on the final row:
+Let's focus on the final row (or the last element of your content):
 
 ```html
 <tr kt-get="/contacts/?page=2"
@@ -18,7 +18,7 @@ Let's focus on the final row:
 </tr>
 ```
 
-This row (or the last element of your content) contains a listener which, when scrolled into view, will trigger a request. The result is then appended after it.
+This last element contains a listener which, when scrolled into view, will trigger a request. The result is then appended after it.
 The last element of the results will itself contain the listener to load the *next* page of results, and so on.
 
 {% include demo_ui.html.liquid %}
