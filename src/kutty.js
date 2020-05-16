@@ -163,11 +163,6 @@ var kutty = kutty || (function () {
             return trigger.split(/\s+/);
         }
 
-        function addRule(rule) {
-            var sheet = getDocument().styleSheets[0];
-            sheet.insertRule(rule, sheet.cssRules.length);
-        }
-
         function mergeObjects(obj1, obj2) {
             for (var key in obj2) {
                 if (obj2.hasOwnProperty(key)) {
@@ -1261,16 +1256,32 @@ var kutty = kutty || (function () {
             }
         }
 
-        // insert kutty-indicator css rules
-        addRule(".kutty-indicator{opacity:0;transition: opacity 200ms ease-in;}");
-        addRule(".kutty-request .kutty-indicator{opacity:1}");
-        addRule(".kutty-request.kutty-indicator{opacity:1}");
+        // insert kutty-indicator css rules immediate, if not configured otherwise
+        (function() {
+            var metaConfig = getMetaConfig();
+            if (metaConfig === null || metaConfig.includeIndicatorStyles !== false) {
+                getDocument().head.insertAdjacentHTML("beforeend",
+                    "<style>\
+                      .kutty-indicator{opacity:0;transition: opacity 200ms ease-in;}\
+                      .kutty-request .kutty-indicator{opacity:1}\
+                      .kutty-request.kutty-indicator{opacity:1}\
+                    </style>");
+            }
+        })();
 
-        function mergeMetaConfig() {
+        function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="kutty-config"]');
             if (element) {
-                var source = JSON.parse(element.content);
-                kutty.config = mergeObjects(kutty.config , source)
+                return JSON.parse(element.content);
+            } else {
+                return null;
+            }
+        }
+
+        function mergeMetaConfig() {
+            var metaConfig = getMetaConfig();
+            if (metaConfig) {
+                kutty.config = mergeObjects(kutty.config , metaConfig)
             }
         }
 
@@ -1307,7 +1318,8 @@ var kutty = kutty || (function () {
                 historyCacheSize:10,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
-                defaultSettleDelay:100
+                defaultSettleDelay:100,
+                includeIndicatorStyles:true
             },
             version: "0.0.2",
             _:internalEval

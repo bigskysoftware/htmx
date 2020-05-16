@@ -533,6 +533,7 @@ Kutty allows you to configure a few defaults:
 *  `kutty.config.defaultSwapStyle` - defaults to `innerHTML`
 *  `kutty.config.defaultSwapDelay` - defaults to 0
 *  `kutty.config.defaultSettleDelay` - defaults to 100
+*  `kutty.config.includeIndicatorStyles` - defaults to `true` (determines if the `kutty-indicator` default styles are loaded, must be set in a `meta` tag before the kutty js is included)
 
 You can set them directly in javascript, or you can use a `meta` tag:
 
