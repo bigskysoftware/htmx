@@ -21,3 +21,4 @@ You can copy and paste them and then adjust them for your needs.
 | [Active Search](/examples/active-search) | Demonstrates the active search box pattern
 | [Progress Bar](/examples/progress-bar) | Demonstrates a job-runner like progress bar
 | [Value Select](/examples/value-select) | Demonstrates making the values of a select dependent on another select
+| [Dialogs](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
