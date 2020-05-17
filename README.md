@@ -4,18 +4,18 @@
 
 ## Introduction
 
-Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
+htmx is a set of extensions (attributes, request headers, etc.) that help you build 
 [modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Kutty is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) 
+Htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) 
 & you can try it out quickly, without a huge rewrite.
 
 ## Quick Start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.0.2"></script>
+  <script src="https://unpkg.com/htmx.org@0.0.3"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -26,7 +26,7 @@ The `hx-post` and `hx-swap` attributes tell htmx:
 
 > "When a user clicks on this button, issue an AJAX request to /example, and replace the entire button with the response"
 
-Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
 ## Website & Docs
 

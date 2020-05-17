@@ -18,11 +18,10 @@ I'll be setting up a forum and chat room at some point.
 [@htmx_org](https://twitter.com/htmx_org)
 
 ## Blog & Announcements
-
 <div>
-<ul>
-{%- for post in collections.post -%}
-  <li><a href="{{ post.url }}">{{ post.data.title }}</a>🔥🔥</li>
+<ul> 
+{%- for post in collections.post reversed -%}
+  <li><a href="{{ post.url  }}">{{ post.date | date: "%a, %b %d, %y"}} - {{ post.data.title }}</a>🔥🔥</li>
 {%- endfor -%}
 </ul>
 </div>

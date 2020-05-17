@@ -91,7 +91,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.0.2"></script>
+    <script src="https://unpkg.com/htmx.org@0.0.3"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)

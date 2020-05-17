@@ -268,7 +268,7 @@ var htmx = htmx || (function () {
 
         }
 
-        function addEventListenerImpl(arg1, arg2, arg3) {
+        function addKuttyEventListener(arg1, arg2, arg3) {
             ready(function(){
                 var eventArgs = processEventArgs(arg1, arg2, arg3);
                 eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener);
@@ -277,7 +277,7 @@ var htmx = htmx || (function () {
             return b ? arg2 : arg3;
         }
 
-        function removeEventListenerImpl(arg1, arg2, arg3) {
+        function removeKuttyEventListener(arg1, arg2, arg3) {
             ready(function(){
                 var eventArgs = processEventArgs(arg1, arg2, arg3);
                 eventArgs.target.removeEventListener(eventArgs.event, eventArgs.listener);
@@ -1300,8 +1300,8 @@ var htmx = htmx || (function () {
         return {
             onLoad: onLoadHelper,
             process: processNode,
-            on: addEventListenerImpl,
-            off: removeEventListenerImpl,
+            on: addKuttyEventListener,
+            off: removeKuttyEventListener,
             trigger : triggerEvent,
             find : find,
             findAll : findAll,

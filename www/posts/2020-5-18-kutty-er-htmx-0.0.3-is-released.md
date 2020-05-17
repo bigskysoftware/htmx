@@ -1,7 +1,8 @@
 ---
 layout: layout.njk
 tags: post
-title: htmx 0.0.2 has been released!
+title: kutty, er, htmx 0.0.3 has been released!
+date: 2020-05-18
 ---
 
 ## htmx 0.0.3 Release
