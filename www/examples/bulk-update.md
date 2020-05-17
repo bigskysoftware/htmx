@@ -9,9 +9,9 @@ accomplished by putting a form around a table, with checkboxes in the table, and
 values in `POST`'s to two different endpoints: `activate` and `deactivate`:
 
 ```html
-<div kt-include="#checked-contacts" kt-target="#tbody">
-  <a class="btn" kt-put="/activate">Activate</a>
-  <a class="btn" kt-put="/deactivate">Deactivate</a>
+<div hx-include="#checked-contacts" hx-target="#tbody">
+  <a class="btn" hx-put="/activate">Activate</a>
+  <a class="btn" hx-put="/deactivate">Deactivate</a>
 </div>
 
 <form id="checked-contacts">
@@ -42,10 +42,10 @@ updated rows.  It will apply the class `activate` or `deactivate` to rows that h
 us to use a bit of CSS to flash a color helping the user see what happened:
 
 ```css
-  .kutty-settling tr.deactivate td {
+  .htmx-settling tr.deactivate td {
     background: lightcoral;
   }
-  .kutty-settling tr.activate td {
+  .htmx-settling tr.activate td {
     background: darkseagreen;
   }
   tr td {
@@ -56,10 +56,10 @@ us to use a bit of CSS to flash a color helping the user see what happened:
 You can see a working examle of this code below.
 
 <style scoped="">
-  .kutty-settling tr.deactivate td {
+  .htmx-settling tr.deactivate td {
     background: lightcoral;
   }
-  .kutty-settling tr.activate td {
+  .htmx-settling tr.activate td {
     background: darkseagreen;
   }
   tr td {
@@ -127,9 +127,9 @@ You can see a working examle of this code below.
 
     // templates
     function displayUI(contacts) {
-      return `<div kt-include="#checked-contacts" kt-target="#tbody">
-                  <a class="btn" kt-put="/activate">Activate</a>
-                  <a class="btn" kt-put="/deactivate">Deactivate</a>
+      return `<div hx-include="#checked-contacts" hx-target="#tbody">
+                  <a class="btn" hx-put="/activate">Activate</a>
+                  <a class="btn" hx-put="/deactivate">Deactivate</a>
               </div>
             
               <form id="checked-contacts">

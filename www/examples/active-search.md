@@ -11,16 +11,16 @@ We start with a search input and an empty table:
 ```html
 <h3> 
   Search Contacts 
-  <span class="kutty-indicator"> 
+  <span class="htmx-indicator"> 
     <img src="/img/bars.svg"/> Searching... 
    </span> 
 </h3>
 <input class="form-control" type="text" 
        name="search" placeholder="Begin Typing To Search Users..." 
-       kt-post="/search" 
-       kt-trigger="keyup changed delay:500ms" 
-       kt-target="#search-results" 
-       kt-indicator=".kutty-indicator">
+       hx-post="/search" 
+       hx-trigger="keyup changed delay:500ms" 
+       hx-target="#search-results" 
+       hx-indicator=".htmx-indicator">
 
 <table class="table">
     <thead>
@@ -41,7 +41,7 @@ We add the `delay:500ms` modifier to the trigger to delay sending the query unti
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
 value of the input (e.g. they hit an arrow key).  
 
-Finally, we show an indicator when the search is in flight with the `kt-indicator` attribute. 
+Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
 
 
 {% include demo_ui.html.liquid %}
@@ -67,17 +67,17 @@ Finally, we show an indicator when the search is in flight with the `kt-indicato
     function searchUI() {
       return `  <h3>
 Search Contacts
-<span class="kutty-indicator">
+<span class="htmx-indicator">
 <img src="/img/bars.svg"/> Searching...
 </span>
 </h3>
 
 <input class="form-control" type="text" 
        name="search" placeholder="Begin Typing To Search Users..." 
-       kt-post="/search" 
-       kt-trigger="keyup changed delay:500ms" 
-       kt-target="#search-results" 
-       kt-indicator=".kutty-indicator">
+       hx-post="/search" 
+       hx-trigger="keyup changed delay:500ms" 
+       hx-target="#search-results" 
+       hx-indicator=".htmx-indicator">
 
 <table class="table">
 <thead>

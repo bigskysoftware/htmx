@@ -10,7 +10,7 @@
 <script src="../../node_modules/chai/chai.js"></script>
 <script src="../../node_modules/mocha/mocha.js"></script>
 <script src="../../node_modules/sinon/pkg/sinon.js"></script>
-<script src="../../src/kutty.js"></script>
+<script src="../../src/htmx.js"></script>
 <script class="mocha-init">
     mocha.setup('bdd');
     mocha.checkLeaks();
@@ -34,7 +34,7 @@
             this.server.respondWith("GET", "/test", "second");
 
             getWorkArea().innerHTML.should.be.equal("");
-            var div = make('<div kt-push-url="true" kt-get="/test">first</div>');
+            var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
             div.click();
             this.server.respond();
             getWorkArea().textContent.should.equal("second")
@@ -53,7 +53,7 @@
             });
 
             getWorkArea().innerHTML.should.equal("");
-            var div = make('<div kt-push-url="true" kt-get="/test" class="">0</div>');
+            var div = make('<div hx-push-url="true" hx-get="/test" class="">0</div>');
             div.click();
             this.server.respond();
             getWorkArea().textContent.should.equal("1")
@@ -77,7 +77,7 @@
             this.server.respondWith("GET", "/test", "second");
 
             getWorkArea().innerHTML.should.equal("");
-            var div = make('<div kt-push-url="true" kt-get="/test" class="">first</div>');
+            var div = make('<div hx-push-url="true" hx-get="/test" class="">first</div>');
             div.click();
             this.server.respond();
             getWorkArea().textContent.should.equal("second")
@@ -104,7 +104,7 @@
 </script>
 <em>Work Area</em>
 <hr/>
-<div id="work-area" kt-history-elt>
+<div id="work-area" hx-history-elt>
 </div>
 </body>
 </html>

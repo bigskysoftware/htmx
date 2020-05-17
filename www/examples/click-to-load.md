@@ -10,10 +10,10 @@ the final row:
 ```html
 <tr id="replaceMe">
   <td colspan="3">
-    <button class='btn' kt-get="/contacts/?page=2" 
-                        kt-target="#replaceMe" 
-                        kt-swap="outerHTML">
-         Load More Agents... <img class="kutty-indicator" src="/img/bars.svg">
+    <button class='btn' hx-get="/contacts/?page=2" 
+                        hx-target="#replaceMe" 
+                        hx-swap="outerHTML">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
     </button>
   </td>
 </tr> 
@@ -83,10 +83,10 @@ results (which will contain a button to load the *next* page of results).  And s
       return `<tr id="replaceMe">
   <td colspan="3">
     <center>
-      <button class='btn' kt-get="/contacts/?page=${page + 1}" 
-                       kt-target="#replaceMe" 
-                       kt-swap="outerHTML">
-         Load More Agents... <img class="kutty-indicator" src="/img/bars.svg">
+      <button class='btn' hx-get="/contacts/?page=${page + 1}" 
+                       hx-target="#replaceMe" 
+                       hx-swap="outerHTML">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
        </button>
     </center>
   </td>

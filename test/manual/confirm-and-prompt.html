@@ -2,11 +2,11 @@
 <head>
     <meta charset="utf-8" />
     <title>Test if indicators are invisible by default</title>
-    <script src="../../src/kutty.js"></script>
+    <script src="../../src/htmx.js"></script>
 </head>
 <body style="padding:20px;font-family: sans-serif">
 <script src="../../node_modules/sinon/pkg/sinon.js"></script>
-<script src="../../src/kutty.js"></script>
+<script src="../../src/htmx.js"></script>
 <script src="../util/util.js"></script>
 <script>
     server = makeServer();
@@ -19,10 +19,10 @@
     })
 </script>
 <h1>Prompt & Confirm Tests</h1>
-<button kt-get="/prompt" kt-prompt="Enter some text and it should be echoed in this button">Click For Prompt</button>
+<button hx-get="/prompt" hx-prompt="Enter some text and it should be echoed in this button">Click For Prompt</button>
 <br/>
 <br/>
 <br/>
-<button kt-get="/confirm" kt-confirm="Confirm The Action">Click For Confirm</button>
+<button hx-get="/confirm" hx-confirm="Confirm The Action">Click For Confirm</button>
 </body>
 </html>

@@ -1,4 +1,4 @@
-describe("Core kutty Regression Tests", function(){
+describe("Core htmx Regression Tests", function(){
 
     beforeEach(function() {
         this.server = makeServer();
@@ -18,21 +18,21 @@ describe("Core kutty Regression Tests", function(){
             '</svg>')
     });
 
-    it ('Handles https://github.com/bigskysoftware/kutty/issues/4 properly', function() {
+    it ('Handles https://github.com/bigskysoftware/htmx/issues/4 properly', function() {
         this.server.respondWith("GET", "/index2a.php",
-            "<div id='message' kt-swap-oob='true'>I came from message oob swap I should be second</div>" +
-            "<div id='message2' kt-swap-oob='true'>I came from a message2 oob swap I should be third  but I am in the wrong spot</div>" +
+            "<div id='message' hx-swap-oob='true'>I came from message oob swap I should be second</div>" +
+            "<div id='message2' hx-swap-oob='true'>I came from a message2 oob swap I should be third  but I am in the wrong spot</div>" +
             "I'm page2 content (non-swap) I should be first")
 
-        var h1 = make("<h1 kt-get='/index2a.php' kt-target='#page2' kt-trigger='click'>Kutty CLICK ME</h1>" +
+        var h1 = make("<h1 hx-get='/index2a.php' hx-target='#page2' hx-trigger='click'>Kutty CLICK ME</h1>" +
             "<div id='page2' ></div>" +
             "<div id='message'></div>" +
             "<div id='message2'></div>")
         h1.click();
         this.server.respond();
-        kutty.find("#page2").innerHTML.should.equal("I'm page2 content (non-swap) I should be first")
-        kutty.find("#message").innerHTML.should.equal("I came from message oob swap I should be second")
-        kutty.find("#message2").innerHTML.should.equal("I came from a message2 oob swap I should be third  but I am in the wrong spot")
+        htmx.find("#page2").innerHTML.should.equal("I'm page2 content (non-swap) I should be first")
+        htmx.find("#message").innerHTML.should.equal("I came from message oob swap I should be second")
+        htmx.find("#message2").innerHTML.should.equal("I came from a message2 oob swap I should be third  but I am in the wrong spot")
     });
 
 })

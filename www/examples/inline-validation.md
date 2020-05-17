@@ -12,11 +12,11 @@ We start with this form:
 
 ```html
 <h3>Signup Form</h3>
-<form kt-post="/contact">
-  <div kt-target="this" kt-swap="outerHTML">
+<form hx-post="/contact">
+  <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" kt-post="/contact/email" kt-indicator="#ind">
-    <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
+    <input name="email" hx-post="/contact/email" hx-indicator="#ind">
+    <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
     <label>First Name</label>
@@ -37,10 +37,10 @@ It also specifies an indicator for the request.
 When a request occurs, it will return a partial to replace the outer div.  It might look like this:
 
 ```html
-<div kt-target="this" kt-swap="outerHTML" class="error">
+<div hx-target="this" hx-swap="outerHTML" class="error">
   <label>Email Address</label>
-  <input name="email" kt-post="/contact/email" kt-indicator="#ind" value="test@foo.com">
-  <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
+  <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="test@foo.com">
+  <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   <div class='error-message'>That email is already taken.  Please enter another email.</div>
 </div> 
 ```
@@ -108,10 +108,10 @@ Below is a working demo of this example.  The only email that will be accepted i
     // templates
     function formTemplate(page) {
       return `<h3>Signup Form</h3><form ic-post-to="/contact">
-  <div kt-target="this" kt-swap="outerHTML">
+  <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" kt-get="/contact/email" kt-indicator="#ind">
-    <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
+    <input name="email" hx-get="/contact/email" hx-indicator="#ind">
+    <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
     <label>First Name</label>
@@ -126,10 +126,10 @@ Below is a working demo of this example.  The only email that will be accepted i
     }
     
         function emailInputTemplate(val, errorMsg) {
-            return `<div kt-target="this" kt-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
+            return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
-  <input name="email" kt-get="/contact/email" kt-indicator="#ind" value="${val}">
-  <img id="ind" src="/img/bars.svg" class="kutty-indicator"/>
+  <input name="email" hx-get="/contact/email" hx-indicator="#ind" value="${val}">
+  <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   ${errorMsg ? ("<div class='error-message'>" + errorMsg + "</div>") : ""}
 </div>`;
         }

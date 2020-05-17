@@ -1,19 +1,19 @@
 <html lang="en">
 <head>
-    <title>&lt;/> kutty - high power tools for html</title>
+    <title>&lt;/> htmx - high power tools for html</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/site.css"/>
-    <link rel="stylesheet" href="/css/prism-kutty.css"/>
+    <link rel="stylesheet" href="/css/prism-htmx.css"/>
     <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
-    <script src="/js/kutty.js"></script>
+    <script src="/js/htmx.js"></script>
     <script>
-        kutty.logger = function(elt, event, data) {
+        htmx.logger = function(elt, event, data) {
             if(console) {
                 //console.log(event, elt, data);
             }
         }
-        kutty.onLoad(function(){
+        htmx.onLoad(function(){
             Prism.highlightAll();
         })
     </script>
@@ -24,9 +24,9 @@
         <div class="row">
             <div class="2 col">
                 {% if page.url.indexOf("/examples/") == 0 %}
-                    <span onclick="document.location = '/';" class="logo light">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+                    <span onclick="document.location = '/';" class="logo light">&lt;<a>/</a>&gt; htm<a>x</a></span>
                 {% else %}
-                    <span kt-get="/" kt-target="body" kt-push-url="true" class="logo light">&lt;<a>/</a>&gt; k<a>u</a>tty</span>
+                    <span hx-get="/" hx-target="body" hx-push-url="true" class="logo light">&lt;<a>/</a>&gt; htm<a>x</a></span>
                 {% endif %}
                 <svg onclick="document.getElementById('nav').classList.toggle('show')" class="hamburger" viewBox="0 0 100 80" width="25" height="25" style="margin-bottom:-5px">
                     <rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
@@ -37,7 +37,7 @@
             {% if page.url.indexOf("/examples/") == 0 %}
             <div id="nav" class="10 col nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
             {% else %}
-            <div id="nav" class="10 col" kt-boost="true">
+            <div id="nav" class="10 col" hx-boost="true">
             {% endif %}
                 <div class="row">
                     <div class="1 col">
@@ -55,8 +55,8 @@
                     <div class="8 col">
                     </div>
                     <div class="8 col" style="text-align: right">
-                            <a href="https://github.com/bigskysoftware/kutty">github</a>
-                            <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=kutty&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star twbs/bootstrap on GitHub"></iframe>
+                            <a href="https://github.com/bigskysoftware/htmx">github</a>
+                            <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star twbs/bootstrap on GitHub"></iframe>
                     </div>
                 </div>
             </div>

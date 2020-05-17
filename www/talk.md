@@ -1,21 +1,21 @@
 ---
 layout: layout.njk
-title: </> kutty - high power tools for html
+title: </> htmx - high power tools for html
 ---
 
-## Kutty Talk
+## Htmx Talk
 
-Right now the best place to talk about kutty is the [intercooler gitter room](https://gitter.im/intercooler-js/Lobby)
+Right now the best place to talk about htmx is the [intercooler gitter room](https://gitter.im/intercooler-js/Lobby)
 
 I'll be setting up a forum and chat room at some point.
 
 ## Features & Bug Reports
 
-[https://github.com/bigskysoftware/kutty/issues](https://github.com/bigskysoftware/kutty/issues)
+[https://github.com/bigskysoftware/htmx/issues](https://github.com/bigskysoftware/htmx/issues)
 
 ## Twitter
 
-[@kutty_org](https://twitter.com/kutty_org)
+[@htmx_org](https://twitter.com/htmx_org)
 
 ## Blog & Announcements
 

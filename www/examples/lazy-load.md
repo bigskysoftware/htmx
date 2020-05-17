@@ -8,8 +8,8 @@ This example shows how to lazily load an element on a page.  We start with an in
 state that looks like this:
 
 ```html
-<div kt-get="/graph" kt-trigger="load">
-  <img class="kutty-indicator" width="150" src="/img/bars.svg"/>
+<div hx-get="/graph" hx-trigger="load">
+  <img class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>
 ```
 
@@ -17,7 +17,7 @@ Which shows a progress indicator as we are loading the graph.  The graph is then
 loaded and faded gently into view via a settling CSS transition:
 
 ```css
-.kutty-settling img {
+.htmx-settling img {
   opacity: 0;
 }
 img {
@@ -26,7 +26,7 @@ img {
 ```
 
 <style>
-.kutty-settling img {
+.htmx-settling img {
   opacity: 0;
 }
 img {
@@ -54,8 +54,8 @@ img {
     
     // templates
     function lazyTemplate(page) {
-      return `<div kt-get="/graph" kt-trigger="load">
-  <img class="kutty-indicator" width="120" src="/img/bars.svg"/>
+      return `<div hx-get="/graph" hx-trigger="load">
+  <img class="htmx-indicator" width="120" src="/img/bars.svg"/>
 </div>`;
     }
 </script>

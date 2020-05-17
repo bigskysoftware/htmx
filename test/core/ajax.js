@@ -1,4 +1,4 @@
-describe("Core kutty AJAX Tests", function(){
+describe("Core htmx AJAX Tests", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
@@ -13,7 +13,7 @@ describe("Core kutty AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        var btn = make('<button kt-get="/test">Click Me!</button>')
+        var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
@@ -21,13 +21,13 @@ describe("Core kutty AJAX Tests", function(){
 
     it('processes inner content properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a kt-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
 
-        var div = make('<div kt-get="/test"></div>')
+        var div = make('<div hx-get="/test"></div>')
         div.click();
         this.server.respond();
-        div.innerHTML.should.equal('<a kt-get="/test2">Click Me</a>');
+        div.innerHTML.should.equal('<a hx-get="/test2">Click Me</a>');
         var a = div.querySelector('a');
         a.click();
         this.server.respond();
@@ -36,10 +36,10 @@ describe("Core kutty AJAX Tests", function(){
 
     it('handles swap outerHTML properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a id="a1" kt-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
 
-        var div = make('<div id="d1" kt-get="/test" kt-swap="outerHTML"></div>')
+        var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
         div.click();
         should.equal(byId("d1"), div);
         this.server.respond();
@@ -54,11 +54,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="beforebegin">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="beforebegin">*</div>')
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -84,11 +84,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="afterbegin">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="afterbegin">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1*");
@@ -111,11 +111,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="afterbegin"></div>')
+        var div = make('<div hx-get="/test" hx-swap="afterbegin"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
@@ -138,11 +138,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="afterend">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="afterend">*</div>')
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -168,11 +168,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="beforeend">*</div>')
+        var div = make('<div hx-get="/test" hx-swap="beforeend">*</div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("*1");
@@ -195,11 +195,11 @@ describe("Core kutty AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" kt-get="/test2" kt-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div kt-get="/test" kt-swap="beforeend"></div>')
+        var div = make('<div hx-get="/test" hx-swap="beforeend"></div>')
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
@@ -217,11 +217,11 @@ describe("Core kutty AJAX Tests", function(){
         div.innerText.should.equal("**");
     });
 
-    it('handles kt-target properly', function()
+    it('handles hx-target properly', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        var btn = make('<button kt-get="/test" kt-target="#s1">Click Me!</button>');
+        var btn = make('<button hx-get="/test" hx-target="#s1">Click Me!</button>');
         var target = make('<span id="s1">Initial</span>');
         btn.click();
         target.innerHTML.should.equal("Initial");
@@ -233,28 +233,28 @@ describe("Core kutty AJAX Tests", function(){
     {
         this.server.respondWith("GET", "/test", [204, {}, "No Content!"]);
 
-        var btn = make('<button kt-get="/test">Click Me!</button>');
+        var btn = make('<button hx-get="/test">Click Me!</button>');
         btn.click();
         btn.innerHTML.should.equal("Click Me!");
         this.server.respond();
         btn.innerHTML.should.equal("Click Me!");
     });
 
-    it('handles kt-trigger with non-default value', function()
+    it('handles hx-trigger with non-default value', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        var form = make('<form kt-get="/test" kt-trigger="click">Click Me!</form>');
+        var form = make('<form hx-get="/test" hx-trigger="click">Click Me!</form>');
         form.click();
         form.innerHTML.should.equal("Click Me!");
         this.server.respond();
         form.innerHTML.should.equal("Clicked!");
     });
 
-    it('handles kt-trigger with load event', function()
+    it('handles hx-trigger with load event', function()
     {
         this.server.respondWith("GET", "/test", "Loaded!");
-        var div = make('<div kt-get="/test" kt-trigger="load">Load Me!</div>');
+        var div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
         div.innerHTML.should.equal("Loaded!");
@@ -266,7 +266,7 @@ describe("Core kutty AJAX Tests", function(){
             xhr.overriddenMimeType.should.equal("text/html");
             done();
         });
-        var div = make('<div kt-get="/test">Click Me!</div>');
+        var div = make('<div hx-get="/test">Click Me!</div>');
         div.click();
         this.server.respond();
     });
@@ -278,28 +278,28 @@ describe("Core kutty AJAX Tests", function(){
             xhr.respond(200, {}, "click " + i);
             i++
         });
-        var div = make('<div kt-get="/test"></div>');
+        var div = make('<div hx-get="/test"></div>');
         div.click();
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("click 1");
     });
 
-    it('properly handles kt-select for basic situation', function()
+    it('properly handles hx-select for basic situation', function()
     {
         var i = 1;
         this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
-        var div = make('<div kt-get="/test" kt-select="#d1"></div>');
+        var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
     });
 
-    it('properly handles kt-select for full html document situation', function()
+    it('properly handles hx-select for full html document situation', function()
     {
         var i = 1;
         this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
-        var div = make('<div kt-get="/test" kt-select="#d1"></div>');
+        var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
@@ -313,7 +313,7 @@ describe("Core kutty AJAX Tests", function(){
             xhr.respond(204, {}, "");
         });
 
-        var form = make('<form kt-post="/test" kt-trigger="click">' +
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
             '<input id="cb1" name="c1" value="cb1" type="checkbox">'+
             '<input id="cb2" name="c1" value="cb2" type="checkbox">'+
             '<input id="cb3" name="c1" value="cb3" type="checkbox">'+

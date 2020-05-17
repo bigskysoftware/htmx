@@ -1,11 +1,11 @@
 ---
 layout: layout.njk
-title: </> kutty - UX Patterns
+title: </> htmx - UX Patterns
 ---
 
 ## UI Examples
 
-Below are a set of UX patterns implemented in kutty with minimal HTML and styling.
+Below are a set of UX patterns implemented in htmx with minimal HTML and styling.
 
 You can copy and paste them and then adjust them for your needs.
 

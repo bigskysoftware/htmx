@@ -2,16 +2,16 @@
 layout: demo_layout.njk
 ---
         
-## Kutty Pattern: Infinite scroll
+## Htmx Pattern: Infinite scroll
 
 The infinite scroll pattern provides a way to load content dynamically on user scrolling action.
 
 Let's focus on the final row:
 
 ```html
-<tr kt-get="/contacts/?page=2"
-    kt-trigger="revealed"
-    kt-swap="afterend">
+<tr hx-get="/contacts/?page=2"
+    hx-trigger="revealed"
+    hx-swap="afterend">
   <td>Agent Smith</td>
   <td>void29@null.org</td>
   <td>55F49448C0</td>
@@ -65,9 +65,9 @@ The last element of the results will itself contain the listener to load the *ne
     
     // templates
     function tableTemplate(contacts) {
-      return `<table kt-indicator=".kutty-indicator"><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
+      return `<table hx-indicator=".htmx-indicator"><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
               ${rowsTemplate(1, contacts)}
-              </tbody></table><center><img class="kutty-indicator" width="60" src="/img/bars.svg"></center>`
+              </tbody></table><center><img class="htmx-indicator" width="60" src="/img/bars.svg"></center>`
     }
 
     function rowsTemplate(page, contacts) {
@@ -78,7 +78,7 @@ The last element of the results will itself contain the listener to load the *ne
         var c = contacts[i];
 
         if (i == (contacts.length - 1)) {
-         trigger_attributes = ` kt-get="/contacts/?page=${page + 1}" kt-trigger="revealed" kt-swap="afterend"`
+         trigger_attributes = ` hx-get="/contacts/?page=${page + 1}" hx-trigger="revealed" hx-swap="afterend"`
         }
 
         txt += "<tr" + trigger_attributes +"><td>" + c.name + "</td><td>" + c.email + "</td><td>" + c.id + "</td></tr>\n";

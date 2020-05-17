@@ -1,6 +1,6 @@
 /* Test Utilities */
 
-kutty.logAll();
+htmx.logAll();
 
 function byId(id) {
     return document.getElementById(id);
@@ -13,7 +13,7 @@ function make(htmlStr) {
         var  wa = getWorkArea();
         for (var  i = fragment.childNodes.length - 1; i >= 0; i--) {
             var child = fragment.childNodes[i];
-            kutty.process(child);
+            htmx.process(child);
             wa.appendChild(child);
         }
         return wa.lastChild;

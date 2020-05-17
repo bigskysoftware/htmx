@@ -1,4 +1,4 @@
-describe("Core kutty AJAX Verbs", function() {
+describe("Core htmx AJAX Verbs", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -10,7 +10,7 @@ describe("Core kutty AJAX Verbs", function() {
 
     it('handles basic posts properly', function () {
         this.server.respondWith("POST", "/test", "post");
-        var div = make('<div kt-post="/test">click me</div>');
+        var div = make('<div hx-post="/test">click me</div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("post");
@@ -18,7 +18,7 @@ describe("Core kutty AJAX Verbs", function() {
 
     it('handles basic put properly', function () {
         this.server.respondWith("PUT", "/test", "put");
-        var div = make('<div kt-put="/test">click me</div>');
+        var div = make('<div hx-put="/test">click me</div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("put");
@@ -26,7 +26,7 @@ describe("Core kutty AJAX Verbs", function() {
 
     it('handles basic patch properly', function () {
         this.server.respondWith("PATCH", "/test", "patch");
-        var div = make('<div kt-patch="/test">click me</div>');
+        var div = make('<div hx-patch="/test">click me</div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("patch");
@@ -34,7 +34,7 @@ describe("Core kutty AJAX Verbs", function() {
 
     it('handles basic delete properly', function () {
         this.server.respondWith("DELETE", "/test", "delete");
-        var div = make('<div kt-delete="/test">click me</div>');
+        var div = make('<div hx-delete="/test">click me</div>');
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("delete");

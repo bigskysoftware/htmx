@@ -1,14 +1,14 @@
 {
-  "name": "kutty.org",
+  "name": "htmx.org",
   "description": "high power tools for html",
   "keywords": [
     "AJAX",
     "HTML"
   ],
-  "version": "0.0.2",
-  "homepage": "https://kutty.org/",
+  "version": "0.0.3",
+  "homepage": "https://htmx.org/",
   "bugs": {
-    "url": "https://github.com/bigskysoftware/kutty/issues"
+    "url": "https://github.com/bigskysoftware/htmx/issues"
   },
   "license": "BSD 2-Clause",
   "files": [
@@ -17,17 +17,17 @@
     "dist/*.js",
     "dist/*.js.gz"
   ],
-  "main": "dist/kutty.min.js",
-  "unpkg": "dist/kutty.min.js",
+  "main": "dist/htmx.min.js",
+  "unpkg": "dist/htmx.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
-    "dist": "cp src/kutty.js dist/ && npm run-script uglify && gzip -k -f dist/kutty.min.js > dist/kutty.min.js.gz && exit",
+    "dist": "cp src/htmx.js dist/ && npm run-script uglify && gzip -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "www": "node scripts/www.js",
-    "uglify": "uglifyjs -m eval -o dist/kutty.min.js dist/kutty.js"
+    "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bigskysoftware/kutty.git"
+    "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.10.0",
