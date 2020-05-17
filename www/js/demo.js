@@ -88,6 +88,13 @@ function onPost(path, response) {
     });
 }
 
+function onDelete(path, response) {
+    server.respondWith("DELETE", path, function(request){
+        let body = response(request, params(request));
+        request.respond(200, {}, body);
+    });
+}
+
 //====================================
 // Activites
 //====================================
