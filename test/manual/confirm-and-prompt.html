@@ -12,7 +12,7 @@
     server = makeServer();
     server.autoRespond = true;
     server.respondWith("GET", "/prompt", function(xhr){
-        xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["X-KT-Prompt"]);
+        xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["X-HX-Prompt"]);
     })
     server.respondWith("GET", "/confirm", function(xhr){
         xhr.respond(200, {}, "Confirmed")
