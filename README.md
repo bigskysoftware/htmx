@@ -15,7 +15,7 @@ Htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatibl
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.0.3"></script>
+  <script src="https://unpkg.com/htmx.org@0.0.4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

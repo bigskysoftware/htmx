@@ -8,10 +8,6 @@ describe("Core htmx API test", function(){
         clearWorkArea();
     });
 
-    it('version is correct', function(){
-      htmx.version.should.equal("0.0.2");
-    });
-
     it('onLoad is called... onLoad', function(){
         // also tests on/off
         this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test'></div>")

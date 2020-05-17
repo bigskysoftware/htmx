@@ -1321,7 +1321,6 @@ var htmx = htmx || (function () {
                 defaultSettleDelay:100,
                 includeIndicatorStyles:true
             },
-            version: "0.0.2",
             _:internalEval
         }
     }
