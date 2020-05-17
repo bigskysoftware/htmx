@@ -1,4 +1,4 @@
-![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/77cc4ba1798750fc6469ae1659baffe2c945ad8f/www/img/htmx_logo.1.png "high power tools for HTML")
+![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/img/htmx_logo.1.png "high power tools for HTML")
 
 *high power tools for HTML*
 
