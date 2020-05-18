@@ -1084,6 +1084,31 @@ var kutty = kutty || (function () {
             return swapSpec;
         }
 
+        function getUrlSpecification(elt, verb) {
+            // verb should be kt-post, kt-get, kt-put, etc
+            var ktverb = "kt-" + verb;
+            var info = getClosestAttributeValue(elt, ktverb);
+            var urlSpec = {
+                "encoding": kutty.config.defaultEncoding,
+                "url": null,
+            }
+
+            if (info) {
+                var split = splitOnWhitespace(info);
+                if (split.length > 0) {
+                    urlSpec["url"] = split[0];
+                    for (var i = 1; i < split.length; i++) {
+                        var modifier = split[i];
+                        if ((modifier.indexOf("encoding:") === 0) && (modifier.indexOf("json") >= 0)) {
+                            urlSpec["encoding"] = "json";
+                        }
+                    }
+                }
+            }
+            return urlSpec;
+        }
+
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1115,6 +1140,7 @@ var kutty = kutty || (function () {
             var headers = getHeaders(elt, target, prompt, eventTarget);
             var rawParameters = getInputValues(elt, verb);
             var filteredParameters = filterValues(rawParameters, elt, verb);
+            var urlSpec = getUrlSpecification(elt, verb);
 
             if (verb !== 'get') {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -1122,8 +1148,7 @@ var kutty = kutty || (function () {
                     headers['X-HTTP-Method-Override'] = verb.toUpperCase();
                 }
 
-                var dataEncoding = getClosestAttributeValue(elt, "kt-data-encoding");
-                if (dataEncoding == "json") {
+                if (urlSpec.encoding == "json") {
                     headers['Content-Type'] = 'application/json';
                 }
             }
@@ -1141,14 +1166,14 @@ var kutty = kutty || (function () {
             var requestURL;
             if (verb === 'get') {
                 var noValues = Object.keys(filteredParameters).length === 0;
-                requestURL = path + (noValues ? "" : "?" + urlEncode(filteredParameters));
+                requestURL = urlSpec.url + (noValues ? "" : "?" + urlEncode(filteredParameters));
                 xhr.open('GET', requestURL, true);
             } else {
-                requestURL = path;
+                requestURL = urlSpec.url;
                 xhr.open('POST', requestURL, true);
             }
 
-            if (dataEncoding != "json") {
+            if (urlSpec.encoding != "json") {
                 xhr.overrideMimeType("text/html");
             }
 
@@ -1164,8 +1189,12 @@ var kutty = kutty || (function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.kutty', eventDetail)) return;
 
-                    handleTrigger(elt, this.getResponseHeader("X-KT-Trigger"));
-                    var pushedUrl = this.getResponseHeader("X-KT-Push");
+                    var ktTrigger =  (this.getAllResponseHeaders().indexOf("X-KT-Trigger") >= 0 ) ?
+                    this.getResponseHeader("X-KT-Trigger") : null;
+                    handleTrigger(elt, ktTrigger );
+
+                    var pushedUrl = (this.getAllResponseHeaders().indexOf("X-KT-Push") >= 0 ) ? 
+                    this.getResponseHeader("X-KT-Push") : null ;
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
@@ -1244,7 +1273,7 @@ var kutty = kutty || (function () {
             if(!triggerEvent(elt, 'beforeRequest.kutty', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
            
-            if (dataEncoding == "json") {
+            if (urlSpec.encoding == "json") {
                 xhr.send(JSON.stringify(filteredParameters));
             } else {
                 xhr.send(verb === 'get' ? null : urlEncode(filteredParameters));
