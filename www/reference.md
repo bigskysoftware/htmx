@@ -1,42 +1,42 @@
 ---
 layout: layout.njk
-title: </> kutty - Attributes
+title: </> htmx - Attributes
 ---
 
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
 | Attribute | Description |
 |-----------|-------------|
-| [`kt-boost`](/attributes/kt-boost) | progressively enhances anchors and forms to use AJAX requests
-| [`kt-classes`](/attributes/kt-classes) | timed modification of classes on an element
-| [`kt-confirm`](/attributes/kt-confirm) | shows a confim() dialog before issuing a request
-| [`kt-delete`](/attributes/kt-delete) | issues a `DELETE` to the specified URL
-| [`kt-error-url`](/attributes/kt-error-url) | a URL to send client-side errors to
-| [`kt-get`](/attributes/kt-get) | issues a `GET` to the specified URL
-| [`kt-history-elt`](/attributes/kt-history-elt) | the element to snapshot and restore during history navigation
-| [`kt-include`](/attributes/kt-include) | includes additional data in AJAX requests
-| [`kt-indicator`](/attributes/kt-indicator) | the element to put the `kutty-request` class on during the AJAX request
-| [`kt-params`](/attributes/kt-params) | filters the parameters that will be submitted with a request
-| [`kt-patch`](/attributes/kt-patch) | issues a `PATCH` to the specified URL
-| [`kt-post`](/attributes/kt-post) | issues a `POST` to the specified URL
-| [`kt-prompt`](/attributes/kt-prompt) | shows a prompt before submitting a request
-| [`kt-push-url`](/attributes/kt-push-url) | pushes the URL into the location bar, creating a new history entry
-| [`kt-put`](/attributes/kt-put) | issues a `PUT` to the specified URL
-| [`kt-select`](/attributes/kt-select) | selects a subset of the server response to process
-| [`kt-sse-src`](/attributes/kt-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
-| [`kt-swap-oob`](/attributes/kt-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
-| [`kt-swap`](/attributes/kt-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
-| [`kt-target`](/attributes/kt-target) | specifies the target element to be swapped
-| [`kt-trigger`](/attributes/kt-trigger) | specifies the event that triggers the request
+| [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
+| [`hx-classes`](/attributes/hx-classes) | timed modification of classes on an element
+| [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
+| [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
+| [`hx-error-url`](/attributes/hx-error-url) | a URL to send client-side errors to
+| [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
+| [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
+| [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
+| [`hx-indicator`](/attributes/hx-indicator) | the element to put the `htmx-request` class on during the AJAX request
+| [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
+| [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
+| [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
+| [`hx-prompt`](/attributes/hx-prompt) | shows a prompt before submitting a request
+| [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
+| [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
+| [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
+| [`hx-sse-src`](/attributes/hx-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
+| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
+| [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
+| [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
+| [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
 
 ## <a name="classes"></a> [CSS Class Reference](#classes)
 
 | Class | Description |
 |-----------|-------------|
-| `kutty-indicator` | A dynamically generated class that will toggle visible (opacity:1) when a `kutty-request` class is present
-| `kutty-request` | Applied to either the element or the element specified with [`kt-indicator`](/attributes/kt-indicator) while a request is ongoing
-| `kutty-settling` | Applied to a target after content is swapped, removed after it is settled
-| `kutty-swapping` | Applied to a target before any content is swapped, removed after it is swapped
+| `htmx-indicator` | A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present
+| `htmx-request` | Applied to either the element or the element specified with [`hx-indicator`](/attributes/hx-indicator) while a request is ongoing
+| `htmx-settling` | Applied to a target after content is swapped, removed after it is settled
+| `htmx-swapping` | Applied to a target before any content is swapped, removed after it is swapped
 
 
 ## <a name="headers"></a> [HTTP Header Reference](#headers)
@@ -46,48 +46,48 @@ title: </> kutty - Attributes
 | Header | Description |
 |-------|-------------|
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
-| `X-KT-Active-Element-Name` | the `name` of the active element if it exists
-| `X-KT-Active-Element-Value` | the `value` of the active element if it exists
-| `X-KT-Active-Element` | the `id` of the active element if it exists
-| `X-KT-Current-URL` | the current URL of the browser
-| `X-KT-Event-Target` | the `id` of the original event target 
-| `X-KT-Prompt` | the user response to an [ic-prompt](/attributes/kt-prompt)
-| `X-KT-Request` | always `true`
-| `X-KT-Target` | the `id` of the target element if it exists
-| `X-KT-Trigger-Name` | the `name` of the triggered element if it exists
-| `X-KT-Trigger` | the `id` of the triggered element if it exists
+| `X-HX-Active-Element-Name` | the `name` of the active element if it exists
+| `X-HX-Active-Element-Value` | the `value` of the active element if it exists
+| `X-HX-Active-Element` | the `id` of the active element if it exists
+| `X-HX-Current-URL` | the current URL of the browser
+| `X-HX-Event-Target` | the `id` of the original event target 
+| `X-HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `X-HX-Request` | always `true`
+| `X-HX-Target` | the `id` of the target element if it exists
+| `X-HX-Trigger-Name` | the `name` of the triggered element if it exists
+| `X-HX-Trigger` | the `id` of the triggered element if it exists
 
 ### <a name="response_headers"></a> [Response Headers](#response_headers)
 
 | Header | Description |
 |-------|-------------|
-| `X-KT-Push` | pushes a new url into the history stack
-| [`X-KT-Trigger`](/headers/x-kt-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-kt-trigger) for more info
+| `X-HX-Push` | pushes a new url into the history stack
+| [`X-HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
 ## <a name="events"></a> [Event Reference](#events)
 
 | Event | Description |
 |-------|-------------|
-| [`afterOnLoad.kutty`](/events#afterOnLoad.kutty) | triggered after an AJAX request has finished
-| [`afterSettle.kutty`](/events#afterSettle.kutty)  | triggered after the DOM has settled
-| [`afterSwap.kutty`](/events#afterSwap.kutty)  | triggered after new content has been swapped in
-| [`beforeOnLoad.kutty`](/events#beforeOnLoad.kutty)  | triggered before any response processing occurs
-| [`beforeRequest.kutty`](/events#beforeRequest.kutty)  | triggered before an AJAX request is made
-| [`beforeSwap.kutty`](/events#beforeSwap.kutty)  | triggered before a swap is done
-| [`configRequest.kutty`](/events#configRequest.kutty)  | triggered before the request, allows you to customize parameters, headers
-| [`historyCacheMiss.kutty`](/events#historyCacheMiss.kutty)  | triggered on a cache miss in the history subsystem
-| [`historyCacheMissError.kutty`](/events#historyCacheMissError.kutty)  | triggered on a unsuccessful remote retrieval 
-| [`historyCacheMissLoad.kutty`](/events#historyCacheMissLoad.kutty)  | triggered on a succesful remote retrieval 
-| [`historyRestore.kutty`](/events#historyRestore.kutty)  | triggered when kutty handles a history restoration action
-| [`beforeHistorySave.kutty`](/events#beforeHistorySave.kutty)  | triggered before content is saved to the history cache
-| [`initSSE.kutty`](/events#initSSE.kutty) | triggered when a new Server Sent Event source is created
-| [`load.kutty`](/events#load.kutty)  | triggered when new content is added to the DOM
-| [`noSSESourceError.kutty`](/events#noSSESourceError.kutty)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
-| [`onLoadError.kutty`](/events#onLoadError.kutty)  | triggered when an exception occurs during the onLoad handling in kutty
-| [`oobErrorNoTarget.kutty`](/events#oobErrorNoTarget.kutty)  | triggered when an out of band element does not have a matching ID in the current DOM
-| [`prompt.kutty`](/events#prompt.kutty)  | triggered after a prompt is shown
-| [`responseError.kutty`](/events#responseError.kutty)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
-| [`sendError.kutty`](/events#sendError.kutty)  | triggered when a network error prevents an HTTP request from happening
-| [`sseError.kutty`](/events#sseError.kutty)  | triggered when an error occurs with a SSE source
-| [`swapError.kutty`](/events#swapError.kutty)  | triggered when an error occurs during the swap phase
-| [`targetError.kutty`](/events#targetError.kutty)  | triggered when an invalid target is specified
+| [`afterOnLoad.htmx`](/events#afterOnLoad.htmx) | triggered after an AJAX request has finished
+| [`afterSettle.htmx`](/events#afterSettle.htmx)  | triggered after the DOM has settled
+| [`afterSwap.htmx`](/events#afterSwap.htmx)  | triggered after new content has been swapped in
+| [`beforeOnLoad.htmx`](/events#beforeOnLoad.htmx)  | triggered before any response processing occurs
+| [`beforeRequest.htmx`](/events#beforeRequest.htmx)  | triggered before an AJAX request is made
+| [`beforeSwap.htmx`](/events#beforeSwap.htmx)  | triggered before a swap is done
+| [`configRequest.htmx`](/events#configRequest.htmx)  | triggered before the request, allows you to customize parameters, headers
+| [`historyCacheMiss.htmx`](/events#historyCacheMiss.htmx)  | triggered on a cache miss in the history subsystem
+| [`historyCacheMissError.htmx`](/events#historyCacheMissError.htmx)  | triggered on a unsuccessful remote retrieval 
+| [`historyCacheMissLoad.htmx`](/events#historyCacheMissLoad.htmx)  | triggered on a succesful remote retrieval 
+| [`historyRestore.htmx`](/events#historyRestore.htmx)  | triggered when htmx handles a history restoration action
+| [`beforeHistorySave.htmx`](/events#beforeHistorySave.htmx)  | triggered before content is saved to the history cache
+| [`initSSE.htmx`](/events#initSSE.htmx) | triggered when a new Server Sent Event source is created
+| [`load.htmx`](/events#load.htmx)  | triggered when new content is added to the DOM
+| [`noSSESourceError.htmx`](/events#noSSESourceError.htmx)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
+| [`onLoadError.htmx`](/events#onLoadError.htmx)  | triggered when an exception occurs during the onLoad handling in htmx
+| [`oobErrorNoTarget.htmx`](/events#oobErrorNoTarget.htmx)  | triggered when an out of band element does not have a matching ID in the current DOM
+| [`prompt.htmx`](/events#prompt.htmx)  | triggered after a prompt is shown
+| [`responseError.htmx`](/events#responseError.htmx)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
+| [`sendError.htmx`](/events#sendError.htmx)  | triggered when a network error prevents an HTTP request from happening
+| [`sseError.htmx`](/events#sseError.htmx)  | triggered when an error occurs with a SSE source
+| [`swapError.htmx`](/events#swapError.htmx)  | triggered when an error occurs during the swap phase
+| [`targetError.htmx`](/events#targetError.htmx)  | triggered when an invalid target is specified

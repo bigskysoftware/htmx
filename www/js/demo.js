@@ -100,7 +100,7 @@ function onDelete(path, response) {
 //====================================
 
 var requestId = 0;
-kutty.on("beforeSwap.kutty", function(event) {
+htmx.on("beforeSwap.htmx", function(event) {
     requestId++;
     pushActivityChip(`${server.getHTTPMethod(event.detail.xhr)} ${event.detail.xhr.url}`, `req-${requestId}`, demoResponseTemplate(event.detail));
     document.getElementById("request-count").innerText = ": " + requestId;

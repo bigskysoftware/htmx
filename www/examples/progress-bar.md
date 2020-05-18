@@ -9,9 +9,9 @@ This example shows how to implement a smoothly scrolling progress bar.
 We start with an intial state with a button that issues a `POST` to `/start` to begin the job:
 
 ```html
-<div kt-target="this" kt-swap="outerHTML">
+<div hx-target="this" hx-swap="outerHTML">
   <h3>Start Progress</h3>
-  <button class="btn" kt-post="/start">
+  <button class="btn" hx-post="/start">
             Start Job
   </button>
 </div>
@@ -20,10 +20,10 @@ We start with an intial state with a button that issues a `POST` to `/start` to 
 This div is then replaced with a new div that reloads itself every 600ms:
 
 ```html
-<div kt-target="this"
-    kt-get="/job" 
-    kt-trigger="load delay:600ms" 
-    kt-swap="outerHTML">
+<div hx-target="this"
+    hx-get="/job" 
+    hx-trigger="load delay:600ms" 
+    hx-swap="outerHTML">
   <h3>Running</h3>
   <div class="progress">
     <div id="pb" class="progress-bar" style="width:0%">
@@ -31,23 +31,23 @@ This div is then replaced with a new div that reloads itself every 600ms:
 </div>
 ```
 This HTML is rerendered every 600 milliseconds, with the "width" style attribute on the progress bar being updated.
-Because there is an id on the progress bar div, kutty will smoothly transition between requests by settling the
+Because there is an id on the progress bar div, htmx will smoothly transition between requests by settling the
 style attribute into its new value.  This, when coupled with CSS transitions, make the visual transition continuous
 rather than jumpy.
 
 Finally, when the process is complete, a restart button is added to the UI:
 
 ```html
-<div kt-target="this"
-    kt-get="/job" 
-    kt-trigger="none" 
-    kt-swap="outerHTML">
+<div hx-target="this"
+    hx-get="/job" 
+    hx-trigger="none" 
+    hx-swap="outerHTML">
   <h3>Complete</h3>
   <div class="progress">
     <div id="pb" class="progress-bar" style="width:100%">
   </div>
 </div>
-<button id="restart-btn" class="btn" kt-post="/start" kt-classes="add show:600ms">
+<button id="restart-btn" class="btn" hx-post="/start" hx-classes="add show:600ms">
   Restart Job
 </button> 
 ```
@@ -109,19 +109,19 @@ Finally, when the process is complete, a restart button is added to the UI:
     
     // templates
     function startButton(message) {
-      return `<div kt-target="this" kt-swap="outerHTML">
+      return `<div hx-target="this" hx-swap="outerHTML">
   <h3>${message}</h3>
-  <button class="btn" kt-post="/start">
+  <button class="btn" hx-post="/start">
             Start Job
   </button>
 </div>`;
     }
     
     function jobStatusTemplate(job) {
-        return `<div kt-target="this"
-    kt-get="/job" 
-    kt-trigger="${job.complete ? 'none' : 'load delay:600ms'}" 
-    kt-swap="outerHTML">
+        return `<div hx-target="this"
+    hx-get="/job" 
+    hx-trigger="${job.complete ? 'none' : 'load delay:600ms'}" 
+    hx-swap="outerHTML">
   <h3>${job.complete ? "Complete" : "Running"}</h3>
   <div class="progress">
     <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
@@ -132,7 +132,7 @@ ${restartButton(job)}`;
 
     function restartButton(job) {
       if(job.complete){
-        return `<button id="restart-btn" class="btn" kt-post="/start" kt-classes="add show:600ms">
+        return `<button id="restart-btn" class="btn" hx-post="/start" hx-classes="add show:600ms">
   Restart Job
 </button>`
       } else {

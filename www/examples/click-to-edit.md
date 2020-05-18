@@ -9,11 +9,11 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 * This pattern starts with a UI that shows the details of a contact.  The div has a button that will get the editing UI for the contact from `/contacts/1/edit`
 
 ```html
-<div kt-target="this" kt-swap="outerHTML">
+<div hx-target="this" hx-swap="outerHTML">
     <div><label>First Name</label>: Joe</div>
     <div><label>Last Name</label>: Blow</div>
     <div><label>Email</label>: joe@blow.com</div>
-    <button kt-get="/contact/1/edit" class="btn btn-primary">
+    <button hx-get="/contact/1/edit" class="btn btn-primary">
     Click To Edit
     </button>
 </div>
@@ -22,7 +22,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 * This returns a form that can be used to edit the contact
 
 ```html
-<form kt-put="/contact/1" kt-target="this" kt-swap="outerHTML">
+<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
   <div>
     <label>First Name</label>
     <input type="text" name="firstName" value="Joe">
@@ -36,7 +36,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
     <input type="email" name="email" value="joe@blow.com">
   </div>
   <button class="btn">Submit</button>
-  <button class="btn" kt-get="/contact/1">Cancel</button>
+  <button class="btn" hx-get="/contact/1">Cancel</button>
 </form> 
 ```
 
@@ -74,7 +74,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 
     // templates
     function formTemplate(contact) {
-return `<form kt-put="/contact/1" kt-target="this" kt-swap="outerHTML">
+return `<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
   <div>
     <label>First Name</label>
     <input type="text" name="firstName" value="${contact.firstName}">
@@ -88,16 +88,16 @@ return `<form kt-put="/contact/1" kt-target="this" kt-swap="outerHTML">
     <input type="email" name="email" value="${contact.email}">
   </div>
   <button class="btn">Submit</button>
-  <button class="btn" kt-get="/contact/1">Cancel</button>
+  <button class="btn" hx-get="/contact/1">Cancel</button>
 </form>`
     }
 
     function displayTemplate(contact) {
-        return `<div kt-target="this" kt-swap="outerHTML">
+        return `<div hx-target="this" hx-swap="outerHTML">
     <div><label>First Name</label>: ${contact.firstName}</div>
     <div><label>Last Name</label>: ${contact.lastName}</div>
     <div><label>Email</label>: ${contact.email}</div>
-    <button kt-get="/contact/1/edit" class="btn btn-primary">
+    <button hx-get="/contact/1/edit" class="btn btn-primary">
     Click To Edit
     </button>
 </div>`;

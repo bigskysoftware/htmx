@@ -1,35 +1,38 @@
-![</> kutty](https://github.com/bigskysoftware/kutty/raw/master/www/img/kutty_logo.1.png "high power tools for HTML")
+![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/img/htmx_logo.1.png "high power tools for HTML")
 
 *high power tools for HTML*
 
+[![Gitter](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/dba3fc85-d9c9-476a-a35a-e52a632cef78/deploy-status)](https://app.netlify.com/sites/htmx/deploys)
+
 ## Introduction
 
-Kutty is a set of extensions (attributes, request headers, etc.) that help you build 
-[modern UI](https://kutty.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+htmx is a set of extensions (attributes, request headers, etc.) that help you build 
+[modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Kutty is small ([~6k min.gz'd](https://unpkg.com/kutty.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/kutty/blob/master/package.json) 
+htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) 
 & you can try it out quickly, without a huge rewrite.
 
 ## Quick Start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/kutty.org@0.0.1"></script>
+  <script src="https://unpkg.com/htmx.org@0.0.3"></script>
   <!-- have a button POST a click via AJAX -->
-  <button kt-post="/clicked" kt-swap="outerHTML">
+  <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
   </button>
 ```
 
-The `kt-post` and `kt-swap` attributes tell kutty:
+The `hx-post` and `hx-swap` attributes tell htmx:
 
 > "When a user clicks on this button, issue an AJAX request to /example, and replace the entire button with the response"
 
-Kutty is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
 ## Website & Docs
 
-[https://kutty.org](https://kutty.org)
+[https://htmx.org](https://htmx.org)
 
-[https://kutty.org/docs](https://kutty.org/docs)
+[https://htmx.org/docs](https://htmx.org/docs)

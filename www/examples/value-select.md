@@ -14,7 +14,7 @@ Here is the code:
 ```html
 <div>
     <label >Make</label>
-    <select name="make" kt-get="/models" kt-target="#models" kt-indicator=".kutty-indicator">
+    <select name="make" hx-get="/models" hx-target="#models" hx-indicator=".htmx-indicator">
       <option value="audi">Audi</option>
       <option value="toyota">Toyota</option>
       <option value="bmw">BMW</option>
@@ -63,7 +63,7 @@ And they become available in the `model` select.
 <form>
   <div>
     <label >Make</label>
-    <select name="make" kt-get="/models" kt-target="#models" kt-indicator=".kutty-indicator">
+    <select name="make" hx-get="/models" hx-target="#models" hx-indicator=".htmx-indicator">
       <option value="audi">Audi</option>
       <option value="toyota">Toyota</option>
       <option value="bmw">BMW</option>
@@ -76,7 +76,7 @@ And they become available in the `model` select.
       <option value="a3">A3</option>
       <option value="a6">A6</option>
     </select>
-    <img class="kutty-indicator" width="20" src="/img/bars.svg">    
+    <img class="htmx-indicator" width="20" src="/img/bars.svg">    
   </div>
 </form>`;
     }

@@ -11,4 +11,4 @@ fs.copySync("node_modules/chai/chai.js", testRoot + "/node_modules/chai/chai.js"
 fs.copySync("node_modules/sinon/pkg/sinon.js", testRoot + "/node_modules/sinon/pkg/sinon.js");
 fs.copySync("test/", testRoot + "/test");
 fs.copySync("src/", testRoot + "/src");
-fs.copySync("src/kutty.js", "www/js/kutty.js");
+fs.copySync("src/htmx.js", "www/js/htmx.js");
