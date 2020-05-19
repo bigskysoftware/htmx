@@ -1361,7 +1361,8 @@ var htmx = htmx || (function () {
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
-                includeIndicatorStyles:true
+                includeIndicatorStyles:true,
+                defaultEncoding: "xml"
             },
             version: "0.0.2",
             _:internalEval

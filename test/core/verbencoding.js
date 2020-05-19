@@ -2,11 +2,14 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
-        htmx.config.defaultEncoding = "xml";
+
     });
     afterEach(function () {
         this.server.restore();
         clearWorkArea();
+        // if we don't set this, then all the following test MAY 
+        // inherit incorrect encoding, and fail. 
+        htmx.config.defaultEncoding="xml";
     });
 
     it('handles basic post properly', function () {
