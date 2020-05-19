@@ -24,7 +24,7 @@ var htmx = htmx || (function () {
             return elt.getAttribute && elt.getAttribute(name);
         }
 
-        // resolve with both kt and data-kt prefixes
+        // resolve with both hx and data-hx prefixes
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -1089,13 +1089,13 @@ var htmx = htmx || (function () {
             return swapSpec;
         }
 
-        function getUrlSpecification(elt, verb) {
-            // verb should be kt-post, kt-get, kt-put, etc
-            var ktverb = "kt-" + verb;
-            var info = getClosestAttributeValue(elt, ktverb);
+        function getUrlSpecification(elt, verb, path) {
+            // verb should be hx-post, hx-get, hx-put, etc
+            var hxverb = "hx-" + verb;
+            var info = getClosestAttributeValue(elt, hxverb);
             var urlSpec = {
-                "encoding": kutty.config.defaultEncoding,
-                "url": null,
+                "encoding": htmx.config.defaultEncoding,
+                "url": path,
             }
 
             if (info) {
@@ -1145,7 +1145,7 @@ var htmx = htmx || (function () {
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var rawParameters = getInputValues(elt, verb);
             var filteredParameters = filterValues(rawParameters, elt, verb);
-            var urlSpec = getUrlSpecification(elt, verb);
+            var urlSpec = getUrlSpecification(elt, verb, path);
 
             if (verb !== 'get') {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -1194,9 +1194,9 @@ var htmx = htmx || (function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
 
-                    var ktTrigger =  (this.getAllResponseHeaders().indexOf("X-HX-Trigger") >= 0 ) ?
+                    var hxTrigger =  (this.getAllResponseHeaders().indexOf("X-HX-Trigger") >= 0 ) ?
                     this.getResponseHeader("X-HX-Trigger") : null;
-                    handleTrigger(elt, ktTrigger );
+                    handleTrigger(elt, hxTrigger );
 
                     var pushedUrl = (this.getAllResponseHeaders().indexOf("X-HX-Push") >= 0 ) ? 
                     this.getResponseHeader("X-HX-Push") : null ;
