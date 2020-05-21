@@ -1022,7 +1022,7 @@ var htmx = htmx || (function () {
                 "X-HX-Target" : getRawAttribute(target, "id"),
                 "Current-URL" : getDocument().location.href,
             }
-            if (prompt) {
+            if (prompt !== undefined) {
                 headers["X-HX-Prompt"] = prompt;
             }
             if (eventTarget) {
@@ -1156,7 +1156,7 @@ var htmx = htmx || (function () {
             // request headers
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
-                    if(headers[header]) xhr.setRequestHeader(header, headers[header]);
+                    if (headers[header] !== null) xhr.setRequestHeader(header, headers[header]);
                 }
             }
 
