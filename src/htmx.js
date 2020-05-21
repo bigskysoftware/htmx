@@ -1107,7 +1107,10 @@ var htmx = htmx || (function () {
             var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
             if (promptQuestion) {
                 var promptResponse = prompt(promptQuestion);
-                if(!triggerEvent(elt, 'prompt.htmx', {prompt: promptResponse, target:target})) return endRequestLock();
+                // prompt returns null if cancelled and empty string if accepted with no entry
+                if (promptResponse === null ||
+                    !triggerEvent(elt, 'prompt.htmx', {prompt: promptResponse, target:target}))
+                    return endRequestLock();
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
