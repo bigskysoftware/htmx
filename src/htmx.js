@@ -966,6 +966,12 @@ var htmx = htmx || (function () {
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
+
+            // for a non-GET include the closest form
+            if (verb !== 'get') {
+                processInputValue(processed, values, closest(elt, 'form'));
+            }
+
             // include the element itself
             processInputValue(processed, values, elt);
 
@@ -978,10 +984,7 @@ var htmx = htmx || (function () {
                 });
             }
 
-            // for a non-GET include the closest form
-            if (verb !== 'get') {
-                processInputValue(processed, values, closest(elt, 'form'));
-            }
+
             return values;
         }
 

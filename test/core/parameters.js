@@ -71,6 +71,13 @@ describe("Core htmx Parameter Handling", function() {
         vals['do'].should.deep.equal(['rey', 'rey']);
     })
 
+    it('Double values are included as array in correct order', function () {
+        var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey1"/><input id="i3" name="do" value="rey2"/></form>');
+        var vals = htmx._('getInputValues')(byId("i3"));
+        vals['foo'].should.equal('bar');
+        vals['do'].should.deep.equal(['rey1', 'rey2']);
+    })
+
     it('hx-include works with form', function () {
         var form = make('<form id="f1"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input id="i2" name="do" value="rey"/></form>');
         var div = make('<div hx-include="#f1"></div>');
