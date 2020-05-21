@@ -1025,7 +1025,7 @@ var htmx = htmx || (function () {
                 "X-HX-Target" : getRawAttribute(target, "id"),
                 "Current-URL" : getDocument().location.href,
             }
-            if (prompt) {
+            if (prompt !== undefined) {
                 headers["X-HX-Prompt"] = prompt;
             }
             if (eventTarget) {
@@ -1110,7 +1110,10 @@ var htmx = htmx || (function () {
             var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
             if (promptQuestion) {
                 var promptResponse = prompt(promptQuestion);
-                if(!triggerEvent(elt, 'prompt.htmx', {prompt: promptResponse, target:target})) return endRequestLock();
+                // prompt returns null if cancelled and empty string if accepted with no entry
+                if (promptResponse === null ||
+                    !triggerEvent(elt, 'prompt.htmx', {prompt: promptResponse, target:target}))
+                    return endRequestLock();
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
@@ -1156,7 +1159,7 @@ var htmx = htmx || (function () {
             // request headers
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
-                    if(headers[header]) xhr.setRequestHeader(header, headers[header]);
+                    if (headers[header] !== null) xhr.setRequestHeader(header, headers[header]);
                 }
             }
 
