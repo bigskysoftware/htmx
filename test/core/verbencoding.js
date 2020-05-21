@@ -55,6 +55,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
             values.should.have.keys("username","password");
             values["username"].should.be.equal("joe");
             values["password"].should.be.equal("123456");
+            var ans = { "passwordok": values["password"] == "123456"};
+            xhr.respond(200, {}, JSON.stringify(ans));
         });
 
         var html = make('<form hx-post="/test encoding:json" > ' + 
@@ -64,6 +66,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
 
         byId("btnSubmit").click();
         this.server.respond();
+        this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
     it('handles put with form parameters', function () {
@@ -73,6 +76,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
             values.should.have.keys("username","password");
             values["username"].should.be.equal("joe");
             values["password"].should.be.equal("123456");
+            var ans = { "passwordok": values["password"] == "123456"};
+            xhr.respond(200, {}, JSON.stringify(ans));
         });
 
         var html = make('<form hx-put="/test encoding:json" > ' + 
@@ -82,6 +87,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
 
         byId("btnSubmit").click();
         this.server.respond();
+        this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
 
@@ -92,6 +98,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
             values.should.have.keys("username","password");
             values["username"].should.be.equal("joe");
             values["password"].should.be.equal("123456");
+            var ans = { "passwordok": values["password"] == "123456"};
+            xhr.respond(200, {}, JSON.stringify(ans));
         });
 
         var html = make('<form hx-patch="/test encoding:json" > ' + 
@@ -101,6 +109,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
 
         byId("btnSubmit").click();
         this.server.respond();
+        this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
     it('handles delete with form parameters', function () {
@@ -110,6 +119,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
             values.should.have.keys("username","password");
             values["username"].should.be.equal("joe");
             values["password"].should.be.equal("123456");
+            var ans = { "passwordok": values["password"] == "123456"};
+            xhr.respond(200, {}, JSON.stringify(ans));
         });
 
         var html = make('<form hx-delete="/test encoding:json" > ' + 
@@ -119,6 +130,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
 
         byId("btnSubmit").click();
         this.server.respond();
+        this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
     it('handles post with default encoding of json', function () {
@@ -128,6 +140,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
             values.should.have.keys("username","password");
             values["username"].should.be.equal("joe");
             values["password"].should.be.equal("123456");
+            var ans = { "passwordok": values["password"] == "123456"};
+            xhr.respond(200, {}, JSON.stringify(ans));
         });
 
         htmx.config.defaultEncoding = "json";
@@ -138,6 +152,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
 
         byId("btnSubmit").click();
         this.server.respond();
+        this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
 });
