@@ -6,7 +6,7 @@ layout: demo_layout.njk
 
 This example shows how to implement a delete button that removes a table row upon completion.
 
-Each row has a button with a `kt-delete` attribute containing the url on which to issue a DELETE request to delete the row from the server.
+Each row has a button with a `hx-delete` attribute containing the url on which to issue a DELETE request to delete the row from the server.
 This request should respond with empty content.
 
 ```html
@@ -15,19 +15,19 @@ This request should respond with empty content.
   <td>angie@macdowell.org</td>
   <td>Active</td>
   <td>
-    <button class="btn btn-danger" kt-delete="/contact/1">
+    <button class="btn btn-danger" hx-delete="/contact/1">
       Delete
     </button>
   </td>
 </tr>
 ```
 
-In order to tell where to put this empty content, the table body has an `kt-target` attribute set to `closest tr` . This will target the row containing the button which triggred the action, replacing it by... nothing.
+In order to tell where to put this empty content, the table body has an `hx-target` attribute set to `closest tr` . This will target the row containing the button which triggred the action, replacing it by... nothing.
 
-It also has a `kt-swap` attribute set to `outerHTML 1s` in order to replace the row itself, with a 1 second delay allowing for a CSS3 transition to fade the row out.
+It also has a `hx-swap` attribute set to `outerHTML 1s` in order to replace the row itself, with a 1 second delay allowing for a CSS3 transition to fade the row out.
 During this one second delay, the class "kutty-swapping" is added to `tr` element about to be replaced.
 
-Finally, the body also has a `kt-confirm` attribute so that a confirmation popup is shown before triggering the action for real.
+Finally, the body also has a `hx-confirm` attribute so that a confirmation popup is shown before triggering the action for real.
 
 ```html
 <table class="table delete-row-example">
@@ -39,7 +39,7 @@ Finally, the body also has a `kt-confirm` attribute so that a confirmation popup
       <th></th>
     </tr>
   </thead>
-  <tbody kt-confirm="Are you sure?" kt-target="closest tr" kt-swap="outerHTML swap:1s">
+  <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
     ...
   </tbody>
 </table>
@@ -92,7 +92,7 @@ Finally, the body also has a `kt-confirm` attribute so that a confirmation popup
       <td>${contact["email"]}</td>
       <td>${contact["status"]}</td>
       <td>
-        <button class="btn btn-danger" kt-delete="/contact/${i}">
+        <button class="btn btn-danger" hx-delete="/contact/${i}">
           Delete
         </button>
       </td>
@@ -116,7 +116,7 @@ Finally, the body also has a `kt-confirm` attribute so that a confirmation popup
       <th></th>
     </tr>
   </thead>
-  <tbody kt-confirm="Are you sure?" kt-target="closest tr" kt-swap="outerHTML swap:1s">
+  <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
     ${rows}
   </tbody>
 </table>`;
