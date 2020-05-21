@@ -9,7 +9,7 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         clearWorkArea();
         // if we don't set this, then all the following test MAY 
         // inherit incorrect encoding, and fail. 
-        htmx.config.defaultEncoding="xml";
+        htmx.config.defaultEncoding="url";
     });
 
     it('handles basic post properly', function () {

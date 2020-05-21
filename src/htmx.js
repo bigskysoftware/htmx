@@ -1362,7 +1362,7 @@ var htmx = htmx || (function () {
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
                 includeIndicatorStyles:true,
-                defaultEncoding: "xml"
+                defaultEncoding: "url"
             },
             version: "0.0.2",
             _:internalEval
