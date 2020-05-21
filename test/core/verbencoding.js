@@ -53,6 +53,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         this.server.respondWith("POST", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
+            values["username"].should.be.equal("joe");
+            values["password"].should.be.equal("123456");
         });
 
         var html = make('<form hx-post="/test encoding:json" > ' + 
@@ -69,6 +71,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         this.server.respondWith("PUT", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
+            values["username"].should.be.equal("joe");
+            values["password"].should.be.equal("123456");
         });
 
         var html = make('<form hx-put="/test encoding:json" > ' + 
@@ -86,6 +90,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         this.server.respondWith("PATCH", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
+            values["username"].should.be.equal("joe");
+            values["password"].should.be.equal("123456");
         });
 
         var html = make('<form hx-patch="/test encoding:json" > ' + 
@@ -102,6 +108,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         this.server.respondWith("DELETE", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
+            values["username"].should.be.equal("joe");
+            values["password"].should.be.equal("123456");
         });
 
         var html = make('<form hx-delete="/test encoding:json" > ' + 
@@ -118,6 +126,8 @@ describe("Core htmx AJAX Verbs with json encoding", function() {
         this.server.respondWith("POST", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
+            values["username"].should.be.equal("joe");
+            values["password"].should.be.equal("123456");
         });
 
         htmx.config.defaultEncoding = "json";
