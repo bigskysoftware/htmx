@@ -4,6 +4,7 @@
 
 [![Gitter](https://badges.gitter.im/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/dba3fc85-d9c9-476a-a35a-e52a632cef78/deploy-status)](https://app.netlify.com/sites/htmx/deploys)
+[![Circle CI](https://circleci.com/gh/bigskysoftware/htmx.svg?style=svg)]()
 
 ## Introduction
 
