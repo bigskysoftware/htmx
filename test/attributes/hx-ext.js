@@ -48,4 +48,39 @@ describe("hx-ext attribute", function() {
         ext3Calls.should.equal(0);
     });
 
+    it('Extensions are merged properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+
+        make('<div hx-ext="ext-1"><button id="btn-1" hx-get="/test" hx-ext="ext-2">Click Me!</button>' +
+            '<button id="btn-2"  hx-get="/test" hx-ext="ext-3">Click Me!</button></div>')
+        var btn1 = byId("btn-1");
+        var btn2 = byId("btn-2");
+
+        btn1.click();
+        this.server.respond();
+        ext1Calls.should.equal(1);
+        ext2Calls.should.equal(1);
+        ext3Calls.should.equal(0);
+
+        btn2.click();
+        this.server.respond();
+        ext1Calls.should.equal(2);
+        ext2Calls.should.equal(1);
+        ext3Calls.should.equal(1);
+    });
+
+    it('supports comma separated lists', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+
+        make('<div hx-ext="ext-1"><button id="btn-1" hx-get="/test" hx-ext="ext-2,  ext-3 ">Click Me!</button></div>')
+        var btn1 = byId("btn-1");
+        var btn2 = byId("btn-2");
+
+        btn1.click();
+        this.server.respond();
+        ext1Calls.should.equal(1);
+        ext2Calls.should.equal(1);
+        ext3Calls.should.equal(1);
+    });
+
 });

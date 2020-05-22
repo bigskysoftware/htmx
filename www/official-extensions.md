@@ -5,7 +5,7 @@ title: </> htmx - high power tools for html
 
 ## Official Extensions
 
-The following extensions are tested against htmx and are considered officially supported.
+The following extensions are tested against htmx and thus are considered officially supported.
 
 ### <a name="debug">[`debug`](#debug)
 

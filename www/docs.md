@@ -481,17 +481,24 @@ This functionality is somewhat similar to [Turbolinks](https://github.com/turbol
 
 ## <a name="extensions"></a> [Extensions](#extensions)
 
-Htmx has an extension mechanism that allows you to customize the libraries' behavior.  Extensions are
-defined in javascript and then used via the (`hx-ext`)[/attributes/hx-ext] attribute:
+Htmx has an extension mechanism that allows you to customize the libraries' behavior.  Extensions [are
+defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/attributes/hx-ext) attribute:
 
 ```html
   <button hx-post="/example" hx-ext="debug">This button uses the debug extension</button>
 ```
 
-If you are interested in adding an extension to htmx, please [see the extension docs](/extensions)
+If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions)
 
-htmx offers some supported extensions that are tested against the htmx code base, such a the `debug` extension used
-above.  See the [officially extensions](/official-extensions) page.
+Htmx offers some officially supported extensions that are tested against the htmx code base, including:
+
+* [`debug`](/official-extensions#debug) - an extension for htmx debugging a particular element
+* [`rails-method`](/official-extensions#rails-method) - an extension for including the `_method` parameter 
+[that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark).
+* [`morphdom-swap`](/official-extensions#morphdom-swap) - an extension for using the 
+[morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+
+See the [officially extensions](/official-extensions) page for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 
