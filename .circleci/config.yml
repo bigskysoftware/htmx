@@ -3,6 +3,8 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   build-and-test:
+    docker:
+      - image: 'circleci/node:latest-browsers'
     executor:
       name: node/default
     steps:
