@@ -8,6 +8,10 @@ server.getHTTPMethod = function(xhr) {
 }
 server.autoRespond = true;
 server.autoRespondAfter = 300;
+server.xhr.useFilters = true;
+server.xhr.addFilter(function (method, url, async, username, password){
+    return url === "/";
+})
 
 //====================================
 // Request Handling
