@@ -2,9 +2,9 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
-  docker:
-    - image: 'circleci/node:latest-browsers'
   build-and-test:
+    docker:
+      - image: 'circleci/node:latest-browsers'
     executor:
       name: node/default
     steps:
