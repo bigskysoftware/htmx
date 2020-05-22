@@ -2,12 +2,12 @@
 layout: layout.njk
 tags: post
 title: kutty, er, htmx 0.0.3 has been released!
-date: 2020-05-18
+date: 2020-05-17
 ---
 
 ## htmx 0.0.3 Release
 
-I'm pleased to announce the [0.0.2 release](https://unpkg.com/browse/htmx.org@0.0.3/) of kutty, the successor
+I'm pleased to announce the [0.0.3 release](https://unpkg.com/browse/htmx.org@0.0.3/) of kutty, er, htmx, the successor
 to [intercooler.js](http://intercoolerjs.org)!
 
 #### Why not kutty 0.0.2?

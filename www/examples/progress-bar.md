@@ -30,6 +30,7 @@ This div is then replaced with a new div that reloads itself every 600ms:
   </div>
 </div>
 ```
+
 This HTML is rerendered every 600 milliseconds, with the "width" style attribute on the progress bar being updated.
 Because there is an id on the progress bar div, htmx will smoothly transition between requests by settling the
 style attribute into its new value.  This, when coupled with CSS transitions, make the visual transition continuous
@@ -50,6 +51,34 @@ Finally, when the process is complete, a restart button is added to the UI:
 <button id="restart-btn" class="btn" hx-post="/start" hx-classes="add show:600ms">
   Restart Job
 </button> 
+```
+
+This example uses styling cribbed from the bootstrap progress bar:
+
+```css
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+.progress-bar {
+    float: left;
+    width: 0%;
+    height: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    text-align: center;
+    background-color: #337ab7;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    -webkit-transition: width .6s ease;
+    -o-transition: width .6s ease;
+    transition: width .6s ease;
+}
 ```
 
 {% include demo_ui.html.liquid %}
