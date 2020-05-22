@@ -10,7 +10,7 @@ describe("hx-include attribute", function() {
 
     it('By default an input includes itself', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
@@ -23,7 +23,7 @@ describe("hx-include attribute", function() {
 
     it('non-GET includes closest form', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
@@ -36,7 +36,7 @@ describe("hx-include attribute", function() {
 
     it('GET does not include closest form by default', function () {
         this.server.respondWith("GET", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             should.equal(params['i1'], undefined);
             xhr.respond(200, {}, "Clicked!")
         });
@@ -49,7 +49,7 @@ describe("hx-include attribute", function() {
 
     it('Input not included twice when in form', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
@@ -62,7 +62,7 @@ describe("hx-include attribute", function() {
 
     it('Two inputs are included twice when they have the same name', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.deep.equal(["test", "test2"]);
             xhr.respond(200, {}, "Clicked!")
         });
@@ -78,7 +78,7 @@ describe("hx-include attribute", function() {
 
     it('Input not included twice when it explicitly refers to parent form', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
@@ -93,7 +93,7 @@ describe("hx-include attribute", function() {
 
     it('Input can be referred to externally', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
@@ -106,7 +106,7 @@ describe("hx-include attribute", function() {
 
     it('Two inputs can be referred to externally', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             params['i2'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
@@ -121,7 +121,7 @@ describe("hx-include attribute", function() {
 
     it('A form can be referred to externally', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             params['i1'].should.equal("test");
             params['i2'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")

@@ -10,7 +10,7 @@ describe("hx-params attribute", function() {
 
     it('none excludes all params', function () {
         this.server.respondWith("POST", "/params", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             should.equal(params['i1'], undefined);
             should.equal(params['i2'], undefined);
             should.equal(params['i3'], undefined);
@@ -28,7 +28,7 @@ describe("hx-params attribute", function() {
 
     it('"*" includes all params', function () {
         this.server.respondWith("POST", "/params", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             should.equal(params['i1'], "test");
             should.equal(params['i2'], "test");
             should.equal(params['i3'], "test");
@@ -46,7 +46,7 @@ describe("hx-params attribute", function() {
 
     it('named includes works', function () {
         this.server.respondWith("POST", "/params", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             should.equal(params['i1'], "test");
             should.equal(params['i2'], undefined);
             should.equal(params['i3'], "test");
@@ -64,7 +64,7 @@ describe("hx-params attribute", function() {
 
     it('named exclude works', function () {
         this.server.respondWith("POST", "/params", function (xhr) {
-            var params = parseParams(xhr.requestBody);
+            var params = getParameters(xhr);
             should.equal(params['i1'], undefined);
             should.equal(params['i2'], "test");
             should.equal(params['i3'], undefined);

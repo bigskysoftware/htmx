@@ -31,7 +31,7 @@ describe("Core htmx Events", function() {
         try {
             var param = null;
             this.server.respondWith("POST", "/test", function (xhr) {
-                param = parseParams(xhr.requestBody)['param'];
+                param = getParameters(xhr)['param'];
             });
             var div = make("<div hx-post='/test'></div>");
             div.click();
@@ -49,7 +49,7 @@ describe("Core htmx Events", function() {
         });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
-                param = parseParams(xhr.requestBody)['param'];
+                param = getParameters(xhr)['param'];
             });
             var div = make("<form hx-trigger='click' hx-post='/test'><input name='param' value='foo'></form>");
             div.click();

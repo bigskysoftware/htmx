@@ -45,11 +45,15 @@ function removeWhiteSpace(str) {
     return str.replace(/\s/g, "");
 }
 
+function getHTTPMethod(xhr) {
+    return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
+}
+
 function makeServer(){
     var server = sinon.fakeServer.create();
     server.fakeHTTPMethods = true;
     server.getHTTPMethod = function(xhr) {
-        return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
+        return getHTTPMethod(xhr);
     }
     return server;
 }
@@ -78,4 +82,22 @@ function parseParams(str) {
         }
     }
     return params;
+}
+
+
+function getQuery(url) {
+    var question = url.indexOf("?");
+    var hash = url.indexOf("#");
+    if(hash==-1 && question==-1) return "";
+    if(hash==-1) hash = url.length;
+    return question==-1 || hash==question+1 ? url.substring(hash) :
+        url.substring(question+1,hash);
+}
+
+function getParameters(xhr) {
+    if (getHTTPMethod(xhr) == "GET") {
+        return parseParams(getQuery(xhr.url));
+    } else {
+        return parseParams(xhr.requestBody);
+    }
 }

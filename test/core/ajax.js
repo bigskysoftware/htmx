@@ -309,7 +309,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         var values;
         this.server.respondWith("Post", "/test", function (xhr) {
-            values = parseParams(xhr.requestBody);
+            values = getParameters(xhr);
             xhr.respond(204, {}, "");
         });
 

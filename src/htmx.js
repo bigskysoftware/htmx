@@ -1173,15 +1173,26 @@ var htmx = htmx || (function () {
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
 
-            // request type
-            var requestURL;
+            var splitPath = path.split("#");
+            var pathNoAnchor = splitPath[0];
+            var anchor = splitPath[1];
             if (verb === 'get') {
-                var noValues = Object.keys(filteredParameters).length === 0;
-                requestURL = path + (noValues ? "" : "?" + urlEncode(filteredParameters));
-                xhr.open('GET', requestURL, true);
+                var finalPathForGet = pathNoAnchor;
+                var values = Object.keys(filteredParameters).length !== 0;
+                if (values) {
+                    if (finalPathForGet.indexOf("?") < 0) {
+                        finalPathForGet += "?";
+                    } else {
+                        finalPathForGet += "&";
+                    }
+                    finalPathForGet += urlEncode(filteredParameters);
+                    if (anchor) {
+                        finalPathForGet += "#" + anchor;
+                    }
+                }
+                xhr.open('GET', finalPathForGet, true);
             } else {
-                requestURL = path;
-                xhr.open('POST', requestURL, true);
+                xhr.open('POST', path, true);
             }
 
             xhr.overrideMimeType("text/html");
@@ -1230,7 +1241,9 @@ var htmx = htmx || (function () {
                                     target.classList.remove("htmx-swapping");
                                     target.classList.add("htmx-settling");
                                     triggerEvent(elt, 'afterSwap.htmx', eventDetail);
-
+                                    if (anchor) {
+                                        location.hash = anchor;
+                                    }
                                     var doSettle = function(){
                                         forEach(settleTasks, function (settleTask) {
                                             settleTask.call();
@@ -1238,7 +1251,7 @@ var htmx = htmx || (function () {
                                         target.classList.remove("htmx-settling");
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            pushUrlIntoHistory(pushedUrl || requestURL );
+                                            pushUrlIntoHistory(pushedUrl || path );
                                         }
                                         triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                     }

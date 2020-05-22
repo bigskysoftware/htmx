@@ -31,7 +31,7 @@ describe("rails-method extension", function() {
 
     it('Does not affect a POST request', function () {
         this.server.respondWith("POST", "/test", function (xhr) {
-            xhr.respond(200, {}, parseParams(xhr.requestBody)['_method']);
+            xhr.respond(200, {}, getParameters(xhr)['_method']);
         });
         var btn = make('<button hx-post="/test" hx-ext="rails-method">Click Me!</button>')
         btn.click();
@@ -41,7 +41,7 @@ describe("rails-method extension", function() {
 
     it('Adds proper _method param to PUT request', function () {
         this.server.respondWith("PUT", "/test", function (xhr) {
-            xhr.respond(200, {}, parseParams(xhr.requestBody)['_method']);
+            xhr.respond(200, {}, getParameters(xhr)['_method']);
         });
         var btn = make('<button hx-put="/test" hx-ext="rails-method">Click Me!</button>')
         btn.click();
@@ -51,7 +51,7 @@ describe("rails-method extension", function() {
 
     it('Adds proper _method param to PATCH request', function () {
         this.server.respondWith("PATCH", "/test", function (xhr) {
-            xhr.respond(200, {}, parseParams(xhr.requestBody)['_method']);
+            xhr.respond(200, {}, getParameters(xhr)['_method']);
         });
         var btn = make('<button hx-patch="/test" hx-ext="rails-method">Click Me!</button>')
         btn.click();
@@ -61,7 +61,7 @@ describe("rails-method extension", function() {
 
     it('Adds proper _method param to DELETE request', function () {
         this.server.respondWith("DELETE", "/test", function (xhr) {
-            xhr.respond(200, {}, parseParams(xhr.requestBody)['_method']);
+            xhr.respond(200, {}, getParameters(xhr)['_method']);
         });
         var btn = make('<button hx-delete="/test" hx-ext="rails-method">Click Me!</button>')
         btn.click();
