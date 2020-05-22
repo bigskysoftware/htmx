@@ -63,3 +63,34 @@ htmx.defineExtension('rails-method', {
     }
 });
 ```
+
+### <a name="morphdom-swap">[`morphdom-swap`](#morphdom-swap)
+
+#### Description
+
+This extension allows you to use the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the
+swapping mechanism in htmx.
+
+#### Usage
+
+```html
+<header>
+  <script src="lib/morphdom-umd.js"></script> <!-- include the morphdom library -->
+</header>
+<body hx-ext="morphdom-swap">
+   <button hx-swap="morphdom">This button will be swapped with morphdom!</button>
+</body>
+```
+
+#### Source
+
+```javascript
+htmx.defineExtension('morphdom-swap', {
+    handleSwap : function(swapStyle, target, fragment) {
+        if (swapStyle === 'morphdom') {
+            morphdom(target, fragment.outerHTML);
+            return []; // no settle phase when using morphdom!
+        }
+    }
+});
+```
