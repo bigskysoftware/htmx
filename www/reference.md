@@ -12,6 +12,7 @@ title: </> htmx - Attributes
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
 | [`hx-error-url`](/attributes/hx-error-url) | a URL to send client-side errors to
+| [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
@@ -68,7 +69,8 @@ title: </> htmx - Attributes
 
 | Event | Description |
 |-------|-------------|
-| [`afterOnLoad.htmx`](/events#afterOnLoad.htmx) | triggered after an AJAX request has finished
+| [`afterOnLoad.htmx`](/events#afterOnLoad.htmx) | triggered after an AJAX request has completed processing a successful response
+| [`afterRequest.htmx`](/events#afterRequest.htmx)  | triggered after an AJAX request has completed
 | [`afterSettle.htmx`](/events#afterSettle.htmx)  | triggered after the DOM has settled
 | [`afterSwap.htmx`](/events#afterSwap.htmx)  | triggered after new content has been swapped in
 | [`beforeOnLoad.htmx`](/events#beforeOnLoad.htmx)  | triggered before any response processing occurs

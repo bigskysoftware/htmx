@@ -24,6 +24,7 @@ title: </> htmx - high power tools for html
 * [history](#history)
 * [requests & responses](#requests)
 * [misc](#misc)
+* [extensions](#extensions)
 * [events & logging](#events)
 * [configuring](#config)
 
@@ -477,6 +478,20 @@ Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/att
 attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
 
 This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks).
+
+## <a name="extensions"></a> [Extensions](#extensions)
+
+Htmx has an extension mechanism that allows you to customize the libraries' behavior.  Extensions are
+defined in javascript and then used via the (`hx-ext`)[/attributes/hx-ext] attribute:
+
+```html
+  <button hx-post="/example" hx-ext="debug">This button uses the debug extension</button>
+```
+
+If you are interested in adding an extension to htmx, please [see the extension docs](/extensions)
+
+htmx offers some supported extensions that are tested against the htmx code base, such a the `debug` extension used
+above.  See the [officially extensions](/official-extensions) page.
 
 ## <a name="events"></a> [Events & Logging](#events)
 

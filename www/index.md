@@ -15,14 +15,16 @@ Htmx is a set of extensions (attributes, request headers, etc.) that help you bu
 [modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) 
-& you can try it out quickly, without a huge rewrite.
+Htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
+[extendable](/extensions),
+IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
 
 ## Quick Start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.0.4"></script>
+  <script src="https://unpkg.com/htmx.org@e0.0.4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

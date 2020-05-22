@@ -19,6 +19,18 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 
+### <a name="afterRequest.htmx"></a> Event - [`afterRequest.htmx`](#afterRequest.htmx)
+
+This event is triggered after an AJAX request has finished either in the case of a successful request (although
+one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
+can be paried with [`beforeRequest.htmx`](#beforeRequest.htmx) to wrap behavior around a request cycle.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+
 ### <a name="afterSettle.htmx"></a> Event - [`afterSettle.htmx`](#afterSettle.htmx)
 
 This event is triggered after the DOM has [settled](/docs#settling).

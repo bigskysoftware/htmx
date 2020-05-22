@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> htmx - high power tools for html
 ---
 
-## Htmx Talk
+## htmx Talk
 
 Right now the best place to talk about htmx is the [intercooler gitter room](https://gitter.im/intercooler-js/Lobby)
 
