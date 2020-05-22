@@ -74,9 +74,9 @@ swapping mechanism in htmx.
 #### Usage
 
 ```html
-<head>
+<header>
   <script src="lib/morphdom-umd.js"></script> <!-- include the morphdom library -->
-</head>
+</header>
 <body hx-ext="morphdom-swap">
    <button hx-swap="morphdom">This button will be swapped with morphdom!</button>
 </body>
