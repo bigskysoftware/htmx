@@ -1164,6 +1164,11 @@ var htmx = htmx || (function () {
                 }
             }
 
+            // behavior of anchors w/ empty href is to use the current URL
+            if (path == null || path === "") {
+                path = getDocument().location.href;
+            }
+
             var requestConfig = {
                 parameters: filteredParameters,
                 unfilteredParameters:rawParameters,
