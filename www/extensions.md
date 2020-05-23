@@ -38,7 +38,7 @@ Extensions can override the following default extension fields:
 
 ## <a name="using"></a>[Using An Extension](#using)
 
-To use an extension you use the [hx-etx](/attributes/hx-ext) attribute.  To use our extension defined above you
+To use an extension you use the [hx-ext](/attributes/hx-ext) attribute.  To use our extension defined above you
 would say:
 
 ```html
