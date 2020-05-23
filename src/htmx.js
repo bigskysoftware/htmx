@@ -969,7 +969,7 @@ var htmx = htmx || (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
-                if (name && value) {
+                if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
                         if (Array.isArray(current)) {

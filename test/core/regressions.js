@@ -35,4 +35,18 @@ describe("Core htmx Regression Tests", function(){
         htmx.find("#message2").innerHTML.should.equal("I came from a message2 oob swap I should be third  but I am in the wrong spot")
     });
 
+    it ('Handles https://github.com/bigskysoftware/htmx/issues/33 "empty values" properly', function() {
+        this.server.respondWith("POST", "/htmx.php", function (xhr) {
+            xhr.respond(200, {}, xhr.requestBody);
+        });
+
+        var form = make('<form hx-trigger="click" hx-post="/htmx.php">\n' +
+            '<input type="text" name="variable" value="">\n' +
+            '<button type="submit">Submit</button>\n' +
+            '</form>')
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("variable=")
+    });
+
 })
