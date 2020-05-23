@@ -2,19 +2,10 @@ describe("morphdom-swap extension", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
-        htmx.defineExtension('morphdom-swap', {
-            handleSwap : function(swapStyle, target, fragment) {
-                if (swapStyle === 'morphdom') {
-                    morphdom(target, fragment.outerHTML);
-                    return []; // no settle phase when using morphdom!
-                }
-            }
-        });
     });
     afterEach(function () {
         this.server.restore();
         clearWorkArea();
-        htmx.removeExtension('morphdom-swap');
     });
 
     it('works on basic request', function () {

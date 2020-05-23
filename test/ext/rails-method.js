@@ -2,21 +2,10 @@ describe("rails-method extension", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
-        htmx.defineExtension('rails-method', {
-            onEvent : function(name, evt) {
-                if(name === "configRequest.htmx"){
-                    var methodOverride = evt.detail.headers['X-HTTP-Method-Override'];
-                    if(methodOverride){
-                        evt.detail.parameters['_method'] = methodOverride;
-                    }
-                }
-            }
-        });
     });
     afterEach(function () {
         this.server.restore();
         clearWorkArea();
-        htmx.removeExtension('rails-method');
     });
 
     it('Does not affect a GET request', function () {

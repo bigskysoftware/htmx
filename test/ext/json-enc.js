@@ -3,13 +3,6 @@ describe("json-enc extension", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
-        htmx.defineExtension('json-enc', {
-            encodeParameters : function(xhr, parameters, elt) {
-                xhr.requestHeaders['Content-Type'] = 'application/json';
-                xhr.overrideMimeType('text/json');
-                return (JSON.stringify(parameters));
-            }
-        });
     });
     afterEach(function () {
         this.server.restore();
