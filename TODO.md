@@ -21,3 +21,4 @@
 * Scroll handler use https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API if available?
 * `path-deps` extension <https://github.com/bigskysoftware/htmx/issues/21>
 * `hx-select` implies same `hx-target`? <https://github.com/bigskysoftware/htmx/issues/26>
+* support web sockets
