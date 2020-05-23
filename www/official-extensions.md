@@ -135,7 +135,7 @@ When you add this extension on an element, any element below it in the DOM can u
 `<template-engine>-temlpate` (e.g. `mustache-template`) with a template ID, and the extension will resolve and render
 the template the standard way for that template engine:
 
-* `mustache` - looks a mustache <script> tag up by ID for the template content
+* `mustache` - looks a mustache &lt;script> tag up by ID for the template content
 * `handlebars` - looks in the `Handlebars.partials` collection fot a template with that name
 * `nunjucks` - resolves the template by name via `nunjucks.render(<template-name>)
 
@@ -147,7 +147,7 @@ The AJAX response body will be parsed as JSON and passed into the template rende
 <div hx-ext='client-side-template'>
   <button mustache-template="my-mustache-template">Handle with mustache</button>
   <button handlebars-template="my-handlebars-template">Handle with handlebars</button>
-  <button nunjucks-template="my-handlebars-template">Handle with nunjucks</button>
+  <button nunjucks-template="my-nunjucks-template">Handle with nunjucks</button>
 </div>
 ```
 
