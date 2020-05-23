@@ -135,7 +135,7 @@ When you add this extension on an element, any element below it in the DOM can u
 `<template-engine>-temlpate` (e.g. `mustache-template`) with a template ID, and the extension will resolve and render
 the template the standard way for that template engine:
 
-* `mustache` - looks a mustache <script> tag up by ID for the template content
+* `mustache` - looks a mustache &lt;script> tag up by ID for the template content
 * `handlebars` - looks in the `Handlebars.partials` collection fot a template with that name
 * `nunjucks` - resolves the template by name via `nunjucks.render(<template-name>)
 
