@@ -1116,10 +1116,14 @@ var htmx = htmx || (function () {
             var encodedParameters = null;
             forEach(getExtensions(elt), function (extension) {
                 if (encodedParameters == null) {
-                    extension.encodeParameters(xhr, filteredParameters, elt);
+                    encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt);
                 }
             });
-            return urlEncode(filteredParameters);
+            if (encodedParameters != null) {
+                return encodedParameters;
+            } else {
+                return urlEncode(filteredParameters);
+            }
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
