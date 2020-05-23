@@ -145,9 +145,18 @@ The AJAX response body will be parsed as JSON and passed into the template rende
 
 ```html
 <div hx-ext='client-side-template'>
-  <button mustache-template="my-mustache-template">Handle with mustache</button>
-  <button handlebars-template="my-handlebars-template">Handle with handlebars</button>
-  <button nunjucks-template="my-nunjucks-template">Handle with nunjucks</button>
+  <button hx-get="/some_json" 
+          mustache-template="my-mustache-template">
+     Handle with mustache
+  </button>
+  <button hx-get="/some_json" 
+          handlebars-template="my-handlebars-template">
+     Handle with handlebars
+  </button>
+  <button hx-get="/some_json" 
+          nunjucks-template="my-nunjucks-template">
+     Handle with nunjucks
+  </button>
 </div>
 ```
 
