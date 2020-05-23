@@ -603,9 +603,16 @@ var htmx = htmx || (function () {
                 (elt.tagName === "A" && elt.href && elt.href.indexOf('#') !== 0);
         }
 
+        function ignoreBoostedAnchorCtrlClick(elt, evt) {
+            return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && evt.ctrlKey;
+        }
+
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
-                if(explicitCancel || shouldCancel(elt)) evt.preventDefault();
+                if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
+                    return;
+                }
+                if(explicitCancel || shouldCancel(elt)) {}evt.preventDefault();
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
