@@ -94,3 +94,28 @@ htmx.defineExtension('morphdom-swap', {
     }
 });
 ```
+
+### <a name="json-enc">[`json-enc`](#json-enc)
+
+#### Description
+
+This extension encodes parameters in JSON format instead of url format.
+
+#### Usage
+
+```html
+<div hx-post='/test' hx-ext='json-enc'>click me</div>
+```
+
+#### Source
+
+```javascript
+htmx.defineExtension('json-enc', {
+    encodeParameters : function(xhr, parameters, elt) {
+        xhr.requestHeaders['Content-Type'] = 'application/json';
+        xhr.overrideMimeType('text/json');
+        return (JSON.stringify(parameters));
+    }
+});
+
+```

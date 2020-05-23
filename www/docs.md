@@ -97,7 +97,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-The core feature of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
+The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
 
 * [hx-get](/attributes/hx-get) - Issues a `GET` request to the given URL
 * [hx-post](/attributes/hx-post) - Issues a `POST` request to the given URL
@@ -492,11 +492,13 @@ If you are interested in adding your own extension to htmx, please [see the exte
 
 Htmx offers some officially supported extensions that are tested against the htmx code base, including:
 
-* [`debug`](/official-extensions#debug) - an extension for htmx debugging a particular element
-* [`rails-method`](/official-extensions#rails-method) - an extension for including the `_method` parameter 
-[that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark).
+* [`json-enc`](/official-extensions#json-enc) - use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
 * [`morphdom-swap`](/official-extensions#morphdom-swap) - an extension for using the 
 [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+* [`debug`](/official-extensions#debug) - an extension for debugging of a particular element using htmx
+* [`rails-method`](/official-extensions#rails-method) - an extension for including the `_method` parameter that 
+[that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark)
+for non-`POST` or `GET` HTTP methods.
 
 See the [officially extensions](/official-extensions) page for a complete list.
 
