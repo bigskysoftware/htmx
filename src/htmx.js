@@ -1050,7 +1050,7 @@ var htmx = htmx || (function () {
                 "X-HX-Trigger" : getRawAttribute(elt, "id"),
                 "X-HX-Trigger-Name" : getRawAttribute(elt, "name"),
                 "X-HX-Target" : getAttributeValue(target, "id"),
-                "Current-URL" : getDocument().location.href,
+                "X-HX-Current-URL" : getDocument().location.href,
             }
             if (prompt !== undefined) {
                 headers["X-HX-Prompt"] = prompt;
