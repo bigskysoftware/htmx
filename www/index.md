@@ -11,11 +11,11 @@ title: </> htmx - high power tools for html
 
 ## Introduction
 
-Htmx is a set of extensions (attributes, request headers, etc.) that help you build 
+htmx is a set of extensions (attributes, request headers, etc.) that help you build 
 [modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-Htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](/extensions),
 IE11 compatible & you can try it out quickly & easily, without a huge rewrite.

@@ -12,8 +12,10 @@ htmx is a set of extensions (attributes, request headers, etc.) that help you bu
 [modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
 
-htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), IE11 compatible, [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) 
-& you can try it out quickly, without a huge rewrite.
+htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
+[extendable](https://htmx.org/extensions),
+IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
 
 ## Quick Start
 

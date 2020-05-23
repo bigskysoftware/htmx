@@ -2,7 +2,7 @@
 
 * Dependency-free implementation of intercooler.js
 * Support IE11 (stretch: IE10)
-* < 6k in .min.gz form
+* ~6k in .min.gz form
 
 ## Post-Launch TODOS
 
