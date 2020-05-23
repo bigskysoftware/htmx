@@ -18,4 +18,15 @@ describe("hx-error-url attribute", function(){
         this.server.respond();
         this.server.respond();
     });
+
+    it('Submits a POST with error content on bad request w/ data-* prefix', function()
+    {
+        this.server.respondWith("POST", "/error", function(xhr){
+            should.equal(JSON.parse(xhr.requestBody).detail.xhr.status, 404);
+        });
+        var btn = make('<button data-hx-error-url="/error" hx-get="/bad">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        this.server.respond();
+    });
 })

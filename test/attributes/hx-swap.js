@@ -246,4 +246,21 @@ describe("hx-swap attribute", function(){
         }, 30);
     });
 
+
+    it('swap outerHTML properly  w/ data-* prefix', function()
+    {
+        this.server.respondWith("GET", "/test", '<a id="a1" data-hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2", "Clicked!");
+
+        var div = make('<div id="d1" data-hx-get="/test" data-hx-swap="outerHTML"></div>')
+        div.click();
+        should.equal(byId("d1"), div);
+        this.server.respond();
+        should.equal(byId("d1"), null);
+        byId("a1").click();
+        this.server.respond();
+        byId("a1").innerHTML.should.equal('Clicked!');
+    });
+
+
 })

@@ -136,4 +136,18 @@ describe("hx-include attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('By default an input includes itself w/ data-* prefix', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make('<div data-hx-target="this"><input data-hx-post="/include" data-hx-trigger="click" id="i1" name="i1" value="test"/></div>')
+        var input = byId("i1")
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+
 });

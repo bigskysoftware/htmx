@@ -29,4 +29,16 @@ describe("hx-classes attribute", function(){
             done();
         }, 100);
     });
+
+    it('adds classes properly w/ data-* prefix', function(done)
+    {
+        var div = make('<div data-hx-classes="add c1">Click Me!</div>')
+        should.equal(div.classList.length, 0);
+        setTimeout(function(){
+            should.equal(div.classList.contains("c1"), true);
+            done();
+        }, 100);
+    });
+
+
 })

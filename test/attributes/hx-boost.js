@@ -47,6 +47,15 @@ describe("hx-boost attribute", function() {
         div.innerHTML.should.equal("Boosted");
     })
 
+    it('handles basic anchor properly w/ data-* prefix', function () {
+        this.server.respondWith("GET", "/test", "Boosted");
+        var div = make('<div data-hx-target="this" data-hx-boost="true"><a id="a1" href="/test">Foo</a></div>');
+        var a = byId('a1');
+        a.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Boosted");
+    })
+
 
 });
 

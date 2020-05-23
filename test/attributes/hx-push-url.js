@@ -120,4 +120,15 @@ describe("hx-push-url attribute", function() {
         chai.assert(timeInMs < 300, "Should take less than 300ms on most platforms");
     })
 
+    it("navigation should push an element into the cache  w/ data-* prefix", function () {
+        this.server.respondWith("GET", "/test", "second");
+        getWorkArea().innerHTML.should.be.equal("");
+        var div = make('<div data-hx-push-url="true" data-hx-get="/test">first</div>');
+        div.click();
+        this.server.respond();
+        getWorkArea().textContent.should.equal("second")
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        cache.length.should.equal(1);
+    });
+
 });
