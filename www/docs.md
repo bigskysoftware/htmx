@@ -494,6 +494,7 @@ Htmx offers some officially supported extensions that are tested against the htm
 
 * [`json-enc`](/official-extensions#json-enc) - use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
 * [`morphdom-swap`](/official-extensions#morphdom-swap) - an extension for using the 
+* [`client-side-templates`](/official-extensions#client-side-templates) - support for client side template processing of JSON responses 
 [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
 * [`debug`](/official-extensions#debug) - an extension for debugging of a particular element using htmx
 * [`rails-method`](/official-extensions#rails-method) - an extension for including the `_method` parameter that 
