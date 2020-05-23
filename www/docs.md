@@ -361,10 +361,10 @@ event.
 Htmx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
 If you want a given element to push its request URL into the browser navigation bar and add the current state of the page
-to the browser's history, include the [hx-push](/attributes/hx-push) attribute:
+to the browser's history, include the [hx-push-url](/attributes/hx-push-url) attribute:
 
 ```html
-    <a hx-get="/blog" hx-push="true">Blog</a>
+    <a hx-get="/blog" hx-push-url="true">Blog</a>
 ```
   
 When a user clicks on this link, htmx will snapshot the current DOM and store it before it makes a request to /blog. 
