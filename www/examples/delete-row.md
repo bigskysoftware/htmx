@@ -4,30 +4,8 @@ layout: demo_layout.njk
 
 ## Delete Row
 
-This example shows how to implement a delete button that removes a table row upon completion.
-
-Each row has a button with a `hx-delete` attribute containing the url on which to issue a DELETE request to delete the row from the server.
-This request should respond with empty content.
-
-```html
-<tr>
-  <td>Angie MacDowell</td>
-  <td>angie@macdowell.org</td>
-  <td>Active</td>
-  <td>
-    <button class="btn btn-danger" hx-delete="/contact/1">
-      Delete
-    </button>
-  </td>
-</tr>
-```
-
-In order to tell where to put this empty content, the table body has an `hx-target` attribute set to `closest tr` . This will target the row containing the button which triggred the action, replacing it by... nothing.
-
-It also has a `hx-swap` attribute set to `outerHTML 1s` in order to replace the row itself, with a 1 second delay allowing for a CSS3 transition to fade the row out.
-During this one second delay, the class "kutty-swapping" is added to `tr` element about to be replaced.
-
-Finally, the body also has a `hx-confirm` attribute so that a confirmation popup is shown before triggering the action for real.
+This example shows how to implement a delete button that removes a table row upon completion.  First let's look at the
+table body:
 
 ```html
 <table class="table delete-row-example">
@@ -44,6 +22,45 @@ Finally, the body also has a `hx-confirm` attribute so that a confirmation popup
   </tbody>
 </table>
 ```
+
+The table body has a [`hx-confirm`](/attributes/hx-confirm) attribute to confirm the delete action.  It also
+set the target to be the `closest tr` that is, the closest table row, for all the buttons ([`hx-target`](/attributes/hx-target) 
+is inherited from parents in the DOM.)  The swap specification in [`hx-swap`](/attributes/hx-swap) says to swap the
+entire target out and to wait 1 second after receiving a response.  This last bit is so that we can use the following
+CSS:
+
+```css
+tr.htmx-swapping td {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+```
+
+To fade the row out before it is swapped/removed.
+
+Each row has a button with a [`hx-delete`](/attributes/hx-delete) attribute containing the url on which to issue a `DELETE` 
+request to delete the row from the server. This request responds with empty content, indicating that the row should
+be replaced with nothing.
+
+```html
+<tr>
+  <td>Angie MacDowell</td>
+  <td>angie@macdowell.org</td>
+  <td>Active</td>
+  <td>
+    <button class="btn btn-danger" hx-delete="/contact/1">
+      Delete
+    </button>
+  </td>
+</tr>
+```
+
+<style>
+tr.htmx-swapping td {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+</style>
 
 {% include demo_ui.html.liquid %}
 
@@ -123,5 +140,3 @@ Finally, the body also has a `hx-confirm` attribute so that a confirmation popup
     }
 
 </script>
-
-

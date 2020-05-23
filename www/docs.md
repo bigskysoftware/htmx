@@ -23,7 +23,7 @@ title: </> htmx - high power tools for html
   * [parameters](#parameters)
 * [history](#history)
 * [requests & responses](#requests)
-* [misc](#misc)
+* [miscellaneous](#miscellaneous)
 * [extensions](#extensions)
 * [events & logging](#events)
 * [configuring](#config)
@@ -362,10 +362,10 @@ event.
 Htmx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
 If you want a given element to push its request URL into the browser navigation bar and add the current state of the page
-to the browser's history, include the [hx-push](/attributes/hx-push) attribute:
+to the browser's history, include the [hx-push-url](/attributes/hx-push-url) attribute:
 
 ```html
-    <a hx-get="/blog" hx-push="true">Blog</a>
+    <a hx-get="/blog" hx-push-url="true">Blog</a>
 ```
   
 When a user clicks on this link, htmx will snapshot the current DOM and store it before it makes a request to /blog. 
@@ -377,7 +377,7 @@ When a user hits the back button, htmx will retrieve the old content from storag
 ### Specifying History Snapshot Element
 
 By default, htmx will use the `body` to take and restore the history snapshop from.  This is usually the right thing, but
-if you want to use a narrower element for snapshotting you can use the [hx-history-element](/attributes/hx-history-element)
+if you want to use a narrower element for snapshotting you can use the [hx-history-elt](/attributes/hx-history-elt)
 attribute to specify a different one.  
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
@@ -439,7 +439,7 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
-## Miscellaneous Attributes
+## <a name="miscellaneous"></a> [Miscellaneous](#miscellaneous)
 
 In addition to the core AJAX functionality, htmx also has a few other tricks up its sleeve that help you build
 nice interfaces without javascript.
