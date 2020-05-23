@@ -23,7 +23,7 @@ title: </> htmx - high power tools for html
   * [parameters](#parameters)
 * [history](#history)
 * [requests & responses](#requests)
-* [misc](#misc)
+* [miscellaneous](#miscellaneous)
 * [events & logging](#events)
 * [configuring](#config)
 
@@ -438,7 +438,7 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
-## Miscellaneous Attributes
+## <a name="miscellaneous"></a> [Miscellaneous](#miscellaneous)
 
 In addition to the core AJAX functionality, htmx also has a few other tricks up its sleeve that help you build
 nice interfaces without javascript.
