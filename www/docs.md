@@ -376,7 +376,7 @@ When a user hits the back button, htmx will retrieve the old content from storag
 ### Specifying History Snapshot Element
 
 By default, htmx will use the `body` to take and restore the history snapshop from.  This is usually the right thing, but
-if you want to use a narrower element for snapshotting you can use the [hx-history-element](/attributes/hx-history-element)
+if you want to use a narrower element for snapshotting you can use the [hx-history-elt](/attributes/hx-history-elt)
 attribute to specify a different one.  
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
