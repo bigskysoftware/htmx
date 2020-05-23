@@ -99,8 +99,8 @@ describe("hx-trigger attribute", function(){
 
     var specExamples = {
         "": {trigger: 'click'},
-        "every 1s": {trigger: 'click', pollInterval: 1000},
-        "sse:/foo": {trigger: 'click', sseEvent: '/foo'},
+        "every 1s": {trigger: 'every', pollInterval: 1000},
+        "sse:/foo": {trigger: 'sse', sseEvent: '/foo'},
         "click": {trigger: 'click'},
         "customEvent": {trigger: 'customEvent'},
         "event changed": {trigger: 'event', changed: true},

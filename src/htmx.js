@@ -482,8 +482,10 @@ var htmx = htmx || (function () {
                 if (tokens.length > 0) {
                     var trigger = tokens[0];
                     if (trigger === "every") {
+                        triggerSpec.trigger = 'every';
                         triggerSpec.pollInterval = parseInterval(tokens[1]);
                     } else if (trigger.indexOf("sse:") === 0) {
+                        triggerSpec.trigger = 'sse';
                         triggerSpec.sseEvent = trigger.substr(4);
                     } else {
                         triggerSpec['trigger'] = trigger;
