@@ -171,6 +171,8 @@ You can use these two attributes to implement a common UX pattern, [Active Searc
 This input will issue a request 500 milliseconds after a key up event if the input has been changed and inserts the results
 into the `div` with the id `search-results`.
 
+Multiple triggers can be specified in the [hx-trigger](/attributes/hx-trigger) attribute, separated by commas.
+
 #### <a name="special-events"></a> [Special Events](#special-events)
 
 htmx provides a few special events for use in [hx-trigger](/attributes/hx-trigger):

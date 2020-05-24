@@ -471,44 +471,46 @@ var htmx = htmx || (function () {
             }
         }
 
-        function getTriggerSpec(elt) {
+        function getTriggerSpecs(elt) {
 
-            var triggerSpec = {
-                "trigger" : "click"
-            }
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             if (explicitTrigger) {
-                var tokens = splitOnWhitespace(explicitTrigger);
-                if (tokens.length > 0) {
-                    var trigger = tokens[0];
-                    if (trigger === "every") {
-                        triggerSpec.pollInterval = parseInterval(tokens[1]);
-                    } else if (trigger.indexOf("sse:") === 0) {
-                        triggerSpec.sseEvent = trigger.substr(4);
-                    } else {
-                        triggerSpec['trigger'] = trigger;
-                        for (var i = 1; i < tokens.length; i++) {
-                            var token = tokens[i].trim();
-                            if (token === "changed") {
-                                triggerSpec.changed = true;
-                            }
-                            if (token === "once") {
-                                triggerSpec.once = true;
-                            }
-                            if (token.indexOf("delay:") === 0) {
-                                triggerSpec.delay = parseInterval(token.substr(6));
-                            }
+                var triggerSpecs = explicitTrigger.split(',').map(function(triggerString) {
+                    var tokens = splitOnWhitespace(triggerString.trim());
+                    var trigger = tokens[0];  // splitOnWhitespace returns at least one element
+                    if (!trigger)
+                        return null;
+
+                    if (trigger === "every")
+                        return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
+                    if (trigger.indexOf("sse:") === 0)
+                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
+
+                    var triggerSpec = {trigger: trigger};
+                    for (var i = 1; i < tokens.length; i++) {
+                        var token = tokens[i].trim();
+                        if (token === "changed") {
+                            triggerSpec.changed = true;
+                        }
+                        if (token === "once") {
+                            triggerSpec.once = true;
+                        }
+                        if (token.indexOf("delay:") === 0) {
+                            triggerSpec.delay = parseInterval(token.substr(6));
                         }
                     }
-                }
-            } else {
-                if (matches(elt, 'form')) {
-                    triggerSpec['trigger'] = 'submit';
-                } else if (matches(elt, 'input, textarea, select')) {
-                    triggerSpec['trigger'] = 'change';
-                }
+                    return triggerSpec;
+                }).filter(x => x !== null);
+
+                if (triggerSpecs.length)
+                    return triggerSpecs;
             }
-            return triggerSpec;
+
+            if (matches(elt, 'form'))
+                return [{trigger: 'submit'}];
+            if (matches(elt, 'input, textarea, select'))
+                return [{trigger: 'change'}];
+            return [{trigger: 'click'}];
         }
 
         function parseClassOperation(trimmedValue) {
@@ -581,7 +583,7 @@ var htmx = htmx || (function () {
                 getRawAttribute(elt,'href').indexOf("#") !== 0;
         }
 
-        function boostElement(elt, nodeData, triggerSpec) {
+        function boostElement(elt, nodeData, triggerSpecs) {
             if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
@@ -593,7 +595,9 @@ var htmx = htmx || (function () {
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
                     path = getRawAttribute(elt, 'action');
                 }
-                addEventListener(elt, verb, path, nodeData, triggerSpec, true);
+                triggerSpecs.forEach(function(triggerSpec) {
+                    addEventListener(elt, verb, path, nodeData, triggerSpec, true);
+                });
             }
         }
 
@@ -723,7 +727,7 @@ var htmx = htmx || (function () {
             }
         }
 
-        function processVerbs(elt, nodeData, triggerSpec) {
+        function processVerbs(elt, nodeData, triggerSpecs) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
                 var path = getAttributeValue(elt, 'hx-' + verb);
@@ -731,19 +735,21 @@ var htmx = htmx || (function () {
                     explicitAction = true;
                     nodeData.path = path;
                     nodeData.verb = verb;
-                    if (triggerSpec.sseEvent) {
-                        processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
-                    } else if (triggerSpec.trigger === "revealed") {
-                        initScrollHandler();
-                        maybeReveal(elt);
-                    } else if (triggerSpec.trigger === "load") {
-                        loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
-                    } else if (triggerSpec.pollInterval) {
-                        nodeData.polling = true;
-                        processPolling(elt, verb, path, triggerSpec.pollInterval);
-                    } else {
-                        addEventListener(elt, verb, path, nodeData, triggerSpec);
-                    }
+                    triggerSpecs.forEach(function(triggerSpec) {
+                        if (triggerSpec.sseEvent) {
+                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
+                        } else if (triggerSpec.trigger === "revealed") {
+                            initScrollHandler();
+                            maybeReveal(elt);
+                        } else if (triggerSpec.trigger === "load") {
+                            loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
+                        } else if (triggerSpec.pollInterval) {
+                            nodeData.polling = true;
+                            processPolling(elt, verb, path, triggerSpec.pollInterval);
+                        } else {
+                            addEventListener(elt, verb, path, nodeData, triggerSpec);
+                        }
+                    });
                 }
             });
             return explicitAction;
@@ -754,11 +760,11 @@ var htmx = htmx || (function () {
             if (!nodeData.processed) {
                 nodeData.processed = true;
 
-                var triggerSpec = getTriggerSpec(elt);
-                var explicitAction = processVerbs(elt, nodeData, triggerSpec);
+                var triggerSpecs = getTriggerSpecs(elt);
+                var explicitAction = processVerbs(elt, nodeData, triggerSpecs);
 
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
-                    boostElement(elt, nodeData, triggerSpec);
+                    boostElement(elt, nodeData, triggerSpecs);
                 }
                 var sseSrc = getAttributeValue(elt, 'hx-sse-source');
                 if (sseSrc) {
