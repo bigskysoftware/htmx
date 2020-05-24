@@ -99,14 +99,17 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 
 The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
 
-* [hx-get](/attributes/hx-get) - Issues a `GET` request to the given URL
-* [hx-post](/attributes/hx-post) - Issues a `POST` request to the given URL
-* [hx-put](/attributes/hx-put) - Issues a `PUT` request to the given URL
-* [hx-patch](/attributes/hx-patch) - Issues a `PATCH` request to the given URL
-* [hx-delete](/attributes/hx-delete) - Issues a `DELETE` request to the given URL
+| Attribute | Description |
+|-----------|-------------|
+| [hx-get](/attributes/hx-get) | Issues a `GET` request to the given URL|
+| [hx-post](/attributes/hx-post) | Issues a `POST` request to the given URL
+| [hx-put](/attributes/hx-put) | Issues a `PUT` request to the given URL
+| [hx-patch](/attributes/hx-patch) | Issues a `PATCH` request to the given URL
+| [hx-delete](/attributes/hx-delete) | Issues a `DELETE` request to the given URL
 
-(Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
-actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.)
+
+Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
+actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -312,12 +315,14 @@ htmx offers a few different ways to swap the HTML returned into the DOM.  By def
 `innerHTML` of the target element.  You can modify this by using the [hx-swap](/attributes/hx-swap) attribute 
 with any of the following values:
 
-* `innerHTML` - the default, puts the content inside the target element
-* `outerHTML` - replaces the entire target element with the returned content
-* `afterbegin` - prepends the content before the first child inside the target
-* `beforebegin` - prepends the content before the target in the targets parent element
-* `beforeend` - appends the content after the last child inside the target
-* `afterend` - appends the content after the target in the targets parent element
+| Name | Description 
+|------|-------------
+| `innerHTML` | the default, puts the content inside the target element
+| `outerHTML` | replaces the entire target element with the returned content
+| `afterbegin` | prepends the content before the first child inside the target
+| `beforebegin` | prepends the content before the target in the targets parent element
+| `beforeend` | appends the content after the last child inside the target
+| `afterend` | appends the content after the target in the targets parent element
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -400,17 +405,19 @@ In the event of a connection error, the `sendError.htmx` event will be triggered
 
 htmx includes a number of useful headers in requests:
 
-* `X-HX-Request` - will be set to "true"
-* `X-HX-Trigger` - will be set to the id of the element that triggered the request
-* `X-HX-Trigger-Name` - will be set to the name of the element that triggered the request
-* `X-HX-Target` - will be set to the id of the target element
-* `X-HX-Current-URL` - will be set to the URL of the browser
-* `X-HX-Prompt` - will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
-* `X-HX-Event-Target` - the id of the original target of the event that triggered the request
-* `X-HX-Active-Element` - the id of the current active element
-* `X-HX-Active-Element-Name` - the name of the current active element
-* `X-HX-Active-Element-Value` - the value of the current active element
-* `X-HTTP-Method-Override` - the HTTP verb for non-`GET` and `POST` requests
+| Header | Description
+|--------|--------------
+| `X-HX-Request` | will be set to "true"
+| `X-HX-Trigger` | will be set to the id of the element that triggered the request
+| `X-HX-Trigger-Name` | will be set to the name of the element that triggered the request
+| `X-HX-Target` | will be set to the id of the target element
+| `X-HX-Current-URL` | will be set to the URL of the browser
+| `X-HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
+| `X-HX-Event-Target` | the id of the original target of the event that triggered the request
+| `X-HX-Active-Element` | the id of the current active element
+| `X-HX-Active-Element-Name` | the name of the current active element
+| `X-HX-Active-Element-Value` | the value of the current active element
+| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
@@ -490,16 +497,18 @@ defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/a
 
 If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions)
 
+### Official Extensions
+
 Htmx offers some officially supported extensions that are tested against the htmx code base, including:
 
-* [`json-enc`](/official-extensions#json-enc) - use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-* [`morphdom-swap`](/official-extensions#morphdom-swap) - an extension for using the 
-* [`client-side-templates`](/official-extensions#client-side-templates) - support for client side template processing of JSON responses 
-[morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
-* [`debug`](/official-extensions#debug) - an extension for debugging of a particular element using htmx
-* [`rails-method`](/official-extensions#rails-method) - an extension for including the `_method` parameter that 
-[that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark)
-for non-`POST` or `GET` HTTP methods.
+| Extension | Description
+|-----------|-------------
+| [`json-enc`](/official-extensions#json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`morphdom-swap`](/official-extensions#morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`client-side-templates`](/official-extensions#client-side-templates) | support for client side template processing of JSON responses
+| [`debug`](/official-extensions#debug) | an extension for debugging of a particular element using htmx
+| [`path-deps`](/official-extensions#path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`rails-method`](/official-extensions#rails-method) | an extension for including the `_method` parameter that [that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark) for non-`POST` or `GET` HTTP methods.
 
 See the [officially extensions](/official-extensions) page for a complete list.
 
@@ -553,12 +562,14 @@ if you want to log everything while developing.
 
 Htmx allows you to configure a few defaults:
 
-*  `htmx.config.historyEnabled` - defaults to `true`, really only useful for testing
-*  `htmx.config.historyCacheSize` - defaults to 10
-*  `htmx.config.defaultSwapStyle` - defaults to `innerHTML`
-*  `htmx.config.defaultSwapDelay` - defaults to 0
-*  `htmx.config.defaultSettleDelay` - defaults to 100
-*  `htmx.config.includeIndicatorStyles` - defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
+| Config Variable | Info |
+|-----------------|-------
+|  `htmx.config.historyEnabled` | defaults to `true`, really only useful for testing
+|  `htmx.config.historyCacheSize` | defaults to 10
+|  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
+|  `htmx.config.defaultSwapDelay` | defaults to 0
+|  `htmx.config.defaultSettleDelay` | defaults to 100
+|  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
 
 You can set them directly in javascript, or you can use a `meta` tag:
 
