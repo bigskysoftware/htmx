@@ -97,23 +97,46 @@ describe("hx-trigger attribute", function(){
         form.innerHTML.should.equal("Clicked!");
     });
 
+    it('works with multiple events', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div = make('<div hx-trigger="load,click" hx-get="/test">Requests: 0</div>');
+        div.innerHTML.should.equal("Requests: 0");
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 1");
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 2");
+    });
+
     var specExamples = {
-        "": {trigger: 'click'},
-        "every 1s": {trigger: 'every', pollInterval: 1000},
-        "sse:/foo": {trigger: 'sse', sseEvent: '/foo'},
-        "click": {trigger: 'click'},
-        "customEvent": {trigger: 'customEvent'},
-        "event changed": {trigger: 'event', changed: true},
-        "event once": {trigger: 'event', once: true},
-        "event delay:1s": {trigger: 'event', delay: 1000},
-        "event changed once delay:1s": {trigger: 'event', changed: true, once: true, delay: 1000}
+        "": [{trigger: 'click'}],
+        "every 1s": [{trigger: 'every', pollInterval: 1000}],
+        "sse:/foo": [{trigger: 'sse', sseEvent: '/foo'}],
+        "click": [{trigger: 'click'}],
+        "customEvent": [{trigger: 'customEvent'}],
+        "event changed": [{trigger: 'event', changed: true}],
+        "event once": [{trigger: 'event', once: true}],
+        "event delay:1s": [{trigger: 'event', delay: 1000}],
+        "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
+        "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+        "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+        "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
+        "event1,": [{trigger: 'event1'}],
+        ",event1": [{trigger: 'event1'}],
+        "  ": [{trigger: 'click'}],
+        ",": [{trigger: 'click'}]
     }
 
     for (const specString in specExamples) {
         it(`parses "${specString}"`, function()
         {
             var div = make(`<div hx-trigger="${specString}"></div>`);
-            var spec = htmx._('getTriggerSpec')(div);
+            var spec = htmx._('getTriggerSpecs')(div);
             spec.should.deep.equal(specExamples[specString]);
         });
     }
@@ -121,15 +144,15 @@ describe("hx-trigger attribute", function(){
     it('sets default trigger for forms', function()
     {
         var form = make('<form></form>');
-        var spec = htmx._('getTriggerSpec')(form);
-        spec.should.deep.equal({trigger: 'submit'});
+        var spec = htmx._('getTriggerSpecs')(form);
+        spec.should.deep.equal([{trigger: 'submit'}]);
     })
 
     it('sets default trigger for form elements', function()
     {
         var form = make('<input></input>');
-        var spec = htmx._('getTriggerSpec')(form);
-        spec.should.deep.equal({trigger: 'change'});
+        var spec = htmx._('getTriggerSpecs')(form);
+        spec.should.deep.equal([{trigger: 'change'}]);
     })
 
 })
