@@ -804,6 +804,9 @@ var htmx = htmx || (function () {
         }
 
         function triggerEvent(elt, eventName, detail) {
+            if (detail == null) {
+                detail = {};
+            }
             detail["elt"] = elt;
             var event = makeEvent(eventName, detail);
             if (htmx.logger) {

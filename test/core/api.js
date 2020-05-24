@@ -38,6 +38,16 @@ describe("Core htmx API test", function(){
         detailStr.should.equal("foo");
     });
 
+    it('triggers with no details properly', function () {
+        var div = make("<div/>");
+        var myEventCalled = false;
+        htmx.on("myEvent", function(evt){
+            myEventCalled = true;
+        })
+        htmx.trigger(div, "myEvent")
+        myEventCalled.should.equal(true);
+    });
+
     it('should find properly', function(){
         var div = make("<div id='d1' class='c1 c2'>");
         div.should.equal(htmx.find("#d1"));
