@@ -31,7 +31,7 @@ Extensions can override the following default extension fields:
 {
     onEvent : function(name, evt) {return true;},
     transformResponse : function(text, xhr, elt) {return text;},
-    handleSwap : function(swapStyle, target, fragment) {return null;},
+    handleSwap : function(swapStyle, target, fragment) {return false;},
     encodeParameters : function(xhr, parameters, elt) {return null;}
 }
 ```

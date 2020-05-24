@@ -321,41 +321,37 @@ var htmx = htmx || (function () {
             });
         }
 
-        function handleOutOfBandSwaps(fragment) {
-            var settleTasks = [];
+        function handleOutOfBandSwaps(fragment, settleInfo) {
             forEach(toArray(fragment.children), function (child) {
                 if (getAttributeValue(child, "hx-swap-oob") === "true") {
                     var target = getDocument().getElementById(child.id);
                     if (target) {
                         var fragment = getDocument().createDocumentFragment();
                         fragment.appendChild(child);
-                        settleTasks = settleTasks.concat(swapOuterHTML(target, fragment));
+                        swapOuterHTML(target, fragment, settleInfo);
                     } else {
                         child.parentNode.removeChild(child);
                         triggerErrorEvent(getDocument().body, "oobErrorNoTarget.htmx", {content: child})
                     }
                 }
             });
-            return settleTasks;
         }
 
-        function handleAttributes(parentNode, fragment) {
-            var attributeSwaps = [];
+        function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
                 var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
                 if (oldNode) {
                     var newAttributes = newNode.cloneNode();
                     cloneAttributes(newNode, oldNode);
-                    attributeSwaps.push(function () {
+                    settleInfo.tasks.push(function () {
                         cloneAttributes(newNode, newAttributes);
                     });
                 }
             });
-            return attributeSwaps;
         }
 
-        function insertNodesBefore(parentNode, insertBefore, fragment) {
-            var settleTasks = handleAttributes(parentNode, fragment);
+        function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
+            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
@@ -364,45 +360,52 @@ var htmx = htmx || (function () {
                     processNode(child);
                 }
             }
-            return settleTasks;
         }
 
-        function swapOuterHTML(target, fragment) {
+        function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment);
             } else {
-                var settleTasks = insertNodesBefore(parentElt(target), target, fragment);
+                var eltBeforeNewContent = target.previousSibling;
+                insertNodesBefore(parentElt(target), target, fragment, settleInfo);
+                if (eltBeforeNewContent == null) {
+                    var newElt = parentElt(target).firstChild;
+                } else {
+                    var newElt = eltBeforeNewContent.nextSibling;
+                }
+                while(newElt && newElt != target) {
+                    settleInfo.elts.push(newElt);
+                    newElt = newElt.nextSibling;
+                }
                 parentElt(target).removeChild(target);
-                return settleTasks;
             }
         }
 
-        function swapAfterBegin(target, fragment) {
-            return insertNodesBefore(target, target.firstChild, fragment);
+        function swapAfterBegin(target, fragment, settleInfo) {
+            return insertNodesBefore(target, target.firstChild, fragment, settleInfo);
         }
 
-        function swapBeforeBegin(target, fragment) {
-            return insertNodesBefore(parentElt(target), target, fragment);
+        function swapBeforeBegin(target, fragment, settleInfo) {
+            return insertNodesBefore(parentElt(target), target, fragment, settleInfo);
         }
 
-        function swapBeforeEnd(target, fragment) {
-            return insertNodesBefore(target, null, fragment);
+        function swapBeforeEnd(target, fragment, settleInfo) {
+            return insertNodesBefore(target, null, fragment, settleInfo);
         }
 
-        function swapAfterEnd(target, fragment) {
-            return insertNodesBefore(parentElt(target), target.nextSibling, fragment);
+        function swapAfterEnd(target, fragment, settleInfo) {
+            return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
 
-        function swapInnerHTML(target, fragment) {
+        function swapInnerHTML(target, fragment, settleInfo) {
             var firstChild = target.firstChild;
-            var settleTasks = insertNodesBefore(target, firstChild, fragment);
+            insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
                     target.removeChild(firstChild.nextSibling);
                 }
                 target.removeChild(firstChild);
             }
-            return settleTasks;
         }
 
         function maybeSelectFromResponse(elt, fragment) {
@@ -417,38 +420,41 @@ var htmx = htmx || (function () {
             return fragment;
         }
 
-        function swap(swapStyle, settleTasks, elt, target, fragment) {
+        function swap(swapStyle, elt, target, fragment, settleInfo) {
             switch (swapStyle) {
                 case "outerHTML":
-                    return concat(settleTasks, swapOuterHTML(target, fragment));
+                    swapOuterHTML(target, fragment, settleInfo);
+                    return;
                 case "afterbegin":
-                    return concat(settleTasks, swapAfterBegin(target, fragment));
+                    swapAfterBegin(target, fragment, settleInfo);
+                    return;
                 case "beforebegin":
-                    return concat(settleTasks, swapBeforeBegin(target, fragment));
+                    swapBeforeBegin(target, fragment, settleInfo);
+                    return;
                 case "beforeend":
-                    return concat(settleTasks, swapBeforeEnd(target, fragment));
+                    swapBeforeEnd(target, fragment, settleInfo);
+                    return;
                 case "afterend":
-                    return concat(settleTasks, swapAfterEnd(target, fragment));
+                    swapAfterEnd(target, fragment, settleInfo);
+                    return;
                 default:
-                    var settleTasks = null;
-                    forEach(getExtensions(elt), function (extension) {
-                        if (settleTasks == null) {
-                            settleTasks = extension.handleSwap(swapStyle, target, fragment);
+                    var extensions = getExtensions(elt);
+                    for (var i = 0; i < extensions.length; i++) {
+                        var ext = extensions[i];
+                        if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
+                            return;
                         }
-                    });
-                    if (settleTasks == null) {
-                        settleTasks = swapInnerHTML(target, fragment);
                     }
-                    return concat(settleTasks, settleTasks);
+                    swapInnerHTML(target, fragment, settleInfo);
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
             var fragment = makeFragment(responseText);
             if (fragment) {
-                var settleTasks = handleOutOfBandSwaps(fragment);
+                handleOutOfBandSwaps(fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment);
-                return swap(swapStyle, settleTasks, elt, target, fragment);
+                return swap(swapStyle, elt, target, fragment, settleInfo);
             }
         }
 
@@ -876,8 +882,8 @@ var htmx = htmx || (function () {
             currentPathForHistory = path;
         }
 
-        function settleImmediately(settleTasks) {
-            forEach(settleTasks, function (task) {
+        function settleImmediately(tasks) {
+            forEach(tasks, function (task) {
                 task.call();
             });
         }
@@ -892,7 +898,10 @@ var htmx = htmx || (function () {
                     triggerEvent(getDocument().body, "historyCacheMissLoad.htmx", details);
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
-                    settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
+                    var historyElement = getHistoryElement();
+                    var settleInfo = makeSettleInfo(historyElement);
+                    swapInnerHTML(historyElement, fragment, settleInfo)
+                    settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
                 } else {
                     triggerErrorEvent(getDocument().body, "historyCacheMissLoadError.htmx", details);
@@ -907,7 +916,11 @@ var htmx = htmx || (function () {
             triggerEvent(getDocument().body, "historyRestore.htmx", {path:path});
             var cached = getCachedHistory(path);
             if (cached) {
-                settleImmediately(swapInnerHTML(getHistoryElement(), makeFragment(cached.content)));
+                var fragment = makeFragment(cached.content);
+                var historyElement = getHistoryElement();
+                var settleInfo = makeSettleInfo(historyElement);
+                swapInnerHTML(historyElement, fragment, settleInfo)
+                settleImmediately(settleInfo.tasks);
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
@@ -1142,6 +1155,10 @@ var htmx = htmx || (function () {
             }
         }
 
+        function makeSettleInfo(target) {
+            return {tasks: [], elts: [target]};
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1262,21 +1279,30 @@ var htmx = htmx || (function () {
                             target.classList.add("htmx-swapping");
                             var doSwap = function () {
                                 try {
-                                    var settleTasks = selectAndSwap(swapSpec.swapStyle, target, elt, resp);
+                                    var settleInfo = makeSettleInfo(target);
+                                    selectAndSwap(swapSpec.swapStyle, target, elt, resp, settleInfo);
                                     target.classList.remove("htmx-swapping");
-                                    target.classList.add("htmx-settling");
+                                    forEach(settleInfo.elts, function (elt) {
+                                        if (elt.classList) {
+                                            elt.classList.add("htmx-settling");
+                                        }
+                                    });
                                     triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     if (anchor) {
                                         location.hash = anchor;
                                     }
                                     var doSettle = function(){
-                                        forEach(settleTasks, function (settleTask) {
-                                            settleTask.call();
+                                        forEach(settleInfo.tasks, function (task) {
+                                            task.call();
                                         });
-                                        target.classList.remove("htmx-settling");
+                                        forEach(settleInfo.elts, function (elt) {
+                                            if (elt.classList) {
+                                                elt.classList.remove("htmx-settling");
+                                            }
+                                        });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            pushUrlIntoHistory(pushedUrl || path );
+                                            pushUrlIntoHistory(pushedUrl || path);
                                         }
                                         triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                     }
@@ -1331,7 +1357,7 @@ var htmx = htmx || (function () {
             return {
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
-                handleSwap : function(swapStyle, target, fragment) {return null;},
+                handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
                 encodeParameters : function(xhr, parameters, elt) {return null;}
             }
         }

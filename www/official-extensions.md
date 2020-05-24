@@ -86,10 +86,10 @@ swapping mechanism in htmx.
 
 ```javascript
 htmx.defineExtension('morphdom-swap', {
-    handleSwap : function(swapStyle, target, fragment) {
+    handleSwap : function(swapStyle, target, fragment, settleInfo) {
         if (swapStyle === 'morphdom') {
             morphdom(target, fragment.outerHTML);
-            return []; // no settle phase when using morphdom!
+            true; // no settle phase when using morphdom!
         }
     }
 });
