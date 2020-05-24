@@ -1307,7 +1307,7 @@ var htmx = htmx || (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerErrorEvent(elt, 'afterRequest.htmx', eventDetail);
+                    triggerEvent(elt, 'afterRequest.htmx', eventDetail);
                     triggerEvent(elt, 'afterOnLoad.htmx', eventDetail);
                     endRequestLock();
                 }
