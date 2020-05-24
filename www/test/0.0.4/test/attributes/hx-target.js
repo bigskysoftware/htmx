@@ -68,4 +68,16 @@ describe("hx-target attribute", function(){
         btn.innerHTML.should.equal("Click Me!");
     });
 
+
+    it('targets an adjacent element properly w/ data-* prefix', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var btn = make('<button data-hx-target="#d1" data-hx-get="/test">Click Me!</button>')
+        var div1 = make('<div id="d1"></div>')
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+    });
+
+
 })

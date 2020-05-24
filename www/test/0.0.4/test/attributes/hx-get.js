@@ -65,4 +65,12 @@ describe("hx-get attribute", function() {
     });
 
 
+    it('issues a GET request on click and swaps content w/ data-* prefix', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+
+        var btn = make('<button data-hx-get="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("Clicked!");
+    });
 });

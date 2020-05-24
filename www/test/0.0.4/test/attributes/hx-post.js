@@ -20,4 +20,17 @@ describe("hx-post attribute", function(){
         this.server.respond();
         btn.innerHTML.should.equal("Posted!");
     });
+
+    it('issues a POST request with proper headers  w/ data-* prefix', function()
+    {
+        this.server.respondWith("POST", "/test", function(xhr){
+            should.equal(xhr.requestHeaders['X-HTTP-Method-Override'], undefined);
+            xhr.respond(200, {}, "Posted!");
+        });
+
+        var btn = make('<button data-hx-post="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("Posted!");
+    });
 })

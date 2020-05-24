@@ -13,7 +13,7 @@
 </head>
 <body style="padding:20px;font-family: sans-serif">
 
-<h1>htmx.js test suite</h1>
+<h1 style="margin-top: 40px">htmx.js test suite</h1>
 
 <h2>Scratch Page</h2>
 <ul>
@@ -52,9 +52,6 @@
 
 <script src="util/util.js"></script>
 
-<!-- external libraries -->
-<script src="lib/morphdom-umd.js"></script>
-
 <!-- core tests -->
 <script src="core/internals.js"></script>
 <script src="core/api.js"></script>
@@ -90,11 +87,20 @@
 <script src="../src/ext/debug.js"></script>
 <script src="ext/debug.js"></script>
 
+<script src="lib/morphdom-umd.js"></script>
 <script src="../src/ext/morphdom-swap.js"></script>
 <script src="ext/morphdom-swap.js"></script>
 
 <script src="../src/ext/json-enc.js"></script>
 <script src="ext/json-enc.js"></script>
+
+<script src="lib/handlebars-v4.7.6.js"></script>
+<script src="lib/mustache.js"></script>
+<script src="../src/ext/client-side-templates.js"></script>
+<script src="ext/client-side-templates.js"></script>
+
+<script src="../src/ext/path-deps.js"></script>
+<script src="ext/path-deps.js"></script>
 
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>

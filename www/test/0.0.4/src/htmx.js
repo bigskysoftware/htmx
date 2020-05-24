@@ -24,7 +24,7 @@ var htmx = htmx || (function () {
             return elt.getAttribute && elt.getAttribute(name);
         }
 
-        // resolve with both kt and data-kt prefixes
+        // resolve with both hx and data-hx prefixes
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -50,7 +50,7 @@ var htmx = htmx || (function () {
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
-                return closestAttr = getRawAttribute(e, attributeName);
+                return closestAttr = getAttributeValue(e, attributeName);
             });
             return closestAttr;
         }
@@ -290,9 +290,9 @@ var htmx = htmx || (function () {
         //====================================================================
 
         function getTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getRawAttribute(e,"hx-target") !== null});
+            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
             if (explicitTarget) {
-                var targetStr = getRawAttribute(explicitTarget, "hx-target");
+                var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
                     return explicitTarget;
                 } else if (targetStr.indexOf("closest ") === 0) {
@@ -652,7 +652,7 @@ var htmx = htmx || (function () {
         function initScrollHandler() {
             if (!window['htmxScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed']"), function (elt) {
+                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
                         maybeReveal(elt);
                     });
                 };
@@ -804,6 +804,9 @@ var htmx = htmx || (function () {
         }
 
         function triggerEvent(elt, eventName, detail) {
+            if (detail == null) {
+                detail = {};
+            }
             detail["elt"] = elt;
             var event = makeEvent(eventName, detail);
             if (htmx.logger) {
@@ -825,7 +828,7 @@ var htmx = htmx || (function () {
         var currentPathForHistory = null;
 
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('[hx-history-elt]');
+            var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
             return historyElt || getDocument().body;
         }
 
@@ -882,7 +885,7 @@ var htmx = htmx || (function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "historyCacheMissLoad.htmx", details);
                     var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('[hx-history-elt]') || fragment;
+                    fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     settleImmediately(swapInnerHTML(getHistoryElement(), fragment));
                     currentPathForHistory = path;
                 } else {
@@ -969,7 +972,7 @@ var htmx = htmx || (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
-                if (name && value) {
+                if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
                         if (Array.isArray(current)) {
@@ -1049,8 +1052,8 @@ var htmx = htmx || (function () {
                 "X-HX-Request" : "true",
                 "X-HX-Trigger" : getRawAttribute(elt, "id"),
                 "X-HX-Trigger-Name" : getRawAttribute(elt, "name"),
-                "X-HX-Target" : getRawAttribute(target, "id"),
-                "Current-URL" : getDocument().location.href,
+                "X-HX-Target" : getAttributeValue(target, "id"),
+                "X-HX-Current-URL" : getDocument().location.href,
             }
             if (prompt !== undefined) {
                 headers["X-HX-Prompt"] = prompt;
@@ -1136,7 +1139,7 @@ var htmx = htmx || (function () {
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
-                triggerErrorEvent(elt, 'targetError.htmx', {target: getRawAttribute(elt, "hx-target")});
+                triggerErrorEvent(elt, 'targetError.htmx', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
             var eltData = getInternalData(elt);

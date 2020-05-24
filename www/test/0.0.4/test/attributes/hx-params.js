@@ -80,4 +80,22 @@ describe("hx-params attribute", function() {
         form.innerHTML.should.equal("Clicked!");
     });
 
+    it('named exclude works  w/ data-* prefix', function () {
+        this.server.respondWith("POST", "/params", function (xhr) {
+            var params = getParameters(xhr);
+            should.equal(params['i1'], undefined);
+            should.equal(params['i2'], "test");
+            should.equal(params['i3'], undefined);
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var form = make('<form data-hx-trigger="click" data-hx-post="/params" data-hx-params="not i1, i3">' +
+            '<input name="i1" value="test"/>' +
+            '<input  name="i2" value="test"/>' +
+            '<input  name="i3" value="test"/>' +
+            '</form> ');
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("Clicked!");
+    });
+
 });

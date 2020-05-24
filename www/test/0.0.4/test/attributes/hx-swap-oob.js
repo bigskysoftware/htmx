@@ -38,5 +38,15 @@ describe("hx-swap-oob attribute", function () {
         div.innerText.should.equal("Clicked");
     })
 
+    it('handles basic response properly w/ data-* prefix', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='d1' data-hx-swap-oob='true'>Swapped</div>");
+        var div = make('<div data-hx-get="/test">click me</div>');
+        make('<div id="d1"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked");
+        byId("d1").innerHTML.should.equal("Swapped");
+    })
+
 });
 

@@ -86,4 +86,15 @@ describe("hx-trigger attribute", function(){
     });
 
 
+    it('non-default value works w/ data-* prefix', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+
+        var form = make('<form data-hx-get="/test" data-hx-trigger="click">Click Me!</form>');
+        form.click();
+        form.innerHTML.should.equal("Click Me!");
+        this.server.respond();
+        form.innerHTML.should.equal("Clicked!");
+    });
+
 })
