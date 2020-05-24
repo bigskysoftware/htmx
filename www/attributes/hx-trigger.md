@@ -8,9 +8,10 @@ title: </> htmx - hx-trigger
 The `hx-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger
 value can be one of the following:
 
-* An event name (e.g. "click") followed by a set of event modifiers
+* An event name (e.g. "click" or "my-custom-event") followed by a set of event modifiers
 * A polling definition of the form `every <timing declaration>`
 * An SSE event declaration of the form `sse:<event name>`
+* A comma-separated list of such events
 
 ### Standard Events
 
@@ -73,6 +74,14 @@ Here is an example:
 
 This example establishes an SSE connection to the `event_stream` end point which then triggers
 a `GET` to the `/chatroom` url whenever the `chatter` event is seen.
+
+### Multiple Triggers
+
+Multiple triggers can be provided, seprarated by commas.  Each trigger gets its own options.
+```html
+  <div hx-get="/news" hx-trigger="load, click delay:1s"></div>
+```
+This example will load `/news` immediate on the page load, and then again with a delay of one second after each click.
 
 ### Notes
 
