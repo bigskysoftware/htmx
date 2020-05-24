@@ -500,7 +500,7 @@ var htmx = htmx || (function () {
                         }
                     }
                     return triggerSpec;
-                }).filter(x => x !== null);
+                }).filter(function(x){ return x !== null });
 
                 if (triggerSpecs.length)
                     return triggerSpecs;
