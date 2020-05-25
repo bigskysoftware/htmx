@@ -23,7 +23,7 @@ title: </> htmx - Attributes
 | [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
 | [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
-| [`hx-sse-src`](/attributes/hx-sse-src) | establishes an [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) source for events
+| [`hx-sse`](/attributes/hx-sse) | establishes and listens to [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) sources for events
 | [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped

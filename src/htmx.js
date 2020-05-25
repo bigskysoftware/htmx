@@ -7,7 +7,6 @@ var htmx = htmx || (function () {
         //====================================================================
         // Utilities
         //====================================================================
-
         function parseInterval(str) {
             if (str === "null" || str === "false" || str === "") {
                 return null;
@@ -485,8 +484,6 @@ var htmx = htmx || (function () {
 
                     if (trigger === "every")
                         return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
-                    if (trigger.indexOf("sse:") === 0)
-                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
 
                     var triggerSpec = {trigger: trigger};
                     for (var i = 1; i < tokens.length; i++) {
@@ -632,7 +629,20 @@ var htmx = htmx || (function () {
             }
         }
 
-        function initSSESource(elt, sseSrc) {
+        function processSSEInfo(elt, nodeData, info) {
+            var values = info.split(",");
+            for (var i = 0; i < values.length; i++) {
+                var value = removeWhiteSpace(values[i]);
+                if (value.indexOf("source:") === 0) {
+                    processSSESource(elt, value.substr(7));
+                }
+                if (value.indexOf("trigger:") && nodeData.verb) {
+                    processSSETrigger(elt, nodeData.verb, nodeData.path, value.substr(8));
+                }
+            }
+        }
+
+        function processSSESource(elt, sseSrc) {
             var detail = {
                 config:{withCredentials: true}
             };
@@ -642,26 +652,28 @@ var htmx = htmx || (function () {
                 triggerErrorEvent(elt, "sseError.htmx", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
-            getInternalData(elt).sseSource = source;
+            getInternalData(elt).sseEventSource = source;
         }
 
         function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSource = getClosestMatch(elt, function (parent) {
-                return parent.sseSource;
+            var sseSourceElt = getClosestMatch(elt, function (parent) {
+                return getInternalData(parent).sseEventSource != null;
             });
-            if (sseSource) {
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
-                    if (!maybeCloseSSESource(sseSource)) {
+                    if (!maybeCloseSSESource(sseEventSource)) {
                         if (bodyContains(elt)) {
                             issueAjaxRequest(elt, verb, path);
                         } else {
-                            sseSource.sseSource.removeEventListener(sseEventName, sseListener);
+                            sseEventSource.removeEventListener(sseEventName, sseListener);
                         }
                     }
                 };
-                sseSource.sseSource.addEventListener(sseEventName, sseListener);
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerErrorEvent(elt, "noSSESourceError.htmx")
+                triggerErrorEvent(elt, "noSSESourceError.htmx");
             }
         }
 
@@ -688,9 +700,7 @@ var htmx = htmx || (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.sseEvent) {
-                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
-                        } else if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "load") {
@@ -718,9 +728,9 @@ var htmx = htmx || (function () {
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
                 }
-                var sseSrc = getAttributeValue(elt, 'hx-sse-source');
-                if (sseSrc) {
-                    initSSESource(elt, sseSrc);
+                var sseInfo = getAttributeValue(elt, 'hx-sse');
+                if (sseInfo) {
+                    processSSEInfo(elt, nodeData, sseInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }

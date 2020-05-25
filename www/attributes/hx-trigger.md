@@ -10,7 +10,6 @@ value can be one of the following:
 
 * An event name (e.g. "click" or "my-custom-event") followed by a set of event modifiers
 * A polling definition of the form `every <timing declaration>`
-* An SSE event declaration of the form `sse:<event name>`
 * A comma-separated list of such events
 
 ### Standard Events
@@ -56,24 +55,6 @@ By using the syntax `every <timing declaration>` you can have an element poll pe
 
 This example will issue a `GET` to the `/latest_updates` URL every second and swap the results into
 the innerHTML of this div.
-
-### SSE Events
-
-If a parent node has declared an SSE source with the [`sse-src`](/attributes/sse-src) attribute,
-an element can register to be triggered by a specific SSE event using the syntax `sse:<event name>`.
-
-Here is an example:
-
-```html
-  <div hx-sse-src="/event_stream">
-    <div hx-get="/chatroom" hx-trigger="sse:chatter">
-      ...
-    </div>
-  </div>
-```
-
-This example establishes an SSE connection to the `event_stream` end point which then triggers
-a `GET` to the `/chatroom` url whenever the `chatter` event is seen.
 
 ### Multiple Triggers
 

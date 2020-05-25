@@ -1,16 +1,23 @@
 ---
 layout: layout.njk
-title: </> htmx - hx-sse-src
+title: </> htmx - hx-sse
 ---
 
-## `hx-sse-src`
+## `hx-sse`
 
-The `hx-sse-src` attribute establishes a [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-`EventSource`, allowing children of the element to register for server sent event triggers.
+The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+`EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by
+commas:
+
+* `source:<url>` - A URL to establish an `EventSource` against
+* `trigger:<event_name>` - An event name to trigger the element to make a request.  When an event with this name is recieved, the element
+will trigger a request against whatever URL has been configured with `hx-get` or a similar attribute.
+
+Here is an example:
 
 ```html
-  <div hx-sse-src="/event_stream">
-    <div hx-get="/chatroom" hx-trigger="sse:chatter">
+  <div hx-sse="source:/event_stream">
+    <div hx-get="/chatroom" hx-sse="bind:chatter">
       ...
     </div>
   </div>
@@ -21,4 +28,4 @@ a `GET` to the `/chatroom` url whenever the `chatter` event is seen.
 
 ### Notes
 
-* `hx-sse-src` is not inherited
+* `hx-sse` is not inherited

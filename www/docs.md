@@ -16,12 +16,12 @@ title: </> htmx - high power tools for html
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
-    * [SSE](#sse)
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
   * [parameters](#parameters)
 * [boosting](#boosting)
+* [SSE](#sse)
 * [history](#history)
 * [requests & responses](#requests)
 * [extensions](#extensions)
@@ -218,30 +218,6 @@ second.
 Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as 
 when you are showing the user a [progress bar](/examples/progress-bar).
 
-#### <a name="sse"></a> [Server Sent Events](#sse)
-
-[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
-a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
-server and the browser than websockets.
-
-If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
-
-1. Define an SSE source.  To do this, add a [hx-sse-src](/attributes/hx-sse-src) attribute on a parent element
-that specifies the URL from which Server Sent Events will be received.
-
-2. Specify the Server Sent Event that will trigger the element, with the prefix `sse:`
-
-Here is an example:
-
-```html
-    <body hx-sse-src="/sse_messages">
-        <div trigger="sse:new_news" hx-get="/news"></div>
-    </body>
-```
-
-Depending on your implementation, this may be more efficient than the polling example above since the server would
-notify the div if there was new news to get, rather than the steady requests that a poll causes.
-
 ### <a name="indicators"></a> [Request Indicators](#indicators)
 
 When an AJAX request is issued it is often good to let the user know that something is happening since the browser
@@ -381,6 +357,31 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 
 This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
 htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
+
+## <a name="sse"></a> [Server Sent Events](#sse)
+
+[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
+a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
+server and the browser than websockets.
+
+If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
+
+1. Define an SSE source.  To do this, add a [hx-sse](/attributes/hx-sse) attribute on a parent element with
+a `source:` declaration that specifies the URL from which Server Sent Events will be received.
+
+2. Define an SSE event that will trigger a request.  Add a [hx-sse](/attributes/hx-sse) attribute on an element with
+a `trigger:` declaration that specifies the event that will cause the element to issue a request.
+
+Here is an example:
+
+```html
+    <body hx-sse="source:/sse_messages">
+        <div hx-sse="trigger:new_news" hx-get="/news"></div>
+    </body>
+```
+
+Depending on your implementation, this may be more efficient than the polling example above since the server would
+notify the div if there was new news to get, rather than the steady requests that a poll causes.
 
 ## <a name="history"></a> [History Support](#history)
 
