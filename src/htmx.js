@@ -89,6 +89,9 @@ return (function () {
                 depth--;
                 responseNode = responseNode.firstChild;
             }
+            if (responseNode == null) {
+                responseNode = getDocument().createDocumentFragment();
+            }
             return responseNode;
         }
 
@@ -1435,7 +1438,7 @@ return (function () {
                 forEach(extensionsForElement.split(","), function(extensionName){
                     extensionName = extensionName.replace(/ /g, '');
                     var extension = extensions[extensionName];
-                    if (extension && !extensionsToReturn.includes(extension)) {
+                    if (extension && extensionsToReturn.indexOf(extension) < 0) {
                         extensionsToReturn.push(extension);
                     }
                 });
