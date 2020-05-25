@@ -22,3 +22,4 @@ You can copy and paste them and then adjust them for your needs.
 | [Progress Bar](/examples/progress-bar) | Demonstrates a job-runner like progress bar
 | [Value Select](/examples/value-select) | Demonstrates making the values of a select dependent on another select
 | [Dialogs](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
+| [Animations](/examples/animations) | Demonstrates various animation techniques

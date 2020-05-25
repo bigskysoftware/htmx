@@ -24,6 +24,7 @@ title: </> htmx - high power tools for html
 * [websockets & SSE](#web-sockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
+* [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
 * [configuring](#config)
@@ -494,6 +495,13 @@ The order of operations in a htmx request are:
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
+
+## <a name="animations"></a> [Animations](#animations)
+
+Htmx allows you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
+in many situations using only HTML and CSS.  
+
+Please see the [Animation Guide](/examples/animations) for more details on the options available.
 
 ## <a name="extensions"></a> [Extensions](#extensions)
 

@@ -1386,7 +1386,7 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerErrorEvent(elt, 'afterRequest.htmx', eventDetail);
+                    triggerEvent(elt, 'afterRequest.htmx', eventDetail);
                     triggerEvent(elt, 'afterOnLoad.htmx', eventDetail);
                     endRequestLock();
                 }
@@ -1522,6 +1522,7 @@ return (function () {
                 defaultSettleDelay:100,
                 includeIndicatorStyles:true
             },
+            parseInterval:parseInterval,
             _:internalEval
         }
     }

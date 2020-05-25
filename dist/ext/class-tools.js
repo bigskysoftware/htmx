@@ -14,7 +14,7 @@
             if (classDef.indexOf(":") > 0) {
                 var splitCssClass = classDef.split(':');
                 cssClass = splitCssClass[0];
-                delay = parseInterval(splitCssClass[1]);
+                delay = htmx.parseInterval(splitCssClass[1]);
             } else {
                 cssClass = classDef;
                 delay = 100;

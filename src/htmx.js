@@ -1522,6 +1522,7 @@ return (function () {
                 defaultSettleDelay:100,
                 includeIndicatorStyles:true
             },
+            parseInterval:parseInterval,
             _:internalEval
         }
     }
