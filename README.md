@@ -34,6 +34,12 @@ The `hx-post` and `hx-swap` attributes tell htmx:
 
 htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
+## haiku
+
+    javascript fatigue:
+    longing for a hypertext 
+    already in hand
+
 ## Website & Docs
 
 [https://htmx.org](https://htmx.org)
