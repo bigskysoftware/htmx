@@ -1,5 +1,14 @@
-// noinspection JSUnusedAssignment
-var htmx = htmx || (function () {
+//AMD insanity
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else {
+        // Browser globals
+        root.htmx = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
+return (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
@@ -1516,4 +1525,5 @@ var htmx = htmx || (function () {
             _:internalEval
         }
     }
-)();
+)()
+}));

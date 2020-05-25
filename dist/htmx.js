@@ -1,5 +1,14 @@
-// noinspection JSUnusedAssignment
-var htmx = htmx || (function () {
+//AMD insanity
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else {
+        // Browser globals
+        root.htmx = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
+return (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
@@ -565,7 +574,9 @@ var htmx = htmx || (function () {
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                     return;
                 }
-                if(explicitCancel || shouldCancel(elt)) {}evt.preventDefault();
+                if(explicitCancel || shouldCancel(elt)){
+                    evt.preventDefault();
+                }
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
@@ -688,12 +699,15 @@ var htmx = htmx || (function () {
             });
             if (webSocketSourceElt) {
                 var webSocket = getInternalData(webSocketSourceElt).webSocket;
-                elt.addEventListener(eventName, function () {
+                elt.addEventListener(eventName, function (evt) {
                     var headers = getHeaders(elt, webSocketSourceElt, null, elt);
                     var rawParameters = getInputValues(elt, 'post');
                     var filteredParameters = filterValues(rawParameters, elt);
                     filteredParameters['HEADERS'] = headers;
                     webSocket.send(JSON.stringify(filteredParameters));
+                    if(shouldCancel(elt)){
+                        evt.preventDefault();
+                    }
                 });
             } else {
                 triggerErrorEvent(elt, "noWebSocketSourceError.htmx");
@@ -1511,4 +1525,5 @@ var htmx = htmx || (function () {
             _:internalEval
         }
     }
-)();
+)()
+}));

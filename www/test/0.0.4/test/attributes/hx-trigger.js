@@ -132,9 +132,9 @@ describe("hx-trigger attribute", function(){
     }
 
     for (var specString in specExamples) {
-        it("parses " + specString + "`, function()
+        it("parses " + specString, function()
         {
-            var div = make("<div hx-trigger=" + specString + "></div>`);
+            var div = make("<div hx-trigger=" + specString + "></div>");
             var spec = htmx._('getTriggerSpecs')(div);
             spec.should.deep.equal(specExamples[specString]);
         });
