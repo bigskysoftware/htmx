@@ -8,7 +8,6 @@ title: </> htmx - Attributes
 | Attribute | Description |
 |-----------|-------------|
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
-| [`hx-classes`](/attributes/hx-classes) | timed modification of classes on an element
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
 | [`hx-error-url`](/attributes/hx-error-url) | a URL to send client-side errors to
@@ -93,3 +92,14 @@ title: </> htmx - Attributes
 | [`sseError.htmx`](/events#sseError.htmx)  | triggered when an error occurs with a SSE source
 | [`swapError.htmx`](/events#swapError.htmx)  | triggered when an error occurs during the swap phase
 | [`targetError.htmx`](/events#targetError.htmx)  | triggered when an invalid target is specified
+
+## <a name="extensions"></a> [Extensions Reference](#extensions)
+
+| Extension | Description
+|-----------|-------------
+| [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
+| [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
+| [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements

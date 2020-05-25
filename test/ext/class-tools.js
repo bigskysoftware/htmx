@@ -1,4 +1,4 @@
-describe("hx-classes attribute", function(){
+describe("class-tools extension", function(){
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
@@ -10,7 +10,7 @@ describe("hx-classes attribute", function(){
 
     it('adds classes properly', function(done)
     {
-        var div = make('<div hx-classes="add c1">Click Me!</div>')
+        var div = make('<div hx-ext="class-tools" classes="add c1">Click Me!</div>')
         should.equal(div.classList.length, 0);
         setTimeout(function(){
             should.equal(div.classList.contains("c1"), true);
@@ -20,7 +20,7 @@ describe("hx-classes attribute", function(){
 
     it('removes classes properly', function(done)
     {
-        var div = make('<div class="foo bar" hx-classes="remove bar">Click Me!</div>')
+        var div = make('<div class="foo bar" hx-ext="class-tools" classes="remove bar">Click Me!</div>')
         should.equal(div.classList.contains("foo"), true);
         should.equal(div.classList.contains("bar"), true);
         setTimeout(function(){
@@ -32,10 +32,21 @@ describe("hx-classes attribute", function(){
 
     it('adds classes properly w/ data-* prefix', function(done)
     {
-        var div = make('<div data-hx-classes="add c1">Click Me!</div>')
+        var div = make('<div hx-ext="class-tools" data-classes="add c1">Click Me!</div>')
         should.equal(div.classList.length, 0);
         setTimeout(function(){
             should.equal(div.classList.contains("c1"), true);
+            done();
+        }, 100);
+    });
+
+    it('extension can be on parent', function(done)
+    {
+        var div = make('<div hx-ext="class-tools"><div id="d1" classes="add c1">Click Me!</div></div>')
+        should.equal(div.classList.length, 0);
+        setTimeout(function(){
+            should.equal(div.classList.contains("c1"), false);
+            should.equal(byId("d1").classList.contains("c1"), true);
             done();
         }, 100);
     });

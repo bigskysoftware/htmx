@@ -21,9 +21,9 @@ title: </> htmx - high power tools for html
   * [indicators](#indicators)
   * [swapping](#swapping)
   * [parameters](#parameters)
+* [boosting](#boosting)
 * [history](#history)
 * [requests & responses](#requests)
-* [miscellaneous](#miscellaneous)
 * [extensions](#extensions)
 * [events & logging](#events)
 * [configuring](#config)
@@ -364,6 +364,24 @@ If you wish to filter out some parameters you can use the [hx-params](/attribute
 Finally, if you want to programatically modify the parameters, you can use the [configRequest.htmx](/events#configRequest.htmx) 
 event.
 
+## <a name="boosting"></a>[Boosting](#boosting)
+
+Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
+attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
+
+Here is an example:
+
+```html
+<div hx-boost="true">
+    <a href="/blog">Blog</a>
+</div>
+```
+
+The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
+
+This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
+htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
+
 ## <a name="history"></a> [History Support](#history)
 
 Htmx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
@@ -448,46 +466,6 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
-## <a name="miscellaneous"></a> [Miscellaneous](#miscellaneous)
-
-In addition to the core AJAX functionality, htmx also has a few other tricks up its sleeve that help you build
-nice interfaces without javascript.
-
-### Class Swapping
-
-Htmx supports an attribute, [hx-classes](/attributes/hx-classes) that allows you to add, remove and toggle classes after 
-a delay.  This can be used to create CSS transition effects.
-
-Here are some examples:
-
-```html
-<!-- adds the class "foo" after 100ms -->
-<div hx-classes="add foo"/> 
-
-<!-- removes the class "bar" after 1s -->
-<div hx-classes="remove bar:1s"/> 
-
-<!-- removes the class "bar" after 1s
-     then adds the class "foo" 1s after that -->
-<div hx-classes="remove bar:1s, add foo:1s"/> 
-
-<!-- removes the class "bar" and adds 
-     class "foo" after 1s  -->
-<div hx-classes="remove bar:1s & add foo:1s"/> 
-
-<!-- toggles the class "foo" every 1s -->
-<div hx-classes="toggle foo:1s"/>
-```
-
-Full documentation is available [on the documentation page.](/attributes/hx-classes)
-
-### Boosting
-
-Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
-attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
-
-This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks).
-
 ## <a name="extensions"></a> [Extensions](#extensions)
 
 Htmx has an extension mechanism that allows you to customize the libraries' behavior.  Extensions [are
@@ -505,14 +483,14 @@ Htmx offers some officially supported extensions that are tested against the htm
 
 | Extension | Description
 |-----------|-------------
-| [`json-enc`](/official-extensions#json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-| [`morphdom-swap`](/official-extensions#morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
-| [`client-side-templates`](/official-extensions#client-side-templates) | support for client side template processing of JSON responses
-| [`debug`](/official-extensions#debug) | an extension for debugging of a particular element using htmx
-| [`path-deps`](/official-extensions#path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
-| [`rails-method`](/official-extensions#rails-method) | an extension for including the `_method` parameter that [that rails uses](https://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-patch-put-or-delete-methods-work-questionmark) for non-`POST` or `GET` HTTP methods.
+| [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
+| [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
+| [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
 
-See the [officially extensions](/official-extensions) page for a complete list.
+See the [references page](/reference#extensions) for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 

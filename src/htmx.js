@@ -155,10 +155,6 @@ var htmx = htmx || (function () {
             return getDocument().body.contains(elt);
         }
 
-        function concat(arr1, arr2) {
-            return arr1.concat(arr2);
-        }
-
         function splitOnWhitespace(trigger) {
             return trigger.split(/\s+/);
         }
@@ -519,56 +515,6 @@ var htmx = htmx || (function () {
             return [{trigger: 'click'}];
         }
 
-        function parseClassOperation(trimmedValue) {
-            var split = splitOnWhitespace(trimmedValue);
-            if (split.length > 1) {
-                var operation = split[0];
-                var classDef = split[1].trim();
-                var cssClass;
-                var delay;
-                if (classDef.indexOf(":") > 0) {
-                    var splitCssClass = classDef.split(':');
-                    cssClass = splitCssClass[0];
-                    delay = parseInterval(splitCssClass[1]);
-                } else {
-                    cssClass = classDef;
-                    delay = 100;
-                }
-                return {
-                    operation:operation,
-                    cssClass:cssClass,
-                    delay:delay
-                }
-            } else {
-                return null;
-            }
-        }
-
-        function processClassList(elt, classList) {
-            forEach(classList.split("&"), function (run) {
-                var currentRunTime = 0;
-                forEach(run.split(","), function(value){
-                    var trimmedValue = value.trim();
-                    var classOperation = parseClassOperation(trimmedValue);
-                    if (classOperation) {
-                        if (classOperation.operation === "toggle") {
-                            setTimeout(function () {
-                                setInterval(function () {
-                                    elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
-                                }, classOperation.delay);
-                            }, currentRunTime);
-                            currentRunTime = currentRunTime + classOperation.delay;
-                        } else {
-                            currentRunTime = currentRunTime + classOperation.delay;
-                            setTimeout(function () {
-                                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
-                            }, currentRunTime);
-                        }
-                    }
-                });
-            });
-        }
-
         function cancelPolling(elt) {
             getInternalData(elt).cancelled = true;
         }
@@ -776,10 +722,7 @@ var htmx = htmx || (function () {
                 if (sseSrc) {
                     initSSESource(elt, sseSrc);
                 }
-                var addClass = getAttributeValue(elt, 'hx-classes');
-                if (addClass) {
-                    processClassList(elt, addClass);
-                }
+                triggerEvent(elt, "processedNode.htmx");
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
@@ -815,17 +758,21 @@ var htmx = htmx || (function () {
             triggerEvent(elt, eventName, mergeObjects({isError:true}, detail));
         }
 
+        function ignoreEventForLogging(eventName) {
+            return eventName === "processedNode.htmx"
+        }
+
         function triggerEvent(elt, eventName, detail) {
             if (detail == null) {
                 detail = {};
             }
             detail["elt"] = elt;
             var event = makeEvent(eventName, detail);
-            if (htmx.logger) {
+            if (htmx.logger && !ignoreEventForLogging(eventName)) {
                 htmx.logger(elt, eventName, detail);
-                if (detail.isError) {
-                    sendError(elt, eventName, detail);
-                }
+            }
+            if (detail.isError) {
+                sendError(elt, eventName, detail);
             }
             var eventResult = elt.dispatchEvent(event);
             forEach(getExtensions(elt), function (extension) {
