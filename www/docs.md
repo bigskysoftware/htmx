@@ -21,7 +21,7 @@ title: </> htmx - high power tools for html
   * [swapping](#swapping)
   * [parameters](#parameters)
 * [boosting](#boosting)
-* [SSE](#sse)
+* [websockets & SSE](#web-sockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
 * [extensions](#extensions)
@@ -358,7 +358,35 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
 htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
 
-## <a name="sse"></a> [Server Sent Events](#sse)
+### <a name="web-sockets-and-sse"></a> [Web Sockets & SSE](#web-sockets-and-sse)
+
+Htmx has experimental support for declarative use of both 
+[WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
+and  [Server Sent Events]((https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)).
+  
+These features are under active development, so please let us know if you are willing to experiment with them.
+
+#### <a name="websockets">[WebSockets](#websockets)
+
+If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
+
+```html
+  <div hx-ws="source:/chatroom">
+    <div id="chat_room">
+      ...
+    </div>
+    <form hx-ws="send:submit">
+        <input name="chat_message">
+    </form>
+  </div>
+```
+
+The `source` delcaration established the connection, and the `send` declaration tells the form to submit values to the
+socket on `submit`.
+
+More details can be found on the [hx-ws attribute page](/attributes/hx-ws) 
+
+#### <a name="sse"></a> [Server Sent Events](#sse)
 
 [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
 a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the

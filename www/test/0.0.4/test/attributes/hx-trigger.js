@@ -116,7 +116,6 @@ describe("hx-trigger attribute", function(){
     var specExamples = {
         "": [{trigger: 'click'}],
         "every 1s": [{trigger: 'every', pollInterval: 1000}],
-        "sse:/foo": [{trigger: 'sse', sseEvent: '/foo'}],
         "click": [{trigger: 'click'}],
         "customEvent": [{trigger: 'customEvent'}],
         "event changed": [{trigger: 'event', changed: true}],
@@ -132,10 +131,10 @@ describe("hx-trigger attribute", function(){
         ",": [{trigger: 'click'}]
     }
 
-    for (const specString in specExamples) {
-        it(`parses "${specString}"`, function()
+    for (var specString in specExamples) {
+        it("parses " + specString + "`, function()
         {
-            var div = make(`<div hx-trigger="${specString}"></div>`);
+            var div = make("<div hx-trigger=" + specString + "></div>`);
             var spec = htmx._('getTriggerSpecs')(div);
             spec.should.deep.equal(specExamples[specString]);
         });

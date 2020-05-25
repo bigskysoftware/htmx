@@ -28,6 +28,7 @@ title: </> htmx - Attributes
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
+| [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
 
 ## <a name="classes"></a> [CSS Class Reference](#classes)
 

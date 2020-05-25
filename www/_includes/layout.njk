@@ -7,13 +7,14 @@
     <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="/js/htmx.js"></script>
+    <script src="/js/class-tools.js"></script>
     <script>
         htmx.onLoad(function(){
             Prism.highlightAll();
         })
     </script>
 </head>
-<body>
+<body hx-ext="class-tools">
 <div class="top-nav">
     <div class="c">
         <div class="row">

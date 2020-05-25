@@ -3,13 +3,13 @@ layout: layout.njk
 title: </> htmx - high power tools for html
 ---
 
-<div class="dark-hero full-width" hx-classes="add appear">
+<div class="dark-hero full-width" classes="add appear">
   <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">htm<a>x</a></span></span>
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
 
-## Introduction
+## introduction
 
 htmx is a set of extensions (attributes, request headers, etc.) that help you build 
 [modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
@@ -20,7 +20,7 @@ htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [extendable](/extensions),
 IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
 
-## Quick Start
+## quick start
 
 ```html
   <!-- Load from unpkg -->
@@ -35,5 +35,10 @@ The `hx-post` and `hx-swap` attributes tell htmx:
 
 > "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
 
-Htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
+## haiku
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*

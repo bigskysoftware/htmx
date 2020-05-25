@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> htmx - hx-sse
 ---
 
-## `hx-sse`
+## *EXPERIMENTAL* `hx-sse`
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 `EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by

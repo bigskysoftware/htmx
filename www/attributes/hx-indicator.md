@@ -72,7 +72,7 @@ call it out with the `ic-indicator` attribute:
 
 This simulates what a spinner might look like in that situation:
 
-<button class="btn" hx-classes="toggle htmx-request:3s">
+<button class="btn" classes="toggle htmx-request:3s">
     Post It!
    <img  class="htmx-indicator" src="/img/bars.svg"/>
 </button>

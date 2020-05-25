@@ -565,7 +565,9 @@ var htmx = htmx || (function () {
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                     return;
                 }
-                if(explicitCancel || shouldCancel(elt)) {}evt.preventDefault();
+                if(explicitCancel || shouldCancel(elt)){
+                    evt.preventDefault();
+                }
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
@@ -622,9 +624,90 @@ var htmx = htmx || (function () {
             }
         }
 
+        function processWebSocketInfo(elt, nodeData, info) {
+            var values = info.split(",");
+            for (var i = 0; i < values.length; i++) {
+                var value = removeWhiteSpace(values[i]);
+                if (value.indexOf("source:") === 0) {
+                    processWebSocketSource(elt, value.substr(7));
+                }
+                if (value.indexOf("send:") === 0) {
+                    processWebSocketSend(elt, value.substr(5));
+                }
+            }
+        }
+
+        function processWebSocketSource(elt, wssSource) {
+            var detail = {
+                protocols:[]
+            };
+            triggerEvent(elt, "initWebSocket.htmx", detail);
+            var socket = new WebSocket("wss:" + wssSource, detail.protocols);
+            socket.onerror = function (e) {
+                triggerErrorEvent(elt, "wsError.htmx", {error:e, socket:socket});
+                maybeCloseWebSocketSource(elt);
+            };
+            getInternalData(elt).webSocket = socket;
+            socket.addEventListener('message', function (event) {
+                if (maybeCloseWebSocketSource(elt)) {
+                    return;
+                }
+
+                var response = event.data;
+                forEach(getExtensions(elt), function(extension){
+                    response = extension.transformResponse(response, null, elt);
+                });
+
+                var settleInfo = makeSettleInfo(elt);
+                var fragment = makeFragment(response);
+                var children = toArray(fragment.children);
+                for (var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    if (child.id) {
+                        var target = getDocument().getElementById(child.id);
+                        if (target) {
+                            var tmp = getDocument().createDocumentFragment();
+                            tmp.appendChild(child);
+                            swapOuterHTML(target, fragment, settleInfo);
+                        }
+                    }
+                }
+
+                settleImmediately(settleInfo.tasks);
+            });
+        }
+
+        function maybeCloseWebSocketSource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).webSocket.close();
+                return true;
+            }
+        }
+
+        function processWebSocketSend(elt, eventName) {
+            var webSocketSourceElt = getClosestMatch(elt, function (parent) {
+                return getInternalData(parent).webSocket != null;
+            });
+            if (webSocketSourceElt) {
+                var webSocket = getInternalData(webSocketSourceElt).webSocket;
+                elt.addEventListener(eventName, function (evt) {
+                    var headers = getHeaders(elt, webSocketSourceElt, null, elt);
+                    var rawParameters = getInputValues(elt, 'post');
+                    var filteredParameters = filterValues(rawParameters, elt);
+                    filteredParameters['HEADERS'] = headers;
+                    webSocket.send(JSON.stringify(filteredParameters));
+                    if(shouldCancel(elt)){
+                        evt.preventDefault();
+                    }
+                });
+            } else {
+                triggerErrorEvent(elt, "noWebSocketSourceError.htmx");
+            }
+        }
+
         function maybeCloseSSESource(elt) {
             if (!bodyContains(elt)) {
-                elt.sseSource.close();
+                getInternalData(elt).sseEventSource.close();
                 return true;
             }
         }
@@ -731,6 +814,10 @@ var htmx = htmx || (function () {
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
                 if (sseInfo) {
                     processSSEInfo(elt, nodeData, sseInfo);
+                }
+                var sseInfo = getAttributeValue(elt, 'hx-ws');
+                if (sseInfo) {
+                    processWebSocketInfo(elt, nodeData, sseInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }
@@ -1047,7 +1134,7 @@ var htmx = htmx || (function () {
             return headers;
         }
 
-        function filterValues(inputValues, elt, verb) {
+        function filterValues(inputValues, elt) {
             var paramsValue = getClosestAttributeValue(elt, "hx-params");
             if (paramsValue) {
                 if (paramsValue === "none") {
@@ -1149,7 +1236,7 @@ var htmx = htmx || (function () {
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var rawParameters = getInputValues(elt, verb);
-            var filteredParameters = filterValues(rawParameters, elt, verb);
+            var filteredParameters = filterValues(rawParameters, elt);
 
             if (verb !== 'get') {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
