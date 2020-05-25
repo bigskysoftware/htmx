@@ -11,14 +11,15 @@ title: </> htmx - high power tools for html
 
 ## introduction
 
-htmx is a set of extensions (attributes, request headers, etc.) that help you build 
-[modern UI](/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
-[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML. 
+htmx is a set of HTML extensions give you to access to [AJAX](https://htmx.org/docs#ajax), 
+[WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
+via [attributes](https://htmx.org/reference#attributes), allowing you to build [modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](/extensions),
-IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
+IE11 compatible & you can try it out quickly, without a huge rewrite
 
 ## quick start
 
@@ -31,11 +32,11 @@ IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
   </button>
 ```
 
-The `hx-post` and `hx-swap` attributes tell htmx:
+The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
 
 > "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
 
-htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
+htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 ## haiku
 

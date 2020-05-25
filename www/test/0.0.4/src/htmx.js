@@ -328,18 +328,44 @@ return (function () {
             });
         }
 
+        function isInlineSwap(swapStyle, target) {
+            var extensions = getExtensions(target);
+            for (var i = 0; i < extensions.length; i++) {
+                var extension = extensions[i];
+                if (extension.isInlineSwap(swapStyle)) {
+                    return true;
+                }
+            }
+            return swapStyle === "outerHTML";
+        }
+
+        function oobSwap(oobValue, child, settleInfo) {
+            if (oobValue === "true") {
+                oobValue = "outerHTML"
+            }
+            var target = getDocument().getElementById(child.id);
+            if (target) {
+                var fragment;
+                if (isInlineSwap(oobValue, target)) {
+                    fragment = getDocument().createDocumentFragment();
+                    fragment.appendChild(child);
+                } else {
+                    fragment = child;
+                }
+                fragment.appendChild(child);
+                swap(oobValue, target, target, fragment, settleInfo);
+            } else {
+                child.parentNode.removeChild(child);
+                triggerErrorEvent(getDocument().body, "oobErrorNoTarget.htmx", {content: child})
+            }
+            return oobValue;
+        }
+
         function handleOutOfBandSwaps(fragment, settleInfo) {
             forEach(toArray(fragment.children), function (child) {
-                if (getAttributeValue(child, "hx-swap-oob") === "true") {
-                    var target = getDocument().getElementById(child.id);
-                    if (target) {
-                        var fragment = getDocument().createDocumentFragment();
-                        fragment.appendChild(child);
-                        swapOuterHTML(target, fragment, settleInfo);
-                    } else {
-                        child.parentNode.removeChild(child);
-                        triggerErrorEvent(getDocument().body, "oobErrorNoTarget.htmx", {content: child})
-                    }
+                var oobValue = getAttributeValue(child, "hx-swap-oob");
+                if (oobValue != null) {
+                    oobSwap(oobValue, child, settleInfo);
                 }
             });
         }
@@ -675,14 +701,7 @@ return (function () {
                 var children = toArray(fragment.children);
                 for (var i = 0; i < children.length; i++) {
                     var child = children[i];
-                    if (child.id) {
-                        var target = getDocument().getElementById(child.id);
-                        if (target) {
-                            var tmp = getDocument().createDocumentFragment();
-                            tmp.appendChild(child);
-                            swapOuterHTML(target, fragment, settleInfo);
-                        }
-                    }
+                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
                 }
 
                 settleImmediately(settleInfo.tasks);
@@ -1413,6 +1432,7 @@ return (function () {
             return {
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
+                isInlineSwap : function(swapStyle) {return false;},
                 handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
                 encodeParameters : function(xhr, parameters, elt) {return null;}
             }

@@ -21,7 +21,7 @@ title: </> htmx - high power tools for html
   * [swapping](#swapping)
   * [parameters](#parameters)
 * [boosting](#boosting)
-* [websockets & SSE](#web-sockets-and-sse)
+* [websockets & SSE](#websockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
 * [animations](#animations)
@@ -359,7 +359,7 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
 htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
 
-### <a name="web-sockets-and-sse"></a> [Web Sockets & SSE](#web-sockets-and-sse)
+### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
 Htmx has experimental support for declarative use of both 
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
