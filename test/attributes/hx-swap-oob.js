@@ -48,5 +48,28 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped");
     })
 
+    it('handles outerHTML response properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='d1' foo='bar' hx-swap-oob='outerHTML'>Swapped</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d1"></div>');
+        div.click();
+        this.server.respond();
+        byId("d1").getAttribute("foo").should.equal("bar");
+        div.innerHTML.should.equal("Clicked");
+        byId("d1").innerHTML.should.equal("Swapped");
+    })
+
+    it('handles innerHTML response properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d1"></div>');
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1").getAttribute("foo"), null);
+        div.innerHTML.should.equal("Clicked");
+        byId("d1").innerHTML.should.equal("Swapped");
+    })
+
+
 });
 

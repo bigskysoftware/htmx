@@ -211,7 +211,7 @@ describe("hx-swap attribute", function(){
         swapSpec(make("<div/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='innerHTML'/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='innerHTML'/>")).swapDelay.should.equal(0)
-        swapSpec(make("<div hx-swap='innerHTML'/>")).settleDelay.should.equal(100)
+        swapSpec(make("<div hx-swap='innerHTML'/>")).settleDelay.should.equal(0) // set to 0 in tests
         swapSpec(make("<div hx-swap='innerHTML swap:10'/>")).swapDelay.should.equal(10)
         swapSpec(make("<div hx-swap='innerHTML settle:10'/>")).settleDelay.should.equal(10)
         swapSpec(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).swapDelay.should.equal(10)
