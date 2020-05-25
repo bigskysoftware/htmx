@@ -17,7 +17,7 @@ Here is an example:
 
 ```html
   <div hx-sse="source:/event_stream">
-    <div hx-get="/chatroom" hx-sse="bind:chatter">
+    <div hx-get="/chatroom" hx-sse="trigger:chatter">
       ...
     </div>
   </div>
