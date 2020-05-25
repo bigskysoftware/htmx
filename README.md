@@ -6,7 +6,7 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/dba3fc85-d9c9-476a-a35a-e52a632cef78/deploy-status)](https://app.netlify.com/sites/htmx/deploys)
 [![Circle CI](https://circleci.com/gh/bigskysoftware/htmx.svg?style=svg)]()
 
-## Introduction
+## introduction
 
 htmx is a set of extensions (attributes, request headers, etc.) that help you build 
 [modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
@@ -17,7 +17,7 @@ htmx is small ([~6k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [extendable](https://htmx.org/extensions),
 IE11 compatible & you can try it out quickly & easily, without a huge rewrite.
 
-## Quick Start
+## quick start
 
 ```html
   <!-- Load from unpkg -->
@@ -34,7 +34,7 @@ The `hx-post` and `hx-swap` attributes tell htmx:
 
 htmx is based on [intercooler.js](http://intercoolerjs.org) and is the successor to that project.
 
-## Website & Docs
+## website & docs
 
 <https://htmx.org>
 
