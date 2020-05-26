@@ -332,8 +332,12 @@ return (function () {
             var extensions = getExtensions(target);
             for (var i = 0; i < extensions.length; i++) {
                 var extension = extensions[i];
-                if (extension.isInlineSwap(swapStyle)) {
-                    return true;
+                try {
+                    if (extension.isInlineSwap(swapStyle)) {
+                        return true;
+                    }
+                } catch(e) {
+                    logError(e);
                 }
             }
             return swapStyle === "outerHTML";
@@ -492,8 +496,12 @@ return (function () {
                     var extensions = getExtensions(elt);
                     for (var i = 0; i < extensions.length; i++) {
                         var ext = extensions[i];
-                        if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
-                            return;
+                        try {
+                            if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
+                                return;
+                            }
+                        } catch (e) {
+                            logError(e);
                         }
                     }
                     swapInnerHTML(target, fragment, settleInfo);
@@ -708,7 +716,7 @@ return (function () {
                 }
 
                 var response = event.data;
-                forEach(getExtensions(elt), function(extension){
+                withExtensions(elt, function(extension){
                     response = extension.transformResponse(response, null, elt);
                 });
 
@@ -904,11 +912,29 @@ return (function () {
         }
 
         function triggerErrorEvent(elt, eventName, detail) {
-            triggerEvent(elt, eventName, mergeObjects({isError:true}, detail));
+            triggerEvent(elt, eventName, mergeObjects({error:eventName}, detail));
         }
 
         function ignoreEventForLogging(eventName) {
             return eventName === "processedNode.htmx"
+        }
+
+        function withExtensions(elt, toDo) {
+            forEach(getExtensions(elt), function(extension){
+                try {
+                    toDo(extension);
+                } catch (e) {
+                    logError(e);
+                }
+            });
+        }
+
+        function logError(msg) {
+            if(console.error) {
+                console.error(msg);
+            } else if (console.log) {
+                console.log("ERROR: ", msg);
+            }
         }
 
         function triggerEvent(elt, eventName, detail) {
@@ -920,13 +946,14 @@ return (function () {
             if (htmx.logger && !ignoreEventForLogging(eventName)) {
                 htmx.logger(elt, eventName, detail);
             }
-            if (detail.isError) {
+            if (detail.error) {
+                logError(detail.error);
                 sendError(elt, eventName, detail);
             }
             var eventResult = elt.dispatchEvent(event);
-            forEach(getExtensions(elt), function (extension) {
+            withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
-            })
+            });
             return eventResult;
         }
 
@@ -1239,7 +1266,7 @@ return (function () {
 
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
-            forEach(getExtensions(elt), function (extension) {
+            withExtensions(elt, function (extension) {
                 if (encodedParameters == null) {
                     encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt);
                 }
@@ -1361,7 +1388,7 @@ return (function () {
                             if (!triggerEvent(elt, 'beforeSwap.htmx', eventDetail)) return;
 
                             var resp = this.response;
-                            forEach(getExtensions(elt), function(extension){
+                            withExtensions(elt, function(extension){
                                 resp = extension.transformResponse(resp, xhr, elt);
                             });
 
@@ -1421,11 +1448,10 @@ return (function () {
                             }
                         }
                     } else {
-                        triggerErrorEvent(elt, 'responseError.htmx', eventDetail);
+                        triggerErrorEvent(elt, 'responseError.htmx', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
                     }
                 } catch (e) {
-                    eventDetail['exception'] = e;
-                    triggerErrorEvent(elt, 'onLoadError.htmx', eventDetail);
+                    triggerErrorEvent(elt, 'onLoadError.htmx', mergeObjects({error:e}, eventDetail));
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
