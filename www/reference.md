@@ -82,7 +82,6 @@ title: </> htmx - Attributes
 | [`historyCacheMissLoad.htmx`](/events#historyCacheMissLoad.htmx)  | triggered on a succesful remote retrieval 
 | [`historyRestore.htmx`](/events#historyRestore.htmx)  | triggered when htmx handles a history restoration action
 | [`beforeHistorySave.htmx`](/events#beforeHistorySave.htmx)  | triggered before content is saved to the history cache
-| [`initSSE.htmx`](/events#initSSE.htmx) | triggered when a new Server Sent Event source is created
 | [`load.htmx`](/events#load.htmx)  | triggered when new content is added to the DOM
 | [`noSSESourceError.htmx`](/events#noSSESourceError.htmx)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
 | [`onLoadError.htmx`](/events#onLoadError.htmx)  | triggered when an exception occurs during the onLoad handling in htmx

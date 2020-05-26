@@ -346,13 +346,11 @@ return (function () {
             var target = getDocument().getElementById(child.id);
             if (target) {
                 var fragment;
-                if (isInlineSwap(oobValue, target)) {
-                    fragment = getDocument().createDocumentFragment();
-                    fragment.appendChild(child);
-                } else {
-                    fragment = child;
+                fragment = getDocument().createDocumentFragment();
+                fragment.appendChild(child); // pulls the child out of the existing fragment
+                if (!isInlineSwap(oobValue, target)) {
+                    fragment = child; // if this is not an inline swap, we use the content of the node, not the node itself
                 }
-                fragment.appendChild(child);
                 swap(oobValue, target, target, fragment, settleInfo);
             } else {
                 child.parentNode.removeChild(child);
@@ -370,27 +368,26 @@ return (function () {
             });
         }
 
-        function handleAttributes(parentNode, fragment, settleInfo) {
-            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
-                if (oldNode) {
-                    var newAttributes = newNode.cloneNode();
-                    cloneAttributes(newNode, oldNode);
-                    settleInfo.tasks.push(function () {
-                        cloneAttributes(newNode, newAttributes);
-                    });
-                }
-            });
-        }
-
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
-            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    triggerEvent(child, 'load.htmx', {});
-                    processNode(child);
+                    var newAttributes = null;
+                    if (child.id) {
+                        var originalNode = parentNode.querySelector(child.tagName + "[id=" + child.id + "]");
+                        if (originalNode && originalNode !== parentNode) {
+                            newAttributes = child.cloneNode();
+                            cloneAttributes(child, originalNode);
+                        }
+                    }
+                    settleInfo.tasks.push(function(){
+                        if (newAttributes) {
+                            cloneAttributes(child, newAttributes);
+                        }
+                        processNode(child);
+                        triggerEvent(child, 'load.htmx', {});
+                    });
                 }
             }
         }
@@ -757,10 +754,6 @@ return (function () {
         }
 
         function processSSESource(elt, sseSrc) {
-            var detail = {
-                config:{withCredentials: true}
-            };
-            triggerEvent(elt, "initSSE.htmx", detail);
             var source = new EventSource(sseSrc, detail.config);
             source.onerror = function (e) {
                 triggerErrorEvent(elt, "sseError.htmx", {error:e, source:source});
@@ -1494,7 +1487,7 @@ return (function () {
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
-                return JSON.parse(element.content);
+                return eval(element.content);
             } else {
                 return null;
             }

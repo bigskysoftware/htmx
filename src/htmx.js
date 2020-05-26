@@ -368,23 +368,26 @@ return (function () {
             });
         }
 
+        function handleAttributes(parentNode, fragment, settleInfo) {
+            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
+                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
+                if (oldNode && oldNode !== parentNode) {
+                    var newAttributes = newNode.cloneNode();
+                    cloneAttributes(newNode, oldNode);
+                    settleInfo.tasks.push(function () {
+                        cloneAttributes(newNode, newAttributes);
+                    });
+                }
+            });
+        }
+
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
+            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    var newAttributes = null;
-                    if (child.id) {
-                        var originalNode = parentNode.querySelector(child.tagName + "[id=" + child.id + "]");
-                        if (originalNode && originalNode !== parentNode) {
-                            newAttributes = child.cloneNode();
-                            cloneAttributes(child, originalNode);
-                        }
-                    }
                     settleInfo.tasks.push(function(){
-                        if (newAttributes) {
-                            cloneAttributes(child, newAttributes);
-                        }
                         processNode(child);
                         triggerEvent(child, 'load.htmx', {});
                     });
@@ -663,21 +666,17 @@ return (function () {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
                 var value = removeWhiteSpace(values[i]);
-                if (value.indexOf("source:") === 0) {
+                if (value.indexOf("source ") === 0) {
                     processWebSocketSource(elt, value.substr(7));
                 }
-                if (value.indexOf("send:") === 0) {
-                    processWebSocketSend(elt, value.substr(5));
+                if (value === "send") {
+                    processWebSocketSend(elt);
                 }
             }
         }
 
         function processWebSocketSource(elt, wssSource) {
-            var detail = {
-                protocols:[]
-            };
-            triggerEvent(elt, "initWebSocket.htmx", detail);
-            var socket = new WebSocket("wss:" + wssSource, detail.protocols);
+            var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
                 triggerErrorEvent(elt, "wsError.htmx", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
@@ -712,13 +711,13 @@ return (function () {
             }
         }
 
-        function processWebSocketSend(elt, eventName) {
+        function processWebSocketSend(elt) {
             var webSocketSourceElt = getClosestMatch(elt, function (parent) {
                 return getInternalData(parent).webSocket != null;
             });
             if (webSocketSourceElt) {
                 var webSocket = getInternalData(webSocketSourceElt).webSocket;
-                elt.addEventListener(eventName, function (evt) {
+                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
                     var headers = getHeaders(elt, webSocketSourceElt, null, elt);
                     var rawParameters = getInputValues(elt, 'post');
                     var filteredParameters = filterValues(rawParameters, elt);
@@ -754,11 +753,7 @@ return (function () {
         }
 
         function processSSESource(elt, sseSrc) {
-            var detail = {
-                config:{withCredentials: true}
-            };
-            triggerEvent(elt, "initSSE.htmx", detail);
-            var source = new EventSource(sseSrc, detail.config);
+            var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
                 triggerErrorEvent(elt, "sseError.htmx", {error:e, source:source});
                 maybeCloseSSESource(elt);
@@ -1543,7 +1538,13 @@ return (function () {
                 includeIndicatorStyles:true
             },
             parseInterval:parseInterval,
-            _:internalEval
+            _:internalEval,
+            createEventSource: function(url){
+                return new EventSource(url, {withCredentials:true})
+            },
+            createWebSocket: function(url){
+                return new WebSocket(url, []);
+            }
         }
     }
 )()

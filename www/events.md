@@ -118,13 +118,6 @@ This event is triggered when htmx handles a history restoration action
 * `detail.path` - the path and query of the page being restored
 * `detail.historyElt` - the history element being restored into
 
-### <a name="initSSE.htmx"></a> Event - [`initSSE.htmx`](#initSSE.htmx)
-
-This event is triggered when htmx initializes a new SSE source.  It can be used
-to [configure the source](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/EventSource).
-
-Note that by default `withCredentials` will be set to `true` in the configuration.
-
 ##### Details
 
 * `detail.config` - the config that will be passed to the `EventSource` contstructor
