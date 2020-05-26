@@ -412,6 +412,7 @@ describe("Core htmx AJAX Tests", function(){
     window.callGlobal = function() {
         globalWasCalled = true;
     }
+
     it('script nodes evaluate', function()
     {
         try {
@@ -423,6 +424,30 @@ describe("Core htmx AJAX Tests", function(){
         } finally {
             delete window.callGlobal;
         }
+    });
+
+    it('allows empty verb values', function()
+    {
+        var path = null;
+        var div = make("<div hx-get=''/>");
+        htmx.on(div, "configRequest.htmx", function (evt) {
+            path = evt.detail.path;
+            return false;
+        });
+        div.click();
+        path.should.not.be.null;
+    });
+
+    it('allows blank verb values', function()
+    {
+        var path = null;
+        var div = make("<div hx-get/>");
+        htmx.on(div, "configRequest.htmx", function (evt) {
+            path = evt.detail.path;
+            return false;
+        });
+        div.click();
+        path.should.not.be.null;
     });
 
 

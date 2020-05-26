@@ -33,6 +33,11 @@ return (function () {
         }
 
         // resolve with both hx and data-hx prefixes
+        function hasAttribute(elt, qualifiedName) {
+            return elt.hasAttribute && (elt.hasAttribute(qualifiedName) ||
+                elt.hasAttribute("data-" + qualifiedName));
+        }
+
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -825,7 +830,7 @@ return (function () {
         function processVerbs(elt, nodeData, triggerSpecs) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
-                if (elt.hasAttribute('hx-' + verb)) {
+                if (hasAttribute(elt,'hx-' + verb)) {
                     var path = getAttributeValue(elt, 'hx-' + verb);
                     explicitAction = true;
                     nodeData.path = path;
@@ -1334,9 +1339,11 @@ return (function () {
                 unfilteredParameters:rawParameters,
                 headers:headers,
                 target:target,
-                verb:verb
+                verb:verb,
+                path:path
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
+            path = requestConfig.path;
 
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
