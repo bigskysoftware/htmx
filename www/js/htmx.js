@@ -368,23 +368,26 @@ return (function () {
             });
         }
 
+        function handleAttributes(parentNode, fragment, settleInfo) {
+            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
+                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
+                if (oldNode && oldNode !== parentNode) {
+                    var newAttributes = newNode.cloneNode();
+                    cloneAttributes(newNode, oldNode);
+                    settleInfo.tasks.push(function () {
+                        cloneAttributes(newNode, newAttributes);
+                    });
+                }
+            });
+        }
+
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
+            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    var newAttributes = null;
-                    if (child.id) {
-                        var originalNode = parentNode.querySelector(child.tagName + "[id=" + child.id + "]");
-                        if (originalNode && originalNode !== parentNode) {
-                            newAttributes = child.cloneNode();
-                            cloneAttributes(child, originalNode);
-                        }
-                    }
                     settleInfo.tasks.push(function(){
-                        if (newAttributes) {
-                            cloneAttributes(child, newAttributes);
-                        }
                         processNode(child);
                         triggerEvent(child, 'load.htmx', {});
                     });
@@ -519,6 +522,8 @@ return (function () {
 
                     if (trigger === "every")
                         return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
+                    if (trigger.indexOf("sse:") === 0)
+                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
 
                     var triggerSpec = {trigger: trigger};
                     for (var i = 1; i < tokens.length; i++) {
@@ -662,22 +667,18 @@ return (function () {
         function processWebSocketInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
-                var value = removeWhiteSpace(values[i]);
-                if (value.indexOf("source:") === 0) {
-                    processWebSocketSource(elt, value.substr(7));
+                var value = splitOnWhitespace(values[i]);
+                if (value[0] === "connect") {
+                    processWebSocketSource(elt, value[1]);
                 }
-                if (value.indexOf("send:") === 0) {
-                    processWebSocketSend(elt, value.substr(5));
+                if (value[0] === "send") {
+                    processWebSocketSend(elt);
                 }
             }
         }
 
         function processWebSocketSource(elt, wssSource) {
-            var detail = {
-                protocols:[]
-            };
-            triggerEvent(elt, "initWebSocket.htmx", detail);
-            var socket = new WebSocket("wss:" + wssSource, detail.protocols);
+            var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
                 triggerErrorEvent(elt, "wsError.htmx", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
@@ -712,13 +713,13 @@ return (function () {
             }
         }
 
-        function processWebSocketSend(elt, eventName) {
+        function processWebSocketSend(elt) {
             var webSocketSourceElt = getClosestMatch(elt, function (parent) {
                 return getInternalData(parent).webSocket != null;
             });
             if (webSocketSourceElt) {
                 var webSocket = getInternalData(webSocketSourceElt).webSocket;
-                elt.addEventListener(eventName, function (evt) {
+                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
                     var headers = getHeaders(elt, webSocketSourceElt, null, elt);
                     var rawParameters = getInputValues(elt, 'post');
                     var filteredParameters = filterValues(rawParameters, elt);
@@ -743,18 +744,15 @@ return (function () {
         function processSSEInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
-                var value = removeWhiteSpace(values[i]);
-                if (value.indexOf("source:") === 0) {
-                    processSSESource(elt, value.substr(7));
-                }
-                if (value.indexOf("trigger:") && nodeData.verb) {
-                    processSSETrigger(elt, nodeData.verb, nodeData.path, value.substr(8));
+                var value = splitOnWhitespace(values[i]);
+                if (value[0] === "connect") {
+                    processSSESource(elt, value[1]);
                 }
             }
         }
 
         function processSSESource(elt, sseSrc) {
-            var source = new EventSource(sseSrc, detail.config);
+            var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
                 triggerErrorEvent(elt, "sseError.htmx", {error:e, source:source});
                 maybeCloseSSESource(elt);
@@ -769,7 +767,7 @@ return (function () {
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
-                    if (!maybeCloseSSESource(sseEventSource)) {
+                    if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
                             issueAjaxRequest(elt, verb, path);
                         } else {
@@ -807,7 +805,9 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.sseEvent) {
+                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
+                        } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "load") {
@@ -835,13 +835,15 @@ return (function () {
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
                 }
+
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
                 if (sseInfo) {
                     processSSEInfo(elt, nodeData, sseInfo);
                 }
-                var sseInfo = getAttributeValue(elt, 'hx-ws');
-                if (sseInfo) {
-                    processWebSocketInfo(elt, nodeData, sseInfo);
+
+                var wsInfo = getAttributeValue(elt, 'hx-ws');
+                if (wsInfo) {
+                    processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }
@@ -1487,7 +1489,7 @@ return (function () {
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
-                return eval(element.content);
+                return JSON.parse(element.content);
             } else {
                 return null;
             }
@@ -1539,7 +1541,13 @@ return (function () {
                 includeIndicatorStyles:true
             },
             parseInterval:parseInterval,
-            _:internalEval
+            _:internalEval,
+            createEventSource: function(url){
+                return new EventSource(url, {withCredentials:true})
+            },
+            createWebSocket: function(url){
+                return new WebSocket(url, []);
+            }
         }
     }
 )()
