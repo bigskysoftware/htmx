@@ -332,8 +332,12 @@ return (function () {
             var extensions = getExtensions(target);
             for (var i = 0; i < extensions.length; i++) {
                 var extension = extensions[i];
-                if (extension.isInlineSwap(swapStyle)) {
-                    return true;
+                try {
+                    if (extension.isInlineSwap(swapStyle)) {
+                        return true;
+                    }
+                } catch(e) {
+                    //TODO log
                 }
             }
             return swapStyle === "outerHTML";
@@ -492,8 +496,12 @@ return (function () {
                     var extensions = getExtensions(elt);
                     for (var i = 0; i < extensions.length; i++) {
                         var ext = extensions[i];
-                        if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
-                            return;
+                        try {
+                            if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
+                                return;
+                            }
+                        } catch (e) {
+                            //TODO log
                         }
                     }
                     swapInnerHTML(target, fragment, settleInfo);
@@ -708,7 +716,7 @@ return (function () {
                 }
 
                 var response = event.data;
-                forEach(getExtensions(elt), function(extension){
+                withExtensions(elt, function(extension){
                     response = extension.transformResponse(response, null, elt);
                 });
 
@@ -911,6 +919,16 @@ return (function () {
             return eventName === "processedNode.htmx"
         }
 
+        function withExtensions(elt, toDo) {
+            forEach(getExtensions(elt), function(extension){
+                try {
+                    toDo(extension);
+                } catch (e) {
+                    // TODO log
+                }
+            });
+        }
+
         function triggerEvent(elt, eventName, detail) {
             if (detail == null) {
                 detail = {};
@@ -924,9 +942,9 @@ return (function () {
                 sendError(elt, eventName, detail);
             }
             var eventResult = elt.dispatchEvent(event);
-            forEach(getExtensions(elt), function (extension) {
+            withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
-            })
+            });
             return eventResult;
         }
 
@@ -1239,7 +1257,7 @@ return (function () {
 
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
-            forEach(getExtensions(elt), function (extension) {
+            withExtensions(elt, function (extension) {
                 if (encodedParameters == null) {
                     encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt);
                 }
@@ -1361,7 +1379,7 @@ return (function () {
                             if (!triggerEvent(elt, 'beforeSwap.htmx', eventDetail)) return;
 
                             var resp = this.response;
-                            forEach(getExtensions(elt), function(extension){
+                            withExtensions(elt, function(extension){
                                 resp = extension.transformResponse(resp, xhr, elt);
                             });
 
