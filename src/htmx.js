@@ -522,6 +522,8 @@ return (function () {
 
                     if (trigger === "every")
                         return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
+                    if (trigger.indexOf("sse:") === 0)
+                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
 
                     var triggerSpec = {trigger: trigger};
                     for (var i = 1; i < tokens.length; i++) {
@@ -665,11 +667,11 @@ return (function () {
         function processWebSocketInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
-                var value = removeWhiteSpace(values[i]);
-                if (value.indexOf("source ") === 0) {
-                    processWebSocketSource(elt, value.substr(7));
+                var value = splitOnWhitespace(values[i]);
+                if (value[0] === "connect") {
+                    processWebSocketSource(elt, value[1]);
                 }
-                if (value === "send") {
+                if (value[0] === "send") {
                     processWebSocketSend(elt);
                 }
             }
@@ -742,12 +744,9 @@ return (function () {
         function processSSEInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
-                var value = removeWhiteSpace(values[i]);
-                if (value.indexOf("source:") === 0) {
-                    processSSESource(elt, value.substr(7));
-                }
-                if (value.indexOf("trigger:") && nodeData.verb) {
-                    processSSETrigger(elt, nodeData.verb, nodeData.path, value.substr(8));
+                var value = splitOnWhitespace(values[i]);
+                if (value[0] === "connect") {
+                    processSSESource(elt, value[1]);
                 }
             }
         }
@@ -768,7 +767,7 @@ return (function () {
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
-                    if (!maybeCloseSSESource(sseEventSource)) {
+                    if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
                             issueAjaxRequest(elt, verb, path);
                         } else {
@@ -806,7 +805,9 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.sseEvent) {
+                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
+                        } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "load") {
@@ -834,13 +835,15 @@ return (function () {
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
                 }
+
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
                 if (sseInfo) {
                     processSSEInfo(elt, nodeData, sseInfo);
                 }
-                var sseInfo = getAttributeValue(elt, 'hx-ws');
-                if (sseInfo) {
-                    processWebSocketInfo(elt, nodeData, sseInfo);
+
+                var wsInfo = getAttributeValue(elt, 'hx-ws');
+                if (wsInfo) {
+                    processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }

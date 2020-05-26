@@ -6,18 +6,19 @@ title: </> htmx - hx-sse
 ## *EXPERIMENTAL* `hx-sse`
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-`EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by
-commas:
+`EventSource`s directly from HTML.  The value of the attribute is of the following form:
 
-* `source:<url>` - A URL to establish an `EventSource` against
-* `trigger:<event_name>` - An event name to trigger the element to make a request.  When an event with this name is recieved, the element
-will trigger a request against whatever URL has been configured with `hx-get` or a similar attribute.
+* `connect <url>` - A URL to establish an `EventSource` against
+
+When a connection for server sent events has been established, child elements can listen for these events by using
+the special [`hx-trigger`](/attributes/hx-trigger) syntax `sse:<event_name>`.  This, when combined with an `hx-get`
+or similar will trigger the element to make a request.
 
 Here is an example:
 
 ```html
-  <div hx-sse="source:/event_stream">
-    <div hx-get="/chatroom" hx-sse="trigger:chatter">
+  <div hx-sse="connect /event_stream">
+    <div hx-get="/chatroom" hx-trigger="chatter">
       ...
     </div>
   </div>

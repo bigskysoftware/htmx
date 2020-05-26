@@ -372,7 +372,7 @@ These features are under active development, so please let us know if you are wi
 If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
 
 ```html
-  <div hx-ws="source:/chatroom">
+  <div hx-ws="connect wss:/chatroom">
     <div id="chat_room">
       ...
     </div>
@@ -396,16 +396,16 @@ server and the browser than websockets.
 If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
 
 1. Define an SSE source.  To do this, add a [hx-sse](/attributes/hx-sse) attribute on a parent element with
-a `source:` declaration that specifies the URL from which Server Sent Events will be received.
+a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
 
-2. Define an SSE event that will trigger a request.  Add a [hx-sse](/attributes/hx-sse) attribute on an element with
-a `trigger:` declaration that specifies the event that will cause the element to issue a request.
+2. Define elements that are descendents of this element that are triggered by server sent events using the 
+`hx-trigger="sse:<event_name>"` syntax
 
 Here is an example:
 
 ```html
-    <body hx-sse="source:/sse_messages">
-        <div hx-sse="trigger:new_news" hx-get="/news"></div>
+    <body hx-sse="connect /news_updates">
+        <div hx-trigger="sse:new_news" hx-get="/news"></div>
     </body>
 ```
 
