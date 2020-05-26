@@ -337,7 +337,7 @@ return (function () {
                         return true;
                     }
                 } catch(e) {
-                    //TODO log
+                    logError(e);
                 }
             }
             return swapStyle === "outerHTML";
@@ -501,7 +501,7 @@ return (function () {
                                 return;
                             }
                         } catch (e) {
-                            //TODO log
+                            logError(e);
                         }
                     }
                     swapInnerHTML(target, fragment, settleInfo);
@@ -912,7 +912,7 @@ return (function () {
         }
 
         function triggerErrorEvent(elt, eventName, detail) {
-            triggerEvent(elt, eventName, mergeObjects({isError:true}, detail));
+            triggerEvent(elt, eventName, mergeObjects({error:eventName}, detail));
         }
 
         function ignoreEventForLogging(eventName) {
@@ -924,9 +924,17 @@ return (function () {
                 try {
                     toDo(extension);
                 } catch (e) {
-                    // TODO log
+                    logError(e);
                 }
             });
+        }
+
+        function logError(msg) {
+            if(console.error) {
+                console.error(msg);
+            } else if (console.log) {
+                console.log("ERROR: ", msg);
+            }
         }
 
         function triggerEvent(elt, eventName, detail) {
@@ -938,7 +946,8 @@ return (function () {
             if (htmx.logger && !ignoreEventForLogging(eventName)) {
                 htmx.logger(elt, eventName, detail);
             }
-            if (detail.isError) {
+            if (detail.error) {
+                logError(detail.error);
                 sendError(elt, eventName, detail);
             }
             var eventResult = elt.dispatchEvent(event);
