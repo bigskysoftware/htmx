@@ -1,7 +1,5 @@
 /* Test Utilities */
 
-htmx.logAll();
-
 function byId(id) {
     return document.getElementById(id);
 }
