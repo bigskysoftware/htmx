@@ -396,6 +396,18 @@ describe("Core htmx AJAX Tests", function(){
 
     });
 
+    it('text nodes dont screw up settling via variable capture', function()
+    {
+        this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test2'></div>fooo");
+        this.server.respondWith("GET", "/test2", "clicked");
+        var div = make("<div hx-get='/test'/>");
+        div.click();
+        this.server.respond();
+        byId("d1").click();
+        this.server.respond();
+        byId("d1").innerHTML.should.equal("clicked");
+    });
+
 
 
 })
