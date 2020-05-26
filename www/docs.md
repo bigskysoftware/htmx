@@ -578,6 +578,8 @@ if you want to log everything while developing.
 
 Htmx allows you to configure a few defaults:
 
+<div class="info-table">
+
 | Config Variable | Info |
 |-----------------|-------
 |  `htmx.config.historyEnabled` | defaults to `true`, really only useful for testing
@@ -586,6 +588,8 @@ Htmx allows you to configure a few defaults:
 |  `htmx.config.defaultSwapDelay` | defaults to 0
 |  `htmx.config.defaultSettleDelay` | defaults to 100
 |  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
+
+</div>
 
 You can set them directly in javascript, or you can use a `meta` tag:
 

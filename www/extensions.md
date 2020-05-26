@@ -52,6 +52,8 @@ and on the `body` tag for it to apply to all htmx requests.
 
 The following extensions that are tested and distributed with htmx:
 
+<div class="info-table">
+
 | Extension | Description
 |-----------|-------------
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
@@ -60,3 +62,5 @@ The following extensions that are tested and distributed with htmx:
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+
+</div>

@@ -3,10 +3,10 @@ layout: layout.njk
 title: </> htmx - Attributes
 ---
 
-<div class="nowrap">
 
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
+<div class="info-table">
 
 | Attribute | Description |
 |-----------|-------------|
@@ -33,7 +33,11 @@ title: </> htmx - Attributes
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
 | [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
 
+</div>
+
 ## <a name="classes"></a> [CSS Class Reference](#classes)
+
+<div class="info-table">
 
 | Class | Description |
 |-----------|-------------|
@@ -42,10 +46,13 @@ title: </> htmx - Attributes
 | `htmx-settling` | Applied to a target after content is swapped, removed after it is settled
 | `htmx-swapping` | Applied to a target before any content is swapped, removed after it is swapped
 
+</div>
 
 ## <a name="headers"></a> [HTTP Header Reference](#headers)
 
 ### <a name="request_headers"></a> [Request Headers](#request_headers)
+
+<div class="info-table">
 
 | Header | Description |
 |-------|-------------|
@@ -61,14 +68,22 @@ title: </> htmx - Attributes
 | `X-HX-Trigger-Name` | the `name` of the triggered element if it exists
 | `X-HX-Trigger` | the `id` of the triggered element if it exists
 
+</div>
+
 ### <a name="response_headers"></a> [Response Headers](#response_headers)
+
+<div class="info-table">
 
 | Header | Description |
 |-------|-------------|
 | `X-HX-Push` | pushes a new url into the history stack
 | [`X-HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
+</div>
+
 ## <a name="events"></a> [Event Reference](#events)
+
+<div class="info-table">
 
 | Event | Description |
 |-------|-------------|
