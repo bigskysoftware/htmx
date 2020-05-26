@@ -825,8 +825,8 @@ return (function () {
         function processVerbs(elt, nodeData, triggerSpecs) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
-                var path = getAttributeValue(elt, 'hx-' + verb);
-                if (path) {
+                if (elt.hasAttribute('hx-' + verb)) {
+                    var path = getAttributeValue(elt, 'hx-' + verb);
                     explicitAction = true;
                     nodeData.path = path;
                     nodeData.verb = verb;
