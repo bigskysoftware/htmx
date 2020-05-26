@@ -399,6 +399,19 @@ return (function () {
             }
         }
 
+        function closeConnections(target) {
+            var internalData = getInternalData(target);
+            if (internalData.webSocket) {
+                internalData.webSocket.close();
+            }
+            if (internalData.sseEventSource) {
+                internalData.sseEventSource.close();
+            }
+            if (target.children) { // IE
+                forEach(target.children, function(child) { closeConnections(child) });
+            }
+        }
+
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment);
@@ -414,6 +427,7 @@ return (function () {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
                 }
+                closeConnections(target);
                 parentElt(target).removeChild(target);
             }
         }
