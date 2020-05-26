@@ -41,4 +41,4 @@ You can use a `*` to match any path component:
 
 #### Source
 
-<https://unpkg.com/htmx.org/ext/path-deps.js>
+<https://unpkg.com/htmx.org/dist/ext/path-deps.js>

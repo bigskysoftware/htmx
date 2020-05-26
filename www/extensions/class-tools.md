@@ -34,4 +34,4 @@ optionally followed by a colon `:` and a time delay.
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/class-tools.js>
+<https://unpkg.com/htmx.org/dist/ext/class-tools.js>

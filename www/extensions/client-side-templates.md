@@ -43,4 +43,4 @@ The AJAX response body will be parsed as JSON and passed into the template rende
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/client-side-templates.js>
+<https://unpkg.com/htmx.org/dist/ext/client-side-templates.js>

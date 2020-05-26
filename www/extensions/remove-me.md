@@ -18,4 +18,4 @@ The `remove-me` extension allows you to remove an element after a specified inte
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/remove-me.js>
+<https://unpkg.com/htmx.org/dist/ext/remove-me.js>

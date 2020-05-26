@@ -17,4 +17,4 @@ This extension includes the rails `_method` parameter in non-`GET` or `POST` req
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/rails-method.js>
+<https://unpkg.com/htmx.org/dist/ext/rails-method.js>

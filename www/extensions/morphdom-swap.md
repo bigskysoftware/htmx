@@ -21,5 +21,5 @@ swapping mechanism in htmx.
 
 #### Source
 
-<https://unpkg.com/htmx.org/ext/morphdom-swap.js>
+<https://unpkg.com/htmx.org/dist/ext/morphdom-swap.js>
 

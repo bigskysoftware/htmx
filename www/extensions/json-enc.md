@@ -15,4 +15,4 @@ This extension encodes parameters in JSON format instead of url format.
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/json-enc.js>
+<https://unpkg.com/htmx.org/dist/ext/json-enc.js>
