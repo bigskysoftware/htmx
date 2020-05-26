@@ -2,16 +2,23 @@ describe("hx-sse attribute", function() {
 
     function mockEventSource() {
         var listeners = {};
+        var wasClosed = false;
         var mockEventSource = {
-            addEventListener : function(message, l) {
+            addEventListener: function (message, l) {
                 listeners[message] = l;
             },
-            sendEvent : function(event) {
+            sendEvent: function (event) {
                 var listener = listeners[event];
-                if(listener){
+                if (listener) {
                     listener();
                 }
             },
+            close: function () {
+                wasClosed = true;
+            },
+            wasClosed: function () {
+                return wasClosed;
+            }
         };
         return mockEventSource;
     }
@@ -90,6 +97,24 @@ describe("hx-sse attribute", function() {
         byId("d1").innerHTML.should.equal("div1");
     })
 
+    it('is closed after removal', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect /foo">' +
+            '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
+            '</div>');
+        div.click();
+        this.server.respond();
+        this.eventSource.wasClosed().should.equal(true)
+    })
+
+    it('is closed after removal with no close and activity', function () {
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect /foo">' +
+            '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
+            '</div>');
+        div.parentElement.removeChild(div);
+        this.eventSource.sendEvent("e1")
+        this.eventSource.wasClosed().should.equal(true)
+    })
 
 });
 

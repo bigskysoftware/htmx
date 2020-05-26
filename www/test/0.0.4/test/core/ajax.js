@@ -408,6 +408,22 @@ describe("Core htmx AJAX Tests", function(){
         byId("d1").innerHTML.should.equal("clicked");
     });
 
+    var globalWasCalled = false;
+    window.callGlobal = function() {
+        globalWasCalled = true;
+    }
+    it('script nodes evaluate', function()
+    {
+        try {
+            this.server.respondWith("GET", "/test", "<div></div><script type='text/javascript'>callGlobal()</script>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
 
 
 })

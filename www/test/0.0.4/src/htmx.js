@@ -399,6 +399,19 @@ return (function () {
             }
         }
 
+        function closeConnections(target) {
+            var internalData = getInternalData(target);
+            if (internalData.webSocket) {
+                internalData.webSocket.close();
+            }
+            if (internalData.sseEventSource) {
+                internalData.sseEventSource.close();
+            }
+            if (target.children) { // IE
+                forEach(target.children, function(child) { closeConnections(child) });
+            }
+        }
+
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment);
@@ -414,6 +427,7 @@ return (function () {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
                 }
+                closeConnections(target);
                 parentElt(target).removeChild(target);
             }
         }
@@ -828,6 +842,12 @@ return (function () {
             return explicitAction;
         }
 
+        function processScript(elt) {
+            if (elt.tagName === "SCRIPT" && elt.type === "text/javascript") {
+                eval(elt.innerText);
+            }
+        }
+
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
@@ -850,6 +870,8 @@ return (function () {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
+
+                processScript(elt);
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });

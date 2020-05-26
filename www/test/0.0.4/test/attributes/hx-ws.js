@@ -3,6 +3,7 @@ describe("hx-ws attribute", function() {
     function mockWebsocket() {
         var listener;
         var lastSent;
+        var wasClosed = false;
         var mockSocket = {
             addEventListener : function(message, l) {
                 listener = l;
@@ -15,6 +16,12 @@ describe("hx-ws attribute", function() {
             },
             getLastSent : function() {
                 return lastSent;
+            },
+            close : function() {
+                wasClosed = true;
+            },
+            wasClosed : function () {
+                return wasClosed;
             }
         };
         return mockSocket;
@@ -45,6 +52,21 @@ describe("hx-ws attribute", function() {
         var lastSent = this.socket.getLastSent();
         var data = JSON.parse(lastSent);
         data.HEADERS["X-HX-Request"].should.equal("true");
+    })
+
+    it('is closed after removal', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ws="connect wss:/foo"></div>');
+        div.click();
+        this.server.respond();
+        this.socket.wasClosed().should.equal(true)
+    })
+
+    it('is closed after removal with no close and activity', function () {
+        var div = make('<div hx-ws="connect wss:/foo"></div>');
+        div.parentElement.removeChild(div);
+        this.socket.write("<div id=\"d1\">replaced</div>")
+        this.socket.wasClosed().should.equal(true)
     })
 
 });
