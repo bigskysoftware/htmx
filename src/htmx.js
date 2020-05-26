@@ -1448,11 +1448,10 @@ return (function () {
                             }
                         }
                     } else {
-                        triggerErrorEvent(elt, 'responseError.htmx', eventDetail);
+                        triggerErrorEvent(elt, 'responseError.htmx', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
                     }
                 } catch (e) {
-                    eventDetail['exception'] = e;
-                    triggerErrorEvent(elt, 'onLoadError.htmx', eventDetail);
+                    triggerErrorEvent(elt, 'onLoadError.htmx', mergeObjects({error:e}, eventDetail));
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);

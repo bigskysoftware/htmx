@@ -514,9 +514,9 @@ defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/a
 
 If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions)
 
-### Official Extensions
+### Included Extensions
 
-Htmx offers some officially supported extensions that are tested against the htmx code base, including:
+Htmx includes some extensions that are tested against the htmx code base.  Here are a few:
 
 | Extension | Description
 |-----------|-------------
@@ -526,7 +526,7 @@ Htmx offers some officially supported extensions that are tested against the htm
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
 
-See the [Extensions](/extensions#list) for a complete list.
+See the [extensions page](/extensions#included) for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 
