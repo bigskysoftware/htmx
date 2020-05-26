@@ -62,5 +62,6 @@ The following extensions that are tested and distributed with htmx:
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+| [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
 
 </div>
