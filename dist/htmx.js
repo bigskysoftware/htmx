@@ -381,16 +381,20 @@ return (function () {
             });
         }
 
+        function makeLoadTask(child) {
+            return function () {
+                processNode(child);
+                triggerEvent(child, 'load.htmx', {});
+            };
+        }
+
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
             handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    settleInfo.tasks.push(function(){
-                        processNode(child);
-                        triggerEvent(child, 'load.htmx', {});
-                    });
+                    settleInfo.tasks.push(makeLoadTask(child));
                 }
             }
         }

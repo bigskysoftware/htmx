@@ -62,9 +62,11 @@
         onEvent: function (name, evt) {
             if (name === "processedNode.htmx") {
                 var elt = evt.detail.elt;
-                var classList = elt.getAttribute("classes") || elt.getAttribute("data-classes");
-                if (classList) {
-                    processClassList(elt, classList);
+                if (elt.getAttribute) {
+                    var classList = elt.getAttribute("classes") || elt.getAttribute("data-classes");
+                    if (classList) {
+                        processClassList(elt, classList);
+                    }
                 }
             }
         }

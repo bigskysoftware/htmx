@@ -10,6 +10,14 @@ body {
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
+table {
+    font-size: 18px;
+}
+
+.nowrap table tbody tr td:first-of-type {
+    white-space: nowrap;
+}
+
 .full-width {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);

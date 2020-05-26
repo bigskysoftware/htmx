@@ -3,7 +3,10 @@ layout: layout.njk
 title: </> htmx - Attributes
 ---
 
+<div class="nowrap">
+
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
+
 
 | Attribute | Description |
 |-----------|-------------|
@@ -92,4 +95,6 @@ title: </> htmx - Attributes
 | [`sseError.htmx`](/events#sseError.htmx)  | triggered when an error occurs with a SSE source
 | [`swapError.htmx`](/events#swapError.htmx)  | triggered when an error occurs during the swap phase
 | [`targetError.htmx`](/events#targetError.htmx)  | triggered when an invalid target is specified
+
+</div>
 
