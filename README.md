@@ -1,4 +1,4 @@
-![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/img/htmx_logo.1.png "high power tools for HTML")
+[![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/img/htmx_logo.1.png "high power tools for HTML")]()
 
 *high power tools for HTML*
 
@@ -37,9 +37,8 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 ## website & docs
 
-<https://htmx.org>
-
-<https://htmx.org/docs>
+* <https://htmx.org>
+* <https://htmx.org/docs>
 
 ## contributing
 
