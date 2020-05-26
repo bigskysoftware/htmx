@@ -19,7 +19,6 @@
         onEvent: function (name, evt) {
             if (name === "afterRequest.htmx") {
                 var xhr = evt.detail.xhr;
-                console.log(xhr);
                 // mutating call
                 if (xhr.method !== "GET") {
                     var eltsWithDeps = htmx.findAll("[path-deps]");
