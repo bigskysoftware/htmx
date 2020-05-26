@@ -9,12 +9,13 @@ describe("Core htmx Events", function() {
     });
 
     it("load.htmx fires properly", function () {
+        var called = false;
         var handler = htmx.on("load.htmx", function (evt) {
             called = true;
         });
         try {
+            this.server.respondWith("GET", "/test", "");
             this.server.respondWith("GET", "/test", "<div></div>");
-            var called = false;
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -32,6 +33,7 @@ describe("Core htmx Events", function() {
             var param = null;
             this.server.respondWith("POST", "/test", function (xhr) {
                 param = getParameters(xhr)['param'];
+                xhr.respondWith(200, {}, "");
             });
             var div = make("<div hx-post='/test'></div>");
             div.click();
@@ -50,6 +52,7 @@ describe("Core htmx Events", function() {
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
                 param = getParameters(xhr)['param'];
+                xhr.respondWith(200, {}, "");
             });
             var div = make("<form hx-trigger='click' hx-post='/test'><input name='param' value='foo'></form>");
             div.click();
@@ -68,6 +71,7 @@ describe("Core htmx Events", function() {
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
                 header = xhr.requestHeaders['X-My-Header'];
+                xhr.respondWith(200, {}, "");
             });
             var div = make("<form hx-trigger='click' hx-post='/test'><input name='param' value='foo'></form>");
             div.click();
