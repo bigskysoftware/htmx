@@ -16,4 +16,4 @@ or through the `console.log` function with a `DEBUG:` prefix.
 
 ### Source
 
-<https://unpkg.com/htmx.org/ext/debug.js>
+<https://unpkg.com/htmx.org/dist/ext/debug.js>
