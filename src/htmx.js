@@ -842,6 +842,12 @@ return (function () {
             return explicitAction;
         }
 
+        function processScript(elt) {
+            if (elt.tagName === "SCRIPT" && elt.type === "text/javascript") {
+                eval(elt.innerText);
+            }
+        }
+
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
@@ -864,6 +870,8 @@ return (function () {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
+
+                processScript(elt);
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
