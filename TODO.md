@@ -1,13 +1,7 @@
 ## Testing
 
-* interval parsing
 * scrolling/'revealed' event
-* hx-swap-oob (verify, chrome coverage tool bad?)
-* SSE stuff
-* WebSocket stuff
 * hx-trigger delay
-* class operation parsing
-* class toggling
 * transition model for content swaps
 
 ## Feature Backlog
