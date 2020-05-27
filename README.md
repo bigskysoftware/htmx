@@ -44,7 +44,7 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 ## contributing
 
 * please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
-* please include test cases in `/test` and docs in `/www`
+* please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
 * if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
 keep the core htmx code tidy
 * development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
