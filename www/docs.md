@@ -75,7 +75,7 @@ within the language:
 * Now any element, not just the entire window, can be the target for update by the request
 
 Note that when you are using htmx, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
-within the [original web programming model]((https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)), 
+within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
