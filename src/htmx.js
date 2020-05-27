@@ -857,7 +857,11 @@ return (function () {
 
         function processScript(elt) {
             if (elt.tagName === "SCRIPT" && elt.type === "text/javascript") {
-                eval(elt.innerText);
+                try {
+                    eval(elt.innerText);
+                } catch(e) {
+                    logError(e);
+                }
             }
         }
 

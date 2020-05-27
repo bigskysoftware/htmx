@@ -426,6 +426,15 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
+    it('script node exceptions do not break rendering', function()
+    {
+        this.server.respondWith("GET", "/test", "clicked<script type='text/javascript'>throw 'foo';</script>");
+        var div = make("<div hx-get='/test'></div>");
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("clicked");
+    });
+
     it('allows empty verb values', function()
     {
         var path = null;
