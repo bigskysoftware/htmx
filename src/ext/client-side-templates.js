@@ -1,9 +1,9 @@
 htmx.defineExtension('client-side-templates', {
     transformResponse : function(text, xhr, elt) {
+        var data = JSON.parse(text);
 
         var mustacheTemplate = htmx.closest(elt, "[mustache-template]");
         if (mustacheTemplate) {
-            var data = JSON.parse(text);
             var templateId = mustacheTemplate.getAttribute('mustache-template');
             var template = htmx.find("#" + templateId);
             if (template) {
@@ -15,16 +15,19 @@ htmx.defineExtension('client-side-templates', {
 
         var handlebarsTemplate = htmx.closest(elt, "[handlebars-template]");
         if (handlebarsTemplate) {
-            var data = JSON.parse(text);
             var templateName = handlebarsTemplate.getAttribute('handlebars-template');
             return Handlebars.partials[templateName](data);
         }
 
         var nunjucksTemplate = htmx.closest(elt, "[nunjucks-template]");
         if (nunjucksTemplate) {
-            var data = JSON.parse(text);
             var templateName = nunjucksTemplate.getAttribute('nunjucks-template');
-            return nunjucks.render(templateName, data);
+            var template = htmx.find('#' + templateName);
+            try {
+              return nunjucks.render(templateName, data);
+            } catch (e) {
+              return nunjucks.renderString(template.innerHTML, data);
+            }
         }
 
         return text;
