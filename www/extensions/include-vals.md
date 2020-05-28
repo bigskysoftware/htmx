@@ -22,4 +22,4 @@ will be evaluated as the fields in a javascript object literal.
 
 ### Source
 
-<https://unpkg.com/htmx.org/dist/ext/remove-me.js>
+<https://unpkg.com/htmx.org/dist/ext/include-vals.js>
