@@ -21,7 +21,7 @@ and on the `body` tag for it to apply to all htmx requests.
 **Tip:** To use multiple extensions on one element, separate them with a comma:
 
 ```html
-  <button hx-post="/example" hx-ext="debug json-enc">This Button Uses Two Extensions</button>
+  <button hx-post="/example" hx-ext="debug, json-enc">This Button Uses Two Extensions</button>
 ```
 
 ## <a name="included"></a> [Included Extensions](#included)
