@@ -189,7 +189,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with the [`hx-trigger`](/attributes/hx-trigger/) attribute:
 
 ```html
-  <div hx-get="/news" trigger="every 2s">
+  <div hx-get="/news" hx-trigger="every 2s">
   </div>
 ```
 
