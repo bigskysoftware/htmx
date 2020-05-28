@@ -13,7 +13,7 @@ swapped into the DOM.  Currently three client-side templating engines are suppor
 * [nunjucks](https://mozilla.github.io/nunjucks/)
 
 When you add this extension on an element, any element below it in the DOM can use one of three attributes named
-`<template-engine>-temlpate` (e.g. `mustache-template`) with a template ID, and the extension will resolve and render
+`<template-engine>-template` (e.g. `mustache-template`) with a template ID, and the extension will resolve and render
 the template the standard way for that template engine:
 
 * `mustache` - looks a mustache &lt;script> tag up by ID for the template content
