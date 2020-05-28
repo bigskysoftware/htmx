@@ -6,7 +6,7 @@ title: </> htmx - hx-prompt
 ## `hx-prompt`
 
 The `hx-prompt` attribute allows you to show a prompt before issuing a request.  The value of
-the prompt will be included in the requst in the `X-HX-Prompt` header.
+the prompt will be included in the requst in the `HX-Prompt` header.
 
 Here is an example:
 

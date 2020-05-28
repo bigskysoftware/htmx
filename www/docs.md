@@ -457,24 +457,24 @@ htmx includes a number of useful headers in requests:
 
 | Header | Description
 |--------|--------------
-| `X-HX-Request` | will be set to "true"
-| `X-HX-Trigger` | will be set to the id of the element that triggered the request
-| `X-HX-Trigger-Name` | will be set to the name of the element that triggered the request
-| `X-HX-Target` | will be set to the id of the target element
-| `X-HX-Current-URL` | will be set to the URL of the browser
-| `X-HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
-| `X-HX-Event-Target` | the id of the original target of the event that triggered the request
-| `X-HX-Active-Element` | the id of the current active element
-| `X-HX-Active-Element-Name` | the name of the current active element
-| `X-HX-Active-Element-Value` | the value of the current active element
+| `HX-Request` | will be set to "true"
+| `HX-Trigger` | will be set to the id of the element that triggered the request
+| `HX-Trigger-Name` | will be set to the name of the element that triggered the request
+| `HX-Target` | will be set to the id of the target element
+| `HX-Current-URL` | will be set to the URL of the browser
+| `HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
+| `HX-Event-Target` | the id of the original target of the event that triggered the request
+| `HX-Active-Element` | the id of the current active element
+| `HX-Active-Element-Name` | the name of the current active element
+| `HX-Active-Element-Value` | the value of the current active element
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
 htmx supports two special response headers:
 
-* `X-HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
-* `X-HX-Push` - can be used to push a new URL into the browsers address bar
+* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
+* `HX-Push` - can be used to push a new URL into the browsers address bar
 
 ### Request Order of Operations
 
