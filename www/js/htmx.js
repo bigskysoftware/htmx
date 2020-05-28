@@ -1191,23 +1191,23 @@ return (function () {
 
         function getHeaders(elt, target, prompt, eventTarget) {
             var headers = {
-                "X-HX-Request" : "true",
-                "X-HX-Trigger" : getRawAttribute(elt, "id"),
-                "X-HX-Trigger-Name" : getRawAttribute(elt, "name"),
-                "X-HX-Target" : getAttributeValue(target, "id"),
-                "X-HX-Current-URL" : getDocument().location.href,
+                "HX-Request" : "true",
+                "HX-Trigger" : getRawAttribute(elt, "id"),
+                "HX-Trigger-Name" : getRawAttribute(elt, "name"),
+                "HX-Target" : getAttributeValue(target, "id"),
+                "HX-Current-URL" : getDocument().location.href,
             }
             if (prompt !== undefined) {
-                headers["X-HX-Prompt"] = prompt;
+                headers["HX-Prompt"] = prompt;
             }
             if (eventTarget) {
-                headers["X-HX-Event-Target"] = getRawAttribute(eventTarget, "id");
+                headers["HX-Event-Target"] = getRawAttribute(eventTarget, "id");
             }
             if (getDocument().activeElement) {
-                headers["X-HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
-                headers["X-HX-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
+                headers["HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
+                headers["HX-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
                 if (getDocument().activeElement.value) {
-                    headers["X-HX-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
+                    headers["HX-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
                 }
             }
             return headers;
@@ -1374,8 +1374,8 @@ return (function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
 
-                    handleTrigger(elt, this.getResponseHeader("X-HX-Trigger"));
-                    var pushedUrl = this.getResponseHeader("X-HX-Push");
+                    handleTrigger(elt, this.getResponseHeader("HX-Trigger"));
+                    var pushedUrl = this.getResponseHeader("HX-Push");
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
