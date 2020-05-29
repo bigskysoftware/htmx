@@ -1104,6 +1104,10 @@ return (function () {
             if(elt.name === "" || elt.name == null || elt.disabled) {
                 return false;
             }
+            // include buttons with values
+            if (elt.type === "submit" && elt.name) {
+              return true;
+            }
             // ignore "submitter" types (see jQuery src/serialize.js)
             if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
                 return false;

@@ -49,4 +49,18 @@ describe("Core htmx Regression Tests", function(){
         form.innerHTML.should.equal("variable=")
     });
 
+    it ('Handles button values properly', function() {
+        this.server.respondWith("POST", "/htmx.php", function (xhr) {
+            xhr.respond(200, {}, xhr.requestBody);
+        });
+
+        var form = make('<form hx-trigger="click" hx-post="/htmx.php">\n' +
+            '<button type="submit" name="variable" value="test">Submit</button>\n' +
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("variable=test");
+    });
+
 })
