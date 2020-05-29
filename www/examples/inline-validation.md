@@ -107,7 +107,7 @@ Below is a working demo of this example.  The only email that will be accepted i
     
     // templates
     function formTemplate(page) {
-      return `<h3>Signup Form</h3><form ic-post-to="/contact">
+      return `<h3>Signup Form</h3><form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
     <input name="email" hx-get="/contact/email" hx-indicator="#ind">
