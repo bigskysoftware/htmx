@@ -87,7 +87,7 @@ Below is a working demo of this example.  The only email that will be accepted i
 
     // routes
     init("/demo", function(request, params){
-      return formTemplate();
+      return demoTemplate();
     });
 
     onPost("/contact", function(request, params){
@@ -106,8 +106,13 @@ Below is a working demo of this example.  The only email that will be accepted i
      });
     
     // templates
-    function formTemplate(page) {
-      return `<h3>Signup Form</h3><form hx-post="/contact">
+    function demoTemplate() {
+        
+        return `<h3>Signup Form</h3><p>Enter an email into the input below and on tab out it will be validated.  Only "test@test.com" will pass.</p> ` + formTemplate();
+    }
+    
+    function formTemplate() {
+      return `<form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
     <input name="email" hx-get="/contact/email" hx-indicator="#ind">
@@ -121,7 +126,7 @@ Below is a working demo of this example.  The only email that will be accepted i
     <label>Last Name</label>
     <input type="text" class="form-control" name="lastName">
   </div>
-  <button class="btn btn-default">Submit</button>
+  <button class="btn btn-default" disabled>Submit</button>
 </form>`;
     }
     
