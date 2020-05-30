@@ -75,7 +75,7 @@ within the language:
 * Now any element, not just the entire window, can be the target for update by the request
 
 Note that when you are using htmx, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
-within the [original web programming model]((https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)), 
+within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
@@ -147,7 +147,7 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 If you want a request to only happen once, you can use the `once` modifier for the trigger:
 
 ```html
-   <div hx-post="/mouse_entered" hx-trigger="mouseenter once"">
+   <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
      [Here Mouse, Mouse!]
    </div>
 ```
@@ -189,7 +189,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with the [`hx-trigger`](/attributes/hx-trigger/) attribute:
 
 ```html
-  <div hx-get="/news" trigger="every 2s">
+  <div hx-get="/news" hx-trigger="every 2s">
   </div>
 ```
 

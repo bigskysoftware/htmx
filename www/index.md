@@ -11,15 +11,16 @@ title: </> htmx - high power tools for html
 
 ## introduction
 
-htmx is a set of HTML extensions give you to access to [AJAX](https://htmx.org/docs#ajax), 
+htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), 
 [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
-via [attributes](https://htmx.org/reference#attributes), allowing you to build [modern UI](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
+[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~7k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](/extensions),
-IE11 compatible & you can try it out quickly, without a huge rewrite
+[extendable](https://htmx.org/extensions) & 
+IE11 compatible
 
 ## quick start
 

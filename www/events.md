@@ -226,7 +226,7 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`ic-select`](/attributes/ic-select)
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
 * `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request

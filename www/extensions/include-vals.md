@@ -13,7 +13,6 @@ will be evaluated as the fields in a javascript object literal.
 
 ```html
 <div hx-ext="include-vals">
-    <!-- Removes this div after 1 second -->
     <div hx-get="/test" include-vals="included:true, computed: computeValue()">
       Will Include Additional Values
     </div>
@@ -22,4 +21,4 @@ will be evaluated as the fields in a javascript object literal.
 
 ### Source
 
-<https://unpkg.com/htmx.org/dist/ext/remove-me.js>
+<https://unpkg.com/htmx.org/dist/ext/include-vals.js>

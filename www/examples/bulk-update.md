@@ -127,12 +127,8 @@ You can see a working examle of this code below.
 
     // templates
     function displayUI(contacts) {
-      return `<div hx-include="#checked-contacts" hx-target="#tbody">
-                  <a class="btn" hx-put="/activate">Activate</a>
-                  <a class="btn" hx-put="/deactivate">Deactivate</a>
-              </div>
-            
-              <form id="checked-contacts">
+      return `<h3>Select Rows And Activate Or Deactivate Below<h3>
+               <form id="checked-contacts">
                 <table>
                   <thead>
                   <tr>
@@ -146,7 +142,12 @@ You can see a working examle of this code below.
                     ${displayTable([], contacts, "")}
                   </tbody>
                 </table>
-              </form>`
+              </form>
+              <br/>
+              <div hx-include="#checked-contacts" hx-target="#tbody">
+                <a class="btn" hx-put="/activate">Activate</a>
+                <a class="btn" hx-put="/deactivate">Deactivate</a>
+              </div>`
     }
     
     function displayTable(ids, contacts, action) {

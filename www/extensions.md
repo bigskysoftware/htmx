@@ -18,6 +18,12 @@ To use an extension you use the [hx-ext](/attributes/hx-ext) attribute:
 Note that the `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire swath of the dom,
 and on the `body` tag for it to apply to all htmx requests.
 
+**Tip:** To use multiple extensions on one element, separate them with a comma:
+
+```html
+  <button hx-post="/example" hx-ext="debug, json-enc">This Button Uses Two Extensions</button>
+```
+
 ## <a name="included"></a> [Included Extensions](#included)
 
 The following extensions that are tested and distributed with htmx:

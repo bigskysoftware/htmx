@@ -62,7 +62,7 @@ title: </> htmx - Attributes
 | `X-HX-Active-Element` | the `id` of the active element if it exists
 | `X-HX-Current-URL` | the current URL of the browser
 | `X-HX-Event-Target` | the `id` of the original event target 
-| `X-HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `X-HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
 | `X-HX-Request` | always `true`
 | `X-HX-Target` | the `id` of the target element if it exists
 | `X-HX-Trigger-Name` | the `name` of the triggered element if it exists
