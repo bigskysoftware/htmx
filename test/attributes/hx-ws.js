@@ -51,7 +51,7 @@ describe("hx-ws attribute", function() {
         byId("d1").click();
         var lastSent = this.socket.getLastSent();
         var data = JSON.parse(lastSent);
-        data.HEADERS["X-HX-Request"].should.equal("true");
+        data.HEADERS["HX-Request"].should.equal("true");
     })
 
     it('is closed after removal', function () {

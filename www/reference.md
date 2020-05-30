@@ -57,16 +57,16 @@ title: </> htmx - Attributes
 | Header | Description |
 |-------|-------------|
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
-| `X-HX-Active-Element-Name` | the `name` of the active element if it exists
-| `X-HX-Active-Element-Value` | the `value` of the active element if it exists
-| `X-HX-Active-Element` | the `id` of the active element if it exists
-| `X-HX-Current-URL` | the current URL of the browser
-| `X-HX-Event-Target` | the `id` of the original event target 
-| `X-HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
-| `X-HX-Request` | always `true`
-| `X-HX-Target` | the `id` of the target element if it exists
-| `X-HX-Trigger-Name` | the `name` of the triggered element if it exists
-| `X-HX-Trigger` | the `id` of the triggered element if it exists
+| `HX-Active-Element-Name` | the `name` of the active element if it exists
+| `HX-Active-Element-Value` | the `value` of the active element if it exists
+| `HX-Active-Element` | the `id` of the active element if it exists
+| `HX-Current-URL` | the current URL of the browser
+| `HX-Event-Target` | the `id` of the original event target 
+| `HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `HX-Request` | always `true`
+| `HX-Target` | the `id` of the target element if it exists
+| `HX-Trigger-Name` | the `name` of the triggered element if it exists
+| `HX-Trigger` | the `id` of the triggered element if it exists
 
 </div>
 
@@ -76,8 +76,8 @@ title: </> htmx - Attributes
 
 | Header | Description |
 |-------|-------------|
-| `X-HX-Push` | pushes a new url into the history stack
-| [`X-HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| `HX-Push` | pushes a new url into the history stack
+| [`HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
 </div>
 
