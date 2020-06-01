@@ -1,6 +1,6 @@
-htmx.defineExtension('json-enc', {
+htmx.defineExtension('sse-body', {
     encodeParameters : function(headers, parameters, elt) {
         headers["Content-Type"] = "application/json";
-        return (JSON.stringify(parameters));
+        return elt["htmx-internal-data"].sseEvent.data;
     }
 });

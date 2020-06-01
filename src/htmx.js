@@ -784,9 +784,11 @@ return (function () {
             });
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function () {
+                
+                var sseListener = function (event) {
                     if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
+                            getInternalData(elt).sseEvent = event;
                             issueAjaxRequest(elt, verb, path);
                         } else {
                             sseEventSource.removeEventListener(sseEventName, sseListener);
@@ -1281,9 +1283,14 @@ return (function () {
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var rawParameters = getInputValues(elt, verb);
             var filteredParameters = filterValues(rawParameters, elt);
+            var epb = encodeParamsForBody(headers, elt, filteredParameters);
+
 
             if (verb !== 'get') {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                if (!headers['Content-Type']) {
+                    headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                }
+
                 if (verb !== 'post') {
                     headers['X-HTTP-Method-Override'] = verb.toUpperCase();
                 }
@@ -1434,7 +1441,7 @@ return (function () {
             }
             if(!triggerEvent(elt, 'beforeRequest.htmx', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
-            xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            xhr.send(verb === 'get' ? null : epb );
         }
 
         //====================================================================
