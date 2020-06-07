@@ -5,17 +5,26 @@ title: </> htmx - high power tools for html
 
 ## htmx Extensions
 
-Htmx has an extension mechanism for defining and using extensions to the default behavior in a simple and obvious manner.
+Htmx provides an extension mechanism for defining and using extensions within htmx-based applications.
 
 ## <a name="using"></a>[Using Extensions](#using)
 
-To use an extension you use the [hx-ext](/attributes/hx-ext) attribute:
+Using an extension involves two steps:
+ 
+ * include the extension definition, which will add it to the `htmx` extension registry
+ * reference the extension via  the [hx-ext](/attributes/hx-ext) attribute
+ 
+Here is an example
 
 ```html
+  <script src="https://unpkg.com/htmx.org@0.0.4/dist/ext/debug.js"></script>  
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
-Note that the `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire swath of the dom,
+This loads the debug extension off of the `unpkg` CDN and then adds the debug extension to the given button.  (This
+will print out extensive logging for the button, for debugging purposes.)
+
+Note that the `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire part of the DOM,
 and on the `body` tag for it to apply to all htmx requests.
 
 **Tip:** To use multiple extensions on one element, separate them with a comma:
@@ -26,7 +35,10 @@ and on the `body` tag for it to apply to all htmx requests.
 
 ## <a name="included"></a> [Included Extensions](#included)
 
-The following extensions that are tested and distributed with htmx:
+htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
+against `htmx` in each distribution
+
+### Included Extensions List
 
 <div class="info-table">
 
@@ -46,7 +58,7 @@ The following extensions that are tested and distributed with htmx:
 
 ## <a name="defining"></a>[Defining an Extensions](#defining)
 
-To define an extension you need to call the `htmx.defineExtension()` function:
+To define an extension you call the `htmx.defineExtension()` function:
 
 ```html
 <script>
@@ -58,9 +70,11 @@ To define an extension you need to call the `htmx.defineExtension()` function:
 </script>
 ```
 
-Extensions should have names that are dash separated like above and that are reasonably short and descriptive.
+Typically, this is done in a stand-alone javascript file, rather than in an inline `script` tag.
 
-Extensions can override the following default extension fields:
+Extensions should have names that are dash separated and that are reasonably short and descriptive.
+
+Extensions can override the following default extension points to add or change functionality:
 
 ```javascript
 {
