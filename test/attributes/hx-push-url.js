@@ -131,4 +131,17 @@ describe("hx-push-url attribute", function() {
         cache.length.should.equal(1);
     });
 
+    it("deals with malformed JSON in history cache when getting", function () {
+        localStorage.setItem(KUTTY_HISTORY_CACHE, "Invalid JSON");
+        var history = htmx._('getCachedHistory')('url');
+        should.equal(history, null);
+    });
+
+    it("deals with malformed JSON in history cache when saving", function () {
+        localStorage.setItem(KUTTY_HISTORY_CACHE, "Invalid JSON");
+        htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll');
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        cache.length.should.equal(1);
+    });
+
 });

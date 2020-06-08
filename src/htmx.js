@@ -184,6 +184,16 @@ return (function () {
             return obj1;
         }
 
+        function parseJSON(jString) {
+            try {
+                return JSON.parse(jString);
+            } catch(error) {
+                console.warn('Failed to parse JSON string `' + jString +'`:');
+                console.warn(error);
+                return null;
+            }
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -525,7 +535,7 @@ return (function () {
         function handleTrigger(elt, trigger) {
             if (trigger) {
                 if (trigger.indexOf("{") === 0) {
-                    var triggers = JSON.parse(trigger);
+                    var triggers = parseJSON(trigger);
                     for (var eventName in triggers) {
                         if (triggers.hasOwnProperty(eventName)) {
                             var detail = triggers[eventName];
@@ -977,7 +987,7 @@ return (function () {
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
-            var historyCache = JSON.parse(localStorage.getItem("htmx-history-cache")) || [];
+            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
                     historyCache = historyCache.slice(i, 1);
@@ -992,7 +1002,7 @@ return (function () {
         }
 
         function getCachedHistory(url) {
-            var historyCache = JSON.parse(localStorage.getItem("htmx-history-cache")) || [];
+            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
                     return historyCache[i];
@@ -1552,7 +1562,7 @@ return (function () {
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
-                return JSON.parse(element.content);
+                return parseJSON(element.content);
             } else {
                 return null;
             }
