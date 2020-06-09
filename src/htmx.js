@@ -390,9 +390,10 @@ return (function () {
             });
         }
 
-        function makeLoadTask(child) {
+        function makeAjaxLoadTask(child) {
             return function () {
                 processNode(child);
+                processScripts(child);
                 triggerEvent(child, 'load.htmx', {});
             };
         }
@@ -403,7 +404,7 @@ return (function () {
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    settleInfo.tasks.push(makeLoadTask(child));
+                    settleInfo.tasks.push(makeAjaxLoadTask(child));
                 }
             }
         }
@@ -855,14 +856,23 @@ return (function () {
             return explicitAction;
         }
 
-        function processScript(elt) {
-            if (elt.tagName === "SCRIPT" && elt.type === "text/javascript") {
+        function evalScript(script) {
+            if (script.type === "text/javascript") {
                 try {
-                    eval(elt.innerText);
-                } catch(e) {
+                    eval(script.innerText);
+                } catch (e) {
                     logError(e);
                 }
             }
+        }
+
+        function processScripts(elt) {
+            if (matches(elt, "script")) {
+                evalScript(elt);
+            }
+            forEach(findAll(elt, "script"), function (script) {
+                evalScript(script);
+            });
         }
 
         function processNode(elt) {
@@ -888,7 +898,6 @@ return (function () {
                 }
                 triggerEvent(elt, "processedNode.htmx");
 
-                processScript(elt);
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
@@ -1569,7 +1578,7 @@ return (function () {
         ready(function () {
             mergeMetaConfig();
             var body = getDocument().body;
-            processNode(body);
+            processNode(body, true);
             triggerEvent(body, 'load.htmx', {});
             window.onpopstate = function () {
                 restoreHistory();
