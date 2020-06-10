@@ -8,10 +8,9 @@ describe("hx-put attribute", function(){
         clearWorkArea();
     });
 
-    it('issues a PUT request with proper headers', function()
+    it('issues a PUT request', function()
     {
         this.server.respondWith("PUT", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('PUT');
             xhr.respond(200, {}, "Putted!");
         });
 
@@ -21,10 +20,9 @@ describe("hx-put attribute", function(){
         btn.innerHTML.should.equal("Putted!");
     });
 
-    it('issues a PUT request with proper headers', function()
+    it('issues a PUT request w/ data-* prefix', function()
     {
         this.server.respondWith("PUT", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('PUT');
             xhr.respond(200, {}, "Putted!");
         });
 

@@ -8,10 +8,9 @@ describe("hx-delete attribute", function(){
         clearWorkArea();
     });
 
-    it('issues a DELETE request with proper headers', function()
+    it('issues a DELETE request', function()
     {
         this.server.respondWith("DELETE", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('DELETE');
             xhr.respond(200, {}, "Deleted!");
         });
 
@@ -21,10 +20,9 @@ describe("hx-delete attribute", function(){
         btn.innerHTML.should.equal("Deleted!");
     });
 
-    it('issues a DELETE request with proper headers  w/ data-* prefix', function()
+    it('issues a DELETE request w/ data-* prefix', function()
     {
         this.server.respondWith("DELETE", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('DELETE');
             xhr.respond(200, {}, "Deleted!");
         });
 

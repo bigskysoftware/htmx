@@ -8,10 +8,9 @@ describe("hx-patch attribute", function(){
         clearWorkArea();
     });
 
-    it('issues a PATCH request with proper headers', function()
+    it('issues a PATCH request', function()
     {
         this.server.respondWith("PATCH", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('PATCH');
             xhr.respond(200, {}, "Patched!");
         });
 
@@ -21,10 +20,9 @@ describe("hx-patch attribute", function(){
         btn.innerHTML.should.equal("Patched!");
     });
 
-    it('issues a PATCH request with proper headers  w/ data-* prefix', function()
+    it('issues a PATCH request w/ data-* prefix', function()
     {
         this.server.respondWith("PATCH", "/test", function(xhr){
-            xhr.requestHeaders['X-HTTP-Method-Override'].should.equal('PATCH');
             xhr.respond(200, {}, "Patched!");
         });
 

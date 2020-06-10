@@ -1337,9 +1337,6 @@ return (function () {
 
             if (verb !== 'get') {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                if (verb !== 'post') {
-                    headers['X-HTTP-Method-Override'] = verb.toUpperCase();
-                }
             }
 
             // behavior of anchors w/ empty href is to use the current URL
@@ -1356,7 +1353,11 @@ return (function () {
                 path:path
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
+            // copy out in case the object was overwritten
             path = requestConfig.path;
+            verb = requestConfig.verb;
+            headers = requestConfig.headers;
+            filteredParameters = requestConfig.parameters;
 
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
@@ -1377,7 +1378,7 @@ return (function () {
                 }
                 xhr.open('GET', finalPathForGet, true);
             } else {
-                xhr.open('POST', path, true);
+                xhr.open(verb.toUpperCase(), path, true);
             }
 
             xhr.overrideMimeType("text/html");
