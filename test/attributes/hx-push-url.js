@@ -131,4 +131,41 @@ describe("hx-push-url attribute", function() {
         cache.length.should.equal(1);
     });
 
+    it("afterSettle.htmx is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("afterSettle.htmx", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("afterSettle.htmx", handler);
+        }
+    });
+
+    it("should include parameters on a get", function () {
+        var path = "";
+        var handler = htmx.on("pushedIntoHistory.htmx", function (evt) {
+            path = evt.detail.path;
+        });
+        try {
+            this.server.respondWith("GET", /test.*/, function (xhr) {
+                xhr.respond(200, {}, "second")
+            });
+            var form = make('<form hx-trigger="click" hx-push-url="true" hx-get="/test"><input type="hidden" name="foo" value="bar"/>first</form>');
+            form.click();
+            this.server.respond();
+            form.textContent.should.equal("second")
+            path.should.equal("/test?foo=bar")
+        } finally {
+            htmx.off("pushedIntoHistory.htmx", handler);
+        }
+    });
+
 });

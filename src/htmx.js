@@ -1447,7 +1447,9 @@ return (function () {
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            pushUrlIntoHistory(pushedUrl || path);
+                                            var pathToPush = pushedUrl || finalPathForGet || path;
+                                            pushUrlIntoHistory(pathToPush);
+                                            triggerEvent(getDocument().body, 'pushedIntoHistory.htmx', {path:pathToPush});
                                         }
                                     }
 
