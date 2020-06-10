@@ -1406,7 +1406,7 @@ return (function () {
                         }
                         // don't process 'No Content' response
                         if (this.status !== 204) {
-                            if (!triggerEvent(elt, 'beforeSwap.htmx', eventDetail)) return;
+                            if (!triggerEvent(target, 'beforeSwap.htmx', eventDetail)) return;
 
                             var resp = this.response;
                             withExtensions(elt, function(extension){
@@ -1430,8 +1430,8 @@ return (function () {
                                         if (elt.classList) {
                                             elt.classList.add("htmx-settling");
                                         }
+                                        triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     });
-                                    triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     if (anchor) {
                                         location.hash = anchor;
                                     }
@@ -1443,12 +1443,12 @@ return (function () {
                                             if (elt.classList) {
                                                 elt.classList.remove("htmx-settling");
                                             }
+                                            triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
                                             pushUrlIntoHistory(pushedUrl || path);
                                         }
-                                        triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                     }
 
                                     if (swapSpec.settleDelay > 0) {
