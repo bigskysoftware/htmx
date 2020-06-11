@@ -60,12 +60,13 @@ return (function () {
             }
         }
 
+        function getClosestEltWithAttribute(elt, attributeName) {
+            return closest(elt, "[" + attributeName + "],[data-" + attributeName + "]");
+        }
+
         function getClosestAttributeValue(elt, attributeName) {
-            var closestAttr = null;
-            getClosestMatch(elt, function (e) {
-                return closestAttr = getAttributeValue(e, attributeName);
-            });
-            return closestAttr;
+            elt = getClosestEltWithAttribute(elt, attributeName);
+            return elt ? getAttributeValue(elt, attributeName) : null;
         }
 
         function matches(elt, selector) {
@@ -259,6 +260,9 @@ return (function () {
         }
 
         function closest(elt, selector) {
+            if (Element.prototype.closest && elt.closest) {
+                return elt.closest(selector);
+            }
             do if (elt == null || matches(elt, selector)) return elt;
             while (elt = elt && parentElt(elt));
         }
@@ -302,7 +306,7 @@ return (function () {
         //====================================================================
 
         function getTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
+            var explicitTarget = getClosestEltWithAttribute(elt, "hx-target");
             if (explicitTarget) {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
