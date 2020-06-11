@@ -17,14 +17,24 @@ I'll be setting up a forum and chat room at some point.
 
 [@htmx_org](https://twitter.com/htmx_org)
 
-## Blog & Announcements
-<div>
+<div class="row">
+<div class="1 col">
+
+## Announcements
+
 <ul> 
 {%- for post in collections.post reversed -%}
-  <li><a href="{{ post.url  }}">{{ post.date | date: "%a, %b %d, %y"}} - {{ post.data.title }}</a>🔥🔥</li>
+  <li><a href="{{ post.url  }}">{{ post.date | date: "%Y-%m-%d"}} - {{ post.data.title }} </a>🔥🔥</li>
 {%- endfor -%}
 </ul>
 </div>
+<div class="1 col">
 
+## Essays
+
+* [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
+
+</div>
+</div>
 
 
