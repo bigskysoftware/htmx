@@ -30,17 +30,17 @@ describe("hx-trigger attribute", function(){
         var div = make('<div id="d1"></div>');
         input.click();
         this.server.respond();
-        div.innerHTML.should.equal("Requests: 1");
+        div.innerHTML.should.equal("");
         input.click();
         this.server.respond();
-        div.innerHTML.should.equal("Requests: 1");
+        div.innerHTML.should.equal("");
         input.value = "bar";
         input.click();
         this.server.respond();
-        div.innerHTML.should.equal("Requests: 2");
+        div.innerHTML.should.equal("Requests: 1");
         input.click();
         this.server.respond();
-        div.innerHTML.should.equal("Requests: 2");
+        div.innerHTML.should.equal("Requests: 1");
     });
 
     it('once modifier works', function()
