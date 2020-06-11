@@ -24,8 +24,13 @@ htmx.defineExtension('client-side-templates', {
         if (nunjucksTemplate) {
             var data = JSON.parse(text);
             var templateName = nunjucksTemplate.getAttribute('nunjucks-template');
-            return nunjucks.render(templateName, data);
-        }
+            var template = htmx.find('#' + templateName);
+            if (template) {
+                return nunjucks.renderString(template.innerHTML, data);
+            } else {
+                return nunjucks.render(templateName, data);
+            }
+          }
 
         return text;
     }

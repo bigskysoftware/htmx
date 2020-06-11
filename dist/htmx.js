@@ -17,7 +17,7 @@ return (function () {
         // Utilities
         //====================================================================
         function parseInterval(str) {
-            if (str === "null" || str === "false" || str === "") {
+            if (str == null || str === "null" || str === "false" || str === "") {
                 return null;
             } else if (str.lastIndexOf("ms") === str.length - 2) {
                 return parseFloat(str.substr(0, str.length - 2));
@@ -33,6 +33,11 @@ return (function () {
         }
 
         // resolve with both hx and data-hx prefixes
+        function hasAttribute(elt, qualifiedName) {
+            return elt.hasAttribute && (elt.hasAttribute(qualifiedName) ||
+                elt.hasAttribute("data-" + qualifiedName));
+        }
+
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -385,9 +390,10 @@ return (function () {
             });
         }
 
-        function makeLoadTask(child) {
+        function makeAjaxLoadTask(child) {
             return function () {
                 processNode(child);
+                processScripts(child);
                 triggerEvent(child, 'load.htmx', {});
             };
         }
@@ -398,7 +404,7 @@ return (function () {
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE) {
-                    settleInfo.tasks.push(makeLoadTask(child));
+                    settleInfo.tasks.push(makeAjaxLoadTask(child));
                 }
             }
         }
@@ -477,6 +483,8 @@ return (function () {
 
         function swap(swapStyle, elt, target, fragment, settleInfo) {
             switch (swapStyle) {
+                case "none":
+                    return;
                 case "outerHTML":
                     swapOuterHTML(target, fragment, settleInfo);
                     return;
@@ -562,6 +570,9 @@ return (function () {
                         }
                         if (token.indexOf("delay:") === 0) {
                             triggerSpec.delay = parseInterval(token.substr(6));
+                        }
+                        if (token.indexOf("throttle:") === 0) {
+                            triggerSpec.throttle = parseInterval(token.substr(9));
                         }
                     }
                     return triggerSpec;
@@ -655,13 +666,21 @@ return (function () {
                     if (elementData.delayed) {
                         clearTimeout(elementData.delayed);
                     }
-                    var issueRequest = function(){
-                        issueAjaxRequest(elt, verb, path, evt.target);
+                    if (elementData.throttle) {
+                        return;
                     }
-                    if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(issueRequest, triggerSpec.delay);
+
+                    if (triggerSpec.throttle) {
+                        elementData.throttle = setTimeout(function(){
+                            issueAjaxRequest(elt, verb, path, evt.target);
+                            elementData.throttle = null;
+                        }, triggerSpec.throttle);
+                    } else if (triggerSpec.delay) {
+                        elementData.delayed = setTimeout(function(){
+                            issueAjaxRequest(elt, verb, path, evt.target);
+                        }, triggerSpec.delay);
                     } else {
-                        issueRequest();
+                        issueAjaxRequest(elt, verb, path, evt.target);
                     }
                 }
             };
@@ -825,8 +844,8 @@ return (function () {
         function processVerbs(elt, nodeData, triggerSpecs) {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
-                var path = getAttributeValue(elt, 'hx-' + verb);
-                if (path) {
+                if (hasAttribute(elt,'hx-' + verb)) {
+                    var path = getAttributeValue(elt, 'hx-' + verb);
                     explicitAction = true;
                     nodeData.path = path;
                     nodeData.verb = verb;
@@ -850,16 +869,33 @@ return (function () {
             return explicitAction;
         }
 
-        function processScript(elt) {
-            if (elt.tagName === "SCRIPT" && elt.type === "text/javascript") {
-                eval(elt.innerText);
+        function evalScript(script) {
+            if (script.type === "text/javascript") {
+                try {
+                    eval(script.innerText);
+                } catch (e) {
+                    logError(e);
+                }
             }
+        }
+
+        function processScripts(elt) {
+            if (matches(elt, "script")) {
+                evalScript(elt);
+            }
+            forEach(findAll(elt, "script"), function (script) {
+                evalScript(script);
+            });
         }
 
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
                 nodeData.processed = true;
+
+                if (elt.value) {
+                    nodeData.lastValue = elt.value;
+                }
 
                 var triggerSpecs = getTriggerSpecs(elt);
                 var explicitAction = processVerbs(elt, nodeData, triggerSpecs);
@@ -879,7 +915,6 @@ return (function () {
                 }
                 triggerEvent(elt, "processedNode.htmx");
 
-                processScript(elt);
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
@@ -1191,23 +1226,23 @@ return (function () {
 
         function getHeaders(elt, target, prompt, eventTarget) {
             var headers = {
-                "X-HX-Request" : "true",
-                "X-HX-Trigger" : getRawAttribute(elt, "id"),
-                "X-HX-Trigger-Name" : getRawAttribute(elt, "name"),
-                "X-HX-Target" : getAttributeValue(target, "id"),
-                "X-HX-Current-URL" : getDocument().location.href,
+                "HX-Request" : "true",
+                "HX-Trigger" : getRawAttribute(elt, "id"),
+                "HX-Trigger-Name" : getRawAttribute(elt, "name"),
+                "HX-Target" : getAttributeValue(target, "id"),
+                "HX-Current-URL" : getDocument().location.href,
             }
             if (prompt !== undefined) {
-                headers["X-HX-Prompt"] = prompt;
+                headers["HX-Prompt"] = prompt;
             }
             if (eventTarget) {
-                headers["X-HX-Event-Target"] = getRawAttribute(eventTarget, "id");
+                headers["HX-Event-Target"] = getRawAttribute(eventTarget, "id");
             }
             if (getDocument().activeElement) {
-                headers["X-HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
-                headers["X-HX-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
+                headers["HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
+                headers["HX-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
                 if (getDocument().activeElement.value) {
-                    headers["X-HX-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
+                    headers["HX-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
                 }
             }
             return headers;
@@ -1319,9 +1354,6 @@ return (function () {
 
             if (verb !== 'get') {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                if (verb !== 'post') {
-                    headers['X-HTTP-Method-Override'] = verb.toUpperCase();
-                }
             }
 
             // behavior of anchors w/ empty href is to use the current URL
@@ -1334,9 +1366,15 @@ return (function () {
                 unfilteredParameters:rawParameters,
                 headers:headers,
                 target:target,
-                verb:verb
+                verb:verb,
+                path:path
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
+            // copy out in case the object was overwritten
+            path = requestConfig.path;
+            verb = requestConfig.verb;
+            headers = requestConfig.headers;
+            filteredParameters = requestConfig.parameters;
 
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
@@ -1357,7 +1395,7 @@ return (function () {
                 }
                 xhr.open('GET', finalPathForGet, true);
             } else {
-                xhr.open('POST', path, true);
+                xhr.open(verb.toUpperCase(), path, true);
             }
 
             xhr.overrideMimeType("text/html");
@@ -1374,8 +1412,8 @@ return (function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
 
-                    handleTrigger(elt, this.getResponseHeader("X-HX-Trigger"));
-                    var pushedUrl = this.getResponseHeader("X-HX-Push");
+                    handleTrigger(elt, this.getResponseHeader("HX-Trigger"));
+                    var pushedUrl = this.getResponseHeader("HX-Push");
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
@@ -1385,7 +1423,7 @@ return (function () {
                         }
                         // don't process 'No Content' response
                         if (this.status !== 204) {
-                            if (!triggerEvent(elt, 'beforeSwap.htmx', eventDetail)) return;
+                            if (!triggerEvent(target, 'beforeSwap.htmx', eventDetail)) return;
 
                             var resp = this.response;
                             withExtensions(elt, function(extension){
@@ -1402,15 +1440,32 @@ return (function () {
                             target.classList.add("htmx-swapping");
                             var doSwap = function () {
                                 try {
+
+                                    var activeElt = document.activeElement;
+                                    var selectionInfo = {
+                                        elt: activeElt,
+                                        start: activeElt.selectionStart,
+                                        end: activeElt.selectionEnd,
+                                    };
+
                                     var settleInfo = makeSettleInfo(target);
                                     selectAndSwap(swapSpec.swapStyle, target, elt, resp, settleInfo);
+
+                                    if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
+                                        var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                                        if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                        }
+                                        newActiveElt.focus();
+                                    }
+
                                     target.classList.remove("htmx-swapping");
                                     forEach(settleInfo.elts, function (elt) {
                                         if (elt.classList) {
                                             elt.classList.add("htmx-settling");
                                         }
+                                        triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     });
-                                    triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     if (anchor) {
                                         location.hash = anchor;
                                     }
@@ -1422,12 +1477,14 @@ return (function () {
                                             if (elt.classList) {
                                                 elt.classList.remove("htmx-settling");
                                             }
+                                            triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            pushUrlIntoHistory(pushedUrl || path);
+                                            var pathToPush = pushedUrl || finalPathForGet || path;
+                                            pushUrlIntoHistory(pathToPush);
+                                            triggerEvent(getDocument().body, 'pushedIntoHistory.htmx', {path:pathToPush});
                                         }
-                                        triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                     }
 
                                     if (swapSpec.settleDelay > 0) {
@@ -1558,7 +1615,7 @@ return (function () {
         ready(function () {
             mergeMetaConfig();
             var body = getDocument().body;
-            processNode(body);
+            processNode(body, true);
             triggerEvent(body, 'load.htmx', {});
             window.onpopstate = function () {
                 restoreHistory();
