@@ -19,6 +19,18 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 
+### <a name="afterRequest.htmx"></a> Event - [`afterRequest.htmx`](#afterRequest.htmx)
+
+This event is triggered after an AJAX request has finished either in the case of a successful request (although
+one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
+can be paried with [`beforeRequest.htmx`](#beforeRequest.htmx) to wrap behavior around a request cycle.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+
 ### <a name="afterSettle.htmx"></a> Event - [`afterSettle.htmx`](#afterSettle.htmx)
 
 This event is triggered after the DOM has [settled](/docs#settling).
@@ -105,13 +117,6 @@ This event is triggered when htmx handles a history restoration action
 
 * `detail.path` - the path and query of the page being restored
 * `detail.historyElt` - the history element being restored into
-
-### <a name="initSSE.htmx"></a> Event - [`initSSE.htmx`](#initSSE.htmx)
-
-This event is triggered when htmx initializes a new SSE source.  It can be used
-to [configure the source](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/EventSource).
-
-Note that by default `withCredentials` will be set to `true` in the configuration.
 
 ##### Details
 
@@ -221,7 +226,7 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`ic-select`](/attributes/ic-select)
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
 * `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request

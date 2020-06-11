@@ -54,12 +54,12 @@ CSS.  Here is an example that uses `display` rather than opacity:
     }
 ```
 
-Note that the target of the `ic-indicator` selector need not be the exact element that you
+Note that the target of the `hx-indicator` selector need not be the exact element that you
 want to show: it can be any element in the parent hierarchy of the indicator.
 
 Finally, note that the `htmx-request` class by default is added to the element causing
 the request, so you can place an indicator inside of that element and not need to explictly
-call it out with the `ic-indicator` attribute:
+call it out with the `hx-indicator` attribute:
 
 ```html
 <button hx-post="/example">
@@ -72,7 +72,7 @@ call it out with the `ic-indicator` attribute:
 
 This simulates what a spinner might look like in that situation:
 
-<button class="btn" hx-classes="toggle htmx-request:3s">
+<button class="btn" classes="toggle htmx-request:3s">
     Post It!
    <img  class="htmx-indicator" src="/img/bars.svg"/>
 </button>

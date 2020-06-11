@@ -8,6 +8,10 @@ server.getHTTPMethod = function(xhr) {
 }
 server.autoRespond = true;
 server.autoRespondAfter = 300;
+server.xhr.useFilters = true;
+server.xhr.addFilter(function (method, url, async, username, password){
+    return url === "/";
+})
 
 //====================================
 // Request Handling
@@ -101,9 +105,11 @@ function onDelete(path, response) {
 
 var requestId = 0;
 htmx.on("beforeSwap.htmx", function(event) {
-    requestId++;
-    pushActivityChip(`${server.getHTTPMethod(event.detail.xhr)} ${event.detail.xhr.url}`, `req-${requestId}`, demoResponseTemplate(event.detail));
-    document.getElementById("request-count").innerText = ": " + requestId;
+    if (document.getElementById("request-count")) {
+        requestId++;
+        pushActivityChip(`${server.getHTTPMethod(event.detail.xhr)} ${event.detail.xhr.url}`, `req-${requestId}`, demoResponseTemplate(event.detail));
+        document.getElementById("request-count").innerText = ": " + requestId;
+    }
 });
 
 function showTimelineEntry(id) {

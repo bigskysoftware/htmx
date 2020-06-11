@@ -36,7 +36,8 @@ Because there is an id on the progress bar div, htmx will smoothly transition be
 style attribute into its new value.  This, when coupled with CSS transitions, make the visual transition continuous
 rather than jumpy.
 
-Finally, when the process is complete, a restart button is added to the UI:
+Finally, when the process is complete, a restart button is added to the UI (we are using the [`class-tools`](/extensions/class-tools)
+extension in this example):
 
 ```html
 <div hx-target="this"
@@ -48,7 +49,7 @@ Finally, when the process is complete, a restart button is added to the UI:
     <div id="pb" class="progress-bar" style="width:100%">
   </div>
 </div>
-<button id="restart-btn" class="btn" hx-post="/start" hx-classes="add show:600ms">
+<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
   Restart Job
 </button> 
 ```
@@ -161,7 +162,7 @@ ${restartButton(job)}`;
 
     function restartButton(job) {
       if(job.complete){
-        return `<button id="restart-btn" class="btn" hx-post="/start" hx-classes="add show:600ms">
+        return `<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
   Restart Job
 </button>`
       } else {

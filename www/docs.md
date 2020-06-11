@@ -16,14 +16,16 @@ title: </> htmx - high power tools for html
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
-    * [SSE](#sse)
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
   * [parameters](#parameters)
+* [boosting](#boosting)
+* [websockets & SSE](#websockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
-* [miscellaneous](#miscellaneous)
+* [animations](#animations)
+* [extensions](#extensions)
 * [events & logging](#events)
 * [configuring](#config)
 
@@ -73,7 +75,7 @@ within the language:
 * Now any element, not just the entire window, can be the target for update by the request
 
 Note that when you are using htmx, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
-within the [original web programming model]((https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)), 
+within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
@@ -91,21 +93,24 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.0.3"></script>
+    <script src="https://unpkg.com/htmx.org@0.0.4"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
-The core feature of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
+The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
 
-* [hx-get](/attributes/hx-get) - Issues a `GET` request to the given URL
-* [hx-post](/attributes/hx-post) - Issues a `POST` request to the given URL
-* [hx-put](/attributes/hx-put) - Issues a `PUT` request to the given URL
-* [hx-patch](/attributes/hx-patch) - Issues a `PATCH` request to the given URL
-* [hx-delete](/attributes/hx-delete) - Issues a `DELETE` request to the given URL
+| Attribute | Description |
+|-----------|-------------|
+| [hx-get](/attributes/hx-get) | Issues a `GET` request to the given URL|
+| [hx-post](/attributes/hx-post) | Issues a `POST` request to the given URL
+| [hx-put](/attributes/hx-put) | Issues a `PUT` request to the given URL
+| [hx-patch](/attributes/hx-patch) | Issues a `PATCH` request to the given URL
+| [hx-delete](/attributes/hx-delete) | Issues a `DELETE` request to the given URL
 
-(Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
-actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.)
+
+Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
+actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -142,7 +147,7 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 If you want a request to only happen once, you can use the `once` modifier for the trigger:
 
 ```html
-   <div hx-post="/mouse_entered" hx-trigger="mouseenter once"">
+   <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
      [Here Mouse, Mouse!]
    </div>
 ```
@@ -167,6 +172,8 @@ You can use these two attributes to implement a common UX pattern, [Active Searc
 This input will issue a request 500 milliseconds after a key up event if the input has been changed and inserts the results
 into the `div` with the id `search-results`.
 
+Multiple triggers can be specified in the [hx-trigger](/attributes/hx-trigger) attribute, separated by commas.
+
 #### <a name="special-events"></a> [Special Events](#special-events)
 
 htmx provides a few special events for use in [hx-trigger](/attributes/hx-trigger):
@@ -182,7 +189,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with the [`hx-trigger`](/attributes/hx-trigger/) attribute:
 
 ```html
-  <div hx-get="/news" trigger="every 2s">
+  <div hx-get="/news" hx-trigger="every 2s">
   </div>
 ```
 
@@ -211,30 +218,6 @@ second.
 
 Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as 
 when you are showing the user a [progress bar](/examples/progress-bar).
-
-#### <a name="sse"></a> [Server Sent Events](#sse)
-
-[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
-a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
-server and the browser than websockets.
-
-If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
-
-1. Define an SSE source.  To do this, add a [hx-sse-src](/attributes/hx-sse-src) attribute on a parent element
-that specifies the URL from which Server Sent Events will be received.
-
-2. Specify the Server Sent Event that will trigger the element, with the prefix `sse:`
-
-Here is an example:
-
-```html
-    <body hx-sse-src="/sse_messages">
-        <div trigger="sse:new_news" hx-get="/news"></div>
-    </body>
-```
-
-Depending on your implementation, this may be more efficient than the polling example above since the server would
-notify the div if there was new news to get, rather than the steady requests that a poll causes.
 
 ### <a name="indicators"></a> [Request Indicators](#indicators)
 
@@ -311,12 +294,14 @@ htmx offers a few different ways to swap the HTML returned into the DOM.  By def
 `innerHTML` of the target element.  You can modify this by using the [hx-swap](/attributes/hx-swap) attribute 
 with any of the following values:
 
-* `innerHTML` - the default, puts the content inside the target element
-* `outerHTML` - replaces the entire target element with the returned content
-* `afterbegin` - prepends the content before the first child inside the target
-* `beforebegin` - prepends the content before the target in the targets parent element
-* `beforeend` - appends the content after the last child inside the target
-* `afterend` - appends the content after the target in the targets parent element
+| Name | Description 
+|------|-------------
+| `innerHTML` | the default, puts the content inside the target element
+| `outerHTML` | replaces the entire target element with the returned content
+| `afterbegin` | prepends the content before the first child inside the target
+| `beforebegin` | prepends the content before the target in the targets parent element
+| `beforeend` | appends the content after the last child inside the target
+| `afterend` | appends the content after the target in the targets parent element
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -355,6 +340,77 @@ If you wish to filter out some parameters you can use the [hx-params](/attribute
 
 Finally, if you want to programatically modify the parameters, you can use the [configRequest.htmx](/events#configRequest.htmx) 
 event.
+
+## <a name="boosting"></a>[Boosting](#boosting)
+
+Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
+attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
+
+Here is an example:
+
+```html
+<div hx-boost="true">
+    <a href="/blog">Blog</a>
+</div>
+```
+
+The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
+
+This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
+htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
+
+### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
+
+Htmx has experimental support for declarative use of both 
+[WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
+and  [Server Sent Events]((https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)).
+  
+These features are under active development, so please let us know if you are willing to experiment with them.
+
+#### <a name="websockets">[WebSockets](#websockets)
+
+If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
+
+```html
+  <div hx-ws="connect wss:/chatroom">
+    <div id="chat_room">
+      ...
+    </div>
+    <form hx-ws="send:submit">
+        <input name="chat_message">
+    </form>
+  </div>
+```
+
+The `source` delcaration established the connection, and the `send` declaration tells the form to submit values to the
+socket on `submit`.
+
+More details can be found on the [hx-ws attribute page](/attributes/hx-ws) 
+
+#### <a name="sse"></a> [Server Sent Events](#sse)
+
+[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
+a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
+server and the browser than websockets.
+
+If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
+
+1. Define an SSE source.  To do this, add a [hx-sse](/attributes/hx-sse) attribute on a parent element with
+a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
+
+2. Define elements that are descendents of this element that are triggered by server sent events using the 
+`hx-trigger="sse:<event_name>"` syntax
+
+Here is an example:
+
+```html
+    <body hx-sse="connect /news_updates">
+        <div hx-trigger="sse:new_news" hx-get="/news"></div>
+    </body>
+```
+
+Depending on your implementation, this may be more efficient than the polling example above since the server would
+notify the div if there was new news to get, rather than the steady requests that a poll causes.
 
 ## <a name="history"></a> [History Support](#history)
 
@@ -399,17 +455,19 @@ In the event of a connection error, the `sendError.htmx` event will be triggered
 
 htmx includes a number of useful headers in requests:
 
-* `X-HX-Request` - will be set to "true"
-* `X-HX-Trigger` - will be set to the id of the element that triggered the request
-* `X-HX-Trigger-Name` - will be set to the name of the element that triggered the request
-* `X-HX-Target` - will be set to the id of the target element
-* `X-HX-Current-URL` - will be set to the URL of the browser
-* `X-HX-Prompt` - will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
-* `X-HX-Event-Target` - the id of the original target of the event that triggered the request
-* `X-HX-Active-Element` - the id of the current active element
-* `X-HX-Active-Element-Name` - the name of the current active element
-* `X-HX-Active-Element-Value` - the value of the current active element
-* `X-HTTP-Method-Override` - the HTTP verb for non-`GET` and `POST` requests
+| Header | Description
+|--------|--------------
+| `X-HX-Request` | will be set to "true"
+| `X-HX-Trigger` | will be set to the id of the element that triggered the request
+| `X-HX-Trigger-Name` | will be set to the name of the element that triggered the request
+| `X-HX-Target` | will be set to the id of the target element
+| `X-HX-Current-URL` | will be set to the URL of the browser
+| `X-HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
+| `X-HX-Event-Target` | the id of the original target of the event that triggered the request
+| `X-HX-Active-Element` | the id of the current active element
+| `X-HX-Active-Element-Name` | the name of the current active element
+| `X-HX-Active-Element-Value` | the value of the current active element
+| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
@@ -438,45 +496,37 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
-## <a name="miscellaneous"></a> [Miscellaneous](#miscellaneous)
+## <a name="animations"></a> [Animations](#animations)
 
-In addition to the core AJAX functionality, htmx also has a few other tricks up its sleeve that help you build
-nice interfaces without javascript.
+Htmx allows you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
+in many situations using only HTML and CSS.  
 
-### Class Swapping
+Please see the [Animation Guide](/examples/animations) for more details on the options available.
 
-Htmx supports an attribute, [hx-classes](/attributes/hx-classes) that allows you to add, remove and toggle classes after 
-a delay.  This can be used to create CSS transition effects.
+## <a name="extensions"></a> [Extensions](#extensions)
 
-Here are some examples:
+Htmx has an extension mechanism that allows you to customize the libraries' behavior.  Extensions [are
+defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/attributes/hx-ext) attribute:
 
 ```html
-<!-- adds the class "foo" after 100ms -->
-<div hx-classes="add foo"/> 
-
-<!-- removes the class "bar" after 1s -->
-<div hx-classes="remove bar:1s"/> 
-
-<!-- removes the class "bar" after 1s
-     then adds the class "foo" 1s after that -->
-<div hx-classes="remove bar:1s, add foo:1s"/> 
-
-<!-- removes the class "bar" and adds 
-     class "foo" after 1s  -->
-<div hx-classes="remove bar:1s & add foo:1s"/> 
-
-<!-- toggles the class "foo" every 1s -->
-<div hx-classes="toggle foo:1s"/>
+  <button hx-post="/example" hx-ext="debug">This button uses the debug extension</button>
 ```
 
-Full documentation is available [on the documentation page.](/attributes/hx-classes)
+If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions)
 
-### Boosting
+### Included Extensions
 
-Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
-attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
+Htmx includes some extensions that are tested against the htmx code base.  Here are a few:
 
-This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks).
+| Extension | Description
+|-----------|-------------
+| [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
+| [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+
+See the [extensions page](/extensions#included) for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 
@@ -528,12 +578,18 @@ if you want to log everything while developing.
 
 Htmx allows you to configure a few defaults:
 
-*  `htmx.config.historyEnabled` - defaults to `true`, really only useful for testing
-*  `htmx.config.historyCacheSize` - defaults to 10
-*  `htmx.config.defaultSwapStyle` - defaults to `innerHTML`
-*  `htmx.config.defaultSwapDelay` - defaults to 0
-*  `htmx.config.defaultSettleDelay` - defaults to 100
-*  `htmx.config.includeIndicatorStyles` - defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
+<div class="info-table">
+
+| Config Variable | Info |
+|-----------------|-------
+|  `htmx.config.historyEnabled` | defaults to `true`, really only useful for testing
+|  `htmx.config.historyCacheSize` | defaults to 10
+|  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
+|  `htmx.config.defaultSwapDelay` | defaults to 0
+|  `htmx.config.defaultSettleDelay` | defaults to 100
+|  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
+
+</div>
 
 You can set them directly in javascript, or you can use a `meta` tag:
 

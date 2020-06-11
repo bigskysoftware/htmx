@@ -10,6 +10,14 @@ body {
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
+table {
+    font-size: 18px;
+}
+
+.info-table table tbody tr td:first-of-type {
+    white-space: nowrap;
+}
+
 .full-width {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
@@ -103,7 +111,8 @@ blockquote {
 }
 
 table {
-    width: 100%;
+    margin: 16px;
+    width: 90%;
 }
 
 .hero {
@@ -167,6 +176,11 @@ h4 {
         margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
         border-radius: 0 !important;
+    }
+    .info-table  {
+        margin-left: calc(50% - 50vw) !important;
+        margin-right: calc(50% - 50vw) !important;
+        overflow-x: scroll !important;
     }
     .no-mobile {
         display: none !important;
