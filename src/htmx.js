@@ -483,6 +483,8 @@ return (function () {
 
         function swap(swapStyle, elt, target, fragment, settleInfo) {
             switch (swapStyle) {
+                case "none":
+                    return;
                 case "outerHTML":
                     swapOuterHTML(target, fragment, settleInfo);
                     return;
