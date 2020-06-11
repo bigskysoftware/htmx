@@ -29,8 +29,13 @@
     //
     // make('<div hx-get="/test">dd</div>')
 
-    this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
-    make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
+    htmx.logAll();
+
+    this.server.respondWith("GET", "/test", function(xhr){
+        xhr.respond(201, {}, '<form><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1" value="blahblah"/></form>')
+    });
+
+    make('<form hx-target="this"><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1"/></form>');
 </script>
 
 

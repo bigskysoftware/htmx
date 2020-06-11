@@ -893,6 +893,10 @@ return (function () {
             if (!nodeData.processed) {
                 nodeData.processed = true;
 
+                if (elt.value) {
+                    nodeData.lastValue = elt.value;
+                }
+
                 var triggerSpecs = getTriggerSpecs(elt);
                 var explicitAction = processVerbs(elt, nodeData, triggerSpecs);
 
@@ -1436,8 +1440,25 @@ return (function () {
                             target.classList.add("htmx-swapping");
                             var doSwap = function () {
                                 try {
+
+                                    var activeElt = document.activeElement;
+                                    var selectionInfo = {
+                                        elt: activeElt,
+                                        start: activeElt.selectionStart,
+                                        end: activeElt.selectionEnd,
+                                    };
+
                                     var settleInfo = makeSettleInfo(target);
                                     selectAndSwap(swapSpec.swapStyle, target, elt, resp, settleInfo);
+
+                                    if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
+                                        var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                                        if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                        }
+                                        newActiveElt.focus();
+                                    }
+
                                     target.classList.remove("htmx-swapping");
                                     forEach(settleInfo.elts, function (elt) {
                                         if (elt.classList) {
