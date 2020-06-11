@@ -403,7 +403,7 @@ return (function () {
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
-                if (child.nodeType !== Node.TEXT_NODE) {
+                if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                     settleInfo.tasks.push(makeAjaxLoadTask(child));
                 }
             }
@@ -505,7 +505,17 @@ return (function () {
                     for (var i = 0; i < extensions.length; i++) {
                         var ext = extensions[i];
                         try {
-                            if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
+                            var newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo);
+                            if (newElements) {
+                                if (typeof newElements.length !== 'undefined') {
+                                    // if handleSwap returns an array (like) of elements, we handle them
+                                    for (var j = 0; j < newElements.length; j++) {
+                                        var child = newElements[j];
+                                        if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
+                                            settleInfo.tasks.push(makeAjaxLoadTask(child));
+                                        }
+                                    }
+                                }
                                 return;
                             }
                         } catch (e) {

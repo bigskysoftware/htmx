@@ -3,14 +3,15 @@ describe("default extensions behavior", function() {
     var loadCalls, afterSwapCalls, afterSettleCalls;
 
     beforeEach(function () {
-        loadCalls = afterSwapCalls = afterSettleCalls = 0;
+        loadCalls = [];
+        afterSwapCalls = afterSettleCalls = 0;
         this.server = makeServer();
         clearWorkArea();
 
         htmx.defineExtension("ext-testswap", {
             onEvent : function(name, evt) {
                 if (name === "load.htmx") {
-                    loadCalls++;
+                    loadCalls.push(evt.detail.elt);
                 }
                 if (name === "afterSwap.htmx") {
                     afterSwapCalls++;
@@ -23,8 +24,7 @@ describe("default extensions behavior", function() {
                 // simple outerHTML replacement for tests
                 var parentEl = target.parentElement;
                 parentEl.removeChild(target);
-                parentEl.appendChild(fragment)
-                return true;
+                return [parentEl.appendChild(fragment)];  // return the newly added element
             }
 
         });
@@ -45,6 +45,27 @@ describe("default extensions behavior", function() {
         this.server.respond();
         afterSwapCalls.should.equal(1);
         afterSettleCalls.should.equal(1);
-        loadCalls.should.equal(0); // load.htmlx event on new added button is not triggered
+        loadCalls.length.should.equal(1);
+        loadCalls[0].textContent.should.equal('Clicked!');  // the new button is loaded
     });
+
+    it('handleSwap: new content is handled by htmx', function() {
+        this.server.respondWith("GET", "/test", '<button id="test-ext-testswap">Clicked!<span hx-get="/test-inner" hx-trigger="load"></span></button>');
+        this.server.respondWith("GET", "/test-inner", 'Loaded!');
+        make('<div hx-ext="ext-testswap"><button hx-get="/test" hx-swap="testswap">Click Me!</button></div>').querySelector('button').click();
+
+        this.server.respond(); // call /test via button trigger=click
+        var btn = byId('test-ext-testswap');
+        btn.textContent.should.equal('Clicked!');
+        afterSwapCalls.should.equal(1);
+        loadCalls.length.should.equal(1);
+        loadCalls[0].textContent.should.equal('Clicked!');  // the new button is loaded
+
+        this.server.respond();  // call /test-inner via span trigger=load
+        btn.textContent.should.equal("Clicked!Loaded!");
+        afterSwapCalls.should.equal(2);
+        loadCalls.length.should.equal(2);
+        loadCalls[1].textContent.should.equal('Loaded!');  // the new span is loaded
+    });
+
 });
