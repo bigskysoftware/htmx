@@ -113,33 +113,35 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Requests: 2");
     });
 
-    var specExamples = {
-        "": [{trigger: 'click'}],
-        "every 1s": [{trigger: 'every', pollInterval: 1000}],
-        "click": [{trigger: 'click'}],
-        "customEvent": [{trigger: 'customEvent'}],
-        "event changed": [{trigger: 'event', changed: true}],
-        "event once": [{trigger: 'event', once: true}],
-        "event delay:1s": [{trigger: 'event', delay: 1000}],
-        "event throttle:1s": [{trigger: 'event', throttle: 1000}],
-        "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
-        "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
-        "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
-        "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
-        "event1,": [{trigger: 'event1'}],
-        ",event1": [{trigger: 'event1'}],
-        "  ": [{trigger: 'click'}],
-        ",": [{trigger: 'click'}]
-    }
 
-    for (var specString in specExamples) {
-        it("parses " + specString, function()
-        {
-            var div = make("<div hx-trigger=" + specString + "></div>");
+
+    it("parses spec strings", function()
+    {
+        var specExamples = {
+            "": [{trigger: 'click'}],
+            "every 1s": [{trigger: 'every', pollInterval: 1000}],
+            "click": [{trigger: 'click'}],
+            "customEvent": [{trigger: 'customEvent'}],
+            "event changed": [{trigger: 'event', changed: true}],
+            "event once": [{trigger: 'event', once: true}],
+            "event delay:1s": [{trigger: 'event', delay: 1000}],
+            "event throttle:1s": [{trigger: 'event', throttle: 1000}],
+            "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
+            "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+            "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+            "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
+            "event1,": [{trigger: 'event1'}],
+            ",event1": [{trigger: 'event1'}],
+            "  ": [{trigger: 'click'}],
+            ",": [{trigger: 'click'}]
+        }
+
+        for (var specString in specExamples) {
+            var div = make("<div hx-trigger='" + specString + "'></div>");
             var spec = htmx._('getTriggerSpecs')(div);
-            spec.should.deep.equal(specExamples[specString]);
-        });
-    }
+            spec.should.deep.equal(specExamples[specString], "Found : " + JSON.stringify(spec) + ", expected : " + JSON.stringify(specExamples[specString]) + " for spec: " + specString);
+        }
+    });
 
     it('sets default trigger for forms', function()
     {

@@ -17,7 +17,7 @@ return (function () {
         // Utilities
         //====================================================================
         function parseInterval(str) {
-            if (str === "null" || str === "false" || str === "") {
+            if (str == null || str === "null" || str === "false" || str === "") {
                 return null;
             } else if (str.lastIndexOf("ms") === str.length - 2) {
                 return parseFloat(str.substr(0, str.length - 2));
@@ -572,7 +572,7 @@ return (function () {
                             triggerSpec.delay = parseInterval(token.substr(6));
                         }
                         if (token.indexOf("throttle:") === 0) {
-                            triggerSpec.delay = parseInterval(token.substr(9));
+                            triggerSpec.throttle = parseInterval(token.substr(9));
                         }
                     }
                     return triggerSpec;
