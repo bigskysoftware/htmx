@@ -157,8 +157,11 @@ There are few other modifiers you can use for trigger:
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
+*  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
+issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
+so the request will trigger at the end of the time period.
 
-You can use these two attributes to implement a common UX pattern, [Active Search](/examples/active-search):
+You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
 ```html
    <input type="text" name="q" 

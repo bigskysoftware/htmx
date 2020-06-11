@@ -571,6 +571,9 @@ return (function () {
                         if (token.indexOf("delay:") === 0) {
                             triggerSpec.delay = parseInterval(token.substr(6));
                         }
+                        if (token.indexOf("throttle:") === 0) {
+                            triggerSpec.delay = parseInterval(token.substr(9));
+                        }
                     }
                     return triggerSpec;
                 }).filter(function(x){ return x !== null });
@@ -663,13 +666,21 @@ return (function () {
                     if (elementData.delayed) {
                         clearTimeout(elementData.delayed);
                     }
-                    var issueRequest = function(){
-                        issueAjaxRequest(elt, verb, path, evt.target);
+                    if (elementData.throttle) {
+                        return;
                     }
-                    if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(issueRequest, triggerSpec.delay);
+
+                    if (triggerSpec.throttle) {
+                        elementData.throttle = setTimeout(function(){
+                            issueAjaxRequest(elt, verb, path, evt.target);
+                            elementData.throttle = null;
+                        }, triggerSpec.throttle);
+                    } else if (triggerSpec.delay) {
+                        elementData.delayed = setTimeout(function(){
+                            issueAjaxRequest(elt, verb, path, evt.target);
+                        }, triggerSpec.delay);
                     } else {
-                        issueRequest();
+                        issueAjaxRequest(elt, verb, path, evt.target);
                     }
                 }
             };

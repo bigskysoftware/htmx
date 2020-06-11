@@ -121,6 +121,7 @@ describe("hx-trigger attribute", function(){
         "event changed": [{trigger: 'event', changed: true}],
         "event once": [{trigger: 'event', once: true}],
         "event delay:1s": [{trigger: 'event', delay: 1000}],
+        "event throttle:1s": [{trigger: 'event', throttle: 1000}],
         "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
         "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
         "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
