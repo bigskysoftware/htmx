@@ -954,8 +954,8 @@ return (function () {
             return eventName === "processedNode.htmx"
         }
 
-        function withExtensions(elt, toDo) {
-            forEach(getExtensions(elt), function(extension){
+        function withExtensions(elt, toDo, extensions) {
+            forEach(typeof extensions === 'undefined' ? getExtensions(elt) : extensions, function(extension){
                 try {
                     toDo(extension);
                 } catch (e) {
@@ -988,7 +988,7 @@ return (function () {
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
-            });
+            }, detail.extensions);
             return eventResult;
         }
 
@@ -1407,7 +1407,7 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, extensions: getExtensions(elt)};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
