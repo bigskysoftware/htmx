@@ -568,8 +568,6 @@ If you set a logger at `htmx.logger`, every event will be logged.  This can be v
     }
 ```
 
-Htmx can also send errors to a URL that is specified with the [hx-error-url](/attributes/hx-error-url) attributes. This can be useful for debugging client-side issues.
-
 Htmx includes a helper method:
 
 ```javascript

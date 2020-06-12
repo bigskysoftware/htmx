@@ -888,10 +888,18 @@ return (function () {
             });
         }
 
+        function isHyperScriptAvailable() {
+            return typeof _hyperscript !== "undefined";
+        }
+
         function processNode(elt) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
                 nodeData.processed = true;
+
+                if(isHyperScriptAvailable()){
+                    _hyperscript.init(elt);
+                }
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -914,7 +922,6 @@ return (function () {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
-
             }
             if (elt.children) { // IE
                 forEach(elt.children, function(child) { processNode(child) });
@@ -924,16 +931,6 @@ return (function () {
         //====================================================================
         // Event/Log Support
         //====================================================================
-
-        function sendError(elt, eventName, detail) {
-            var errorURL = getClosestAttributeValue(elt, "hx-error-url");
-            if (errorURL) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", errorURL);
-                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "detail" : detail }));
-            }
-        }
 
         function makeEvent(eventName, detail) {
             var evt;
@@ -983,7 +980,7 @@ return (function () {
             }
             if (detail.error) {
                 logError(detail.error);
-                sendError(elt, eventName, detail);
+                triggerEvent(elt, "error.htmx", {errorDetail:detail})
             }
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {

@@ -13,7 +13,6 @@ title: </> htmx - Attributes
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
-| [`hx-error-url`](/attributes/hx-error-url) | a URL to send client-side errors to
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
