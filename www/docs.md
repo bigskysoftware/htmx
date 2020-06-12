@@ -582,7 +582,7 @@ if you want to log everything while developing.
 **NOTE: hyperscript is in very early alpha**
 
 Htmx has a sister project named [hyperscript](https://hyperscript.org).  Hyperscript is a small scripting language
-designed to be expressive, makding it ideal for embedding directly in HTML, handling custom events, etc.  The language
+designed to be expressive, making it ideal for embedding directly in HTML, handling custom events, etc.  The language
 is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), javascript, [gosu](https://gosu-lang.github.io/)
 and others.
 
