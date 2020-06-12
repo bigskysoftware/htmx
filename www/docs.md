@@ -611,9 +611,12 @@ Here is an example that posts all htmx errors to a server URL:
 Here is an example that takes an `active` class from other tabs:
 
 ```html
-<a class="tabs" _="on beforeOnLoad.htmx take .active from .tabs">
-  ...
-</a>
+<div hx-target="#tabBody" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+    <a class="tabs" hx-get="/tabl1" >Tab 1</a>
+    <a class="tabs" hx-get="/tabl2">Tab 2</a>
+    <a class="tabs" hx-get="/tabl3">Tab 3</a>
+</div>
+<div id="tabBody">...</div>
 ```
 
 ## <a name="config"></a>[Configuring htmx](#config)
