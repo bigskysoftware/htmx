@@ -27,6 +27,7 @@ title: </> htmx - high power tools for html
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
+* [hyperscript](#hyperscript)
 * [configuring](#config)
 
 </div>
@@ -575,6 +576,45 @@ Htmx includes a helper method:
 ```
 
 if you want to log everything while developing.
+
+## <a name="hyperscript"></a>[hyperscript](#hyperscript)
+
+**NOTE: hyperscript is in very early alpha**
+
+Htmx has a sister project named [hyperscript](https://hyperscript.org).  Hyperscript is a small scripting language
+designed to be expressive, makding it ideal for embedding directly in HTML, handling custom events, etc.  The language
+is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), javascript, [gosu](https://gosu-lang.github.io/)
+and others.
+
+The language can be explored more fully on its website:
+
+<http://hyperscript.org>
+
+### Catching Events with Hyperscript
+
+A primary use case of hyperscript is catching and responding to events triggered by htmx.
+
+Here is an example with an element that is shown for 5 seconds, then removes the element:
+
+```html
+<div _="on load wait 5s then remove me">Here is a temporary message!</div>
+```
+
+Here is an example that posts all htmx errors to a server URL:
+
+```html
+<body _="on error.htmx ajax POST to /errors with body event.detail.errorDetail">
+  ...
+</body>
+```
+
+Here is an example that takes an `active` class from other tabs:
+
+```html
+<a class="tabs" _="on beforeOnLoad.htmx take .active from .tabs">
+  ...
+</a>
+```
 
 ## <a name="config"></a>[Configuring htmx](#config)
 
