@@ -1334,7 +1334,8 @@ return (function () {
                 unfilteredParameters:rawParameters,
                 headers:headers,
                 target:target,
-                verb:verb
+                verb:verb,
+                xhrVerb: (verb === 'get') ? "GET" : "POST"
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
 
@@ -1357,7 +1358,7 @@ return (function () {
                 }
                 xhr.open('GET', finalPathForGet, true);
             } else {
-                xhr.open('POST', path, true);
+                xhr.open( requestConfig.xhrVerb, path, true);
             }
 
             xhr.overrideMimeType("text/html");
