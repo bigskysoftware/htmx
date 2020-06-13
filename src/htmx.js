@@ -792,9 +792,10 @@ return (function () {
             });
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function () {
+                var sseListener = function (sseEvent) {
                     if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
+                            getInternalData(elt).sseEvent = sseEvent;
                             issueAjaxRequest(elt, verb, path);
                         } else {
                             sseEventSource.removeEventListener(sseEventName, sseListener);
@@ -1314,7 +1315,10 @@ return (function () {
             var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
-            var rawParameters = getInputValues(elt, verb);
+
+            var rawParameters = (getInternalData(elt).sseEvent !== undefined) ? 
+            {'data':getInternalData(elt).sseEvent.data} : getInputValues(elt, verb);
+
             var filteredParameters = filterValues(rawParameters, elt);
 
             if (verb !== 'get') {
