@@ -1315,10 +1315,8 @@ return (function () {
             var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
-
-            var rawParameters = (getInternalData(elt).sseEvent !== undefined) ? 
-            {'data':getInternalData(elt).sseEvent.data} : getInputValues(elt, verb);
-
+            var rawParameters = (eltData.sseEvent !== undefined) ? 
+            {'data':eltData.sseEvent.data} : getInputValues(elt, verb);
             var filteredParameters = filterValues(rawParameters, elt);
 
             if (verb !== 'get') {
