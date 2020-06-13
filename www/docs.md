@@ -581,42 +581,70 @@ if you want to log everything while developing.
 
 **NOTE: hyperscript is in very early alpha**
 
-Htmx has a sister project named [hyperscript](https://hyperscript.org).  Hyperscript is a small scripting language
-designed to be expressive, making it ideal for embedding directly in HTML, handling custom events, etc.  The language
-is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), javascript, [gosu](https://gosu-lang.github.io/)
-and others.
+Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML, 
+handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), 
+javascript, [gosu](https://gosu-lang.github.io/) and others.
 
-The language can be explored more fully on its website:
+You can explore the language more fully on its main website:
 
 <http://hyperscript.org>
 
-### Catching Events with Hyperscript
+### Events & Hyperscript
 
-A primary use case of hyperscript is catching and responding to events triggered by htmx.
+Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
+directly, in a more flexible and open manner.  One of its prime features is the ability to respond to arbitrary events
+on a DOM element, using the `on` syntax:
 
-Here is an example with an element that is shown for 5 seconds, then removes the element:
+```html
+<div _="on afterSettle.htmx log 'Settled!'">
+ ...
+</div>
+```
+
+This will log `Settled!` to the console when the `afterSettle.htmx` event is triggered.
+
+#### intercooler.js features & hyperscript implementations
+
+Below are some examples of intercooler features and the hyperscript equivalent.  
+
+##### `ic-remove-after`
+
+Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
+for removing an element after a given amount of time.  
+
+In hyperscript this is implemented like so:
 
 ```html
 <div _="on load wait 5s then remove me">Here is a temporary message!</div>
 ```
 
-Here is an example that posts all htmx errors to a server URL:
+##### `ic-post-errors-to`
+
+Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
+for posting errors that occured during requests and responses.
+
+In hyperscript similar functionality is implemented like so:
 
 ```html
-<body _="on error.htmx ajax POST to /errors with body event.detail.errorDetail">
+<body _="on error.htmx(errorInfo) ajax POST errorInfo to /errors">
   ...
 </body>
 ```
 
-Here is an example that takes an `active` class from other tabs:
+##### `ic-switch-class`
+
+Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
+let you switch a class between siblings.
+
+In hyperscript you can implement similar functionality like so:
 
 ```html
-<div hx-target="#tabBody" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
-    <a class="tabs" hx-get="/tabl1" >Tab 1</a>
+<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
     <a class="tabs" hx-get="/tabl2">Tab 2</a>
     <a class="tabs" hx-get="/tabl3">Tab 3</a>
 </div>
-<div id="tabBody">...</div>
+<div id="content">Tab 1 Content</div>
 ```
 
 ## <a name="config"></a>[Configuring htmx](#config)

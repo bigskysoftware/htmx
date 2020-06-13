@@ -78,6 +78,9 @@
 
                 function makeTokensObject(tokens, consumed, source) {
 
+                    var ignoreWhiteSpace = true;
+                    matchTokenType("WHITESPACE"); // consume any initial whitespace
+
                     function raiseError(tokens, error) {
                         _parser.raiseParseError(tokens, error);
                     }
@@ -141,7 +144,20 @@
                     function consumeToken() {
                         var match = tokens.shift();
                         consumed.push(match);
+                        if(ignoreWhiteSpace) {
+                            matchTokenType("WHITESPACE"); // consume any whitespace until the next token
+                        }
                         return match;
+                    }
+
+                    function consumeUntilWhitespace() {
+                        var tokenList = [];
+                        ignoreWhiteSpace = false;
+                        while (currentToken() && currentToken().type !== "WHITESPACE") {
+                            tokenList.push(consumeToken());
+                        }
+                        ignoreWhiteSpace = true;
+                        return tokenList;
                     }
 
                     function hasMore() {
@@ -164,7 +180,8 @@
                         list: tokens,
                         source: source,
                         hasMore: hasMore,
-                        currentToken: currentToken
+                        currentToken: currentToken,
+                        consumeUntilWhitespace: consumeUntilWhitespace
                     }
                 }
 
@@ -177,11 +194,12 @@
                     var lastToken = "<START>";
 
                     while (position < source.length) {
-                        consumeWhitespace();
                         if (currentChar() === "-" && nextChar() === "-") {
                             consumeComment();
                         } else {
-                            if (!possiblePrecedingSymbol() && currentChar() === "." && isAlpha(nextChar())) {
+                            if (isWhitespace(currentChar())) {
+                                tokens.push(consumeWhitespace());
+                            } else if (!possiblePrecedingSymbol() && currentChar() === "." && isAlpha(nextChar())) {
                                 tokens.push(consumeClassReference());
                             } else if (!possiblePrecedingSymbol() && currentChar() === "#" && isAlpha(nextChar())) {
                                 tokens.push(consumeIdReference());
@@ -281,7 +299,7 @@
                     function consumeOp() {
                         var value = consumeChar(); // consume leading char
                         while (currentChar() && OP_TABLE[value + currentChar()]) {
-                          value += consumeChar();
+                            value += consumeChar();
                         }
                         var op = makeOpToken(OP_TABLE[value], value);
                         op.value = value;
@@ -329,13 +347,18 @@
                     }
 
                     function consumeWhitespace() {
+                        var whitespace = makeToken("WHITESPACE");
+                        var value = "";
                         while (currentChar() && isWhitespace(currentChar())) {
                             if (isNewline(currentChar())) {
                                 column = 0;
                                 line++;
                             }
-                            consumeChar();
+                            value += consumeChar();
                         }
+                        whitespace.value = value;
+                        whitespace.end = position;
+                        return whitespace;
                     }
                 }
 
@@ -458,6 +481,32 @@
                     }
                 }
 
+                function evalTarget(root, path) {
+                    if (root.length) {
+                        var last = root;
+                    } else {
+                        var last = [root];
+                    }
+
+                    while (path.length > 0) {
+                        var prop = path.shift();
+                        var next = []
+                        // flat map
+                        for (var i = 0; i < last.length; i++) {
+                            var element = last[i];
+                            var nextVal = element[prop];
+                            if (nextVal && nextVal.length) {
+                                next = next.concat(nextVal);
+                            } else {
+                                next.push(nextVal);
+                            }
+                        }
+                        last = next;
+                    }
+
+                    return last;
+                }
+
                 function getScript(elt) {
                     for (var i = 0; i < SCRIPT_ATTRIBUTES.length; i++) {
                         var scriptAttribute = SCRIPT_ATTRIBUTES[i];
@@ -499,7 +548,7 @@
                         var ctx = ctxArg;
                     } else {
                         var src = typeOrSrc;
-                            var ctx = {};
+                        var ctx = {};
                         var type = "expression";
                     }
                     ctx = ctx || {};
@@ -552,6 +601,7 @@
                 return {
                     typeCheck: typeCheck,
                     forEach: forEach,
+                    evalTarget: evalTarget,
                     triggerEvent: triggerEvent,
                     matchesSelector: matchesSelector,
                     getScript: getScript,
@@ -594,6 +644,20 @@
                             } else {
                                 return '"' + stringToken.value + '"';
                             }
+                        }
+                    }
+                }
+            })
+
+            _parser.addGrammarElement("nakedString", function (parser, tokens) {
+                if (tokens.hasMore()) {
+                    var tokenArr = tokens.consumeUntilWhitespace();
+                    tokens.matchTokenType("WHITESPACE");
+                    return {
+                        type: "nakedString",
+                        tokens: tokenArr,
+                        transpile: function () {
+                            return "'" + tokenArr.map(function(t){return t.value}).join("") + "'";
                         }
                     }
                 }
@@ -1019,21 +1083,24 @@
             });
 
             _parser.addGrammarElement("target", function (parser, tokens) {
-                var value = parser.parseAnyOf(["symbol", "classRef", "idRef"], tokens);
-                if (value == null) {
+                var root = parser.parseAnyOf(["symbol", "classRef", "idRef"], tokens);
+                if (root == null) {
                     parser.raiseParseError(tokens, "Expected a valid target expression");
                 }
+
+                var propPath = []
+                while (tokens.matchOpToken(".")) {
+                    propPath.push(tokens.requireTokenType("IDENTIFIER").value)
+                }
+
                 return {
                     type: "target",
-                    value: value,
-                    transpile: function (context) {
-                        if (value.type === "classRef") {
-                            return parser.transpile(value);
-                        } else if (value.type === "idRef") {
-                            return "[" + parser.transpile(value) + "]";
-                        } else {
-                            return "[" + parser.transpile(value) + "]"; //TODO, check if array?
-                        }
+                    propPath: propPath,
+                    root: root,
+                    transpile: function () {
+                        return "_hyperscript.runtime.evalTarget(" + parser.transpile(root) + ", [" + propPath.map(function (prop) {
+                            return "\"" + prop + "\""
+                        }).join(", ") + "])";
                     }
                 };
             });
@@ -1091,6 +1158,15 @@
                 } else {
                     var from = parser.parseElement("implicitMeTarget", tokens);
                 }
+
+                var args = [];
+                if (tokens.matchOpToken("(")) {
+                    do {
+                        args.push(tokens.requireTokenType('IDENTIFIER'));
+                    } while (tokens.matchOpToken(","))
+                    tokens.requireOpToken(')')
+                }
+
                 var start = parser.parseElement("commandList", tokens);
                 var eventListener = {
                     type: "eventListener",
@@ -1102,6 +1178,7 @@
                             "var my = me;\n" +
                             "_hyperscript.runtime.forEach( " + parser.transpile(from) + ", function(target){\n" +
                             "  target.addEventListener('" + parser.transpile(on) + "', function(event){\n" +
+                            args.map(function(arg){return "var " + arg.value + " = event.detail." + arg.value + ";"}).join("\n") + "\n" +
                             parser.transpile(start) +
                             "  })\n" +
                             "})\n" +
@@ -1301,14 +1378,24 @@
                     } else {
                         var from = parser.parseElement("implicitAllTarget")
                     }
+
+                    if (tokens.matchToken("for")) {
+                        var forElt = parser.parseElement("target", tokens);
+                    } else {
+                        var forElt = parser.parseElement("implicitMeTarget")
+                    }
+
                     return {
                         type: "takeCmd",
                         classRef: classRef,
                         from: from,
+                        forElt: forElt,
                         transpile: function () {
                             var clazz = this.classRef.value.substr(1);
                             return "  _hyperscript.runtime.forEach(" + parser.transpile(from) + ", function (target) { target.classList.remove('" + clazz + "') }); " +
-                                "me.classList.add('" + clazz + "');";
+                                "_hyperscript.runtime.forEach( " + parser.transpile(forElt) + ", function (target) {" +
+                                "  target.classList.add('" + clazz + "')" +
+                                "})";
                         }
                     }
                 }
@@ -1369,13 +1456,9 @@
                         parser.raiseParseError(tokens, "Expected one of 'into', 'before', 'afterbegin', 'beforeend', 'after'")
                     }
                     var target = parser.parseElement("target", tokens);
-                    var propPath = []
-                    while (tokens.matchOpToken(".")) {
-                        propPath.push(tokens.requireTokenType("IDENTIFIER").value)
-                    }
 
-                    var directWrite = propPath.length === 0 && operation.value === "into";
-                    var symbolWrite = directWrite && target.value.type === "symbol";
+                    var directWrite = target.propPath.length === 0 && operation.value === "into";
+                    var symbolWrite = directWrite && target.root.type === "symbol";
                     if (directWrite && !symbolWrite) {
                         parser.raiseParseError(tokens, "Can only put directly into symbols, not references")
                     }
@@ -1383,34 +1466,33 @@
                     return {
                         type: "putCmd",
                         target: target,
-                        propPath: propPath,
                         op: operation.value,
                         symbolWrite: symbolWrite,
                         value: value,
                         transpile: function () {
                             if (this.symbolWrite) {
-                                return "var " + target.value.name + " = " + parser.transpile(value);
+                                return "var " + target.root.name + " = " + parser.transpile(value);
                             } else {
-                                var dotPath = propPath.length === 0 ? "" : "." + propPath.join(".");
                                 if (this.op === "into") {
+                                    var lastProperty = target.propPath.pop(); // steal last property for assignment
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
-                                        "  target" + dotPath + "=" + parser.transpile(value) +
+                                        "  target." + lastProperty + "=" + parser.transpile(value) +
                                         "})";
                                 } else if (this.op === "before") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
-                                        "  target" + dotPath + ".insertAdjacentHTML('beforebegin', " + parser.transpile(value) + ")" +
+                                        "  target.insertAdjacentHTML('beforebegin', " + parser.transpile(value) + ")" +
                                         "})";
                                 } else if (this.op === "afterbegin") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
-                                        "  target" + dotPath + ".insertAdjacentHTML('afterbegin', " + parser.transpile(value) + ")" +
+                                        "  target.insertAdjacentHTML('afterbegin', " + parser.transpile(value) + ")" +
                                         "})";
                                 } else if (this.op === "beforeend") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
-                                        "  target" + dotPath + ".insertAdjacentHTML('beforeend', " + parser.transpile(value) + ")" +
+                                        "  target.insertAdjacentHTML('beforeend', " + parser.transpile(value) + ")" +
                                         "})";
                                 } else if (this.op === "after") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
-                                        "  target" + dotPath + ".insertAdjacentHTML('afterend', " + parser.transpile(value) + ")" +
+                                        "  target.insertAdjacentHTML('afterend', " + parser.transpile(value) + ")" +
                                         "})";
                                 }
                             }
@@ -1452,20 +1534,17 @@
                     if (method.value === "GET") {
                         tokens.requireToken("from");
                     } else {
-                        tokens.requireToken("to");
+                        if (!tokens.matchToken("to")) {
+                            var data = parser.parseElement("expression", tokens);
+                            tokens.requireToken("to");
+                        }
                     }
 
                     var url = parser.parseElement("string", tokens);
                     if (url == null) {
-                        parser.raiseParseError(tokens, "Requires a URL");
+                        var url = parser.parseElement("nakedString", tokens);
                     }
-                    if (tokens.matchToken("with")) {
-                        tokens.requireToken("body");
-                        var data = parser.parseElement("expression", tokens);
-                        if (data == null) {
-                            parser.raiseParseError(tokens, "Requires a URL");
-                        }
-                    }
+
                     return {
                         type: "requestCommand",
                         method: method,
@@ -1473,8 +1552,8 @@
                             var capturedNext = this.next;
                             delete this.next;
                             return "_hyperscript.runtime.ajax('" + method.value + "', " +
-                                 parser.transpile(url) + ", " +
-                                 "function(it){ " + parser.transpile(capturedNext) + " }," +
+                                parser.transpile(url) + ", " +
+                                "function(response){ " + parser.transpile(capturedNext) + " }," +
                                 parser.transpile(data, "null") + ")";
                         }
                     };

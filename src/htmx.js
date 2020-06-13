@@ -980,7 +980,7 @@ return (function () {
             }
             if (detail.error) {
                 logError(detail.error);
-                triggerEvent(elt, "error.htmx", {errorDetail:detail})
+                triggerEvent(elt, "error.htmx", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {
