@@ -1525,7 +1525,7 @@ return (function () {
                                         doSettle();
                                     }
                                 } catch (e) {
-                                    triggerErrorEvent(elt, 'swapError.htmx', eventDetail);
+                                    triggerErrorEvent(elt, 'swapError.htmx', mergeObjects({error: e}, eventDetail));
                                     throw e;
                                 }
                             };
@@ -1537,7 +1537,7 @@ return (function () {
                             }
                         }
                     } else {
-                        triggerErrorEvent(elt, 'responseError.htmx', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
+                        triggerErrorEvent(elt, 'responseError.htmx', mergeObjects({error: {status: this.status, path: path, verb: verb}}, eventDetail));
                     }
                 } catch (e) {
                     triggerErrorEvent(elt, 'onLoadError.htmx', mergeObjects({error:e}, eventDetail));

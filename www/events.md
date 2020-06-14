@@ -100,9 +100,10 @@ than a single value.
 * `detail.parameters` - the parameters that will be submitted in the request
 * `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
 * `detail.headers` - the request headers
+* `detail.verb` - the HTTP verb in use
+* `detail.path` - the request path
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
-* `detail.verb` - the HTTP verb in use
 
 ### <a name="historyCacheMiss.htmx"></a> Event - [`historyCacheMiss.htmx`](#historyCacheMiss.htmx)
 
@@ -179,7 +180,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
-* `detail.exception` - the exception that occurred
+* `detail.error` - the exception that occurred
 
 ### <a name="oobErrorNoTarget.htmx"></a> Event - [`oobErrorNoTarget.htmx`](#oobErrorNoTarget.htmx)
 
@@ -210,6 +211,10 @@ This event is triggered when an HTTP error response occurs
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.error` - object with:
+  * `status` - http status code of the response
+  * `path` - request path
+  * `verb` - request verb
 
 ### <a name="sendError.htmx"></a> Event - [`sendError.htmx`](#sendError.htmx)
 
@@ -240,6 +245,7 @@ This event is triggered when an error occurs during the swap phase
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.error` - the exception that occurred
 
 ### <a name="targetError.htmx"></a> Event - [`targetError.htmx`](#targetError.htmx)
 
