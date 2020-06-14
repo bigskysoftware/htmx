@@ -104,8 +104,8 @@ title: </> htmx - Attributes
 | [`beforeSwap.htmx`](/events#beforeSwap.htmx)  | triggered before a swap is done
 | [`configRequest.htmx`](/events#configRequest.htmx)  | triggered before the request, allows you to customize parameters, headers
 | [`historyCacheMiss.htmx`](/events#historyCacheMiss.htmx)  | triggered on a cache miss in the history subsystem
-| [`historyCacheMissError.htmx`](/events#historyCacheMissError.htmx)  | triggered on a unsuccessful remote retrieval 
 | [`historyCacheMissLoad.htmx`](/events#historyCacheMissLoad.htmx)  | triggered on a succesful remote retrieval 
+| [`historyCacheMissLoadError.htmx`](/events#historyCacheMissLoadError.htmx)  | triggered on a unsuccessful remote retrieval
 | [`historyRestore.htmx`](/events#historyRestore.htmx)  | triggered when htmx handles a history restoration action
 | [`beforeHistorySave.htmx`](/events#beforeHistorySave.htmx)  | triggered before content is saved to the history cache
 | [`load.htmx`](/events#load.htmx)  | triggered when new content is added to the DOM

@@ -113,20 +113,20 @@ This event is triggered when a cache miss occurs when restoring history
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
 
-### <a name="historyCacheMissError.htmx"></a> Event - [`historyCacheMissError.htmx`](#historyCacheMissError.htmx)
+### <a name="historyCacheMissLoad.htmx"></a> Event - [`historyCacheMissLoad.htmx`](#historyCacheMissLoad.htmx)
 
-This event is triggered when a cache miss occurs and a response has been retrieved from the server
-for the content to restore, but the response is an error (e.g. `404`)
+This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
+for the content to restore 
 
 ##### Details
 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 
-### <a name="historyCacheMissLoad.htmx"></a> Event - [`historyCacheMissLoad.htmx`](#historyCacheMissLoad.htmx)
+### <a name="historyCacheMissLoadError.htmx"></a> Event - [`historyCacheMissLoadError.htmx`](#historyCacheMissLoadError.htmx)
 
-This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
-for the content to restore 
+This event is triggered when a cache miss occurs and a response has been retrieved from the server
+for the content to restore, but the response is an error (e.g. `404`)
 
 ##### Details
 
