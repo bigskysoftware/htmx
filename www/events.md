@@ -157,7 +157,7 @@ This event is triggered when htmx handles a history restoration action
 
 ### <a name="load.htmx"></a> Event - [`load.htmx`](#load.htmx)
 
-This event is triggered when a new node is loaded into the DOM by htmx.
+This event is triggered when a new node is loaded into the DOM by htmx. Called first with `body` when page is fully loaded.
 
 ##### Details
 

@@ -9,17 +9,22 @@ describe("Core htmx Events", function() {
     });
 
     it("load.htmx fires properly", function () {
-        var called = false;
+        var calls = [];
         var handler = htmx.on("load.htmx", function (evt) {
-            called = true;
+            calls.push({detailElt: evt.detail.elt, eventTarget: evt.target});
         });
         try {
             this.server.respondWith("GET", "/test", "");
-            this.server.respondWith("GET", "/test", "<div></div>");
+            this.server.respondWith("GET", "/test", "<div id='id1'><span></span></div><div id='id2'></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
-            should.equal(called, true);
+            // called for new "parents" element, ie div id1 & id2 but not the span
+            calls.length.should.equal(2);
+            calls[0].eventTarget.id.should.equal('id1');
+            calls[0].detailElt.id.should.equal('id1');
+            calls[1].eventTarget.id.should.equal('id2');
+            calls[1].detailElt.id.should.equal('id2');
         } finally {
             htmx.off("load.htmx", handler);
         }
