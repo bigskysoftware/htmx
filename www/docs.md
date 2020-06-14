@@ -631,6 +631,22 @@ In hyperscript similar functionality is implemented like so:
 </body>
 ```
 
+##### `ic-switch-class`
+
+Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
+let you switch a class between siblings.
+
+In hyperscript you can implement similar functionality like so:
+
+```html
+<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
+    <a class="tabs" hx-get="/tabl2">Tab 2</a>
+    <a class="tabs" hx-get="/tabl3">Tab 3</a>
+</div>
+<div id="content">Tab 1 Content</div>
+```
+
 ##### `X-IC-Redirect`
 
 Intercooler provided more response headers than htmx does:  `X-IC-Refresh`, `X-IC-Redirect` etc.  Htmx omits these
@@ -648,22 +664,6 @@ Then we would write the following hyperscript:
 <body _="on redirect(url) put url into window.location">
   ...
 </body>
-```
-
-##### `ic-switch-class`
-
-Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
-let you switch a class between siblings.
-
-In hyperscript you can implement similar functionality like so:
-
-```html
-<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
-    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
-    <a class="tabs" hx-get="/tabl2">Tab 2</a>
-    <a class="tabs" hx-get="/tabl3">Tab 3</a>
-</div>
-<div id="content">Tab 1 Content</div>
 ```
 
 ## <a name="config"></a>[Configuring htmx](#config)
