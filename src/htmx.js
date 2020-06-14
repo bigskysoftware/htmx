@@ -417,13 +417,16 @@ return (function () {
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
             handleAttributes(parentNode, fragment, settleInfo);
+            var newElts = [];
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                     settleInfo.tasks.push(makeAjaxLoadTask(child));
+                    newElts.push(child);
                 }
             }
+            return newElts;
         }
 
         function closeConnections(target) {
@@ -464,7 +467,10 @@ return (function () {
         }
 
         function swapBeforeBegin(target, fragment, settleInfo) {
-            return insertNodesBefore(parentElt(target), target, fragment, settleInfo);
+            var elts = insertNodesBefore(parentElt(target), target, fragment, settleInfo);
+            for (var i = 0; i < elts.length; i++) {
+                settleInfo.elts.push(elts[i]);
+            }
         }
 
         function swapBeforeEnd(target, fragment, settleInfo) {
@@ -472,7 +478,10 @@ return (function () {
         }
 
         function swapAfterEnd(target, fragment, settleInfo) {
-            return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
+            var elts = insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
+            for (var i = 0; i < elts.length; i++) {
+                settleInfo.elts.push(elts[i]);
+            }
         }
 
         function swapInnerHTML(target, fragment, settleInfo) {
@@ -526,10 +535,12 @@ return (function () {
                             if (newElements) {
                                 if (typeof newElements.length !== 'undefined') {
                                     // if handleSwap returns an array (like) of elements, we handle them
+                                    settleInfo.elts = [];
                                     for (var j = 0; j < newElements.length; j++) {
                                         var child = newElements[j];
                                         if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                                             settleInfo.tasks.push(makeAjaxLoadTask(child));
+                                            settleInfo.elts.push(child);
                                         }
                                     }
                                 }
@@ -1399,7 +1410,8 @@ return (function () {
                 headers:headers,
                 target:target,
                 verb:verb,
-                path:path
+                path:path,
+                trigger: elt
             };
             if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
             // copy out in case the object was overwritten
@@ -1439,7 +1451,7 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, trigger: elt};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;

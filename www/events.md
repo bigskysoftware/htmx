@@ -5,8 +5,12 @@ title: </> htmx - high power tools for html
 
 ## Events
 
-Htmx provides an extensive events system that can be used to modify and enhance behavior.  Events
-are listed below.
+Htmx provides an extensive events system that can be used to modify and enhance behavior.
+
+All events contain a `detail` object, with at least an `elt` key that is the event target (so also
+accessible via `event.target`)
+
+Events are listed below.
 
 ### <a name="afterOnLoad.htmx"></a> Event - [`afterOnLoad.htmx`](#afterOnLoad.htmx)
 
@@ -18,6 +22,7 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="afterRequest.htmx"></a> Event - [`afterRequest.htmx`](#afterRequest.htmx)
 
@@ -30,26 +35,49 @@ can be paried with [`beforeRequest.htmx`](#beforeRequest.htmx) to wrap behavior 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="afterSettle.htmx"></a> Event - [`afterSettle.htmx`](#afterSettle.htmx)
 
 This event is triggered after the DOM has [settled](/docs#settling).
 
+It can be called once or many times depending on `hx-swap`:
+
+* `innerHTML` - for the target of the request
+* `outerHTML` - once for each top level elements(s) added in place of the target of the request
+* `beforebegin` - for the target of the request + once for each top level element(s) added before this target
+* `beforeend` - for the target of the request
+* `afterend` - for the target of the request + once for each top level element(s) added after thistarget
+
+For each call, `event.detail.elt` (and `event.target`) will be one of these elements.
+
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the added/updated element
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="afterSwap.htmx"></a> Event - [`afterSwap.htmx`](#afterSwap.htmx)
 
-This event is triggered after new content has been  [swapped into the DOM](/docs#swapping).
+This event is triggered after new content has been [swapped into the DOM](/docs#swapping).
+
+It can be called once or many times depending on `hx-swap`:
+
+* `innerHTML` - for the target of the request
+* `outerHTML` - once for each top level elements(s) added in place of the target of the request
+* `beforebegin` - for the target of the request + once for each top level element(s) added before this target
+* `beforeend` - for the target of the request
+* `afterend` - for the target of the request + once for each top level element(s) added after thistarget
+
+For each call, `event.detail.elt` (and `event.target`) will be one of these elements.
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the added/updated element
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="beforeOnLoad.htmx"></a> Event - [`beforeOnLoad.htmx`](#beforeOnLoad.htmx)
 
@@ -60,6 +88,7 @@ This event is triggered before any response processing occurs.  If the event is 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="beforeRequest.htmx"></a> Event - [`beforeRequest.htmx`](#beforeRequest.htmx)
 
@@ -70,6 +99,7 @@ This event is triggered before an AJAX request is issued.  If the event is cance
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="beforeSwap.htmx"></a> Event - [`beforeSwap.htmx`](#beforeSwap.htmx)
 
@@ -80,6 +110,7 @@ This event is triggered before any new content has been [swapped into the DOM](/
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="configRequest.htmx"></a> Event - [`configRequest.htmx`](#configRequest.htmx)
 
@@ -104,6 +135,7 @@ than a single value.
 * `detail.path` - the request path
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 
 ### <a name="historyCacheMiss.htmx"></a> Event - [`historyCacheMiss.htmx`](#historyCacheMiss.htmx)
 
@@ -180,6 +212,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 * `detail.error` - the exception that occurred
 
 ### <a name="oobErrorNoTarget.htmx"></a> Event - [`oobErrorNoTarget.htmx`](#oobErrorNoTarget.htmx)
@@ -211,6 +244,7 @@ This event is triggered when an HTTP error response occurs
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 * `detail.error` - object with:
   * `status` - http status code of the response
   * `path` - request path
@@ -245,6 +279,7 @@ This event is triggered when an error occurs during the swap phase
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.trigger` - the element that dispatched the request
 * `detail.error` - the exception that occurred
 
 ### <a name="targetError.htmx"></a> Event - [`targetError.htmx`](#targetError.htmx)

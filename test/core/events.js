@@ -123,5 +123,252 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("configureRequest.htmx should contain correct elements", function () {
+        var calls = [];
+        var handler = htmx.on("configRequest.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0'></div>");
+            div.click();
+            this.server.respond();
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("configRequest.htmx", handler);
+        }
+    });
+
+    it("beforeOnLoad.htmx should contain correct elements", function () {
+        var calls = [];
+        var handler = htmx.on("beforeOnLoad.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0'></div>");
+            div.click();
+            this.server.respond();
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("beforeOnLoad.htmx", handler);
+        }
+    });
+
+    it("beforeSwap.htmx should contain correct elements (target == trigger)", function () {
+        var calls = [];
+        var handler = htmx.on("beforeSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0'></div>");
+            div.click();
+            this.server.respond();
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("beforeSwap.htmx", handler);
+        }
+    });
+
+    it("beforeSwap.htmx should contain correct elements (target != trigger)", function () {
+        var calls = [];
+        var handler = htmx.on("beforeSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var trigger = make("<div hx-get='/test' id='id0' hx-target='#id00 '></div>");
+            var target = make("<div id='id00'></div>");
+            trigger.click();
+            this.server.respond();
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(target);
+            calls[0].detailTrigger.should.equal(trigger);
+            calls[0].detailTarget.should.equal(target);
+            calls[0].detailElt.should.equal(target);
+        } finally {
+            htmx.off("beforeSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=innerHTML)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='innerHTML'></div>");
+            div.click();
+            this.server.respond();
+            // target is the only pseudo-root content updated
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=outerHTML)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='outerHTML'></div>");
+            div.click();
+            this.server.respond();
+            // target is replaced by two new pseudo-roots: id1 & id2
+            calls.length.should.equal(2);
+            calls[0].eventTarget.id.should.equal('id1');
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.id.should.equal('id1');
+            calls[1].eventTarget.id.should.equal('id2');
+            calls[1].detailTrigger.should.equal(div);
+            calls[1].detailTarget.should.equal(div);
+            calls[1].detailElt.id.should.equal('id2');
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=beforebegin)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='beforebegin'></div>");
+            div.click();
+            this.server.respond();
+            // target is preceded by two new pseudo-roots: id1 & id2
+            calls.length.should.equal(3);
+            calls[0].eventTarget.id.should.equal('id0');
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.id.should.equal('id0');
+            calls[1].eventTarget.id.should.equal('id1');
+            calls[1].detailTrigger.should.equal(div);
+            calls[1].detailTarget.should.equal(div);
+            calls[1].detailElt.id.should.equal('id1');
+            calls[2].eventTarget.id.should.equal('id2');
+            calls[2].detailTrigger.should.equal(div);
+            calls[2].detailTarget.should.equal(div);
+            calls[2].detailElt.id.should.equal('id2');
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=afterbegin)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='afterbegin'></div>");
+            div.click();
+            this.server.respond();
+            // target is still the only pseudo-root content updated
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=beforeend)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='beforeend'></div>");
+            div.click();
+            this.server.respond();
+            // target is still the only pseudo-root content updated
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterSwap.htmx should contain correct elements (swap=afterend)", function () {
+        var calls = [];
+        var handler = htmx.on("afterSwap.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0' hx-swap='afterend'></div>");
+            div.click();
+            this.server.respond();
+            // target is followed by two new pseudo-roots: id1 & id2
+            calls.length.should.equal(3);
+            calls[0].eventTarget.id.should.equal('id0');
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.id.should.equal('id0');
+            calls[1].eventTarget.id.should.equal('id1');
+            calls[1].detailTrigger.should.equal(div);
+            calls[1].detailTarget.should.equal(div);
+            calls[1].detailElt.id.should.equal('id1');
+            calls[2].eventTarget.id.should.equal('id2');
+            calls[2].detailTrigger.should.equal(div);
+            calls[2].detailTarget.should.equal(div);
+            calls[2].detailElt.id.should.equal('id2');
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
+    it("afterOnLoad.htmx should contain correct elements", function () {
+        var calls = [];
+        var handler = htmx.on("afterOnLoad.htmx", function (evt) {
+            calls.push({detailElt: evt.detail.elt, detailTrigger: evt.detail.trigger, detailTarget: evt.detail.target, eventTarget: evt.target});
+        });
+        try {
+            this.server.respondWith("GET", "/test", "<div id='id1'></div><div id='id2'></div>");
+            var div = make("<div hx-get='/test' id='id0'></div>");
+            div.click();
+            this.server.respond();
+            calls.length.should.equal(1);
+            calls[0].eventTarget.should.equal(div);
+            calls[0].detailTrigger.should.equal(div);
+            calls[0].detailTarget.should.equal(div);
+            calls[0].detailElt.should.equal(div);
+        } finally {
+            htmx.off("afterSwap.htmx", handler);
+        }
+    });
+
 });
 
