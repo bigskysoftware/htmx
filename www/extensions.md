@@ -40,6 +40,7 @@ The following extensions that are tested and distributed with htmx:
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
+| [`ajax-header`](/extensions/ajax-header) | includes the commonly-used X-Requested-With header that identifies ajax requests in many backend frameworks
 
 </div>
 
