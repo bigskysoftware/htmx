@@ -38,7 +38,7 @@ and on the `body` tag for it to apply to all htmx requests.
 htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
 against `htmx` in each distribution
 
-### Included Extensions List
+### <a name='reference'></a> [Included Extensions List](#reference)
 
 <div class="info-table">
 

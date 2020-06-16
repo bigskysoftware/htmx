@@ -4,6 +4,15 @@ title: </> htmx - Attributes
 ---
 
 
+## Contents
+
+* [Htmx Attribute Reference](#attributes)
+* [Htmx CSS Class Reference](#classes)
+* [Htmx Request Headers Reference](#request_headers)
+* [Htmx Response Headers Reference](#response_headers)
+* [Htmx Event Reference](#events)
+* [Htmx Extensions Reference](/extensions#reference)
+
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
 <div class="info-table">
@@ -49,7 +58,7 @@ title: </> htmx - Attributes
 
 ## <a name="headers"></a> [HTTP Header Reference](#headers)
 
-### <a name="request_headers"></a> [Request Headers](#request_headers)
+### <a name="request_headers"></a> [Request Headers Reference](#request_headers)
 
 <div class="info-table">
 
@@ -69,7 +78,7 @@ title: </> htmx - Attributes
 
 </div>
 
-### <a name="response_headers"></a> [Response Headers](#response_headers)
+### <a name="response_headers"></a> [Response Headers Reference](#response_headers)
 
 <div class="info-table">
 
