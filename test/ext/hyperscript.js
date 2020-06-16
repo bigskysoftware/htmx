@@ -28,7 +28,7 @@ describe("hyperscript integration", function() {
     it('can handle htmx error events', function () {
         this.server.respondWith("GET", "/test", [404, {}, "Bad request"]);
         var div = make('<div id="d1"></div>')
-        var btn = make('<button _="on error.htmx put event.detail.errorDetail.error into #d1.innerHTML" hx-get="/test">Click Me!</button>')
+        var btn = make('<button _="on error.htmx(errorInfo) put errorInfo.error into #d1.innerHTML" hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
         div.innerHTML.should.equal("Response Status Error Code 404 from /test");
