@@ -50,7 +50,6 @@ describe("hx-ws attribute", function() {
         var div = make('<div hx-ws="connect wss:/foo"><div hx-ws="send" id="d1">div1</div></div>');
         byId("d1").click();
         var lastSent = this.socket.getLastSent();
-        console.log(lastSent)
         var data = JSON.parse(lastSent);
         data.HEADERS["HX-Request"].should.equal("true");
     })
