@@ -27,6 +27,7 @@ title: </> htmx - high power tools for html
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
+* [hyperscript](#hyperscript)
 * [configuring](#config)
 
 </div>
@@ -157,8 +158,11 @@ There are few other modifiers you can use for trigger:
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
+*  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
+issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
+so the request will trigger at the end of the time period.
 
-You can use these two attributes to implement a common UX pattern, [Active Search](/examples/active-search):
+You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
 ```html
    <input type="text" name="q" 
@@ -302,6 +306,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
+| `none` | does not append content from respons (out of band items will still be processed)
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -564,8 +569,6 @@ If you set a logger at `htmx.logger`, every event will be logged.  This can be v
     }
 ```
 
-Htmx can also send errors to a URL that is specified with the [hx-error-url](/attributes/hx-error-url) attributes. This can be useful for debugging client-side issues.
-
 Htmx includes a helper method:
 
 ```javascript
@@ -573,6 +576,95 @@ Htmx includes a helper method:
 ```
 
 if you want to log everything while developing.
+
+## <a name="hyperscript"></a>[hyperscript](#hyperscript)
+
+**NOTE: hyperscript is in very early alpha**
+
+Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML, 
+handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), 
+javascript, [gosu](https://gosu-lang.github.io/) and others.
+
+You can explore the language more fully on its main website:
+
+<http://hyperscript.org>
+
+### Events & Hyperscript
+
+Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
+directly, in a more flexible and open manner.  One of its prime features is the ability to respond to arbitrary events
+on a DOM element, using the `on` syntax:
+
+```html
+<div _="on afterSettle.htmx log 'Settled!'">
+ ...
+</div>
+```
+
+This will log `Settled!` to the console when the `afterSettle.htmx` event is triggered.
+
+#### intercooler.js features & hyperscript implementations
+
+Below are some examples of intercooler features and the hyperscript equivalent.  
+
+##### `ic-remove-after`
+
+Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
+for removing an element after a given amount of time.  
+
+In hyperscript this is implemented like so:
+
+```html
+<div _="on load wait 5s then remove me">Here is a temporary message!</div>
+```
+
+##### `ic-post-errors-to`
+
+Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
+for posting errors that occured during requests and responses.
+
+In hyperscript similar functionality is implemented like so:
+
+```html
+<body _="on error.htmx(errorInfo) ajax POST errorInfo to /errors">
+  ...
+</body>
+```
+
+##### `ic-switch-class`
+
+Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
+let you switch a class between siblings.
+
+In hyperscript you can implement similar functionality like so:
+
+```html
+<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
+    <a class="tabs" hx-get="/tabl2">Tab 2</a>
+    <a class="tabs" hx-get="/tabl3">Tab 3</a>
+</div>
+<div id="content">Tab 1 Content</div>
+```
+
+##### `X-IC-Redirect`
+
+Intercooler provided more response headers than htmx does:  `X-IC-Refresh`, `X-IC-Redirect` etc.  Htmx omits these
+headers in favor of the general `HX-Trigger`, combined with some client side code.
+
+Let's implement the `X-IC-Redirect` header using the `HX-Trigger` response header and some hyperscript.
+
+First, let's trigger an event with a response header that looks like this:
+
+`HX-Trigger:{"redirect":{"url":"https://htmx.org"}}`
+
+Then we would write the following hyperscript:
+
+```html
+<body _="on redirect(url) put url into window.location">
+  ...
+</body>
+```
 
 ## <a name="config"></a>[Configuring htmx](#config)
 

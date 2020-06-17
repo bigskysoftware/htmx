@@ -53,8 +53,7 @@ This event is triggered after new content has been  [swapped into the DOM](/docs
 
 ### <a name="beforeOnLoad.htmx"></a> Event - [`beforeOnLoad.htmx`](#beforeOnLoad.htmx)
 
-This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If
-the event is cancelled, no swap will occur.
+This event is triggered before any response processing occurs.  If the event is cancelled, no swap will occur.
 
 ##### Details
 
@@ -72,6 +71,39 @@ This event is triggered before an AJAX request is issued.  If the event is cance
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 
+### <a name="beforeSwap.htmx"></a> Event - [`beforeSwap.htmx`](#beforeSwap.htmx)
+
+This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If the event is cancelled, no swap will occur.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+
+### <a name="configRequest.htmx"></a> Event - [`configRequest.htmx`](#configRequest.htmx)
+
+This event is triggered after htmx has collected parameters for inclusion in the request.  It can be
+used to include or update the parameters that htmx will send:
+
+```javascript
+document.body.addEventListener('configRequest.htmx', function(evt) {
+    evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
+});
+```
+
+Note that if an input value appears more than once the value in the `parameters` object will be an array, rather
+than a single value.
+
+##### Details
+
+* `detail.parameters` - the parameters that will be submitted in the request
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
+* `detail.headers` - the request headers
+* `detail.elt` - the element that triggered the request
+* `detail.target` - the target of the request
+* `detail.verb` - the HTTP verb in use
+
 ### <a name="historyCacheMiss.htmx"></a> Event - [`historyCacheMiss.htmx`](#historyCacheMiss.htmx)
 
 This event is triggered when a cache miss occurs when restoring history
@@ -81,20 +113,20 @@ This event is triggered when a cache miss occurs when restoring history
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
 
-### <a name="historyCacheMissLoad.htmx"></a> Event - [`historyCacheMissLoad.htmx`](#historyCacheMissLoad.htmx)
+### <a name="historyCacheMissError.htmx"></a> Event - [`historyCacheMissError.htmx`](#historyCacheMissError.htmx)
 
-This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
-for the content to restore 
+This event is triggered when a cache miss occurs and a response has been retrieved from the server
+for the content to restore, but the response is an error (e.g. `404`)
 
 ##### Details
 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 
-### <a name="historyCacheMissError.htmx"></a> Event - [`historyCacheMissError.htmx`](#historyCacheMissError.htmx)
+### <a name="historyCacheMissLoad.htmx"></a> Event - [`historyCacheMissLoad.htmx`](#historyCacheMissLoad.htmx)
 
-This event is triggered when a cache miss occurs and a response has been retrieved from the server
-for the content to restore, but the response is an error (e.g. `404`)
+This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
+for the content to restore 
 
 ##### Details
 
@@ -208,29 +240,6 @@ This event is triggered when an error occurs during the swap phase
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
-
-### <a name="configRequest.htmx"></a> Event - [`configRequest.htmx`](#configRequest.htmx)
-
-This event is triggered after htmx has collected parameters for inclusion in the request.  It can be
-used to include or update the parameters that htmx will send:
-
-```javascript
-document.body.addEventListener('configRequest.htmx', function(evt) {
-    evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
-});
-```
-
-Note that if an input value appears more than once the value in the `parameters` object will be an array, rather
-than a single value.
-
-##### Details
-
-* `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
-* `detail.headers` - the request headers
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.verb` - the HTTP verb in use
 
 ### <a name="targetError.htmx"></a> Event - [`targetError.htmx`](#targetError.htmx)
 

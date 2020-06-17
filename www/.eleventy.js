@@ -5,5 +5,6 @@ module.exports = function(config) {
     config.addPassthroughCopy("css");
     config.addPassthroughCopy("img");
     config.addPassthroughCopy("test");
+    config.addPassthroughCopy("_redirects");
     config.addPlugin(pluginSass, {});
 }
