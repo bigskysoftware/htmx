@@ -107,7 +107,7 @@ describe("hx-push-url attribute", function() {
     it("deals with malformed JSON in history cache when saving", function () {
         localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
         htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll');
-        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(1);
     });
 
