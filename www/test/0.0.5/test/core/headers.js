@@ -107,4 +107,12 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
+    it("should survive malformed JSON in HX-Trigger response header", function(){
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{not: valid}"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        div.click();
+        this.server.respond();
+    })
+
 });

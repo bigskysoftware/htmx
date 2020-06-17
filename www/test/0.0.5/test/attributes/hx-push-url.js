@@ -98,6 +98,20 @@ describe("hx-push-url attribute", function() {
         cache.length.should.equal(1);
     });
 
+    it("deals with malformed JSON in history cache when getting", function () {
+        localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
+        var history = htmx._('getCachedHistory')('url');
+        should.equal(history, null);
+    });
+
+    it("deals with malformed JSON in history cache when saving", function () {
+        localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
+        htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll');
+        var cache = JSON.parse(localStorage.getItem(KUTTY_HISTORY_CACHE));
+        cache.length.should.equal(1);
+    });
+
+
     it("afterSettle.htmx is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("afterSettle.htmx", function (evt) {
