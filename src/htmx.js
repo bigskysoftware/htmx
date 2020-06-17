@@ -191,8 +191,7 @@ return (function () {
             try {
                 return JSON.parse(jString);
             } catch(error) {
-                console.warn('Failed to parse JSON string `' + jString +'`:');
-                console.warn(error);
+                logError(error);
                 return null;
             }
         }
