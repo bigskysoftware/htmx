@@ -12,6 +12,9 @@ return (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
+        var VERB_SELECTOR = VERBS.map(function(verb){
+            return "[hx-" + verb + "], [data-hx-" + verb + "]"
+        }).join(", ");
 
         //====================================================================
         // Utilities
@@ -379,13 +382,15 @@ return (function () {
 
         function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
-                if (oldNode && oldNode !== parentNode) {
-                    var newAttributes = newNode.cloneNode();
-                    cloneAttributes(newNode, oldNode);
-                    settleInfo.tasks.push(function () {
-                        cloneAttributes(newNode, newAttributes);
-                    });
+                if (newNode.id && newNode.id.length > 0) {
+                    var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]");
+                    if (oldNode && oldNode !== parentNode) {
+                        var newAttributes = newNode.cloneNode();
+                        cloneAttributes(newNode, oldNode);
+                        settleInfo.tasks.push(function () {
+                            cloneAttributes(newNode, newAttributes);
+                        });
+                    }
                 }
             });
         }
@@ -888,10 +893,26 @@ return (function () {
             });
         }
 
-        function processNode(elt) {
+        function isHyperScriptAvailable() {
+            return typeof _hyperscript !== "undefined";
+        }
+
+        function findElementsToProcess(elt) {
+            if (elt.querySelectorAll) {
+                return elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+            } else {
+                return [];
+            }
+        }
+
+        function processNode(elt, ignoreChildren) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
                 nodeData.processed = true;
+
+                if(isHyperScriptAvailable()){
+                    _hyperscript.init(elt);
+                }
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -914,26 +935,15 @@ return (function () {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
                 triggerEvent(elt, "processedNode.htmx");
-
             }
-            if (elt.children) { // IE
-                forEach(elt.children, function(child) { processNode(child) });
+            if (!ignoreChildren) {
+                forEach(findElementsToProcess(elt), function(child) { processNode(child, true) });
             }
         }
 
         //====================================================================
         // Event/Log Support
         //====================================================================
-
-        function sendError(elt, eventName, detail) {
-            var errorURL = getClosestAttributeValue(elt, "hx-error-url");
-            if (errorURL) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", errorURL);
-                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({ "elt": elt.id, "event": eventName, "detail" : detail }));
-            }
-        }
 
         function makeEvent(eventName, detail) {
             var evt;
@@ -983,7 +993,7 @@ return (function () {
             }
             if (detail.error) {
                 logError(detail.error);
-                sendError(elt, eventName, detail);
+                triggerEvent(elt, "error.htmx", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {
