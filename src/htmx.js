@@ -379,13 +379,15 @@ return (function () {
 
         function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]")
-                if (oldNode && oldNode !== parentNode) {
-                    var newAttributes = newNode.cloneNode();
-                    cloneAttributes(newNode, oldNode);
-                    settleInfo.tasks.push(function () {
-                        cloneAttributes(newNode, newAttributes);
-                    });
+                if (newNode.id && newNode.id.length > 0) {
+                    var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]");
+                    if (oldNode && oldNode !== parentNode) {
+                        var newAttributes = newNode.cloneNode();
+                        cloneAttributes(newNode, oldNode);
+                        settleInfo.tasks.push(function () {
+                            cloneAttributes(newNode, newAttributes);
+                        });
+                    }
                 }
             });
         }

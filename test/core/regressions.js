@@ -49,8 +49,16 @@ describe("Core htmx Regression Tests", function(){
         form.innerHTML.should.equal("variable=")
     });
 
-    it ('name=id doesnt cause an error, function()', function(){
+    it ('name=id doesnt cause an error', function(){
         this.server.respondWith("GET", "/test", "Foo<form><input name=\"id\"/></form>")
+        var div = make('<div hx-get="/test">Get It</div>')
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Foo")
+    });
+
+    it ('empty id doesnt cause an error', function(){
+        this.server.respondWith("GET", "/test", "Foo<div id=''></div>")
         var div = make('<div hx-get="/test">Get It</div>')
         div.click();
         this.server.respond();
