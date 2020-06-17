@@ -54,15 +54,15 @@ describe("Core htmx Regression Tests", function(){
         var div = make('<div hx-get="/test">Get It</div>')
         div.click();
         this.server.respond();
-        div.innerText.should.equal("Foo")
+        div.innerText.should.contain("Foo")
     });
 
     it ('empty id doesnt cause an error', function(){
-        this.server.respondWith("GET", "/test", "Foo<div id=''></div>")
+        this.server.respondWith("GET", "/test", "Foo\n<div id=''></div>")
         var div = make('<div hx-get="/test">Get It</div>')
         div.click();
         this.server.respond();
-        div.innerText.should.equal("Foo")
+        div.innerText.should.contain("Foo")
     });
 
 })
