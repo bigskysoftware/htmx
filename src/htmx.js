@@ -12,6 +12,9 @@ return (function () {
         'use strict';
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
+        var VERB_SELECTOR = VERBS.map(function(verb){
+            return "[hx-" + verb + "], [data-hx-" + verb + "]"
+        }).join(", ");
 
         //====================================================================
         // Utilities
@@ -894,7 +897,15 @@ return (function () {
             return typeof _hyperscript !== "undefined";
         }
 
-        function processNode(elt) {
+        function findElementsToProcess(elt) {
+            if (elt.querySelectorAll) {
+                return elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+            } else {
+                return [];
+            }
+        }
+
+        function processNode(elt, ignoreChildren) {
             var nodeData = getInternalData(elt);
             if (!nodeData.processed) {
                 nodeData.processed = true;
@@ -925,8 +936,8 @@ return (function () {
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }
-            if (elt.children) { // IE
-                forEach(elt.children, function(child) { processNode(child) });
+            if (!ignoreChildren) {
+                forEach(findElementsToProcess(elt), function(child) { processNode(child, true) });
             }
         }
 

@@ -58,14 +58,24 @@
         }
     }
 
+    function maybeProcessClasses(elt) {
+        if (elt.getAttribute) {
+            var classList = elt.getAttribute("classes") || elt.getAttribute("data-classes");
+            if (classList) {
+                processClassList(elt, classList);
+            }
+        }
+    }
+
     htmx.defineExtension('class-tools', {
         onEvent: function (name, evt) {
             if (name === "processedNode.htmx") {
                 var elt = evt.detail.elt;
-                if (elt.getAttribute) {
-                    var classList = elt.getAttribute("classes") || elt.getAttribute("data-classes");
-                    if (classList) {
-                        processClassList(elt, classList);
+                maybeProcessClasses(elt);
+                if (elt.querySelectorAll) {
+                    var children = elt.querySelectorAll("[classes], [data-classes]");
+                    for (var i = 0; i < children.length; i++) {
+                        maybeProcessClasses(children[i]);
                     }
                 }
             }
