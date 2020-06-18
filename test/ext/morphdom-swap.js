@@ -18,4 +18,14 @@ describe("morphdom-swap extension", function() {
         btn.innerHTML.should.equal("Clicked!");
     });
 
+    it('works with htmx elements in new content', function () {
+        this.server.respondWith("GET", "/test", '<button>Clicked!<span hx-get="/test-inner" hx-trigger="load" hx-swap="morphdom"></span></button>');
+        this.server.respondWith("GET", "/test-inner", 'Loaded!');
+        var btn = make('<div hx-ext="morphdom-swap"><button hx-get="/test" hx-swap="morphdom">Click Me!</button></div>').querySelector('button');
+        btn.click();
+        this.server.respond(); // call /test via button trigger=click
+        this.server.respond(); // call /test-inner via span trigger=load
+        btn.innerHTML.should.equal("Clicked!Loaded!");
+    });
+
 });

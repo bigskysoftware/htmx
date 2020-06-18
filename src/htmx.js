@@ -417,7 +417,7 @@ return (function () {
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
-                if (child.nodeType !== Node.TEXT_NODE) {
+                if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                     settleInfo.tasks.push(makeAjaxLoadTask(child));
                 }
             }
@@ -519,7 +519,17 @@ return (function () {
                     for (var i = 0; i < extensions.length; i++) {
                         var ext = extensions[i];
                         try {
-                            if (ext.handleSwap(swapStyle, target, fragment, settleInfo)) {
+                            var newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo);
+                            if (newElements) {
+                                if (typeof newElements.length !== 'undefined') {
+                                    // if handleSwap returns an array (like) of elements, we handle them
+                                    for (var j = 0; j < newElements.length; j++) {
+                                        var child = newElements[j];
+                                        if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
+                                            settleInfo.tasks.push(makeAjaxLoadTask(child));
+                                        }
+                                    }
+                                }
                                 return;
                             }
                         } catch (e) {
@@ -973,8 +983,8 @@ return (function () {
             return eventName === "processedNode.htmx"
         }
 
-        function withExtensions(elt, toDo) {
-            forEach(getExtensions(elt), function(extension){
+        function withExtensions(elt, toDo, extensions) {
+            forEach(typeof extensions === 'undefined' ? getExtensions(elt) : extensions, function(extension){
                 try {
                     toDo(extension);
                 } catch (e) {
@@ -1007,7 +1017,7 @@ return (function () {
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
-            });
+            }, detail.extensions);
             return eventResult;
         }
 
@@ -1426,7 +1436,7 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, extensions: getExtensions(elt)};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
