@@ -17,7 +17,7 @@ Using an extension involves two steps:
 Here is an example
 
 ```html
-  <script src="https://unpkg.com/htmx.org@0.0.4/dist/ext/debug.js"></script>  
+  <script src="https://unpkg.com/htmx.org@0.0.5/dist/ext/debug.js"></script>  
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
