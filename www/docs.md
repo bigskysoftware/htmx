@@ -661,7 +661,7 @@ First, let's trigger an event with a response header that looks like this:
 Then we would write the following hyperscript:
 
 ```html
-<body _="on redirect(url) put url into window.location">
+<body _="on redirect(url) set window.location to url">
   ...
 </body>
 ```
