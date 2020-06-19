@@ -444,6 +444,7 @@ describe("Core htmx AJAX Tests", function(){
             return false;
         });
         div.click();
+        this.server.respond();
         path.should.not.be.null;
     });
 
@@ -456,7 +457,18 @@ describe("Core htmx AJAX Tests", function(){
             return false;
         });
         div.click();
+        this.server.respond();
         path.should.not.be.null;
+    });
+
+    it('input values are not settle swapped (causes flicker)', function()
+    {
+        this.server.respondWith("GET", "/test", "<input id='i1' value='bar'/>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='outerHTML settle:50' hx-trigger='click'/>");
+        input.click();
+        this.server.respond();
+        input = byId('i1');
+        input.value.should.equal('bar');
     });
 
 

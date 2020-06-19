@@ -334,14 +334,17 @@ return (function () {
             }
         }
 
+        var EXCLUDED_ATTRIBUTES = ['id', 'value'];
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name)) {
+                if (!mergeFrom.hasAttribute(attr.name) && EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
                     mergeTo.removeAttribute(attr.name)
                 }
             });
             forEach(mergeFrom.attributes, function (attr) {
-                mergeTo.setAttribute(attr.name, attr.value);
+                if (EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
+                    mergeTo.setAttribute(attr.name, attr.value);
+                }
             });
         }
 
