@@ -409,7 +409,7 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
-                processNode(child);
+                processNode(child, true);
                 processScripts(child);
                 triggerEvent(child, 'load.htmx', {});
             };
@@ -921,18 +921,19 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                return elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+                return results;
             } else {
                 return [];
             }
         }
 
-        function processNode(elt, ignoreChildren) {
+        function initNode(elt) {
             var nodeData = getInternalData(elt);
-            if (!nodeData.processed) {
-                nodeData.processed = true;
+            if (!nodeData.initialized) {
+                nodeData.initialized = true;
 
-                if(isHyperScriptAvailable()){
+                if (isHyperScriptAvailable()) {
                     _hyperscript.init(elt);
                 }
 
@@ -958,9 +959,11 @@ return (function () {
                 }
                 triggerEvent(elt, "processedNode.htmx");
             }
-            if (!ignoreChildren) {
-                forEach(findElementsToProcess(elt), function(child) { processNode(child, true) });
-            }
+        }
+
+        function processNode(elt) {
+            initNode(elt);
+            forEach(findElementsToProcess(elt), function(child) { initNode(child) });
         }
 
         //====================================================================
