@@ -75,7 +75,7 @@ within the language:
 * Now any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs), not just `GET` and `POST`, can be used
 * Now any element, not just the entire window, can be the target for update by the request
 
-Note that when you are using htmx, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
+Note that when you are using htmx, on the server side you typically respond with *HTML*, not *JSON*.  This keeps you firmly
 within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
@@ -109,9 +109,6 @@ The core of htmx is a set of attributes that allow you to issue AJAX requests di
 | [hx-patch](/attributes/hx-patch) | Issues a `PATCH` request to the given URL
 | [hx-delete](/attributes/hx-delete) | Issues a `DELETE` request to the given URL
 
-
-Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
-actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -472,7 +469,6 @@ htmx includes a number of useful headers in requests:
 | `HX-Active-Element` | the id of the current active element
 | `HX-Active-Element-Name` | the name of the current active element
 | `HX-Active-Element-Value` | the value of the current active element
-| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 

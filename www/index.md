@@ -39,6 +39,8 @@ The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htm
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
+Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
+
 ## haiku
 
 *javascript fatigue:<br/>
