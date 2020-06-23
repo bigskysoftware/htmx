@@ -450,7 +450,7 @@ return (function () {
                 } else {
                     var newElt = eltBeforeNewContent.nextSibling;
                 }
-                while(newElt && newElt != target) {
+                while(newElt && newElt !== target) {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
                 }
@@ -1328,6 +1328,12 @@ return (function () {
                         if (modifier.indexOf("settle:") === 0) {
                             swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
                         }
+                        if (modifier.indexOf("scroll:") === 0) {
+                            swapSpec["scroll"] = modifier.substr(7);
+                        }
+                        if (modifier.indexOf("view:") === 0) {
+                            swapSpec["view"] = modifier.substr(7);
+                        }
                     }
                 }
             }
@@ -1350,6 +1356,25 @@ return (function () {
 
         function makeSettleInfo(target) {
             return {tasks: [], elts: [target]};
+        }
+
+        function updateScrollState(target, altContent, swapSpec) {
+            if (swapSpec.scroll) {
+                if (swapSpec.scroll === "top") {
+                    target.scrollTop = 0;
+                }
+                if (swapSpec.scroll === "bottom") {
+                    target.scrollTop = target.scrollHeight;
+                }
+            }
+            if (swapSpec.view) {
+                if (swapSpec.scroll === "top") {
+                    target.scrollIntoView(true);
+                }
+                if (swapSpec.scroll === "bottom") {
+                    target.scrollIntoView(false);
+                }
+            }
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget) {
@@ -1520,6 +1545,7 @@ return (function () {
                                             pushUrlIntoHistory(pathToPush);
                                             triggerEvent(getDocument().body, 'pushedIntoHistory.htmx', {path:pathToPush});
                                         }
+                                        updateScrollState(target, settleInfo.elts, swapSpec);
                                     }
 
                                     if (swapSpec.settleDelay > 0) {

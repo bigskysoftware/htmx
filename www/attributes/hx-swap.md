@@ -47,6 +47,28 @@ modifier:
 
 These attributes can be used to synchronize htmx with the timing of CSS transition effects.
 
+You can also change the scrolling behavior of the target element by using the `scroll` and `view` modifiers, both
+of which take the values `top` and `bottom`:
+
+```html
+  <!-- this fixed-height div will scroll to the bottom of the div after content is appended -->
+  <div style="height:200px;overflow: scroll" 
+       hx-get="/example" 
+       hx-swap="beforeEnd scroll:bottom">
+     Get Some HTML & Append It & Scroll To Bottom
+  </div>
+```
+
+```html
+  <!-- this will get some content and add it to #another-div, then ensure that the top of #another-div is visible in the 
+       viewport -->
+  <div hx-get="/example" 
+       hx-swap="innerHTML view:top"
+       hx-target="#another-div">
+    Get Some Content
+  </div>
+```
+
 ### Notes
 
 * `hx-swap` is inherited and can be placed on a parent element
