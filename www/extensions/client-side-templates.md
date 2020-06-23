@@ -25,7 +25,7 @@ The AJAX response body will be parsed as JSON and passed into the template rende
 ### Usage
 
 ```html
-<div hx-ext='client-side-template'>
+<div hx-ext="client-side-templates">
   <button hx-get="/some_json" 
           mustache-template="my-mustache-template">
      Handle with mustache

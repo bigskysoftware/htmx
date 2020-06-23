@@ -19,7 +19,7 @@ Dialogs can be triggered with the [`hx-prompt`](/attributes/hx-prompt) and [`hx-
 </div>
 ```
 
-The value provided by the user to the prompt dialog is sent to the server in a `X-HX-Prompt` header.  In this case, the server simply echos the user input back.
+The value provided by the user to the prompt dialog is sent to the server in a `HX-Prompt` header.  In this case, the server simply echos the user input back.
 
 ```html
 User entered <i>${response}</i>
@@ -39,7 +39,7 @@ User entered <i>${response}</i>
     });
 
     onPost("/submit", function(request, params){
-        var response = request.requestHeaders['X-HX-Prompt'];
+        var response = request.requestHeaders['HX-Prompt'];
         return promptSubmit(response);
     });
 

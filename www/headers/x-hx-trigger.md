@@ -1,16 +1,16 @@
 ---
 layout: layout.njk
-title: </> htmx - X-HX-Trigger
+title: </> htmx - HX-Trigger
 ---
 
-## `X-HX-Trigger` Response Header
+## `HX-Trigger` Response Header
 
-The `X-HX-Trigger` response header can be used to trigger client side actions from a response to htmx.  You can
+The `HX-Trigger` response header can be used to trigger client side actions from a response to htmx.  You can
 trigger a single event or as many uniquely named events as you would like.
 
 To trigger a single event with no additional details you can simply send the header like so:
 
-`X-HX-Trigger: myEvent`
+`HX-Trigger: myEvent`
 
 This will trigger `myEvent` on the triggering element and will bubble up to the body.  As an example you could
 listen for this event like this:
@@ -23,7 +23,7 @@ document.body.addEventListener("myEvent", function(evt){
 
 If you want to pass details along with the event, you can move to JSON for the value of the trigger:
 
-`X-HX-Trigger: {"showMessage":"Here Is A Message"}`
+`HX-Trigger: {"showMessage":"Here Is A Message"}`
 
 To handle this event you would write the following code:
 
@@ -36,7 +36,7 @@ document.body.addEventListener("showMessage", function(evt){
 Note that the value of the message was put into the `detail.value` slot.  If you wish to pass multiple pieces of data
 you can use a nested JSON object on the right hand side of the JSON object:
 
-`X-HX-Trigger: {"showMessage":{"level" : "info", "message" : "Here Is A Message"}}`
+`HX-Trigger: {"showMessage":{"level" : "info", "message" : "Here Is A Message"}}`
 
 And handle this event like so:
 
@@ -53,6 +53,6 @@ Each property of the JSON object on the right hand side will be copied onto the 
 Finally, if you wish to invoke multiple events, you can simply add additional properties to the top level JSON
 object:
 
-`X-HX-Trigger: {"event1":"A message", "event2":"Another message"}`
+`HX-Trigger: {"event1":"A message", "event2":"Another message"}`
 
 Using events gives you a lot of flexibility to add functionality to normal htmx responses.

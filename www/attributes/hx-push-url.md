@@ -23,4 +23,4 @@ location bar.
 ### Notes
 
 * `hx-push-url` is inherited and can be placed on a parent element
-* see also the `X-HX-Push` response header
+* see also the `HX-Push` response header

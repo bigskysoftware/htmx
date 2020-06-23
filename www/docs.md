@@ -27,6 +27,7 @@ title: </> htmx - high power tools for html
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
+* [hyperscript](#hyperscript)
 * [configuring](#config)
 
 </div>
@@ -74,7 +75,7 @@ within the language:
 * Now any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs), not just `GET` and `POST`, can be used
 * Now any element, not just the entire window, can be the target for update by the request
 
-Note that when you are using htmx, on the server side you respond with *HTML*, not *JSON*.  This keeps you firmly
+Note that when you are using htmx, on the server side you typically respond with *HTML*, not *JSON*.  This keeps you firmly
 within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
@@ -93,7 +94,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.0.4"></script>
+    <script src="https://unpkg.com/htmx.org@0.0.6"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -108,9 +109,6 @@ The core of htmx is a set of attributes that allow you to issue AJAX requests di
 | [hx-patch](/attributes/hx-patch) | Issues a `PATCH` request to the given URL
 | [hx-delete](/attributes/hx-delete) | Issues a `DELETE` request to the given URL
 
-
-Since most browsers only support issuing `GET` and `POST`, a request with one of the other three methods will
-actually be issued as a `POST`, with the `X-HTTP-Method-Override` header set to the desired method.
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
@@ -157,8 +155,11 @@ There are few other modifiers you can use for trigger:
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
+*  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
+issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
+so the request will trigger at the end of the time period.
 
-You can use these two attributes to implement a common UX pattern, [Active Search](/examples/active-search):
+You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
 ```html
    <input type="text" name="q" 
@@ -302,6 +303,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
+| `none` | does not append content from respons (out of band items will still be processed)
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -457,24 +459,23 @@ htmx includes a number of useful headers in requests:
 
 | Header | Description
 |--------|--------------
-| `X-HX-Request` | will be set to "true"
-| `X-HX-Trigger` | will be set to the id of the element that triggered the request
-| `X-HX-Trigger-Name` | will be set to the name of the element that triggered the request
-| `X-HX-Target` | will be set to the id of the target element
-| `X-HX-Current-URL` | will be set to the URL of the browser
-| `X-HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
-| `X-HX-Event-Target` | the id of the original target of the event that triggered the request
-| `X-HX-Active-Element` | the id of the current active element
-| `X-HX-Active-Element-Name` | the name of the current active element
-| `X-HX-Active-Element-Value` | the value of the current active element
-| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
+| `HX-Request` | will be set to "true"
+| `HX-Trigger` | will be set to the id of the element that triggered the request
+| `HX-Trigger-Name` | will be set to the name of the element that triggered the request
+| `HX-Target` | will be set to the id of the target element
+| `HX-Current-URL` | will be set to the URL of the browser
+| `HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
+| `HX-Event-Target` | the id of the original target of the event that triggered the request
+| `HX-Active-Element` | the id of the current active element
+| `HX-Active-Element-Name` | the name of the current active element
+| `HX-Active-Element-Value` | the value of the current active element
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
 htmx supports two special response headers:
 
-* `X-HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
-* `X-HX-Push` - can be used to push a new URL into the browsers address bar
+* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
+* `HX-Push` - can be used to push a new URL into the browsers address bar
 
 ### Request Order of Operations
 
@@ -564,8 +565,6 @@ If you set a logger at `htmx.logger`, every event will be logged.  This can be v
     }
 ```
 
-Htmx can also send errors to a URL that is specified with the [hx-error-url](/attributes/hx-error-url) attributes. This can be useful for debugging client-side issues.
-
 Htmx includes a helper method:
 
 ```javascript
@@ -573,6 +572,95 @@ Htmx includes a helper method:
 ```
 
 if you want to log everything while developing.
+
+## <a name="hyperscript"></a>[hyperscript](#hyperscript)
+
+**NOTE: hyperscript is in very early alpha**
+
+Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML, 
+handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), 
+javascript, [gosu](https://gosu-lang.github.io/) and others.
+
+You can explore the language more fully on its main website:
+
+<http://hyperscript.org>
+
+### Events & Hyperscript
+
+Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
+directly, in a more flexible and open manner.  One of its prime features is the ability to respond to arbitrary events
+on a DOM element, using the `on` syntax:
+
+```html
+<div _="on afterSettle.htmx log 'Settled!'">
+ ...
+</div>
+```
+
+This will log `Settled!` to the console when the `afterSettle.htmx` event is triggered.
+
+#### intercooler.js features & hyperscript implementations
+
+Below are some examples of intercooler features and the hyperscript equivalent.  
+
+##### `ic-remove-after`
+
+Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
+for removing an element after a given amount of time.  
+
+In hyperscript this is implemented like so:
+
+```html
+<div _="on load wait 5s then remove me">Here is a temporary message!</div>
+```
+
+##### `ic-post-errors-to`
+
+Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
+for posting errors that occured during requests and responses.
+
+In hyperscript similar functionality is implemented like so:
+
+```html
+<body _="on error.htmx(errorInfo) ajax POST errorInfo to /errors">
+  ...
+</body>
+```
+
+##### `ic-switch-class`
+
+Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
+let you switch a class between siblings.
+
+In hyperscript you can implement similar functionality like so:
+
+```html
+<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
+    <a class="tabs" hx-get="/tabl2">Tab 2</a>
+    <a class="tabs" hx-get="/tabl3">Tab 3</a>
+</div>
+<div id="content">Tab 1 Content</div>
+```
+
+##### `X-IC-Redirect`
+
+Intercooler provided more response headers than htmx does:  `X-IC-Refresh`, `X-IC-Redirect` etc.  Htmx omits these
+headers in favor of the general `HX-Trigger`, combined with some client side code.
+
+Let's implement the `X-IC-Redirect` header using the `HX-Trigger` response header and some hyperscript.
+
+First, let's trigger an event with a response header that looks like this:
+
+`HX-Trigger:{"redirect":{"url":"https://htmx.org"}}`
+
+Then we would write the following hyperscript:
+
+```html
+<body _="on redirect(url) set window.location to url">
+  ...
+</body>
+```
 
 ## <a name="config"></a>[Configuring htmx](#config)
 

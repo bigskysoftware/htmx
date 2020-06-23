@@ -26,7 +26,7 @@ IE11 compatible
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.0.4"></script>
+  <script src="https://unpkg.com/htmx.org@0.0.6"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -38,6 +38,8 @@ The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htm
 > "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
+
+Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
 ## haiku
 

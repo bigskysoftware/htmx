@@ -17,7 +17,7 @@ Using an extension involves two steps:
 Here is an example
 
 ```html
-  <script src="https://unpkg.com/htmx.org@0.0.4/dist/ext/debug.js"></script>  
+  <script src="https://unpkg.com/htmx.org@0.0.6/dist/ext/debug.js"></script>  
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
@@ -38,13 +38,14 @@ and on the `body` tag for it to apply to all htmx requests.
 htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
 against `htmx` in each distribution
 
-### Included Extensions List
+### <a name='reference'></a> [Included Extensions List](#reference)
 
 <div class="info-table">
 
 | Extension | Description
 |-----------|-------------
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`method-override`](/extensions/method-override) | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
@@ -53,6 +54,7 @@ against `htmx` in each distribution
 | [`rails-method`](/extensions/rails-method) | includes the `_method` parameter in requests for rails compatibility
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
+| [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
 
 </div>
 

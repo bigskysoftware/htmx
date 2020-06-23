@@ -4,6 +4,15 @@ title: </> htmx - Attributes
 ---
 
 
+## Contents
+
+* [Htmx Attribute Reference](#attributes)
+* [Htmx CSS Class Reference](#classes)
+* [Htmx Request Headers Reference](#request_headers)
+* [Htmx Response Headers Reference](#response_headers)
+* [Htmx Event Reference](#events)
+* [Htmx Extensions Reference](/extensions#reference)
+
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
 <div class="info-table">
@@ -13,7 +22,6 @@ title: </> htmx - Attributes
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
-| [`hx-error-url`](/attributes/hx-error-url) | a URL to send client-side errors to
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
@@ -50,34 +58,34 @@ title: </> htmx - Attributes
 
 ## <a name="headers"></a> [HTTP Header Reference](#headers)
 
-### <a name="request_headers"></a> [Request Headers](#request_headers)
+### <a name="request_headers"></a> [Request Headers Reference](#request_headers)
 
 <div class="info-table">
 
 | Header | Description |
 |-------|-------------|
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
-| `X-HX-Active-Element-Name` | the `name` of the active element if it exists
-| `X-HX-Active-Element-Value` | the `value` of the active element if it exists
-| `X-HX-Active-Element` | the `id` of the active element if it exists
-| `X-HX-Current-URL` | the current URL of the browser
-| `X-HX-Event-Target` | the `id` of the original event target 
-| `X-HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
-| `X-HX-Request` | always `true`
-| `X-HX-Target` | the `id` of the target element if it exists
-| `X-HX-Trigger-Name` | the `name` of the triggered element if it exists
-| `X-HX-Trigger` | the `id` of the triggered element if it exists
+| `HX-Active-Element-Name` | the `name` of the active element if it exists
+| `HX-Active-Element-Value` | the `value` of the active element if it exists
+| `HX-Active-Element` | the `id` of the active element if it exists
+| `HX-Current-URL` | the current URL of the browser
+| `HX-Event-Target` | the `id` of the original event target 
+| `HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `HX-Request` | always `true`
+| `HX-Target` | the `id` of the target element if it exists
+| `HX-Trigger-Name` | the `name` of the triggered element if it exists
+| `HX-Trigger` | the `id` of the triggered element if it exists
 
 </div>
 
-### <a name="response_headers"></a> [Response Headers](#response_headers)
+### <a name="response_headers"></a> [Response Headers Reference](#response_headers)
 
 <div class="info-table">
 
 | Header | Description |
 |-------|-------------|
-| `X-HX-Push` | pushes a new url into the history stack
-| [`X-HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| `HX-Push` | pushes a new url into the history stack
+| [`HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
 </div>
 
