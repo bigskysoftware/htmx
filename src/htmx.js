@@ -1377,6 +1377,24 @@ return (function () {
             }
         }
 
+        function addExpressionVars(elt, rawParameters) {
+            if (elt == null) {
+                return;
+            }
+            var attributeValue = getAttributeValue(elt, "hx-vars");
+            if (attributeValue) {
+                var varsValues = eval("({" + attributeValue + "})");
+                for (var key in varsValues) {
+                    if (varsValues.hasOwnProperty(key)) {
+                        if (rawParameters[key] == null) {
+                            rawParameters[key] = varsValues[key];
+                        }
+                    }
+                }
+            }
+            addExpressionVars(parentElt(elt), rawParameters);
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1410,6 +1428,7 @@ return (function () {
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var rawParameters = getInputValues(elt, verb);
+            addExpressionVars(elt, rawParameters);
             var filteredParameters = filterValues(rawParameters, elt);
 
             if (verb !== 'get') {

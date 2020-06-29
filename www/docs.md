@@ -343,6 +343,12 @@ If you wish to filter out some parameters you can use the [hx-params](/attribute
 Finally, if you want to programatically modify the parameters, you can use the [configRequest.htmx](/events#configRequest.htmx) 
 event.
 
+#### <a name="vars"></a> [Variables](#variables)
+
+You can also include dynamically computed variables in the parameters of a request by using the 
+[hx-vars](/attributes/hx-vars) attribute.  This attributes allows you to use name-expression pairs to include additional
+computed variables in a request.
+
 ## <a name="boosting"></a>[Boosting](#boosting)
 
 Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
