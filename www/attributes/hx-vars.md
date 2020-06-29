@@ -16,6 +16,6 @@ syntax of javascript [Object Literals](https://developer.mozilla.org/en-US/docs/
 
 ### Notes
 
-* `hx-params` is inherited and can be placed on a parent element.
+* `hx-vars` is inherited and can be placed on a parent element.
 * A child declaration of a variable overrides a parent declaration.
 * Input values with the same name override variable declarations.
