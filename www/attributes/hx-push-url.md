@@ -7,7 +7,7 @@ title: </> htmx - hx-push-url
 
 The `hx-push-url` attribute allows you to "push" a new entry into the browser location bar, which creates
 a new history entry, allowing back-button and general history navigation.  The possible values of this
-attribute are `true`, `false` and a custom string.
+attribute are `true`, `false` or a custom string.
 
 Here is an example:
 
