@@ -7,7 +7,7 @@ title: </> htmx - hx-push-url
 
 The `hx-push-url` attribute allows you to "push" a new entry into the browser location bar, which creates
 a new history entry, allowing back-button and general history navigation.  The possible values of this
-attribute are `true` and `false`.
+attribute are `true`, `false` or a custom string.
 
 Here is an example:
 
@@ -19,6 +19,14 @@ Here is an example:
 
 This will cause htmx to snapshot the current DOM to `localStorage` and push the URL `/account' into the browser 
 location bar. 
+
+```html
+<div hx-get="/account" hx-push-url="/account/home">
+  Go to My Account
+</div>
+```
+
+This will push the URL `/account/home' into the browser location bar. 
 
 ### Notes
 

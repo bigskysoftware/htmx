@@ -13,7 +13,7 @@ describe("hx-push-url attribute", function() {
         localStorage.removeItem(HTMX_HISTORY_CACHE_NAME);
     });
 
-    it("navigation should push an element into the cache ", function () {
+    it("navigation should push an element into the cache when true", function () {
         this.server.respondWith("GET", "/test", "second");
         getWorkArea().innerHTML.should.be.equal("");
         var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
@@ -22,6 +22,19 @@ describe("hx-push-url attribute", function() {
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(1);
+        cache[0].url.should.equal("/test");
+    });
+
+    it("navigation should push an element into the cache when string", function () {
+        this.server.respondWith("GET", "/test", "second");
+        getWorkArea().innerHTML.should.be.equal("");
+        var div = make('<div hx-push-url="/abc123" hx-get="/test">first</div>');
+        div.click();
+        this.server.respond();
+        getWorkArea().textContent.should.equal("second")
+        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
+        cache.length.should.equal(1);
+        cache[0].url.should.equal("/abc123");
     });
 
     it("restore should return old value", function () {

@@ -1123,8 +1123,14 @@ return (function () {
         }
 
         function shouldPush(elt) {
-            return getClosestAttributeValue(elt, "hx-push-url") === "true" ||
+            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            return (pushUrl && pushUrl !== "false") ||
                 (elt.tagName === "A" && getInternalData(elt).boosted);
+        }
+
+        function getPushUrl(elt) {
+            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
         }
 
         function addRequestIndicatorClasses(elt) {
@@ -1560,7 +1566,7 @@ return (function () {
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            var pathToPush = pushedUrl || finalPathForGet || path;
+                                            var pathToPush = pushedUrl || getPushUrl(elt) || finalPathForGet || path;
                                             pushUrlIntoHistory(pathToPush);
                                             triggerEvent(getDocument().body, 'pushedIntoHistory.htmx', {path:pathToPush});
                                         }
