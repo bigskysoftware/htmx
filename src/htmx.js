@@ -1130,7 +1130,7 @@ return (function () {
 
         function getPushUrl(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl === "true" || pushUrl === "false") ? "" : pushUrl;
+            return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
         }
 
         function addRequestIndicatorClasses(elt) {
