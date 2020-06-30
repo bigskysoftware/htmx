@@ -684,6 +684,8 @@ Htmx allows you to configure a few defaults:
 |  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
 |  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
 |  `htmx.config.requestClass` | defaults to `htmx-request`
+|  `htmx.config.settlingClass` | defaults to `htmx-settling`
+|  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 
 </div>
 
