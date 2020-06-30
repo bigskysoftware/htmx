@@ -1149,7 +1149,7 @@ return (function () {
                 indicators = [elt];
             }
             forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, "htmx-request");
+                ic.classList[action].call(ic.classList, htmx.config.requestClass);
             });
         }
 
@@ -1668,18 +1668,16 @@ return (function () {
             }
         }
 
-        // insert htmx-indicator css rules immediate, if not configured otherwise
-        (function() {
-            var metaConfig = getMetaConfig();
-            if (metaConfig === null || metaConfig.includeIndicatorStyles !== false) {
+        function insertIndicatorStyles() {
+            if (htmx.config.includeIndicatorStyles !== false) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>\
-                      .htmx-indicator{opacity:0;transition: opacity 200ms ease-in;}\
-                      .htmx-request .htmx-indicator{opacity:1}\
-                      .htmx-request.htmx-indicator{opacity:1}\
+                      ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
+                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1}\
                     </style>");
             }
-        })();
+        }
 
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
@@ -1700,6 +1698,7 @@ return (function () {
         // initialize the document
         ready(function () {
             mergeMetaConfig();
+            insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body, true);
             triggerEvent(body, 'load.htmx', {});
@@ -1733,7 +1732,9 @@ return (function () {
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
-                includeIndicatorStyles:true
+                includeIndicatorStyles:true,
+                indicatorClass:'htmx-indicator',
+                requestClass:'htmx-request'
             },
             parseInterval:parseInterval,
             _:internalEval,
