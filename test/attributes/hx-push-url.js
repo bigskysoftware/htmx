@@ -19,10 +19,12 @@ describe("hx-push-url attribute", function() {
         var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
         div.click();
         this.server.respond();
+        div.click();
+        this.server.respond();
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
-        cache.length.should.equal(1);
-        cache[0].url.should.equal("/test");
+        cache.length.should.equal(2);
+        cache[1].url.should.equal("/test");
     });
 
     it("navigation should push an element into the cache when string", function () {
@@ -31,10 +33,13 @@ describe("hx-push-url attribute", function() {
         var div = make('<div hx-push-url="/abc123" hx-get="/test">first</div>');
         div.click();
         this.server.respond();
+        div.click();
+        this.server.respond();
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
-        cache.length.should.equal(1);
-        cache[0].url.should.equal("/abc123");
+        console.log(cache);
+        cache.length.should.equal(2);
+        cache[1].url.should.equal("/abc123");
     });
 
     it("restore should return old value", function () {
@@ -125,7 +130,7 @@ describe("hx-push-url attribute", function() {
     });
 
 
-    it("afterSettle.htmx is called when replacing outerHTML", function () {
+    it("htmx:afterSettle is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("htmx:afterSettle", function (evt) {
             called = true;
