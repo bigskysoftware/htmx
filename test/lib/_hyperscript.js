@@ -39,6 +39,8 @@
                     '>=': 'GTE_ANG',
                     '==': 'EQ',
                     '===': 'EQQ',
+                    '!=': 'NEQ',
+                    '!==': 'NEQQ',
                     '{': 'L_BRACE',
                     '}': 'R_BRACE',
                     '[': 'L_BRACKET',
@@ -1049,7 +1051,7 @@
             _parser.addGrammarElement("comparisonOperator", function (parser, tokens) {
                 var expr = parser.parseElement("mathExpression", tokens);
                 var comparisonOp, initialComparisonOp = null;
-                comparisonOp = tokens.matchAnyOpToken("<", ">", "<=", ">=", "==", "===")
+                comparisonOp = tokens.matchAnyOpToken("<", ">", "<=", ">=", "==", "===", "!=", "!==")
                 while (comparisonOp) {
                     initialComparisonOp = initialComparisonOp || comparisonOp;
                     if(initialComparisonOp.value !== comparisonOp.value) {
@@ -1065,7 +1067,7 @@
                             return parser.transpile(this.lhs) + " " + this.operator + " " + parser.transpile(this.rhs);
                         }
                     }
-                    comparisonOp = tokens.matchAnyOpToken("<", ">", "<=", ">=", "==", "===")
+                    comparisonOp = tokens.matchAnyOpToken("<", ">", "<=", ">=", "==", "===", "!=", "!==")
                 }
                 return expr;
             });
