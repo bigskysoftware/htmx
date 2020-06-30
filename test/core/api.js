@@ -20,7 +20,7 @@ describe("Core htmx API test", function(){
             this.server.respond();
             byId("d1").getAttribute("foo").should.equal("bar");
         } finally {
-            htmx.off("load.htmx", helper);
+            htmx.off("htmx:load", helper);
         }
     });
 

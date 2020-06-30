@@ -69,7 +69,7 @@
 
     htmx.defineExtension('class-tools', {
         onEvent: function (name, evt) {
-            if (name === "processedNode.htmx") {
+            if (name === "htmx:processedNode") {
                 var elt = evt.detail.elt;
                 maybeProcessClasses(elt);
                 if (elt.querySelectorAll) {

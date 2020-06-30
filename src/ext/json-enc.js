@@ -1,6 +1,6 @@
 htmx.defineExtension('json-enc', {
     onEvent: function (name, evt) {
-        if (name === "configRequest.htmx") {
+        if (name === "htmx:configRequest") {
             evt.detail.headers['Content-Type'] = "application/json";
         }
     },

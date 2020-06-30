@@ -554,13 +554,9 @@
                     ctx = ctx || {};
                     var compiled = _parser.parseElement(type, _lexer.tokenize(src) ).transpile();
                     var evalString = "(function(" + Object.keys(ctx).join(",") + "){return " + compiled + "})";
-                    // TODO parser debugging
-                    if(false) console.log("transpile: " + compiled);
-                    if(false) console.log("evalString: " + evalString);
                     var args = Object.keys(ctx).map(function (key) {
                         return ctx[key]
                     });
-                    if(false) console.log("args", args);
                     return eval(evalString).apply(null, args);
                 }
 
@@ -570,7 +566,9 @@
                         var tokens = _lexer.tokenize(src);
                         var hyperScript = _parser.parseHyperScript(tokens);
                         var transpiled = _parser.transpile(hyperScript);
-                        if(true) console.log(transpiled);
+                        if (elt.getAttribute('debug') === "true") {
+                            console.log(transpiled);
+                        }
                         var hyperscriptObj = eval(transpiled);
                         hyperscriptObj.applyEventListenersTo(elt);
                     }
@@ -579,7 +577,7 @@
                 function ajax(method, url, callback, data) {
                     var xhr = new XMLHttpRequest();
                     xhr.onload = function() {
-                        callback(this.response)
+                        callback(this.response, xhr);
                     };
                     xhr.open(method, url);
                     xhr.send(JSON.stringify(data));
@@ -657,7 +655,7 @@
                         type: "nakedString",
                         tokens: tokenArr,
                         transpile: function () {
-                            return "'" + tokenArr.map(function(t){return t.value}).join("") + "'";
+                                return "'" + tokenArr.map(function(t){return t.value}).join("") + "'";
                         }
                     }
                 }
@@ -748,6 +746,32 @@
                         fields: fields,
                         transpile: function () {
                             return "({" + fields.map(function (field) {
+                                return field.name.value + ":" + parser.transpile(field.value)
+                            }).join(", ") + "})";
+                        }
+                    }
+                }
+
+
+            })
+
+            _parser.addGrammarElement("namedArgumentList", function (parser, tokens) {
+                if (tokens.matchOpToken("(")) {
+                    var fields = []
+                    if (!tokens.matchOpToken(")")) {
+                        do {
+                            var name = tokens.requireTokenType("IDENTIFIER");
+                            tokens.requireOpToken(":");
+                            var value = parser.parseElement("expression", tokens);
+                            fields.push({name: name, value: value});
+                        } while (tokens.matchOpToken(","))
+                        tokens.requireOpToken(")");
+                    }
+                    return {
+                        type: "namedArgumentList",
+                        fields: fields,
+                        transpile: function () {
+                            return "({_namedArgList_:true, " + fields.map(function (field) {
                                 return field.name.value + ":" + parser.transpile(field.value)
                             }).join(", ") + "})";
                         }
@@ -1106,8 +1130,8 @@
             });
 
             _parser.addGrammarElement("command", function (parser, tokens) {
-                return parser.parseAnyOf(["onCmd", "addCmd", "removeCmd", "toggleCmd", "waitCmd", "sendCmd",
-                    "takeCmd", "logCmd", "callCmd", "putCmd", "ifCmd", "ajaxCmd"], tokens);
+                return parser.parseAnyOf(["onCmd", "addCmd", "removeCmd", "toggleCmd", "waitCmd", "sendCmd", "triggerCmd",
+                    "takeCmd", "logCmd", "callCmd", "putCmd", "setCmd", "ifCmd", "ajaxCmd"], tokens);
             })
 
             _parser.addGrammarElement("commandList", function (parser, tokens) {
@@ -1134,9 +1158,9 @@
                         return "(function(){\n" +
                             "var eventListeners = []\n" +
                             eventListeners.map(function (el) {
-                                return "eventListeners.push(" + parser.transpile(el) + ");\n"
-                            }) +
-                            "      function applyEventListenersTo(elt) { _hyperscript.runtime.applyEventListeners(this, elt) }" +
+                                return "  eventListeners.push(" + parser.transpile(el) + ");\n"
+                            }).join("") +
+                            "      function applyEventListenersTo(elt) { _hyperscript.runtime.applyEventListeners(this, elt) }\n" +
                             "      return {eventListeners:eventListeners, applyEventListenersTo:applyEventListenersTo}\n" +
                             "})()"
                     }
@@ -1146,7 +1170,7 @@
 
             _parser.addGrammarElement("eventListener", function (parser, tokens) {
                 tokens.requireToken("on");
-                var on = parser.parseElement("dotPath", tokens);
+                var on = parser.parseElement("dotOrColonPath", tokens);
                 if (on == null) {
                     parser.raiseParseError(tokens, "Expected event name")
                 }
@@ -1326,18 +1350,24 @@
                 }
             })
 
-            _parser.addGrammarElement("dotPath", function (parser, tokens) {
+            // TODO  - colon path needs to eventually become part of ruby-style symbols
+            _parser.addGrammarElement("dotOrColonPath", function (parser, tokens) {
                 var root = tokens.matchTokenType("IDENTIFIER");
                 if (root) {
                     var path = [root.value];
-                    while (tokens.matchOpToken(".")) {
-                        path.push(tokens.requireTokenType("IDENTIFIER").value);
+
+                    var separator = tokens.matchOpToken(".") || tokens.matchOpToken(":");
+                    if (separator) {
+                        do {
+                            path.push(tokens.requireTokenType("IDENTIFIER").value);
+                        } while (tokens.matchOpToken(separator.value))
                     }
+
                     return {
-                        type: "dotPath",
+                        type: "dotOrColonPath",
                         path: path,
                         transpile: function () {
-                            return path.join(".");
+                            return path.join(separator ? separator.value : "");
                         }
                     }
                 }
@@ -1346,9 +1376,9 @@
             _parser.addGrammarElement("sendCmd", function (parser, tokens) {
                 if (tokens.matchToken("send")) {
 
-                    var eventName = parser.parseElement("dotPath", tokens);
+                    var eventName = parser.parseElement("dotOrColonPath", tokens);
 
-                    var details = parser.parseElement("objectLiteral", tokens);
+                    var details = parser.parseElement("namedArgumentList", tokens);
                     if (tokens.matchToken("to")) {
                         var to = parser.parseElement("target", tokens);
                     } else {
@@ -1364,6 +1394,23 @@
                             return "_hyperscript.runtime.forEach( " + parser.transpile(to) + ", function (target) {" +
                                 "  _hyperscript.runtime.triggerEvent(target, '" + parser.transpile(eventName) + "'," + parser.transpile(details, "{}") + ")" +
                                 "})";
+                        }
+                    }
+                }
+            })
+
+            _parser.addGrammarElement("triggerCmd", function (parser, tokens) {
+                if (tokens.matchToken("trigger")) {
+
+                    var eventName = parser.parseElement("dotOrColonPath", tokens);
+                    var details = parser.parseElement("namedArgumentList", tokens);
+
+                    return {
+                        type: "triggerCmd",
+                        eventName: eventName,
+                        details: details,
+                        transpile: function () {
+                            return "_hyperscript.runtime.triggerEvent(me, '" + parser.transpile(eventName) + "'," + parser.transpile(details, "{}") + ");";
                         }
                     }
                 }
@@ -1430,7 +1477,7 @@
             })
 
             _parser.addGrammarElement("callCmd", function (parser, tokens) {
-                if (tokens.matchToken("call")) {
+                if (tokens.matchToken("call") || tokens.matchToken("get")) {
                     return {
                         type: "callCmd",
                         expr: parser.parseElement("expression", tokens),
@@ -1448,12 +1495,16 @@
 
                     var operation = tokens.matchToken("into") ||
                         tokens.matchToken("before") ||
-                        tokens.matchToken("afterbegin") ||
-                        tokens.matchToken("beforeend") ||
                         tokens.matchToken("after");
 
+                    if (operation == null && tokens.matchToken("at")) {
+                        operation = tokens.matchToken("start") ||
+                            tokens.matchToken("end");
+                        tokens.requireToken("of");
+                    }
+
                     if (operation == null) {
-                        parser.raiseParseError(tokens, "Expected one of 'into', 'before', 'afterbegin', 'beforeend', 'after'")
+                        parser.raiseParseError(tokens, "Expected one of 'into', 'before', 'at start of', 'at end of', 'after'");
                     }
                     var target = parser.parseElement("target", tokens);
 
@@ -1482,11 +1533,11 @@
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
                                         "  target.insertAdjacentHTML('beforebegin', " + parser.transpile(value) + ")" +
                                         "})";
-                                } else if (this.op === "afterbegin") {
+                                } else if (this.op === "start") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
                                         "  target.insertAdjacentHTML('afterbegin', " + parser.transpile(value) + ")" +
                                         "})";
-                                } else if (this.op === "beforeend") {
+                                } else if (this.op === "end") {
                                     return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
                                         "  target.insertAdjacentHTML('beforeend', " + parser.transpile(value) + ")" +
                                         "})";
@@ -1501,9 +1552,44 @@
                 }
             })
 
+            _parser.addGrammarElement("setCmd", function (parser, tokens) {
+                if (tokens.matchToken("set")) {
+
+                    var target = parser.parseElement("target", tokens);
+
+                    tokens.requireToken("to");
+
+                    var value = parser.parseElement("expression", tokens);
+
+                    var directWrite = target.propPath.length === 0;
+                    var symbolWrite = directWrite && target.root.type === "symbol";
+                    if (directWrite && !symbolWrite) {
+                        parser.raiseParseError(tokens, "Can only put directly into symbols, not references")
+                    }
+
+                    return {
+                        type: "setCmd",
+                        target: target,
+                        symbolWrite: symbolWrite,
+                        value: value,
+                        transpile: function () {
+                            if (this.symbolWrite) {
+                                return "var " + target.root.name + " = " + parser.transpile(value);
+                            } else {
+                                var lastProperty = target.propPath.pop(); // steal last property for assignment
+                                return "_hyperscript.runtime.forEach( " + parser.transpile(target) + ", function (target) {" +
+                                    "  target." + lastProperty + "=" + parser.transpile(value) +
+                                    "})";
+                            }
+                        }
+                    }
+                }
+            })
+
             _parser.addGrammarElement("ifCmd", function (parser, tokens) {
                 if (tokens.matchToken("if")) {
                     var expr = parser.parseElement("expression", tokens);
+                    tokens.matchToken("then"); // optional 'then'
                     var trueBranch = parser.parseElement("commandList", tokens);
                     if (tokens.matchToken("else")) {
                         var falseBranch = parser.parseElement("commandList", tokens);
@@ -1531,9 +1617,7 @@
                     if (method == null) {
                         parser.raiseParseError(tokens, "Requires either GET or POST");
                     }
-                    if (method.value === "GET") {
-                        tokens.requireToken("from");
-                    } else {
+                    if (method.value !== "GET") {
                         if (!tokens.matchToken("to")) {
                             var data = parser.parseElement("expression", tokens);
                             tokens.requireToken("to");
@@ -1553,7 +1637,7 @@
                             delete this.next;
                             return "_hyperscript.runtime.ajax('" + method.value + "', " +
                                 parser.transpile(url) + ", " +
-                                "function(response){ " + parser.transpile(capturedNext) + " }," +
+                                "function(response, xhr){ " + parser.transpile(capturedNext) + " }," +
                                 parser.transpile(data, "null") + ")";
                         }
                     };

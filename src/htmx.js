@@ -205,7 +205,7 @@ return (function () {
         }
 
         function onLoadHelper(callback) {
-            var value = htmx.on("load.htmx", function(evt) {
+            var value = htmx.on("htmx:load", function(evt) {
                 callback(evt.detail.elt);
             });
             return value;
@@ -378,7 +378,7 @@ return (function () {
                 swap(oobValue, target, target, fragment, settleInfo);
             } else {
                 child.parentNode.removeChild(child);
-                triggerErrorEvent(getDocument().body, "oobErrorNoTarget.htmx", {content: child})
+                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: child})
             }
             return oobValue;
         }
@@ -411,7 +411,7 @@ return (function () {
             return function () {
                 processNode(child, true);
                 processScripts(child);
-                triggerEvent(child, 'load.htmx', {});
+                triggerEvent(child, 'htmx:load', {});
             };
         }
 
@@ -752,7 +752,7 @@ return (function () {
         function processWebSocketSource(elt, wssSource) {
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
-                triggerErrorEvent(elt, "wsError.htmx", {error:e, socket:socket});
+                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
             };
             getInternalData(elt).webSocket = socket;
@@ -802,7 +802,7 @@ return (function () {
                     }
                 });
             } else {
-                triggerErrorEvent(elt, "noWebSocketSourceError.htmx");
+                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
             }
         }
 
@@ -826,7 +826,7 @@ return (function () {
         function processSSESource(elt, sseSrc) {
             var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
-                triggerErrorEvent(elt, "sseError.htmx", {error:e, source:source});
+                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
             getInternalData(elt).sseEventSource = source;
@@ -850,7 +850,7 @@ return (function () {
                 getInternalData(elt).sseListener = sseListener;
                 sseEventSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerErrorEvent(elt, "noSSESourceError.htmx");
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
             }
         }
 
@@ -957,7 +957,7 @@ return (function () {
                 if (wsInfo) {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
-                triggerEvent(elt, "processedNode.htmx");
+                triggerEvent(elt, "htmx:processedNode");
             }
         }
 
@@ -986,7 +986,7 @@ return (function () {
         }
 
         function ignoreEventForLogging(eventName) {
-            return eventName === "processedNode.htmx"
+            return eventName === "htmx:processedNode"
         }
 
         function withExtensions(elt, toDo) {
@@ -1018,7 +1018,7 @@ return (function () {
             }
             if (detail.error) {
                 logError(detail.error);
-                triggerEvent(elt, "error.htmx", {errorInfo:detail})
+                triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
             withExtensions(elt, function (extension) {
@@ -1065,7 +1065,7 @@ return (function () {
         function saveHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
-            triggerEvent(getDocument().body, "beforeHistorySave.htmx", {path:path, historyElt:elt});
+            triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
             if(htmx.config.historyEnabled) history.replaceState({}, getDocument().title, window.location.href);
             saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
         }
@@ -1084,11 +1084,11 @@ return (function () {
         function loadHistoryFromServer(path) {
             var request = new XMLHttpRequest();
             var details = {path: path, xhr:request};
-            triggerEvent(getDocument().body, "historyCacheMiss.htmx", details);
+            triggerEvent(getDocument().body, "htmx:historyCacheMiss", details);
             request.open('GET', path, true);
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
-                    triggerEvent(getDocument().body, "historyCacheMissLoad.htmx", details);
+                    triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
                     var fragment = makeFragment(this.response);
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
@@ -1097,7 +1097,7 @@ return (function () {
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
                 } else {
-                    triggerErrorEvent(getDocument().body, "historyCacheMissLoadError.htmx", details);
+                    triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
             };
             request.send();
@@ -1106,7 +1106,7 @@ return (function () {
         function restoreHistory(path) {
             saveHistory(currentPathForHistory);
             path = path || location.pathname+location.search;
-            triggerEvent(getDocument().body, "historyRestore.htmx", {path:path});
+            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             var cached = getCachedHistory(path);
             if (cached) {
                 var fragment = makeFragment(cached.content);
@@ -1398,7 +1398,7 @@ return (function () {
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
-                triggerErrorEvent(elt, 'targetError.htmx', {target: getAttributeValue(elt, "hx-target")});
+                triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
             var eltData = getInternalData(elt);
@@ -1415,7 +1415,7 @@ return (function () {
                 var promptResponse = prompt(promptQuestion);
                 // prompt returns null if cancelled and empty string if accepted with no entry
                 if (promptResponse === null ||
-                    !triggerEvent(elt, 'prompt.htmx', {prompt: promptResponse, target:target}))
+                    !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target}))
                     return endRequestLock();
             }
 
@@ -1448,7 +1448,7 @@ return (function () {
                 verb:verb,
                 path:path
             };
-            if(!triggerEvent(elt, 'configRequest.htmx', requestConfig)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
             // copy out in case the object was overwritten
             path = requestConfig.path;
             verb = requestConfig.verb;
@@ -1489,7 +1489,7 @@ return (function () {
             var eventDetail = {xhr: xhr, target: target};
             xhr.onload = function () {
                 try {
-                    if (!triggerEvent(elt, 'beforeOnLoad.htmx', eventDetail)) return;
+                    if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
 
                     handleTrigger(elt, this.getResponseHeader("HX-Trigger"));
                     var pushedUrl = this.getResponseHeader("HX-Push");
@@ -1502,7 +1502,7 @@ return (function () {
                         }
                         // don't process 'No Content' response
                         if (this.status !== 204) {
-                            if (!triggerEvent(target, 'beforeSwap.htmx', eventDetail)) return;
+                            if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
 
                             var resp = this.response;
                             withExtensions(elt, function(extension){
@@ -1543,7 +1543,7 @@ return (function () {
                                         if (elt.classList) {
                                             elt.classList.add("htmx-settling");
                                         }
-                                        triggerEvent(elt, 'afterSwap.htmx', eventDetail);
+                                        triggerEvent(elt, 'htmx:afterSwap', eventDetail);
                                     });
                                     if (anchor) {
                                         location.hash = anchor;
@@ -1556,13 +1556,13 @@ return (function () {
                                             if (elt.classList) {
                                                 elt.classList.remove("htmx-settling");
                                             }
-                                            triggerEvent(elt, 'afterSettle.htmx', eventDetail);
+                                            triggerEvent(elt, 'htmx:afterSettle', eventDetail);
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
                                             var pathToPush = pushedUrl || finalPathForGet || path;
                                             pushUrlIntoHistory(pathToPush);
-                                            triggerEvent(getDocument().body, 'pushedIntoHistory.htmx', {path:pathToPush});
+                                            triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                         }
                                         updateScrollState(target, settleInfo.elts, swapSpec);
                                     }
@@ -1573,7 +1573,7 @@ return (function () {
                                         doSettle();
                                     }
                                 } catch (e) {
-                                    triggerErrorEvent(elt, 'swapError.htmx', eventDetail);
+                                    triggerErrorEvent(elt, 'htmx:swapError', eventDetail);
                                     throw e;
                                 }
                             };
@@ -1585,25 +1585,25 @@ return (function () {
                             }
                         }
                     } else {
-                        triggerErrorEvent(elt, 'responseError.htmx', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
+                        triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
                     }
                 } catch (e) {
-                    triggerErrorEvent(elt, 'onLoadError.htmx', mergeObjects({error:e}, eventDetail));
+                    triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, eventDetail));
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerEvent(elt, 'afterRequest.htmx', eventDetail);
-                    triggerEvent(elt, 'afterOnLoad.htmx', eventDetail);
+                    triggerEvent(elt, 'htmx:afterRequest', eventDetail);
+                    triggerEvent(elt, 'htmx:afterOnLoad', eventDetail);
                     endRequestLock();
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(elt);
-                triggerErrorEvent(elt, 'afterRequest.htmx', eventDetail);
-                triggerErrorEvent(elt, 'sendError.htmx', eventDetail);
+                triggerErrorEvent(elt, 'htmx:afterRequest', eventDetail);
+                triggerErrorEvent(elt, 'htmx:sendError', eventDetail);
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'beforeRequest.htmx', eventDetail)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:beforeRequest', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
@@ -1696,7 +1696,7 @@ return (function () {
             mergeMetaConfig();
             var body = getDocument().body;
             processNode(body, true);
-            triggerEvent(body, 'load.htmx', {});
+            triggerEvent(body, 'htmx:load', {});
             window.onpopstate = function () {
                 restoreHistory();
             };

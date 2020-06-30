@@ -11,7 +11,7 @@
 
     htmx.defineExtension('include-vals', {
         onEvent: function (name, evt) {
-            if (name === "configRequest.htmx") {
+            if (name === "htmx:configRequest") {
                 var includeValsElt = htmx.closest(evt.detail.elt, "[include-vals],[data-include-vals]");
                 if (includeValsElt) {
                     var includeVals = includeValsElt.getAttribute("include-vals") || includeValsElt.getAttribute("data-include-vals");

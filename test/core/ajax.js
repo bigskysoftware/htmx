@@ -439,7 +439,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         var path = null;
         var div = make("<div hx-get=''/>");
-        htmx.on(div, "configRequest.htmx", function (evt) {
+        htmx.on(div, "htmx:configRequest", function (evt) {
             path = evt.detail.path;
             return false;
         });
@@ -452,7 +452,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         var path = null;
         var div = make("<div hx-get/>");
-        htmx.on(div, "configRequest.htmx", function (evt) {
+        htmx.on(div, "htmx:configRequest", function (evt) {
             path = evt.detail.path;
             return false;
         });

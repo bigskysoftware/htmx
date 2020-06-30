@@ -8,21 +8,21 @@ describe("hx-ext attribute", function() {
         clearWorkArea();
         htmx.defineExtension("ext-1", {
             onEvent : function(name, evt) {
-                if(name === "afterRequest.htmx"){
+                if(name === "htmx:afterRequest"){
                     ext1Calls++;
                 }
             }
         });
         htmx.defineExtension("ext-2", {
             onEvent : function(name, evt) {
-                if(name === "afterRequest.htmx"){
+                if(name === "htmx:afterRequest"){
                     ext2Calls++;
                 }
             }
         });
         htmx.defineExtension("ext-3", {
             onEvent : function(name, evt) {
-                if(name === "afterRequest.htmx"){
+                if(name === "htmx:afterRequest"){
                     ext3Calls++;
                 }
             }

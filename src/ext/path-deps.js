@@ -17,7 +17,7 @@
 
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
-            if (name === "afterRequest.htmx") {
+            if (name === "htmx:afterRequest") {
                 var xhr = evt.detail.xhr;
                 // mutating call
                 if (xhr.method !== "GET") {

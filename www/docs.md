@@ -340,7 +340,7 @@ with a CSS selector of all the elements whose values you want to include in the 
 
 If you wish to filter out some parameters you can use the [hx-params](/attributes/hx-params) attribute.
 
-Finally, if you want to programatically modify the parameters, you can use the [configRequest.htmx](/events#configRequest.htmx) 
+Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](/events#htmx:configRequest) 
 event.
 
 #### <a name="vars"></a> [Variables](#variables)
@@ -454,10 +454,10 @@ HTML into the document at the target specified and with the swap strategy specif
 Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side event ([see below](#response-headers)).
 For this situation you can return a `204 - No Content` response code, and htmx will ignore the content of the response.
 
-In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`responseError.htmx`](/events#responseError.htmx)
+In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](/events#htmx:responseError)
 event, which you can handle.  
 
-In the event of a connection error, the `sendError.htmx` event will be triggered.
+In the event of a connection error, the `htmx:sendError` event will be triggered.
 
 ### <a name="request-header"></a> [Request Headers](#request-headers)
 
@@ -542,7 +542,7 @@ Htmx has an extensive events mechanism, which doubles as the logging system.
 If you want to register for a given htmx event you can use the following javascript:
 
 ```javascript
-  htmx.on("load.htmx", function(evt) {
+  htmx.on("htmx.load", function(evt) {
         myJavascriptLib.init(evt.details.elt);  
   });
 ```
@@ -598,12 +598,12 @@ directly, in a more flexible and open manner.  One of its prime features is the 
 on a DOM element, using the `on` syntax:
 
 ```html
-<div _="on afterSettle.htmx log 'Settled!'">
+<div _="on htmx:afterSettle log 'Settled!'">
  ...
 </div>
 ```
 
-This will log `Settled!` to the console when the `afterSettle.htmx` event is triggered.
+This will log `Settled!` to the console when the `htmx:afterSettle` event is triggered.
 
 #### intercooler.js features & hyperscript implementations
 
@@ -628,7 +628,7 @@ for posting errors that occured during requests and responses.
 In hyperscript similar functionality is implemented like so:
 
 ```html
-<body _="on error.htmx(errorInfo) ajax POST errorInfo to /errors">
+<body _="on htmx:error(errorInfo) ajax POST errorInfo to /errors">
   ...
 </body>
 ```
@@ -641,7 +641,7 @@ let you switch a class between siblings.
 In hyperscript you can implement similar functionality like so:
 
 ```html
-<div hx-target="#content" _="on beforeOnLoad.htmx take .active from .tabs for event.target">
+<div hx-target="#content" _="on htmx:beforeOnLoad take .active from .tabs for event.target">
     <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
     <a class="tabs" hx-get="/tabl2">Tab 2</a>
     <a class="tabs" hx-get="/tabl3">Tab 3</a>

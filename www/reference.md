@@ -95,29 +95,29 @@ title: </> htmx - Attributes
 
 | Event | Description |
 |-------|-------------|
-| [`afterOnLoad.htmx`](/events#afterOnLoad.htmx) | triggered after an AJAX request has completed processing a successful response
-| [`afterRequest.htmx`](/events#afterRequest.htmx)  | triggered after an AJAX request has completed
-| [`afterSettle.htmx`](/events#afterSettle.htmx)  | triggered after the DOM has settled
-| [`afterSwap.htmx`](/events#afterSwap.htmx)  | triggered after new content has been swapped in
-| [`beforeOnLoad.htmx`](/events#beforeOnLoad.htmx)  | triggered before any response processing occurs
-| [`beforeRequest.htmx`](/events#beforeRequest.htmx)  | triggered before an AJAX request is made
-| [`beforeSwap.htmx`](/events#beforeSwap.htmx)  | triggered before a swap is done
-| [`configRequest.htmx`](/events#configRequest.htmx)  | triggered before the request, allows you to customize parameters, headers
-| [`historyCacheMiss.htmx`](/events#historyCacheMiss.htmx)  | triggered on a cache miss in the history subsystem
-| [`historyCacheMissError.htmx`](/events#historyCacheMissError.htmx)  | triggered on a unsuccessful remote retrieval 
-| [`historyCacheMissLoad.htmx`](/events#historyCacheMissLoad.htmx)  | triggered on a succesful remote retrieval 
-| [`historyRestore.htmx`](/events#historyRestore.htmx)  | triggered when htmx handles a history restoration action
-| [`beforeHistorySave.htmx`](/events#beforeHistorySave.htmx)  | triggered before content is saved to the history cache
-| [`load.htmx`](/events#load.htmx)  | triggered when new content is added to the DOM
-| [`noSSESourceError.htmx`](/events#noSSESourceError.htmx)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
-| [`onLoadError.htmx`](/events#onLoadError.htmx)  | triggered when an exception occurs during the onLoad handling in htmx
-| [`oobErrorNoTarget.htmx`](/events#oobErrorNoTarget.htmx)  | triggered when an out of band element does not have a matching ID in the current DOM
-| [`prompt.htmx`](/events#prompt.htmx)  | triggered after a prompt is shown
-| [`responseError.htmx`](/events#responseError.htmx)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
-| [`sendError.htmx`](/events#sendError.htmx)  | triggered when a network error prevents an HTTP request from happening
-| [`sseError.htmx`](/events#sseError.htmx)  | triggered when an error occurs with a SSE source
-| [`swapError.htmx`](/events#swapError.htmx)  | triggered when an error occurs during the swap phase
-| [`targetError.htmx`](/events#targetError.htmx)  | triggered when an invalid target is specified
+| [`htmx:afterOnLoad`](/events#htmx:afterOnLoad) | triggered after an AJAX request has completed processing a successful response
+| [`htmx:afterRequest`](/events#htmx:afterRequest)  | triggered after an AJAX request has completed
+| [`htmx:afterSettle`](/events#htmx:afterSettle)  | triggered after the DOM has settled
+| [`htmx:afterSwap`](/events#htmx:afterSwap)  | triggered after new content has been swapped in
+| [`htmx:beforeOnLoad`](/events#htmx:beforeOnLoad)  | triggered before any response processing occurs
+| [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
+| [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
+| [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
+| [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
+| [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
+| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
+| [`htmx:historyRestore`](/events#htmx:historyRestore)  | triggered when htmx handles a history restoration action
+| [`htmx:beforeHistorySave`](/events#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
+| [`htmx:load`](/events#htmx:load)  | triggered when new content is added to the DOM
+| [`htmx:noSSESourceError`](/events#htmx:noSSESourceError)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
+| [`htmx:onLoadError`](/events#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
+| [`htmx:oobErrorNoTarget`](/events#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
+| [`htmx:prompt`](/events#htmx:prompt)  | triggered after a prompt is shown
+| [`htmx:responseError`](/events#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
+| [`htmx:sendError`](/events#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
+| [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
+| [`htmx:swapError`](/events#htmx:swapError)  | triggered when an error occurs during the swap phase
+| [`htmx:targetError`](/events#htmx:targetError)  | triggered when an invalid target is specified
 
 </div>
 

@@ -9,7 +9,7 @@ describe("default extensions behavior", function() {
 
         htmx.defineExtension("ext-testswap", {
             onEvent : function(name, evt) {
-                if (name === "load.htmx") {
+                if (name === "htmx:load") {
                     loadCalls.push(evt.detail.elt);
                 }
             },

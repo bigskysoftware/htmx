@@ -114,7 +114,7 @@ describe("hx-push-url attribute", function() {
 
     it("afterSettle.htmx is called when replacing outerHTML", function () {
         var called = false;
-        var handler = htmx.on("afterSettle.htmx", function (evt) {
+        var handler = htmx.on("htmx:afterSettle", function (evt) {
             called = true;
         });
         try {
@@ -126,13 +126,13 @@ describe("hx-push-url attribute", function() {
             this.server.respond();
             should.equal(called, true);
         } finally {
-            htmx.off("afterSettle.htmx", handler);
+            htmx.off("htmx:afterSettle", handler);
         }
     });
 
     it("should include parameters on a get", function () {
         var path = "";
-        var handler = htmx.on("pushedIntoHistory.htmx", function (evt) {
+        var handler = htmx.on("htmx:pushedIntoHistory", function (evt) {
             path = evt.detail.path;
         });
         try {
@@ -145,7 +145,7 @@ describe("hx-push-url attribute", function() {
             form.textContent.should.equal("second")
             path.should.equal("/test?foo=bar")
         } finally {
-            htmx.off("pushedIntoHistory.htmx", handler);
+            htmx.off("htmx:pushedIntoHistory", handler);
         }
     });
 
