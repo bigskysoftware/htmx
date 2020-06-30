@@ -1522,7 +1522,7 @@ return (function () {
 
                             var swapSpec = getSwapSpecification(elt);
 
-                            target.classList.add("htmx-swapping");
+                            target.classList.add(htmx.config.swappingClass);
                             var doSwap = function () {
                                 try {
 
@@ -1544,10 +1544,10 @@ return (function () {
                                         newActiveElt.focus();
                                     }
 
-                                    target.classList.remove("htmx-swapping");
+                                    target.classList.remove(htmx.config.swappingClass);
                                     forEach(settleInfo.elts, function (elt) {
                                         if (elt.classList) {
-                                            elt.classList.add("htmx-settling");
+                                            elt.classList.add(htmx.config.settlingClass);
                                         }
                                         triggerEvent(elt, 'afterSwap.htmx', eventDetail);
                                     });
@@ -1560,7 +1560,7 @@ return (function () {
                                         });
                                         forEach(settleInfo.elts, function (elt) {
                                             if (elt.classList) {
-                                                elt.classList.remove("htmx-settling");
+                                                elt.classList.remove(htmx.config.settlingClass);
                                             }
                                             triggerEvent(elt, 'afterSettle.htmx', eventDetail);
                                         });
@@ -1734,7 +1734,9 @@ return (function () {
                 defaultSettleDelay:100,
                 includeIndicatorStyles:true,
                 indicatorClass:'htmx-indicator',
-                requestClass:'htmx-request'
+                requestClass:'htmx-request',
+                settlingClass:'htmx-settling',
+                swappingClass:'htmx-swapping',
             },
             parseInterval:parseInterval,
             _:internalEval,
