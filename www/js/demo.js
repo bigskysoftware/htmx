@@ -104,7 +104,7 @@ function onDelete(path, response) {
 //====================================
 
 var requestId = 0;
-htmx.on("beforeSwap.htmx", function(event) {
+htmx.on("htmx:beforeSwap", function(event) {
     if (document.getElementById("request-count")) {
         requestId++;
         pushActivityChip(`${server.getHTTPMethod(event.detail.xhr)} ${event.detail.xhr.url}`, `req-${requestId}`, demoResponseTemplate(event.detail));
