@@ -3,7 +3,7 @@ htmx.defineExtension('local-vars', {
         if (!localStorage) {
             console.log("Warning: browser does not support local storage.")
         }
-        elt = evt.detail.elt;
+        var elt = evt.detail.elt;
         if (name === "configRequest.htmx") {
             if (elt.hasAttribute("hx-include-local-vars") || elt.hasAttribute("data-hx-include-local-vars") ) {
                 var includeVars = elt.getAttribute("hx-include-local-vars") || elt.getAttribute("data-hx-include-local-vars");
@@ -26,7 +26,7 @@ htmx.defineExtension('local-vars', {
             var localVars = xhr.getResponseHeader("HX-Local-Vars");
             if (localVars) {
                 var localVars = JSON.parse(localVars);
-                for(key in localVars) {
+                for(var key in localVars) {
                     localStorage.setItem(key, localVars[key]);
                 }
             }
