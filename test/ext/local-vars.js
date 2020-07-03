@@ -12,7 +12,7 @@ describe("local-vars extension", function() {
 
     it('Local variables are set/unset properly', function () {
         this.server.respondWith("POST", "/test", function (xhr) {
-            var myvars = xhr.requestHeaders["HX-Local-Vars"];
+            var myvars = xhr.requestHeaders["Local-Vars"];
             if (myvars) {
                 var myvars = JSON.parse(myvars);
                 // check Get Local Vars
@@ -21,15 +21,15 @@ describe("local-vars extension", function() {
                     "mylocalvar1": (Number(myvars.mylocalvar1) + 1),
                     "mylocalvar2": "bye!"
                     };
-                    // xhr.responseHeaders["HX-Local-Vars"] = JSON.stringify(answer);
-                    xhr.respond(200, {"HX-Local-Vars": JSON.stringify(answer)}, "OK");
+                    // xhr.responseHeaders["Local-Vars"] = JSON.stringify(answer);
+                    xhr.respond(200, {"Local-Vars": JSON.stringify(answer)}, "OK");
                     return;
                 }
             }
             xhr.respond(200, {}, "ERROR");
         });
 
-        var btn = make('<button hx-post="/test" hx-ext="local-vars" hx-include-local-vars="mylocalvar1 mylocalvar2">Click Me!</button>')
+        var btn = make('<button hx-post="/test" hx-ext="local-vars" include-local-vars="mylocalvar1 mylocalvar2">Click Me!</button>')
         btn.click();
         this.server.respond();
                 

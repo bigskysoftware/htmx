@@ -4,9 +4,9 @@ htmx.defineExtension('local-vars', {
             console.log("Warning: browser does not support local storage.")
         }
         var elt = evt.detail.elt;
-        if (name === "configRequest.htmx") {
-            if (elt.hasAttribute("hx-include-local-vars") || elt.hasAttribute("data-hx-include-local-vars") ) {
-                var includeVars = elt.getAttribute("hx-include-local-vars") || elt.getAttribute("data-hx-include-local-vars");
+        if (name === "htmx:configRequest") {
+            if (elt.hasAttribute("include-local-vars") || elt.hasAttribute("data-include-local-vars") ) {
+                var includeVars = elt.getAttribute("include-local-vars") || elt.getAttribute("data-include-local-vars");
                 var data = {};
                 includeVars.split(" ").forEach(function(key) {
                     var item = localStorage.getItem(key);
@@ -14,16 +14,16 @@ htmx.defineExtension('local-vars', {
                         data[key] = item;
                     }
                 });
-                evt.detail.headers["HX-Local-Vars"] = JSON.stringify(data);           
+                evt.detail.headers["Local-Vars"] = JSON.stringify(data);           
             }
             else {
-                console.log("Warning: hx-local-vars without hx-include-local-vars.")
+                console.log("Warning: hx-local-vars without include-local-vars.")
             }
         }
     },
     transformResponse: function(text, xhr, elt) {
-        if (elt.hasAttribute("hx-include-local-vars") || elt.hasAttribute("data-hx-include-local-vars")) {
-            var localVars = xhr.getResponseHeader("HX-Local-Vars");
+        if (elt.hasAttribute("include-local-vars") || elt.hasAttribute("data-include-local-vars")) {
+            var localVars = xhr.getResponseHeader("Local-Vars");
             if (localVars) {
                 var localVars = JSON.parse(localVars);
                 for(var key in localVars) {

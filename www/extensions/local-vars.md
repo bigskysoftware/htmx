@@ -12,7 +12,7 @@ if you need to set the localStorage values after your ajax response.
 ### Usage
 
 ```html
-<div hx-post='/test' hx-ext='local-vars' hx-include-local-vars="ncount">click me</div>
+<div hx-post='/test' hx-ext='local-vars' include-local-vars="ncount">click me</div>
 ```
 
 ### Source
