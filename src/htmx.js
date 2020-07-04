@@ -1066,12 +1066,12 @@ return (function () {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({}, getDocument().title, window.location.href);
+            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
             saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
         }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({}, "", path);
+            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
             currentPathForHistory = path;
         }
 
@@ -1703,8 +1703,10 @@ return (function () {
             var body = getDocument().body;
             processNode(body, true);
             triggerEvent(body, 'htmx:load', {});
-            window.onpopstate = function () {
-                restoreHistory();
+            window.onpopstate = function (event) {
+                if (event.state && event.state.htmx) {
+                    restoreHistory();
+                }
             };
         })
 
