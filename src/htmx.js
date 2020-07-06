@@ -1338,7 +1338,7 @@ return (function () {
                             swapSpec["scroll"] = modifier.substr(7);
                         }
                         if (modifier.indexOf("view:") === 0) {
-                            swapSpec["view"] = modifier.substr(7);
+                            swapSpec["view"] = modifier.substr(5);
                         }
                     }
                 }
@@ -1374,10 +1374,10 @@ return (function () {
                 }
             }
             if (swapSpec.view) {
-                if (swapSpec.scroll === "top") {
+                if (swapSpec.view === "top") {
                     target.scrollIntoView(true);
                 }
-                if (swapSpec.scroll === "bottom") {
+                if (swapSpec.view === "bottom") {
                     target.scrollIntoView(false);
                 }
             }
