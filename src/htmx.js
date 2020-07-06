@@ -1337,8 +1337,8 @@ return (function () {
                         if (modifier.indexOf("scroll:") === 0) {
                             swapSpec["scroll"] = modifier.substr(7);
                         }
-                        if (modifier.indexOf("view:") === 0) {
-                            swapSpec["view"] = modifier.substr(5);
+                        if (modifier.indexOf("show:") === 0) {
+                            swapSpec["show"] = modifier.substr(5);
                         }
                     }
                 }
@@ -1373,11 +1373,11 @@ return (function () {
                     target.scrollTop = target.scrollHeight;
                 }
             }
-            if (swapSpec.view) {
-                if (swapSpec.view === "top") {
+            if (swapSpec.show) {
+                if (swapSpec.show === "top") {
                     target.scrollIntoView(true);
                 }
-                if (swapSpec.view === "bottom") {
+                if (swapSpec.show === "bottom") {
                     target.scrollIntoView(false);
                 }
             }
