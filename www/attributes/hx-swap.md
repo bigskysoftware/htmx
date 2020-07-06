@@ -29,6 +29,12 @@ So in this code:
 
 The `div` will issue a request to `/example` and append the returned content after the `div`
 
+### Modifiers
+
+The `hx-swap` attributes supports modifiers for changing the behavior of the swap.  They are outlined below.
+
+#### Timing: `swap` & `settle`
+
 You can modify the amount of time that htmx will wait after receiving a response to swap the content
 by including a `swap` modifier:
 
@@ -47,6 +53,8 @@ modifier:
 
 These attributes can be used to synchronize htmx with the timing of CSS transition effects.
 
+#### Scrolling: `scroll` & `show`
+
 You can also change the scrolling behavior of the target element by using the `scroll` and `view` modifiers, both
 of which take the values `top` and `bottom`:
 
@@ -63,7 +71,7 @@ of which take the values `top` and `bottom`:
   <!-- this will get some content and add it to #another-div, then ensure that the top of #another-div is visible in the 
        viewport -->
   <div hx-get="/example" 
-       hx-swap="innerHTML view:top"
+       hx-swap="innerHTML show:top"
        hx-target="#another-div">
     Get Some Content
   </div>
