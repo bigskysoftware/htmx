@@ -681,7 +681,11 @@ Htmx allows you to configure a few defaults:
 |  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
 |  `htmx.config.defaultSwapDelay` | defaults to 0
 |  `htmx.config.defaultSettleDelay` | defaults to 100
-|  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the `htmx-indicator` default styles are loaded, must be set in a `meta` tag before the htmx js is included)
+|  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
+|  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
+|  `htmx.config.requestClass` | defaults to `htmx-request`
+|  `htmx.config.settlingClass` | defaults to `htmx-settling`
+|  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 
 </div>
 
