@@ -2,7 +2,7 @@
 
 *high power tools for HTML*
 
-[![Gitter](https://img.shields.io/gitter/room/intercooler-js/Lobby.svg)](https://gitter.im/intercooler-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
 [![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
 [![Circle CI](https://circleci.com/gh/bigskysoftware/htmx.svg?style=shield)](https://app.circleci.com/pipelines/github/bigskysoftware/htmx)
 
