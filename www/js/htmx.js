@@ -1066,12 +1066,12 @@ return (function () {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({}, getDocument().title, window.location.href);
+            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
             saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
         }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({}, "", path);
+            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
             currentPathForHistory = path;
         }
 
@@ -1149,7 +1149,7 @@ return (function () {
                 indicators = [elt];
             }
             forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, "htmx-request");
+                ic.classList[action].call(ic.classList, htmx.config.requestClass);
             });
         }
 
@@ -1337,8 +1337,8 @@ return (function () {
                         if (modifier.indexOf("scroll:") === 0) {
                             swapSpec["scroll"] = modifier.substr(7);
                         }
-                        if (modifier.indexOf("view:") === 0) {
-                            swapSpec["view"] = modifier.substr(7);
+                        if (modifier.indexOf("show:") === 0) {
+                            swapSpec["show"] = modifier.substr(5);
                         }
                     }
                 }
@@ -1373,11 +1373,11 @@ return (function () {
                     target.scrollTop = target.scrollHeight;
                 }
             }
-            if (swapSpec.view) {
-                if (swapSpec.scroll === "top") {
+            if (swapSpec.show) {
+                if (swapSpec.show === "top") {
                     target.scrollIntoView(true);
                 }
-                if (swapSpec.scroll === "bottom") {
+                if (swapSpec.show === "bottom") {
                     target.scrollIntoView(false);
                 }
             }
@@ -1522,7 +1522,7 @@ return (function () {
 
                             var swapSpec = getSwapSpecification(elt);
 
-                            target.classList.add("htmx-swapping");
+                            target.classList.add(htmx.config.swappingClass);
                             var doSwap = function () {
                                 try {
 
@@ -1544,10 +1544,10 @@ return (function () {
                                         newActiveElt.focus();
                                     }
 
-                                    target.classList.remove("htmx-swapping");
+                                    target.classList.remove(htmx.config.swappingClass);
                                     forEach(settleInfo.elts, function (elt) {
                                         if (elt.classList) {
-                                            elt.classList.add("htmx-settling");
+                                            elt.classList.add(htmx.config.settlingClass);
                                         }
                                         triggerEvent(elt, 'htmx:afterSwap', eventDetail);
                                     });
@@ -1560,7 +1560,7 @@ return (function () {
                                         });
                                         forEach(settleInfo.elts, function (elt) {
                                             if (elt.classList) {
-                                                elt.classList.remove("htmx-settling");
+                                                elt.classList.remove(htmx.config.settlingClass);
                                             }
                                             triggerEvent(elt, 'htmx:afterSettle', eventDetail);
                                         });
@@ -1668,18 +1668,16 @@ return (function () {
             }
         }
 
-        // insert htmx-indicator css rules immediate, if not configured otherwise
-        (function() {
-            var metaConfig = getMetaConfig();
-            if (metaConfig === null || metaConfig.includeIndicatorStyles !== false) {
+        function insertIndicatorStyles() {
+            if (htmx.config.includeIndicatorStyles !== false) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>\
-                      .htmx-indicator{opacity:0;transition: opacity 200ms ease-in;}\
-                      .htmx-request .htmx-indicator{opacity:1}\
-                      .htmx-request.htmx-indicator{opacity:1}\
+                      ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
+                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1}\
                     </style>");
             }
-        })();
+        }
 
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
@@ -1700,11 +1698,14 @@ return (function () {
         // initialize the document
         ready(function () {
             mergeMetaConfig();
+            insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body, true);
             triggerEvent(body, 'htmx:load', {});
-            window.onpopstate = function () {
-                restoreHistory();
+            window.onpopstate = function (event) {
+                if (event.state && event.state.htmx) {
+                    restoreHistory();
+                }
             };
         })
 
@@ -1733,7 +1734,11 @@ return (function () {
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
-                includeIndicatorStyles:true
+                includeIndicatorStyles:true,
+                indicatorClass:'htmx-indicator',
+                requestClass:'htmx-request',
+                settlingClass:'htmx-settling',
+                swappingClass:'htmx-swapping',
             },
             parseInterval:parseInterval,
             _:internalEval,
