@@ -43,7 +43,7 @@ The response from the `/register` url will be appended to the `div` with the id 
 There are two special events that are non-standard that htmx supports:
 
 * `load` - triggered on load (useful for lazy-loading something)
-* `reveal` - triggered when an element is scrolled into the viewport (also useful for lazy-loading)
+* `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading)
 
 ### Polling
 
