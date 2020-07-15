@@ -5,19 +5,19 @@ title: </> htmx - high power tools for html
 
 ## The `local-vars` Extension
 
-This extension allows you to send localStorage or sessionStorage variables 
+This extension allows you to send localStorage or sessionStorage variables' 
 values to the server. It also allows the 
 server to return values to the same variables.  
 
 Set the **Local-Vars** header on the response
-if you need to send the the localStorage or sessionStorage variable values back to the client browser.  
+if you need to send the the localStorage or sessionStorage variables' values back to the client browser.  
 
 **Parameters** for include-local-vars or data-include-local-vars 
 should be a space delimited 
 list of local variables or "sessionStorage:1" if you want to use sessionStorage
 instead.  
 
-The localStorage variable do not need to be instanciated, 
+The localStorage variables do not need to be instanciated, 
 but uninstanciated variables aren't sent to the server.  
 Also, this extension will not clear localStorage variables on unload event.  
 
