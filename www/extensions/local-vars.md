@@ -15,14 +15,11 @@ if you need to send the the localStorage or sessionStorage variables' values bac
 **Parameters** for include-local-vars or data-include-local-vars 
 should be a space delimited 
 list of local variables or "sessionStorage:1" if you want to use sessionStorage
-instead.  
+instead of localStorage.  
 
-The localStorage variables do not need to be instanciated, 
-but uninstanciated variables aren't sent to the server.  
-Also, this extension will not clear localStorage variables on unload event.  
+The localStorage variables do not need to be instanciated, but uninstanciated variables aren't sent to the server.  Also, this extension will not clear localStorage variables on unload event.  
 
-If you use sessionStorage variables, they are of course removed at the 
-end of the session and hence a good reason to use them.
+If you use sessionStorage variables, they are of course removed at the end of the session and hence a good reason to use them.
 
 **NOTE:** localStorage and sessionStorage use cookies to "save" the data.  If the browser has cookies disabled, then neither will work.
 
