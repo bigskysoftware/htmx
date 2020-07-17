@@ -1190,6 +1190,9 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
+                if (!!getRawAttribute(elt, 'multiple')) {
+                    value = Array.from(elt.querySelectorAll("option:checked"), function (e) { return e.value });
+                }
                 if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
