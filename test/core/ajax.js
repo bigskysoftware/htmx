@@ -317,6 +317,42 @@ describe("Core htmx AJAX Tests", function(){
             done();
         }, 20);
     });
+    it('properly handles multiple select input', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<select id="multiSelect" name="multiSelect" multiple="multiple">'+
+            '<option id="m1" value="m1">m1</option>'+
+            '<option id="m2" value="m2">m2</option>'+
+            '<option id="m3" value="m3">m3</option>'+
+            '<option id="m4" value="m4">m4</option>'+
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        console.log(values)
+        values.should.deep.equal({});
+
+        byId("m1").selected = true;
+        form.click();
+        this.server.respond();
+        console.log(values)
+        values.should.deep.equal({multiSelect:"m1"});
+
+
+        byId("m1").selected = true;
+        byId("m3").selected = true;
+        form.click();
+        this.server.respond();
+        console.log(values)
+        values.should.deep.equal({multiSelect:["m1", "m3"]});
+
+    });
 
     it('properly handles checkbox inputs', function()
     {
