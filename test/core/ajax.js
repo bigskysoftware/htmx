@@ -317,6 +317,7 @@ describe("Core htmx AJAX Tests", function(){
             done();
         }, 20);
     });
+
     it('properly handles multiple select input', function()
     {
         var values;
@@ -342,13 +343,11 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         values.should.deep.equal({multiSelect:"m1"});
 
-
         byId("m1").selected = true;
         byId("m3").selected = true;
         form.click();
         this.server.respond();
         values.should.deep.equal({multiSelect:["m1", "m3"]});
-
     });
 
     it('properly handles checkbox inputs', function()
