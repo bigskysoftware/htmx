@@ -335,13 +335,11 @@ describe("Core htmx AJAX Tests", function(){
 
         form.click();
         this.server.respond();
-        console.log(values)
         values.should.deep.equal({});
 
         byId("m1").selected = true;
         form.click();
         this.server.respond();
-        console.log(values)
         values.should.deep.equal({multiSelect:"m1"});
 
 
@@ -349,7 +347,6 @@ describe("Core htmx AJAX Tests", function(){
         byId("m3").selected = true;
         form.click();
         this.server.respond();
-        console.log(values)
         values.should.deep.equal({multiSelect:["m1", "m3"]});
 
     });
