@@ -64,5 +64,13 @@ describe("Core htmx Regression Tests", function(){
         this.server.respond();
         div.innerText.should.contain("Foo")
     });
+    
+    it ('id with dot in value doesnt cause an error', function(){
+        this.server.respondWith("GET", "/test", "Foo <div id='ViewModel.Test'></div>");
+        var div = make('<div hx-get="/test">Get It</div>');
+        div.click();
+        this.server.respond();
+        div.innerText.should.contain("Foo");
+    });
 
 })
