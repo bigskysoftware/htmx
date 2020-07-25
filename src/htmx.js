@@ -750,11 +750,39 @@ return (function () {
         }
 
         function processWebSocketSource(elt, wssSource) {
-            var socket = htmx.createWebSocket(wssSource);
+            
+            var socket
+
+            try {
+                socket = htmx.createWebSocket(wssSource);
+            } catch(err) {
+                maybeRetryWebSocketSource(elt, wssSource)
+                return
+            }
+
+            socket.onopen = function(e) {
+
+                var data = getInternalData(elt)
+
+                // reset any pending retries
+                if (data.websocketTimerId) {
+                    window.clearTimeout(data.websocketTimerId)
+                }
+
+                // reset retry data
+                data.websocketAttempts = undefined
+                data.websocketTimerId = undefined
+            };
+
+            socket.onclose = function(e) {
+                maybeRetryWebSocketSource(elt, wssSource)    
+            };
+
             socket.onerror = function (e) {
                 triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
             };
+
             getInternalData(elt).webSocket = socket;
             socket.addEventListener('message', function (event) {
                 if (maybeCloseWebSocketSource(elt)) {
@@ -776,6 +804,33 @@ return (function () {
 
                 settleImmediately(settleInfo.tasks);
             });
+        }
+
+        // attempts to re-create a failed WebSocket, if another attempt has not already been scheduled.
+        function maybeRetryWebSocketSource(elt, wssSource) {
+
+            // If the DOM node that owns this websocket no longer exists, then do not try to reopen it.
+            if (!bodyContains(elt)) return false;
+
+            // alias to DOM node properties
+            var data = getInternalData(elt) 
+            
+            // Continue only if there are no duplicate timers already in progress
+            if (!data.websocketTimerId) {
+
+                var attemptCount = data.websocketAttempts || 1;
+                var maxAttemptCount = 7; // 2^7 = 128.  In 500ms intervals, this is about 60 seconds max.
+                var maxInterval = (Math.pow(2, attemptCount) - 1) * 500  // Exponential backoff
+                var timeoutInterval = Math.floor(Math.random() * maxInterval); // Random Number between 0 and maxInterval
+                
+                data.websocketTimerId = setTimeout(function() {
+                    data.websocketTimerId = undefined;
+                    data.websocketAttempts = Math.min(attemptCount + 1, maxAttemptCount);
+                    processWebSocketSource(elt, wssSource);
+                }, timeoutInterval);
+            }
+
+            return true; // TRUE means that another retry is scheduled in the future.
         }
 
         function maybeCloseWebSocketSource(elt) {
