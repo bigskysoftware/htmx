@@ -736,6 +736,10 @@ return (function () {
             }
         }
 
+        //====================================================================
+        // Web Sockets
+        //====================================================================
+        
         function processWebSocketInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
@@ -760,21 +764,7 @@ return (function () {
                 if (maybeCloseWebSocketSource(elt)) {
                     return;
                 }
-
-                var response = event.data;
-                withExtensions(elt, function(extension){
-                    response = extension.transformResponse(response, null, elt);
-                });
-
-                var settleInfo = makeSettleInfo(elt);
-                var fragment = makeFragment(response);
-                var children = toArray(fragment.children);
-                for (var i = 0; i < children.length; i++) {
-                    var child = children[i];
-                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
-                }
-
-                settleImmediately(settleInfo.tasks);
+                processFragments(elt, event.data)
             });
         }
 
@@ -806,30 +796,53 @@ return (function () {
             }
         }
 
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
-                return true;
+        // processFragments is used by both WebSockets and SSE to 
+        // push fragments into the DOM, using hx-swap-oob syntax.
+        function processFragments(elt, response) {
+            withExtensions(elt, function(extension){
+                response = extension.transformResponse(response, null, elt);
+            });
+            var settleInfo = makeSettleInfo(elt);
+            var fragment = makeFragment(response);
+            var children = toArray(fragment.children);
+
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
             }
+            settleImmediately(settleInfo.tasks);
         }
+
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
 
         function processSSEInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
                 var value = splitOnWhitespace(values[i]);
                 if (value[0] === "connect") {
-                    processSSESource(elt, value[1]);
+                    processSSESource(elt, value[1], value[2]);
                 }
             }
         }
 
-        function processSSESource(elt, sseSrc) {
+        function processSSESource(elt, sseSrc, eventName) {
             var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
                 triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
             getInternalData(elt).sseEventSource = source;
+
+            // If this source is configured to listen to a specific event name,
+            // then process the fragments in the same way as WebSockets
+            if (eventName != undefined) {
+                source.addEventListener(eventName, function(event) {
+                    console.log(event)
+                    processFragments(elt, event.data)
+                })
+            }
         }
 
         function processSSETrigger(elt, verb, path, sseEventName) {
@@ -853,6 +866,15 @@ return (function () {
                 triggerErrorEvent(elt, "htmx:noSSESourceError");
             }
         }
+
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).sseEventSource.close();
+                return true;
+            }
+        }
+
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
