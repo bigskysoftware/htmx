@@ -839,7 +839,6 @@ return (function () {
             // then process the fragments in the same way as WebSockets
             if (eventName != undefined) {
                 source.addEventListener(eventName, function(event) {
-                    console.log(event)
                     processFragments(elt, event.data)
                 })
             }
