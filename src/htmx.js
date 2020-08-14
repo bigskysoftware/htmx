@@ -411,8 +411,16 @@ return (function () {
             return function () {
                 processNode(child, true);
                 processScripts(child);
+                processFocus(child)
                 triggerEvent(child, 'htmx:load', {});
             };
+        }
+
+        function processFocus(child) {
+            var el = child.querySelector("[autofocus]")
+            if (el != null) {
+                el.focus()
+            }
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
