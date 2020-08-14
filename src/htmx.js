@@ -321,6 +321,8 @@ return (function () {
                     return explicitTarget;
                 } else if (targetStr.indexOf("closest ") === 0) {
                     return closest(elt, targetStr.substr(8));
+                } else if (targetStr.indexOf("find ") === 0) {
+                    return find(elt, targetStr.substr(5));   
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
