@@ -921,7 +921,7 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws], [_]");
                 return results;
             } else {
                 return [];
