@@ -481,8 +481,10 @@ return (function () {
             if (firstChild) {
                 while (firstChild.nextSibling) {
                     target.removeChild(firstChild.nextSibling);
+                    closeConnections(firstChild.nextSibling)
                 }
                 target.removeChild(firstChild);
+                closeConnections(firstChild)
             }
         }
 
