@@ -806,6 +806,43 @@ return (function () {
             }
         }
 
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
+
+        function processSSEInfo(elt, nodeData, info) {
+            var value = splitOnWhitespace(info);
+            var sseSrc = value[0]
+            var eventType = value[1]
+
+            if (eventType == undefined) {
+                return
+            }
+
+            var source = htmx.createEventSource(sseSrc);
+
+            source.addEventListener(eventType, function(e) {
+
+                if (maybeCloseSSESource(elt)) {
+                    return
+                }
+                
+                var swapSpec = getSwapSpecification(elt)
+                var target = getTarget(elt)
+                var fragment = makeFragment(e.data);
+                var settleInfo = makeSettleInfo(elt);
+
+                swap(swapSpec.swapStyle, elt, target, fragment, settleInfo)
+            })
+            
+            source.onerror = function (e) {
+                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
+                maybeCloseSSESource(elt);
+            };
+
+            getInternalData(elt).sseEventSource = source;
+        }
+
         function maybeCloseSSESource(elt) {
             if (!bodyContains(elt)) {
                 getInternalData(elt).sseEventSource.close();
@@ -813,46 +850,7 @@ return (function () {
             }
         }
 
-        function processSSEInfo(elt, nodeData, info) {
-            var values = info.split(",");
-            for (var i = 0; i < values.length; i++) {
-                var value = splitOnWhitespace(values[i]);
-                if (value[0] === "connect") {
-                    processSSESource(elt, value[1]);
-                }
-            }
-        }
-
-        function processSSESource(elt, sseSrc) {
-            var source = htmx.createEventSource(sseSrc);
-            source.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
-                maybeCloseSSESource(elt);
-            };
-            getInternalData(elt).sseEventSource = source;
-        }
-
-        function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).sseEventSource != null;
-            });
-            if (sseSourceElt) {
-                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function () {
-                    if (!maybeCloseSSESource(sseSourceElt)) {
-                        if (bodyContains(elt)) {
-                            issueAjaxRequest(elt, verb, path);
-                        } else {
-                            sseEventSource.removeEventListener(sseEventName, sseListener);
-                        }
-                    }
-                };
-                getInternalData(elt).sseListener = sseListener;
-                sseEventSource.addEventListener(sseEventName, sseListener);
-            } else {
-                triggerErrorEvent(elt, "htmx:noSSESourceError");
-            }
-        }
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
@@ -877,9 +875,7 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.sseEvent) {
-                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
-                        } else if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "load") {
