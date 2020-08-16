@@ -842,9 +842,7 @@ return (function () {
             }
 
             forEach(eventTypes, function(eventType) {
-                console.log("adding handler", eventType)
                 addServerSentEvent(elt, sseSrc, eventType, function(e) {
-                    console.log("received event", e)
                     if (maybeCloseSSESource(elt)) {return}
                     handleContent(elt, e.data)
                 })
@@ -883,7 +881,6 @@ return (function () {
             // Search all event handlers that match this element.
             eventSource.l = filter(eventSource.l, function(listener) {
                 if (listener.e === elt) {
-                    console.log("removing handler", eventSource)
                     eventSource.s.removeEventListener(listener.t, listener.fn)
                     return false
                 }
@@ -898,7 +895,6 @@ return (function () {
         }
 
         function maybeCloseSSESource(elt) {
-            console.log("maybeCloseSSESource")
             if (!bodyContains(elt)) {
                 closeServerSentEvent(elt)
                 return true;
