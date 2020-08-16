@@ -816,7 +816,7 @@ return (function () {
             var eventType = value[1]
 
             if (eventType == undefined) {
-                return
+                eventType = "message"
             }
 
             var source = htmx.createEventSource(sseSrc);
