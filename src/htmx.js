@@ -163,6 +163,16 @@ return (function () {
             }
         }
 
+        function filter(arr, func) {
+            var result = []
+            for (var i = 0 ; i < arr.length; i++) {
+                if (func(arr[i])) {
+                    result.push(arr[i])
+                }
+            }
+            return result
+        }
+
         function isScrolledIntoView(el) {
             var rect = el.getBoundingClientRect();
             var elemTop = rect.top;
@@ -431,9 +441,11 @@ return (function () {
             if (internalData.webSocket) {
                 internalData.webSocket.close();
             }
-            if (internalData.sseEventSource) {
-                internalData.sseEventSource.close();
+            
+            if (internalData.sseEventSource !== undefined) {
+                closeServerSentEvent(target)
             }
+
             if (target.children) { // IE
                 forEach(target.children, function(child) { closeConnections(child) });
             }
@@ -480,8 +492,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
+                    closeConnections(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
+                closeConnections(firstChild)
                 target.removeChild(firstChild);
             }
         }
@@ -810,40 +824,83 @@ return (function () {
         // Server Sent Events
         //====================================================================
 
+        var globalEventSourceRegistry = {}
+
         function processSSEInfo(elt, nodeData, info) {
 
             if (typeof EventSource === "undefined") {
-                triggerErrorEvent(elt, "htmx:Unsupported", "Server Sent Events are not supported by this browser")
+                triggerErrorEvent(elt, "htmx:sseError", {error:"Server Sent Events are not supported by this browser"})
                 return
             }
 
             var eventTypes = splitOnWhitespace(info);
             var sseSrc = eventTypes.shift()
+            var data = getInternalData(elt)
 
             if (eventTypes.length == 0) {
                 eventTypes = ["message"]
             }
 
-            var source = htmx.createEventSource(sseSrc);
-
-            for (var i = 0 ; i < eventTypes.length; i++) {
-                source.addEventListener(eventTypes[i], function(e) {
+            forEach(eventTypes, function(eventType) {
+                console.log("adding handler", eventType)
+                addServerSentEvent(elt, sseSrc, eventType, function(e) {
+                    console.log("received event", e)
                     if (maybeCloseSSESource(elt)) {return}
                     handleContent(elt, e.data)
                 })
+            })
+            
+            data.sseEventSource = sseSrc
+        }
+
+        function addServerSentEvent(elt, url, eventType, listener) {
+
+            // If this is the first SSE for this URL, then create a new EventSource
+            if (globalEventSourceRegistry[url] === undefined) {
+                globalEventSourceRegistry[url] = {s: htmx.createEventSource(url), l:[]}
+
+                globalEventSourceRegistry[url].s.onerror = function (e) {
+                    triggerErrorEvent(elt, "htmx:sseError", {error:e});
+                    maybeCloseSSESource(elt);
+                };
+            }
+
+            // Add the listener to the array of listeners for this URL/eventType
+            globalEventSourceRegistry[url].s.addEventListener(eventType, listener)
+            globalEventSourceRegistry[url].l.push({e: elt, t:eventType, fn:listener, u: url})
+
+            return globalEventSourceRegistry[url]
+        }
+
+        function closeServerSentEvent(elt) {
+
+            var url = getInternalData(elt).sseEventSource
+            var eventSource = globalEventSourceRegistry[url]
+            if (eventSource === undefined) {
+                return
             }
             
-            source.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
-                maybeCloseSSESource(elt);
-            };
+            // Search all event handlers that match this element.
+            eventSource.l = filter(eventSource.l, function(listener) {
+                if (listener.e === elt) {
+                    console.log("removing handler", eventSource)
+                    eventSource.s.removeEventListener(listener.t, listener.fn)
+                    return false
+                }
+                return true
+            })
 
-            getInternalData(elt).sseEventSource = source;
+            // If there are no more listeners for this EventSource, then close the EventSource
+            if (eventSource.l.length == 0) {
+                globalEventSourceRegistry[url].s.close()
+                delete globalEventSourceRegistry[url]
+            }
         }
 
         function maybeCloseSSESource(elt) {
+            console.log("maybeCloseSSESource")
             if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
+                closeServerSentEvent(elt)
                 return true;
             }
         }
