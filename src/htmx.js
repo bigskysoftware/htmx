@@ -811,29 +811,27 @@ return (function () {
         //====================================================================
 
         function processSSEInfo(elt, nodeData, info) {
-            var value = splitOnWhitespace(info);
-            var sseSrc = value[0]
-            var eventType = value[1]
 
-            if (eventType == undefined) {
-                eventType = "message"
+            if (typeof EventSource === "undefined") {
+                triggerErrorEvent(elt, "htmx:Unsupported", "Server Sent Events are not supported by this browser")
+                return
+            }
+
+            var eventTypes = splitOnWhitespace(info);
+            var sseSrc = eventTypes.shift()
+
+            if (eventTypes.length == 0) {
+                eventTypes = ["message"]
             }
 
             var source = htmx.createEventSource(sseSrc);
 
-            source.addEventListener(eventType, function(e) {
-
-                if (maybeCloseSSESource(elt)) {
-                    return
-                }
-                
-                var swapSpec = getSwapSpecification(elt)
-                var target = getTarget(elt)
-                var fragment = makeFragment(e.data);
-                var settleInfo = makeSettleInfo(elt);
-
-                swap(swapSpec.swapStyle, elt, target, fragment, settleInfo)
-            })
+            for (var i = 0 ; i < eventTypes.length; i++) {
+                source.addEventListener(eventTypes[i], function(e) {
+                    if (maybeCloseSSESource(elt)) {return}
+                    handleContent(elt, e.data)
+                })
+            }
             
             source.onerror = function (e) {
                 triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
@@ -848,6 +846,21 @@ return (function () {
                 getInternalData(elt).sseEventSource.close();
                 return true;
             }
+        }
+
+        //====================================================================
+
+        // handleContent does ALL the work to put new content into the DOM.
+        // maybe something like this can become the central place for all
+        // DOM updates?
+        function handleContent(elt, text) {
+            var swapSpec = getSwapSpecification(elt)
+            var target = getTarget(elt)
+            var fragment = makeFragment(text);
+            var settleInfo = makeSettleInfo(elt);
+
+            swap(swapSpec.swapStyle, elt, target, fragment, settleInfo)
+
         }
 
         //====================================================================
