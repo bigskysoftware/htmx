@@ -442,10 +442,6 @@ return (function () {
                 internalData.webSocket.close();
             }
             
-            if (internalData.sseEventSource !== undefined) {
-                closeServerSentEvent(target)
-            }
-
             if (target.children) { // IE
                 forEach(target.children, function(child) { closeConnections(child) });
             }
@@ -468,6 +464,7 @@ return (function () {
                 }
                 closeConnections(target);
                 parentElt(target).removeChild(target);
+                auditEventListeners()
             }
         }
 
@@ -497,6 +494,7 @@ return (function () {
                 }
                 closeConnections(firstChild)
                 target.removeChild(firstChild);
+                auditEventListeners()
             }
         }
 
@@ -824,18 +822,17 @@ return (function () {
         // Server Sent Events
         //====================================================================
 
-        var globalEventSourceRegistry = {}
+        var globalEventListeners = []
 
         function processSSEInfo(elt, nodeData, info) {
 
-            if (typeof EventSource === "undefined") {
+            if (typeof(EventSource) === "undefined") {
                 triggerErrorEvent(elt, "htmx:sseError", {error:"Server Sent Events are not supported by this browser"})
                 return
             }
 
             var eventTypes = splitOnWhitespace(info);
             var sseSrc = eventTypes.shift()
-            var data = getInternalData(elt)
 
             if (eventTypes.length == 0) {
                 eventTypes = ["message"]
@@ -843,62 +840,83 @@ return (function () {
 
             forEach(eventTypes, function(eventType) {
                 addServerSentEvent(elt, sseSrc, eventType, function(e) {
-                    if (maybeCloseSSESource(elt)) {return}
+                    if (!bodyContains(elt)) {
+                        auditEventListeners()
+                        return
+                    }
                     handleContent(elt, e.data)
                 })
             })
-            
-            data.sseEventSource = sseSrc
         }
 
-        function addServerSentEvent(elt, url, eventType, listener) {
-
-            // If this is the first SSE for this URL, then create a new EventSource
-            if (globalEventSourceRegistry[url] === undefined) {
-                globalEventSourceRegistry[url] = {s: htmx.createEventSource(url), l:[]}
-
-                globalEventSourceRegistry[url].s.onerror = function (e) {
-                    triggerErrorEvent(elt, "htmx:sseError", {error:e});
-                    maybeCloseSSESource(elt);
-                };
-            }
-
-            // Add the listener to the array of listeners for this URL/eventType
-            globalEventSourceRegistry[url].s.addEventListener(eventType, listener)
-            globalEventSourceRegistry[url].l.push({e: elt, t:eventType, fn:listener, u: url})
-
-            return globalEventSourceRegistry[url]
+        function addServerSentEvent(elt, url, eventType, fn) {
+           var listener = getSSEListener(url)
+           listener.eventSource.addEventListener(eventType, fn)
+           listener.handlers.push({elt:elt, eventType:eventType, fn:fn})
         }
 
-        function closeServerSentEvent(elt) {
+        function getSSEListener(url) {
 
-            var url = getInternalData(elt).sseEventSource
-            var eventSource = globalEventSourceRegistry[url]
-            if (eventSource === undefined) {
-                return
+            // Search for an existing listener in the registry.  If found, return it.
+            for (var i = 0 ; i < globalEventListeners.length ; i++) {
+                if (globalEventListeners[i].eventSource != undefined) {
+                    if (globalEventListeners[i].url == url) {
+                        return globalEventListeners[i]
+                    }
+                }
             }
-            
-            // Search all event handlers that match this element.
-            eventSource.l = filter(eventSource.l, function(listener) {
-                if (listener.e === elt) {
-                    eventSource.s.removeEventListener(listener.t, listener.fn)
+
+            // Fall through to here means we need to create a new connection.
+            var eventSource = htmx.createEventSource(url)
+
+            eventSource.onerror = function(e) {
+                auditEventListeners()
+                triggerErrorEvent(window.document, "htmx:sseError", {error:e});
+            }
+
+            var listener = {
+                eventSource: eventSource,
+                url: url,
+                handlers: []
+            }
+
+            globalEventListeners.push(listener)
+
+            return listener
+        }
+
+        // auditEventListeners verifies all of the eventListeners in the globalEventListener registry.
+        function auditEventListeners() {
+
+            globalEventListeners = filter(globalEventListeners, function(eventListener) {
+                if (eventListener.eventSource != undefined) {
+                    eventListener.handlers = filter(eventListener.handlers, function(handler) {
+
+                        // If the root element for this handler is still in the body, then keep it in the registry
+                        if (bodyContains(handler.elt)) {
+                            return true
+                        }
+
+                        // Fall through to here means the root element is gone.  Remove the handler from the DOM and the registry
+                        eventListener.eventSource.removeEventListener(handler.eventType, handler.fn)
+                        return false
+                    });
+
+                    // If there are still listeners connected to this EventSource, then keep it in the registry
+                    if (eventListener.handlers.length > 0) {
+                        return true
+                    }
+
+                    // Fall through means there are no more listeners.  Close the source and remove it from the registry.
+                    eventListener.eventSource.close()
                     return false
                 }
-                return true
-            })
 
-            // If there are no more listeners for this EventSource, then close the EventSource
-            if (eventSource.l.length == 0) {
-                globalEventSourceRegistry[url].s.close()
-                delete globalEventSourceRegistry[url]
-            }
-        }
+                // TODO: WebSockets could be added to this structure as well.
 
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                closeServerSentEvent(elt)
-                return true;
-            }
+                logError("HTMX: removing invalid eventListener config")
+                return false // Remove invalid listener from the registry.  How would this even happen?
+            });
         }
 
         //====================================================================
@@ -906,6 +924,8 @@ return (function () {
         // handleContent does ALL the work to put new content into the DOM.
         // maybe something like this can become the central place for all
         // DOM updates?
+        //
+        // TODO: after we're done duplicating the existing logic, redirect it to this function.
         function handleContent(elt, text) {
             var swapSpec = getSwapSpecification(elt)
             var target = getTarget(elt)
@@ -914,6 +934,7 @@ return (function () {
 
             swap(swapSpec.swapStyle, elt, target, fragment, settleInfo)
 
+            // TODO: swap-oob and additional hx-swap parameters.
         }
 
         //====================================================================
