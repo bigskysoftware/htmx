@@ -118,5 +118,77 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:afterRequest is called after a successful request", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    });
+
+    it("htmx:afterOnLoad is called after a successful request", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterOnLoad", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterOnLoad", handler);
+        }
+    });
+
+    it("htmx:afterRequest is called after a failed request", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    });
+
+    it("htmx:sendError is called after a failed request", function () {
+        var called = false;
+        var handler = htmx.on("htmx:sendError", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:sendError", handler);
+        }
+    });
+
 });
 
