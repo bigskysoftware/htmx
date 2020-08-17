@@ -8,7 +8,7 @@ describe("Core htmx Events", function() {
         clearWorkArea();
     });
 
-    it("load.htmx fires properly", function () {
+    it("htmx:load fires properly", function () {
         var called = false;
         var handler = htmx.on("htmx:load", function (evt) {
             called = true;
@@ -25,7 +25,7 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("configRequest.htmx allows attribute addition", function () {
+    it("htmx:configRequest allows attribute addition", function () {
         var handler = htmx.on("htmx:configRequest", function (evt) {
             evt.detail.parameters['param'] = "true";
         });
@@ -44,7 +44,7 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("configRequest.htmx allows attribute removal", function () {
+    it("htmx:configRequest allows attribute removal", function () {
         var param = "foo";
         var handler = htmx.on("htmx:configRequest", function (evt) {
             delete evt.detail.parameters['param'];
@@ -63,7 +63,7 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("configRequest.htmx allows header tweaking", function () {
+    it("htmx:configRequest allows header tweaking", function () {
         var header = "foo";
         var handler = htmx.on("htmx:configRequest", function (evt) {
             evt.detail.headers['X-My-Header'] = "bar";
@@ -82,7 +82,7 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("afterSwap.htmx is called when replacing outerHTML", function () {
+    it("htmx:afterSwap is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("htmx:afterSwap", function (evt) {
             called = true;
@@ -100,7 +100,7 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("afterSettle.htmx is called when replacing outerHTML", function () {
+    it("htmx:afterSettle is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("htmx:afterSettle", function (evt) {
             called = true;
