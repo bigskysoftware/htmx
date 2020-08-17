@@ -564,6 +564,73 @@ return (function () {
             }
         }
 
+        function doSwap(elt, text, eventDetail) {
+            // NOTES: This function does not change URL bar (anchors or history)
+            // TODO: processScripts
+            try {
+
+                var target = getTarget(elt)
+
+                if (target == null) {
+                    triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
+                    return;
+                }
+
+                var settleInfo = makeSettleInfo(target);
+                var swapSpec = getSwapSpecification(elt)
+
+                var activeElt = document.activeElement;
+                var selectionInfo = {
+                    elt: activeElt,
+                    start: activeElt.selectionStart,
+                    end: activeElt.selectionEnd,
+                };
+
+                selectAndSwap(swapSpec.swapStyle, target, elt, text, settleInfo);
+
+                if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
+                    var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                    if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                    }
+                    newActiveElt.focus();
+                }
+
+                target.classList.remove(htmx.config.swappingClass);
+                forEach(settleInfo.elts, function (elt) {
+                    if (elt.classList) {
+                        elt.classList.add(htmx.config.settlingClass);
+                    }
+                    triggerEvent(elt, 'htmx:afterSwap', eventDetail);
+                });
+
+                var doSettle = function(){
+
+                    forEach(settleInfo.tasks, function (task) {
+                        task.call();
+                    });
+
+                    forEach(settleInfo.elts, function (elt) {
+                        if (elt.classList) {
+                            elt.classList.remove(htmx.config.settlingClass);
+                        }
+                        triggerEvent(elt, 'htmx:afterSettle', eventDetail);
+                    });
+
+                    updateScrollState(target, settleInfo.elts, swapSpec);
+                }
+
+                if (swapSpec.settleDelay > 0) {
+                    setTimeout(doSettle, swapSpec.settleDelay)
+                } else {
+                    doSettle();
+                }
+            } catch (e) {
+                triggerErrorEvent(elt, 'htmx:swapError', e);
+                throw e;
+            }
+        }
+        
         function handleTrigger(elt, trigger) {
             if (trigger) {
                 if (trigger.indexOf("{") === 0) {
@@ -844,7 +911,8 @@ return (function () {
                         auditEventListeners()
                         return
                     }
-                    handleContent(elt, e.data)
+                    doSwap(elt, e.data)
+                    // handleContent(elt, e.data)
                 })
             })
         }
@@ -917,24 +985,6 @@ return (function () {
                 logError("HTMX: removing invalid eventListener config")
                 return false // Remove invalid listener from the registry.  How would this even happen?
             });
-        }
-
-        //====================================================================
-
-        // handleContent does ALL the work to put new content into the DOM.
-        // maybe something like this can become the central place for all
-        // DOM updates?
-        //
-        // TODO: after we're done duplicating the existing logic, redirect it to this function.
-        function handleContent(elt, text) {
-            var swapSpec = getSwapSpecification(elt)
-            var target = getTarget(elt)
-            var fragment = makeFragment(text);
-            var settleInfo = makeSettleInfo(elt);
-
-            swap(swapSpec.swapStyle, elt, target, fragment, settleInfo)
-
-            // TODO: swap-oob and additional hx-swap parameters.
         }
 
         //====================================================================
