@@ -271,7 +271,7 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
     });
 
-    it('doesnt issue two requests when clicked twice before response', function()
+    it('issues two requests when clicked twice before response', function()
     {
         var i = 1;
         this.server.respondWith("GET", "/test", function (xhr) {
@@ -283,6 +283,23 @@ describe("Core htmx AJAX Tests", function(){
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("click 1");
+        this.server.respond();
+        div.innerHTML.should.equal("click 2");
+    });
+
+    it('issues two requests when clicked three times before response', function()
+    {
+        var i = 1;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "click " + i);
+            i++
+        });
+        var div = make('<div hx-get="/test"></div>');
+        div.click();
+        div.click();
+        div.click();
+        this.server.respondAll();
+        div.innerHTML.should.equal("click 2");
     });
 
     it('properly handles hx-select for basic situation', function()
@@ -297,7 +314,6 @@ describe("Core htmx AJAX Tests", function(){
 
     it('properly handles hx-select for full html document situation', function()
     {
-        var i = 1;
         this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
         var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();

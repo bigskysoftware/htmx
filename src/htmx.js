@@ -1409,12 +1409,18 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
+                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget)};
                 return;
             } else {
                 eltData.requestInFlight = true;
             }
             var endRequestLock = function(){
                 eltData.requestInFlight = false
+                var queuedRequest = eltData.queuedRequest;
+                eltData.queuedRequest = null;
+                if (queuedRequest) {
+                    queuedRequest();
+                }
             }
             var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
             if (promptQuestion) {
