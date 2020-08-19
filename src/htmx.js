@@ -31,6 +31,18 @@ return (function () {
             }
         }
 
+        function parseInteger(str) {
+            try {
+                var result = parseInt(str)
+
+                if (result > 0) {
+                    return result
+                }
+            } catch(any) {
+                return undefined
+            }
+        }
+
         function getRawAttribute(elt, name) {
             return elt.getAttribute && elt.getAttribute(name);
         }
@@ -507,15 +519,19 @@ return (function () {
                     return;
                 case "afterbegin":
                     swapAfterBegin(target, fragment, settleInfo);
+                    maybeLimitChildren(elt, target, "last")
                     return;
                 case "beforebegin":
                     swapBeforeBegin(target, fragment, settleInfo);
+                    maybeLimitChildren(elt, target.parentElement, "last")
                     return;
                 case "beforeend":
                     swapBeforeEnd(target, fragment, settleInfo);
+                    maybeLimitChildren(elt, target, "first")
                     return;
                 case "afterend":
                     swapAfterEnd(target, fragment, settleInfo);
+                    maybeLimitChildren(elt, target.parentElement, "first")
                     return;
                 default:
                     var extensions = getExtensions(elt);
@@ -540,6 +556,28 @@ return (function () {
                         }
                     }
                     swapInnerHTML(target, fragment, settleInfo);
+            }
+        }
+
+        // maybeLimitChildren uses information in the swapSpecification to potentially
+        // remove child items from the target element, until the number of children
+        // is equal to the limit number
+        function maybeLimitChildren(elt, target, loc) {
+
+            if (elt == undefined) {return;}
+            if (target == undefined) {return;}
+
+            var swapSpec = getSwapSpecification(elt)
+            
+            if (swapSpec.limit == undefined) {return;}
+            if (!bodyContains(target)) {return;}
+
+            while (target.childNodes.length > swapSpec.limit) {
+                if (loc == "first") {
+                    removeElement(target.childNodes[0])
+                } else {
+                    removeElement(target.childNodes[target.childNodes.length -1])
+                }
             }
         }
 
@@ -1347,6 +1385,9 @@ return (function () {
                         }
                         if (modifier.indexOf("show:") === 0) {
                             swapSpec["show"] = modifier.substr(5);
+                        }
+                        if (modifier.indexOf("limit:") === 0) {
+                            swapSpec["limit"] = parseInteger(modifier.substr(6));
                         }
                     }
                 }
