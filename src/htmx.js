@@ -716,15 +716,23 @@ return (function () {
             elt.addEventListener(triggerSpec.trigger, eventListener);
         }
 
+        var windowIsScrolling = false
         function initScrollHandler() {
             if (!window['htmxScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                        maybeReveal(elt);
-                    });
+                    windowIsScrolling = true
                 };
                 window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
+
+                setInterval(function() {
+                    if (windowIsScrolling) {
+                        windowIsScrolling = false;
+                        forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                            maybeReveal(elt);
+                        })
+                    }
+                }, 200);
             }
         }
 
