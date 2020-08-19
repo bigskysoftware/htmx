@@ -730,7 +730,7 @@ return (function () {
 
         function maybeReveal(elt) {
             var nodeData = getInternalData(elt);
-            if (!nodeData.revealed && isScrolledIntoView(elt)) {
+            if (isScrolledIntoView(elt) && (nodeData.revealed != true) && (nodeData.verb != undefined)) {
                 nodeData.revealed = true;
                 issueAjaxRequest(elt, nodeData.verb, nodeData.path);
             }
