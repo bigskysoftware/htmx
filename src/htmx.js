@@ -11,6 +11,47 @@
 return (function () {
         'use strict';
 
+        // Public API
+        var htmx = {
+            onLoad: onLoadHelper,
+            process: processNode,
+            on: addEventListenerImpl,
+            off: removeEventListenerImpl,
+            trigger : triggerEvent,
+            find : find,
+            findAll : findAll,
+            closest : closest,
+            remove : removeElement,
+            addClass : addClassToElement,
+            removeClass : removeClassFromElement,
+            toggleClass : toggleClassOnElement,
+            takeClass : takeClassForElement,
+            defineExtension : defineExtension,
+            removeExtension : removeExtension,
+            logAll : logAll,
+            logger : null,
+            config : {
+                historyEnabled:true,
+                historyCacheSize:10,
+                defaultSwapStyle:'innerHTML',
+                defaultSwapDelay:0,
+                defaultSettleDelay:100,
+                includeIndicatorStyles:true,
+                indicatorClass:'htmx-indicator',
+                requestClass:'htmx-request',
+                settlingClass:'htmx-settling',
+                swappingClass:'htmx-swapping',
+            },
+            parseInterval:parseInterval,
+            _:internalEval,
+            createEventSource: function(url){
+                return new EventSource(url, {withCredentials:true})
+            },
+            createWebSocket: function(url){
+                return new WebSocket(url, []);
+            }
+        };
+
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
@@ -1715,46 +1756,7 @@ return (function () {
             };
         })
 
-        // Public API
-        return {
-            onLoad: onLoadHelper,
-            process: processNode,
-            on: addEventListenerImpl,
-            off: removeEventListenerImpl,
-            trigger : triggerEvent,
-            find : find,
-            findAll : findAll,
-            closest : closest,
-            remove : removeElement,
-            addClass : addClassToElement,
-            removeClass : removeClassFromElement,
-            toggleClass : toggleClassOnElement,
-            takeClass : takeClassForElement,
-            defineExtension : defineExtension,
-            removeExtension : removeExtension,
-            logAll : logAll,
-            logger : null,
-            config : {
-                historyEnabled:true,
-                historyCacheSize:10,
-                defaultSwapStyle:'innerHTML',
-                defaultSwapDelay:0,
-                defaultSettleDelay:100,
-                includeIndicatorStyles:true,
-                indicatorClass:'htmx-indicator',
-                requestClass:'htmx-request',
-                settlingClass:'htmx-settling',
-                swappingClass:'htmx-swapping',
-            },
-            parseInterval:parseInterval,
-            _:internalEval,
-            createEventSource: function(url){
-                return new EventSource(url, {withCredentials:true})
-            },
-            createWebSocket: function(url){
-                return new WebSocket(url, []);
-            }
-        }
+        return htmx;
     }
 )()
 }));
