@@ -542,7 +542,7 @@ Htmx has an extensive events mechanism, which doubles as the logging system.
 If you want to register for a given htmx event you can use the following javascript:
 
 ```javascript
-  htmx.on("htmx.load", function(evt) {
+  htmx.on("htmx:load", function(evt) {
         myJavascriptLib.init(evt.details.elt);  
   });
 ```
