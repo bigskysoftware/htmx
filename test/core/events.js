@@ -117,6 +117,42 @@ describe("Core htmx Events", function() {
             htmx.off("htmx:afterSettle", handler);
         }
     });
+    
+    it("afterRequest.htmx is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    }); 
+    
+    it("afterOnLoad.htmx is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterOnLoad", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterOnLoad", handler);
+        }
+    });     
 
 });
 
