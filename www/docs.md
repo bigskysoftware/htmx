@@ -371,7 +371,7 @@ htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enh
 
 Htmx has experimental support for declarative use of both 
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
-and  [Server Sent Events]((https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)).
+and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
   
 These features are under active development, so please let us know if you are willing to experiment with them.
 
