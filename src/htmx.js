@@ -522,8 +522,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
+                    closeConnections(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
+                closeConnections(firstChild)
                 target.removeChild(firstChild);
             }
         }
