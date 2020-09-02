@@ -491,6 +491,7 @@ return (function () {
                 } else {
                     var newElt = eltBeforeNewContent.nextSibling;
                 }
+                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 while(newElt && newElt !== target) {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
@@ -1645,8 +1646,9 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerEvent(elt, 'htmx:afterRequest', eventDetail);
-                    triggerEvent(elt, 'htmx:afterOnLoad', eventDetail);
+                    var finalElt = getInternalData(elt).replacedWith || elt;
+                    triggerEvent(finalElt, 'htmx:afterRequest', eventDetail);
+                    triggerEvent(finalElt, 'htmx:afterOnLoad', eventDetail);
                     endRequestLock();
                 }
             }
