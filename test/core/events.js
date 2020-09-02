@@ -186,6 +186,42 @@ describe("Core htmx Events", function() {
             done();
         }, 30);
     });
+    
+    it("htmx:afterRequest is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    }); 
+
+    it("htmx:afterOnLoad is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterOnLoad", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterOnLoad", handler);
+        }
+    });      
 
 });
 
