@@ -172,22 +172,19 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("htmx:sendError is called after a failed request", function () {
+    it("htmx:sendError is called after a failed request", function (done) {
         var called = false;
         var handler = htmx.on("htmx:sendError", function (evt) {
             called = true;
         });
-        try {
-            this.server.respondWith("POST", "/test", function (xhr) {
-                xhr.respond(200, {}, "");
-            });
-            var div = make("<button hx-post='/test'>Foo</button>");
-            div.click();
-            this.server.respond();
-            should.equal(called, true);
-        } finally {
+        this.server.restore(); // turn off server mock so connection doesn't work
+        var div = make("<button hx-post='file://foo'>Foo</button>");
+        div.click();
+        setTimeout(function () {
             htmx.off("htmx:sendError", handler);
-        }
+            should.equal(called, true);
+            done();
+        }, 30);
     });
 
 });
