@@ -57,6 +57,8 @@ return (function () {
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
 
+        var windowIsScrolling = false // used by initScrollHandler
+
         //====================================================================
         // Utilities
         //====================================================================
@@ -765,13 +767,20 @@ return (function () {
         function initScrollHandler() {
             if (!window['htmxScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                        maybeReveal(elt);
-                    });
+                    windowIsScrolling = true
                 };
                 window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
             }
+
+            setInterval(function() {
+                if (windowIsScrolling) {
+                    windowIsScrolling = false;
+                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                        maybeReveal(elt);
+                    })
+                }
+            }, 200);            
         }
 
         function maybeReveal(elt) {
