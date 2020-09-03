@@ -454,7 +454,7 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
-                processNode(child, true);
+                processNode(child);
                 processScripts(child);
                 triggerEvent(child, 'htmx:load', {});
             };
@@ -1765,7 +1765,7 @@ return (function () {
             mergeMetaConfig();
             insertIndicatorStyles();
             var body = getDocument().body;
-            processNode(body, true);
+            processNode(body);
             triggerEvent(body, 'htmx:load', {});
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
