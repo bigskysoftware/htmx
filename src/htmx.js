@@ -771,16 +771,15 @@ return (function () {
                 };
                 window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
+                setInterval(function() {
+                    if (windowIsScrolling) {
+                        windowIsScrolling = false;
+                        forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                            maybeReveal(elt);
+                        })
+                    }
+                }, 200);
             }
-
-            setInterval(function() {
-                if (windowIsScrolling) {
-                    windowIsScrolling = false;
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                        maybeReveal(elt);
-                    })
-                }
-            }, 200);            
         }
 
         function maybeReveal(elt) {
