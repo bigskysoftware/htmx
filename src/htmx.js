@@ -1579,8 +1579,8 @@ return (function () {
                         if (this.status === 286) {
                             cancelPolling(elt);
                         }
-                        // don't process 'No Content' response
-                        if (this.status !== 204) {
+                        // don't process 'No Content' or 'Not Modified' response
+                        if (this.status !== 204 && this.status !== 304) {
                             if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
 
                             var resp = this.response;

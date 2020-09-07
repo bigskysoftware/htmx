@@ -240,6 +240,17 @@ describe("Core htmx AJAX Tests", function(){
         btn.innerHTML.should.equal("Click Me!");
     });
 
+    it('handles 304 NOT MODIFIED responses properly', function()
+    {
+        this.server.respondWith("GET", "/test", [204, {}, "No Content!"]);
+
+        var btn = make('<button hx-get="/test">Click Me!</button>');
+        btn.click();
+        btn.innerHTML.should.equal("Click Me!");
+        this.server.respond();
+        btn.innerHTML.should.equal("Click Me!");
+    });
+
     it('handles hx-trigger with non-default value', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
