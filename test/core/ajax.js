@@ -519,5 +519,41 @@ describe("Core htmx AJAX Tests", function(){
         input.value.should.equal('bar');
     });
 
+    it('autofocus attribute works properly', function()
+    {
+        this.server.respondWith("GET", "/test", "<input id='i2' value='bar' autofocus/>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
+    });
+
+    it('autofocus attribute works properly w/ child', function()
+    {
+        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus/></div>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
+    });
+
+    it('autofocus attribute works properly w/ true value', function()
+    {
+        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus='true'/></div>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
+    });
+
 
 })

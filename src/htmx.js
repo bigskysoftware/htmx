@@ -462,9 +462,10 @@ return (function () {
         }
 
         function processFocus(child) {
-            var el = child.querySelector("[autofocus]")
-            if (el != null) {
-                el.focus()
+            var autofocus = "[autofocus]";
+            var autoFocusedElt = matches(child, autofocus) ? child : child.querySelector(autofocus)
+            if (autoFocusedElt != null) {
+                autoFocusedElt.focus();
             }
         }
 
