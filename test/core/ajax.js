@@ -242,13 +242,32 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles 304 NOT MODIFIED responses properly', function()
     {
-        this.server.respondWith("GET", "/test", [204, {}, "No Content!"]);
+        this.server.respondWith("GET", "/test-1", [200, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2", [200, {}, "Content for Tab 2"]);
 
-        var btn = make('<button hx-get="/test">Click Me!</button>');
-        btn.click();
-        btn.innerHTML.should.equal("Click Me!");
+        var target = make('<div id="target"></div>')
+        var btn1 = make('<button hx-get="/test-1" hx-target="#target">Tab 1</button>');
+        var btn2 = make('<button hx-get="/test-2" hx-target="#target">Tab 2</button>');
+
+        btn1.click();
+        target.innerHTML.should.equal("");
         this.server.respond();
-        btn.innerHTML.should.equal("Click Me!");
+        target.innerHTML.should.equal("Content for Tab 1");
+
+        btn2.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 2");
+
+        this.server.respondWith("GET", "/test-1", [304, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2", [304, {}, "Content for Tab 2"]);
+
+        btn1.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 1");
+
+        btn2.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 2");
     });
 
     it('handles hx-trigger with non-default value', function()
