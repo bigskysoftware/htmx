@@ -492,11 +492,11 @@ The order of operations in a htmx request are:
   * The `htmx-request` class is applied to the appropriate elements
   * The request is then issued asynchronously via AJAX
     * Upon getting a response the target element is marked with the `htmx-swapping` class
-    * An optional swap delay is applied (see the [hx-swap-delay](/attributes/hx-swap-delay) attribute)
+    * An optional swap delay is applied (see the [hx-swap](/attributes/hx-swap) attribute)
     * The actual content swap is done
         * the `htmx-swapping` class is removed from the target
         * the `htmx-settling` class is applied to the target
-        * A settle delay  is done (default: 100ms)
+        * A settle delay is done (default: 100ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
 
