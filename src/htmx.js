@@ -1488,6 +1488,18 @@ return (function () {
             }
         }
 
+        function getResponseURL(xhr) {
+            // NB: IE11 does not support this stuff
+            if (xhr.responseURL && typeof(URL) !== "undefined") {
+                try {
+                    var url = new URL(xhr.responseURL);
+                    return url.pathname + url.search;
+                } catch (e) {
+                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1660,7 +1672,7 @@ return (function () {
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            var pathToPush = pushedUrl || getPushUrl(elt) || finalPathForGet || path;
+                                            var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPathForGet || path;
                                             pushUrlIntoHistory(pathToPush);
                                             triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                         }
