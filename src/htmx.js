@@ -1476,6 +1476,18 @@ return (function () {
             addExpressionVars(parentElt(elt), rawParameters);
         }
 
+        function safelySetHeaderValue(xhr, header, headerValue) {
+            if (headerValue !== null) {
+                try {
+                    xhr.setRequestHeader(header, headerValue);
+                } catch (e) {
+                    // On an exception, try to set the header URI encoded instead
+                    xhr.setRequestHeader(header, encodeURIComponent(headerValue));
+                    xhr.setRequestHeader(header + "-URI-AutoEncoded", "true");
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1569,7 +1581,8 @@ return (function () {
             // request headers
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
-                    if (headers[header] !== null) xhr.setRequestHeader(header, headers[header]);
+                    var headerValue = headers[header];
+                    safelySetHeaderValue(xhr, header, headerValue);
                 }
             }
 
