@@ -44,6 +44,25 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:configRequest is also dispatched in kebab-case", function () {
+        var handler = htmx.on("htmx:config-request", function (evt) {
+            evt.detail.parameters['param'] = "true";
+        });
+        try {
+            var param = null;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                param = getParameters(xhr)['param'];
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<div hx-post='/test'></div>");
+            div.click();
+            this.server.respond();
+            param.should.equal("true");
+        } finally {
+            htmx.off("htmx:config-request", handler);
+        }
+    });
+
     it("htmx:configRequest allows attribute removal", function () {
         var param = "foo";
         var handler = htmx.on("htmx:configRequest", function (evt) {

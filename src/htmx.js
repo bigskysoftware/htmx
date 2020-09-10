@@ -1034,6 +1034,10 @@ return (function () {
         // Event/Log Support
         //====================================================================
 
+        function kebabEventName(str) {
+            return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        }
+
         function makeEvent(eventName, detail) {
             var evt;
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
@@ -1085,6 +1089,10 @@ return (function () {
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
+            if (eventResult) {
+                var kebabedEvent = makeEvent(kebabEventName(eventName), event.detail);
+                eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
+            }
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
