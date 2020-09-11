@@ -457,7 +457,7 @@ return (function () {
                 processNode(child);
                 processScripts(child);
                 processFocus(child)
-                triggerEvent(child, 'htmx:load', {});
+                triggerEvent(child, 'htmx:load');
             };
         }
 
@@ -978,14 +978,10 @@ return (function () {
             });
         }
 
-        function isHyperScriptAvailable() {
-            return typeof _hyperscript !== "undefined";
-        }
-
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [_], [script], [data-script]");
+                    " [data-hx-ws]");
                 return results;
             } else {
                 return [];
@@ -996,10 +992,6 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
-
-                if (isHyperScriptAvailable()) {
-                    _hyperscript.init(elt);
-                }
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
