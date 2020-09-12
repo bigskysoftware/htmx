@@ -175,7 +175,7 @@ return (function () {
         }
 
         function splitOnWhitespace(trigger) {
-            return trigger.split(/\s+/);
+            return trigger.trim().split(/\s+/);
         }
 
         function mergeObjects(obj1, obj2) {
@@ -552,6 +552,13 @@ return (function () {
             }
         }
 
+        function NEW_SWAP_FUNCTION_NEEDS_A_NAME(elt, content) {
+            console.group("NEW SWAP FUNCTION")
+            console.log(elt)
+            console.log(content)
+            console.groupEnd()
+        }
+
         function handleTrigger(elt, trigger) {
             if (trigger) {
                 if (trigger.indexOf("{") === 0) {
@@ -806,6 +813,10 @@ return (function () {
             }
         }
 
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
+
         function maybeCloseSSESource(elt) {
             if (!bodyContains(elt)) {
                 getInternalData(elt).sseEventSource.close();
@@ -820,6 +831,10 @@ return (function () {
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
                 }
+                
+                if ((value[0] == "swap") && (value[1] == "on")) {
+                    processSSESwap(elt, value[2])
+                }
             }
         }
 
@@ -832,10 +847,29 @@ return (function () {
             getInternalData(elt).sseEventSource = source;
         }
 
+        function processSSESwap(elt, sseEventName) {
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                var sseListener = function (event) {
+                    console.log("SSE EVENT RECEIVED")
+                    if (!maybeCloseSSESource(sseSourceElt)) {
+                        if (bodyContains(elt)) {
+                            NEW_SWAP_FUNCTION_NEEDS_A_NAME(elt, event.data)
+                        } else {
+                            sseEventSource.removeEventListener(sseEventName, sseListener);
+                        }
+                    }
+                };
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
+            }
+        }
+
         function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).sseEventSource != null;
-            });
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
@@ -852,6 +886,10 @@ return (function () {
             } else {
                 triggerErrorEvent(elt, "htmx:noSSESourceError");
             }
+        }
+
+        function hasEventSource(node) {
+            return getInternalData(node).sseEventSource != null;
         }
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
