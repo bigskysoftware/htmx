@@ -1,7 +1,8 @@
 <html>
 	<head>
-		<script src="../../src/htmx.js"></script>
+		<script src="../../src/htmx.js"></script>		
 		<script>
+			// "withCredentials:false" is necessary to circumvent CORS restrictions
 			htmx.createEventSource = function(url){
                 return new EventSource(url, {withCredentials:false})
             }

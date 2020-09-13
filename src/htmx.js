@@ -552,73 +552,6 @@ return (function () {
             }
         }
 
-        function doSwap(elt, text, eventDetail) {
-            // NOTES: This function does not change URL bar (anchors or history)
-            // TODO: processScripts
-            try {
-
-                var target = getTarget(elt)
-
-                if (target == null) {
-                    triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
-                    return;
-                }
-
-                var settleInfo = makeSettleInfo(target);
-                var swapSpec = getSwapSpecification(elt)
-
-                var activeElt = document.activeElement;
-                var selectionInfo = {
-                    elt: activeElt,
-                    start: activeElt.selectionStart,
-                    end: activeElt.selectionEnd,
-                };
-
-                selectAndSwap(swapSpec.swapStyle, target, elt, text, settleInfo);
-
-                if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
-                    var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                    if (selectionInfo.start && newActiveElt.setSelectionRange) {
-                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
-                    }
-                    newActiveElt.focus();
-                }
-
-                target.classList.remove(htmx.config.swappingClass);
-                forEach(settleInfo.elts, function (elt) {
-                    if (elt.classList) {
-                        elt.classList.add(htmx.config.settlingClass);
-                    }
-                    triggerEvent(elt, 'htmx:afterSwap', eventDetail);
-                });
-
-                var doSettle = function(){
-
-                    forEach(settleInfo.tasks, function (task) {
-                        task.call();
-                    });
-
-                    forEach(settleInfo.elts, function (elt) {
-                        if (elt.classList) {
-                            elt.classList.remove(htmx.config.settlingClass);
-                        }
-                        triggerEvent(elt, 'htmx:afterSettle', eventDetail);
-                    });
-
-                    updateScrollState(target, settleInfo.elts, swapSpec);
-                }
-
-                if (swapSpec.settleDelay > 0) {
-                    setTimeout(doSettle, swapSpec.settleDelay)
-                } else {
-                    doSettle();
-                }
-            } catch (e) {
-                triggerErrorEvent(elt, 'htmx:swapError', e);
-                throw e;
-            }
-        }
-        
         function handleTrigger(elt, trigger) {
             if (trigger) {
                 if (trigger.indexOf("{") === 0) {
@@ -912,15 +845,36 @@ return (function () {
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function (event) {
-                    console.log("SSE EVENT RECEIVED")
-                    if (!maybeCloseSSESource(sseSourceElt)) {
-                        if (bodyContains(elt)) {
-                            doSwap(elt, event.data, event)
-                        } else {
-                            sseEventSource.removeEventListener(sseEventName, sseListener);
-                        }
+                    if (maybeCloseSSESource(sseSourceElt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener);
+                        return;
                     }
+
+                    ///////////////////////////
+                    // TODO: merge this code with AJAX and WebSockets code in the future.
+                    
+                    var response = event.data;
+                    withExtensions(elt, function(extension){
+                        response = extension.transformResponse(response, null, elt);
+                    });
+    
+                    var swapSpec = getSwapSpecification(elt)
+                    var target = getTarget(elt)
+                    var settleInfo = makeSettleInfo(elt);
+
+                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    triggerEvent(elt, "htmx:sseMessage", event)
+
+                    // This is a placeholder before a larger refactor. This code does not (yet?) handle:
+                    //
+                    // * hx-oob-swap
+                    // * hx-settle
+                    // * hx-trigger (header values)
+                    // 
+                    ///////////////////////////
+    
                 };
+
                 getInternalData(elt).sseListener = sseListener;
                 sseEventSource.addEventListener(sseEventName, sseListener);
             } else {
