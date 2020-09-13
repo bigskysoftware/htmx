@@ -810,13 +810,6 @@ return (function () {
         // Server Sent Events
         //====================================================================
 
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
-                return true;
-            }
-        }
-
         function processSSEInfo(elt, nodeData, info) {
             var values = info.split(",");
             for (var i = 0; i < values.length; i++) {
@@ -867,6 +860,7 @@ return (function () {
 
                     // This is a placeholder before a larger refactor. This code does not (yet?) handle:
                     //
+                    // * This syntax breaks if there are commas in the URL
                     // * hx-oob-swap
                     // * hx-settle
                     // * hx-trigger (header values)
@@ -902,9 +896,18 @@ return (function () {
             }
         }
 
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).sseEventSource.close();
+                return true;
+            }
+        }
+
         function hasEventSource(node) {
             return getInternalData(node).sseEventSource != null;
         }
+
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
