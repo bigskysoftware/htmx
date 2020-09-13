@@ -11,10 +11,53 @@
 return (function () {
         'use strict';
 
+        // Public API
+        var htmx = {
+            onLoad: onLoadHelper,
+            process: processNode,
+            on: addEventListenerImpl,
+            off: removeEventListenerImpl,
+            trigger : triggerEvent,
+            find : find,
+            findAll : findAll,
+            closest : closest,
+            remove : removeElement,
+            addClass : addClassToElement,
+            removeClass : removeClassFromElement,
+            toggleClass : toggleClassOnElement,
+            takeClass : takeClassForElement,
+            defineExtension : defineExtension,
+            removeExtension : removeExtension,
+            logAll : logAll,
+            logger : null,
+            config : {
+                historyEnabled:true,
+                historyCacheSize:10,
+                defaultSwapStyle:'innerHTML',
+                defaultSwapDelay:0,
+                defaultSettleDelay:100,
+                includeIndicatorStyles:true,
+                indicatorClass:'htmx-indicator',
+                requestClass:'htmx-request',
+                settlingClass:'htmx-settling',
+                swappingClass:'htmx-swapping',
+            },
+            parseInterval:parseInterval,
+            _:internalEval,
+            createEventSource: function(url){
+                return new EventSource(url, {withCredentials:true})
+            },
+            createWebSocket: function(url){
+                return new WebSocket(url, []);
+            }
+        };
+
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
+
+        var windowIsScrolling = false // used by initScrollHandler
 
         //====================================================================
         // Utilities
@@ -321,6 +364,8 @@ return (function () {
                     return explicitTarget;
                 } else if (targetStr.indexOf("closest ") === 0) {
                     return closest(elt, targetStr.substr(8));
+                } else if (targetStr.indexOf("find ") === 0) {
+                    return find(elt, targetStr.substr(5));   
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
@@ -395,7 +440,7 @@ return (function () {
         function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
                 if (newNode.id && newNode.id.length > 0) {
-                    var oldNode = parentNode.querySelector(newNode.tagName + "[id=" + newNode.id + "]");
+                    var oldNode = parentNode.querySelector(newNode.tagName + "[id='" + newNode.id + "']");
                     if (oldNode && oldNode !== parentNode) {
                         var newAttributes = newNode.cloneNode();
                         cloneAttributes(newNode, oldNode);
@@ -409,10 +454,19 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
-                processNode(child, true);
+                processNode(child);
                 processScripts(child);
-                triggerEvent(child, 'htmx:load', {});
+                processFocus(child)
+                triggerEvent(child, 'htmx:load');
             };
+        }
+
+        function processFocus(child) {
+            var autofocus = "[autofocus]";
+            var autoFocusedElt = matches(child, autofocus) ? child : child.querySelector(autofocus)
+            if (autoFocusedElt != null) {
+                autoFocusedElt.focus();
+            }
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
@@ -450,6 +504,7 @@ return (function () {
                 } else {
                     var newElt = eltBeforeNewContent.nextSibling;
                 }
+                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 while(newElt && newElt !== target) {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
@@ -480,8 +535,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
+                    closeConnections(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
+                closeConnections(firstChild)
                 target.removeChild(firstChild);
             }
         }
@@ -719,12 +776,18 @@ return (function () {
         function initScrollHandler() {
             if (!window['htmxScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                        maybeReveal(elt);
-                    });
+                    windowIsScrolling = true
                 };
                 window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
+                setInterval(function() {
+                    if (windowIsScrolling) {
+                        windowIsScrolling = false;
+                        forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                            maybeReveal(elt);
+                        })
+                    }
+                }, 200);
             }
         }
 
@@ -915,13 +978,10 @@ return (function () {
             });
         }
 
-        function isHyperScriptAvailable() {
-            return typeof _hyperscript !== "undefined";
-        }
-
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws]," +
+                    " [data-hx-ws]");
                 return results;
             } else {
                 return [];
@@ -932,10 +992,6 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
-
-                if (isHyperScriptAvailable()) {
-                    _hyperscript.init(elt);
-                }
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -969,6 +1025,10 @@ return (function () {
         //====================================================================
         // Event/Log Support
         //====================================================================
+
+        function kebabEventName(str) {
+            return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        }
 
         function makeEvent(eventName, detail) {
             var evt;
@@ -1021,6 +1081,10 @@ return (function () {
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
+            if (eventResult) {
+                var kebabedEvent = makeEvent(kebabEventName(eventName), event.detail);
+                eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
+            }
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
@@ -1190,6 +1254,9 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
+                if (!!getRawAttribute(elt, 'multiple')) {
+                    value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
+                }
                 if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
@@ -1401,6 +1468,30 @@ return (function () {
             addExpressionVars(parentElt(elt), rawParameters);
         }
 
+        function safelySetHeaderValue(xhr, header, headerValue) {
+            if (headerValue !== null) {
+                try {
+                    xhr.setRequestHeader(header, headerValue);
+                } catch (e) {
+                    // On an exception, try to set the header URI encoded instead
+                    xhr.setRequestHeader(header, encodeURIComponent(headerValue));
+                    xhr.setRequestHeader(header + "-URI-AutoEncoded", "true");
+                }
+            }
+        }
+
+        function getResponseURL(xhr) {
+            // NB: IE11 does not support this stuff
+            if (xhr.responseURL && typeof(URL) !== "undefined") {
+                try {
+                    var url = new URL(xhr.responseURL);
+                    return url.pathname + url.search;
+                } catch (e) {
+                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1409,12 +1500,18 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
+                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget)};
                 return;
             } else {
                 eltData.requestInFlight = true;
             }
             var endRequestLock = function(){
                 eltData.requestInFlight = false
+                var queuedRequest = eltData.queuedRequest;
+                eltData.queuedRequest = null;
+                if (queuedRequest) {
+                    queuedRequest();
+                }
             }
             var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
             if (promptQuestion) {
@@ -1488,7 +1585,8 @@ return (function () {
             // request headers
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
-                    if (headers[header] !== null) xhr.setRequestHeader(header, headers[header]);
+                    var headerValue = headers[header];
+                    safelySetHeaderValue(xhr, header, headerValue);
                 }
             }
 
@@ -1506,7 +1604,7 @@ return (function () {
                         if (this.status === 286) {
                             cancelPolling(elt);
                         }
-                        // don't process 'No Content' response
+                        // don't process 'No Content'
                         if (this.status !== 204) {
                             if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
 
@@ -1566,7 +1664,7 @@ return (function () {
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            var pathToPush = pushedUrl || getPushUrl(elt) || finalPathForGet || path;
+                                            var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPathForGet || path;
                                             pushUrlIntoHistory(pathToPush);
                                             triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                         }
@@ -1598,8 +1696,9 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerEvent(elt, 'htmx:afterRequest', eventDetail);
-                    triggerEvent(elt, 'htmx:afterOnLoad', eventDetail);
+                    var finalElt = getInternalData(elt).replacedWith || elt;
+                    triggerEvent(finalElt, 'htmx:afterRequest', eventDetail);
+                    triggerEvent(finalElt, 'htmx:afterOnLoad', eventDetail);
                     endRequestLock();
                 }
             }
@@ -1700,7 +1799,7 @@ return (function () {
             mergeMetaConfig();
             insertIndicatorStyles();
             var body = getDocument().body;
-            processNode(body, true);
+            processNode(body);
             triggerEvent(body, 'htmx:load', {});
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
@@ -1709,46 +1808,7 @@ return (function () {
             };
         })
 
-        // Public API
-        return {
-            onLoad: onLoadHelper,
-            process: processNode,
-            on: addEventListenerImpl,
-            off: removeEventListenerImpl,
-            trigger : triggerEvent,
-            find : find,
-            findAll : findAll,
-            closest : closest,
-            remove : removeElement,
-            addClass : addClassToElement,
-            removeClass : removeClassFromElement,
-            toggleClass : toggleClassOnElement,
-            takeClass : takeClassForElement,
-            defineExtension : defineExtension,
-            removeExtension : removeExtension,
-            logAll : logAll,
-            logger : null,
-            config : {
-                historyEnabled:true,
-                historyCacheSize:10,
-                defaultSwapStyle:'innerHTML',
-                defaultSwapDelay:0,
-                defaultSettleDelay:100,
-                includeIndicatorStyles:true,
-                indicatorClass:'htmx-indicator',
-                requestClass:'htmx-request',
-                settlingClass:'htmx-settling',
-                swappingClass:'htmx-swapping',
-            },
-            parseInterval:parseInterval,
-            _:internalEval,
-            createEventSource: function(url){
-                return new EventSource(url, {withCredentials:true})
-            },
-            createWebSocket: function(url){
-                return new WebSocket(url, []);
-            }
-        }
+        return htmx;
     }
 )()
 }));

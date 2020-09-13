@@ -12,6 +12,8 @@ request.  The value of this attribute can be:
  * `this` which indicates that the element that the `hx-target` attribute is on is the target
  * `closest <CSS selector>` which will find the closest parent ancestor that matches the given CSS selector. 
     (e.g. `closest tr` will target the closest table row to the element)
+ * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
+    (e.g `find tr` will target the first child descendant row to the element)
 
 Here is an example that targets a div:
 
