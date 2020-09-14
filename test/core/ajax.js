@@ -353,13 +353,13 @@ describe("Core htmx AJAX Tests", function(){
 
     it('properly settles attributes on interior elements', function(done)
     {
-        this.server.respondWith("GET", "/test", "<div hx-get='/test'><div foo='bar' id='d1'></div></div>");
+        this.server.respondWith("GET", "/test", "<div hx-get='/test'><div width='bar' id='d1'></div></div>");
         var div = make("<div hx-get='/test' hx-swap='outerHTML settle:10ms'><div id='d1'></div></div>");
         div.click();
         this.server.respond();
-        should.equal(byId("d1").getAttribute("foo"), null);
+        should.equal(byId("d1").getAttribute("width"), null);
         setTimeout(function () {
-            should.equal(byId("d1").getAttribute("foo"), "bar");
+            should.equal(byId("d1").getAttribute("width"), "bar");
             done();
         }, 20);
     });

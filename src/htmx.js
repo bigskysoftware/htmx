@@ -41,6 +41,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
+                attributesToSwizzle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -380,8 +381,13 @@ return (function () {
         }
 
         function shouldSwizzleAttribute(name) {
-            return !(name === "id" || name === "value" || name.indexOf("@") >= 0);
-
+            var attributesToSwizzle = htmx.config.attributesToSwizzle;
+            for (var i = 0; i < attributesToSwizzle.length; i++) {
+                if (name === attributesToSwizzle[i]) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function cloneAttributes(mergeTo, mergeFrom) {
@@ -392,12 +398,7 @@ return (function () {
             });
             forEach(mergeFrom.attributes, function (attr) {
                 if (shouldSwizzleAttribute(attr.name)) {
-                    try {
-                        mergeTo.setAttribute(attr.name, attr.value);
-                    } catch (e) {
-                        // log bad attributes, should be added to the shouldSwizzleAttribute function when reported
-                        logError("Could not set attribute with name '" + attr.name + "'");
-                    }
+                    mergeTo.setAttribute(attr.name, attr.value);
                 }
             });
         }
