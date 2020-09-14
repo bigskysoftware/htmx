@@ -379,16 +379,25 @@ return (function () {
             }
         }
 
-        var EXCLUDED_ATTRIBUTES = ['id', 'value'];
+        function shouldSwizzleAttribute(name) {
+            return !(name === "id" || name === "value" || name.indexOf("@") >= 0);
+
+        }
+
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name) && EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
+                if (!mergeFrom.hasAttribute(attr.name) && shouldSwizzleAttribute(attr.name)) {
                     mergeTo.removeAttribute(attr.name)
                 }
             });
             forEach(mergeFrom.attributes, function (attr) {
-                if (EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
-                    mergeTo.setAttribute(attr.name, attr.value);
+                if (shouldSwizzleAttribute(attr.name)) {
+                    try {
+                        mergeTo.setAttribute(attr.name, attr.value);
+                    } catch (e) {
+                        // log bad attributes, should be added to the shouldSwizzleAttribute function when reported
+                        logError("Could not set attribute with name '" + attr.name + "'");
+                    }
                 }
             });
         }
