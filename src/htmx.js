@@ -218,7 +218,7 @@ return (function () {
         }
 
         function splitOnWhitespace(trigger) {
-            return trigger.split(/\s+/);
+            return trigger.trim().split(/\s+/);
         }
 
         function mergeObjects(obj1, obj2) {
@@ -869,12 +869,9 @@ return (function () {
             }
         }
 
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
-                return true;
-            }
-        }
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
 
         function processSSEInfo(elt, nodeData, info) {
             var values = info.split(",");
@@ -882,6 +879,10 @@ return (function () {
                 var value = splitOnWhitespace(values[i]);
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
+                }
+                
+                if ((value[0] == "swap") && (value[1] == "on")) {
+                    processSSESwap(elt, value[2])
                 }
             }
         }
@@ -895,10 +896,51 @@ return (function () {
             getInternalData(elt).sseEventSource = source;
         }
 
+        function processSSESwap(elt, sseEventName) {
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                var sseListener = function (event) {
+                    if (maybeCloseSSESource(sseSourceElt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener);
+                        return;
+                    }
+
+                    ///////////////////////////
+                    // TODO: merge this code with AJAX and WebSockets code in the future.
+                    
+                    var response = event.data;
+                    withExtensions(elt, function(extension){
+                        response = extension.transformResponse(response, null, elt);
+                    });
+    
+                    var swapSpec = getSwapSpecification(elt)
+                    var target = getTarget(elt)
+                    var settleInfo = makeSettleInfo(elt);
+
+                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    triggerEvent(elt, "htmx:sseMessage", event)
+
+                    // This is a placeholder before a larger refactor. This code does not (yet?) handle:
+                    //
+                    // * This syntax breaks if there are commas in the URL
+                    // * hx-oob-swap
+                    // * hx-settle
+                    // * hx-trigger (header values)
+                    // 
+                    ///////////////////////////
+    
+                };
+
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
+            }
+        }
+
         function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).sseEventSource != null;
-            });
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
@@ -916,6 +958,19 @@ return (function () {
                 triggerErrorEvent(elt, "htmx:noSSESourceError");
             }
         }
+
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).sseEventSource.close();
+                return true;
+            }
+        }
+
+        function hasEventSource(node) {
+            return getInternalData(node).sseEventSource != null;
+        }
+
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
