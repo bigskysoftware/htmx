@@ -380,7 +380,7 @@ return (function () {
             }
         }
 
-        function shouldSwizzleAttribute(name) {
+        function shouldSettleAttribute(name) {
             var attributesToSwizzle = htmx.config.attributesToSwizzle;
             for (var i = 0; i < attributesToSwizzle.length; i++) {
                 if (name === attributesToSwizzle[i]) {
@@ -392,12 +392,12 @@ return (function () {
 
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name) && shouldSwizzleAttribute(attr.name)) {
+                if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
                     mergeTo.removeAttribute(attr.name)
                 }
             });
             forEach(mergeFrom.attributes, function (attr) {
-                if (shouldSwizzleAttribute(attr.name)) {
+                if (shouldSettleAttribute(attr.name)) {
                     mergeTo.setAttribute(attr.name, attr.value);
                 }
             });
