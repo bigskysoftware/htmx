@@ -810,9 +810,9 @@ return (function () {
         }
 
         function processWebSocketInfo(elt, nodeData, info) {
-            var values = info.split(",");
+            var values = splitOnWhitespace(info);
             for (var i = 0; i < values.length; i++) {
-                var value = splitOnWhitespace(values[i]);
+                var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
                     processWebSocketSource(elt, value[1]);
                 }
@@ -823,6 +823,9 @@ return (function () {
         }
 
         function processWebSocketSource(elt, wssSource) {
+            if (wssSource.indexOf("ws:") !== 0 && wssSource.indexOf("wss:") !== 0) {
+                wssSource = "wss:" + wssSource;
+            }
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
                 triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
@@ -884,14 +887,14 @@ return (function () {
         //====================================================================
 
         function processSSEInfo(elt, nodeData, info) {
-            var values = info.split(",");
+            var values = splitOnWhitespace(info);
             for (var i = 0; i < values.length; i++) {
-                var value = splitOnWhitespace(values[i]);
+                var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
                 }
                 
-                if ((value[0] == "swap") && (value[1] == "on")) {
+                if ((value[0] === "swap")) {
                     processSSESwap(elt, value[2])
                 }
             }
@@ -930,16 +933,6 @@ return (function () {
 
                     selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
                     triggerEvent(elt, "htmx:sseMessage", event)
-
-                    // This is a placeholder before a larger refactor. This code does not (yet?) handle:
-                    //
-                    // * This syntax breaks if there are commas in the URL
-                    // * hx-oob-swap
-                    // * hx-settle
-                    // * hx-trigger (header values)
-                    // 
-                    ///////////////////////////
-    
                 };
 
                 getInternalData(elt).sseListener = sseListener;

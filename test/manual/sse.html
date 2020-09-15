@@ -33,11 +33,11 @@
 
 		<div id="page">
 			<h3>Multiple Listeners. message only</h3>
-			<div class="container" hx-sse="connect http://sseplaceholder.openfollow.org/posts.html, swap on message">Waiting for Posts...</div>
-			<div class="container" hx-sse="connect http://sseplaceholder.openfollow.org/comments.html, swap on message">Waiting for Comments...</div>
-			<div class="container" hx-sse="connect http://sseplaceholder.openfollow.org/albums.html, swap on message">Waiting for Albums...</div>
-			<div class="container" hx-sse="connect http://sseplaceholder.openfollow.org/todos.html, swap on message">Waiting for ToDos...</div>
-			<div class="container" hx-sse="connect http://sseplaceholder.openfollow.org/users.html, swap on message">Waiting for Users...</div>
+			<div class="container" hx-sse="connect:http://sseplaceholder.openfollow.org/posts.html swap:message">Waiting for Posts...</div>
+			<div class="container" hx-sse="connect:http://sseplaceholder.openfollow.org/comments.html swap:message">Waiting for Comments...</div>
+			<div class="container" hx-sse="connect:http://sseplaceholder.openfollow.org/albums.html swap:message">Waiting for Albums...</div>
+			<div class="container" hx-sse="connect:http://sseplaceholder.openfollow.org/todos.html swap:message">Waiting for ToDos...</div>
+			<div class="container" hx-sse="connect:http://sseplaceholder.openfollow.org/users.html swap:message">Waiting for Users...</div>
 		</div>
 	</body>
 </html>

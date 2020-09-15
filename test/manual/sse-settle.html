@@ -37,12 +37,12 @@
 
 		<div id="page">
 			<h3>Settling Options</h3>
-			<div hx-sse="connect http://sseplaceholder.openfollow.org/comments.html">
-				<div class="container" hx-sse="swap on message" hx-swap="innerHTML settle:100ms">Waiting for Comments...</div>
-				<div class="container" hx-sse="swap on message" hx-swap="innerHTML settle:200ms">Waiting for Comments...</div>
-				<div class="container" hx-sse="swap on message" hx-swap="innerHTML settle:300ms">Waiting for Comments...</div>
-				<div class="container" hx-sse="swap on message" hx-swap="innerHTML settle:400ms">Waiting for Comments...</div>
-				<div class="container" hx-sse="swap on message" hx-swap="innerHTML settle:500ms">Waiting for Comments...</div>
+			<div hx-sse="connect:http://sseplaceholder.openfollow.org/comments.html">
+				<div class="container" hx-sse="swap:message" hx-swap="innerHTML settle:100ms">Waiting for Comments...</div>
+				<div class="container" hx-sse="swap:message" hx-swap="innerHTML settle:200ms">Waiting for Comments...</div>
+				<div class="container" hx-sse="swap:message" hx-swap="innerHTML settle:300ms">Waiting for Comments...</div>
+				<div class="container" hx-sse="swap:message" hx-swap="innerHTML settle:400ms">Waiting for Comments...</div>
+				<div class="container" hx-sse="swap:message" hx-swap="innerHTML settle:500ms">Waiting for Comments...</div>
 			</div>
 		</div>
 	</body>
