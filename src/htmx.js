@@ -895,7 +895,7 @@ return (function () {
                 }
                 
                 if ((value[0] === "swap")) {
-                    processSSESwap(elt, value[2])
+                    processSSESwap(elt, value[1])
                 }
             }
         }
