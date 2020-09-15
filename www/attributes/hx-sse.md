@@ -6,10 +6,10 @@ title: </> htmx - hx-sse
 ## `hx-sse`
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-`EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by commas:
+`EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by white space:
 
-* `connect <url>` - A URL to establish an `EventSource` against
-* `swap <eventName>` - Swap SSE message content into a DOM node on matching event names
+* `connect:<url>` - A URL to establish an `EventSource` against
+* `swap:<eventName>` - Swap SSE message content into a DOM node on matching event names
 
 
 ### Swap Message Content
@@ -17,17 +17,17 @@ When an SSE connection has been established (using the `connect` keyword) the co
 
 Here is an example:
 ```html
-<div hx-sse="connect /event_stream, swap eventName">
+<div hx-sse="connect:/event_stream swap:eventName">
   ...
 </div>
 
 ```
-This example connects to a Server Sent Event stream, and begins swapping events named {eventName} into the same element.
+This example connects to a Server Sent Event stream, and begins swapping events named `eventName` into the same element.
 
 Here is another example:
 ```html
-<div hx-sse="connect /event_stream">
-  <div hx-sse="swap eventName1">
+<div hx-sse="connect:/event_stream">
+  <div hx-sse="swap:eventName1">
     ...
   </div>
   <div hx-sse="swap eventName2">
@@ -44,7 +44,7 @@ When a connection for server sent events has been established, child elements ca
 Here is an example:
 
 ```html
-  <div hx-sse="connect /event_stream">
+  <div hx-sse="connect:/event_stream">
     <div hx-get="/chatroom" hx-trigger="sse:chatter">
       ...
     </div>
@@ -62,7 +62,7 @@ data: <div>Content to swap into your HTML page.</div>
 ```
 
 ```html
-<div hx-sse="connect /server-url, swap eventName></div>
+<div hx-sse="connect:/server-url swap:eventName></div>
 ```
 
 ### Data Only Events
@@ -74,10 +74,8 @@ data: <div>Content to swap into your HTML page.</div>
 ```
 
 ```html
-<div hx-sse="connect /server-url, swap message></div>
+<div hx-sse="connect:/server-url swap:message></div>
 ```
-
-
 
 ### Notes
 
