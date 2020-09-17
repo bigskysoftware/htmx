@@ -47,6 +47,18 @@ describe("hx-target attribute", function(){
         this.server.respond();
         div1.innerHTML.should.equal("Clicked!");
     });
+    
+    it('targets a `find` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div1 = make('<div hx-target="find span" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
+        div1.click();
+        this.server.respond();
+        var span1 = byId("s1")
+        var span2 = byId("s2")
+        span1.innerHTML.should.equal("Clicked!");
+        span2.innerHTML.should.equal("");
+    });
 
     it('targets an inner element properly', function()
     {

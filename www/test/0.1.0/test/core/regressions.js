@@ -73,4 +73,20 @@ describe("Core htmx Regression Tests", function(){
         div.innerText.should.contain("Foo");
     });
 
+    it ('@ symbol in attributes does not break requests', function(){
+        this.server.respondWith("GET", "/test", "<div id='d1' @foo='bar'>Foo</div>");
+        var div = make('<div hx-get="/test">Get It</div>');
+        div.click();
+        this.server.respond();
+        byId("d1").getAttribute('@foo').should.equal('bar');
+    });
+
+    it ('@ symbol in attributes does not break attribute swizzling requests', function(){
+        this.server.respondWith("GET", "/test", "<div id='d1' @foo='bar'>Foo</div>");
+        var div = make('<div hx-get="/test"><div id="d1">Foo</div></div>');
+        div.click();
+        this.server.respond();
+        byId("d1").getAttribute('@foo').should.equal('bar');
+    });
+
 })

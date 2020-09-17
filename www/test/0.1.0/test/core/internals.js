@@ -1,12 +1,4 @@
 describe("Core htmx internals Tests", function() {
-    beforeEach(function () {
-        this.server = makeServer();
-        clearWorkArea();
-    });
-    afterEach(function () {
-        this.server.restore();
-        clearWorkArea();
-    });
 
     it("makeFragment works with janky stuff", function(){
         htmx._("makeFragment")("<html></html>").tagName.should.equal("BODY");
@@ -18,6 +10,14 @@ describe("Core htmx internals Tests", function() {
         htmx._("makeFragment")("<thead></thead>").tagName.should.equal("TABLE");
         htmx._("makeFragment")("<col></col>").tagName.should.equal("COLGROUP");
         htmx._("makeFragment")("<tr></tr>").tagName.should.equal("TBODY");
+    })
+
+    it("set header works with non-ASCII values", function(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/dummy");
+        htmx._("safelySetHeaderValue")(xhr, "Example", "привет");
+        // unfortunately I can't test the value :/
+        // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
     })
 
 });

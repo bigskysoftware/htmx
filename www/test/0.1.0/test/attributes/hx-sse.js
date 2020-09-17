@@ -40,7 +40,7 @@ describe("hx-sse attribute", function() {
         this.server.respondWith("GET", "/d1", "div1 updated");
         this.server.respondWith("GET", "/d2", "div2 updated");
 
-        var div = make('<div hx-sse="connect /foo">' +
+        var div = make('<div hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '<div id="d2" hx-trigger="sse:e2" hx-get="/d2">div2</div>' +
             '</div>');
@@ -60,7 +60,7 @@ describe("hx-sse attribute", function() {
 
         this.server.respondWith("GET", "/d1", "div1 updated");
 
-        var div = make('<div hx-sse="connect /foo">' +
+        var div = make('<div hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '</div>');
 
@@ -81,7 +81,7 @@ describe("hx-sse attribute", function() {
 
         this.server.respondWith("GET", "/d1", "div1 updated");
 
-        var div = make('<div hx-sse="connect /foo"></div>' +
+        var div = make('<div hx-sse="connect:/foo"></div>' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>');
 
         this.eventSource.sendEvent("foo");
@@ -99,7 +99,7 @@ describe("hx-sse attribute", function() {
 
     it('is closed after removal', function () {
         this.server.respondWith("GET", "/test", "Clicked!");
-        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect /foo">' +
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '</div>');
         div.click();
@@ -108,7 +108,7 @@ describe("hx-sse attribute", function() {
     })
 
     it('is closed after removal with no close and activity', function () {
-        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect /foo">' +
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '</div>');
         div.parentElement.removeChild(div);

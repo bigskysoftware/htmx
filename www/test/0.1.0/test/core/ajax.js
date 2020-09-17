@@ -240,6 +240,36 @@ describe("Core htmx AJAX Tests", function(){
         btn.innerHTML.should.equal("Click Me!");
     });
 
+    it('handles 304 NOT MODIFIED responses properly', function()
+    {
+        this.server.respondWith("GET", "/test-1", [200, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2", [200, {}, "Content for Tab 2"]);
+
+        var target = make('<div id="target"></div>')
+        var btn1 = make('<button hx-get="/test-1" hx-target="#target">Tab 1</button>');
+        var btn2 = make('<button hx-get="/test-2" hx-target="#target">Tab 2</button>');
+
+        btn1.click();
+        target.innerHTML.should.equal("");
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 1");
+
+        btn2.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 2");
+
+        this.server.respondWith("GET", "/test-1", [304, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2", [304, {}, "Content for Tab 2"]);
+
+        btn1.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 1");
+
+        btn2.click();
+        this.server.respond();
+        target.innerHTML.should.equal("Content for Tab 2");
+    });
+
     it('handles hx-trigger with non-default value', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
@@ -323,15 +353,47 @@ describe("Core htmx AJAX Tests", function(){
 
     it('properly settles attributes on interior elements', function(done)
     {
-        this.server.respondWith("GET", "/test", "<div hx-get='/test'><div foo='bar' id='d1'></div></div>");
+        this.server.respondWith("GET", "/test", "<div hx-get='/test'><div width='bar' id='d1'></div></div>");
         var div = make("<div hx-get='/test' hx-swap='outerHTML settle:10ms'><div id='d1'></div></div>");
         div.click();
         this.server.respond();
-        should.equal(byId("d1").getAttribute("foo"), null);
+        should.equal(byId("d1").getAttribute("width"), null);
         setTimeout(function () {
-            should.equal(byId("d1").getAttribute("foo"), "bar");
+            should.equal(byId("d1").getAttribute("width"), "bar");
             done();
         }, 20);
+    });
+
+    it('properly handles multiple select input', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<select id="multiSelect" name="multiSelect" multiple="multiple">'+
+            '<option id="m1" value="m1">m1</option>'+
+            '<option id="m2" value="m2">m2</option>'+
+            '<option id="m3" value="m3">m3</option>'+
+            '<option id="m4" value="m4">m4</option>'+
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({});
+
+        byId("m1").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:"m1"});
+
+        byId("m1").selected = true;
+        byId("m3").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:["m1", "m3"]});
     });
 
     it('properly handles checkbox inputs', function()
@@ -485,6 +547,42 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         input = byId('i1');
         input.value.should.equal('bar');
+    });
+
+    it('autofocus attribute works properly', function()
+    {
+        this.server.respondWith("GET", "/test", "<input id='i2' value='bar' autofocus/>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
+    });
+
+    it('autofocus attribute works properly w/ child', function()
+    {
+        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus/></div>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
+    });
+
+    it('autofocus attribute works properly w/ true value', function()
+    {
+        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus='true'/></div>");
+        var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
+        input.focus();
+        input.click();
+        document.activeElement.should.equal(input);
+        this.server.respond();
+        var input2 = byId('i2');
+        document.activeElement.should.equal(input2);
     });
 
 

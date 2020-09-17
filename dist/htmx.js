@@ -41,6 +41,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
+                attributesToSwizzle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -56,6 +57,8 @@ return (function () {
         var VERB_SELECTOR = VERBS.map(function(verb){
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
+
+        var windowIsScrolling = false // used by initScrollHandler
 
         //====================================================================
         // Utilities
@@ -216,7 +219,7 @@ return (function () {
         }
 
         function splitOnWhitespace(trigger) {
-            return trigger.split(/\s+/);
+            return trigger.trim().split(/\s+/);
         }
 
         function mergeObjects(obj1, obj2) {
@@ -362,6 +365,8 @@ return (function () {
                     return explicitTarget;
                 } else if (targetStr.indexOf("closest ") === 0) {
                     return closest(elt, targetStr.substr(8));
+                } else if (targetStr.indexOf("find ") === 0) {
+                    return find(elt, targetStr.substr(5));   
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
@@ -375,15 +380,24 @@ return (function () {
             }
         }
 
-        var EXCLUDED_ATTRIBUTES = ['id', 'value'];
+        function shouldSettleAttribute(name) {
+            var attributesToSwizzle = htmx.config.attributesToSwizzle;
+            for (var i = 0; i < attributesToSwizzle.length; i++) {
+                if (name === attributesToSwizzle[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name) && EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
+                if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
                     mergeTo.removeAttribute(attr.name)
                 }
             });
             forEach(mergeFrom.attributes, function (attr) {
-                if (EXCLUDED_ATTRIBUTES.indexOf(attr.name) === -1) {
+                if (shouldSettleAttribute(attr.name)) {
                     mergeTo.setAttribute(attr.name, attr.value);
                 }
             });
@@ -450,10 +464,19 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
-                processNode(child, true);
+                processNode(child);
                 processScripts(child);
-                triggerEvent(child, 'htmx:load', {});
+                processFocus(child)
+                triggerEvent(child, 'htmx:load');
             };
+        }
+
+        function processFocus(child) {
+            var autofocus = "[autofocus]";
+            var autoFocusedElt = matches(child, autofocus) ? child : child.querySelector(autofocus)
+            if (autoFocusedElt != null) {
+                autoFocusedElt.focus();
+            }
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
@@ -491,6 +514,7 @@ return (function () {
                 } else {
                     var newElt = eltBeforeNewContent.nextSibling;
                 }
+                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 while(newElt && newElt !== target) {
                     settleInfo.elts.push(newElt);
                     newElt = newElt.nextSibling;
@@ -521,8 +545,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
+                    closeConnections(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
+                closeConnections(firstChild)
                 target.removeChild(firstChild);
             }
         }
@@ -760,12 +786,18 @@ return (function () {
         function initScrollHandler() {
             if (!window['htmxScrollHandler']) {
                 var scrollHandler = function() {
-                    forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                        maybeReveal(elt);
-                    });
+                    windowIsScrolling = true
                 };
                 window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
+                setInterval(function() {
+                    if (windowIsScrolling) {
+                        windowIsScrolling = false;
+                        forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                            maybeReveal(elt);
+                        })
+                    }
+                }, 200);
             }
         }
 
@@ -778,9 +810,9 @@ return (function () {
         }
 
         function processWebSocketInfo(elt, nodeData, info) {
-            var values = info.split(",");
+            var values = splitOnWhitespace(info);
             for (var i = 0; i < values.length; i++) {
-                var value = splitOnWhitespace(values[i]);
+                var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
                     processWebSocketSource(elt, value[1]);
                 }
@@ -791,6 +823,9 @@ return (function () {
         }
 
         function processWebSocketSource(elt, wssSource) {
+            if (wssSource.indexOf("ws:") !== 0 && wssSource.indexOf("wss:") !== 0) {
+                wssSource = "wss:" + wssSource;
+            }
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
                 triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
@@ -847,19 +882,20 @@ return (function () {
             }
         }
 
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
-                return true;
-            }
-        }
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
 
         function processSSEInfo(elt, nodeData, info) {
-            var values = info.split(",");
+            var values = splitOnWhitespace(info);
             for (var i = 0; i < values.length; i++) {
-                var value = splitOnWhitespace(values[i]);
+                var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
+                }
+                
+                if ((value[0] === "swap")) {
+                    processSSESwap(elt, value[1])
                 }
             }
         }
@@ -873,10 +909,41 @@ return (function () {
             getInternalData(elt).sseEventSource = source;
         }
 
+        function processSSESwap(elt, sseEventName) {
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                var sseListener = function (event) {
+                    if (maybeCloseSSESource(sseSourceElt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener);
+                        return;
+                    }
+
+                    ///////////////////////////
+                    // TODO: merge this code with AJAX and WebSockets code in the future.
+                    
+                    var response = event.data;
+                    withExtensions(elt, function(extension){
+                        response = extension.transformResponse(response, null, elt);
+                    });
+    
+                    var swapSpec = getSwapSpecification(elt)
+                    var target = getTarget(elt)
+                    var settleInfo = makeSettleInfo(elt);
+
+                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    triggerEvent(elt, "htmx:sseMessage", event)
+                };
+
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
+            }
+        }
+
         function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).sseEventSource != null;
-            });
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
@@ -894,6 +961,19 @@ return (function () {
                 triggerErrorEvent(elt, "htmx:noSSESourceError");
             }
         }
+
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).sseEventSource.close();
+                return true;
+            }
+        }
+
+        function hasEventSource(node) {
+            return getInternalData(node).sseEventSource != null;
+        }
+
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
@@ -956,13 +1036,10 @@ return (function () {
             });
         }
 
-        function isHyperScriptAvailable() {
-            return typeof _hyperscript !== "undefined";
-        }
-
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws], [data-hx-ws]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws]," +
+                    " [data-hx-ws]");
                 return results;
             } else {
                 return [];
@@ -973,10 +1050,6 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
-
-                if (isHyperScriptAvailable()) {
-                    _hyperscript.init(elt);
-                }
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -1010,6 +1083,10 @@ return (function () {
         //====================================================================
         // Event/Log Support
         //====================================================================
+
+        function kebabEventName(str) {
+            return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        }
 
         function makeEvent(eventName, detail) {
             var evt;
@@ -1062,6 +1139,10 @@ return (function () {
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
+            if (eventResult) {
+                var kebabedEvent = makeEvent(kebabEventName(eventName), event.detail);
+                eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
+            }
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
@@ -1231,6 +1312,9 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
+                if (!!getRawAttribute(elt, 'multiple')) {
+                    value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
+                }
                 if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
@@ -1442,6 +1526,30 @@ return (function () {
             addExpressionVars(parentElt(elt), rawParameters);
         }
 
+        function safelySetHeaderValue(xhr, header, headerValue) {
+            if (headerValue !== null) {
+                try {
+                    xhr.setRequestHeader(header, headerValue);
+                } catch (e) {
+                    // On an exception, try to set the header URI encoded instead
+                    xhr.setRequestHeader(header, encodeURIComponent(headerValue));
+                    xhr.setRequestHeader(header + "-URI-AutoEncoded", "true");
+                }
+            }
+        }
+
+        function getResponseURL(xhr) {
+            // NB: IE11 does not support this stuff
+            if (xhr.responseURL && typeof(URL) !== "undefined") {
+                try {
+                    var url = new URL(xhr.responseURL);
+                    return url.pathname + url.search;
+                } catch (e) {
+                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                }
+            }
+        }
+
         function issueAjaxRequest(elt, verb, path, eventTarget) {
             var target = getTarget(elt);
             if (target == null) {
@@ -1535,7 +1643,8 @@ return (function () {
             // request headers
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
-                    if (headers[header] !== null) xhr.setRequestHeader(header, headers[header]);
+                    var headerValue = headers[header];
+                    safelySetHeaderValue(xhr, header, headerValue);
                 }
             }
 
@@ -1553,7 +1662,7 @@ return (function () {
                         if (this.status === 286) {
                             cancelPolling(elt);
                         }
-                        // don't process 'No Content' response
+                        // don't process 'No Content'
                         if (this.status !== 204) {
                             if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
 
@@ -1613,7 +1722,7 @@ return (function () {
                                         });
                                         // push URL and save new page
                                         if (shouldSaveHistory) {
-                                            var pathToPush = pushedUrl || getPushUrl(elt) || finalPathForGet || path;
+                                            var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPathForGet || path;
                                             pushUrlIntoHistory(pathToPush);
                                             triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                         }
@@ -1645,8 +1754,9 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
-                    triggerEvent(elt, 'htmx:afterRequest', eventDetail);
-                    triggerEvent(elt, 'htmx:afterOnLoad', eventDetail);
+                    var finalElt = getInternalData(elt).replacedWith || elt;
+                    triggerEvent(finalElt, 'htmx:afterRequest', eventDetail);
+                    triggerEvent(finalElt, 'htmx:afterOnLoad', eventDetail);
                     endRequestLock();
                 }
             }
@@ -1747,7 +1857,7 @@ return (function () {
             mergeMetaConfig();
             insertIndicatorStyles();
             var body = getDocument().body;
-            processNode(body, true);
+            processNode(body);
             triggerEvent(body, 'htmx:load', {});
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
