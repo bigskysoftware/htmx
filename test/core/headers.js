@@ -1,4 +1,4 @@
-describe("Core htmx AJAX headers", function() {
+describe("Core htmx AJAX headers", function () {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -8,8 +8,8 @@ describe("Core htmx AJAX headers", function() {
         clearWorkArea();
     });
 
-    it("should include the HX-Request header", function(){
-        this.server.respondWith("GET", "/test", function(xhr){
+    it("should include the HX-Request header", function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
             xhr.requestHeaders['HX-Request'].should.be.equal('true');
             xhr.respond(200, {}, "");
         });
@@ -18,8 +18,8 @@ describe("Core htmx AJAX headers", function() {
         this.server.respond();
     })
 
-    it("should include the HX-Trigger header", function(){
-        this.server.respondWith("GET", "/test", function(xhr){
+    it("should include the HX-Trigger header", function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
             xhr.requestHeaders['HX-Trigger'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
@@ -28,8 +28,8 @@ describe("Core htmx AJAX headers", function() {
         this.server.respond();
     })
 
-    it("should include the HX-Trigger-Name header", function(){
-        this.server.respondWith("GET", "/test", function(xhr){
+    it("should include the HX-Trigger-Name header", function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
             xhr.requestHeaders['HX-Trigger-Name'].should.equal('n1');
             xhr.respond(200, {}, "");
         });
@@ -38,8 +38,8 @@ describe("Core htmx AJAX headers", function() {
         this.server.respond();
     })
 
-    it("should include the HX-Target header", function(){
-        this.server.respondWith("GET", "/test", function(xhr){
+    it("should include the HX-Target header", function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
             xhr.requestHeaders['HX-Target'].should.equal('d1');
             xhr.respond(200, {}, "");
         });
@@ -48,8 +48,8 @@ describe("Core htmx AJAX headers", function() {
         this.server.respond();
     })
 
-    it("should handle simple string HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "foo"}, ""]);
+    it("should handle simple string HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         var invokedEvent = false;
@@ -61,8 +61,21 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
-        it("should handle a namespaced HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "namespace:foo"}, ""]);
+    it("should handle simple string HX-Trigger response header in different case properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"hx-trigger": "foo"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEvent = false;
+        div.addEventListener("foo", function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+    })
+
+    it("should handle a namespaced HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "namespace:foo"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         var invokedEvent = false;
@@ -74,8 +87,8 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle basic JSON HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{\"foo\":null}"}, ""]);
+    it("should handle basic JSON HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "{\"foo\":null}"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         var invokedEvent = false;
@@ -89,8 +102,8 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle JSON with array arg HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{\"foo\":[1, 2, 3]}"}, ""]);
+    it("should handle JSON with array arg HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "{\"foo\":[1, 2, 3]}"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         var invokedEvent = false;
@@ -104,8 +117,8 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should handle JSON with array arg HX-Trigger response header properly", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{\"foo\":{\"a\":1, \"b\":2}}"}, ""]);
+    it("should handle JSON with array arg HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "{\"foo\":{\"a\":1, \"b\":2}}"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         var invokedEvent = false;
@@ -120,8 +133,8 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
-    it("should survive malformed JSON in HX-Trigger response header", function(){
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{not: valid}"}, ""]);
+    it("should survive malformed JSON in HX-Trigger response header", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "{not: valid}"}, ""]);
 
         var div = make('<div hx-get="/test"></div>');
         div.click();
