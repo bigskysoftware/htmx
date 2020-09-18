@@ -23,7 +23,7 @@ IE11 compatible
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.1.1"></script>
+  <script src="https://unpkg.com/htmx.org@0.1.2"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
