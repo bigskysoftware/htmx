@@ -303,7 +303,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from respons (out of band items will still be processed)
+| `none` | does not append content from response (out of band items will still be processed)
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -371,7 +371,7 @@ htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enh
 
 Htmx has experimental support for declarative use of both 
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
-and  [Server Sent Events]((https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)).
+and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
   
 These features are under active development, so please let us know if you are willing to experiment with them.
 
@@ -492,11 +492,11 @@ The order of operations in a htmx request are:
   * The `htmx-request` class is applied to the appropriate elements
   * The request is then issued asynchronously via AJAX
     * Upon getting a response the target element is marked with the `htmx-swapping` class
-    * An optional swap delay is applied (see the [hx-swap-delay](/attributes/hx-swap-delay) attribute)
+    * An optional swap delay is applied (see the [hx-swap](/attributes/hx-swap) attribute)
     * The actual content swap is done
         * the `htmx-swapping` class is removed from the target
         * the `htmx-settling` class is applied to the target
-        * A settle delay  is done (default: 100ms)
+        * A settle delay is done (default: 100ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
 
@@ -542,7 +542,7 @@ Htmx has an extensive events mechanism, which doubles as the logging system.
 If you want to register for a given htmx event you can use the following javascript:
 
 ```javascript
-  htmx.on("htmx.load", function(evt) {
+  htmx.on("htmx:load", function(evt) {
         myJavascriptLib.init(evt.details.elt);  
   });
 ```
