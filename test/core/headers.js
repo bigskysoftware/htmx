@@ -61,6 +61,19 @@ describe("Core htmx AJAX headers", function() {
         invokedEvent.should.equal(true);
     })
 
+        it("should handle a namespaced HX-Trigger response header properly", function(){
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "namespace:foo"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEvent = false;
+        div.addEventListener("namespace:foo", function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+    })
+
     it("should handle basic JSON HX-Trigger response header properly", function(){
         this.server.respondWith("GET", "/test", [200, {"HX-Trigger" : "{\"foo\":null}"}, ""]);
 

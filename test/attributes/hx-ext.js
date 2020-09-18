@@ -1,9 +1,9 @@
 describe("hx-ext attribute", function() {
 
-    var ext1Calls, ext2Calls, ext3Calls;
+    var ext1Calls, ext2Calls, ext3Calls, ext4Calls;
 
     beforeEach(function () {
-        ext1Calls = ext2Calls = ext3Calls = 0;
+        ext1Calls = ext2Calls = ext3Calls = ext4Calls = 0;
         this.server = makeServer();
         clearWorkArea();
         htmx.defineExtension("ext-1", {
@@ -24,6 +24,13 @@ describe("hx-ext attribute", function() {
             onEvent : function(name, evt) {
                 if(name === "htmx:afterRequest"){
                     ext3Calls++;
+                }
+            }
+        });
+        htmx.defineExtension("ext-4", {
+            onEvent : function(name, evt) {
+                if(name === "namespace:example"){
+                    ext4Calls++;
                 }
             }
         });
@@ -92,6 +99,17 @@ describe("hx-ext attribute", function() {
         ext1Calls.should.equal(1);
         ext2Calls.should.equal(0);
         ext3Calls.should.equal(0);
+    });
+
+    it('A simple extension is invoked properly when an HX-Trigger event w/ a namespace fires', function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger":"namespace:example"}, ""]);
+        var btn = make('<button data-hx-get="/test" data-hx-ext="ext-4">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        ext1Calls.should.equal(0);
+        ext2Calls.should.equal(0);
+        ext3Calls.should.equal(0);
+        ext4Calls.should.equal(1);
     });
 
 
