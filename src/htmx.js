@@ -1139,8 +1139,9 @@ return (function () {
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
-            if (eventResult) {
-                var kebabedEvent = makeEvent(kebabEventName(eventName), event.detail);
+            var kebabName = kebabEventName(eventName);
+            if (eventResult && kebabName !== eventName) {
+                var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
             withExtensions(elt, function (extension) {
