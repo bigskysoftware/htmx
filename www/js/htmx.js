@@ -1654,15 +1654,13 @@ return (function () {
                 try {
                     if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
 
-                       //AK - FIXED CHROME issue - "refuse to get unsafe header" warning.
-                    if (xhr.getAllResponseHeaders().indexOf("HX-Trigger") >= 0) {
+                    if (xhr.getAllResponseHeaders().search(/HX-Trigger/i) >= 0) {
                         handleTrigger(elt, this.getResponseHeader("HX-Trigger"));
-                      }                      
+                    }
 
-                    if (xhr.getAllResponseHeaders().indexOf("HX-Push") >= 0) {
+                    if (xhr.getAllResponseHeaders().search(/HX-Push/i) >= 0) {
                         var pushedUrl = this.getResponseHeader("HX-Push");
-                      }
-                      //AK - FIXED CHROME issue - "refuse to get unsafe header" warning. \\
+                    }
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
