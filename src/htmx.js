@@ -1185,12 +1185,21 @@ return (function () {
             return null;
         }
 
+        function cleanInnerHtmlForHistory(elt) {
+            var className = htmx.config.requestClass;
+            var clone = elt.cloneNode(true);
+            forEach(findAll(clone, "." + className), function(child){
+                removeClassFromElement(child, className);
+            });
+            return clone.innerHTML;
+        }
+
         function saveHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
             if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
+            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
         }
 
         function pushUrlIntoHistory(path) {

@@ -61,8 +61,29 @@ describe("hx-push-url attribute", function() {
 
         cache.length.should.equal(2);
         htmx._('restoreHistory')("/test1")
-        this.server.respond();
         getWorkArea().textContent.should.equal("test1")
+    });
+
+    it("history restore should not have htmx support classes in content", function () {
+        this.server.respondWith("GET", "/test1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
+
+        make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>');
+
+        byId("d1").click();
+        this.server.respond();
+        var workArea = getWorkArea();
+        workArea.textContent.should.equal("test1")
+
+        byId("d2").click();
+        this.server.respond();
+        workArea.textContent.should.equal("test2")
+
+        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
+
+        cache.length.should.equal(2);
+        htmx._('restoreHistory')("/test1")
+        getWorkArea().getElementsByClassName("htmx-request").length.should.equal(0);
     });
 
     it("cache should only store 10 entries", function () {

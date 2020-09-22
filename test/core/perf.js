@@ -67,4 +67,17 @@ describe("Core htmx perf Tests", function() {
         chai.assert(timeInMs < 300, "Should take less than 300ms on most platforms");
     })
 
+    it("history snapshot cleaning should be fast", function(){
+        //
+        var workArea = getWorkArea();
+        var html = "<div class='foo bar'>Yay, really large HTML documents are fun!</div>\n";
+        html = stringRepeat(html, 5 * 1024); // ~350K in size, about the size of CNN's body tag :p
+        workArea.insertAdjacentHTML("beforeend", html)
+        var start = performance.now();
+        htmx._("cleanInnerHtmlForHistory")(workArea);
+        var end = performance.now();
+        var timeInMs = end - start;
+        chai.assert(timeInMs < 50, "Should take less than 50ms on most platforms");
+    })
+
 })
