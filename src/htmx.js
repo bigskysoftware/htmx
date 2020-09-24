@@ -1625,6 +1625,10 @@ return (function () {
             verb = requestConfig.verb;
             headers = requestConfig.headers;
             filteredParameters = requestConfig.parameters;
+            
+            // Required fields for path-deps.js
+            xhr.url = path;
+            xhr.method = verb.toUpperCase();
 
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
