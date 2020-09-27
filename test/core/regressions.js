@@ -89,4 +89,13 @@ describe("Core htmx Regression Tests", function(){
         byId("d1").getAttribute('@foo').should.equal('bar');
     });
 
+    it ('selected element with ID does not cause NPE when it disappears', function(){
+        this.server.respondWith("GET", "/test", "<div id='d1'>Replaced</div>");
+        var input = make('<input hx-trigger="click" hx-get="/test" id="i1" hx-swap="outerHTML">');
+        input.focus();
+        input.click();
+        this.server.respond();
+        byId("d1").innerText.should.equal('Replaced');
+    });
+
 })

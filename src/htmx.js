@@ -1709,10 +1709,12 @@ return (function () {
 
                                     if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
                                         var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                                        if (selectionInfo.start && newActiveElt.setSelectionRange) {
-                                            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                        if (newActiveElt) {
+                                            if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                                newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                            }
+                                            newActiveElt.focus();
                                         }
-                                        newActiveElt.focus();
                                     }
 
                                     target.classList.remove(htmx.config.swappingClass);
