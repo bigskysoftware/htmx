@@ -5,7 +5,7 @@ describe("Core htmx AJAX Tests", function(){
     });
     afterEach(function()  {
         this.server.restore();
-//        clearWorkArea();
+        clearWorkArea();
     });
 
     // bootstrap test
