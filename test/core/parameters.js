@@ -111,7 +111,7 @@ describe("Core htmx Parameter Handling", function() {
     })
 
     it('correctly URL escapes values', function () {
-        htmx._("urlEncode")({}).should.equal("");``
+        htmx._("urlEncode")({}).should.equal("");
         htmx._("urlEncode")({"foo": "bar"}).should.equal("foo=bar");
         htmx._("urlEncode")({"foo": "bar", "do" : "rey"}).should.equal("foo=bar&do=rey");
         htmx._("urlEncode")({"foo": "bar", "do" : ["rey", "blah"]}).should.equal("foo=bar&do=rey&do=blah");
