@@ -1325,13 +1325,27 @@ return (function () {
                 if (!!getRawAttribute(elt, 'multiple')) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
                 }
+                // include file inputs
+                if (elt.files) {
+                    value = toArray(elt.files);
+                }
+                // This is a little ugly because both the current value of the named value in the form
+                // and the new value could be arrays, so we have to handle all four cases :/
                 if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
                         if (Array.isArray(current)) {
-                            current.push(value);
+                            if (Array.isArray(value)) {
+                                values[name] = current.concat(value);
+                            } else {
+                                current.push(value);
+                            }
                         } else {
-                            values[name] = [current, value];
+                            if (Array.isArray(value)) {
+                                values[name] = [current].concat(value);
+                            } else {
+                                values[name] = [current, value];
+                            }
                         }
                     } else {
                         values[name] = value;
@@ -1394,6 +1408,23 @@ return (function () {
                 }
             }
             return returnStr;
+        }
+
+        function makeFormData(values) {
+            var formData = new FormData();
+            for (var name in values) {
+                if (values.hasOwnProperty(name)) {
+                    var value = values[name];
+                    if (Array.isArray(value)) {
+                        forEach(value, function(v) {
+                            formData.append(name, v);
+                        });
+                    } else {
+                        formData.append(name, v);
+                    }
+                }
+            }
+            return formData;
         }
 
         //====================================================================
@@ -1491,7 +1522,11 @@ return (function () {
             if (encodedParameters != null) {
                 return encodedParameters;
             } else {
-                return urlEncode(filteredParameters);
+                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data") {
+                    return makeFormData(filteredParameters);
+                } else {
+                    return urlEncode(filteredParameters);
+                }
             }
         }
 
@@ -1785,6 +1820,12 @@ return (function () {
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
+
+            forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
+                xhr.addEventListener(eventName, function(event){
+                    triggerEvent(elt, "htmx:xhr:" + eventName, mergeObjects({}, event.detail));
+                })
+            });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
 

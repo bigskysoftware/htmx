@@ -378,6 +378,7 @@ describe("Core htmx AJAX Tests", function(){
             '<option id="m2" value="m2">m2</option>'+
             '<option id="m3" value="m3">m3</option>'+
             '<option id="m4" value="m4">m4</option>'+
+            '</select>'+
             '</form>');
 
         form.click();
@@ -394,6 +395,47 @@ describe("Core htmx AJAX Tests", function(){
         form.click();
         this.server.respond();
         values.should.deep.equal({multiSelect:["m1", "m3"]});
+    });
+
+    it('properly handles two multiple select inputs w/ same name', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<select id="multiSelect" name="multiSelect" multiple="multiple">'+
+            '<option id="m1" value="m1">m1</option>'+
+            '<option id="m2" value="m2">m2</option>'+
+            '<option id="m3" value="m3">m3</option>'+
+            '<option id="m4" value="m4">m4</option>'+
+            '</select>'+
+            '<select id="multiSelect" name="multiSelect" multiple="multiple">'+
+            '<option id="m5" value="m5">m1</option>'+
+            '<option id="m6" value="m6">m2</option>'+
+            '<option id="m7" value="m7">m3</option>'+
+            '<option id="m8" value="m8">m4</option>'+
+            '</select>'+
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({});
+
+        byId("m1").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:"m1"});
+
+        byId("m1").selected = true;
+        byId("m3").selected = true;
+        byId("m7").selected = true;
+        byId("m8").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:["m1", "m3", "m7", "m8"]});
     });
 
     it('properly handles checkbox inputs', function()
@@ -586,4 +628,4 @@ describe("Core htmx AJAX Tests", function(){
     });
 
 
-})
+}, "Core htmx AJAX Tests")
