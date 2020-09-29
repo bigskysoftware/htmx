@@ -872,9 +872,12 @@ return (function () {
                     var results = getInputValues(elt, 'post');
                     var rawParameters = results.values;
                     var errors = results.errors;
-                    //TODO deal with errors
                     var filteredParameters = filterValues(rawParameters, elt);
                     filteredParameters['HEADERS'] = headers;
+                    if (errors && errors.length > 0) {
+                        triggerEvent(elt, 'htmx:validation:halted', errors);
+                        return;
+                    }
                     webSocket.send(JSON.stringify(filteredParameters));
                     if(shouldCancel(elt)){
                         evt.preventDefault();
