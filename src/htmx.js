@@ -1637,12 +1637,8 @@ return (function () {
             addExpressionVars(elt, rawParameters);
             var filteredParameters = filterValues(rawParameters, elt);
 
-            if (verb !== 'get') {
-                var encoding = getClosestAttributeValue(elt, "hx-encoding");
-                if (encoding == null) {
-                    encoding = 'application/x-www-form-urlencoded; charset=UTF-8';
-                }
-                headers['Content-Type'] = encoding;
+            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
             }
 
             // behavior of anchors w/ empty href is to use the current URL

@@ -630,8 +630,7 @@ describe("Core htmx AJAX Tests", function(){
    it('multipart/form-data encoding works', function()
     {
         this.server.respondWith("POST", "/test", function(xhr){
-            console.log(xhr);
-            xhr.requestHeaders['Content-Type'].startsWith("multipart/form-data");
+            should.equal(xhr.requestHeaders['Content-Type'], undefined);
             xhr.requestBody.get("i1").should.equal('foo');
             xhr.respond(200, {}, "body: " + xhr.requestBody);
         });
