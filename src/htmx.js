@@ -1420,7 +1420,7 @@ return (function () {
                             formData.append(name, v);
                         });
                     } else {
-                        formData.append(name, v);
+                        formData.append(name, value);
                     }
                 }
             }
@@ -1638,7 +1638,11 @@ return (function () {
             var filteredParameters = filterValues(rawParameters, elt);
 
             if (verb !== 'get') {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                var encoding = getClosestAttributeValue(elt, "hx-encoding");
+                if (encoding == null) {
+                    encoding = 'application/x-www-form-urlencoded; charset=UTF-8';
+                }
+                headers['Content-Type'] = encoding;
             }
 
             // behavior of anchors w/ empty href is to use the current URL

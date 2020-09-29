@@ -5,7 +5,7 @@ describe("Core htmx AJAX Tests", function(){
     });
     afterEach(function()  {
         this.server.restore();
-        clearWorkArea();
+//        clearWorkArea();
     });
 
     // bootstrap test
@@ -627,5 +627,21 @@ describe("Core htmx AJAX Tests", function(){
         document.activeElement.should.equal(input2);
     });
 
+   it('multipart/form-data encoding works', function()
+    {
+        this.server.respondWith("POST", "/test", function(xhr){
+            console.log(xhr);
+            xhr.requestHeaders['Content-Type'].startsWith("multipart/form-data");
+            xhr.requestBody.get("i1").should.equal('foo');
+            xhr.respond(200, {}, "body: " + xhr.requestBody);
+        });
+        var form = make("<form hx-post='/test' hx-encoding='multipart/form-data' hx-trigger='click'>" +
+            "<input name='i1'  id='i1' value='foo'/>" +
+            "</form>");
+        form.focus();
+        form.click();
+        this.server.respond();
+    });
 
-}, "Core htmx AJAX Tests")
+
+})
