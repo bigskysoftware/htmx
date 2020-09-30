@@ -1368,7 +1368,7 @@ return (function () {
         }
 
         function validateElement(element, errors) {
-            if (element.checkValidity && element.willValidate) {
+            if (element.willValidate) {
                 triggerEvent(element, "htmx:validation:validate")
                 if (!element.checkValidity()) {
                     errors.push({elt: element, message:element.validationMessage, validity:element.validity});
