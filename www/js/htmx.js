@@ -1763,14 +1763,16 @@ return (function () {
                                     var activeElt = document.activeElement;
                                     var selectionInfo = {
                                         elt: activeElt,
-                                        start: activeElt.selectionStart,
-                                        end: activeElt.selectionEnd,
+                                        start: activeElt ? activeElt.selectionStart : null,
+                                        end: activeElt ? activeElt.selectionEnd : null
                                     };
 
                                     var settleInfo = makeSettleInfo(target);
                                     selectAndSwap(swapSpec.swapStyle, target, elt, resp, settleInfo);
 
-                                    if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
+                                    if (selectionInfo.elt &&
+                                        !bodyContains(selectionInfo.elt) &&
+                                        selectionInfo.elt.id) {
                                         var newActiveElt = document.getElementById(selectionInfo.elt.id);
                                         if (newActiveElt) {
                                             if (selectionInfo.start && newActiveElt.setSelectionRange) {

@@ -631,7 +631,9 @@ describe("Core htmx AJAX Tests", function(){
     {
         this.server.respondWith("POST", "/test", function(xhr){
             should.equal(xhr.requestHeaders['Content-Type'], undefined);
-            xhr.requestBody.get("i1").should.equal('foo');
+            if (xhr.requestBody.get) { //IE 11 does not support
+                xhr.requestBody.get("i1").should.equal('foo');
+            }
             xhr.respond(200, {}, "body: " + xhr.requestBody);
         });
         var form = make("<form hx-post='/test' hx-encoding='multipart/form-data' hx-trigger='click'>" +
