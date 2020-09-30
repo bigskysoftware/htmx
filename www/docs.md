@@ -344,6 +344,18 @@ If you wish to filter out some parameters you can use the [hx-params](/attribute
 Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](/events#htmx:configRequest) 
 event.
 
+#### <a name="files"></a> [File Upload](#files)
+
+If you wish to upload files via an htmx request, you can set the [hx-encoding](/attributes/hx-encoding) attribute to 
+`multipart/form-data`.  This will use a `FormData` object to submit the request, which will properly include the file
+in the request.
+
+Note that depending on your server-side technology, you may have to handle requests with this type of body content very 
+differently.
+
+Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload, 
+which you can hook into to show the progress of the upload.
+
 #### <a name="vars"></a> [Variables](#variables)
 
 You can also include dynamically computed variables in the parameters of a request by using the 

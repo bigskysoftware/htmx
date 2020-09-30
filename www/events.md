@@ -290,3 +290,34 @@ This event is triggered when a request is halted due to validation errors.
 * `detail.elt` - the element that triggered the request
 * `detail.errors` - an array of error objects with the invalid elements and errors associated with them
 
+### <a name="htmx:xhr:abort"></a> Event - [htmx:xhr:abort](#htmx:xhr:abort)
+
+This event is triggered when an ajax request aborts
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+
+### <a name="htmx:xhr:loadstart"></a> Event - [htmx:xhr:loadstart](#htmx:xhr:loadstart)
+
+This event is triggered when an ajax request starts
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+
+### <a name="htmx:xhr:loadend"></a> Event - [htmx:xhr:loadend](#htmx:xhr:loadend)
+
+This event is triggered when an ajax request finishes
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+
+### <a name="htmx:xhr:progress"></a> Event - [htmx:xhr:progress](#htmx:xhr:progress)
+
+This event is triggered periodically when an ajax request that supports progress is in flight
+
+##### Details
+
+* `detail.elt` - the element that triggered the request

@@ -122,6 +122,10 @@ title: </> htmx - Attributes
 | [`htmx:validation:validate`](/events#htmx:validation:validate)  | triggered before an element is validated
 | [`htmx:validation:failed`](/events#htmx:validation:failed)  | triggered when an element fails validation
 | [`htmx:validation:halted`](/events#htmx:validation:halted)  | triggered when a request is halted due to validation errors
+| [`htmx:xhr:abort`](/events#htmx:xhr:abort)  | triggered when an ajax request aborts
+| [`htmx:xhr:loadend`](/events#htmx:xhr:loadend)  | triggered when an ajax request ends
+| [`htmx:xhr:loadstart`](/events#htmx:xhr:loadstart)  | triggered when an ajax request starts
+| [`htmx:xhr:progress`](/events#htmx:xhr:progress)  | triggered periodically during an ajax request that supports progress events
 
 </div>
 
