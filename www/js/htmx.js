@@ -869,9 +869,15 @@ return (function () {
                 var webSocket = getInternalData(webSocketSourceElt).webSocket;
                 elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
                     var headers = getHeaders(elt, webSocketSourceElt, null, elt);
-                    var rawParameters = getInputValues(elt, 'post');
+                    var results = getInputValues(elt, 'post');
+                    var rawParameters = results.values;
+                    var errors = results.errors;
                     var filteredParameters = filterValues(rawParameters, elt);
                     filteredParameters['HEADERS'] = headers;
+                    if (errors && errors.length > 0) {
+                        triggerEvent(elt, 'htmx:validation:halted', errors);
+                        return;
+                    }
                     webSocket.send(JSON.stringify(filteredParameters));
                     if(shouldCancel(elt)){
                         evt.preventDefault();
@@ -1185,12 +1191,21 @@ return (function () {
             return null;
         }
 
+        function cleanInnerHtmlForHistory(elt) {
+            var className = htmx.config.requestClass;
+            var clone = elt.cloneNode(true);
+            forEach(findAll(clone, "." + className), function(child){
+                removeClassFromElement(child, className);
+            });
+            return clone.innerHTML;
+        }
+
         function saveHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
             if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, elt.innerHTML, getDocument().title, window.scrollY);
+            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
         }
 
         function pushUrlIntoHistory(path) {
@@ -1304,7 +1319,7 @@ return (function () {
             return true;
         }
 
-        function processInputValue(processed, values, elt) {
+        function processInputValue(processed, values, errors, elt) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
             } else {
@@ -1316,50 +1331,76 @@ return (function () {
                 if (!!getRawAttribute(elt, 'multiple')) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
                 }
+                // include file inputs
+                if (elt.files) {
+                    value = toArray(elt.files);
+                }
+                // This is a little ugly because both the current value of the named value in the form
+                // and the new value could be arrays, so we have to handle all four cases :/
                 if (name != null && value != null) {
                     var current = values[name];
                     if(current) {
                         if (Array.isArray(current)) {
-                            current.push(value);
+                            if (Array.isArray(value)) {
+                                values[name] = current.concat(value);
+                            } else {
+                                current.push(value);
+                            }
                         } else {
-                            values[name] = [current, value];
+                            if (Array.isArray(value)) {
+                                values[name] = [current].concat(value);
+                            } else {
+                                values[name] = [current, value];
+                            }
                         }
                     } else {
                         values[name] = value;
                     }
                 }
+                validateElement(elt, errors);
             }
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
                 forEach(inputs, function(input) {
-                    processInputValue(processed, values, input);
+                    processInputValue(processed, values, errors, input);
                 });
+            }
+        }
+
+        function validateElement(element, errors) {
+            if (element.willValidate) {
+                triggerEvent(element, "htmx:validation:validate")
+                if (!element.checkValidity()) {
+                    errors.push({elt: element, message:element.validationMessage, validity:element.validity});
+                    triggerEvent(element, "htmx:validation:failed", {message:element.validationMessage, validity:element.validity})
+                }
             }
         }
 
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
+            var errors = [];
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values, closest(elt, 'form'));
+                processInputValue(processed, values, errors, closest(elt, 'form'));
             }
 
             // include the element itself
-            processInputValue(processed, values, elt);
+            processInputValue(processed, values, errors, elt);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values, node);
+                    processInputValue(processed, values, errors, node);
                 });
             }
 
 
-            return values;
+            return {errors:errors, values:values};
         }
 
         function appendParam(returnStr, name, realValue) {
@@ -1385,6 +1426,23 @@ return (function () {
                 }
             }
             return returnStr;
+        }
+
+        function makeFormData(values) {
+            var formData = new FormData();
+            for (var name in values) {
+                if (values.hasOwnProperty(name)) {
+                    var value = values[name];
+                    if (Array.isArray(value)) {
+                        forEach(value, function(v) {
+                            formData.append(name, v);
+                        });
+                    } else {
+                        formData.append(name, value);
+                    }
+                }
+            }
+            return formData;
         }
 
         //====================================================================
@@ -1482,7 +1540,11 @@ return (function () {
             if (encodedParameters != null) {
                 return encodedParameters;
             } else {
-                return urlEncode(filteredParameters);
+                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data") {
+                    return makeFormData(filteredParameters);
+                } else {
+                    return urlEncode(filteredParameters);
+                }
             }
         }
 
@@ -1589,11 +1651,13 @@ return (function () {
             var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
-            var rawParameters = getInputValues(elt, verb);
+            var results = getInputValues(elt, verb);
+            var rawParameters = results.values;
+            var errors = results.errors;
             addExpressionVars(elt, rawParameters);
             var filteredParameters = filterValues(rawParameters, elt);
 
-            if (verb !== 'get') {
+            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
             }
 
@@ -1608,14 +1672,22 @@ return (function () {
                 headers:headers,
                 target:target,
                 verb:verb,
+                errors:errors,
                 path:path
             };
+
             if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
             // copy out in case the object was overwritten
             path = requestConfig.path;
             verb = requestConfig.verb;
             headers = requestConfig.headers;
             filteredParameters = requestConfig.parameters;
+            errors = requestConfig.errors;
+
+            if(errors && errors.length > 0){
+                triggerEvent(elt, 'htmx:validation:halted', requestConfig)
+                return endRequestLock();
+            }
 
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
@@ -1700,10 +1772,12 @@ return (function () {
 
                                     if (!bodyContains(selectionInfo.elt) && selectionInfo.elt.id) {
                                         var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                                        if (selectionInfo.start && newActiveElt.setSelectionRange) {
-                                            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                        if (newActiveElt) {
+                                            if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                                newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                            }
+                                            newActiveElt.focus();
                                         }
-                                        newActiveElt.focus();
                                     }
 
                                     target.classList.remove(htmx.config.swappingClass);
@@ -1774,6 +1848,12 @@ return (function () {
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
+
+            forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
+                xhr.addEventListener(eventName, function(event){
+                    triggerEvent(elt, "htmx:xhr:" + eventName, mergeObjects({}, event.detail));
+                })
+            });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
 
