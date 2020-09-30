@@ -251,3 +251,42 @@ element id without a preceding `#`)
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the bad CSS selector
 
+### <a name="htmx:validation:validate"></a> Event - [htmx:validation:validate](#htmx:validation:validate)
+
+This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method
+to implement custom validation rules.
+
+```html
+<form hx-post="/test">
+  <input _="on htmx:validation:validate 
+               if my.value != 'foo' 
+                  call me.setCustomValidity('Please enter the value foo')   
+               else 
+                  call me.setCustomValidity('')" 
+         name="example">
+</form>
+```
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+
+### <a name="htmx:validation:failed"></a> Event - [htmx:validation:failed](#htmx:validation:failed)
+
+This event is triggered when an element fails validation.
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+* `detail.message` - the validation error message
+* `detail.validity` - the validity object, which contains properties specifying how validation failed
+
+### <a name="htmx:validation:halted"></a> Event - [htmx:validation:halted](#htmx:validation:halted)
+
+This event is triggered when a request is halted due to validation errors.
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+* `detail.errors` - an array of error objects with the invalid elements and errors associated with them
+

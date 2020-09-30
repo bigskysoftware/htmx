@@ -24,6 +24,7 @@ title: </> htmx - high power tools for html
 * [websockets & SSE](#websockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
+* [validation](#validation)
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
@@ -502,6 +503,38 @@ The order of operations in a htmx request are:
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
+
+## <a name="validation">[Validation](#validation)
+
+Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+and will not issue a request if a validatable input is invalid.  This is true for both AJAX requests as well as
+WebSocket sends.
+
+Htmx fires events around validation that can be used to hook in custom validation and error handling:
+
+* `htmx:validation:validate` - called before an elements `checkValidity()` method is called.  May be used to add in
+   custom validation logic
+* `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
+* `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
+  in the `event.details.errors` object
+   
+### Validation Example
+
+Here is an example of an input that uses the `htmx:validation:validate` event to require that an input have the value
+`foo`, using hyperscript:
+
+```html
+<form hx-post="/test">
+  <input _="on htmx:validation:validate 
+               if my.value != 'foo' 
+                  call me.setCustomValidity('Please enter the value foo')   
+               else 
+                  call me.setCustomValidity('')" 
+         name="example">
+</form>
+```
+
+Note that all client side validations must be re-done on the server side, as they can always be bypassed.
 
 ## <a name="animations"></a> [Animations](#animations)
 
