@@ -85,6 +85,46 @@ describe("Core htmx client side validation tests", function(){
         form.textContent.should.equal("Clicked!");
     });
 
+    it('calls htmx:validation:failed on failure', function()
+    {
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '</form>');
+        var calledEvent = false;
+        var handler = htmx.on(form, "htmx:validation:failed", function(){
+            calledEvent = true;
+        });
+        try {
+            form.click();
+            this.server.respond();
+        } finally {
+            htmx.off(form, handler);
+        }
+        calledEvent.should.equal(true);
+    });
+
+    it('calls htmx:validation:halted on failure', function()
+    {
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '</form>');
+        var errors = null;
+        var handler = htmx.on(form, "htmx:validation:halted", function(evt){
+            errors = evt.detail.errors;
+        });
+        try {
+            form.click();
+            this.server.respond();
+        } finally {
+            htmx.off(form, handler);
+        }
+        errors.length.should.equal(1);
+        byId("i1").should.equal(errors[0].elt);
+        errors[0].validity.valueMissing.should.equal(true);
+    });
+
 
 
 })
