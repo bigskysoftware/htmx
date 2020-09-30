@@ -43,7 +43,7 @@ If you would prefer a different effect for showing the spinner you could define 
 CSS.  Here is an example that uses `display` rather than opacity:
 
 ```css
-    .htmx-indicator{
+    .my-indicator{
         display:none;
     }
     .htmx-request .my-indicator{
