@@ -41,7 +41,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
-                attributesToSwizzle:["class", "style", "width", "height"]
+                attributesToSettle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -381,9 +381,9 @@ return (function () {
         }
 
         function shouldSettleAttribute(name) {
-            var attributesToSwizzle = htmx.config.attributesToSwizzle;
-            for (var i = 0; i < attributesToSwizzle.length; i++) {
-                if (name === attributesToSwizzle[i]) {
+            var attributesToSettle = htmx.config.attributesToSettle;
+            for (var i = 0; i < attributesToSettle.length; i++) {
+                if (name === attributesToSettle[i]) {
                     return true;
                 }
             }
