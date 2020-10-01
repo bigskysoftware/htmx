@@ -18,6 +18,7 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:afterRequest"></a> Event - [`htmx:afterRequest`](#htmx:afterRequest)
 
@@ -30,6 +31,7 @@ can be paried with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:afterSettle"></a> Event - [`htmx:afterSettle`](#htmx:afterSettle)
 
@@ -40,6 +42,7 @@ This event is triggered after the DOM has [settled](/docs#settling).
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:afterSwap"></a> Event - [`htmx:afterSwap`](#htmx:afterSwap)
 
@@ -50,6 +53,7 @@ This event is triggered after new content has been  [swapped into the DOM](/docs
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:beforeOnLoad"></a> Event - [`htmx:beforeOnLoad`](#htmx:beforeOnLoad)
 
@@ -60,6 +64,7 @@ This event is triggered before any response processing occurs.  If the event is 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:beforeRequest"></a> Event - [`htmx:beforeRequest`](#htmx:beforeRequest)
 
@@ -70,6 +75,7 @@ This event is triggered before an AJAX request is issued.  If the event is cance
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:beforeSwap"></a> Event - [`htmx:beforeSwap`](#htmx:beforeSwap)
 
@@ -80,6 +86,7 @@ This event is triggered before any new content has been [swapped into the DOM](/
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:configRequest"></a> Event - [`htmx:configRequest`](#htmx:configRequest)
 
@@ -180,6 +187,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
 * `detail.exception` - the exception that occurred
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
 
@@ -210,6 +218,7 @@ This event is triggered when an HTTP error response occurs
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
 
@@ -220,6 +229,7 @@ This event is triggered when a network error prevents an HTTP request from occur
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:sseError"></a> Event - [`htmx:sseError`](#htmx:sseError)
 
@@ -240,6 +250,7 @@ This event is triggered when an error occurs during the swap phase
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:targetError"></a> Event - [`htmx:targetError`](#htmx:targetError)
 
