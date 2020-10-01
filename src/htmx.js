@@ -1721,7 +1721,7 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, requestConfig:requestConfig};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
