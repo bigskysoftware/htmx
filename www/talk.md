@@ -11,9 +11,10 @@ title: </> htmx - high power tools for html
 
 [https://github.com/bigskysoftware/htmx/issues](https://github.com/bigskysoftware/htmx/issues)
 
-## Twitter
+## Social
 
-[@htmx_org](https://twitter.com/htmx_org)
+[@htmx_org on Twitter](https://twitter.com/htmx_org)
+[#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx)
 
 ## Sponsor
 
