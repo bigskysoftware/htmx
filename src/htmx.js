@@ -638,6 +638,79 @@ return (function () {
             }
         }
 
+        var WHITESPACE = /\s/;
+        var SYMBOL_START = /[_$a-zA-Z]/;
+        var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
+        var STRINGISH_START = ['"', "'", "/"];
+        function tokenizeString(str) {
+            var tokens = [];
+            var position = 0;
+            while (position < str.length) {
+                if(SYMBOL_START.exec(str.charAt(position))) {
+                    var startPosition = position;
+                    position++;
+                    while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
+                } else if (STRINGISH_START.indexOf(str.charAt(position)) !== -1) {
+                    var startChar = str.charAt(position);
+                    var startPosition = position;
+                    position++;
+                    while (position < str.length && str.charAt(position) !== startChar ) {
+                        if (str.charAt(position) === "\\") {
+                            position++;
+                        }
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
+                } else {
+                    var symbol = str.charAt(position);
+                    tokens.push(symbol);
+                }
+                position++;
+            }
+            return tokens;
+        }
+
+    function isPossibleRelativeReference(token, last) {
+        return SYMBOL_START.exec(token.charAt(0)) &&
+            token !== "true" &&
+            token !== "false" &&
+            token !== "this" &&
+            last !== ".";
+    }
+
+    function maybeGenerateConditional(tokens) {
+            if (tokens[0] === '[') {
+                tokens.shift();
+                var bracketCount = 1;
+                var conditional = "(function(__val){ return (";
+                var last = null;
+                while (tokens.length > 0) {
+                    var token = tokens[0];
+                    if (token === "]") {
+                        bracketCount--;
+                        if (bracketCount === 0) {
+                            if (last === null) {
+                                conditional = conditional + "true";
+                            }
+                            tokens.shift();
+                            return conditional + ")})";
+                        }
+                    } else if (token === "[") {
+                        bracketCount++;
+                    }
+                    if (isPossibleRelativeReference(token, last)) {
+                            conditional = conditional += "((__val." + token + ") ? (__val." + token + ") : (" + token + "))";
+                    } else {
+                        conditional = conditional + token;
+                    }
+                    last = tokens.shift();
+                }
+            }
+        }
+
         function getTriggerSpecs(elt) {
 
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');

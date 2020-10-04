@@ -41,7 +41,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
-                attributesToSwizzle:["class", "style", "width", "height"]
+                attributesToSettle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -381,9 +381,9 @@ return (function () {
         }
 
         function shouldSettleAttribute(name) {
-            var attributesToSwizzle = htmx.config.attributesToSwizzle;
-            for (var i = 0; i < attributesToSwizzle.length; i++) {
-                if (name === attributesToSwizzle[i]) {
+            var attributesToSettle = htmx.config.attributesToSettle;
+            for (var i = 0; i < attributesToSettle.length; i++) {
+                if (name === attributesToSettle[i]) {
                     return true;
                 }
             }
@@ -634,6 +634,80 @@ return (function () {
                     }
                 } else {
                     triggerEvent(elt, trigger, []);
+                }
+            }
+        }
+
+        var WHITESPACE = /\s/;
+        var SYMBOL_START = /[_$a-zA-Z]/;
+        var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
+        function tokenizeString(str) {
+            var tokens = [];
+            var position = 0;
+            while (position < str.length) {
+                if (WHITESPACE.exec(str.charAt(position))) {
+                } else if(SYMBOL_START.exec(str.charAt(position))) {
+                    var startPosition = position;
+                    position++;
+                    while (SYMBOL_CONT.exec(str.charAt(position))) {
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
+                } else if (str.charAt(position) === "'" || str.charAt(position) === '"') {
+                    var startChar = str.charAt(position);
+                    var startPosition = position;
+                    position++;
+                    while (position < str.length && str.charAt(position) !== startChar ) {
+                        if (str.charAt(position) === "\\") {
+                            position++;
+                        }
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
+                } else {
+                    var symbol = str.charAt(position);
+                    if (symbol === "&" || symbol === "|") {
+                        if (tokens[tokens.length - 1] === symbol) {
+                            symbol = tokens.pop() + symbol;
+                        }
+                    }
+                    tokens.push(symbol);
+                }
+                position++;
+            }
+            return tokens;
+        }
+
+    function isTopLevelSymbol(token, last) {
+        return SYMBOL_START.exec(token.charAt(0)) &&
+            token !== "true" &&
+            token !== "false" &&
+            last !== ".";
+    }
+
+    function maybeGenerateConditional(tokens) {
+            if (tokens[0] === '[') {
+                tokens.shift();
+                var bracketCount = 1;
+                var conditional = "(function(__val){ return (";
+                var last = null;
+                while (tokens.length > 0) {
+                    var token = tokens[0];
+                    if (token === "]") {
+                        bracketCount--;
+                        if (bracketCount === 0) {
+                            tokens.shift();
+                            return conditional + ")})";
+                        }
+                    } else if (token === "[") {
+                        bracketCount++;
+                    }
+                    if (isTopLevelSymbol(token, last)) {
+                            conditional = conditional += "(__val." + token + "? (__val." + token + ") : (" + token + "))";
+                    } else {
+                        conditional = conditional + token;
+                    }
+                    last = tokens.shift();
                 }
             }
         }
@@ -1721,7 +1795,7 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, requestConfig: requestConfig};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
