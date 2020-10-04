@@ -516,8 +516,10 @@ return (function () {
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 while(newElt && newElt !== target) {
-                    settleInfo.elts.push(newElt);
-                    newElt = newElt.nextSibling;
+                    if (newElt.nodeType === Node.ELEMENT_NODE) {
+                        settleInfo.elts.push(newElt);
+                    }
+                    newElt = newElt.nextElementSibling;
                 }
                 closeConnections(target);
                 parentElt(target).removeChild(target);

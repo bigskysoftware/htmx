@@ -133,10 +133,10 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("htmx:afterSettle is called when replacing outerHTML", function () {
-        var called = false;
+    it("htmx:afterSettle is called once when replacing outerHTML", function () {
+        var called = 0;
         var handler = htmx.on("htmx:afterSettle", function (evt) {
-            called = true;
+            called++;
         });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
@@ -145,7 +145,43 @@ describe("Core htmx Events", function() {
             var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
             div.click();
             this.server.respond();
-            should.equal(called, true);
+            should.equal(called, 1);
+        } finally {
+            htmx.off("htmx:afterSettle", handler);
+        }
+    });
+
+    it("htmx:afterSettle is called once when replacing outerHTML with whitespace", function () {
+        var called = 0;
+        var handler = htmx.on("htmx:afterSettle", function (evt) {
+            called++;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>\n");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, 1);
+        } finally {
+            htmx.off("htmx:afterSettle", handler);
+        }
+    });
+
+    it("htmx:afterSettle is called twice when replacing outerHTML with whitespace separated elements", function () {
+        var called = 0;
+        var handler = htmx.on("htmx:afterSettle", function (evt) {
+            called++;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>\n <a>Foo</a>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, 2);
         } finally {
             htmx.off("htmx:afterSettle", handler);
         }
@@ -254,7 +290,7 @@ describe("Core htmx Events", function() {
         } finally {
             htmx.off("htmx:afterOnLoad", handler);
         }
-    });      
+    });
 
 });
 
