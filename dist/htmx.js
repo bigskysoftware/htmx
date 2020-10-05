@@ -366,7 +366,7 @@ return (function () {
                 } else if (targetStr.indexOf("closest ") === 0) {
                     return closest(elt, targetStr.substr(8));
                 } else if (targetStr.indexOf("find ") === 0) {
-                    return find(elt, targetStr.substr(5));   
+                    return find(elt, targetStr.substr(5));
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
@@ -641,19 +641,20 @@ return (function () {
         var WHITESPACE = /\s/;
         var SYMBOL_START = /[_$a-zA-Z]/;
         var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
+        var STRINGISH_START = ['"', "'", "/"];
+        var NOT_WHITESPACE = /[^\s]/;
         function tokenizeString(str) {
             var tokens = [];
             var position = 0;
             while (position < str.length) {
-                if (WHITESPACE.exec(str.charAt(position))) {
-                } else if(SYMBOL_START.exec(str.charAt(position))) {
+                if(SYMBOL_START.exec(str.charAt(position))) {
                     var startPosition = position;
                     position++;
-                    while (SYMBOL_CONT.exec(str.charAt(position))) {
+                    while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
                         position++;
                     }
                     tokens.push(str.substr(startPosition, position - startPosition + 1));
-                } else if (str.charAt(position) === "'" || str.charAt(position) === '"') {
+                } else if (STRINGISH_START.indexOf(str.charAt(position)) !== -1) {
                     var startChar = str.charAt(position);
                     var startPosition = position;
                     position++;
@@ -666,11 +667,6 @@ return (function () {
                     tokens.push(str.substr(startPosition, position - startPosition + 1));
                 } else {
                     var symbol = str.charAt(position);
-                    if (symbol === "&" || symbol === "|") {
-                        if (tokens[tokens.length - 1] === symbol) {
-                            symbol = tokens.pop() + symbol;
-                        }
-                    }
                     tokens.push(symbol);
                 }
                 position++;
@@ -678,32 +674,42 @@ return (function () {
             return tokens;
         }
 
-    function isTopLevelSymbol(token, last) {
-        return SYMBOL_START.exec(token.charAt(0)) &&
-            token !== "true" &&
-            token !== "false" &&
-            last !== ".";
-    }
+        function isPossibleRelativeReference(token, last, paramName) {
+            return SYMBOL_START.exec(token.charAt(0)) &&
+                token !== "true" &&
+                token !== "false" &&
+                token !== "this" &&
+                token !== paramName &&
+                last !== ".";
+        }
 
-    function maybeGenerateConditional(tokens) {
+        function maybeGenerateConditional(tokens, paramName) {
             if (tokens[0] === '[') {
                 tokens.shift();
                 var bracketCount = 1;
-                var conditional = "(function(__val){ return (";
+                var conditional = "(function(" + paramName + "){ return (";
                 var last = null;
                 while (tokens.length > 0) {
                     var token = tokens[0];
                     if (token === "]") {
                         bracketCount--;
                         if (bracketCount === 0) {
+                            if (last === null) {
+                                conditional = conditional + "true";
+                            }
                             tokens.shift();
-                            return conditional + ")})";
+                            conditional += ")})";
+                            try {
+                                return eval(conditional);
+                            } catch (e) {
+                                triggerErrorEvent(getDocument(), "htmx:syntax:error", {error:e})
+                            }
                         }
                     } else if (token === "[") {
                         bracketCount++;
                     }
-                    if (isTopLevelSymbol(token, last)) {
-                            conditional = conditional += "(__val." + token + "? (__val." + token + ") : (" + token + "))";
+                    if (isPossibleRelativeReference(token, last, paramName)) {
+                            conditional += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
                     } else {
                         conditional = conditional + token;
                     }
@@ -712,49 +718,73 @@ return (function () {
             }
         }
 
+        function consumeUntil(tokens, match) {
+            var result = "";
+            while (tokens.length > 0 && !tokens[0].match(match)) {
+                result += tokens.shift();
+            }
+            return result;
+        }
+
         function getTriggerSpecs(elt) {
-
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+            var triggerSpecs = [];
             if (explicitTrigger) {
-                var triggerSpecs = explicitTrigger.split(',').map(function(triggerString) {
-                    var tokens = splitOnWhitespace(triggerString.trim());
-                    var trigger = tokens[0];  // splitOnWhitespace returns at least one element
-                    if (!trigger)
-                        return null;
-
-                    if (trigger === "every")
-                        return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
-                    if (trigger.indexOf("sse:") === 0)
-                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
-
-                    var triggerSpec = {trigger: trigger};
-                    for (var i = 1; i < tokens.length; i++) {
-                        var token = tokens[i].trim();
-                        if (token === "changed") {
-                            triggerSpec.changed = true;
-                        }
-                        if (token === "once") {
-                            triggerSpec.once = true;
-                        }
-                        if (token.indexOf("delay:") === 0) {
-                            triggerSpec.delay = parseInterval(token.substr(6));
-                        }
-                        if (token.indexOf("throttle:") === 0) {
-                            triggerSpec.throttle = parseInterval(token.substr(9));
+                var tokens = tokenizeString(explicitTrigger);
+                do {
+                    consumeUntil(tokens, NOT_WHITESPACE);
+                    var initialLength = tokens.length;
+                    var trigger = consumeUntil(tokens, /[,\[\s]/);
+                    if (trigger !== "") {
+                        if (trigger === "every") {
+                            var every = {trigger: 'every'};
+                            consumeUntil(tokens, NOT_WHITESPACE);
+                            every.pollInterval = parseInterval(consumeUntil(tokens, WHITESPACE));
+                            triggerSpecs.push(every);
+                        } else if (trigger.indexOf("sse:") === 0) {
+                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
+                        } else {
+                            var triggerSpec = {trigger: trigger};
+                            var eventFilter = maybeGenerateConditional(tokens, "evt");
+                            if (eventFilter) {
+                                triggerSpec.eventFilter = eventFilter;
+                            }
+                            while (tokens.length > 0 && tokens[0] !== ",") {
+                                consumeUntil(tokens, NOT_WHITESPACE)
+                                var token = tokens.shift();
+                                if (token === "changed") {
+                                    triggerSpec.changed = true;
+                                } else if (token === "once") {
+                                    triggerSpec.once = true;
+                                } else if (token === "delay" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                } else if (token === "throttle" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                } else {
+                                    triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                                }
+                            }
+                            triggerSpecs.push(triggerSpec);
                         }
                     }
-                    return triggerSpec;
-                }).filter(function(x){ return x !== null });
-
-                if (triggerSpecs.length)
-                    return triggerSpecs;
+                    if (tokens.length === initialLength) {
+                        triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                    }
+                    consumeUntil(tokens, NOT_WHITESPACE);
+                } while (tokens[0] === "," && tokens.shift())
             }
 
-            if (matches(elt, 'form'))
+            if (triggerSpecs.length > 0) {
+                return triggerSpecs;
+            } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            if (matches(elt, 'input, textarea, select'))
+            } else if (matches(elt, 'input, textarea, select')) {
                 return [{trigger: 'change'}];
-            return [{trigger: 'click'}];
+            } else {
+                return [{trigger: 'click'}];
+            }
         }
 
         function cancelPolling(elt) {
@@ -807,6 +837,10 @@ return (function () {
 
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
+                if (triggerSpec.eventFilter &&
+                    triggerSpec.eventFilter(evt) !== true) {
+                    return;
+                }
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                     return;
                 }
@@ -973,7 +1007,7 @@ return (function () {
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
                 }
-                
+
                 if ((value[0] === "swap")) {
                     processSSESwap(elt, value[1])
                 }
@@ -1001,12 +1035,12 @@ return (function () {
 
                     ///////////////////////////
                     // TODO: merge this code with AJAX and WebSockets code in the future.
-                    
+
                     var response = event.data;
                     withExtensions(elt, function(extension){
                         response = extension.transformResponse(response, null, elt);
                     });
-    
+
                     var swapSpec = getSwapSpecification(elt)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
