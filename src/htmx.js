@@ -874,15 +874,15 @@ return (function () {
 
                     if (triggerSpec.throttle) {
                         elementData.throttle = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target);
+                            issueAjaxRequest(elt, verb, path, evt.target, evt);
                             elementData.throttle = null;
                         }, triggerSpec.throttle);
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target);
+                            issueAjaxRequest(elt, verb, path, evt.target, evt);
                         }, triggerSpec.delay);
                     } else {
-                        issueAjaxRequest(elt, verb, path, evt.target);
+                        issueAjaxRequest(elt, verb, path, evt.target, evt);
                     }
                 }
             };
@@ -1721,7 +1721,7 @@ return (function () {
             }
         }
 
-        function issueAjaxRequest(elt, verb, path, eventTarget) {
+        function issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent) {
             var target = getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
@@ -1729,7 +1729,7 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
-                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget)};
+                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent)};
                 return;
             } else {
                 eltData.requestInFlight = true;
@@ -1781,7 +1781,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
-                path:path
+                path:path,
+                triggeringEvent:triggeringEvent
             };
 
             if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
