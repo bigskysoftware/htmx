@@ -19,16 +19,16 @@ describe("Core htmx tokenizer tests", function(){
     it('tokenizes properly', function()
     {
         tokenizeTest("", []);
-        tokenizeTest("  ", []);
+        tokenizeTest("  ", [" ", " "]);
         tokenizeTest("(", ["("]);
         tokenizeTest("()", ["(", ")"]);
         tokenizeTest("(,)", ["(", ",", ")"]);
-        tokenizeTest(" ( ) ", ["(", ")"]);
-        tokenizeTest(" && ) ", ["&&", ")"]);
-        tokenizeTest(" && ) 'asdf'", ["&&", ")", "'asdf'"]);
-        tokenizeTest(" && ) ',asdf'", ["&&", ")", "',asdf'"]);
+        tokenizeTest(" ( ) ", [" ", "(", " ", ")", " "]);
+        tokenizeTest(" && ) ", [" ", "&", "&", " ", ")", " "]);
+        tokenizeTest(" && ) 'asdf'", [" ", "&", "&", " ", ")", " ", "'asdf'"]);
+        tokenizeTest(" && ) ',asdf'", [" ", "&", "&", " ", ")", " ", "',asdf'"]);
         tokenizeTest('",asdf"', ['",asdf"']);
-        tokenizeTest('&& ) ",asdf"', ["&&", ")", '",asdf"']);
+        tokenizeTest('&& ) ",asdf"', ["&", "&", " ", ")", " ", '",asdf"']);
     });
 
     it('generates conditionals property', function()

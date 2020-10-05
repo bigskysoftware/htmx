@@ -89,7 +89,6 @@ describe("hx-trigger attribute", function(){
     it('non-default value works w/ data-* prefix', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
-
         var form = make('<form data-hx-get="/test" data-hx-trigger="click">Click Me!</form>');
         form.click();
         form.innerHTML.should.equal("Click Me!");
@@ -113,8 +112,6 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Requests: 2");
     });
 
-
-
     it("parses spec strings", function()
     {
         var specExamples = {
@@ -131,9 +128,7 @@ describe("hx-trigger attribute", function(){
             "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
             "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
             "event1,": [{trigger: 'event1'}],
-            ",event1": [{trigger: 'event1'}],
             "  ": [{trigger: 'click'}],
-            ",": [{trigger: 'click'}]
         }
 
         for (var specString in specExamples) {
@@ -155,6 +150,21 @@ describe("hx-trigger attribute", function(){
         var form = make('<input></input>');
         var spec = htmx._('getTriggerSpecs')(form);
         spec.should.deep.equal([{trigger: 'change'}]);
+    })
+
+    it('filters properly with filter spec', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var form = make('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>');
+        form.click();
+        form.innerHTML.should.equal("Not Called");
+        var event = htmx._("makeEvent")('evt');
+        form.dispatchEvent(event);
+        this.server.respond();
+        form.innerHTML.should.equal("Not Called");
+        event.foo = true;
+        form.dispatchEvent(event);
+        this.server.respond();
+        form.innerHTML.should.equal("Called!");
     })
 
 })
