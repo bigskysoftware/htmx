@@ -146,6 +146,7 @@ title: </> htmx - Attributes
 | [`htmx.findAll()` `htmx.findAll(elt, selector)`](/api#find)  | Finds all elements matching a given selector
 | [`htmx.logAll()`](/api#logAll)  | Installs a logger that will log all htmx events
 | [`htmx.logger`](/api#logger)  | A property set to the current logger (default is `null`)
+| [`htmx.off()`](/api#off)  | Removes an event listener from the given element
 | [`htmx.on()`](/api#on)  | Creates an event listener on the given element, returning it
 | [`htmx.onLoad()`](/api#onLoad)  | Adds a callback handler for the `htmx:load` event
 | [`htmx.parseInterval()`](/api#parseInterval)  | Parses an interval declaration into a millisecond value
