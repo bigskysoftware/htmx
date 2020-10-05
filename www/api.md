@@ -28,12 +28,12 @@ This method adds a class to the given element.
 
 ### <a name="closest"></a> Method -  [`htmx.closest()`](#closest)
 
-Finds the closest matching element in the given elements parentage, inclusive
+Finds the closest matching element in the given elements parentage, inclusive of the element
 
 ##### Parameters
 
-* `elt` - the element to find the selector in
-* `class` - the selector to find
+* `elt` - the element to find the selector from
+* `selector` - the selector to find
 
 ##### Example
 
@@ -125,20 +125,269 @@ Defines a new htmx [extension](/extensions).
   });
 ```
 
+### <a name="find"></a> Method -  [`htmx.find()`](#find)
 
+Finds an element matching the selector
 
+##### Parameters
 
-| [`htmx.find(selector)` `htmx.find(elt, selector)`](/api#find)  | Finds a single element matching the selector
-| [`htmx.findAll(selector)` `htmx.findAll(elt, selector)`](/api#find)  | Finds all elements matching a given selector
-| [`htmx.logAll()`](/api#logAll)  | Installs a logger that will log all htmx events
-| [`htmx.logger`](/api#logger)  | A property set to the current logger (default is `null`)
-| [`htmx.on(elt, event, listener)`](/api#on)  | Creates an event listener on the given element, returning it
-| [`htmx.onLoad(function(elt))`](/api#onLoad)  | Adds a callback handler for the `htmx:load` event
-| [`htmx.parseInterval`](/api#parseInterval)  | Parses an interval declaration into a millisecond value
-| [`htmx.process(elt)`](/api#process)  | Processes the given element and its children, hooking up any htmx behavior
-| [`htmx.remove(elt)`](/api#remove)  | Removes the given element
-| [`htmx.removeClass(elt, class)`](/api#removeClass)  | Removes a class from the given element
-| [`htmx.removeExtension(name)`](/api#removeExtension)  | Removes an htmx [extension](/extensions)
-| [`htmx.takeClass(elt, class)`](/api#takeClass)  | Takes a class from other elements for the given element
-| [`htmx.toggleClass(elt, class)`](/api#toggleClass)  | Toggles a class from the given element
-| [`htmx.trigger(elt, event, detail)`](/api#trigger)  | Triggers an event on an element
+* `selector` - the selector to match
+
+or
+
+* `elt` - the root element to find the matching element in, inclusive
+* `selector` - the selector to match
+
+##### Example
+
+```js
+    // find div with id my-div
+    var div = htmx.find("#my-div")
+
+    // find div with id another-div within that div
+    var anotherDiv = htmx.find(div, "#another-div")
+```
+
+### <a name="findAll"></a> Method -  [`htmx.findAll()`](#findAll)
+
+Finds all elements matching the selector
+
+##### Parameters
+
+* `selector` - the selector to match
+
+or
+
+* `elt` - the root element to find the matching elements in, inclusive
+* `selector` - the selector to match
+
+##### Example
+
+```js
+    // find all divs
+    var allDivs = htmx.find("div")
+
+    // find all paragraphs within a given div
+    var allParagraphsInMyDiv = htmx.find(htmx.find("#my-div"), "p")
+```
+
+### <a name="logAll"></a> Method -  [`htmx.logAll()`](#logAll)
+
+Log all htmx events, useful for debugging.
+
+##### Example
+
+```js
+    htmx.logAll();
+```
+
+### <a name="logger"></a> Property -  [`htmx.logger`](#logger)
+
+The logger htmx uses to log with
+
+##### Value
+
+* `func(elt, eventName, detail)` - a function that takes an element, eventName and event detail and logs it
+
+##### Example
+
+```js
+    htmx.logger = function(elt, event, data) {
+        if(console) {
+            console.log("INFO:", event, elt, data);
+        }
+    }
+```
+
+### <a name="off"></a> Method -  [`htmx.off()`](#off)
+
+Removes an event listener from an element
+
+##### Parameters
+
+* `eventName` - the event name to remove the listener from
+* `listener` - the listener to remove
+
+or
+
+* `target` - the element to remove the listener from
+* `eventName` - the event name to remove the listener from
+* `listener` - the listener to remove
+
+##### Example
+
+```js
+    // remove this click listener from the body
+    htmx.off("click", myEventListener);
+
+    // remove this click listener from the given div
+    var allParagraphsInMyDiv = htmx.find(htmx.find("#my-div"), "click", myEventListener)
+```
+
+### <a name="on"></a> Method -  [`htmx.on()`](#on)
+
+Adds an event listener to an element
+
+##### Parameters
+
+* `eventName` - the event name to add the listener for
+* `listener` - the listener to add
+
+or
+
+* `target` - the element to add the listener to
+* `eventName` - the event name to add the listener for
+* `listener` - the listener to add
+
+##### Example
+
+```js
+    // add a click listener to the body
+    var myEventListener = htmx.on("click", function(evt){ console.log(evt); });
+
+    // add a click listener to the given div
+    var myEventListener = htmx.on(htmx.find("#my-div"), "click", function(evt){ console.log(evt); });
+```
+
+### <a name="onLoad"></a> Method -  [`htmx.onLoad()`](#onLoad)
+
+Adds a callback for the `htmx:load` event. This can be used to process new content, for example
+initializing the content with a javascript library
+
+##### Parameters
+
+* `callback(elt)` - the callback to call on newly loaded content
+
+##### Example
+
+```js
+    htmx.onLoad(function(elt){
+        MyLibrary.init(elt);
+    })
+```
+
+### <a name="parseInterval"></a> Method -  [`htmx.parseInterval()`](#parseInterval)
+
+Parses an interval string consistent with the way htmx does.  Useful for plugins that have timing-related attributes.
+
+##### Parameters
+
+* `str` - timing string
+
+##### Example
+
+```js
+    // returns 3000
+    var milliseconds = htmx.parseInterval("3s");
+```
+
+### <a name="process"></a> Method -  [`htmx.process()`](#process)
+
+Processes new content, enabling htmx behavior.  This can be useful if you have content that is added to the DOM
+outside of the normal htmx request cycle but still want htmx attributes to work.
+
+##### Parameters
+
+* `elt` - element to process
+
+##### Example
+
+```js
+  document.body.innerHTML = "<div hx-get='/example'>Get it!</div>"
+  // process the newly added content
+  htmx.process(document.body);
+```
+
+### <a name="remove"></a> Method -  [`htmx.remove()`](#remove)
+
+Removes an element from the DOM
+
+##### Parameters
+
+* `elt` - element to remove
+
+##### Example
+
+```js
+  // removes my-div from the DOM
+  htmx.remove(htmx.find("#my-div"));
+```
+
+### <a name="removeClass"></a> Method -  [`htmx.removeClass()`](#removeClass)
+
+Removes a class from the given element
+
+##### Parameters
+
+* `elt` - element to remove the class from
+* `class` - the class to remove
+
+##### Example
+
+```js
+  // removes .myClass from my-div
+  htmx.removeClass(htmx.find("#my-div"), "myClass");
+```
+
+### <a name="removeExtension"></a> Method -  [`htmx.removeExtension()`](#removeExtension)
+
+Removes the given extension from htmx
+
+##### Parameters
+
+* `name` - the name of the extension to remove
+
+##### Example
+
+```js
+  htmx.removeExtension("my-extension");
+```
+
+### <a name="takeClass"></a> Method -  [`htmx.takeClass()`](#takeClass)
+
+Takes the given class from its siblings, so that among its siblings, only the given element will have the class.
+
+##### Parameters
+
+* `elt` - the element that will take the class
+* `class` - the class to take
+
+##### Example
+
+```js
+  // takes the selected class from tab2's siblings
+  htmx.takeClass(htmx.find("#tab2"), "selected");
+```
+
+### <a name="toggleClass"></a> Method -  [`htmx.toggleClass()`](#toggleClass)
+
+Toggles the given class on an element
+
+##### Parameters
+
+* `elt` - the element to toggle the class on
+* `class` - the class to toggle
+
+##### Example
+
+```js
+  // toggles the selected class on tab2
+  htmx.toggle(htmx.find("#tab2"), "selected");
+```
+
+### <a name="trigger"></a> Method -  [`htmx.trigger()`](#trigger)
+
+Triggers a given event on an element
+
+##### Parameters
+
+* `elt` - the element to trigger the event on
+* `name` - the name of the event to trigger
+* `detail` - details for the event
+
+##### Example
+
+```js
+  // triggers the myEvent event on #tab2 with the answer 42
+  htmx.trigger(htmx.find("#tab2"), "myEvent", {answer:42});
+```
