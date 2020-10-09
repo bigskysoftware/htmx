@@ -24,7 +24,7 @@ IE11 compatible
 
 ## motivation
 
-* Why should only `&lt;a>` and `&lt;form>` be able to make HTTP requests?
+* Why should only `<a>` and `<form>` be able to make HTTP requests?
 * Why should only `click` & `submit` events trigger them?
 * Why should only GET & POST be available?
 * Why should you only be able to replace the *entire* screen?
