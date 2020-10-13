@@ -1179,7 +1179,11 @@ return (function () {
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
-            localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+            try {
+                localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+            } catch (e) {
+                triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e})
+            }
         }
 
         function getCachedHistory(url) {

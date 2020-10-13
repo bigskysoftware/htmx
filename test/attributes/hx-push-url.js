@@ -188,4 +188,20 @@ describe("hx-push-url attribute", function() {
         }
     });
 
+    it("saveToHistoryCache should not throw", function () {
+        var bigContent = "Dummy";
+        for (var i = 0; i < 20; i++) {
+            bigContent += bigContent;
+        }
+        console.log(bigContent.length);
+        try {
+            localStorage.removeItem("htmx-history-cache");
+            htmx._("saveToHistoryCache")("/dummy", bigContent, "Foo", 0);
+            should.equal(localStorage.getItem("htmx-history-cache"), null);
+        } finally {
+            // clear history cache afterwards
+            localStorage.removeItem("htmx-history-cache");
+        }
+    });
+
 });
