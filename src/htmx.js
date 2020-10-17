@@ -688,7 +688,7 @@ return (function () {
             if (tokens[0] === '[') {
                 tokens.shift();
                 var bracketCount = 1;
-                var conditional = "(function(" + paramName + "){ return (";
+                var conditionalSource = "(function(" + paramName + "){ return (";
                 var last = null;
                 while (tokens.length > 0) {
                     var token = tokens[0];
@@ -696,23 +696,26 @@ return (function () {
                         bracketCount--;
                         if (bracketCount === 0) {
                             if (last === null) {
-                                conditional = conditional + "true";
+                                conditionalSource = conditionalSource + "true";
                             }
                             tokens.shift();
-                            conditional += ")})";
+                            conditionalSource += ")})";
                             try {
-                                return eval(conditional);
+                                var conditionFunction = eval(conditionalSource);
+                                conditionFunction.source = conditionalSource;
+                                return conditionFunction;
                             } catch (e) {
-                                triggerErrorEvent(getDocument(), "htmx:syntax:error", {error:e})
+                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                return null;
                             }
                         }
                     } else if (token === "[") {
                         bracketCount++;
                     }
                     if (isPossibleRelativeReference(token, last, paramName)) {
-                            conditional += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
+                            conditionalSource += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
                     } else {
-                        conditional = conditional + token;
+                        conditionalSource = conditionalSource + token;
                     }
                     last = tokens.shift();
                 }
@@ -746,7 +749,7 @@ return (function () {
                             triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
-                            var eventFilter = maybeGenerateConditional(tokens, "evt");
+                            var eventFilter = maybeGenerateConditional(tokens, "event");
                             if (eventFilter) {
                                 triggerSpec.eventFilter = eventFilter;
                             }
@@ -836,10 +839,22 @@ return (function () {
             return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && evt.ctrlKey;
         }
 
+        function maybeFilterEvent(triggerSpec, evt) {
+            var eventFilter = triggerSpec.eventFilter;
+            if(eventFilter){
+                try {
+                    return eventFilter(evt) !== true;
+                } catch(e) {
+                    triggerErrorEvent(getDocument().body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
-                if (triggerSpec.eventFilter &&
-                    triggerSpec.eventFilter(evt) !== true) {
+                if (maybeFilterEvent(triggerSpec, evt)) {
                     return;
                 }
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {

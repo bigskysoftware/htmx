@@ -35,11 +35,11 @@ describe("Core htmx tokenizer tests", function(){
     {
         var tokens = tokenize("[code==4||(code==5&&foo==true)]");
         var conditional = htmx._("maybeGenerateConditional")(tokens);
-        console.log(conditional);
         var func = eval(conditional);
-        console.log(func({code: 5, foo: true}));
-        console.log(func({code: 4, foo: false}));
-        console.log(func({code: 3, foo: false}));
+        func({code: 5, foo: true}).should.equal(true);
+        func({code: 5, foo: false}).should.equal(false);
+        func({code: 4, foo: false}).should.equal(true);
+        func({code: 3, foo: true}).should.equal(false);
     });
 
 

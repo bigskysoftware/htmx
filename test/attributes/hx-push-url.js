@@ -37,7 +37,6 @@ describe("hx-push-url attribute", function() {
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
-        console.log(cache);
         cache.length.should.equal(2);
         cache[1].url.should.equal("/abc123");
     });
@@ -193,7 +192,6 @@ describe("hx-push-url attribute", function() {
         for (var i = 0; i < 20; i++) {
             bigContent += bigContent;
         }
-        console.log(bigContent.length);
         try {
             localStorage.removeItem("htmx-history-cache");
             htmx._("saveToHistoryCache")("/dummy", bigContent, "Foo", 0);
