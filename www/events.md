@@ -111,6 +111,14 @@ than a single value.
 * `detail.target` - the target of the request
 * `detail.verb` - the HTTP verb in use
 
+### <a name="htmx:historyCacheError"></a> Event - [`htmx:historyCacheError`](#htmx:historyCacheError)
+
+This event is triggered when an attempt to save the cache to `localStorage` fails
+
+##### Details
+
+* `detail.cause` - the `Exception` that was thrown when attempting to save history to `localStorage`
+
 ### <a name="htmx:historyCacheMiss"></a> Event - [`htmx:historyCacheMiss`](#htmx:historyCacheMiss)
 
 This event is triggered when a cache miss occurs when restoring history
