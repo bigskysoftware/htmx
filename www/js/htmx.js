@@ -41,7 +41,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
-                attributesToSwizzle:["class", "style", "width", "height"]
+                attributesToSettle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -366,7 +366,7 @@ return (function () {
                 } else if (targetStr.indexOf("closest ") === 0) {
                     return closest(elt, targetStr.substr(8));
                 } else if (targetStr.indexOf("find ") === 0) {
-                    return find(elt, targetStr.substr(5));   
+                    return find(elt, targetStr.substr(5));
                 } else {
                     return getDocument().querySelector(targetStr);
                 }
@@ -381,9 +381,9 @@ return (function () {
         }
 
         function shouldSettleAttribute(name) {
-            var attributesToSwizzle = htmx.config.attributesToSwizzle;
-            for (var i = 0; i < attributesToSwizzle.length; i++) {
-                if (name === attributesToSwizzle[i]) {
+            var attributesToSettle = htmx.config.attributesToSettle;
+            for (var i = 0; i < attributesToSettle.length; i++) {
+                if (name === attributesToSettle[i]) {
                     return true;
                 }
             }
@@ -516,8 +516,10 @@ return (function () {
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 while(newElt && newElt !== target) {
-                    settleInfo.elts.push(newElt);
-                    newElt = newElt.nextSibling;
+                    if (newElt.nodeType === Node.ELEMENT_NODE) {
+                        settleInfo.elts.push(newElt);
+                    }
+                    newElt = newElt.nextElementSibling;
                 }
                 closeConnections(target);
                 parentElt(target).removeChild(target);
@@ -619,68 +621,174 @@ return (function () {
             }
         }
 
-        function handleTrigger(elt, trigger) {
-            if (trigger) {
-                if (trigger.indexOf("{") === 0) {
-                    var triggers = parseJSON(trigger);
-                    for (var eventName in triggers) {
-                        if (triggers.hasOwnProperty(eventName)) {
-                            var detail = triggers[eventName];
-                            if (!isRawObject(detail)) {
-                                detail = {"value": detail}
-                            }
-                            triggerEvent(elt, eventName, detail);
+        function handleTrigger(xhr, header, elt) {
+            var triggerBody = xhr.getResponseHeader(header);
+            if (triggerBody.indexOf("{") === 0) {
+                var triggers = parseJSON(triggerBody);
+                for (var eventName in triggers) {
+                    if (triggers.hasOwnProperty(eventName)) {
+                        var detail = triggers[eventName];
+                        if (!isRawObject(detail)) {
+                            detail = {"value": detail}
                         }
+                        triggerEvent(elt, eventName, detail);
                     }
+                }
+            } else {
+                triggerEvent(elt, triggerBody, []);
+            }
+        }
+
+        var WHITESPACE = /\s/;
+        var SYMBOL_START = /[_$a-zA-Z]/;
+        var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
+        var STRINGISH_START = ['"', "'", "/"];
+        var NOT_WHITESPACE = /[^\s]/;
+        function tokenizeString(str) {
+            var tokens = [];
+            var position = 0;
+            while (position < str.length) {
+                if(SYMBOL_START.exec(str.charAt(position))) {
+                    var startPosition = position;
+                    position++;
+                    while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
+                } else if (STRINGISH_START.indexOf(str.charAt(position)) !== -1) {
+                    var startChar = str.charAt(position);
+                    var startPosition = position;
+                    position++;
+                    while (position < str.length && str.charAt(position) !== startChar ) {
+                        if (str.charAt(position) === "\\") {
+                            position++;
+                        }
+                        position++;
+                    }
+                    tokens.push(str.substr(startPosition, position - startPosition + 1));
                 } else {
-                    triggerEvent(elt, trigger, []);
+                    var symbol = str.charAt(position);
+                    tokens.push(symbol);
+                }
+                position++;
+            }
+            return tokens;
+        }
+
+        function isPossibleRelativeReference(token, last, paramName) {
+            return SYMBOL_START.exec(token.charAt(0)) &&
+                token !== "true" &&
+                token !== "false" &&
+                token !== "this" &&
+                token !== paramName &&
+                last !== ".";
+        }
+
+        function maybeGenerateConditional(tokens, paramName) {
+            if (tokens[0] === '[') {
+                tokens.shift();
+                var bracketCount = 1;
+                var conditionalSource = "(function(" + paramName + "){ return (";
+                var last = null;
+                while (tokens.length > 0) {
+                    var token = tokens[0];
+                    if (token === "]") {
+                        bracketCount--;
+                        if (bracketCount === 0) {
+                            if (last === null) {
+                                conditionalSource = conditionalSource + "true";
+                            }
+                            tokens.shift();
+                            conditionalSource += ")})";
+                            try {
+                                var conditionFunction = eval(conditionalSource);
+                                conditionFunction.source = conditionalSource;
+                                return conditionFunction;
+                            } catch (e) {
+                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                return null;
+                            }
+                        }
+                    } else if (token === "[") {
+                        bracketCount++;
+                    }
+                    if (isPossibleRelativeReference(token, last, paramName)) {
+                            conditionalSource += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
+                    } else {
+                        conditionalSource = conditionalSource + token;
+                    }
+                    last = tokens.shift();
                 }
             }
         }
 
+        function consumeUntil(tokens, match) {
+            var result = "";
+            while (tokens.length > 0 && !tokens[0].match(match)) {
+                result += tokens.shift();
+            }
+            return result;
+        }
+
         function getTriggerSpecs(elt) {
-
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+            var triggerSpecs = [];
             if (explicitTrigger) {
-                var triggerSpecs = explicitTrigger.split(',').map(function(triggerString) {
-                    var tokens = splitOnWhitespace(triggerString.trim());
-                    var trigger = tokens[0];  // splitOnWhitespace returns at least one element
-                    if (!trigger)
-                        return null;
-
-                    if (trigger === "every")
-                        return {trigger: 'every', pollInterval: parseInterval(tokens[1])};
-                    if (trigger.indexOf("sse:") === 0)
-                        return {trigger: 'sse', sseEvent: trigger.substr(4)};
-
-                    var triggerSpec = {trigger: trigger};
-                    for (var i = 1; i < tokens.length; i++) {
-                        var token = tokens[i].trim();
-                        if (token === "changed") {
-                            triggerSpec.changed = true;
-                        }
-                        if (token === "once") {
-                            triggerSpec.once = true;
-                        }
-                        if (token.indexOf("delay:") === 0) {
-                            triggerSpec.delay = parseInterval(token.substr(6));
-                        }
-                        if (token.indexOf("throttle:") === 0) {
-                            triggerSpec.throttle = parseInterval(token.substr(9));
+                var tokens = tokenizeString(explicitTrigger);
+                do {
+                    consumeUntil(tokens, NOT_WHITESPACE);
+                    var initialLength = tokens.length;
+                    var trigger = consumeUntil(tokens, /[,\[\s]/);
+                    if (trigger !== "") {
+                        if (trigger === "every") {
+                            var every = {trigger: 'every'};
+                            consumeUntil(tokens, NOT_WHITESPACE);
+                            every.pollInterval = parseInterval(consumeUntil(tokens, WHITESPACE));
+                            triggerSpecs.push(every);
+                        } else if (trigger.indexOf("sse:") === 0) {
+                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
+                        } else {
+                            var triggerSpec = {trigger: trigger};
+                            var eventFilter = maybeGenerateConditional(tokens, "event");
+                            if (eventFilter) {
+                                triggerSpec.eventFilter = eventFilter;
+                            }
+                            while (tokens.length > 0 && tokens[0] !== ",") {
+                                consumeUntil(tokens, NOT_WHITESPACE)
+                                var token = tokens.shift();
+                                if (token === "changed") {
+                                    triggerSpec.changed = true;
+                                } else if (token === "once") {
+                                    triggerSpec.once = true;
+                                } else if (token === "delay" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                } else if (token === "throttle" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                } else {
+                                    triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                                }
+                            }
+                            triggerSpecs.push(triggerSpec);
                         }
                     }
-                    return triggerSpec;
-                }).filter(function(x){ return x !== null });
-
-                if (triggerSpecs.length)
-                    return triggerSpecs;
+                    if (tokens.length === initialLength) {
+                        triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                    }
+                    consumeUntil(tokens, NOT_WHITESPACE);
+                } while (tokens[0] === "," && tokens.shift())
             }
 
-            if (matches(elt, 'form'))
+            if (triggerSpecs.length > 0) {
+                return triggerSpecs;
+            } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            if (matches(elt, 'input, textarea, select'))
+            } else if (matches(elt, 'input, textarea, select')) {
                 return [{trigger: 'change'}];
-            return [{trigger: 'click'}];
+            } else {
+                return [{trigger: 'click'}];
+            }
         }
 
         function cancelPolling(elt) {
@@ -731,8 +839,24 @@ return (function () {
             return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && evt.ctrlKey;
         }
 
+        function maybeFilterEvent(triggerSpec, evt) {
+            var eventFilter = triggerSpec.eventFilter;
+            if(eventFilter){
+                try {
+                    return eventFilter(evt) !== true;
+                } catch(e) {
+                    triggerErrorEvent(getDocument().body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
             var eventListener = function (evt) {
+                if (maybeFilterEvent(triggerSpec, evt)) {
+                    return;
+                }
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                     return;
                 }
@@ -766,15 +890,15 @@ return (function () {
 
                     if (triggerSpec.throttle) {
                         elementData.throttle = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target);
+                            issueAjaxRequest(elt, verb, path, evt.target, evt);
                             elementData.throttle = null;
                         }, triggerSpec.throttle);
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target);
+                            issueAjaxRequest(elt, verb, path, evt.target, evt);
                         }, triggerSpec.delay);
                     } else {
-                        issueAjaxRequest(elt, verb, path, evt.target);
+                        issueAjaxRequest(elt, verb, path, evt.target, evt);
                     }
                 }
             };
@@ -899,7 +1023,7 @@ return (function () {
                 if (value[0] === "connect") {
                     processSSESource(elt, value[1]);
                 }
-                
+
                 if ((value[0] === "swap")) {
                     processSSESwap(elt, value[1])
                 }
@@ -927,12 +1051,12 @@ return (function () {
 
                     ///////////////////////////
                     // TODO: merge this code with AJAX and WebSockets code in the future.
-                    
+
                     var response = event.data;
                     withExtensions(elt, function(extension){
                         response = extension.transformResponse(response, null, elt);
                     });
-    
+
                     var swapSpec = getSwapSpecification(elt)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
@@ -1178,7 +1302,11 @@ return (function () {
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
-            localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+            try {
+                localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+            } catch (e) {
+                triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e})
+            }
         }
 
         function getCachedHistory(url) {
@@ -1613,7 +1741,11 @@ return (function () {
             }
         }
 
-        function issueAjaxRequest(elt, verb, path, eventTarget) {
+        function hasHeader(xhr, regexp) {
+            return xhr.getAllResponseHeaders().match(regexp);
+        }
+
+        function issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent) {
             var target = getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
@@ -1621,7 +1753,7 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
-                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget)};
+                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent)};
                 return;
             } else {
                 eltData.requestInFlight = true;
@@ -1673,7 +1805,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
-                path:path
+                path:path,
+                triggeringEvent:triggeringEvent
             };
 
             if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
@@ -1721,16 +1854,16 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target};
+            var eventDetail = {xhr: xhr, target: target, requestConfig: requestConfig};
             xhr.onload = function () {
                 try {
                     if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
 
-                    if (xhr.getAllResponseHeaders().search(/HX-Trigger/i) >= 0) {
-                        handleTrigger(elt, this.getResponseHeader("HX-Trigger"));
+                    if (hasHeader(xhr, /HX-Trigger:/i)) {
+                        handleTrigger(xhr, "HX-Trigger", elt);
                     }
 
-                    if (xhr.getAllResponseHeaders().search(/HX-Push/i) >= 0) {
+                    if (hasHeader(xhr,/HX-Push:/i)) {
                         var pushedUrl = this.getResponseHeader("HX-Push");
                     }
 
@@ -1792,6 +1925,11 @@ return (function () {
                                     if (anchor) {
                                         location.hash = anchor;
                                     }
+
+                                    if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                                        handleTrigger(xhr, "HX-Trigger-After-Swap", elt);
+                                    }
+
                                     var doSettle = function(){
                                         forEach(settleInfo.tasks, function (task) {
                                             task.call();
@@ -1809,6 +1947,10 @@ return (function () {
                                             triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                         }
                                         updateScrollState(target, settleInfo.elts, swapSpec);
+
+                                        if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+                                            handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
+                                        }
                                     }
 
                                     if (swapSpec.settleDelay > 0) {
