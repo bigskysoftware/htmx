@@ -30,7 +30,7 @@ Here is another example:
   <div hx-sse="swap:eventName1">
     ...
   </div>
-  <div hx-sse="swap eventName2">
+  <div hx-sse="swap:eventName2">
     ...
   </div>
 </div>

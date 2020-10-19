@@ -7,10 +7,12 @@ describe("hx-sse attribute", function() {
             addEventListener: function (message, l) {
                 listeners[message] = l;
             },
-            sendEvent: function (event) {
-                var listener = listeners[event];
+            sendEvent: function (eventName, data) {
+                var listener = listeners[eventName];
                 if (listener) {
-                    listener();
+                    var event = htmx._("makeEvent")(eventName);
+                    event.data = data;
+                    listener(event);
                 }
             },
             close: function () {
@@ -114,6 +116,21 @@ describe("hx-sse attribute", function() {
         div.parentElement.removeChild(div);
         this.eventSource.sendEvent("e1")
         this.eventSource.wasClosed().should.equal(true)
+    })
+
+    it('swaps content properly on SSE swap', function () {
+        var div = make('<div hx-sse="connect:/event_stream">\n' +
+            '  <div id="d1" hx-sse="swap:e1"></div>\n' +
+            '  <div id="d2" hx-sse="swap:e2"></div>\n' +
+            '</div>\n');
+        byId("d1").innerText.should.equal("")
+        byId("d2").innerText.should.equal("")
+        this.eventSource.sendEvent("e1", "Event 1")
+        byId("d1").innerText.should.equal("Event 1")
+        byId("d2").innerText.should.equal("")
+        this.eventSource.sendEvent("e2", "Event 2")
+        byId("d1").innerText.should.equal("Event 1")
+        byId("d2").innerText.should.equal("Event 2")
     })
 
 });
