@@ -143,7 +143,7 @@ title: </> htmx - Attributes
 | [`htmx.createEventSource`](/api#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
 | [`htmx.createWebSocket`](/api#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
 | [`htmx.defineExtension()`](/api#defineExtension)  | Defines an htmx [extension](/extensions)
-| [`htmx.find()``](/api#find)  | Finds a single element matching the selector
+| [`htmx.find()`](/api#find)  | Finds a single element matching the selector
 | [`htmx.findAll()` `htmx.findAll(elt, selector)`](/api#find)  | Finds all elements matching a given selector
 | [`htmx.logAll()`](/api#logAll)  | Installs a logger that will log all htmx events
 | [`htmx.logger`](/api#logger)  | A property set to the current logger (default is `null`)
