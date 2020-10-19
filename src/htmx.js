@@ -58,8 +58,6 @@ return (function () {
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
 
-        var windowIsScrolling = false // used by initScrollHandler
-
         //====================================================================
         // Utilities
         //====================================================================
@@ -907,12 +905,13 @@ return (function () {
             elt.addEventListener(triggerSpec.trigger, eventListener);
         }
 
+        var windowIsScrolling = false // used by initScrollHandler
+        var scrollHandler = null;
         function initScrollHandler() {
-            if (!window['htmxScrollHandler']) {
-                var scrollHandler = function() {
+            if (!scrollHandler) {
+                scrollHandler = function() {
                     windowIsScrolling = true
                 };
-                window['htmxScrollHandler'] = scrollHandler;
                 window.addEventListener("scroll", scrollHandler)
                 setInterval(function() {
                     if (windowIsScrolling) {
