@@ -1148,7 +1148,7 @@ return (function () {
         }
 
         function evalScript(script) {
-            if (script.type === "text/javascript") {
+            if (script.type === "text/javascript" || script.type === "") {
                 try {
                     eval(script.innerText);
                 } catch (e) {

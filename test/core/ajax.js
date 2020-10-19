@@ -528,19 +528,70 @@ describe("Core htmx AJAX Tests", function(){
         byId("d1").innerHTML.should.equal("clicked");
     });
 
-    var globalWasCalled = false;
-    window.callGlobal = function() {
-        globalWasCalled = true;
-    }
 
     it('script nodes evaluate', function()
     {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
         try {
             this.server.respondWith("GET", "/test", "<div></div><script type='text/javascript'>callGlobal()</script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
             globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('child script nodes evaluate when children', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script type='text/javascript'>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('child script nodes evaluate when not explicity marked javascript', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('script nodes do not evaluate when explicity marked as something other than javascript', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script type='text/samplescript'>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(false);
         } finally {
             delete window.callGlobal;
         }
