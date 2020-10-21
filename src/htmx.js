@@ -606,7 +606,7 @@ return (function () {
                             logError(e);
                         }
                     }
-                    swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo)
+                    swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
             }
         }
 
