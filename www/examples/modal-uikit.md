@@ -72,15 +72,14 @@ window.document.getElementById("showButton").addEventListener("htmx:afterOnLoad"
 
 
 // This triggers the fade-out animation when the modal is closed.
-window.document.getElementById("cancelButton").addEventListener()
-on click take .uk-open from #modal wait 200ms then remove #modal
+window.document.getElementById("cancelButton").addEventListener("click", function() {
+	window.document.getElementById("modal").classList.remove("uk-open")
+	setTimeout(function(){
+		window.document.getElementById("show-modals-here").innerHTML = ""
+		,200
+	})
+})
 ```
-
-The input issues a `POST` to `/search` on the `keyup` event and sets the body of the table to be the resulting content.
-
-We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally, we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the value of the input (e.g. they hit an arrow key).  
-
-Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
 
 <div id="show-modals-here"></div>
 
