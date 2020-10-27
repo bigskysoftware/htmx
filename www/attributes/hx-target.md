@@ -20,7 +20,7 @@ Here is an example that targets a div:
 ```html
 <div>
     <div id="response-div"></div>
-    <button hx-post="/register" hx-target="#response-div" hx-swap="beforeEnd">
+    <button hx-post="/register" hx-target="#response-div" hx-swap="beforeend">
         Register!
     </button>
 </div>

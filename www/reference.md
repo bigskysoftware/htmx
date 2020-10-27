@@ -12,6 +12,7 @@ title: </> htmx - Attributes
 * [Htmx Response Headers Reference](#response_headers)
 * [Htmx Event Reference](#events)
 * [Htmx Extensions Reference](/extensions#reference)
+* [JS API Reference](#api)
 
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
@@ -104,6 +105,7 @@ title: </> htmx - Attributes
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
 | [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
+| [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
 | [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
 | [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
@@ -126,6 +128,36 @@ title: </> htmx - Attributes
 | [`htmx:xhr:loadend`](/events#htmx:xhr:loadend)  | triggered when an ajax request ends
 | [`htmx:xhr:loadstart`](/events#htmx:xhr:loadstart)  | triggered when an ajax request starts
 | [`htmx:xhr:progress`](/events#htmx:xhr:progress)  | triggered periodically during an ajax request that supports progress events
+
+</div>
+
+## <a name="api"></a> [JS API Reference](#api)
+
+<div class="info-table">
+
+| Method | Description |
+|-------|-------------|
+| [`htmx.addClass()`](/api#addClass)  | Adds a class to the given element
+| [`htmx.closest()`](/api#closest)  | Finds the closest parent to the given element matching the selector
+| [`htmx.config`](/api#config)  | A property that holds the current htmx config object
+| [`htmx.createEventSource`](/api#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
+| [`htmx.createWebSocket`](/api#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
+| [`htmx.defineExtension()`](/api#defineExtension)  | Defines an htmx [extension](/extensions)
+| [`htmx.find()`](/api#find)  | Finds a single element matching the selector
+| [`htmx.findAll()` `htmx.findAll(elt, selector)`](/api#find)  | Finds all elements matching a given selector
+| [`htmx.logAll()`](/api#logAll)  | Installs a logger that will log all htmx events
+| [`htmx.logger`](/api#logger)  | A property set to the current logger (default is `null`)
+| [`htmx.off()`](/api#off)  | Removes an event listener from the given element
+| [`htmx.on()`](/api#on)  | Creates an event listener on the given element, returning it
+| [`htmx.onLoad()`](/api#onLoad)  | Adds a callback handler for the `htmx:load` event
+| [`htmx.parseInterval()`](/api#parseInterval)  | Parses an interval declaration into a millisecond value
+| [`htmx.process()`](/api#process)  | Processes the given element and its children, hooking up any htmx behavior
+| [`htmx.remove()`](/api#remove)  | Removes the given element
+| [`htmx.removeClass()`](/api#removeClass)  | Removes a class from the given element
+| [`htmx.removeExtension()`](/api#removeExtension)  | Removes an htmx [extension](/extensions)
+| [`htmx.takeClass()`](/api#takeClass)  | Takes a class from other elements for the given element
+| [`htmx.toggleClass()`](/api#toggleClass)  | Toggles a class from the given element
+| [`htmx.trigger()`](/api#trigger)  | Triggers an event on an element
 
 </div>
 

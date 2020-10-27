@@ -13,6 +13,8 @@ title: </> htmx - high power tools for html
 * [installing](#installing)
 * [ajax](#ajax)
   * [triggers](#triggers)
+    * [trigger filters](#trigger-filters)
+    * [trigger modifiers](#trigger-modifiers)
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
@@ -95,7 +97,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.2.0"></script>
+    <script src="https://unpkg.com/htmx.org@0.2.1"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -143,7 +145,23 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
    </div>
 ```
 
-If you want a request to only happen once, you can use the `once` modifier for the trigger:
+#### <a name="trigger-filters"></a> [Trigger Filters](#trigger-filters)
+
+You may also apply trigger filters by using square brackets after the event name, enclosing a javascript expression that
+will be evaluated.  If the expression evaluates to `true` the event will trigger, otherwise it will not.
+
+Here is an example that triggers only on a Control-Click of the element
+
+```html
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+```
+
+Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
+
+#### <a name="trigger-modifiers"></a> [Trigger Modifiers](#trigger-modifiers)
+
+A trigger can also have a few additional modifiers that change its behavior.  For example, if you want a request to only
+ happen once, you can use the `once` modifier for the trigger:
 
 ```html
    <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
@@ -151,7 +169,7 @@ If you want a request to only happen once, you can use the `once` modifier for t
    </div>
 ```
 
-There are few other modifiers you can use for trigger:
+Other modifiers you can use for triggers are:
 
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before

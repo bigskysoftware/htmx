@@ -18,13 +18,13 @@
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
             if (name === "htmx:afterRequest") {
-                var xhr = evt.detail.xhr;
+                var config = evt.detail.requestConfig;
                 // mutating call
-                if (xhr.method !== "GET") {
+                if (config.verb !== "get") {
                     var eltsWithDeps = htmx.findAll("[path-deps]");
                     for (var i = 0; i < eltsWithDeps.length; i++) {
                         var elt = eltsWithDeps[i];
-                        if (dependsOn(elt.getAttribute('path-deps'), xhr.url)) {
+                        if (dependsOn(elt.getAttribute('path-deps'), config.path)) {
                             htmx.trigger(elt, "path-deps");
                         }
                     }
