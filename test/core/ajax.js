@@ -597,6 +597,24 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
+    it('script nodes evaluate after swap', function()
+    {
+        window.callGlobal = function() {
+            console.log("Here...");
+            window.tempVal = byId("d1").innerText
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script><div id='d1'>After settle...</div> </div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            window.tempVal.should.equal("After settle...");
+        } finally {
+            delete window.callGlobal;
+            delete window.tempVal;
+        }
+    });
+
     it('script node exceptions do not break rendering', function()
     {
         this.server.respondWith("GET", "/test", "clicked<script type='text/javascript'>throw 'foo';</script>");

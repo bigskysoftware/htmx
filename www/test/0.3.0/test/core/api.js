@@ -163,5 +163,14 @@ describe("Core htmx API test", function(){
         div3.classList.contains("foo").should.equal(true);
     });
 
+    it('logAll works', function () {
+        var initialLogger = htmx.config.logger
+        try {
+            htmx.logAll();
+        } finally {
+            htmx.config.logger = initialLogger;
+        }
+    });
 
-})
+
+    })
