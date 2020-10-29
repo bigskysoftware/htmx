@@ -5,7 +5,7 @@ title: SPA Alternative
 
 ## An SPA Alternative
 
-Recently [Tom MacWrite](https://macwright.com) has written a few posts on Single Page Applications and their discontents:
+Recently [Tom MacWright](https://macwright.com) has written a few posts on Single Page Applications and their discontents:
 
 * [Second-guessing the modern web](https://macwright.com/2020/05/10/spa-fatigue.html)
 * [If not SPAs, What?](https://macwright.com/2020/10/28/if-not-spas.html)
