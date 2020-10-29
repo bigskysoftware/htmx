@@ -97,7 +97,9 @@ is today's
 That's a reality that we must accept, even if we don't feel React/etc. aren't appropriate for many (or even most) web
 applications being built today.  
 
-However, we are starting
+However, we are starting to see a reconsideration of the SPA approach.  With a bit of technical bravery, a willingness
+to stand against the crowd, you may be able to make your application much less complex, and focus your development
+efforts on what your application does, rather than on how it does it.
 
 From the [htmx developer's starter kit](https://twitter.com/htmx_org/status/1306234341056344065):
 
