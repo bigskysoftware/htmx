@@ -10,8 +10,10 @@ Every application involves managing a complexity budget.  A complexity budget ca
 > An explicit or implicit allocation of complexity across the entire application
 
 "Complexity" here is defined subjectively (rather than [formally](https://en.wikipedia.org/wiki/Programming_complexity))
-and in [Stewartian Terms](https://en.wikipedia.org/wiki/I_know_it_when_I_see_it).  One of the primary jobs of an
-application architect is to manage a complexity budget:
+and in [Stewartian Terms](https://en.wikipedia.org/wiki/I_know_it_when_I_see_it): "I know it when I see it."  Or, more
+specifically to software development, "I know it when I *feel* it."
+
+One of the primary jobs of an application architect is to manage a complexity budget:
 
 * Decide if a given feature is "worth it"
 * Decide if a given implementation is "worth it"
