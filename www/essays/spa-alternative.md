@@ -40,7 +40,9 @@ HTML-Centric Development builds on the original model of the web, as outlined in
 [Roy Fielding's PhD dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm), describing the web
 architecture.  In particular, by embracing HTML as a hypertext, you get the benefits of 
 [REST and HATEOAS](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), all without needing to
-be an expert in either of those topics.  (Recall, Roy was *describing* the web architecture, so the original web was
+be an expert in either of those topics.  
+
+(Recall, Roy was *describing* the web architecture, so the original web was
 largely REST-ful, without any particular effort on the part of the original participants)
 
 By picking HTML-Centric Development, you accrue many benefits:
@@ -60,7 +62,9 @@ By picking HTML-Centric Development, you accrue many benefits:
 #### HTML: The Bad Parts
 
 With all these benefits of the HTML-Centric model, one may wonder why it has been abandoned (and is often mocked) by 
-many web developers.  At a high level, the answer is: *HTML-Centric applications have historically offered a limited 
+many web developers.  At a high level, the answer is: 
+
+*HTML-Centric applications have historically offered a limited 
 amount of interactivity when compared with javascript-based applications*.
 
 This is in large part because HTML is a limited hypertext.  In particular:
@@ -70,12 +74,12 @@ This is in large part because HTML is a limited hypertext.  In particular:
 * Only GET & POST [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) are widely available
 * A request must replace the entire screen, leading to a clunkly and sometimes jarring user experience
 
-Of course, none of the constraints are inherent in the concept of a hypertext, and [htmx](https://htmx.org) aims to
-remove each of them.
+Of course, none of the constraints are inherent in the concept of a hypertext, and the goal of [htmx](https://htmx.org) 
+is to remove each of them.
 
-By removing these constraints & completing HTML as a fully-functional, high-powered hypertext, HTML-Centric 
+By removing these constraints and completing HTML as a fully-functional and high-powered hypertext, HTML-Centric 
 applications can compete with SPAs in many application domains, while at the same time accruing the technical
-and complexity benefits discussed above.
+and complexity benefits mentioned above.
 
 ### Being Brave, Technically
 
@@ -103,4 +107,4 @@ efforts on what your application does, rather than on how it does it.
 
 From the [htmx developer's starter kit](https://twitter.com/htmx_org/status/1306234341056344065):
 
-![What if?](https://pbs.twimg.com/media/EiCtJYuVoAIK5be?format=png&name=small)
+![What if?](/img/what_if.png)
