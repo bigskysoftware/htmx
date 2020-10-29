@@ -622,6 +622,14 @@ This does the same thing as the first example, but is a little cleaner.
 
 The full set of events can be seen [on the reference page](/reference#events).
 
+Note that all events are fired with two different names
+
+* Camel Case
+* Kebab Case
+
+So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
+with libraries like [Alpine.js](https://github.com/alpinejs/alpine/).
+
 ### Logging
 
 If you set a logger at `htmx.logger`, every event will be logged.  This can be very useful for troubleshooting:
