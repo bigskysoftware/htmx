@@ -98,7 +98,7 @@ is today's
 
 > "No One Ever Got Fired For Buying IBM"
 
-That's a reality that we must accept, even if we don't feel React/etc. aren't appropriate for many (or even most) web
+That's a reality that we must accept, even if we feel that React/etc. aren't appropriate for many (or even most) web
 applications being built today.  
 
 However, we are starting to see a reconsideration of the SPA approach.  With a bit of technical bravery, a willingness
