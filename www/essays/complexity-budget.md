@@ -43,9 +43,9 @@ inexplicably, development on a system that I was working on went from feeling "l
 Here are some tools for managing your complexity budget:
 
 1. Foremost: understanding that there *is* a complexity budget that needs to be managed
+1. Focus your "complexity spend" on the areas where your application is adding value and/or differentiates itself
 1. Saying "No" - probably the easiest, best and, also, hardest tool to use in your battle with complexity
 1. Embracing [KISS](https://en.wikipedia.org/wiki/KISS_principle), even if it means admitting you are stupid (It's often very good for an organization if the senior developers can admit they are fallible)
-1. Focus your "complexity spend" on the areas where your application is adding value and/or differentiates itself
 1. Proper factoring of components - this is an art: Too many components and your complexity explodes.  Too few... same. 
 1. Choosing the proper balance of expressiveness and restrictions for a component
 
