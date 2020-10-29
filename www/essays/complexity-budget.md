@@ -1,3 +1,8 @@
+---
+layout: layout.njk
+title: Complexity Budget
+---
+
 ## Complexity Budgets
 
 Every application involves managing a complexity budget.  A complexity budget can be defined as:

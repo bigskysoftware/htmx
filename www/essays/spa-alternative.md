@@ -1,3 +1,8 @@
+---
+layout: layout.njk
+title: SPA Alternative
+---
+
 ## An SPA Alternative
 
 Recently [Tom MacWrite](https://macwright.com) has written a few posts on Single Page Applications and their discontents:
