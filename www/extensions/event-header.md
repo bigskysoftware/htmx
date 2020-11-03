@@ -3,10 +3,11 @@ layout: layout.njk
 title: </> htmx - high power tools for html
 ---
 
-## The `ajax-header` Extension
+## The `event-header` Extension
 
-This extension adds the `Triggering-Event` header to requests.  The value
-of the header is a JSON serialized version of the event that triggered the request.
+This extension adds the `Triggering-Event` header to requests.  The value of
+the header is a JSON serialized version of the event that triggered the
+request.
 
 ### Usage
 
