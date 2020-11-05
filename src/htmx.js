@@ -1165,9 +1165,14 @@ return (function () {
             });
         }
 
+        function isBoosted() {
+            return document.querySelector("[hx-boost], [data-hx-boost]");
+        }
+
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedElts = isBoosted(elt) ? ", a, form" : "";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws]");
                 return results;
             } else {
