@@ -15,7 +15,7 @@ We start with this form:
 <form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" hx-post="/contact/email" hx-indicator="#ind">
+    <input name="email" hx-get="/contact/email" hx-indicator="#ind">
     <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
