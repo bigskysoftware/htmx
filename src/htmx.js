@@ -1745,6 +1745,10 @@ return (function () {
         }
 
         function issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent) {
+            if (!bodyContains(elt)) {
+                console.log("Body does not contain", elt);
+                return; // do not issue requests for elements removed from the DOM
+            }
             var target = getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});

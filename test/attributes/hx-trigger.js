@@ -292,15 +292,4 @@ describe("hx-trigger attribute", function(){
         }
     })
 
-    it('scrolledInoViewFiresProperty', function(done){
-        this.server.respondWith("GET", "/test", "Revealed!");
-        var div = make('<div id="d1" hx-get="/test" hx-trigger="revealed">Not Revealed</div>');
-        div.scrollIntoView({block:"end"});
-        this.server.respond();
-        setTimeout(function () {
-            div.innerText.should.equal("Revealed!");
-            done();
-        }, 220);
-    })
-
 })

@@ -713,5 +713,19 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
     });
 
+    it('removed elements do not issue requests', function()
+    {
+        var count = 0;
+        this.server.respondWith("GET", "/test", function () {
+            count++;
+            xhr.respond(200, {}, "");
+        });
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        htmx.remove(btn);
+        btn.click();
+        this.server.respond();
+        count.should.equal(0);
+    });
+
 
 })
