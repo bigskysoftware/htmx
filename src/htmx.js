@@ -993,9 +993,11 @@ return (function () {
                 elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
                     var headers = getHeaders(elt, webSocketSourceElt, null, elt);
                     var results = getInputValues(elt, 'post');
-                    var rawParameters = results.values;
                     var errors = results.errors;
-                    var filteredParameters = filterValues(rawParameters, elt);
+                    var rawParameters = results.values;
+                    var expressionVars = getExpressionVars(elt);
+                    var allParameters = mergeObjects(rawParameters, expressionVars);
+                    var filteredParameters = filterValues(allParameters, elt);
                     filteredParameters['HEADERS'] = headers;
                     if (errors && errors.length > 0) {
                         triggerEvent(elt, 'htmx:validation:halted', errors);
@@ -1703,22 +1705,22 @@ return (function () {
             }
         }
 
-        function addExpressionVars(elt, rawParameters) {
+        function getExpressionVars(elt, expressionVars = []) {
             if (elt == null) {
-                return;
+                return expressionVars;
             }
             var attributeValue = getAttributeValue(elt, "hx-vars");
             if (attributeValue) {
                 var varsValues = eval("({" + attributeValue + "})");
                 for (var key in varsValues) {
                     if (varsValues.hasOwnProperty(key)) {
-                        if (rawParameters[key] == null) {
-                            rawParameters[key] = varsValues[key];
+                        if (expressionVars[key] == null) {
+                            expressionVars[key] = varsValues[key];
                         }
                     }
                 }
             }
-            addExpressionVars(parentElt(elt), rawParameters);
+            return getExpressionVars(parentElt(elt), expressionVars);
         }
 
         function safelySetHeaderValue(xhr, header, headerValue) {
@@ -1792,10 +1794,11 @@ return (function () {
 
             var headers = getHeaders(elt, target, promptResponse, eventTarget);
             var results = getInputValues(elt, verb);
-            var rawParameters = results.values;
             var errors = results.errors;
-            addExpressionVars(elt, rawParameters);
-            var filteredParameters = filterValues(rawParameters, elt);
+            var rawParameters = results.values;
+            var expressionVars = getExpressionVars(elt);
+            var allParameters = mergeObjects(rawParameters, expressionVars);
+            var filteredParameters = filterValues(allParameters, elt);
 
             if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -1808,7 +1811,7 @@ return (function () {
 
             var requestConfig = {
                 parameters: filteredParameters,
-                unfilteredParameters:rawParameters,
+                unfilteredParameters: allParameters,
                 headers:headers,
                 target:target,
                 verb:verb,
