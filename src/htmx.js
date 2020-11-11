@@ -1171,7 +1171,7 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = isBoosted(elt) ? ", a, form" : "";
+                var boostedElts = isBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws]");
                 return results;
