@@ -24,3 +24,5 @@ You can copy and paste them and then adjust them for your needs.
 | [Animations](/examples/animations) | Demonstrates various animation techniques
 | [Dialogs - Browser](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
 | [Dialogs - UIKIt](/examples/modal-uikit) | Demonstrates modal dialogs using UIKit
+| [Dialogs - Bootstrap](/examples/modal-bootstrap) | Demonstrates modal dialogs using Bootstrap
+

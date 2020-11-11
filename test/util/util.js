@@ -11,8 +11,8 @@ function make(htmlStr) {
         var  wa = getWorkArea();
         for (var  i = fragment.childNodes.length - 1; i >= 0; i--) {
             var child = fragment.childNodes[i];
-            htmx.process(child);
             wa.appendChild(child);
+            htmx.process(child);
         }
         return wa.lastChild;
     }

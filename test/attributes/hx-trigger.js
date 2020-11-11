@@ -89,7 +89,6 @@ describe("hx-trigger attribute", function(){
     it('non-default value works w/ data-* prefix', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
-
         var form = make('<form data-hx-get="/test" data-hx-trigger="click">Click Me!</form>');
         form.click();
         form.innerHTML.should.equal("Click Me!");
@@ -113,8 +112,6 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Requests: 2");
     });
 
-
-
     it("parses spec strings", function()
     {
         var specExamples = {
@@ -131,9 +128,7 @@ describe("hx-trigger attribute", function(){
             "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
             "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
             "event1,": [{trigger: 'event1'}],
-            ",event1": [{trigger: 'event1'}],
             "  ": [{trigger: 'click'}],
-            ",": [{trigger: 'click'}]
         }
 
         for (var specString in specExamples) {
@@ -155,6 +150,146 @@ describe("hx-trigger attribute", function(){
         var form = make('<input></input>');
         var spec = htmx._('getTriggerSpecs')(form);
         spec.should.deep.equal([{trigger: 'change'}]);
+    })
+
+    it('filters properly with false filter spec', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var form = make('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>');
+        form.click();
+        form.innerHTML.should.equal("Not Called");
+        var event = htmx._("makeEvent")('evt');
+        form.dispatchEvent(event);
+        this.server.respond();
+        form.innerHTML.should.equal("Not Called");
+    })
+
+    it('filters properly with true filter spec', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var form = make('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>');
+        form.click();
+        form.innerHTML.should.equal("Not Called");
+        var event = htmx._("makeEvent")('evt');
+        event.foo = true;
+        form.dispatchEvent(event);
+        this.server.respond();
+        form.innerHTML.should.equal("Called!");
+    })
+
+    it('filters properly compound filter spec', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var div = make('<div hx-get="/test" hx-trigger="evt[foo&&bar]">Not Called</div>');
+        var event = htmx._("makeEvent")('evt');
+        event.foo = true;
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Not Called");
+        event.bar = true;
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Called!");
+    })
+
+    it('can refer to target element in condition', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var div = make('<div hx-get="/test" hx-trigger="evt[target.classList.contains(\'doIt\')]">Not Called</div>');
+        var event = htmx._("makeEvent")('evt');
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Not Called");
+        div.classList.add("doIt");
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Called!");
+    })
+
+    it('negative condition', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var div = make('<div hx-get="/test" hx-trigger="evt[!target.classList.contains(\'disabled\')]">Not Called</div>');
+        div.classList.add("disabled");
+        var event = htmx._("makeEvent")('evt');
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Not Called");
+        div.classList.remove("disabled");
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Called!");
+    })
+
+    it('global function call works', function(){
+        window.globalFun = function(evt) {
+            return evt.bar;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "Called!");
+            var div = make('<div hx-get="/test" hx-trigger="evt[globalFun(event)]">Not Called</div>');
+            var event = htmx._("makeEvent")('evt');
+            event.bar = false;
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Not Called");
+            event.bar = true;
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Called!");
+        } finally {
+            delete window.globalFun;
+        }
+    })
+
+    it('global property event filter works', function(){
+        window.foo =  {
+            bar:false
+        }
+        try {
+            this.server.respondWith("GET", "/test", "Called!");
+            var div = make('<div hx-get="/test" hx-trigger="evt[foo.bar]">Not Called</div>');
+            var event = htmx._("makeEvent")('evt');
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Not Called");
+            foo.bar = true;
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Called!");
+        } finally {
+            delete window.foo;
+        }
+    })
+
+    it('global variable filter works', function(){
+        try {
+            this.server.respondWith("GET", "/test", "Called!");
+            var div = make('<div hx-get="/test" hx-trigger="evt[foo]">Not Called</div>');
+            var event = htmx._("makeEvent")('evt');
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Not Called");
+            foo = true;
+            div.dispatchEvent(event);
+            this.server.respond();
+            div.innerHTML.should.equal("Called!");
+        } finally {
+            delete window.foo;
+        }
+    })
+
+    it('bad condition issues error', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var div = make('<div hx-get="/test" hx-trigger="evt[a.b]">Not Called</div>');
+        var errorEvent = null;
+        var handler = htmx.on("htmx:eventFilter:error", function (event) {
+            errorEvent = event;
+        });
+        try {
+            var event = htmx._("makeEvent")('evt');
+            div.dispatchEvent(event);
+            should.not.equal(null, errorEvent);
+            should.not.equal(null, errorEvent.detail.source);
+            console.log(errorEvent.detail.source);
+        } finally {
+            htmx.off("htmx:eventFilter:error", handler);
+        }
     })
 
 })

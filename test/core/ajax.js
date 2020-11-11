@@ -528,13 +528,13 @@ describe("Core htmx AJAX Tests", function(){
         byId("d1").innerHTML.should.equal("clicked");
     });
 
-    var globalWasCalled = false;
-    window.callGlobal = function() {
-        globalWasCalled = true;
-    }
 
     it('script nodes evaluate', function()
     {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
         try {
             this.server.respondWith("GET", "/test", "<div></div><script type='text/javascript'>callGlobal()</script>");
             var div = make("<div hx-get='/test'></div>");
@@ -543,6 +543,109 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled.should.equal(true);
         } finally {
             delete window.callGlobal;
+        }
+    });
+
+    it('stand alone script nodes evaluate', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<script type='text/javascript'>callGlobal()</script>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('child script nodes evaluate when children', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script type='text/javascript'>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('child script nodes evaluate when first child', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<script type='text/javascript'>callGlobal()</script><div></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('child script nodes evaluate when not explicity marked javascript', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(true);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('script nodes do not evaluate when explicity marked as something other than javascript', function()
+    {
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script type='text/samplescript'>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(false);
+        } finally {
+            delete window.callGlobal;
+        }
+    });
+
+    it('script nodes evaluate after swap', function()
+    {
+        window.callGlobal = function() {
+            console.log("Here...");
+            window.tempVal = byId("d1").innerText
+        }
+        try {
+            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script><div id='d1'>After settle...</div> </div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            window.tempVal.should.equal("After settle...");
+        } finally {
+            delete window.callGlobal;
+            delete window.tempVal;
         }
     });
 
@@ -642,6 +745,20 @@ describe("Core htmx AJAX Tests", function(){
         form.focus();
         form.click();
         this.server.respond();
+    });
+
+    it('removed elements do not issue requests', function()
+    {
+        var count = 0;
+        this.server.respondWith("GET", "/test", function () {
+            count++;
+            xhr.respond(200, {}, "");
+        });
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        htmx.remove(btn);
+        btn.click();
+        this.server.respond();
+        count.should.equal(0);
     });
 
 
