@@ -161,6 +161,8 @@ return (function () {
                 case "td":
                 case "th":
                     return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                case "script":
+                    return parseHTML("<div>" + resp + "</div>", 1);
                 default:
                     return parseHTML(resp, 0);
             }
