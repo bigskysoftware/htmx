@@ -59,10 +59,10 @@ describe("hx-vars attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
-    it('hx-vars do not override inputs', function () {
+    it('hx-vars override inputs', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
             var params = getParameters(xhr);
-            params['i1'].should.equal("test");
+            params['i1'].should.equal("best");
             xhr.respond(200, {}, "Clicked!")
         });
         var div = make('<div hx-target="this"><input hx-post="/include" hx-vars="i1:\'best\'" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
