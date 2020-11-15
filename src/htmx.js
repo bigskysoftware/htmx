@@ -612,7 +612,19 @@ return (function () {
             }
         }
 
+        var TITLE_FINDER = /<title>([\s\S]+?)<\/title>/im;
+        function findTitle(content) {
+            var result = TITLE_FINDER.exec(content);
+            if (result) {
+                return result[1];
+            }
+        }
+
         function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
+            var title = findTitle(responseText);
+            if(title) {
+                window.document.title = title;
+            }
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
@@ -1899,9 +1911,9 @@ return (function () {
                         if (this.status !== 204) {
                             if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
 
-                            var resp = this.response;
+                            var serverResponse = this.response;
                             withExtensions(elt, function(extension){
-                                resp = extension.transformResponse(resp, xhr, elt);
+                                serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                             });
 
                             // Save current page
@@ -1923,7 +1935,7 @@ return (function () {
                                     };
 
                                     var settleInfo = makeSettleInfo(target);
-                                    selectAndSwap(swapSpec.swapStyle, target, elt, resp, settleInfo);
+                                    selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
 
                                     if (selectionInfo.elt &&
                                         !bodyContains(selectionInfo.elt) &&
