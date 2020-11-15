@@ -87,7 +87,11 @@ title: </> htmx - Attributes
 | Header | Description |
 |-------|-------------|
 | `HX-Push` | pushes a new url into the history stack
+| `HX-Redirect` | can be used to do a client-side redirect to a new location
+| `HX-Refresh` | if set to "true" the client side will do a a full refresh of the page
 | [`HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| [`HX-Trigger-After-Settle`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| [`HX-Trigger-After-Swap`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
 </div>
 

@@ -509,10 +509,14 @@ htmx includes a number of useful headers in requests:
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
-htmx supports two special response headers:
+htmx supports some htmx-specific response headers:
 
-* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
 * `HX-Push` - can be used to push a new URL into the browsers address bar
+* `HX-Redirect` - can be used to do a client-side redirect to a new location
+* `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
+* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
+* `HX-Trigger-After-Swap` - can be used to trigger client side events after the swap step.
+* `HX-Trigger-After-Settle` - can be used to trigger client side events after the settle step.
 
 ### Request Order of Operations
 

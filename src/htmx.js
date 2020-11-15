@@ -1874,7 +1874,19 @@ return (function () {
                     }
 
                     if (hasHeader(xhr,/HX-Push:/i)) {
-                        var pushedUrl = this.getResponseHeader("HX-Push");
+                        var pushedUrl = xhr.getResponseHeader("HX-Push");
+                    }
+
+                    if (hasHeader(xhr, /HX-Redirect:/i)) {
+                        window.location.href = xhr.getResponseHeader("HX-Redirect");
+                        return;
+                    }
+
+                    if (hasHeader(xhr,/HX-Refresh:/i)) {
+                        if ("true" === xhr.getResponseHeader("HX-Refresh")) {
+                            location.reload();
+                            return;
+                        }
                     }
 
                     var shouldSaveHistory = shouldPush(elt) || pushedUrl;
