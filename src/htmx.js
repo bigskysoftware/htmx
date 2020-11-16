@@ -700,7 +700,7 @@ return (function () {
             if (tokens[0] === '[') {
                 tokens.shift();
                 var bracketCount = 1;
-                var conditionalSource = "(function(" + paramName + "){ return (";
+                var conditionalSource = " return (function(" + paramName + "){ return (";
                 var last = null;
                 while (tokens.length > 0) {
                     var token = tokens[0];
@@ -713,7 +713,7 @@ return (function () {
                             tokens.shift();
                             conditionalSource += ")})";
                             try {
-                                var conditionFunction = eval(conditionalSource);
+                                var conditionFunction = Function(conditionalSource)();
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
@@ -1719,13 +1719,20 @@ return (function () {
             }
         }
 
-        function getExpressionVars(elt, expressionVars = []) {
+        function getValuesForElement(elt, attr, strToValues, expressionVars) {
+            if (expressionVars == null) {
+                expressionVars = {};
+            }
             if (elt == null) {
                 return expressionVars;
             }
-            var attributeValue = getAttributeValue(elt, "hx-vars");
+            var attributeValue = getAttributeValue(elt, attr);
             if (attributeValue) {
-                var varsValues = eval("({" + attributeValue + "})");
+                var str = attributeValue.trim();
+                if (str.indexOf('{') !== 0) {
+                    str = "{" + str + "}";
+                }
+                var varsValues = strToValues(str);
                 for (var key in varsValues) {
                     if (varsValues.hasOwnProperty(key)) {
                         if (expressionVars[key] == null) {
@@ -1734,7 +1741,23 @@ return (function () {
                     }
                 }
             }
-            return getExpressionVars(parentElt(elt), expressionVars);
+            return getValuesForElement(parentElt(elt), attr, strToValues, expressionVars);
+        }
+
+        function getHXVarsForElement(elt, expressionVars) {
+            return getValuesForElement(elt, "hx-vars", function(valueStr){
+                return Function("return (" + valueStr + ")")()
+            }, expressionVars);
+        }
+
+        function getHXValsForElement(elt, expressionVars) {
+            return getValuesForElement(elt, "hx-vals", function(valueStr){
+                return JSON.parse(valueStr);
+            }, expressionVars);
+        }
+
+        function getExpressionVars(elt) {
+            return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt));
         }
 
         function safelySetHeaderValue(xhr, header, headerValue) {
