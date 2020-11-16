@@ -1751,7 +1751,7 @@ return (function () {
         }
 
         function getHXValsForElement(elt, expressionVars) {
-            return getValuesForElement(elt, "hx-vars", function(valueStr){
+            return getValuesForElement(elt, "hx-vals", function(valueStr){
                 return JSON.parse(expressionVars);
             }, expressionVars);
         }
