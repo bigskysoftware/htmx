@@ -2050,6 +2050,10 @@ return (function () {
                 triggerErrorEvent(elt, 'htmx:sendError', eventDetail);
                 endRequestLock();
             }
+            xhr.onabort = function() {
+                removeRequestIndicatorClasses(elt);
+                endRequestLock();
+            }
             if(!triggerEvent(elt, 'htmx:beforeRequest', eventDetail)) return endRequestLock();
             addRequestIndicatorClasses(elt);
 
