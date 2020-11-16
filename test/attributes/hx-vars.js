@@ -20,6 +20,18 @@ describe("hx-vars attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('hx-vars works with braces', function () {
+        this.server.respondWith("POST", "/vars", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make('<div hx-post="/vars" hx-vars="{i1:\'test\'}"></div>')
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
     it('multiple hx-vars works', function () {
         this.server.respondWith("POST", "/vars", function (xhr) {
             var params = getParameters(xhr);
