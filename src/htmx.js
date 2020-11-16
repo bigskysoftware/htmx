@@ -1165,7 +1165,7 @@ return (function () {
         function evalScript(script) {
             if (script.type === "text/javascript" || script.type === "") {
                 try {
-                    eval(script.innerText);
+                    Function(script.innerText)();
                 } catch (e) {
                     logError(e);
                 }
