@@ -6,7 +6,6 @@
 
 ## Feature Backlog
 
-* focus recapture
 * logrithmic back off on history cache size on QuotaExceededError
 * `htmx-requests` class on body
 * local references (e.g. hx-get="#foo")
