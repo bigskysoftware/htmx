@@ -97,7 +97,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.2.1"></script>
+    <script src="https://unpkg.com/htmx.org@0.3.0"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -625,6 +625,14 @@ fact this is so common, you can use the helper function:
 This does the same thing as the first example, but is a little cleaner.  
 
 The full set of events can be seen [on the reference page](/reference#events).
+
+Note that all events are fired with two different names
+
+* Camel Case
+* Kebab Case
+
+So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
+with libraries like [Alpine.js](https://github.com/alpinejs/alpine/).
 
 ### Logging
 

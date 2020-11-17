@@ -22,11 +22,21 @@ htmx is small ([~8k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [extendable](https://htmx.org/extensions) & 
 IE11 compatible
 
+## motivation
+
+* Why should only `<a>` and `<form>` be able to make HTTP requests?
+* Why should only `click` & `submit` events trigger them?
+* Why should only GET & POST be available?
+* Why should you only be able to replace the *entire* screen?
+
+By removing these arbitrary constraints htmx completes HTML as a 
+[hypertext](https://en.wikipedia.org/wiki/Hypertext)
+
 ## quick start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.2.1"></script>
+  <script src="https://unpkg.com/htmx.org@0.3.0"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

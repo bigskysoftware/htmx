@@ -36,6 +36,8 @@ title: </> htmx - high power tools for html
 ## Essays
 
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
+* [Complexity Budget](/essays/complexity-budget)
+* [SPA Alternative](/essays/spa-alternative)
 
 </div>
 </div>
