@@ -71,8 +71,8 @@ title: </> htmx - Attributes
 | `HX-Active-Element-Value` | the `value` of the active element if it exists
 | `HX-Active-Element` | the `id` of the active element if it exists
 | `HX-Current-URL` | the current URL of the browser
-| `HX-Event-Target` | the `id` of the original event target 
-| `HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `HX-Event-Target` | the `id` of the original event target
+| `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
 | `HX-Request` | always `true`
 | `HX-Target` | the `id` of the target element if it exists
 | `HX-Trigger-Name` | the `name` of the triggered element if it exists
