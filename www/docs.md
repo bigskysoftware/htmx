@@ -374,11 +374,10 @@ differently.
 Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload, 
 which you can hook into to show the progress of the upload.
 
-#### <a name="vars"></a> [Variables](#variables)
+#### <a name="extra-values"></a> [Extra Values](#extra-values)
 
-You can also include dynamically computed variables in the parameters of a request by using the 
-[hx-vars](/attributes/hx-vars) attribute.  This attributes allows you to use name-expression pairs to include additional
-computed variables in a request.
+You can include extra values in a request using the [hx-vals](/attributes/hx-vals) (name-expression pairs in JSON format) and
+[hx-vars](/attributes/hx-vars) attributes (comma-separated name-expression pairs that are dynamically computed).
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
