@@ -267,7 +267,7 @@ return (function () {
             if (selector) {
                 return eltOrSelector.querySelector(selector);
             } else {
-                return getDocument().body.querySelector(eltOrSelector);
+                return find(getDocument(), eltOrSelector);
             }
         }
 
@@ -275,7 +275,7 @@ return (function () {
             if (selector) {
                 return eltOrSelector.querySelectorAll(selector);
             } else {
-                return getDocument().body.querySelectorAll(eltOrSelector);
+                return findAll(getDocument(), eltOrSelector);
             }
         }
 
@@ -623,7 +623,12 @@ return (function () {
         function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
             var title = findTitle(responseText);
             if(title) {
-                window.document.title = title;
+                var titleElt = find("title");
+                if(titleElt) {
+                    titleElt.innerHTML = title;
+                } else {
+                    window.document.title = title;
+                }
             }
             var fragment = makeFragment(responseText);
             if (fragment) {

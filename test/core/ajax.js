@@ -773,5 +773,17 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal("htmx rocks!");
     });
 
+    it('title update does not URL escapte', function()
+    {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "<title>&lt;/> htmx rocks!</title>Clicked!");
+        });
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Clicked!");
+        window.document.title.should.equal("</> htmx rocks!");
+    });
+
 
 })
