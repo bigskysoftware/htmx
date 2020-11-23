@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1] - 2020-11-23
+
+* Fixed bug with title tag support when title tag contained HTML entities
+* Pass properties for the `loadstart`, `loadend`, `progress`, `abort` events through properly to the htmx equivalents
+
 ## [0.4.0] - 2020-11-16
 
 * Now support the `HX-Redirect` and `HX-Refresh` response headers for redirecting client side and triggering a page refresh, respectively
