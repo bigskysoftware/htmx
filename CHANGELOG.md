@@ -12,7 +12,7 @@
 * `hx-vars` now overrides input values
 * `<title>` tags in responses will be used to update page titles
 * All uses of `eval()` have been removed in favor of `Function`
-* [`hx-vals`](https://htmx.org/attributes/hx-vals) is available as a save alternative to `hx-vars`.  It uses `JSON.parse()` rather than evaluation, if you wish to safely pass user-provided values through to htmx.
+* [`hx-vals`](https://htmx.org/attributes/hx-vals) is available as a safe alternative to `hx-vars`.  It uses `JSON.parse()` rather than evaluation, if you wish to safely pass user-provided values through to htmx.
 
 ## [0.3.0] - 2020-10-27
 
