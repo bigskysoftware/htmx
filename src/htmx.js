@@ -2064,7 +2064,7 @@ return (function () {
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
                 xhr.addEventListener(eventName, function(event){
-                    triggerEvent(elt, "htmx:xhr:" + eventName, mergeObjects({}, event.detail));
+                    triggerEvent(elt, "htmx:xhr:" + eventName, mergeObjects({}, event));
                 })
             });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
