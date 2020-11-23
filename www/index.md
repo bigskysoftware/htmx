@@ -36,7 +36,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.4.1"></script>
+  <script src="https://unpkg.com/htmx.org@1.0.0"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.0.0] - 2020-12-?
+
+* Bumped the release version :)
+
 ## [0.4.1] - 2020-11-23
 
 * Fixed bug with title tag support when title tag contained HTML entities
