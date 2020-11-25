@@ -2063,13 +2063,15 @@ return (function () {
             addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
-                xhr.addEventListener(eventName, function(event){
-                    triggerEvent(elt, "htmx:xhr:" + eventName, {
-                        lengthComputable:event.lengthComputable,
-                        loaded:event.loaded,
-                        total:event.total
-                    });
-                })
+                forEach([xhr, xhr.upload], function (target) {
+                    target.addEventListener(eventName, function(event){
+                        triggerEvent(elt, "htmx:xhr:" + eventName, {
+                            lengthComputable:event.lengthComputable,
+                            loaded:event.loaded,
+                            total:event.total
+                        });
+                    })
+                });
             });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
