@@ -319,6 +319,14 @@ return (function () {
             while (elt = elt && parentElt(elt));
         }
 
+        function resolveTarget(arg2) {
+            if (isType(arg2, 'String')) {
+                return find(arg2);
+            } else {
+                return arg2;
+            }
+        }
+
         function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg2)) {
                 return {
@@ -328,7 +336,7 @@ return (function () {
                 }
             } else {
                 return {
-                    target: arg1,
+                    target: resolveTarget(arg1),
                     event: arg2,
                     listener: arg3
                 }
