@@ -17,7 +17,7 @@ First the pure javascript version.
 * We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the even detail.
 
 ```html
-    <form id='form1' hx-encoding='multipart/form-data' hx-post='/upload'>
+    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload'>
         <input type='file' name='file'>
         <button>
             Upload
