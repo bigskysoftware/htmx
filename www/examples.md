@@ -25,4 +25,5 @@ You can copy and paste them and then adjust them for your needs.
 | [Dialogs - Browser](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
 | [Dialogs - UIKIt](/examples/modal-uikit) | Demonstrates modal dialogs using UIKit
 | [Dialogs - Bootstrap](/examples/modal-bootstrap) | Demonstrates modal dialogs using Bootstrap
+| [File Upload](/examples/file-upload) | Demonstrates how to upload a file via ajax with a progress bar
 
