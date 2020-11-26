@@ -17,15 +17,15 @@ This is an example of using HTMX to remotely load modal dialogs using UIKit.
 <button 
 	id="showButton"
 	hx-get="/uikit-modal.html" 
-	hx-target="#show-modals-here" 
+	hx-target="#modals-here" 
 	class="uk-button uk-button-primary" 
 	_="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">Open Modal</button>
 
-<div id="show-modals-here"></div>
+<div id="modals-here"></div>
 ```
 
 This button uses a `GET` request to `/uikit-modal.html` when this button is clicked.  The
-contents of this file will be added to the DOM underneath the `#show-modals-here` DIV.
+contents of this file will be added to the DOM underneath the `#modals-here` DIV.
 
 We're replacing the standard UIKit Javascript library with a little bit of Hyperscript, 
 which triggers UIKit's smooth animations. It is delayed by 10ms so that UIKit's animations
@@ -75,13 +75,13 @@ window.document.getElementById("showButton").addEventListener("htmx:afterOnLoad"
 window.document.getElementById("cancelButton").addEventListener("click", function() {
 	window.document.getElementById("modal").classList.remove("uk-open")
 	setTimeout(function(){
-		window.document.getElementById("show-modals-here").innerHTML = ""
+		window.document.getElementById("modals-here").innerHTML = ""
 		,200
 	})
 })
 ```
 
-<div id="show-modals-here"></div>
+<div id="modals-here"></div>
 
 {% include demo_ui.html.liquid %}
 
@@ -102,7 +102,7 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 	class="uk-button uk-button-primary" 
 	hx-get="/modal" 
 	hx-trigger="click" 
-	hx-target="#show-modals-here"
+	hx-target="#modals-here"
 	_="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">Show Modal Dialog</button>`
 	})
 		

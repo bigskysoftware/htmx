@@ -14,16 +14,16 @@ markup where the dialog will be loaded:
 ```html
 <button 
 	hx-get="/modal" 
-	hx-target="#show-modals-here" 
+	hx-target="#modals-here" 
 	hx-trigger="click"
 	class="btn btn-primary"
 	_="on htmx:afterOnLoad wait 10ms then add .show to #modal then add .show to #modal-backdrop">Open Modal</button>
 
-<div id="show-modals-here"></div>
+<div id="modals-here"></div>
 ```
 
 This button uses a `GET` request to `/modal` when this button is clicked.  The
-contents of this file will be added to the DOM underneath the `#show-modals-here` DIV.
+contents of this file will be added to the DOM underneath the `#modals-here` DIV.
 
 We're replacing Bootstrap's javascript widgets with a small bit of Hyperscript to provide
 smooth animations when the dialog opens and closes.
@@ -69,7 +69,7 @@ function closeModal() {
 ```
 
 
-<div id="show-modals-here"></div>
+<div id="modals-here"></div>
 
 {% include demo_ui.html.liquid %}
 
@@ -97,7 +97,7 @@ function closeModal() {
     init("/demo", function(request, params) {
 		return `<button 
 			hx-get="/modal" 
-			hx-target="#show-modals-here" 
+			hx-target="#modals-here" 
 			bx-trigger="click"
 			class="btn btn-primary"
 			_="on htmx:afterOnLoad wait 10ms then add .show to #modal then add .show to #modal-backdrop">Open Modal</button>
