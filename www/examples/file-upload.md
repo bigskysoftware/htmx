@@ -38,7 +38,7 @@ The hyperscript version is very similar, except:
 
 ```html
     <form hx-encoding='multipart/form-data' hx-post='/upload'
-          _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100 '>
+          _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
         <input type='file' name='file'>
         <button>
             Upload
