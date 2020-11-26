@@ -1,7 +1,18 @@
 # Changelog
 
 
-## [1.0.0] - 2020-12-?
+## [1.0.1] - 2020-12-?
+
+* AJAX file upload now correctly fires events, allowing for [a proper progress bar](https://htmx.org/examples/file-upload)
+* htmx api functions that expect an element now can accept a string selector instead:
+   ```js
+    htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+      htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+    });
+   ```
+* htmx now properly handles the `multiple` attribute on `<select>` elements
+
+## [1.0.0] - 2020-11-24
 
 * Bumped the release version :)
 

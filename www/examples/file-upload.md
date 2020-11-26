@@ -17,7 +17,7 @@ First the pure javascript version.
 * We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the even detail.
 
 ```html
-    <form hx-encoding='multipart/form-data' hx-post='/upload'>
+    <form id='form1' hx-encoding='multipart/form-data' hx-post='/upload'>
         <input type='file' name='file'>
         <button>
             Upload
@@ -25,7 +25,7 @@ First the pure javascript version.
         <progress id='progress' value='0' max='100'></progress>
     </form>
     <script>
-        htmx.on('htmx:xhr:progress', function(evt) {
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
           htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
         });
     </script>
