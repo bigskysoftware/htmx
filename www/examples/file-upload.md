@@ -47,4 +47,4 @@ The hyperscript version is very similar, except:
     </form>
 ```
 
-Note that this hyperscript allows you to destructure properties from `details` into variables directly
+Note that hyperscript allows you to destructure properties from `details` directly into variables
