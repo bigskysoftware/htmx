@@ -131,9 +131,13 @@ return (function () {
             }
         }
 
-        function parseHTML(resp, depth) {
+        function parseHTML(resp, depth, settleInfo) {
             var parser = new DOMParser();
             var responseDoc = parser.parseFromString(resp, "text/html");
+            triggerEvent(getDocument().body, 'htmx:afterResponseParse', {
+                responseDoc:responseDoc,
+                settleInfo:settleInfo
+            });
             var responseNode = responseDoc.body;
             while (depth > 0) {
                 depth--;
@@ -145,7 +149,7 @@ return (function () {
             return responseNode;
         }
 
-        function makeFragment(resp) {
+        function makeFragment(resp, settleInfo) {
             var startTag = getStartTag(resp);
             switch (startTag) {
                 case "thead":
@@ -153,18 +157,18 @@ return (function () {
                 case "tfoot":
                 case "colgroup":
                 case "caption":
-                    return parseHTML("<table>" + resp + "</table>", 1);
+                    return parseHTML("<table>" + resp + "</table>", 1, settleInfo);
                 case "col":
-                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
+                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2, settleInfo);
                 case "tr":
-                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
+                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2, settleInfo);
                 case "td":
                 case "th":
-                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3, settleInfo);
                 case "script":
-                    return parseHTML("<div>" + resp + "</div>", 1);
+                    return parseHTML("<div>" + resp + "</div>", 1, settleInfo);
                 default:
-                    return parseHTML(resp, 0);
+                    return parseHTML(resp, 0, settleInfo);
             }
         }
 
@@ -638,7 +642,7 @@ return (function () {
                     window.document.title = title;
                 }
             }
-            var fragment = makeFragment(responseText);
+            var fragment = makeFragment(responseText, settleInfo);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment);
@@ -993,7 +997,7 @@ return (function () {
                 });
 
                 var settleInfo = makeSettleInfo(elt);
-                var fragment = makeFragment(response);
+                var fragment = makeFragment(response, settleInfo);
                 var children = toArray(fragment.children);
                 for (var i = 0; i < children.length; i++) {
                     var child = children[i];
@@ -1388,10 +1392,10 @@ return (function () {
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
-                    var fragment = makeFragment(this.response);
-                    fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
+                    var fragment = makeFragment(this.response, settleInfo);
+                    fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
@@ -1408,9 +1412,9 @@ return (function () {
             triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             var cached = getCachedHistory(path);
             if (cached) {
-                var fragment = makeFragment(cached.content);
                 var historyElement = getHistoryElement();
                 var settleInfo = makeSettleInfo(historyElement);
+                var fragment = makeFragment(cached.content, settleInfo);
                 swapInnerHTML(historyElement, fragment, settleInfo)
                 settleImmediately(settleInfo.tasks);
                 document.title = cached.title;
