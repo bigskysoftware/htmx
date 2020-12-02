@@ -397,6 +397,71 @@ describe("Core htmx AJAX Tests", function(){
         values.should.deep.equal({multiSelect:["m1", "m3"]});
     });
 
+    it('properly handles multiple select input when "multiple" attribute is empty string', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<select name="multiSelect" id="id_question_list" multiple="" tabindex="-1" aria-hidden="true">' +
+            '<option id="m1" value="m1">m1</option>'+
+            '<option id="m2" value="m2">m2</option>'+
+            '<option id="m3" value="m3">m3</option>'+
+            '<option id="m4" value="m4">m4</option>'+
+            '</select>' +
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({});
+
+        byId("m1").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:"m1"});
+
+        byId("m1").selected = true;
+        byId("m3").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:["m1", "m3"]});
+    });
+
+    it('properly handles multiple select input when "multiple" attribute is false', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<select name="multiSelect" id="id_question_list" multiple="false" tabindex="-1" aria-hidden="true">' +
+            '<option id="m1" value="m1">m1</option>'+
+            '<option id="m2" value="m2">m2</option>'+
+            '<option id="m3" value="m3">m3</option>'+
+            '<option id="m4" value="m4">m4</option>'+
+            '</select>' +
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:''});
+
+        byId("m1").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:"m1"});
+
+        byId("m3").selected = true;
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiSelect:"m1"});
+    });
+
     it('properly handles two multiple select inputs w/ same name', function()
     {
         var values;

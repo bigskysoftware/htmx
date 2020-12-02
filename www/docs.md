@@ -97,7 +97,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.0.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.0.1"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -323,6 +323,64 @@ with any of the following values:
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response (out of band items will still be processed)
+
+#### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
+
+htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without javascript.  To understand how CSS transitions
+work in htmx, you must first understand the swap & settle model that htmx uses.
+
+When new content is received from a server, before the content is swapped in, the existing
+content of the page is examined for elements that match by the `id` attribute.  If a match
+is found for an element in the new content, the attributes of the old content are copied
+onto the new element before the swap occurs.  The new content is then swapped in, but with the
+*old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
+(100ms by default).
+
+This may seem a bit complicated, but with this mechanic for swapping content, you can write
+CSS transitions from old to new attribute values.
+
+An example will help clarify.  Consider this original content:
+
+```html
+  <div id="div1">Original Content</div>
+```
+
+And this content, which has been received by htmx after an AJAX request, to replace it:
+
+```html
+  <div id="div1" class="red">New Content</div>
+```
+
+The first thing that htmx does, before it swaps in this new content, is note that these two elements match by `id` (and tag type).  It therefore swaps the *old* attribute values onto the *new* content:
+
+```html
+  <div id="div1">New Content</div>
+```
+
+Note that the new content no longer has a `class` attribute.  This modified new content is then
+swapped into the DOM.  This is the swap step.
+
+Next, after a "settle" delay, the new div will have its attributes updated to the actual values received from the server:
+
+```html
+  <div id="div1" class="red">New Content</div>
+```
+
+Because this `div` was in the DOM with the original `div`'s attributes, this is will trigger a
+CSS transition.  So you can write, for example, this CSS:
+
+```css
+.red {
+  color: red;
+  transition: all ease-in 1s ;
+}
+```
+
+And the newly swapped content will gently transition to a red text color over one second.
+
+All of that may seem a little crazy, but it can be summarized as this: 
+
+> In htmx, all you need to do to use CSS transitions for an element is keep its `id` stable across requests
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
