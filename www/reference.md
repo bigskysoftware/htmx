@@ -23,6 +23,7 @@ title: </> htmx - Attributes
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
+| [`hx-encoding`](/attributes/hx-encoding) | changes the request encoding type
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
@@ -40,7 +41,8 @@ title: </> htmx - Attributes
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
-| [`hx-vars`](/attributes/hx-vars) | adds to the parameters that will be submitted with the request
+| [`hx-vals`](/attributes/hx-vals) | safely adds to the parameters that will be submitted with the request
+| [`hx-vars`](/attributes/hx-vars) | dynamically adds to the parameters that will be submitted with the request
 | [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
 
 </div>
