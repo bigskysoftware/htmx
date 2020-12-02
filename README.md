@@ -8,7 +8,7 @@
 
 ## introduction
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), 
+htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
 [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
 directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
