@@ -29,6 +29,7 @@ title: </> htmx - Attributes
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
 | [`hx-indicator`](/attributes/hx-indicator) | the element to put the `htmx-request` class on during the AJAX request
+| [`hx-oob-target`](/attributes/hx-oob-target) | specifies the target element to be swapped by `hx-swap-oob`. Defaults to the element with the same id
 | [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
 | [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
 | [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
@@ -37,7 +38,7 @@ title: </> htmx - Attributes
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
 | [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
 | [`hx-sse`](/attributes/hx-sse) | establishes and listens to [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) sources for events
-| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
+| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
@@ -113,8 +114,8 @@ title: </> htmx - Attributes
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
-| [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
-| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
+| [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval
+| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval
 | [`htmx:historyRestore`](/events#htmx:historyRestore)  | triggered when htmx handles a history restoration action
 | [`htmx:beforeHistorySave`](/events#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
 | [`htmx:load`](/events#htmx:load)  | triggered when new content is added to the DOM
@@ -166,4 +167,3 @@ title: </> htmx - Attributes
 | [`htmx.trigger()`](/api#trigger)  | Triggers an event on an element
 
 </div>
-

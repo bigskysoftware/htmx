@@ -70,6 +70,14 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped");
     })
 
+    it('handles hx-oob-target attribute properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div data-foo='' hx-swap-oob='true' hx-oob-target='[data-foo]'>Swapped</div>")
+        var div = make('<div hx-get="/test">click me</div>')
+        make('<div data-foo=""></div>')
+        div.click()
+        this.server.respond()
+        div.innerHTML.should.equal("Clicked")
+        document.querySelector('[data-foo]').innerHTML.should.equal("Swapped");
+    })
 
 });
-

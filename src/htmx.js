@@ -430,7 +430,8 @@ return (function () {
             if (oobValue === "true") {
                 oobValue = "outerHTML"
             }
-            var target = getDocument().getElementById(child.id);
+            var oobTargetSelector = getAttributeValue(child, "hx-oob-target") || ("#" + child.id)
+            var target = getDocument().querySelector(oobTargetSelector);
             if (target) {
                 var fragment;
                 fragment = getDocument().createDocumentFragment();
