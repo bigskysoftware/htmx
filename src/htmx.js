@@ -280,6 +280,7 @@ return (function () {
         }
 
         function removeElement(elt, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){removeElement(elt);}, delay)
             } else {
@@ -288,6 +289,7 @@ return (function () {
         }
 
         function addClassToElement(elt, clazz, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){addClassToElement(elt, clazz);}, delay)
             } else {
@@ -296,6 +298,7 @@ return (function () {
         }
 
         function removeClassFromElement(elt, clazz, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
             } else {
@@ -304,10 +307,12 @@ return (function () {
         }
 
         function toggleClassOnElement(elt, clazz) {
+            elt = resolveTarget(elt);
             elt.classList.toggle(clazz);
         }
 
         function takeClassForElement(elt, clazz) {
+            elt = resolveTarget(elt);
             forEach(elt.parentElement.children, function(child){
                 removeClassFromElement(child, clazz);
             })
@@ -315,6 +320,7 @@ return (function () {
         }
 
         function closest(elt, selector) {
+            elt = resolveTarget(elt);
             do if (elt == null || matches(elt, selector)) return elt;
             while (elt = elt && parentElt(elt));
         }
@@ -1239,6 +1245,7 @@ return (function () {
         }
 
         function processNode(elt) {
+            elt = resolveTarget(elt);
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
         }
@@ -1289,6 +1296,7 @@ return (function () {
         }
 
         function triggerEvent(elt, eventName, detail) {
+            elt = resolveTarget(elt);
             if (detail == null) {
                 detail = {};
             }

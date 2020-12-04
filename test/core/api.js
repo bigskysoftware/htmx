@@ -38,6 +38,20 @@ describe("Core htmx API test", function(){
         detailStr.should.equal("foo");
     });
 
+    it('triggers properly w/ selector', function () {
+        var div = make("<div id='div1'/>");
+        var myEventCalled = false;
+        var detailStr = "";
+        htmx.on("myEvent", function(evt){
+            myEventCalled = true;
+            detailStr = evt.detail.str;
+        })
+        htmx.trigger("#div1", "myEvent", {str:"foo"})
+
+        myEventCalled.should.equal(true);
+        detailStr.should.equal("foo");
+    });
+
     it('triggers with no details properly', function () {
         var div = make("<div/>");
         var myEventCalled = false;
@@ -88,10 +102,25 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal("");
     });
 
+    it('should remove element properly w/ selector', function () {
+        var div = make("<div><a id='a1'></a></div>");
+        var a = htmx.find(div, "a");
+        htmx.remove("#a1");
+        div.innerHTML.should.equal("");
+    });
+
     it('should add class properly', function () {
         var div = make("<div></div>");
         div.classList.contains("foo").should.equal(false);
         htmx.addClass(div, "foo");
+        div.classList.contains("foo").should.equal(true);
+    });
+
+
+    it('should add class properly w/ selector', function () {
+        var div = make("<div id='div1'></div>");
+        div.classList.contains("foo").should.equal(false);
+        htmx.addClass("#div1", "foo");
         div.classList.contains("foo").should.equal(true);
     });
 
@@ -114,6 +143,14 @@ describe("Core htmx API test", function(){
         div.classList.contains("foo").should.equal(false);
     });
 
+    it('should remove class properly w/ selector', function () {
+        var div = make("<div id='div1'></div>");
+        htmx.addClass(div, "foo");
+        div.classList.contains("foo").should.equal(true);
+        htmx.removeClass("#div1", "foo");
+        div.classList.contains("foo").should.equal(false);
+    });
+
     it('should add class properly after delay', function (done) {
         var div = make("<div></div>");
         htmx.addClass(div, "foo");
@@ -132,6 +169,15 @@ describe("Core htmx API test", function(){
         htmx.toggleClass(div, "foo");
         div.classList.contains("foo").should.equal(true);
         htmx.toggleClass(div, "foo");
+        div.classList.contains("foo").should.equal(false);
+    });
+
+    it('should toggle class properly w/ selector', function () {
+        var div = make("<div id='div1'></div>");
+        div.classList.contains("foo").should.equal(false);
+        htmx.toggleClass("#div1", "foo");
+        div.classList.contains("foo").should.equal(true);
+        htmx.toggleClass("#div1", "foo");
         div.classList.contains("foo").should.equal(false);
     });
 
@@ -157,6 +203,34 @@ describe("Core htmx API test", function(){
         div3.classList.contains("foo").should.equal(false);
 
         htmx.takeClass(div3, "foo");
+
+        div1.classList.contains("foo").should.equal(false);
+        div2.classList.contains("foo").should.equal(false);
+        div3.classList.contains("foo").should.equal(true);
+    });
+
+    it('should take class properly w/ selector', function () {
+        var div1 = make("<div id='div1'></div>");
+        var div2 = make("<div id='div2'></div>");
+        var div3 = make("<div id='div3'></div>");
+
+        div1.classList.contains("foo").should.equal(false);
+        div2.classList.contains("foo").should.equal(false);
+        div3.classList.contains("foo").should.equal(false);
+
+        htmx.takeClass("#div1", "foo");
+
+        div1.classList.contains("foo").should.equal(true);
+        div2.classList.contains("foo").should.equal(false);
+        div3.classList.contains("foo").should.equal(false);
+
+        htmx.takeClass("#div2", "foo");
+
+        div1.classList.contains("foo").should.equal(false);
+        div2.classList.contains("foo").should.equal(true);
+        div3.classList.contains("foo").should.equal(false);
+
+        htmx.takeClass("#div3", "foo");
 
         div1.classList.contains("foo").should.equal(false);
         div2.classList.contains("foo").should.equal(false);
