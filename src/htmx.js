@@ -1489,8 +1489,7 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
-                if (hasAttribute(elt, 'multiple') &&
-                    getRawAttribute(elt, 'multiple') !== 'false') {
+                if (elt.multiple) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
                 }
                 // include file inputs
