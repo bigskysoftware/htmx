@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [1.0.1] - 2020-12-?
+## [1.0.1] - 2020-12-04
 
 * AJAX file upload now correctly fires events, allowing for [a proper progress bar](https://htmx.org/examples/file-upload)
 * htmx api functions that expect an element now can accept a string selector instead:
