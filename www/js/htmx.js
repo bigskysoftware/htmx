@@ -280,6 +280,7 @@ return (function () {
         }
 
         function removeElement(elt, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){removeElement(elt);}, delay)
             } else {
@@ -288,6 +289,7 @@ return (function () {
         }
 
         function addClassToElement(elt, clazz, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){addClassToElement(elt, clazz);}, delay)
             } else {
@@ -296,6 +298,7 @@ return (function () {
         }
 
         function removeClassFromElement(elt, clazz, delay) {
+            elt = resolveTarget(elt);
             if (delay) {
                 setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
             } else {
@@ -304,10 +307,12 @@ return (function () {
         }
 
         function toggleClassOnElement(elt, clazz) {
+            elt = resolveTarget(elt);
             elt.classList.toggle(clazz);
         }
 
         function takeClassForElement(elt, clazz) {
+            elt = resolveTarget(elt);
             forEach(elt.parentElement.children, function(child){
                 removeClassFromElement(child, clazz);
             })
@@ -315,6 +320,7 @@ return (function () {
         }
 
         function closest(elt, selector) {
+            elt = resolveTarget(elt);
             do if (elt == null || matches(elt, selector)) return elt;
             while (elt = elt && parentElt(elt));
         }
@@ -426,31 +432,39 @@ return (function () {
             return swapStyle === "outerHTML";
         }
 
-        function oobSwap(oobValue, child, settleInfo) {
+        function oobSwap(oobValue, oobElement, settleInfo) {
+            var selector = "#" + oobElement.id;
+            var swapStyle = "outerHTML";
             if (oobValue === "true") {
-                oobValue = "outerHTML"
+                // do nothing
+            } else if (oobValue.indexOf(":") > 0) {
+                swapStyle = oobValue.substr(0, oobValue.indexOf(":"));
+                selector  = oobValue.substr(oobValue.indexOf(":") + 1, oobValue.length);
+            } else {
+                swapStyle = oobValue;
             }
-            var target = getDocument().getElementById(child.id);
+
+            var target = getDocument().querySelector(selector);
             if (target) {
                 var fragment;
                 fragment = getDocument().createDocumentFragment();
-                fragment.appendChild(child); // pulls the child out of the existing fragment
-                if (!isInlineSwap(oobValue, target)) {
-                    fragment = child; // if this is not an inline swap, we use the content of the node, not the node itself
+                fragment.appendChild(oobElement); // pulls the child out of the existing fragment
+                if (!isInlineSwap(swapStyle, target)) {
+                    fragment = oobElement; // if this is not an inline swap, we use the content of the node, not the node itself
                 }
-                swap(oobValue, target, target, fragment, settleInfo);
+                swap(swapStyle, target, target, fragment, settleInfo);
             } else {
-                child.parentNode.removeChild(child);
-                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: child})
+                oobElement.parentNode.removeChild(oobElement);
+                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement})
             }
             return oobValue;
         }
 
         function handleOutOfBandSwaps(fragment, settleInfo) {
-            forEach(toArray(fragment.children), function (child) {
-                var oobValue = getAttributeValue(child, "hx-swap-oob");
+            forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
+                var oobValue = getAttributeValue(oobElement, "hx-swap-oob");
                 if (oobValue != null) {
-                    oobSwap(oobValue, child, settleInfo);
+                    oobSwap(oobValue, oobElement, settleInfo);
                 }
             });
         }
@@ -1239,6 +1253,7 @@ return (function () {
         }
 
         function processNode(elt) {
+            elt = resolveTarget(elt);
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
         }
@@ -1289,6 +1304,7 @@ return (function () {
         }
 
         function triggerEvent(elt, eventName, detail) {
+            elt = resolveTarget(elt);
             if (detail == null) {
                 detail = {};
             }

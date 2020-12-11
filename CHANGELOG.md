@@ -1,9 +1,11 @@
 # Changelog
 
 
-## [1.1.0] - 202?-??-??
+## [1.0.2] - 202?-??-??
 
 * Extend all API methods to take a string selector as well as an element
+* Out of band swap elements need not be top level now
+* [`hx-swap-oob`](https:/htmx.org/attributes/hx-swap-oob) now can accept a CSS selector to retarget with
 
 ## [1.0.1] - 2020-12-04
 
