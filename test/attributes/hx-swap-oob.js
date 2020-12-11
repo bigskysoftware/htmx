@@ -81,6 +81,16 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped");
     })
 
+    it('oob swaps can use selectors to match up', function () {
+        this.server.respondWith("GET", "/test", "<div>Clicked<div hx-swap-oob='innerHTML:[foo]'>Swapped</div></div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d1" foo="bar"></div>');
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1").getAttribute("foo"), "bar");
+        div.innerHTML.should.equal("<div>Clicked</div>");
+        byId("d1").innerHTML.should.equal("Swapped");
+    })
 
 });
 
