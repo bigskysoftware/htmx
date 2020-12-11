@@ -453,7 +453,7 @@ return (function () {
         }
 
         function handleOutOfBandSwaps(fragment, settleInfo) {
-            forEach(toArray(fragment.children), function (child) {
+            forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (child) {
                 var oobValue = getAttributeValue(child, "hx-swap-oob");
                 if (oobValue != null) {
                     oobSwap(oobValue, child, settleInfo);
