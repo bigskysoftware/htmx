@@ -10,6 +10,7 @@ The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozil
 
 * `connect:<url>` - A URL to establish an `EventSource` against
 * `swap:<eventName>` - Swap SSE message content into a DOM node on matching event names
+* `listen:<eventName>` - Trigger an htmx:sseMessage event on the DOM node on matching event names
 
 
 ### Swap Message Content

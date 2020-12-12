@@ -133,5 +133,32 @@ describe("hx-sse attribute", function() {
         byId("d2").innerText.should.equal("Event 2")
     })
 
+    it('does not swap content on SSE listen', function () {
+        var div = make('<div hx-sse="connect:/event_stream">\n' +
+            '  <div id="d1" hx-sse="listen:e1"></div>\n' +
+            '  <div id="d2" hx-sse="listen:e2"></div>\n' +
+            '</div>\n');
+        byId("d1").innerText.should.equal("")
+        byId("d2").innerText.should.equal("")
+        this.eventSource.sendEvent("e1", "Event 1")
+        byId("d1").innerText.should.equal("")
+        byId("d2").innerText.should.equal("")
+        this.eventSource.sendEvent("e2", "Event 2")
+        byId("d1").innerText.should.equal("")
+        byId("d2").innerText.should.equal("")
+    })
+
+    it('listen syntax works', function () {
+        var div = make('<div hx-sse="connect:/event_stream">\n' +
+            '  <div id="d1" hx-sse="listen:e1"></div>\n' +
+            '</div>\n');
+        var called = false;
+        htmx.on(byId("d1"), "htmx:sseMessage", function(evt) {
+            called = true;
+        })
+        this.eventSource.sendEvent("e1");
+        called.should.equal(true);
+    })
+
 });
 

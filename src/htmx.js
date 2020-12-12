@@ -1076,8 +1076,12 @@ return (function () {
                     processSSESource(elt, value[1]);
                 }
 
+                if ((value[0] === "listen")) {
+                    processSSEClient(elt, value[1], false)
+                }
+
                 if ((value[0] === "swap")) {
-                    processSSESwap(elt, value[1])
+                    processSSEClient(elt, value[1], true)
                 }
             }
         }
@@ -1091,7 +1095,7 @@ return (function () {
             getInternalData(elt).sseEventSource = source;
         }
 
-        function processSSESwap(elt, sseEventName) {
+        function processSSEClient(elt, sseEventName, doSwap) {
             var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
@@ -1101,20 +1105,21 @@ return (function () {
                         return;
                     }
 
-                    ///////////////////////////
-                    // TODO: merge this code with AJAX and WebSockets code in the future.
+                    if (doSwap) {
+                        ///////////////////////////
+                        // TODO: merge this code with AJAX and WebSockets code in the future.
+                        var response = event.data;
+                        withExtensions(elt, function(extension){
+                            response = extension.transformResponse(response, null, elt);
+                        });
+                        var swapSpec = getSwapSpecification(elt)
+                        var target = getTarget(elt)
+                        var settleInfo = makeSettleInfo(elt);
+                        selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                        settleImmediately(settleInfo.tasks);
+                    }
 
-                    var response = event.data;
-                    withExtensions(elt, function(extension){
-                        response = extension.transformResponse(response, null, elt);
-                    });
-
-                    var swapSpec = getSwapSpecification(elt)
-                    var target = getTarget(elt)
-                    var settleInfo = makeSettleInfo(elt);
-
-                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
-                    triggerEvent(elt, "htmx:sseMessage", event)
+                    triggerEvent(elt, "htmx:sse:" + sseEventName, event)
                 };
 
                 getInternalData(elt).sseListener = sseListener;
