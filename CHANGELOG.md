@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [1.0.2] - 202?-??-??
+## [1.0.2] - 2020-12-12
 
 * Extend all API methods to take a string selector as well as an element
 * Out of band swap elements need not be top level now
