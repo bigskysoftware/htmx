@@ -2097,6 +2097,11 @@ return (function () {
                     })
                 });
             });
+
+            withExtensions(elt, function(extension) {
+                xhr = extension.transformRequest(xhr)
+            })
+
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
 
@@ -2107,6 +2112,7 @@ return (function () {
         function extensionBase() {
             return {
                 onEvent : function(name, evt) {return true;},
+                transformRequest : function(xhr) {return xhr;},
                 transformResponse : function(text, xhr, elt) {return text;},
                 isInlineSwap : function(swapStyle) {return false;},
                 handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
