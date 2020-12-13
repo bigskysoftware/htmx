@@ -2135,7 +2135,7 @@ return (function () {
                 if (extension != null) {
                     extension.init(elt)
                 }
-            }
+            })
         }
 
         function getExtensions(elt, extensionsToReturn) {
