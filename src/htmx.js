@@ -1216,7 +1216,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
                 return results;
             } else {
                 return [];
@@ -1248,6 +1248,12 @@ return (function () {
                 if (wsInfo) {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
+
+                var extInfo = getAttributeValue(elt, 'hx-ext')
+                if (extInfo) {
+                    processExtensionInfo(elt, extInfo)
+                }
+
                 triggerEvent(elt, "htmx:processedNode");
             }
         }
@@ -2106,6 +2112,7 @@ return (function () {
         var extensions = {};
         function extensionBase() {
             return {
+                init: function(elt) {},
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
                 isInlineSwap : function(swapStyle) {return false;},
@@ -2120,6 +2127,15 @@ return (function () {
 
         function removeExtension(name) {
             delete extensions[name];
+        }
+
+        function processExtensionInfo(elt, extInfo) {
+            forEach(extInfo.split(','), function(name) {
+                var extension = extensions[name]
+                if (extension != null) {
+                    extension.init(elt)
+                }
+            }
         }
 
         function getExtensions(elt, extensionsToReturn) {
