@@ -13,6 +13,8 @@ title: </> htmx - high power tools for html
 * [installing](#installing)
 * [ajax](#ajax)
   * [triggers](#triggers)
+    * [trigger filters](#trigger-filters)
+    * [trigger modifiers](#trigger-modifiers)
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
@@ -24,6 +26,7 @@ title: </> htmx - high power tools for html
 * [websockets & SSE](#websockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
+* [validation](#validation)
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
@@ -94,7 +97,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@0.0.8"></script>
+    <script src="https://unpkg.com/htmx.org@1.0.2"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -142,7 +145,23 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
    </div>
 ```
 
-If you want a request to only happen once, you can use the `once` modifier for the trigger:
+#### <a name="trigger-filters"></a> [Trigger Filters](#trigger-filters)
+
+You may also apply trigger filters by using square brackets after the event name, enclosing a javascript expression that
+will be evaluated.  If the expression evaluates to `true` the event will trigger, otherwise it will not.
+
+Here is an example that triggers only on a Control-Click of the element
+
+```html
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+```
+
+Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
+
+#### <a name="trigger-modifiers"></a> [Trigger Modifiers](#trigger-modifiers)
+
+A trigger can also have a few additional modifiers that change its behavior.  For example, if you want a request to only
+ happen once, you can use the `once` modifier for the trigger:
 
 ```html
    <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
@@ -150,7 +169,7 @@ If you want a request to only happen once, you can use the `once` modifier for t
    </div>
 ```
 
-There are few other modifiers you can use for trigger:
+Other modifiers you can use for triggers are:
 
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
@@ -303,7 +322,65 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from respons (out of band items will still be processed)
+| `none` | does not append content from response (out of band items will still be processed)
+
+#### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
+
+htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without javascript.  To understand how CSS transitions
+work in htmx, you must first understand the swap & settle model that htmx uses.
+
+When new content is received from a server, before the content is swapped in, the existing
+content of the page is examined for elements that match by the `id` attribute.  If a match
+is found for an element in the new content, the attributes of the old content are copied
+onto the new element before the swap occurs.  The new content is then swapped in, but with the
+*old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
+(100ms by default).
+
+This may seem a bit complicated, but with this mechanic for swapping content, you can write
+CSS transitions from old to new attribute values.
+
+An example will help clarify.  Consider this original content:
+
+```html
+  <div id="div1">Original Content</div>
+```
+
+And this content, which has been received by htmx after an AJAX request, to replace it:
+
+```html
+  <div id="div1" class="red">New Content</div>
+```
+
+The first thing that htmx does, before it swaps in this new content, is note that these two elements match by `id` (and tag type).  It therefore swaps the *old* attribute values onto the *new* content:
+
+```html
+  <div id="div1">New Content</div>
+```
+
+Note that the new content no longer has a `class` attribute.  This modified new content is then
+swapped into the DOM.  This is the swap step.
+
+Next, after a "settle" delay, the new div will have its attributes updated to the actual values received from the server:
+
+```html
+  <div id="div1" class="red">New Content</div>
+```
+
+Because this `div` was in the DOM with the original `div`'s attributes, this is will trigger a
+CSS transition.  So you can write, for example, this CSS:
+
+```css
+.red {
+  color: red;
+  transition: all ease-in 1s ;
+}
+```
+
+And the newly swapped content will gently transition to a red text color over one second.
+
+All of that may seem a little crazy, but it can be summarized as this: 
+
+> In htmx, all you need to do to use CSS transitions for an element is keep its `id` stable across requests
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
@@ -343,11 +420,22 @@ If you wish to filter out some parameters you can use the [hx-params](/attribute
 Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](/events#htmx:configRequest) 
 event.
 
-#### <a name="vars"></a> [Variables](#variables)
+#### <a name="files"></a> [File Upload](#files)
 
-You can also include dynamically computed variables in the parameters of a request by using the 
-[hx-vars](/attributes/hx-vars) attribute.  This attributes allows you to use name-expression pairs to include additional
-computed variables in a request.
+If you wish to upload files via an htmx request, you can set the [hx-encoding](/attributes/hx-encoding) attribute to 
+`multipart/form-data`.  This will use a `FormData` object to submit the request, which will properly include the file
+in the request.
+
+Note that depending on your server-side technology, you may have to handle requests with this type of body content very 
+differently.
+
+Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload, 
+which you can hook into to show the progress of the upload.
+
+#### <a name="extra-values"></a> [Extra Values](#extra-values)
+
+You can include extra values in a request using the [hx-vals](/attributes/hx-vals) (name-expression pairs in JSON format) and
+[hx-vars](/attributes/hx-vars) attributes (comma-separated name-expression pairs that are dynamically computed).
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
@@ -371,7 +459,7 @@ htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enh
 
 Htmx has experimental support for declarative use of both 
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
-and  [Server Sent Events]((https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)).
+and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
   
 These features are under active development, so please let us know if you are willing to experiment with them.
 
@@ -439,7 +527,7 @@ When a user hits the back button, htmx will retrieve the old content from storag
 
 ### Specifying History Snapshot Element
 
-By default, htmx will use the `body` to take and restore the history snapshop from.  This is usually the right thing, but
+By default, htmx will use the `body` to take and restore the history snapshot from.  This is usually the right thing, but
 if you want to use a narrower element for snapshotting you can use the [hx-history-elt](/attributes/hx-history-elt)
 attribute to specify a different one.  
 
@@ -478,10 +566,14 @@ htmx includes a number of useful headers in requests:
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
-htmx supports two special response headers:
+htmx supports some htmx-specific response headers:
 
-* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
 * `HX-Push` - can be used to push a new URL into the browsers address bar
+* `HX-Redirect` - can be used to do a client-side redirect to a new location
+* `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
+* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
+* `HX-Trigger-After-Swap` - can be used to trigger client side events after the swap step.
+* `HX-Trigger-After-Settle` - can be used to trigger client side events after the settle step.
 
 ### Request Order of Operations
 
@@ -492,16 +584,48 @@ The order of operations in a htmx request are:
   * The `htmx-request` class is applied to the appropriate elements
   * The request is then issued asynchronously via AJAX
     * Upon getting a response the target element is marked with the `htmx-swapping` class
-    * An optional swap delay is applied (see the [hx-swap-delay](/attributes/hx-swap-delay) attribute)
+    * An optional swap delay is applied (see the [hx-swap](/attributes/hx-swap) attribute)
     * The actual content swap is done
         * the `htmx-swapping` class is removed from the target
         * the `htmx-settling` class is applied to the target
-        * A settle delay  is done (default: 100ms)
+        * A settle delay is done (default: 100ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create 
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
+
+## <a name="validation">[Validation](#validation)
+
+Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+and will not issue a request if a validatable input is invalid.  This is true for both AJAX requests as well as
+WebSocket sends.
+
+Htmx fires events around validation that can be used to hook in custom validation and error handling:
+
+* `htmx:validation:validate` - called before an elements `checkValidity()` method is called.  May be used to add in
+   custom validation logic
+* `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
+* `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
+  in the `event.details.errors` object
+   
+### Validation Example
+
+Here is an example of an input that uses the `htmx:validation:validate` event to require that an input have the value
+`foo`, using hyperscript:
+
+```html
+<form hx-post="/test">
+  <input _="on htmx:validation:validate 
+               if my.value != 'foo' 
+                  call me.setCustomValidity('Please enter the value foo')   
+               else 
+                  call me.setCustomValidity('')" 
+         name="example">
+</form>
+```
+
+Note that all client side validations must be re-done on the server side, as they can always be bypassed.
 
 ## <a name="animations"></a> [Animations](#animations)
 
@@ -545,7 +669,7 @@ Htmx has an extensive events mechanism, which doubles as the logging system.
 If you want to register for a given htmx event you can use the following javascript:
 
 ```javascript
-  htmx.on("htmx.load", function(evt) {
+  htmx.on("htmx:load", function(evt) {
         myJavascriptLib.init(evt.details.elt);  
   });
 ```
@@ -561,6 +685,14 @@ fact this is so common, you can use the helper function:
 This does the same thing as the first example, but is a little cleaner.  
 
 The full set of events can be seen [on the reference page](/reference#events).
+
+Note that all events are fired with two different names
+
+* Camel Case
+* Kebab Case
+
+So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
+with libraries like [Alpine.js](https://github.com/alpinejs/alpine/).
 
 ### Logging
 

@@ -12,6 +12,7 @@ title: </> htmx - Attributes
 * [Htmx Response Headers Reference](#response_headers)
 * [Htmx Event Reference](#events)
 * [Htmx Extensions Reference](/extensions#reference)
+* [JS API Reference](#api)
 
 ## <a name="attributes"></a> [Attribute Reference](#attributes)
 
@@ -22,6 +23,7 @@ title: </> htmx - Attributes
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
+| [`hx-encoding`](/attributes/hx-encoding) | changes the request encoding type
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
@@ -39,7 +41,8 @@ title: </> htmx - Attributes
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
-| [`hx-vars`](/attributes/hx-vars) | adds to the parameters that will be submitted with the request
+| [`hx-vals`](/attributes/hx-vals) | safely adds to the parameters that will be submitted with the request
+| [`hx-vars`](/attributes/hx-vars) | dynamically adds to the parameters that will be submitted with the request
 | [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
 
 </div>
@@ -70,8 +73,8 @@ title: </> htmx - Attributes
 | `HX-Active-Element-Value` | the `value` of the active element if it exists
 | `HX-Active-Element` | the `id` of the active element if it exists
 | `HX-Current-URL` | the current URL of the browser
-| `HX-Event-Target` | the `id` of the original event target 
-| `HX-Prompt` | the user response to an [ic-prompt](/attributes/hx-prompt)
+| `HX-Event-Target` | the `id` of the original event target
+| `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
 | `HX-Request` | always `true`
 | `HX-Target` | the `id` of the target element if it exists
 | `HX-Trigger-Name` | the `name` of the triggered element if it exists
@@ -86,7 +89,11 @@ title: </> htmx - Attributes
 | Header | Description |
 |-------|-------------|
 | `HX-Push` | pushes a new url into the history stack
+| `HX-Redirect` | can be used to do a client-side redirect to a new location
+| `HX-Refresh` | if set to "true" the client side will do a a full refresh of the page
 | [`HX-Trigger`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| [`HX-Trigger-After-Settle`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
+| [`HX-Trigger-After-Swap`](/headers/x-hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/x-hx-trigger) for more info
 
 </div>
 
@@ -104,6 +111,7 @@ title: </> htmx - Attributes
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
 | [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
+| [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
 | [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
 | [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
@@ -119,6 +127,43 @@ title: </> htmx - Attributes
 | [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
 | [`htmx:swapError`](/events#htmx:swapError)  | triggered when an error occurs during the swap phase
 | [`htmx:targetError`](/events#htmx:targetError)  | triggered when an invalid target is specified
+| [`htmx:validation:validate`](/events#htmx:validation:validate)  | triggered before an element is validated
+| [`htmx:validation:failed`](/events#htmx:validation:failed)  | triggered when an element fails validation
+| [`htmx:validation:halted`](/events#htmx:validation:halted)  | triggered when a request is halted due to validation errors
+| [`htmx:xhr:abort`](/events#htmx:xhr:abort)  | triggered when an ajax request aborts
+| [`htmx:xhr:loadend`](/events#htmx:xhr:loadend)  | triggered when an ajax request ends
+| [`htmx:xhr:loadstart`](/events#htmx:xhr:loadstart)  | triggered when an ajax request starts
+| [`htmx:xhr:progress`](/events#htmx:xhr:progress)  | triggered periodically during an ajax request that supports progress events
+
+</div>
+
+## <a name="api"></a> [JS API Reference](#api)
+
+<div class="info-table">
+
+| Method | Description |
+|-------|-------------|
+| [`htmx.addClass()`](/api#addClass)  | Adds a class to the given element
+| [`htmx.closest()`](/api#closest)  | Finds the closest parent to the given element matching the selector
+| [`htmx.config`](/api#config)  | A property that holds the current htmx config object
+| [`htmx.createEventSource`](/api#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
+| [`htmx.createWebSocket`](/api#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
+| [`htmx.defineExtension()`](/api#defineExtension)  | Defines an htmx [extension](/extensions)
+| [`htmx.find()`](/api#find)  | Finds a single element matching the selector
+| [`htmx.findAll()` `htmx.findAll(elt, selector)`](/api#find)  | Finds all elements matching a given selector
+| [`htmx.logAll()`](/api#logAll)  | Installs a logger that will log all htmx events
+| [`htmx.logger`](/api#logger)  | A property set to the current logger (default is `null`)
+| [`htmx.off()`](/api#off)  | Removes an event listener from the given element
+| [`htmx.on()`](/api#on)  | Creates an event listener on the given element, returning it
+| [`htmx.onLoad()`](/api#onLoad)  | Adds a callback handler for the `htmx:load` event
+| [`htmx.parseInterval()`](/api#parseInterval)  | Parses an interval declaration into a millisecond value
+| [`htmx.process()`](/api#process)  | Processes the given element and its children, hooking up any htmx behavior
+| [`htmx.remove()`](/api#remove)  | Removes the given element
+| [`htmx.removeClass()`](/api#removeClass)  | Removes a class from the given element
+| [`htmx.removeExtension()`](/api#removeExtension)  | Removes an htmx [extension](/extensions)
+| [`htmx.takeClass()`](/api#takeClass)  | Takes a class from other elements for the given element
+| [`htmx.toggleClass()`](/api#toggleClass)  | Toggles a class from the given element
+| [`htmx.trigger()`](/api#trigger)  | Triggers an event on an element
 
 </div>
 

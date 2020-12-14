@@ -8,14 +8,14 @@ title: </> htmx - hx-ws
 The `hx-ws` allows you to work with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 directly from HTML.  The value of the attribute can be one or more of the following, separated by commas:
 
-* `connect <url>` - A URL to establish an `WebSocket` connection against (NB: include the `wss:` protocol prefix)
+* `connect:<url>` - A URL to establish an `WebSocket` connection against
 * `send` - Sends a message to the nearest websocket based on the trigger value for the element (either the natural event
 of the event specified by [`hx-trigger`])
 
 Here is an example:
 
 ```html
-  <div hx-ws="connect wss:/chatroom">
+  <div hx-ws="connect:/chatroom">
     <div id="chat_room">
       ...
     </div>
