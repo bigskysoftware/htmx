@@ -1735,24 +1735,35 @@ return (function () {
             delete extensions[name];
         }
 
-        function getExtensions(elt, extensionsToReturn) {
+        function getExtensions(elt) {
+            return getExtensionNames(elt).map(function (name) {
+                return extensions[name]
+            }).filter(function (extension) {
+                return (extension != undefined)
+            })
+        }
+
+        function getExtensionNames(elt) {
+
             if (elt == null) {
-                return extensionsToReturn;
+                return []
             }
-            if (extensionsToReturn == null) {
-                extensionsToReturn = [];
-            }
-            var extensionsForElement = getAttributeValue(elt, "hx-ext");
-            if (extensionsForElement) {
-                forEach(extensionsForElement.split(","), function(extensionName){
-                    extensionName = extensionName.replace(/ /g, '');
-                    var extension = extensions[extensionName];
-                    if (extension && extensionsToReturn.indexOf(extension) < 0) {
-                        extensionsToReturn.push(extension);
+
+            var result = getExtensionNames(parentElt(elt));
+            var exts = getAttributeValue(elt, "hx-ext");
+
+            if (exts) {
+                exts = exts.replace(/ /g, '');
+                forEach(exts.split(","), function (name) {
+                    if (name.slice(0, 7) == "ignore:") {
+                        result = result.filter(function (n) { return n != name.slice(7) });
+                    } else if (result.indexOf(name) < 0) {
+                        result.push(name)
                     }
                 });
             }
-            return getExtensions(parentElt(elt), extensionsToReturn);
+
+            return result
         }
 
         //====================================================================

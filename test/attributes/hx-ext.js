@@ -94,5 +94,27 @@ describe("hx-ext attribute", function() {
         ext3Calls.should.equal(0);
     });
 
+    it('Extensions are ignored properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked!");
+
+        make('<div id="div-AA" hx-ext="ext-1, ext-2"><button id="btn-AA" hx-get="/test">Click Me!</button>' +
+            '<div id="div-BB" hx-ext="ignore:ext-1"><button id="btn-BB" hx-get="/test"></div></div>')
+
+        var btn1 = byId("btn-AA");
+        var btn2 = byId("btn-BB");
+
+        btn1.click();
+        this.server.respond();
+        ext1Calls.should.equal(1);
+        ext2Calls.should.equal(1);
+        ext3Calls.should.equal(0);
+
+        btn2.click();
+        this.server.respond();
+        ext1Calls.should.equal(1);
+        ext2Calls.should.equal(2);
+        ext3Calls.should.equal(0);
+    });
+
 
 });
