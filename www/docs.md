@@ -516,7 +516,10 @@ Htmx has an extension mechanism that allows you to customize the libraries' beha
 defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/attributes/hx-ext) attribute:
 
 ```html
-  <button hx-post="/example" hx-ext="debug">This button uses the debug extension</button>
+<div hx-ext="debug">
+  <button hx-post="/example">This button used the debug extension</button>
+  <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
+</div>
 ```
 
 If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions)

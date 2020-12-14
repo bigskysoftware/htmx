@@ -16,3 +16,16 @@ and on the `body` tag for it to apply to all htmx requests.
 
 * `hx-ext` is both inherited and merged with parent elements, so you can specify extensions on any element in the DOM 
 hierarchy and it will apply to all child elements. 
+
+* You can ignore an extension that is defined by a parent node using `hx-ext="ignore:extensionName"` 
+
+
+```html
+<div ext="example">
+  "Example" extension is used in this part of the tree...
+  <div ext="ignore:example">
+    ... but it will not be used in this part.
+  </div>
+</div>
+```
+
