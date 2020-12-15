@@ -62,7 +62,7 @@ phase.
   transition: opacity 1s ease-out;
 }
 </style>
-<button class="fade-me-in"
+<button id="fade-me-in"
         hx-post="/fade_in_demo"
         hx-swap="outerHTML settle:1s">
         Fade Me In
