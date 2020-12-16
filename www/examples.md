@@ -25,5 +25,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Dialogs - Browser](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
 | [Dialogs - UIKIt](/examples/modal-uikit) | Demonstrates modal dialogs using UIKit
 | [Dialogs - Bootstrap](/examples/modal-bootstrap) | Demonstrates modal dialogs using Bootstrap
+| [Tabs (Using HATEOAS)](/examples/tabs-hateoas) | Demonstrates how to display and select tabs using HATEOAS principles
+| [Tabs (Using Hyperscript)](/examples/tabs-hyperscript) | Demonstrates how to display and select tabs using Hyperscript
 | [File Upload](/examples/file-upload) | Demonstrates how to upload a file via ajax with a progress bar
 
