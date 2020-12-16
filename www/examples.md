@@ -22,10 +22,11 @@ You can copy and paste them and then adjust them for your needs.
 | [Progress Bar](/examples/progress-bar) | Demonstrates a job-runner like progress bar
 | [Value Select](/examples/value-select) | Demonstrates making the values of a select dependent on another select
 | [Animations](/examples/animations) | Demonstrates various animation techniques
+| [File Upload](/examples/file-upload) | Demonstrates how to upload a file via ajax with a progress bar
 | [Dialogs - Browser](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
 | [Dialogs - UIKIt](/examples/modal-uikit) | Demonstrates modal dialogs using UIKit
 | [Dialogs - Bootstrap](/examples/modal-bootstrap) | Demonstrates modal dialogs using Bootstrap
+| [Dialogs - Custom](/examples/modal-custom) | Demonstrates modal dialogs from scratch
 | [Tabs (Using HATEOAS)](/examples/tabs-hateoas) | Demonstrates how to display and select tabs using HATEOAS principles
 | [Tabs (Using Hyperscript)](/examples/tabs-hyperscript) | Demonstrates how to display and select tabs using Hyperscript
-| [File Upload](/examples/file-upload) | Demonstrates how to upload a file via ajax with a progress bar
 
