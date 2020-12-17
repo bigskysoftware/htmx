@@ -55,6 +55,7 @@ against `htmx` in each distribution
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
 | [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
+| [`authentication-header`](/extensions/authentication-header) | automates use of `Authentication` header 
 | [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
 
 </div>
@@ -82,6 +83,7 @@ Extensions can override the following default extension points to add or change 
 ```javascript
 {
     onEvent : function(name, evt) {return true;},
+    transformRequest : function(xhr) {return xhr;},
     transformResponse : function(text, xhr, elt) {return text;},
     isInlineSwap : function(swapStyle) {return false;},
     handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
