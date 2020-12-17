@@ -818,5 +818,28 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal("</> htmx rocks!");
     });
 
+    it('should use transformRequest extensions properly', function()
+    {
+        this.server.respondWith("GET", "/success", function (xhr) {
+            xhr.respond(200, {}, "SUCCESS");
+        });
+
+        htmx.defineExtension("transformRequest", {
+            transformRequest: function(xhr) {
+
+                if (xhr.url == "/failure") {
+                    xhr.url = "/success"
+                }
+                return xhr
+            }
+        })
+
+        var btn = make('<button hx-ext="transformRequest" hx-get="/failure">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("SUCCESS");
+
+        htmx.removeExtension("transformRequest")
+    });
 
 })
