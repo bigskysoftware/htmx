@@ -1556,16 +1556,12 @@ return (function () {
 
         function getInputValues(elt, verb) {
             var processed = [];
-            var values = {
-                form: {},
-                element: {},
-                includes: {},
-            };
+            var values = {};
             var errors = [];
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values.form, errors, closest(elt, 'form'));
+                processInputValue(processed, values, errors, closest(elt, 'form'));
             }
 
             // include the element itself
@@ -1576,14 +1572,12 @@ return (function () {
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values.includes, errors, node);
+                    processInputValue(processed, values, errors, node);
                 });
             }
 
-            var mergedValues = mergeObjects(values.includes, values.form);
-            mergedValues = mergeObjects(mergedValues, values.element);
 
-            return {errors:errors, values:mergedValues};
+            return {errors:errors, values:values};
         }
 
         function appendParam(returnStr, name, realValue) {
