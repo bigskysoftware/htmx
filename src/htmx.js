@@ -1580,8 +1580,8 @@ return (function () {
                 });
             }
 
-            var mergedValues = mergeObjects(values.includes, values.form);
-            mergedValues = mergeObjects(mergedValues, values.element);
+            var mergedValues = mergeObjects(values.includes, values.element);
+            mergedValues = mergeObjects(mergedValues, values.form);
 
             return {errors:errors, values:mergedValues};
         }
