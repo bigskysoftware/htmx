@@ -1496,14 +1496,15 @@ return (function () {
             return true;
         }
 
-        function processInputValue(processed, values, errors, elt) {
-            if (elt == null || haveSeenNode(processed, elt)) {
+        function processInputValue(values, errors, elt) {
+            if (elt == null) {
                 return;
-            } else {
-                processed.push(elt);
             }
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
+                if (name in values) {
+                    return;
+                }
                 var value = elt.value;
                 if (elt.multiple) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
@@ -1539,7 +1540,7 @@ return (function () {
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
                 forEach(inputs, function(input) {
-                    processInputValue(processed, values, errors, input);
+                    processInputValue(values, errors, input);
                 });
             }
         }
@@ -1555,24 +1556,23 @@ return (function () {
         }
 
         function getInputValues(elt, verb) {
-            var processed = [];
             var values = {};
             var errors = [];
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values, errors, closest(elt, 'form'));
+                processInputValue(values, errors, closest(elt, 'form'));
             }
 
             // include the element itself
-            processInputValue(processed, values, errors, elt);
+            processInputValue(values, errors, elt);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values, errors, node);
+                    processInputValue(values, errors, node);
                 });
             }
 
