@@ -1569,7 +1569,7 @@ return (function () {
             }
 
             // include the element itself
-            processInputValue(processed, values, errors, elt);
+            processInputValue(processed, values.element, errors, elt);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
