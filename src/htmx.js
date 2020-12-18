@@ -1472,16 +1472,6 @@ return (function () {
         // Input Value Processing
         //====================================================================
 
-        function haveSeenNode(processed, elt) {
-            for (var i = 0; i < processed.length; i++) {
-                var node = processed[i];
-                if (node.isSameNode(elt)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         function shouldInclude(elt) {
             if(elt.name === "" || elt.name == null || elt.disabled) {
                 return false;
