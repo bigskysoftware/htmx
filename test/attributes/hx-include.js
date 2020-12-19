@@ -34,6 +34,22 @@ describe("hx-include attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('non-GET includes closest form and overrides values included that exist outside the form', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make('<div hx-include="*" hx-target="this">' +
+            '<input name="i1" value="before"/>' +
+            '<form><div id="d1" hx-post="/include"></div><input name="i1" value="test"/></form>' +
+            '<input name="i1" value="after"/>')
+        var input = byId("d1")
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
     it('GET does not include closest form by default', function () {
         this.server.respondWith("GET", "/include", function (xhr) {
             var params = getParameters(xhr);
