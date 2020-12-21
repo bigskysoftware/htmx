@@ -1419,7 +1419,7 @@ return (function () {
         }
 
         function restoreHistory(path) {
-            saveHistory(currentPathForHistory);
+            saveHistory();
             path = path || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             var cached = getCachedHistory(path);
