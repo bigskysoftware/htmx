@@ -1033,7 +1033,7 @@ return (function () {
             if (webSocketSourceElt) {
                 var webSocket = getInternalData(webSocketSourceElt).webSocket;
                 elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
-                    var headers = getHeaders(elt, webSocketSourceElt, null, elt);
+                    var headers = getHeaders(elt, webSocketSourceElt);
                     var results = getInputValues(elt, 'post');
                     var errors = results.errors;
                     var rawParameters = results.values;
@@ -1627,7 +1627,7 @@ return (function () {
         // Ajax
         //====================================================================
 
-        function getHeaders(elt, target, prompt, event) {
+        function getHeaders(elt, target, prompt) {
             var headers = {
                 "HX-Request" : "true",
                 "HX-Trigger" : getRawAttribute(elt, "id"),
@@ -1637,16 +1637,6 @@ return (function () {
             }
             if (prompt !== undefined) {
                 headers["HX-Prompt"] = prompt;
-            }
-            if (event && event.target) {
-                headers["HX-Event-Target"] = getRawAttribute(event.target, "id");
-            }
-            if (getDocument().activeElement) {
-                headers["HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
-                headers["HX-Active-Element-Name"] = getRawAttribute(getDocument().activeElement, "name");
-                if (getDocument().activeElement.value) {
-                    headers["HX-Active-Element-Value"] = getRawAttribute(getDocument().activeElement, "value");
-                }
             }
             return headers;
         }
@@ -1831,10 +1821,10 @@ return (function () {
         }
 
         function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
-            if(elt == null) {
+            if(elt === undefined) {
                 elt = getDocument().body;
             }
-            if (responseHandler == null) {
+            if (responseHandler === undefined) {
                 responseHandler = handleAjaxResponse;
             }
             if (!bodyContains(elt)) {
@@ -1878,7 +1868,7 @@ return (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var headers = getHeaders(elt, target, promptResponse, event);
+            var headers = getHeaders(elt, target, promptResponse);
             var results = getInputValues(elt, verb);
             var errors = results.errors;
             var rawParameters = results.values;
