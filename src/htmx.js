@@ -1569,14 +1569,14 @@ return (function () {
             }
 
             // include the element itself
-            processInputValue(processed, values, errors, elt, true, validate);
+            processInputValue(processed, values, errors, elt, validate);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values, errors, node, true, validate);
+                    processInputValue(processed, values, errors, node, validate);
                 });
             }
 
