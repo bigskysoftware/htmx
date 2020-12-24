@@ -1561,13 +1561,12 @@ return (function () {
             var values = {};
             var errors = [];
 
-            var validate = matches(elt, 'form') ? elt.noValidate !== true : true;
+            var parentForm  = closest(elt, 'form');
+            var validate = parentForm ? parentForm.noValidate !== true : true;
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                var parentForm = closest(elt, 'form');
-                validate = parentForm ? parentForm.noValidate !== true : validate;
-                processInputValue(processed, values, errors, parentForm, validate);
+                processInputValue(processed, values, errors, closest(elt, 'form'), validate);
             }
 
             // include the element itself
