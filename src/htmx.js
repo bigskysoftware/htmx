@@ -1565,7 +1565,9 @@ return (function () {
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values, errors, closest(elt, 'form'), validate);
+                var parentForm = closest(elt, 'form');
+                validate = parentForm ? parentForm.noValidate !== true : validate;
+                processInputValue(processed, values, errors, parentForm, validate);
             }
 
             // include the element itself
