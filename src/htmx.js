@@ -1496,7 +1496,7 @@ return (function () {
             return true;
         }
 
-        function processInputValue(processed, values, errors, elt) {
+        function processInputValue(processed, values, errors, elt, validate) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
             } else {
@@ -1534,12 +1534,14 @@ return (function () {
                         values[name] = value;
                     }
                 }
-                validateElement(elt, errors);
+                if (validate) {
+                    validateElement(elt, errors);
+                }
             }
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
                 forEach(inputs, function(input) {
-                    processInputValue(processed, values, errors, input);
+                    processInputValue(processed, values, errors, input, validate);
                 });
             }
         }
@@ -1559,20 +1561,22 @@ return (function () {
             var values = {};
             var errors = [];
 
+            var validate = matches(elt, 'form') ? elt.noValidate !== true : true;
+
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values, errors, closest(elt, 'form'));
+                processInputValue(processed, values, errors, closest(elt, 'form'), validate);
             }
 
             // include the element itself
-            processInputValue(processed, values, errors, elt);
+            processInputValue(processed, values, errors, elt, true, validate);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values, errors, node);
+                    processInputValue(processed, values, errors, node, true, validate);
                 });
             }
 
