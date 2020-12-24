@@ -1561,8 +1561,7 @@ return (function () {
             var values = {};
             var errors = [];
 
-            var parentForm  = closest(elt, 'form');
-            var validate = parentForm ? parentForm.noValidate !== true : true;
+            var validate = matches(elt, 'form') && elt.noValidate !== true;
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
