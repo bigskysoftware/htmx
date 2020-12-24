@@ -1810,10 +1810,10 @@ return (function () {
 
         function ajaxHelper(verb, path, context) {
             if (context) {
-                if (context instanceof Element) {
-                    issueAjaxRequest(verb, path, null, null, null, context);
+                if (context instanceof Element || isType(context, 'String')) {
+                    issueAjaxRequest(verb, path, null, null, null, resolveTarget(context));
                 } else {
-                    issueAjaxRequest(verb, path, context.source, context.event, context.handler, context.target);
+                    issueAjaxRequest(verb, path, resolveTarget(context.source), context.event, context.handler, resolveTarget(context.target));
                 }
             } else {
                 issueAjaxRequest(verb, path);
@@ -1821,10 +1821,10 @@ return (function () {
         }
 
         function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
-            if(elt === undefined) {
+            if(elt == null) {
                 elt = getDocument().body;
             }
-            if (responseHandler === undefined) {
+            if (responseHandler == null) {
                 responseHandler = handleAjaxResponse;
             }
             if (!bodyContains(elt)) {
