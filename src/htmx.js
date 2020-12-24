@@ -1828,7 +1828,9 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
-                eltData.queuedRequest = function(){issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent)};
+                eltData.queuedRequest = function(){
+                    issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent)
+                };
                 return;
             } else {
                 eltData.requestInFlight = true;
@@ -1933,134 +1935,7 @@ return (function () {
             var eventDetail = {xhr: xhr, target: target, requestConfig: requestConfig};
             xhr.onload = function () {
                 try {
-                    if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
-
-                    if (hasHeader(xhr, /HX-Trigger:/i)) {
-                        handleTrigger(xhr, "HX-Trigger", elt);
-                    }
-
-                    if (hasHeader(xhr,/HX-Push:/i)) {
-                        var pushedUrl = xhr.getResponseHeader("HX-Push");
-                    }
-
-                    if (hasHeader(xhr, /HX-Redirect:/i)) {
-                        window.location.href = xhr.getResponseHeader("HX-Redirect");
-                        return;
-                    }
-
-                    if (hasHeader(xhr,/HX-Refresh:/i)) {
-                        if ("true" === xhr.getResponseHeader("HX-Refresh")) {
-                            location.reload();
-                            return;
-                        }
-                    }
-
-                    var shouldSaveHistory = shouldPush(elt) || pushedUrl;
-
-                    if (this.status >= 200 && this.status < 400) {
-                        if (this.status === 286) {
-                            cancelPolling(elt);
-                        }
-                        // don't process 'No Content'
-                        if (this.status !== 204) {
-                            if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
-
-                            var serverResponse = this.response;
-                            withExtensions(elt, function(extension){
-                                serverResponse = extension.transformResponse(serverResponse, xhr, elt);
-                            });
-
-                            // Save current page
-                            if (shouldSaveHistory) {
-                                saveHistory();
-                            }
-
-                            var swapSpec = getSwapSpecification(elt);
-
-                            target.classList.add(htmx.config.swappingClass);
-                            var doSwap = function () {
-                                try {
-
-                                    var activeElt = document.activeElement;
-                                    var selectionInfo = {
-                                        elt: activeElt,
-                                        start: activeElt ? activeElt.selectionStart : null,
-                                        end: activeElt ? activeElt.selectionEnd : null
-                                    };
-
-                                    var settleInfo = makeSettleInfo(target);
-                                    selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
-
-                                    if (selectionInfo.elt &&
-                                        !bodyContains(selectionInfo.elt) &&
-                                        selectionInfo.elt.id) {
-                                        var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                                        if (newActiveElt) {
-                                            if (selectionInfo.start && newActiveElt.setSelectionRange) {
-                                                newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
-                                            }
-                                            newActiveElt.focus();
-                                        }
-                                    }
-
-                                    target.classList.remove(htmx.config.swappingClass);
-                                    forEach(settleInfo.elts, function (elt) {
-                                        if (elt.classList) {
-                                            elt.classList.add(htmx.config.settlingClass);
-                                        }
-                                        triggerEvent(elt, 'htmx:afterSwap', eventDetail);
-                                    });
-                                    if (anchor) {
-                                        location.hash = anchor;
-                                    }
-
-                                    if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-                                        handleTrigger(xhr, "HX-Trigger-After-Swap", elt);
-                                    }
-
-                                    var doSettle = function(){
-                                        forEach(settleInfo.tasks, function (task) {
-                                            task.call();
-                                        });
-                                        forEach(settleInfo.elts, function (elt) {
-                                            if (elt.classList) {
-                                                elt.classList.remove(htmx.config.settlingClass);
-                                            }
-                                            triggerEvent(elt, 'htmx:afterSettle', eventDetail);
-                                        });
-                                        // push URL and save new page
-                                        if (shouldSaveHistory) {
-                                            var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPathForGet || path;
-                                            pushUrlIntoHistory(pathToPush);
-                                            triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
-                                        }
-                                        updateScrollState(target, settleInfo.elts, swapSpec);
-
-                                        if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                                            handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
-                                        }
-                                    }
-
-                                    if (swapSpec.settleDelay > 0) {
-                                        setTimeout(doSettle, swapSpec.settleDelay)
-                                    } else {
-                                        doSettle();
-                                    }
-                                } catch (e) {
-                                    triggerErrorEvent(elt, 'htmx:swapError', eventDetail);
-                                    throw e;
-                                }
-                            };
-
-                            if (swapSpec.swapDelay > 0) {
-                                setTimeout(doSwap, swapSpec.swapDelay)
-                            } else {
-                                doSwap();
-                            }
-                        }
-                    } else {
-                        triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + this.status + " from " + path}, eventDetail));
-                    }
+                    handleAjaxResponse(elt, target, xhr, eventDetail, path, finalPathForGet, anchor);
                 } catch (e) {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, eventDetail));
                     throw e;
@@ -2097,6 +1972,137 @@ return (function () {
                 });
             });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+        }
+
+        function handleAjaxResponse(elt, target, xhr, eventDetail, path, finalPath, anchor) {
+            if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
+
+            if (hasHeader(xhr, /HX-Trigger:/i)) {
+                handleTrigger(xhr, "HX-Trigger", elt);
+            }
+
+            if (hasHeader(xhr,/HX-Push:/i)) {
+                var pushedUrl = xhr.getResponseHeader("HX-Push");
+            }
+
+            if (hasHeader(xhr, /HX-Redirect:/i)) {
+                window.location.href = xhr.getResponseHeader("HX-Redirect");
+                return;
+            }
+
+            if (hasHeader(xhr,/HX-Refresh:/i)) {
+                if ("true" === xhr.getResponseHeader("HX-Refresh")) {
+                    location.reload();
+                    return;
+                }
+            }
+
+            var shouldSaveHistory = shouldPush(elt) || pushedUrl;
+
+            if (xhr.status >= 200 && xhr.status < 400) {
+                if (xhr.status === 286) {
+                    cancelPolling(elt);
+                }
+                // don't process 'No Content'
+                if (xhr.status !== 204) {
+                    if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
+
+                    var serverResponse = xhr.response;
+                    withExtensions(elt, function(extension){
+                        serverResponse = extension.transformResponse(serverResponse, xhr, elt);
+                    });
+
+                    // Save current page
+                    if (shouldSaveHistory) {
+                        saveHistory();
+                    }
+
+                    var swapSpec = getSwapSpecification(elt);
+
+                    target.classList.add(htmx.config.swappingClass);
+                    var doSwap = function () {
+                        try {
+
+                            var activeElt = document.activeElement;
+                            var selectionInfo = {
+                                elt: activeElt,
+                                start: activeElt ? activeElt.selectionStart : null,
+                                end: activeElt ? activeElt.selectionEnd : null
+                            };
+
+                            var settleInfo = makeSettleInfo(target);
+                            selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
+
+                            if (selectionInfo.elt &&
+                                !bodyContains(selectionInfo.elt) &&
+                                selectionInfo.elt.id) {
+                                var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                                if (newActiveElt) {
+                                    if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                    }
+                                    newActiveElt.focus();
+                                }
+                            }
+
+                            target.classList.remove(htmx.config.swappingClass);
+                            forEach(settleInfo.elts, function (elt) {
+                                if (elt.classList) {
+                                    elt.classList.add(htmx.config.settlingClass);
+                                }
+                                triggerEvent(elt, 'htmx:afterSwap', eventDetail);
+                            });
+                            if (anchor) {
+                                location.hash = anchor;
+                            }
+
+                            if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                                handleTrigger(xhr, "HX-Trigger-After-Swap", elt);
+                            }
+
+                            var doSettle = function(){
+                                forEach(settleInfo.tasks, function (task) {
+                                    task.call();
+                                });
+                                forEach(settleInfo.elts, function (elt) {
+                                    if (elt.classList) {
+                                        elt.classList.remove(htmx.config.settlingClass);
+                                    }
+                                    triggerEvent(elt, 'htmx:afterSettle', eventDetail);
+                                });
+                                // push URL and save new page
+                                if (shouldSaveHistory) {
+                                    var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPath || path;
+                                    pushUrlIntoHistory(pathToPush);
+                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
+                                }
+                                updateScrollState(target, settleInfo.elts, swapSpec);
+
+                                if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+                                    handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
+                                }
+                            }
+
+                            if (swapSpec.settleDelay > 0) {
+                                setTimeout(doSettle, swapSpec.settleDelay)
+                            } else {
+                                doSettle();
+                            }
+                        } catch (e) {
+                            triggerErrorEvent(elt, 'htmx:swapError', eventDetail);
+                            throw e;
+                        }
+                    };
+
+                    if (swapSpec.swapDelay > 0) {
+                        setTimeout(doSwap, swapSpec.swapDelay)
+                    } else {
+                        doSwap();
+                    }
+                }
+            } else {
+                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + path}, eventDetail));
+            }
         }
 
         //====================================================================
