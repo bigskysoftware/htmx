@@ -929,15 +929,15 @@ return (function () {
 
                     if (triggerSpec.throttle) {
                         elementData.throttle = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target, evt);
+                            issueAjaxRequest(elt, verb, path, evt);
                             elementData.throttle = null;
                         }, triggerSpec.throttle);
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt.target, evt);
+                            issueAjaxRequest(elt, verb, path, evt);
                         }, triggerSpec.delay);
                     } else {
-                        issueAjaxRequest(elt, verb, path, evt.target, evt);
+                        issueAjaxRequest(elt, verb, path, evt);
                     }
                 }
             };
@@ -1626,7 +1626,7 @@ return (function () {
         // Ajax
         //====================================================================
 
-        function getHeaders(elt, target, prompt, eventTarget) {
+        function getHeaders(elt, target, prompt, event) {
             var headers = {
                 "HX-Request" : "true",
                 "HX-Trigger" : getRawAttribute(elt, "id"),
@@ -1637,8 +1637,8 @@ return (function () {
             if (prompt !== undefined) {
                 headers["HX-Prompt"] = prompt;
             }
-            if (eventTarget) {
-                headers["HX-Event-Target"] = getRawAttribute(eventTarget, "id");
+            if (event && event.target) {
+                headers["HX-Event-Target"] = getRawAttribute(event.target, "id");
             }
             if (getDocument().activeElement) {
                 headers["HX-Active-Element"] = getRawAttribute(getDocument().activeElement, "id");
@@ -1817,7 +1817,7 @@ return (function () {
             return xhr.getAllResponseHeaders().match(regexp);
         }
 
-        function issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent) {
+        function issueAjaxRequest(elt, verb, path, event) {
             if (!bodyContains(elt)) {
                 return; // do not issue requests for elements removed from the DOM
             }
@@ -1829,7 +1829,7 @@ return (function () {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 eltData.queuedRequest = function(){
-                    issueAjaxRequest(elt, verb, path, eventTarget, triggeringEvent)
+                    issueAjaxRequest(elt, verb, path, event)
                 };
                 return;
             } else {
@@ -1859,7 +1859,7 @@ return (function () {
 
             var xhr = new XMLHttpRequest();
 
-            var headers = getHeaders(elt, target, promptResponse, eventTarget);
+            var headers = getHeaders(elt, target, promptResponse, event);
             var results = getInputValues(elt, verb);
             var errors = results.errors;
             var rawParameters = results.values;
@@ -1884,7 +1884,7 @@ return (function () {
                 verb:verb,
                 errors:errors,
                 path:path,
-                triggeringEvent:triggeringEvent
+                triggeringEvent:event
             };
 
             if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
