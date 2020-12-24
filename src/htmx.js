@@ -838,7 +838,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    issueAjaxRequest(elt, verb, path);
+                    issueAjaxRequest(verb, path, elt);
                     processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), interval);
                 }
             }, interval);
@@ -929,15 +929,15 @@ return (function () {
 
                     if (triggerSpec.throttle) {
                         elementData.throttle = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt);
+                            issueAjaxRequest(verb, path, elt, evt);
                             elementData.throttle = null;
                         }, triggerSpec.throttle);
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(elt, verb, path, evt);
+                            issueAjaxRequest(verb, path, elt, evt);
                         }, triggerSpec.delay);
                     } else {
-                        issueAjaxRequest(elt, verb, path, evt);
+                        issueAjaxRequest(verb, path, elt, evt);
                     }
                 }
             };
@@ -969,7 +969,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.revealed && isScrolledIntoView(elt)) {
                 nodeData.revealed = true;
-                issueAjaxRequest(elt, nodeData.verb, nodeData.path);
+                issueAjaxRequest(nodeData.verb, nodeData.path, elt);
             }
         }
 
@@ -1121,7 +1121,7 @@ return (function () {
                 var sseListener = function () {
                     if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
-                            issueAjaxRequest(elt, verb, path);
+                            issueAjaxRequest(verb, path, elt);
                         } else {
                             sseEventSource.removeEventListener(sseEventName, sseListener);
                         }
@@ -1151,7 +1151,7 @@ return (function () {
             var load = function(){
                 if (!nodeData.loaded) {
                     nodeData.loaded = true;
-                    issueAjaxRequest(elt, verb, path);
+                    issueAjaxRequest(verb, path, elt);
                 }
             }
             if (delay) {
@@ -1817,7 +1817,10 @@ return (function () {
             return xhr.getAllResponseHeaders().match(regexp);
         }
 
-        function issueAjaxRequest(elt, verb, path, event) {
+        function issueAjaxRequest(verb, path, elt, event, responseHandler) {
+            if(elt == null) {
+                elt = getDocument().body;
+            }
             if (!bodyContains(elt)) {
                 return; // do not issue requests for elements removed from the DOM
             }
@@ -1829,7 +1832,7 @@ return (function () {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 eltData.queuedRequest = function(){
-                    issueAjaxRequest(elt, verb, path, event)
+                    issueAjaxRequest(verb, path, elt, event)
                 };
                 return;
             } else {
@@ -1932,32 +1935,34 @@ return (function () {
                 }
             }
 
-            var eventDetail = {xhr: xhr, target: target, requestConfig: requestConfig};
+            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
+                  path:path, finalPath:finalPathForGet, anchor:anchor
+                }};
             xhr.onload = function () {
                 try {
-                    handleAjaxResponse(elt, target, xhr, eventDetail, path, finalPathForGet, anchor);
+                    handleAjaxResponse(elt, responseInfo);
                 } catch (e) {
-                    triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, eventDetail));
+                    triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(elt);
                     var finalElt = getInternalData(elt).replacedWith || elt;
-                    triggerEvent(finalElt, 'htmx:afterRequest', eventDetail);
-                    triggerEvent(finalElt, 'htmx:afterOnLoad', eventDetail);
+                    triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
+                    triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
                     endRequestLock();
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(elt);
-                triggerErrorEvent(elt, 'htmx:afterRequest', eventDetail);
-                triggerErrorEvent(elt, 'htmx:sendError', eventDetail);
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(elt);
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'htmx:beforeRequest', eventDetail)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
             addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
@@ -1974,8 +1979,11 @@ return (function () {
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
         }
 
-        function handleAjaxResponse(elt, target, xhr, eventDetail, path, finalPath, anchor) {
-            if (!triggerEvent(elt, 'htmx:beforeOnLoad', eventDetail)) return;
+        function handleAjaxResponse(elt, responseInfo) {
+            var xhr = responseInfo.xhr;
+            var target = responseInfo.target;
+
+            if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
             if (hasHeader(xhr, /HX-Trigger:/i)) {
                 handleTrigger(xhr, "HX-Trigger", elt);
@@ -2005,7 +2013,7 @@ return (function () {
                 }
                 // don't process 'No Content'
                 if (xhr.status !== 204) {
-                    if (!triggerEvent(target, 'htmx:beforeSwap', eventDetail)) return;
+                    if (!triggerEvent(target, 'htmx:beforeSwap', responseInfo)) return;
 
                     var serverResponse = xhr.response;
                     withExtensions(elt, function(extension){
@@ -2050,10 +2058,10 @@ return (function () {
                                 if (elt.classList) {
                                     elt.classList.add(htmx.config.settlingClass);
                                 }
-                                triggerEvent(elt, 'htmx:afterSwap', eventDetail);
+                                triggerEvent(elt, 'htmx:afterSwap', responseInfo);
                             });
-                            if (anchor) {
-                                location.hash = anchor;
+                            if (responseInfo.pathInfo.anchor) {
+                                location.hash = responseInfo.pathInfo.anchor;
                             }
 
                             if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
@@ -2068,11 +2076,11 @@ return (function () {
                                     if (elt.classList) {
                                         elt.classList.remove(htmx.config.settlingClass);
                                     }
-                                    triggerEvent(elt, 'htmx:afterSettle', eventDetail);
+                                    triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                                 });
                                 // push URL and save new page
                                 if (shouldSaveHistory) {
-                                    var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || finalPath || path;
+                                    var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
                                     pushUrlIntoHistory(pathToPush);
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                 }
@@ -2089,7 +2097,7 @@ return (function () {
                                 doSettle();
                             }
                         } catch (e) {
-                            triggerErrorEvent(elt, 'htmx:swapError', eventDetail);
+                            triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
                             throw e;
                         }
                     };
@@ -2101,7 +2109,7 @@ return (function () {
                     }
                 }
             } else {
-                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + path}, eventDetail));
+                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
             }
         }
 
