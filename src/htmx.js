@@ -18,6 +18,7 @@ return (function () {
             on: addEventListenerImpl,
             off: removeEventListenerImpl,
             trigger : triggerEvent,
+            ajax : ajaxHelper,
             find : find,
             findAll : findAll,
             closest : closest,
@@ -1817,14 +1818,29 @@ return (function () {
             return xhr.getAllResponseHeaders().match(regexp);
         }
 
-        function issueAjaxRequest(verb, path, elt, event, responseHandler) {
+        function ajaxHelper(verb, path, context) {
+            if (context) {
+                if (context instanceof Element) {
+                    issueAjaxRequest(verb, path, null, null, null, context);
+                } else {
+                    issueAjaxRequest(verb, path, context.source, context.event, context.handler, context.target);
+                }
+            } else {
+                issueAjaxRequest(verb, path);
+            }
+        }
+
+        function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
             if(elt == null) {
                 elt = getDocument().body;
+            }
+            if (responseHandler == null) {
+                responseHandler = handleAjaxResponse;
             }
             if (!bodyContains(elt)) {
                 return; // do not issue requests for elements removed from the DOM
             }
-            var target = getTarget(elt);
+            var target = targetOverride || getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
@@ -1937,10 +1953,11 @@ return (function () {
 
             var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
-                }};
+                }
+            };
             xhr.onload = function () {
                 try {
-                    handleAjaxResponse(elt, responseInfo);
+                    responseHandler(elt, responseInfo);
                 } catch (e) {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
