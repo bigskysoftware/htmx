@@ -470,6 +470,14 @@ return (function () {
             });
         }
 
+        function handlePreservedElements(fragment) {
+            forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function (preservedElt) {
+                var id = getAttributeValue(preservedElt, "id");
+                var oldElt = getDocument().getElementById(id);
+                preservedElt.parentNode.replaceChild(oldElt, preservedElt);
+            });
+        }
+
         function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
                 if (newNode.id && newNode.id.length > 0) {
@@ -656,6 +664,7 @@ return (function () {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
+                handlePreservedElements(fragment);
                 fragment = maybeSelectFromResponse(elt, fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
             }
