@@ -35,10 +35,7 @@
                 }
             } else if (name === "htmx:refreshPath") {
                 refreshPath(evt.path);
-            } else if (name === "htmx:refresh") {
-                var elt = evt.detail.elt;
-                htmx.trigger(elt, "path-deps");
-            }
+            } 
         }
     });
 })();
