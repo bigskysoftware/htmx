@@ -34,7 +34,7 @@
                     refreshPath(config.path);
                 }
             } else if (name === "htmx:refreshPath") {
-                refreshPath(evt.path);
+                refreshPath(evt.detail.path);
             } 
         }
     });
