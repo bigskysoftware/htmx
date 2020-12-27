@@ -1,4 +1,9 @@
-(function(){
+(function(undefined){
+    'use strict';
+
+    // Save a reference to the global object (window in the browser)
+    var _root = this;
+  
     function dependsOn(pathSpec, url) {
         var dependencyPath = pathSpec.split("/");
         var urlPath = url.split("/");
@@ -23,7 +28,7 @@
                 htmx.trigger(elt, "path-deps");
             }
         }      
-    }
+    }    
 
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
@@ -33,9 +38,21 @@
                 if (config.verb !== "get") {
                     refreshPath(config.path);
                 }
-            } else if (name === "htmx:refreshPath") {
-                refreshPath(evt.detail.path);
             } 
         }
     });
-})();
+
+    /**
+     *  ********************
+     *  Expose functionality
+     *  ********************
+     */    
+
+    _root.PathDeps = {
+            
+        PathDeps.refresh: function(path) {
+            refreshPath(path);
+        }
+    };
+            
+}).call(this);
