@@ -26,6 +26,35 @@ describe("Core htmx client side validation tests", function(){
         form.textContent.should.equal("Clicked!");
     });
 
+    it('Novalidate skips form validation', function()
+    {
+        this.server.respondWith("POST", "/test", "Clicked!");
+
+        var form = make('<form hx-post="/test" hx-trigger="click" novalidate>' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '</form>');
+        form.textContent.should.equal("No Request");
+        form.click();
+        this.server.respond();
+        form.textContent.should.equal("Clicked!");
+    });
+
+    it('Validation skipped for indirect form submission', function()
+    {
+        this.server.respondWith("POST", "/test", "Clicked!");
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '<button id="button" hx-post="/test" hx-target="form"></button>' +
+            '</form>');
+        form.textContent.should.equal("No Request");
+        byId("button").click();
+        this.server.respond();
+        form.textContent.should.equal("Clicked!");
+    });
+
     it('HTML5 pattern validation error prevents request', function()
     {
         this.server.respondWith("POST", "/test", "Clicked!");
