@@ -557,12 +557,7 @@ htmx includes a number of useful headers in requests:
 | `HX-Trigger` | will be set to the id of the element that triggered the request
 | `HX-Trigger-Name` | will be set to the name of the element that triggered the request
 | `HX-Target` | will be set to the id of the target element
-| `HX-Current-URL` | will be set to the URL of the browser
 | `HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
-| `HX-Event-Target` | the id of the original target of the event that triggered the request
-| `HX-Active-Element` | the id of the current active element
-| `HX-Active-Element-Name` | the name of the current active element
-| `HX-Active-Element-Value` | the value of the current active element
 
 ### <a name="response-header"></a> [Response Headers](#response-headers)
 
