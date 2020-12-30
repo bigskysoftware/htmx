@@ -1018,6 +1018,7 @@ return (function () {
         }
 
         function processNode(elt) {
+            triggerEvent(elt, "htmx:beforeProcessNode")
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
         }
