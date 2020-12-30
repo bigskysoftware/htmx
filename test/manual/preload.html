@@ -2,29 +2,40 @@
 <head>
     <script src="../../src/htmx.js"></script>
     <script src="../../src/ext/preload.js"></script>
+
+    <style>
+        div.container {
+            border:solid 1px black;
+            margin-bottom:25px;
+            padding:25px;
+        }
+    </style>
 </head>
 
 <body hx-ext="preload">
-<!--
-    <button hx-get="preload-1.html?button=true" preload="on:load wait:100ms">1</button>
-    <button hx-get="preload-2.html?button=true" preload="on:mouseover">2</button>
 
-    <a href="preload-1.html?link=true" preload="on:mouseover">1</a>
-    <a href="preload-2.html?link=true" preload="on:mousedown wait:0">2</a>
-
-    <div preload="on:load wait:3s">
-        <a href="preload-1.html?onload=true" preload>onload 1</a>
-        <a href="preload-2.html?onload=true" preload="wait:4s">onload 2</a>
+    <div class="container">
+        <h4>Buttons</h4>
+        <button hx-get="preload-1.html?mouseover" preload="on:mouseover wait:1.5s">Trigger mouseover after 1.5s</button><br>
+        <button hx-get="preload-2.html?mouseover" preload="on:mouseover">Trigger on mouseover after 100ms</button><br>
     </div>
 
-    <br>
-    <br>
--->
-    <div hx-get="preload-1.html?complex=true" preload="on:mouseover wait:2s">
+    <div class="container">
+        <a href="preload-1.html?mousedown" preload="on:mousedown wait:1s">Trigger on mousedown after 1s</a><br>
+        <a href="preload-2.html?mousedown" preload="on:mousedown wait:0">Trigger on mousedown immediately</a><br>
+    </div>
+
+    <div class="container" preload="on:load wait:3s">
+        <a href="preload-1.html?onload=true" preload>Trigger on load after 3s</a><br>
+        <a href="preload-2.html?onload=true" preload="wait:200ms">Trigger on load after 200ms</a><br>
+    </div>
+
+    <div class="container" hx-get="preload-1.html?complex=true" preload="on:mouseover wait:1s">
         <div>This is a complex object</div>
         <div>With many sub-objects</div>
         <div>Preload should only be canceled</div>
         <div>If we leave the whole parent</div>
+        <div>Triggers on:mouseover after 1s</div>
     </div>
 
 </body>

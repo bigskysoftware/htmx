@@ -63,14 +63,16 @@ htmx.defineExtension("preload", {
 					return;
 				}
 
+				var done = function() {
+					node.preloadState = "DONE"
+				}
+
 				// Special handling for HX_GET - use built-in htmx.ajax function
 				// so that headers match other htmx requests, then set 
 				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future
 				if (node.getAttribute("hx-get")) {
-					htmx.ajax("GET", node.getAttribute("hx-get"), {handler:function() {
-						node.preloadState = "DONE"
-					}});
+					htmx.ajax("GET", node.getAttribute("hx-get"), {handler:done});
 					return;
 				}
 
@@ -80,9 +82,7 @@ htmx.defineExtension("preload", {
 				if (node.getAttribute("href")) {
 					var r = new XMLHttpRequest();
 					r.open("GET", node.getAttribute("href"));
-					r.onload = function() {
-						node.preloadState = "DONE";
-					}
+					r.onload = done;
 					r.send();
 				}
 			}
@@ -116,9 +116,8 @@ htmx.defineExtension("preload", {
 			// FALL THROUGH to here means we need to add an EventListener
 	
 			// Apply the listener to the node
-			node.addEventListener(on, function() {
-				// Only add one event listener
-				if (node.preloadState !== "READY") {
+			node.addEventListener(on, function(evt) {
+				if (node.preloadState === "PAUSE") { // Only add one event listener
 					node.preloadState = "READY"; // Requred for the `load` function to trigger
 					window.setTimeout(load(node), wait);
 				}
@@ -133,8 +132,8 @@ htmx.defineExtension("preload", {
 
 					// WHhen the mouse leaves, immediately disable the preload
 					node.addEventListener("mouseout", function(evt) {
-						if (evt.target === node) {
-							node.preloadState = "PAUSE"
+						if ((evt.target === node) && (node.preloadState === "READY")) {
+							node.preloadState = "PAUSE";
 						}
 					})
 					break;
