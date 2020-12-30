@@ -1,5 +1,3 @@
-const { should } = require("chai");
-
 describe("Core htmx internals Tests", function() {
 
     it("makeFragment works with janky stuff", function(){
@@ -23,17 +21,17 @@ describe("Core htmx internals Tests", function() {
     })
 
     it("handles parseInterval correctly", function() {
-        htmx._("parseInterval")("1ms").should.equal(1);
-        htmx._("parseInterval")("300ms").should.equal(300);
-        htmx._("parseInterval")("1s").should.equal(1000)
-        htmx._("parseInterval")("1.5s").should.equal(1500)
-        htmx._("parseInterval")("2s").should.equal(2000)
+        chai.expect(htmx.parseInterval("1ms")).to.be.equal(1);
+        chai.expect(htmx.parseInterval("300ms")).to.be.equal(300);
+        chai.expect(htmx.parseInterval("1s")).to.be.equal(1000)
+        chai.expect(htmx.parseInterval("1.5s")).to.be.equal(1500)
+        chai.expect(htmx.parseInterval("2s")).to.be.equal(2000)
 
-/*        should(htmx.parseInterval(null)).be.undefined
-        should(htmx.parseInterval("")).be.undefined
-        should(htmx.parseInterval("false")).be.undefined
-        should(htmx.parseInterval("true")).be.undefined
-*/
+        chai.expect(htmx.parseInterval(null)).to.be.undefined
+        chai.expect(htmx.parseInterval("")).to.be.undefined
+        chai.expect(htmx.parseInterval("undefined")).to.be.undefined
+        chai.expect(htmx.parseInterval("true")).to.be.undefined
+        chai.expect(htmx.parseInterval("false")).to.be.undefined
     })
 
 });
