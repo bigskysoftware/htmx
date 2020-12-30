@@ -42,6 +42,18 @@
     <li>
         <a href="manual/scroll-test-eventHandler.html">Scroll Test 2 - Event Handler</a>
     </li>
+    <li>
+        <a href="manual/sse.html">SSE - Multiple Event Sources - Single Event Name</a>
+    </li>
+    <li>
+        <a href="manual/sse-multichannel.html">SSE - Single Event Source - Multiple Event Names</a>
+    </li>
+    <li>
+        <a href="manual/sse-settle.html">SSE - Settling</a>
+    </li>
+    <li>
+      <a href="manual/aborting-request.html">Aborting Request Test</a>
+    </li>
 </ul>
 
 <h2>Mocha Test Suite</h2>
@@ -67,6 +79,8 @@
 <script src="core/headers.js"></script>
 <script src="core/regressions.js"></script>
 <script src="core/perf.js"></script>
+<script src="core/validation.js"></script>
+<script src="core/tokenizer.js"></script>
 
 <!-- attribute tests -->
 <script src="attributes/hx-boost.js"></script>
@@ -78,6 +92,7 @@
 <script src="attributes/hx-params.js"></script>
 <script src="attributes/hx-patch.js"></script>
 <script src="attributes/hx-post.js"></script>
+<script src="attributes/hx-preserve.js"></script>
 <script src="attributes/hx-push-url.js"></script>
 <script src="attributes/hx-put.js"></script>
 <script src="attributes/hx-select.js"></script>
@@ -86,6 +101,7 @@
 <script src="attributes/hx-swap.js"></script>
 <script src="attributes/hx-target.js"></script>
 <script src="attributes/hx-trigger.js"></script>
+<script src="attributes/hx-vals.js"></script>
 <script src="attributes/hx-vars.js"></script>
 <script src="attributes/hx-ws.js"></script>
 
@@ -130,6 +146,9 @@
 
 <script src="../src/ext/ajax-header.js"></script>
 <script src="ext/ajax-header.js"></script>
+
+<script src="../src/ext/event-header.js"></script>
+<script src="ext/event-header.js"></script>
 
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>

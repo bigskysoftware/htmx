@@ -8,22 +8,32 @@
 
 ## introduction
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), 
+htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
 [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
 directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~7k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~9k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](https://htmx.org/extensions) & 
 IE11 compatible
+
+## motivation
+
+* Why should only `<a>` and `<form>` be able to make HTTP requests?
+* Why should only `click` & `submit` events trigger them?
+* Why should only GET & POST be available?
+* Why should you only be able to replace the *entire* screen?
+
+By removing these arbitrary constraints htmx completes HTML as a 
+[hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 ## quick start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@0.0.8"></script>
+  <script src="https://unpkg.com/htmx.org@1.0.2"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

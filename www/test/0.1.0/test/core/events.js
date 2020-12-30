@@ -44,6 +44,25 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:configRequest is also dispatched in kebab-case", function () {
+        var handler = htmx.on("htmx:config-request", function (evt) {
+            evt.detail.parameters['param'] = "true";
+        });
+        try {
+            var param = null;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                param = getParameters(xhr)['param'];
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<div hx-post='/test'></div>");
+            div.click();
+            this.server.respond();
+            param.should.equal("true");
+        } finally {
+            htmx.off("htmx:config-request", handler);
+        }
+    });
+
     it("htmx:configRequest allows attribute removal", function () {
         var param = "foo";
         var handler = htmx.on("htmx:configRequest", function (evt) {
@@ -172,23 +191,56 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("htmx:sendError is called after a failed request", function () {
+    it("htmx:sendError is called after a failed request", function (done) {
         var called = false;
         var handler = htmx.on("htmx:sendError", function (evt) {
             called = true;
         });
+        this.server.restore(); // turn off server mock so connection doesn't work
+        var div = make("<button hx-post='file://foo'>Foo</button>");
+        div.click();
+        setTimeout(function () {
+            htmx.off("htmx:sendError", handler);
+            should.equal(called, true);
+            done();
+        }, 30);
+    });
+    
+    it("htmx:afterRequest is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
-                xhr.respond(200, {}, "");
+                xhr.respond(200, {}, "<button>Bar</button>");
             });
-            var div = make("<button hx-post='/test'>Foo</button>");
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
             div.click();
             this.server.respond();
             should.equal(called, true);
         } finally {
-            htmx.off("htmx:sendError", handler);
+            htmx.off("htmx:afterRequest", handler);
         }
-    });
+    }); 
+
+    it("htmx:afterOnLoad is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterOnLoad", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterOnLoad", handler);
+        }
+    });      
 
 });
 
