@@ -138,5 +138,24 @@ describe("path-deps extension", function() {
         div.innerHTML.should.equal("Deps fired!");
     });
 
+    it('path-deps api basic refresh case works', function () {
+        this.server.respondWith("GET", "/test", "Path deps fired!");
+        var div = make('<div hx-get="/test" hx-trigger="path-deps" path-deps="/test">FOO</div>')
+        PathDeps.refresh("/test");
+        this.server.respond();
+        div.innerHTML.should.equal("Path deps fired!");
+    });
+
+    it('path-deps api parent path case works', function () {
+        this.server.respondWith("GET", "/test1", "Path deps 1 fired!");
+        this.server.respondWith("GET", "/test2", "Path deps 2 fired!");
+        var div = make('<div hx-get="/test1" hx-trigger="path-deps" path-deps="/test/child">FOO</div>')
+        var div2 = make('<div hx-get="/test2" hx-trigger="path-deps" path-deps="/test">BAR</div>')
+        PathDeps.refresh("/test/child");
+        this.server.respond();
+        div.innerHTML.should.equal("Path deps 1 fired!");
+        this.server.respond();
+        div2.innerHTML.should.equal("Path deps 2 fired!");
+    });
 
 });
