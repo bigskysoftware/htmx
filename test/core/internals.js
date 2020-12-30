@@ -1,3 +1,5 @@
+const { should } = require("chai");
+
 describe("Core htmx internals Tests", function() {
 
     it("makeFragment works with janky stuff", function(){
@@ -18,6 +20,20 @@ describe("Core htmx internals Tests", function() {
         htmx._("safelySetHeaderValue")(xhr, "Example", "привет");
         // unfortunately I can't test the value :/
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+    })
+
+    it("handles parseInterval correctly", function() {
+        htmx._("parseInterval")("1ms").should.equal(1);
+        htmx._("parseInterval")("300ms").should.equal(300);
+        htmx._("parseInterval")("1s").should.equal(1000)
+        htmx._("parseInterval")("1.5s").should.equal(1500)
+        htmx._("parseInterval")("2s").should.equal(2000)
+
+/*        should(htmx.parseInterval(null)).be.undefined
+        should(htmx.parseInterval("")).be.undefined
+        should(htmx.parseInterval("false")).be.undefined
+        should(htmx.parseInterval("true")).be.undefined
+*/
     })
 
 });
