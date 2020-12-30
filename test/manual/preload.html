@@ -5,7 +5,7 @@
 </head>
 
 <body hx-ext="preload">
-
+<!--
     <button hx-get="preload-1.html?button=true" preload="on:load wait:100ms">1</button>
     <button hx-get="preload-2.html?button=true" preload="on:mouseover">2</button>
 
@@ -15,6 +15,16 @@
     <div preload="on:load wait:3s">
         <a href="preload-1.html?onload=true" preload>onload 1</a>
         <a href="preload-2.html?onload=true" preload="wait:4s">onload 2</a>
+    </div>
+
+    <br>
+    <br>
+-->
+    <div hx-get="preload-1.html?complex=true" preload="on:mouseover wait:2s">
+        <div>This is a complex object</div>
+        <div>With many sub-objects</div>
+        <div>Preload should only be canceled</div>
+        <div>If we leave the whole parent</div>
     </div>
 
 </body>
