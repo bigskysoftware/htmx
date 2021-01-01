@@ -20,4 +20,18 @@ describe("Core htmx internals Tests", function() {
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
     })
 
+    it("handles parseInterval correctly", function() {
+        chai.expect(htmx.parseInterval("1ms")).to.be.equal(1);
+        chai.expect(htmx.parseInterval("300ms")).to.be.equal(300);
+        chai.expect(htmx.parseInterval("1s")).to.be.equal(1000)
+        chai.expect(htmx.parseInterval("1.5s")).to.be.equal(1500)
+        chai.expect(htmx.parseInterval("2s")).to.be.equal(2000)
+
+        chai.expect(htmx.parseInterval(null)).to.be.undefined
+        chai.expect(htmx.parseInterval("")).to.be.undefined
+        chai.expect(htmx.parseInterval("undefined")).to.be.undefined
+        chai.expect(htmx.parseInterval("true")).to.be.undefined
+        chai.expect(htmx.parseInterval("false")).to.be.undefined
+    })
+
 });

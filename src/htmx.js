@@ -62,16 +62,18 @@ return (function () {
         //====================================================================
         // Utilities
         //====================================================================
-        function parseInterval(str) {
-            if (str == null || str === "null" || str === "false" || str === "") {
-                return null;
-            } else if (str.lastIndexOf("ms") === str.length - 2) {
-                return parseFloat(str.substr(0, str.length - 2));
-            } else if (str.lastIndexOf("s") === str.length - 1) {
-                return parseFloat(str.substr(0, str.length - 1)) * 1000;
-            } else {
-                return parseFloat(str);
-            }
+
+		function parseInterval(str) {
+			if (str == undefined)  {
+				return undefined
+			}
+			if (str.slice(-2) == "ms") {
+				return parseFloat(str.slice(0,-2)) || undefined
+			}			
+			if (str.slice(-1) == "s") {
+				return (parseFloat(str.slice(0,-1)) * 1000) || undefined
+			}
+			return parseFloat(str) || undefined
         }
 
         function getRawAttribute(elt, name) {
