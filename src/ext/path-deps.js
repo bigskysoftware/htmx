@@ -49,8 +49,7 @@
      */    
 
     _root.PathDeps = {
-            
-        PathDeps.refresh: function(path) {
+        refresh: function(path) {
             refreshPath(path);
         }
     };
