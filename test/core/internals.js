@@ -34,4 +34,11 @@ describe("Core htmx internals Tests", function() {
         chai.expect(htmx.parseInterval("false")).to.be.undefined
     })
 
+    it("tokenizes correctly", function() {
+        chai.expect(htmx._("tokenizeString")("a,")).to.be.deep.equal(['a', ',']);
+        chai.expect(htmx._("tokenizeString")("aa,")).to.be.deep.equal(['aa', ',']);
+        chai.expect(htmx._("tokenizeString")("aa,aa")).to.be.deep.equal(['aa', ',', 'aa']);
+        chai.expect(htmx._("tokenizeString")("aa.aa")).to.be.deep.equal(['aa', '.', 'aa']);
+    })
+
 });

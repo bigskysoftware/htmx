@@ -691,6 +691,7 @@ return (function () {
         }
 
         var WHITESPACE = /\s/;
+        var WHITESPACE_OR_COMMA = /[\s,]/;
         var SYMBOL_START = /[_$a-zA-Z]/;
         var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
         var STRINGISH_START = ['"', "'", "/"];
@@ -701,7 +702,6 @@ return (function () {
             while (position < str.length) {
                 if(SYMBOL_START.exec(str.charAt(position))) {
                     var startPosition = position;
-                    position++;
                     while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
                         position++;
                     }
@@ -813,10 +813,13 @@ return (function () {
                                     triggerSpec.once = true;
                                 } else if (token === "delay" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                    triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                                } else if (token === "from" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE));
+                                    triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else {
                                     triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
                                 }
@@ -904,7 +907,15 @@ return (function () {
         }
 
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
+            var eltToListenOn = elt;
+            if (triggerSpec.from) {
+                eltToListenOn = find(triggerSpec.from);
+            }
             var eventListener = function (evt) {
+                if (!bodyContains(elt)) {
+                    eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
+                    return;
+                }
                 if (maybeFilterEvent(triggerSpec, evt)) {
                     return;
                 }
@@ -955,7 +966,7 @@ return (function () {
             };
             nodeData.trigger = triggerSpec.trigger;
             nodeData.eventListener = eventListener;
-            elt.addEventListener(triggerSpec.trigger, eventListener);
+            eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
         }
 
         var windowIsScrolling = false // used by initScrollHandler

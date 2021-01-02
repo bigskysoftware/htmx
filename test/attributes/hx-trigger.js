@@ -67,6 +67,33 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Requests: 1");
     });
 
+    it('once modifier works with multiple triggers', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var input = make('<input hx-trigger="click once, foo" hx-target="#d1" hx-get="/test" value="foo"/>');
+        var div = make('<div id="d1"></div>');
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 1");
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 1");
+        input.value = "bar";
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 1");
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 1");
+        htmx.trigger(input, "foo");
+        this.server.respond();
+        div.innerHTML.should.equal("Requests: 2");
+    });
+
     it('polling works', function(complete)
     {
         var requests = 0;
@@ -123,6 +150,8 @@ describe("hx-trigger attribute", function(){
             "event once": [{trigger: 'event', once: true}],
             "event delay:1s": [{trigger: 'event', delay: 1000}],
             "event throttle:1s": [{trigger: 'event', throttle: 1000}],
+            "event delay:1s, foo": [{trigger: 'event', delay: 1000}, {trigger: 'foo'}],
+            "event throttle:1s, foo": [{trigger: 'event', throttle: 1000}, {trigger: 'foo'}],
             "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
             "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
             "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
@@ -291,5 +320,55 @@ describe("hx-trigger attribute", function(){
             htmx.off("htmx:eventFilter:error", handler);
         }
     })
+
+    it('from clause works', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div2 = make('<div id="d2"></div>');
+        var div1 = make('<div hx-trigger="click from:#d2" hx-get="/test">Requests: 0</div>');
+        div1.innerHTML.should.equal("Requests: 0");
+        div1.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 0");
+        div2.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 1");
+    });
+
+    it('from clause works with body selector', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div1 = make('<div hx-trigger="click from:body" hx-get="/test">Requests: 0</div>');
+        div1.innerHTML.should.equal("Requests: 0");
+        document.body.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 1");
+    });
+
+    it('multiple triggers with from clauses mixed in work', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div2 = make('<div id="d2"></div>');
+        var div1 = make('<div hx-trigger="click from:#d2, click" hx-get="/test">Requests: 0</div>');
+        div1.innerHTML.should.equal("Requests: 0");
+        div1.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 1");
+        div2.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 2");
+    });
 
 })
