@@ -44,6 +44,7 @@ table {
     margin: 0px;
     background-image: linear-gradient(#fff, #f4f5f5);
     box-shadow: 0px 4px 15px 0px rgb(239, 239, 239);
+    margin-bottom:1em;
 }
 
 .hide {
@@ -100,9 +101,14 @@ p {
 pre[class*="language-"] {
     font-size: 16px;
     margin-top: 24px !important;
-    margin-bottom: 24px !important;
-    margin-left: 48px !important;
-    margin-right: 48px !important;
+    margin-bottom: 24px !important;    
+}
+
+@media(min-width:45rem) {
+    pre[class*="language-"] {       
+        margin-left: 48px !important;
+        margin-right: 48px !important;
+    }
 }
 
 blockquote {
@@ -159,6 +165,7 @@ h4 {
     box-sizing: border-box;
 }
 
+
 @media(max-width:calc(45rem - 1px)) {
     #nav {
         height: 0px;
@@ -173,8 +180,8 @@ h4 {
         font-size: 2.5em;
     }
     pre[class*="language-"]  {
-        margin-left: calc(50% - 50vw) !important;
-        margin-right: calc(50% - 50vw) !important;
+        // margin-left: calc(50% - 50vw) !important;
+        // margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
         border-radius: 0 !important;
     }
@@ -297,7 +304,32 @@ table.delete-row-example .kutty-swapping {
     max-width:95px
 }
 
+// Content
+
+.content{
+    margin-top:2em;
+}
+
+h1,h2,h3,h4{
+    margin-bottom: .65em;
+}
+
+// UL in content
+.content .col:not(.nav) ul{
+    padding-left: 2em;
+}
+
+.nav ul{
+    padding-left: 0;
+    li ul {
+        padding-left:12px;       
+    }
+}
+
+
 @media(min-width:45em) {
+
+    // Menu 
     .menu,
     .navigation > div{
         display:flex;
@@ -307,6 +339,7 @@ table.delete-row-example .kutty-swapping {
        flex:1;
        display:flex;
        justify-content: space-between;
+       padding-left: calc(1em + 1.5vw);
     }    
     .navigation-items > *:not(:last-child){
         margin-right: calc(.5em + .7vw);
@@ -319,7 +352,28 @@ table.delete-row-example .kutty-swapping {
         }
         
     }
+    
+    // Content
+    .content .col:not(.nav) {
+        padding-left: calc(1em + 1.5vw);
+    }
+    .content .nav > p,
+    .content .nav #contents{
+        position: sticky;
+       
+    }
+   
+    .content .nav #contents{
+        top: 3.5em;
+    }
+    .content .nav > p
+    {
+        position: sticky;
+        top: 2vh;
+    }
+    
 }
+
 @media(max-width:calc(45rem - 1px)) {
     .github-stars{
         text-align:center;
@@ -329,3 +383,5 @@ table.delete-row-example .kutty-swapping {
         }
     }
 }
+
+
