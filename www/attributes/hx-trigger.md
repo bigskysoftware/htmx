@@ -57,6 +57,7 @@ Standard events can also have modifiers that change how they behave.  The modifi
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
 is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
+* `from:<CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
 
 Here is an example of a search box that searches on `keyup`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:
