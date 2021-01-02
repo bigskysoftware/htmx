@@ -66,7 +66,7 @@ code {
     text-align: center;
     vertical-align: center;
     color: whitesmoke;
-    margin-top: -1em;
+    margin-top: -2em;
     * {
         opacity: 0;
         transition: all 500ms ease-in;
@@ -306,8 +306,8 @@ table.delete-row-example .kutty-swapping {
 
 // Content
 
-.content{
-    margin-top:2em;
+.content {
+    padding-top:1em;
 }
 
 h1,h2,h3,h4{
@@ -315,7 +315,7 @@ h1,h2,h3,h4{
 }
 
 // UL in content
-.content .col:not(.nav) ul{
+:not(.nav) ul{
     padding-left: 2em;
 }
 
