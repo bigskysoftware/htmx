@@ -153,13 +153,13 @@ h4 {
     margin-top: 16px;
 }
 
-/* customized version of lit.css */
-* + *{
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    margin: .5em 0;
 }
 
-@media(max-width:45em) {
+@media(max-width:calc(45rem - 1px)) {
     #nav {
         height: 0px;
         overflow: hidden;
@@ -211,10 +211,14 @@ h4 {
     .\32 {
         width: 15%;
     }
+    .content .row .nav,
+    .logo-wrapper{
+        width:12rem;
+    }
     .row {
         display: table;
         table-layout: fixed;
-        border-spacing: 1em 0;
+        // border-spacing: 1em 0;
     }
 }
 
@@ -242,8 +246,8 @@ a[href]:hover, .btn:hover {
 }
 
 .c {
+    width: calc(100% - 2em);
     max-width: 55em;
-    padding: 1em;
     margin: auto;
 }
 
@@ -281,4 +285,47 @@ pre {
 table.delete-row-example .kutty-swapping {
   opacity: 0;
   transition: visibility 0s 1s, opacity 1s linear;
+}
+
+// MENU
+
+.menu{
+    padding:1em 0;
+}
+
+.github-stars iframe{
+    max-width:95px
+}
+
+@media(min-width:45em) {
+    .menu,
+    .navigation > div{
+        display:flex;
+        align-items:center;
+    }    
+    .navigation{
+       flex:1;
+       display:flex;
+       justify-content: space-between;
+    }    
+    .navigation-items > *:not(:last-child){
+        margin-right: calc(.5em + .7vw);
+    }
+    .github-stars{
+        display:flex;
+        align-items:center;
+        a{
+            margin:0 calc(.5em + .7vw);
+        }
+        
+    }
+}
+@media(max-width:calc(45rem - 1px)) {
+    .github-stars{
+        text-align:center;
+        margin-top:1em;
+        a{
+            display:block;
+        }
+    }
 }
