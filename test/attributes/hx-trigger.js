@@ -231,6 +231,19 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Called!");
     })
 
+    it('can refer to target element in condition w/ equality', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var div = make('<div hx-get="/test" hx-trigger="evt[target.id==\'foo\']">Not Called</div>');
+        var event = htmx._("makeEvent")('evt');
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Not Called");
+        div.id = "foo";
+        div.dispatchEvent(event);
+        this.server.respond();
+        div.innerHTML.should.equal("Called!");
+    })
+
     it('negative condition', function(){
         this.server.respondWith("GET", "/test", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[!target.classList.contains(\'disabled\')]">Not Called</div>');
