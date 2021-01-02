@@ -14,42 +14,13 @@ htmx.defineExtension("preload", {
 		// SOME HELPER FUNCTIONS WE'LL NEED ALONG THE WAY
 
 		// closest gets the closest token value in the preload attribute of the node, so
-		// calling closest(node, 'wait') on this node: <div preload="on:mouseover wait:100ms"> 
+		// calling closest(node, 'wait') on this node: <div preload-wait="100ms"> 
 		// would return "100ms".
 		var closest = function(node, token) {
-			// Handle undefined inputs gracefully
-			if (node == undefined) {return undefined;}
-
-			// Get the attribute
-			var attr = node.getAttribute("preload");
-
-			// If we find a token in this attribute value, return it.  Otherwise, search parent elements.
-			return parseToken(attr, token) || closest(node.parentElement, token);
-		}
-
-		// parseToken finds the value for a specific name:value pair
-		// embedded in an input string.  
-		// For example, parseToken("one:1 two:2 three:3", "two") => "2"
-		var parseToken = function(input, name) {
-
-			// Handle undefined inputs gracefully
-			if (input == undefined) {
-				return undefined;
-			}
-
-			// Split options on whitespace
-			var options = input.split(/\s/);
-
-			// Search all options for a matching name...
-			for (var i = 0 ; i < options.length ; i++) {
-				var option = options[i].split(":");
-				if (option[0] === name) {
-					return option[1]; // ... return token value
-				}
-			}
-
-			// Nothing found, return undefined
-			return undefined;
+			var attr = "preload-" + token
+			node = htmx.closest(node, "[" + attr + "]")
+			if (node == undefined) {return undefined;}			
+			return node.getAttribute(attr)
 		}
 		
 		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're 
@@ -101,7 +72,7 @@ htmx.defineExtension("preload", {
 			node.preloadState = "PAUSE";
 
 			// Get event name.  Default="mousedown"
-			var on = closest(node, "on") || "mousedown";
+			var on = closest(node, "on") || "mouseover";
 			
 			// One-Line monstrosity to get wait time.  For mouseover events, Default=100ms.  All others, default=0ms.
 			var wait = htmx.parseInterval(closest(node, "wait")) || ((on == "mouseover") ? 100 : 0);
