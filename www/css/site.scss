@@ -213,6 +213,7 @@ h4 {
     }
     .row {
         display: table;
+        table-layout: fixed;
         border-spacing: 1em 0;
     }
 }
