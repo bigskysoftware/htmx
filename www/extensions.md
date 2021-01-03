@@ -56,6 +56,7 @@ against `htmx` in each distribution
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
 | [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
 | [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
+| [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
 
 </div>
 
