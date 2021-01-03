@@ -7,7 +7,7 @@ layout: demo_layout.njk
 In this example we show how to integrate the [Sortable](https://sortablejs.github.io/sortablejs/)
 javascript library with htmx.
 
-To begin we load the Sortable for content with the `.sortable` class:
+To begin we intialize the `.sortable` class with the `Sortable` javascript library:
 
 ```js
 htmx.onLoad(function(content) {
@@ -22,17 +22,25 @@ htmx.onLoad(function(content) {
 })
 ```
 
-And we return the following HTML from the server:
+Next, we create a form that has some sortable divs within it, and we trigger an ajax request on the `end` event, fired
+by Sortable.js:
 
 ```html
-<div id="example1" class="list-group col" hx-post="/items" hx-trigger="end">
-  <div class="list-group-item">Item 1</div>
-  <div class="list-group-item">Item 2</div>
-  <div class="list-group-item">Item 3</div>
-  <div class="list-group-item">Item 4</div>
-  <div class="list-group-item">Item 5</div>
-</div>
+<form class="sortable" hx-post="/items" hx-trigger="end">
+  <div><input type='hidden' name='item' value='1'/>Item 1</div>
+  <div><input type='hidden' name='item' value='2'/>Item 1</div>
+  <div><input type='hidden' name='item' value='3'/>Item 1</div>
+  <div><input type='hidden' name='item' value='4'/>Item 1</div>
+  <div><input type='hidden' name='item' value='5'/>Item 1</div>
+</form>
 ```
+
+Note that each div has a hidden input inside of it that specifies the item id for that row.
+
+When the list is reordered via the Sortable.js drag-and-drop, the `end` event will be fired.  htmx will then post
+the item ids in the new order to `/items`, to be persisted by the server.
+
+That's it!
 
 {% include demo_ui.html.liquid %}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
