@@ -17,8 +17,8 @@
 <body hx-ext="class-tools">
 <div class="top-nav">
     <div class="c">
-        <div class="row">
-            <div class="2 col">
+        <div class="menu">
+            <div class="logo-wrapper">
                 <span hx-get="/" hx-target="body" hx-push-url="true" class="logo light">&lt;<a>/</a>&gt; htm<a>x</a></span>
                 <svg onclick="document.getElementById('nav').classList.toggle('show')" class="hamburger" viewBox="0 0 100 80" width="25" height="25" style="margin-bottom:-5px">
                     <rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
@@ -27,33 +27,31 @@
                 </svg>
             </div>
             {% if page.url.indexOf("/examples/") == 0 %}
-            <div id="nav" class="10 col nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
+            <div id="nav" class="navigation nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
             {% else %}
-            <div id="nav" class="10 col" hx-boost="true">
+            <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
-                <div class="row">
-                    <div class="1 col">
+                <div class="navigation-items">
+                    <div>
                         <a href="/docs">docs</a>
                     </div>
-                    <div class="1 col">
+                    <div>
                         <a href="/reference">reference</a>
                     </div>
-                    <div class="1 col">
+                    <div>
                         <a href="/examples">examples</a>
                     </div>
-                    <div class="1 col">
+                    <div>
                         <a href="/talk">talk</a>
                     </div>
-                    <div class="1 col">
+                    <div>
                         <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsor</a>
-                    </div>
-                    <div class="8 col">
-                    </div>
-                    <div class="8 col" style="text-align: right">
+                    </div>                    
+                </div>
+                <div class="github-stars">
                             <a href="https://github.com/bigskysoftware/htmx">github</a>
                             <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star htmx on GitHub"></iframe>
                     </div>
-                </div>
             </div>
         </div>
     </div>

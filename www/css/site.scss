@@ -2,6 +2,7 @@ $midBlue: #3465a4;
 $lightBlue: #3d72d7;
 
 body {
+    overflow-x:hidden;
     margin: 0px;
     line-height: 1.4em;
     font-size: 18px;
@@ -43,6 +44,7 @@ table {
     margin: 0px;
     background-image: linear-gradient(#fff, #f4f5f5);
     box-shadow: 0px 4px 15px 0px rgb(239, 239, 239);
+    margin-bottom:1em;
 }
 
 .hide {
@@ -64,7 +66,7 @@ code {
     text-align: center;
     vertical-align: center;
     color: whitesmoke;
-    margin-top: -1em;
+    margin-top: -2em;
     * {
         opacity: 0;
         transition: all 500ms ease-in;
@@ -99,9 +101,14 @@ p {
 pre[class*="language-"] {
     font-size: 16px;
     margin-top: 24px !important;
-    margin-bottom: 24px !important;
-    margin-left: 48px !important;
-    margin-right: 48px !important;
+    margin-bottom: 24px !important;    
+}
+
+@media(min-width:45rem) {
+    pre[class*="language-"] {       
+        margin-left: 48px !important;
+        margin-right: 48px !important;
+    }
 }
 
 blockquote {
@@ -152,13 +159,14 @@ h4 {
     margin-top: 16px;
 }
 
-/* customized version of lit.css */
-* + *{
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    margin: .5em 0;
 }
 
-@media(max-width:45em) {
+
+@media(max-width:calc(45rem - 1px)) {
     #nav {
         height: 0px;
         overflow: hidden;
@@ -172,8 +180,8 @@ h4 {
         font-size: 2.5em;
     }
     pre[class*="language-"]  {
-        margin-left: calc(50% - 50vw) !important;
-        margin-right: calc(50% - 50vw) !important;
+        // margin-left: calc(50% - 50vw) !important;
+        // margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
         border-radius: 0 !important;
     }
@@ -210,9 +218,14 @@ h4 {
     .\32 {
         width: 15%;
     }
+    .content .row .nav,
+    .logo-wrapper{
+        width:12rem;
+    }
     .row {
         display: table;
-        border-spacing: 1em 0;
+        table-layout: fixed;
+        // border-spacing: 1em 0;
     }
 }
 
@@ -240,8 +253,8 @@ a[href]:hover, .btn:hover {
 }
 
 .c {
+    width: calc(100% - 2em);
     max-width: 55em;
-    padding: 1em;
     margin: auto;
 }
 
@@ -280,3 +293,95 @@ table.delete-row-example .kutty-swapping {
   opacity: 0;
   transition: visibility 0s 1s, opacity 1s linear;
 }
+
+// MENU
+
+.menu{
+    padding:1em 0;
+}
+
+.github-stars iframe{
+    max-width:95px
+}
+
+// Content
+
+.content {
+    padding-top:1em;
+}
+
+h1,h2,h3,h4{
+    margin-bottom: .65em;
+}
+
+// UL in content
+:not(.nav) ul{
+    padding-left: 2em;
+}
+
+.nav ul{
+    padding-left: 0;
+    li ul {
+        padding-left:12px;       
+    }
+}
+
+
+@media(min-width:45em) {
+
+    // Menu 
+    .menu,
+    .navigation > div{
+        display:flex;
+        align-items:center;
+    }    
+    .navigation{
+       flex:1;
+       display:flex;
+       justify-content: space-between;
+       padding-left: calc(1em + 1.5vw);
+    }    
+    .navigation-items > *:not(:last-child){
+        margin-right: calc(.5em + .7vw);
+    }
+    .github-stars{
+        display:flex;
+        align-items:center;
+        a{
+            margin:0 calc(.5em + .7vw);
+        }
+        
+    }
+    
+    // Content
+    .content .col:not(.nav) {
+        padding-left: calc(1em + 1.5vw);
+    }
+    .content .nav > p,
+    .content .nav #contents{
+        position: sticky;
+       
+    }
+   
+    .content .nav #contents{
+        top: 3.5em;
+    }
+    .content .nav > p
+    {
+        position: sticky;
+        top: 2vh;
+    }
+    
+}
+
+@media(max-width:calc(45rem - 1px)) {
+    .github-stars{
+        text-align:center;
+        margin-top:1em;
+        a{
+            display:block;
+        }
+    }
+}
+
+
