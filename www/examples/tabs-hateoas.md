@@ -4,7 +4,7 @@ layout: demo_layout.njk
         
 ## Tabs (Using HATEOAS)
 
-This example shows how easy it is to implement tabs using htmx.  Following the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS), the selected tab is a part of the application state.  Therefore, to display and select tabs in your application, simply include the tab markup in the returned HTML.  If this does not suit your application server design, you can also use a little bit of [Javascript to select tabs instead](../tabs-javascript).
+This example shows how easy it is to implement tabs using htmx.  Following the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS), the selected tab is a part of the application state.  Therefore, to display and select tabs in your application, simply include the tab markup in the returned HTML.  If this does not suit your application server design, you can also use a little bit of [Hyperscript to select tabs instead](../tabs-hyperscript).
 
 ### Example Code (Main Page)
 The main page simply includes the following HTML to load the initial tab into the DOM.

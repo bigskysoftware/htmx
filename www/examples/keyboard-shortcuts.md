@@ -38,7 +38,5 @@ https://javascript.info/keyboard-events
     onPost("/doit", function (request, params) {
         return "Did it!";
     });
-    
-    // help w/ logging
-    document.body.addEventListener("keyup", event => {console.log(event) });
+
 </script>
