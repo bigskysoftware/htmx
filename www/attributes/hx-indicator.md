@@ -9,7 +9,8 @@ The `hx-indicator` attribute allows you to specify the element that will have th
 added to it for the duration of the request. This can be used to show spinners or progress indicators
 while the request is in flight.
 
-The value of this attribute is a CSS query selector of the element or elements to apply the class to.
+The value of this attribute is a CSS query selector of the element or elements to apply the class to,
+or the keyword `closest`, followed by a CSS selector, which will find the closest matching parent (e.g. `closest tr`);
 
 Here is an example with a spinner adjacent to the button:
 
