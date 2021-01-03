@@ -1250,6 +1250,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
+                triggerEvent(elt, "htmx:beforeProcessNode")
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -1271,13 +1272,12 @@ return (function () {
                 if (wsInfo) {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
-                triggerEvent(elt, "htmx:processedNode");
+                triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
 
         function processNode(elt) {
             elt = resolveTarget(elt);
-            triggerEvent(elt, "htmx:beforeProcessNode")
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
         }
@@ -1306,7 +1306,7 @@ return (function () {
         }
 
         function ignoreEventForLogging(eventName) {
-            return eventName === "htmx:processedNode"
+            return eventName === "htmx:afterProcessNode"
         }
 
         function withExtensions(elt, toDo) {
