@@ -10,7 +10,7 @@
 
     htmx.defineExtension('remove-me', {
         onEvent: function (name, evt) {
-            if (name === "htmx:processedNode") {
+            if (name === "htmx:afterProcessNode") {
                 var elt = evt.detail.elt;
                 if (elt.getAttribute) {
                     maybeRemoveMe(elt);

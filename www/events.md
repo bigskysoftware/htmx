@@ -20,6 +20,14 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### <a name="htmx:afterProcessNode"></a> Event - [`htmx:afterProcessNode`](#htmx:afterProcessNode)
+
+This event is triggered after htmx has initialized a DOM node.  It can be useful for extensions to build additional features onto a node.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+
 ### <a name="htmx:afterRequest"></a> Event - [`htmx:afterRequest`](#htmx:afterRequest)
 
 This event is triggered after an AJAX request has finished either in the case of a successful request (although
@@ -65,6 +73,14 @@ This event is triggered before any response processing occurs.  If the event is 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
+
+### <a name="htmx:beforeProcessNode"></a> Event - [`htmx:beforeProcessNode`](#htmx:beforeProcessNode)
+
+This event is triggered before htmx initializes a DOM node and has processed all of its `hx-` attributes.  This gives extensions and other external code the ability to modify the contents of a DOM node before it is processed.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
 
 ### <a name="htmx:beforeRequest"></a> Event - [`htmx:beforeRequest`](#htmx:beforeRequest)
 

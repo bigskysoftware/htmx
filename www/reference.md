@@ -104,10 +104,12 @@ title: </> htmx - Attributes
 | Event | Description |
 |-------|-------------|
 | [`htmx:afterOnLoad`](/events#htmx:afterOnLoad) | triggered after an AJAX request has completed processing a successful response
+| [`htmx:afterProcessNode`](/events#htmx:afterProcessNode) | triggered after htmx has initialized a node
 | [`htmx:afterRequest`](/events#htmx:afterRequest)  | triggered after an AJAX request has completed
 | [`htmx:afterSettle`](/events#htmx:afterSettle)  | triggered after the DOM has settled
 | [`htmx:afterSwap`](/events#htmx:afterSwap)  | triggered after new content has been swapped in
 | [`htmx:beforeOnLoad`](/events#htmx:beforeOnLoad)  | triggered before any response processing occurs
+| [`htmx:beforeProcessNode`](/events#htmx:afterProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
 | [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers

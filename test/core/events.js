@@ -292,5 +292,59 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:beforeProcessNode is called when replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:beforeProcessNode", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:beforeProcessNode", handler);
+        }
+    });
+
+    it("htmx:beforeProcessNode allows htmx attribute tweaking", function () {
+        var called = false;
+        var handler = htmx.on("htmx:beforeProcessNode", function (evt) {
+            evt.target.setAttribute("hx-post", "/success")
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/success", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/fail' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:beforeProcessNode", handler);
+        }
+    });
+
+    it("htmx:afterProcessNode is called after replacing outerHTML", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterProcessNode", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterProcessNode", handler);
+        }
+    });
 });
 
