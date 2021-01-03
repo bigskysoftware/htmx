@@ -33,6 +33,18 @@ and on the `body` tag for it to apply to all htmx requests.
   <button hx-post="/example" hx-ext="debug, json-enc">This Button Uses Two Extensions</button>
 ```
 
+## <a name="ignore"></a> [Ignoring Extensions](#ignoring)
+
+By default, extensions are applied to the DOM node where it is invoked, along with all child elements inside of that parent node.
+If you need to disable an extension somewhere within the DOM tree, you can use the `ignore:` keyword to stop it from being used.
+
+```html
+<div hx-ext="debug">
+  <button hx-post="/example">This button used the debug extension</button>
+  <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
+</div>
+```
+
 ## <a name="included"></a> [Included Extensions](#included)
 
 htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
