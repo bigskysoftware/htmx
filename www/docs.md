@@ -145,19 +145,6 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
    </div>
 ```
 
-#### <a name="trigger-filters"></a> [Trigger Filters](#trigger-filters)
-
-You may also apply trigger filters by using square brackets after the event name, enclosing a javascript expression that
-will be evaluated.  If the expression evaluates to `true` the event will trigger, otherwise it will not.
-
-Here is an example that triggers only on a Control-Click of the element
-
-```html
-<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
-```
-
-Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
-
 #### <a name="trigger-modifiers"></a> [Trigger Modifiers](#trigger-modifiers)
 
 A trigger can also have a few additional modifiers that change its behavior.  For example, if you want a request to only
@@ -177,6 +164,7 @@ issuing the request.  If the event triggers again, the countdown is reset.
 *  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
 so the request will trigger at the end of the time period.
+*  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts.
 
 You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
@@ -193,6 +181,19 @@ This input will issue a request 500 milliseconds after a key up event if the inp
 into the `div` with the id `search-results`.
 
 Multiple triggers can be specified in the [hx-trigger](/attributes/hx-trigger) attribute, separated by commas.
+
+#### <a name="trigger-filters"></a> [Trigger Filters](#trigger-filters)
+
+You may also apply trigger filters by using square brackets after the event name, enclosing a javascript expression that
+will be evaluated.  If the expression evaluates to `true` the event will trigger, otherwise it will not.
+
+Here is an example that triggers only on a Control-Click of the element
+
+```html
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+```
+
+Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
 
 #### <a name="special-events"></a> [Special Events](#special-events)
 

@@ -29,4 +29,5 @@ You can copy and paste them and then adjust them for your needs.
 | [Dialogs - Custom](/examples/modal-custom) | Demonstrates modal dialogs from scratch
 | [Tabs (Using HATEOAS)](/examples/tabs-hateoas) | Demonstrates how to display and select tabs using HATEOAS principles
 | [Tabs (Using Hyperscript)](/examples/tabs-hyperscript) | Demonstrates how to display and select tabs using Hyperscript
+| [Keyboard Shortcuts](/examples/keyboard-shortcuts) | Demonstrates how to create keyboard shortcuts for htmx enabled elements
 
