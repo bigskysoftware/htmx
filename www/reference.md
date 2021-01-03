@@ -146,6 +146,7 @@ title: </> htmx - Attributes
 | Method | Description |
 |-------|-------------|
 | [`htmx.addClass()`](/api#addClass)  | Adds a class to the given element
+| [`htmx.ajax()`](/api#ajax)  | Issues an htmx-style ajax request
 | [`htmx.closest()`](/api#closest)  | Finds the closest parent to the given element matching the selector
 | [`htmx.config`](/api#config)  | A property that holds the current htmx config object
 | [`htmx.createEventSource`](/api#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx

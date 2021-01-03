@@ -1,11 +1,32 @@
 # Changelog
 
 
-## [1.0.2] - 202?-??-??
+## [1.1.0] - 2021-1-8
+
+* Newly added [preload extension](https://htmx.org/extensions/preload/) allows you to preload resources for lower
+  latency requests!
+* Support the `ignore:` modifier for extensions
+* Updated form variable order inclusion to include the enclosing form *last* so that, in the presence of multiple 
+  values, the most relevant value is the most likely to be selected by the server
+* Support for the [`htmx.ajax()`](https://dev.htmx.org/api/#ajax) javascript function, to issue an htmx-style ajax 
+  request from javascript
+* Removed the following htmx request headers for better cache behavior: `HX-Event-Target`, `HX-Active-Element`, 
+  `HX-Active-Element-Name`, `HX-Active-Element`
+* Added the [`hx-preserve`](https://dev.htmx.org/attributes/hx-preserve) attribute, which allows 
+  you to preserve elements across requests (for example, to keep a video element playing properly)
+* The [`path-deps](https://dev.htmx.org/extensions/path-deps/#refresh) now surfaces a small api
+  for refreshing path dependencies manually in javascript
+* Now support the `from:` clause on [`hx-trigger`](https://dev.htmx.org/attributes/hx-trigger) to
+  allow an element to respond to events on other elements.
+* Added the `htmx:beforeProcessNode` event, renamed the (previously undocumented) `htmx:processedNode` to `htmx:afterProcessNode`
+* Added `closest` syntax support for the [`hx-indicator`](https://dev.htmx.org/attributes/hx-indicator) attribute
+* Bug fixes & improvements 
+  
+## [1.0.2] - 2020-12-12
 
 * Extend all API methods to take a string selector as well as an element
 * Out of band swap elements need not be top level now
-* [`hx-swap-oob`](https:/htmx.org/attributes/hx-swap-oob) now can accept a CSS selector to retarget with
+* [`hx-swap-oob`](https://htmx.org/attributes/hx-swap-oob) now can accept a CSS selector to retarget with
 
 ## [1.0.1] - 2020-12-04
 

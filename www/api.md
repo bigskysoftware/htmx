@@ -26,6 +26,40 @@ This method adds a class to the given element.
   htmx.addClass(htmx.find('#demo'), 'myClass');
 ```
 
+### <a name="ajax"></a> Method -  [`htmx.ajax()`](#ajax)
+
+Issues an htmx-style AJAX request
+
+##### Parameters
+
+* `verb` - 'GET', 'POST', etc.
+* `path` - the URL path to make the AJAX
+* `element` - the element to target (defaults to the `body`)
+
+or
+
+* `verb` - 'GET', 'POST', etc.
+* `path` - the URL path to make the AJAX
+* `selector` - a selector for the target
+
+or
+
+* `verb` - 'GET', 'POST', etc.
+* `path` - the URL path to make the AJAX
+* `context` - a context object that contains any of the following
+    * `source` - the source element of the request
+    * `event` - an event that "triggered" the request
+    * `handler` - a callback that will handle the response HTML
+    * `target` - the target to swap the response into
+
+
+##### Example
+
+```js
+    // issue a GET to /example and put the response HTML into #myDiv
+    htmx.ajax('GET', '/example', '#myDiv')
+```
+
 ### <a name="closest"></a> Method -  [`htmx.closest()`](#closest)
 
 Finds the closest matching element in the given elements parentage, inclusive of the element
