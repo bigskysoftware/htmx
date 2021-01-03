@@ -28,10 +28,10 @@ by Sortable.js:
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
   <div><input type='hidden' name='item' value='1'/>Item 1</div>
-  <div><input type='hidden' name='item' value='2'/>Item 1</div>
-  <div><input type='hidden' name='item' value='3'/>Item 1</div>
-  <div><input type='hidden' name='item' value='4'/>Item 1</div>
-  <div><input type='hidden' name='item' value='5'/>Item 1</div>
+  <div><input type='hidden' name='item' value='2'/>Item 2</div>
+  <div><input type='hidden' name='item' value='3'/>Item 3</div>
+  <div><input type='hidden' name='item' value='4'/>Item 4</div>
+  <div><input type='hidden' name='item' value='5'/>Item 5</div>
 </form>
 ```
 
