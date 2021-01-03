@@ -13,43 +13,10 @@ htmx.defineExtension("preload", {
 
 		// SOME HELPER FUNCTIONS WE'LL NEED ALONG THE WAY
 
-		// closest gets the closest token value in the preload attribute of the node, so
-		// calling closest(node, 'wait') on this node: <div preload="on:mouseover wait:100ms"> 
-		// would return "100ms".
-		var closest = function(node, token) {
-			// Handle undefined inputs gracefully
+		// config gets the closest non-empty value from the preload="" attribute. (default = "mousedown")
+		var config = function(node) {
 			if (node == undefined) {return undefined;}
-
-			// Get the attribute
-			var attr = node.getAttribute("preload");
-
-			// If we find a token in this attribute value, return it.  Otherwise, search parent elements.
-			return parseToken(attr, token) || closest(node.parentElement, token);
-		}
-
-		// parseToken finds the value for a specific name:value pair
-		// embedded in an input string.  
-		// For example, parseToken("one:1 two:2 three:3", "two") => "2"
-		var parseToken = function(input, name) {
-
-			// Handle undefined inputs gracefully
-			if (input == undefined) {
-				return undefined;
-			}
-
-			// Split options on whitespace
-			var options = input.split(/\s/);
-
-			// Search all options for a matching name...
-			for (var i = 0 ; i < options.length ; i++) {
-				var option = options[i].split(":");
-				if (option[0] === name) {
-					return option[1]; // ... return token value
-				}
-			}
-
-			// Nothing found, return undefined
-			return undefined;
+			return node.getAttribute("preload") || node.getAttribute("data-preload") || config(node.parentElement) || "mousedown"
 		}
 		
 		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're 
@@ -63,11 +30,13 @@ htmx.defineExtension("preload", {
 					return;
 				}
 
+				// This is used after a successful AJAX request, to mark the
+				// content as loaded (and prevent additional AJAX calls.)
 				var done = function() {
 					node.preloadState = "DONE"
 				}
 
-				// Special handling for HX_GET - use built-in htmx.ajax function
+				// Special handling for HX-GET - use built-in htmx.ajax function
 				// so that headers match other htmx requests, then set 
 				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future
@@ -84,48 +53,47 @@ htmx.defineExtension("preload", {
 					r.open("GET", node.getAttribute("href"));
 					r.onload = done;
 					r.send();
+					return;
 				}
 			}
 		}
 
-		// Search for all child nodes that have a "preload" attribute.  Making this explicit
-		// ensures that all elements in a large DOM tree are not accidentally targeted
-		event.target.querySelectorAll("[preload]").forEach(function(node) {
+		// This function processes a specific node and sets up event handlers.
+		// We'll search for nodes and use it below.
+		var init = function(node) {
 
-			// Guarantee that we only process each node once.
+			// If this node DOES NOT include a "GET" transaction, then there's nothing to do here.
+			if (node.getAttribute("href") + node.getAttribute("hx-get") + node.getAttribute("data-hx-get") == "") {
+				return;
+			}
+
+			// Guarantee that we only initialize each node once.
 			if (node.preloadState !== undefined) {
 				return;
 			}
 			
-			// This means that the node has been initialized
-			node.preloadState = "PAUSE";
-
-			// Get event name.  Default="mousedown"
-			var on = closest(node, "on") || "mousedown";
-			
-			// One-Line monstrosity to get wait time.  For mouseover events, Default=100ms.  All others, default=0ms.
-			var wait = htmx.parseInterval(closest(node, "wait")) || ((on == "mouseover") ? 100 : 0);
-
-			// Special handling for "load" events.  No EventListener necessary, just trigger the timer now.
-			if (on === "load") {
-				node.preloadState = "READY";  // Required for the `load` function to trigger
-				window.setTimeout(load(node), wait);
-				return;
-			}
-			
+			// Get event name from config.
+			var on = config(node)
+						
 			// FALL THROUGH to here means we need to add an EventListener
 	
 			// Apply the listener to the node
 			node.addEventListener(on, function(evt) {
 				if (node.preloadState === "PAUSE") { // Only add one event listener
 					node.preloadState = "READY"; // Requred for the `load` function to trigger
-					window.setTimeout(load(node), wait);
+
+					// Special handling for "mouseover" events.  Wait 100ms before triggering load.
+					if (on === "mouseover") {
+						window.setTimeout(load(node), 100);
+					} else {
+						load(node)() // all other events trigger immediately.
+					}
 				}
 			})
 
+			// Special handling for certain built-in event handlers
 			switch (on) {
 
-				// Special handling for "mouseover" events
 				case "mouseover":
 					// Mirror `touchstart` events (fires immediately)
 					node.addEventListener("touchstart", load(node));
@@ -138,12 +106,25 @@ htmx.defineExtension("preload", {
 					})
 					break;
 
-				// Special handling for "mousedown" events
 				case "mousedown":
 					 // Mirror `touchstart` events (fires immediately)
 					node.addEventListener("touchstart", load(node));
 					break;
 			}
+
+			// Mark the node as ready to run.
+			node.preloadState = "PAUSE";
+			htmx.trigger(node, "preload:init") // This event can be used to load content immediately.
+		}
+
+		// Search for all child nodes that have a "preload" attribute
+		event.target.querySelectorAll("[preload]").forEach(function(node) {
+
+			// Initialize the node with the "preload" attribute
+			init(node)
+
+			// Initialize all child elements that are anchors or have `hx-get` (use with care)
+			node.querySelectorAll("a,[hx-get],[data-hx-get").forEach(init)
 		})
 	}
 })
