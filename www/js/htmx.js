@@ -2245,12 +2245,14 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
-            triggerEvent(body, 'htmx:load', {});
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
                 }
             };
+            setTimeout(function () {
+                triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
+            }, 0);
         })
 
         return htmx;

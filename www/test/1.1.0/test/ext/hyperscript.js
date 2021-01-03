@@ -47,14 +47,18 @@ describe("hyperscript integration", function() {
         newDiv.innerText.should.equal("Clicked...");
     });
 
-    it('hyperscript removal example works', function () {
-        this.server.respondWith("GET", "/test", "<div><div><div id='d1' _=''></div></div></div>");
+    it('hyperscript removal example works', function (done) {
+        this.server.respondWith("GET", "/test", "<div id='d1' _='on load wait 20ms then remove me'>To Remove</div>");
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
         var newDiv = byId("d1");
-        newDiv.click();
-        newDiv.innerText.should.equal("Clicked...");
+        newDiv.innerText.should.equal("To Remove")
+        setTimeout(function(){
+            newDiv = byId("d1");
+            should.equal(newDiv, null);
+            done();
+        }, 100);
     });
 
 });
