@@ -1482,7 +1482,12 @@ return (function () {
         function mutateRequestIndicatorClasses(elt, action) {
             var indicator = getClosestAttributeValue(elt, 'hx-indicator');
             if (indicator) {
-                var indicators = getDocument().querySelectorAll(indicator);
+                var indicators;
+                if (indicator.indexOf("closest ") === 0) {
+                    indicators = [closest(elt, indicator.substr(8))];
+                } else {
+                    indicators = getDocument().querySelectorAll(indicator);
+                }
             } else {
                 indicators = [elt];
             }
