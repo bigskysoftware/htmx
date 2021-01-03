@@ -6,8 +6,8 @@ htmx.defineExtension("preload", {
 
 	onEvent: function(name, event) {
 
-		// Only take actions on "htmx:processedNode"
-		if (name !== "htmx:processedNode") {
+		// Only take actions on "htmx:afterProcessNode"
+		if (name !== "htmx:afterProcessNode") {
 			return;
 		}
 

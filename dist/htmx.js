@@ -1250,6 +1250,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
+                triggerEvent(elt, "htmx:beforeProcessNode")
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
@@ -1271,7 +1272,7 @@ return (function () {
                 if (wsInfo) {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
-                triggerEvent(elt, "htmx:processedNode");
+                triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
 
@@ -1305,7 +1306,7 @@ return (function () {
         }
 
         function ignoreEventForLogging(eventName) {
-            return eventName === "htmx:processedNode"
+            return eventName === "htmx:afterProcessNode"
         }
 
         function withExtensions(elt, toDo) {
@@ -2180,24 +2181,33 @@ return (function () {
             delete extensions[name];
         }
 
-        function getExtensions(elt, extensionsToReturn) {
-            if (elt == null) {
+        function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+            if (elt == undefined) {
                 return extensionsToReturn;
             }
-            if (extensionsToReturn == null) {
+            if (extensionsToReturn == undefined) {
                 extensionsToReturn = [];
+            }
+            if (extensionsToIgnore == undefined) {
+                extensionsToIgnore = [];
             }
             var extensionsForElement = getAttributeValue(elt, "hx-ext");
             if (extensionsForElement) {
                 forEach(extensionsForElement.split(","), function(extensionName){
                     extensionName = extensionName.replace(/ /g, '');
-                    var extension = extensions[extensionName];
-                    if (extension && extensionsToReturn.indexOf(extension) < 0) {
-                        extensionsToReturn.push(extension);
+                    if (extensionName.slice(0, 7) == "ignore:") {
+                        extensionsToIgnore.push(extensionName.slice(7));
+                        return;
+                    }
+                    if (extensionsToIgnore.indexOf(extensionName) < 0) {
+                        var extension = extensions[extensionName];
+                        if (extension && extensionsToReturn.indexOf(extension) < 0) {
+                            extensionsToReturn.push(extension);
+                        }
                     }
                 });
             }
-            return getExtensions(parentElt(elt), extensionsToReturn);
+            return getExtensions(parentElt(elt), extensionsToReturn, extensionsToIgnore);
         }
 
         //====================================================================
