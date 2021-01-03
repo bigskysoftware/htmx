@@ -20,6 +20,7 @@
   allow an element to respond to events on other elements.
 * Added the `htmx:beforeProcessNode` event, renamed the (previously undocumented) `htmx:processedNode` to `htmx:afterProcessNode`
 * Added `closest` syntax support for the [`hx-indicator`](https://dev.htmx.org/attributes/hx-indicator) attribute
+* Added `on load` support for the newest version of [hyperscript](https://hyperscript.org)
 * Bug fixes & improvements 
   
 ## [1.0.2] - 2020-12-12
