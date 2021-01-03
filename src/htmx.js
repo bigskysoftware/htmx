@@ -2122,35 +2122,33 @@ return (function () {
             delete extensions[name];
         }
 
-        function getExtensions(elt) {
-            return getExtensionNames(elt).map(function (name) {
-                return extensions[name]
-            }).filter(function (extension) {
-                return (extension != undefined)
-            })
-        }
-
-        function getExtensionNames(elt) {
-
-            if (elt == null) {
-                return []
+        function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+            if (elt == undefined) {
+                return extensionsToReturn;
             }
-
-            var result = getExtensionNames(parentElt(elt));
-            var exts = getAttributeValue(elt, "hx-ext");
-
-            if (exts) {
-                exts = exts.replace(/ /g, '');
-                forEach(exts.split(","), function (name) {
-                    if (name.slice(0, 7) == "ignore:") {
-                        result = result.filter(function (n) { return n != name.slice(7) });
-                    } else if (result.indexOf(name) < 0) {
-                        result.push(name)
+            if (extensionsToReturn == undefined) {
+                extensionsToReturn = [];
+            }
+            if (extensionsToIgnore == undefined) {
+                extensionsToIgnore = [];
+            }
+            var extensionsForElement = getAttributeValue(elt, "hx-ext");
+            if (extensionsForElement) {
+                forEach(extensionsForElement.split(","), function(extensionName){
+                    extensionName = extensionName.replace(/ /g, '');
+                    if (extensionName.slice(0, 7) == "ignore:") {
+                        extensionsToIgnore.push(extensionName.slice(7));
+                        return;
+                    }
+                    if (extensionsToIgnore.indexOf(extensionName) < 0) {
+                        var extension = extensions[extensionName];
+                        if (extension && extensionsToReturn.indexOf(extension) < 0) {
+                            extensionsToReturn.push(extension);
+                        }
                     }
                 });
             }
-
-            return result
+            return getExtensions(parentElt(elt), extensionsToReturn, extensionsToIgnore);
         }
 
         //====================================================================
