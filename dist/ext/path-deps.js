@@ -1,4 +1,9 @@
-(function(){
+(function(undefined){
+    'use strict';
+
+    // Save a reference to the global object (window in the browser)
+    var _root = this;
+  
     function dependsOn(pathSpec, url) {
         var dependencyPath = pathSpec.split("/");
         var urlPath = url.split("/");
@@ -15,21 +20,38 @@
         return false;
     }
 
+    function refreshPath(path) {
+        var eltsWithDeps = htmx.findAll("[path-deps]");
+        for (var i = 0; i < eltsWithDeps.length; i++) {
+            var elt = eltsWithDeps[i];
+            if (dependsOn(elt.getAttribute('path-deps'), path)) {
+                htmx.trigger(elt, "path-deps");
+            }
+        }      
+    }    
+
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
             if (name === "htmx:afterRequest") {
                 var config = evt.detail.requestConfig;
                 // mutating call
                 if (config.verb !== "get") {
-                    var eltsWithDeps = htmx.findAll("[path-deps]");
-                    for (var i = 0; i < eltsWithDeps.length; i++) {
-                        var elt = eltsWithDeps[i];
-                        if (dependsOn(elt.getAttribute('path-deps'), config.path)) {
-                            htmx.trigger(elt, "path-deps");
-                        }
-                    }
+                    refreshPath(config.path);
                 }
-            }
+            } 
         }
     });
-})();
+
+    /**
+     *  ********************
+     *  Expose functionality
+     *  ********************
+     */    
+
+    _root.PathDeps = {
+        refresh: function(path) {
+            refreshPath(path);
+        }
+    };
+            
+}).call(this);
