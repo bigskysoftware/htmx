@@ -246,5 +246,20 @@ describe("Core htmx API test", function(){
         }
     });
 
+    it('eval can be suppressed', function () {
+        var calledEvent = false;
+        var handler = htmx.on("htmx:evalDisallowedError", function(){
+            calledEvent = true;
+        });
+        try {
+            htmx.config.allowEval = false;
+            should.equal(htmx._("tokenizeString"), undefined);
+        } finally {
+            htmx.config.allowEval = true;
+            htmx.off("htmx:evalDisallowedError", handler);
+        }
+        calledEvent.should.equal(true);
+    });
 
-    })
+
+})

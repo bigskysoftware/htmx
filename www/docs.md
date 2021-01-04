@@ -817,6 +817,7 @@ Htmx allows you to configure a few defaults:
 |  `htmx.config.requestClass` | defaults to `htmx-request`
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
+|  `htmx.config.allowEval` | defaults to `true`
 
 </div>
 

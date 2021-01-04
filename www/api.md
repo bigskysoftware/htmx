@@ -95,6 +95,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 * `requestClass:'htmx-request'` - string: the class to place on triggering elements when a request is in flight
 * `settlingClass:'htmx-settling'` - string: the class to place on target elements when htmx is in the settling phase
 * `swappingClass:'htmx-swapping'` - string: the class to place on target elements when htmx is in the swapping phase
+* `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility
 
 ##### Example
 
