@@ -14,7 +14,7 @@
   `HX-Active-Element-Name`, `HX-Active-Element`
 * Added the [`hx-preserve`](https://dev.htmx.org/attributes/hx-preserve) attribute, which allows 
   you to preserve elements across requests (for example, to keep a video element playing properly)
-* The [`path-deps](https://dev.htmx.org/extensions/path-deps/#refresh) now surfaces a small api
+* The [path-deps](https://dev.htmx.org/extensions/path-deps/#refresh) now surfaces a small api
   for refreshing path dependencies manually in javascript
 * Now support the `from:` clause on [`hx-trigger`](https://dev.htmx.org/attributes/hx-trigger) to
   allow an element to respond to events on other elements.
