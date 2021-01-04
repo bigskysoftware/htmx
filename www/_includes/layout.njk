@@ -15,7 +15,7 @@
         })
     </script>
 </head>
-<body hx-ext="class-tools">
+<body hx-ext="class-tools, preload">
 <div class="top-nav">
     <div class="c">
         <div class="menu">
@@ -32,7 +32,7 @@
             {% else %}
             <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
-                <div class="navigation-items">
+                <div class="navigation-items" preload="mouseover">
                     <div>
                         <a href="/docs">docs</a>
                     </div>
@@ -50,9 +50,9 @@
                     </div>                    
                 </div>
                 <div class="github-stars">
-                            <a href="https://github.com/bigskysoftware/htmx">github</a>
-                            <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star htmx on GitHub"></iframe>
-                    </div>
+                    <a href="https://github.com/bigskysoftware/htmx">github</a>
+                    <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star htmx on GitHub"></iframe>
+                </div>
             </div>
         </div>
     </div>
