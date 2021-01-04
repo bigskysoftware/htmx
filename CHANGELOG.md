@@ -11,7 +11,7 @@
 * Support for the [`htmx.ajax()`](https://dev.htmx.org/api/#ajax) javascript function, to issue an htmx-style ajax 
   request from javascript
 * Removed the following htmx request headers for better cache behavior: `HX-Event-Target`, `HX-Active-Element`, 
-  `HX-Active-Element-Name`, `HX-Active-Element`
+  `HX-Active-Element-Name`, `HX-Active-Element-Value`
 * Added the [`hx-preserve`](https://dev.htmx.org/attributes/hx-preserve) attribute, which allows 
   you to preserve elements across requests (for example, to keep a video element playing properly)
 * The [path-deps](https://dev.htmx.org/extensions/path-deps/#refresh) now surfaces a small api
