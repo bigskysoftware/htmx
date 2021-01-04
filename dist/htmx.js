@@ -42,6 +42,7 @@ return (function () {
                 requestClass:'htmx-request',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
+                allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"]
             },
             parseInterval:parseInterval,
@@ -248,7 +249,9 @@ return (function () {
         //==========================================================================================
 
         function internalEval(str){
-            return eval(str);
+            return maybeEval(getDocument().body, function () {
+                return eval(str);
+            });
         }
 
         function onLoadHelper(callback) {
@@ -735,7 +738,7 @@ return (function () {
                 last !== ".";
         }
 
-        function maybeGenerateConditional(tokens, paramName) {
+        function maybeGenerateConditional(elt, tokens, paramName) {
             if (tokens[0] === '[') {
                 tokens.shift();
                 var bracketCount = 1;
@@ -752,7 +755,10 @@ return (function () {
                             tokens.shift();
                             conditionalSource += ")})";
                             try {
-                                var conditionFunction = Function(conditionalSource)();
+                                var conditionFunction = maybeEval(elt,function () {
+                                    return Function(conditionalSource)();
+                                    },
+                                    function(){return true})
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
@@ -800,7 +806,7 @@ return (function () {
                             triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
-                            var eventFilter = maybeGenerateConditional(tokens, "event");
+                            var eventFilter = maybeGenerateConditional(elt, tokens, "event");
                             if (eventFilter) {
                                 triggerSpec.eventFilter = eventFilter;
                             }
@@ -1215,7 +1221,9 @@ return (function () {
         function evalScript(script) {
             if (script.type === "text/javascript" || script.type === "") {
                 try {
-                    Function(script.innerText)();
+                    maybeEval(script, function () {
+                        Function(script.innerText)()
+                    });
                 } catch (e) {
                     logError(e);
                 }
@@ -1803,9 +1811,18 @@ return (function () {
             return getValuesForElement(parentElt(elt), attr, strToValues, expressionVars);
         }
 
+        function maybeEval(elt, toEval, defaultVal) {
+            if (htmx.config.allowEval) {
+                return toEval();
+            } else {
+                triggerErrorEvent(elt, 'htmx:evalDisallowedError');
+                return defaultVal;
+            }
+        }
+
         function getHXVarsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vars", function(valueStr){
-                return Function("return (" + valueStr + ")")()
+                return maybeEval(elt,function () {return Function("return (" + valueStr + ")")();}, {});
             }, expressionVars);
         }
 

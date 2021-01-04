@@ -34,7 +34,7 @@ describe("Core htmx tokenizer tests", function(){
     it('generates conditionals property', function()
     {
         var tokens = tokenize("[code==4||(code==5&&foo==true)]");
-        var conditional = htmx._("maybeGenerateConditional")(tokens);
+        var conditional = htmx._("maybeGenerateConditional")(null, tokens);
         var func = eval(conditional);
         func({code: 5, foo: true}).should.equal(true);
         func({code: 5, foo: false}).should.equal(false);
