@@ -780,25 +780,6 @@ In hyperscript you can implement similar functionality like so:
 <div id="content">Tab 1 Content</div>
 ```
 
-##### `X-IC-Redirect`
-
-Intercooler provided more response headers than htmx does:  `X-IC-Refresh`, `X-IC-Redirect` etc.  Htmx omits these
-headers in favor of the general `HX-Trigger`, combined with some client side code.
-
-Let's implement the `X-IC-Redirect` header using the `HX-Trigger` response header and some hyperscript.
-
-First, let's trigger an event with a response header that looks like this:
-
-`HX-Trigger:{"redirect":{"url":"https://htmx.org"}}`
-
-Then we would write the following hyperscript:
-
-```html
-<body _="on redirect(url) set window.location to url">
-  ...
-</body>
-```
-
 ## <a name="config"></a>[Configuring htmx](#config)
 
 Htmx allows you to configure a few defaults:
