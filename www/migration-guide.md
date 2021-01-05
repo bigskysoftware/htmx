@@ -1,3 +1,8 @@
+---
+layout: layout.njk
+title: </> intercooler.js -> htmx migration
+---
+
 # Migration Guide: Intercooler to htmx 
 
 The purpose of this guide is to:
@@ -6,31 +11,33 @@ The purpose of this guide is to:
  -  _highlight gaps_ which can't (yet) be elegantly solved via core htmx, any of the existing extensions or [hyperscript](https://htmx.org/docs/#hyperscript)
 
 ## Before you begin
+
 It is worth noting the difference in approach between what Intercooler set out to do and what htmx is doing.
 
 **Intercooler** tried to provide custom html attributes for most of it's functionality. This is evident in it's longer list of attributes, many of which could be described as convenience or client-side-focused in nature.
 
 **htmx** follows the approach of trying to keep the core small, with a smaller set of available attributes that are mostly focused on content loading and swapping. It's capability is augmented in primarily 2 ways:
 1. [Extensions](https://dev.htmx.org/extensions#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](https://htmx.org/extensions/path-deps). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](https://dev.htmx.org/extensions/preload)
-2. [Hyperscript](https://htmx.org/docs/#hyperscript), or another "barebones" JS library like [alpine.js]([hyperscript](https://htmx.org/docs/#hyperscript). Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
+  
+2. Using the htmx events system with vanilla javascript, [alpine.js](https://github.com/alpinejs/alpine/) or [hyperscript](https://htmx.org/docs/#hyperscript).   Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
 
 htmx contains some functionality which is not present in Intercooler. That is outside of the scope of this guide.<br>
+
 Finally, it's worth noting that this is still a work in progress and is liable to change over time.
 
-## On to the migration stuff already!
+## Migration Information
+
 The rest of this guide is laid out as a set of tables, each of which attempts to map the following common functional areas of Intercooler onto the htmx equivalents:
 
- - [attributes](#attributes)
- - [request parameters](#request-parameters)
- - [request headers](#request-headers)
- - [response headers](#response-headers)
- - [events](#events)
- - [Javascript API methods](#methods)
- - [meta tags](#meta-tags)
+ - [Attributes](#attributes)
+ - [Request Parameters](#request-parameters)
+ - [Request Headers](#request-headers)
+ - [Response Headers](#response-headers)
+ - [Events](#events)
+ - [Javascript API Methods](#methods)
+ - [Meta Tags](#meta-tags)
 
- ---
-
-### <a name="attributes">Attributes</a>
+#### <a name="attributes">Attributes</a>
 
 **Note**: For certain Intercooler attributes (mostly client-side specific attributes, e.g. the ic-action and associated attributes) there are no direct htmx equivalents. Instead, there is a small, expressive language available called hyperscript, (see http://hyperscript.org), which is designed to be embedded in HTML and acts as a seamless companion to htmx. It allows you to achieve the same behavior as some of especially the _client-side focused_ Intercooler attributes, but in a more flexible and open manner.
 
@@ -63,7 +70,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | [`ic-on-complete`](https://intercoolerjs.org/attributes/ic-on-complete.html) | None. Use [Hyperscript]() in conjunction with events (e.g. [`https://htmx.org/events#htmx:afterRequest`](https://htmx.org/events#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-on-error`](https://intercoolerjs.org/attributes/ic-on-error.html) | None. Use [Hyperscript]() in conjunction with events (e.g. [`https://htmx.org/events#htmx:afterRequest`](https://htmx.org/events#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-on-success`](https://intercoolerjs.org/attributes/ic-on-success.html) | None. Use [Hyperscript]() in conjunction with events (e.g. [`https://htmx.org/events#htmx:afterRequest`](https://htmx.org/events#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) and [hyperscript documentation](https://hyperscript.org) for more examples
-| [`ic-patch-to`](https://intercoolerjs.org/attributes/ic-patch-to.html) | None. Use [Hyperscript]() in conjunction with events (e.g. [`https://htmx.org/events#htmx:afterRequest`](https://htmx.org/events#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-patch-to`](https://intercoolerjs.org/attributes/ic-patch-to.html) | [`hx-patch`](https://htmx.org/attributes/hx-patch)
 | [`ic-pause-polling`](https://intercoolerjs.org/attributes/ic-pause-polling.html) | None. Techniques like [`load polling`](https://htmx.org/docs/#load_polling) could be used
 | [`ic-poll`](https://intercoolerjs.org/attributes/ic-poll.html) | None. The equivalent can be achieved by triggering a load on schedule, e.g. `<div hx-get="/news" hx-trigger="every 2s"></div>`. See the [documentation on polling](https://htmx.org/docs/#polling)
 | [`ic-poll-repeats`](https://intercoolerjs.org/attributes/ic-poll-repeats.html) | None. The equivalent can be achieved by triggering a load on schedule, e.g. `<div hx-get="/news" hx-trigger="every 2s"></div>`. See the [documentation on polling](https://htmx.org/docs/#polling)
@@ -72,13 +79,13 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | [`ic-prepend-from`](https://intercoolerjs.org/attributes/ic-prepend-from.html) | The [`hx-swap` attribute](https://htmx.org/attributes/hx-swap) with value set to `beforeend` could be used to achieve the same outcome
 | [`ic-prompt`](https://intercoolerjs.org/attributes/ic-prompt.html) | [`hx-prompt`](https://htmx.org/attributes/hx-prompt)
 | [`ic-push-url`](https://intercoolerjs.org/attributes/ic-push-url.html) | [`hx-push-url`](https://htmx.org/attributes/hx-push-url)
-| [`ic-push-params`](https://intercoolerjs.org/attributes/ic-push-params.html) | tbd
+| [`ic-push-params`](https://intercoolerjs.org/attributes/ic-push-params.html) | Parameters are automatically pushed in the case of a `GET` in htmx
 | [`ic-put-to`](https://intercoolerjs.org/attributes/ic-put-to.html) | [`hx-put`](https://htmx.org/attributes/hx-put)
 | [`ic-remove-after`](https://intercoolerjs.org/attributes/ic-remove-after.html) | None. See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) for an example on how to implement it using [hyperscript](https://hyperscript.org)
 | [`ic-remove-class`](https://intercoolerjs.org/attributes/ic-remove-class.html) | None. Use [Hyperscript](), e.g. `<button class="red" _="on click remove .red">Remove The "red" class from me</button>`. See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) and [hyperscript documentation](https://hyperscript.org)for more examples
 | [`ic-replace-target`](https://intercoolerjs.org/attributes/ic-replace-target.html) | The [`hx-swap` attribute](https://htmx.org/attributes/hx-swap) with value set to `outerHTML` could be used to achieve the same outcome
-| [`ic-scroll-offset`](https://intercoolerjs.org/attributes/ic-scroll-offset.html) | None. No direct equivalent functionality exists (TBC)
-| [`ic-scroll-to-target`](https://intercoolerjs.org/attributes/ic-scroll-to-target.html) | None. No direct equivalent functionality exists (TBC)
+| [`ic-scroll-offset`](https://intercoolerjs.org/attributes/ic-scroll-offset.html) | None. No direct equivalent functionality exists
+| [`ic-scroll-to-target`](https://intercoolerjs.org/attributes/ic-scroll-to-target.html) | See the `scroll` and `show` modifiers on the [`hx-swap`](https://htmx.org/attributes/hx-swap/) attribute
 | [`ic-select-from-response`](https://intercoolerjs.org/attributes/ic-select-from-response.html) | [`hx-select`](https://htmx.org/attributes/hx-select)
 | [`ic-src`](https://intercoolerjs.org/attributes/ic-src.html) | None. Use ['hx-get'](https://htmx.org/attributes/hx-get) in conjunction with triggers or the [`path-deps` extension](https://htmx.org/extensions/path-deps)
 | [`ic-sse-src`](https://intercoolerjs.org/attributes/ic-sse-src.html) | [`hx-sse`](https://htmx.org/attributes/hx-sse)
@@ -94,7 +101,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | [`ic-verb`](https://intercoolerjs.org/attributes/ic-verb.html) | None. By default htmx sends the actual http method. You can however non-`GET` verbs to `POST` via the [`method-override` extension](https://htmx.org/extensions/method-override)
 
 
-### <a name="request-parameters">Request parameters</a>
+#### <a name="request-parameters">Request parameters</a>
 
 | Intercooler | htmx |
 |-----------|-------------|
@@ -108,14 +115,14 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | `ic-current-url` | None. Use the `HX-Current-URL` header
 | `ic-prompt-value` | None. Use the `HX-Prompt` header
 
-## <a name="request-headers">Request headers</a>
+#### <a name="request-headers">Request headers</a>
 
 | Intercooler | htmx |
 |-----------|-------------|
 | `X-IC-Request` | `HX-Request`
 | `X-HTTP-Method-Override` | `X-HTTP-Method-Override`
 
-## <a name="response-headers">Response headers</a>
+#### <a name="response-headers">Response headers</a>
 
 | Intercooler | htmx |
 |-----------|-------------|
@@ -133,7 +140,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | `X-IC-Title-Encoded` | None. No direct equivalent functionality exists (TBC)
 | `X-IC-Set-Local-Vars` | None. No direct equivalent functionality exists (TBC)
 
-### <a name="events">Events</a>
+#### <a name="events">Events</a>
 
 **Note**: All [htmx events](https://htmx.org/docs/#events) are fired in both Camel and Kebab casing.
 
@@ -154,7 +161,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | `pushUrl.ic` | tbd
 | `beforeHistorySnapshot.ic` | [`htmx:beforeHistorySave`](https://htmx.org/events#htmx:beforeHistorySave)
 
-### <a name="methods">Javascript API methods</a>
+#### <a name="methods">Javascript API methods</a>
 
 | Intercooler | htmx |
 |-----------|-------------|
@@ -170,7 +177,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 | `LeadDyno.startPolling(elt)` | None. No direct equivalent functionality exists (TBC)
 | `LeadDyno.stopPolling(elt)` | None. No direct equivalent functionality exists (TBC)
 
-### <a name="meta-tags">Meta tags</a>
+#### <a name="meta-tags">Meta tags</a>
 
 | Intercooler | htmx |
 |-----------|-------------|
