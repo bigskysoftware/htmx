@@ -3,7 +3,7 @@ layout: layout.njk
 title: </> intercooler.js -> htmx migration
 ---
 
-# Migration Guide: Intercooler to htmx 
+# Intercooler.js &rarr; htmx Migration Guide
 
 The purpose of this guide is to:
  -  _map_ the equivalent htmx attributes, headers, events, methods, etc. that are available in Intercooler
@@ -16,12 +16,15 @@ It is worth noting the difference in approach between what Intercooler set out t
 
 **Intercooler** tried to provide custom html attributes for most of it's functionality. This is evident in it's longer list of attributes, many of which could be described as convenience or client-side-focused in nature.
 
-**htmx** follows the approach of trying to keep the core small, with a smaller set of available attributes that are mostly focused on content loading and swapping. It's capability is augmented in primarily 2 ways:
+**htmx** follows the approach of trying to keep the core small, with a smaller set of available attributes that are mostly focused on content loading and swapping. 
+
+This capability is augmented in primarily 2 ways:
+
 1. [Extensions](https://dev.htmx.org/extensions#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](https://htmx.org/extensions/path-deps). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](https://dev.htmx.org/extensions/preload)
   
 2. Using the htmx events system with vanilla javascript, [alpine.js](https://github.com/alpinejs/alpine/) or [hyperscript](https://htmx.org/docs/#hyperscript).   Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
 
-htmx contains some functionality which is not present in Intercooler. That is outside of the scope of this guide.<br>
+htmx also contains functionality which is not present in Intercooler. That is outside of the scope of this guide.<br>
 
 Finally, it's worth noting that this is still a work in progress and is liable to change over time.
 
