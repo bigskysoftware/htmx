@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [1.1.0] - 2021-1-8
+## [1.1.0] - 2021-1-6
 
 * Newly added [preload extension](https://htmx.org/extensions/preload/) allows you to preload resources for lower
   latency requests!
