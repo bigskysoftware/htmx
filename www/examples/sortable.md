@@ -27,6 +27,7 @@ by Sortable.js:
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
+  <div class="htmx-indicator">Updating...</div>
   <div><input type='hidden' name='item' value='1'/>Item 1</div>
   <div><input type='hidden' name='item' value='2'/>Item 2</div>
   <div><input type='hidden' name='item' value='3'/>Item 3</div>
@@ -63,7 +64,7 @@ That's it!
     var listItems = [1, 2, 3, 4, 5]
     // routes
     init("/demo", function(request, params){
-      return '<form id=example1" class="list-group col sortable" hx-post="/items" hx-trigger="end">\n' +
+      return '<form id=example1" class="list-group col sortable" hx-post="/items" hx-trigger="end">' +
       listContents()
       + "\n</form>";
     });
@@ -76,7 +77,7 @@ That's it!
     
     // templates
     function listContents() {
-      return listItems.map(function(val) {
+      return '<div class="htmx-indicator">Updating...</div>' + listItems.map(function(val) {
         return "  <div><input type='hidden' name='item' value='" + val + "'/> Item " + val +"</div>";
       }).join("\n");
     }
