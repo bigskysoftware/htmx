@@ -52,7 +52,7 @@ for a global symbol with the name `foo`
 Standard events can also have modifiers that change how they behave.  The modifiers are:
 
 * `once` - the event will only trigger once (e.g. the first click)
-* `changed` - the event will only change if the value of the element has changed
+* `changed` - the event will only change if the value of the element has changed. Please pay attention `change` is the name of the event and `changed` is the name of the modifier.
 * `delay:<timing declaration>` - a delay will occur before an event triggers a request.  If the event
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
