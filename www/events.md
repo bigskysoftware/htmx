@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: </> htmx - high power tools for html
+title: </> htmx - Events
 ---
 
 ## Events
@@ -157,7 +157,7 @@ for the content to restore, but the response is an error (e.g. `404`)
 ### <a name="htmx:historyCacheMissLoad"></a> Event - [`htmx:historyCacheMissLoad`](#htmx:historyCacheMissLoad)
 
 This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
-for the content to restore 
+for the content to restore
 
 ##### Details
 
@@ -293,11 +293,11 @@ to implement custom validation rules.
 
 ```html
 <form hx-post="/test">
-  <input _="on htmx:validation:validate 
-               if my.value != 'foo' 
-                  call me.setCustomValidity('Please enter the value foo')   
-               else 
-                  call me.setCustomValidity('')" 
+  <input _="on htmx:validation:validate
+               if my.value != 'foo'
+                  call me.setCustomValidity('Please enter the value foo')
+               else
+                  call me.setCustomValidity('')"
          name="example">
 </form>
 ```
