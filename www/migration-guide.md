@@ -110,8 +110,8 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 |-----------|-------------|
 | `ic-request` | None. Use `HX-Request` header
 | `_method` | _method (requires the [`rails-method`](https://htmx.org/extensions/rails-method) extension)
-| `ic-element-id` | None. Use `HX-Active-Element` header
-| `ic-element-name` | None. Use `HX-Active-Element-Name` header
+| `ic-element-id` | None
+| `ic-element-name` | None
 | `ic-target-id` | None. Use `HX-Target` header
 | `ic-trigger-id` | None. Use `HX-Trigger` header
 | `ic-trigger-name` | None. Use `HX-Trigger-Name` header
@@ -184,5 +184,5 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 
 | Intercooler | htmx |
 |-----------|-------------|
-| `<meta name="intercoolerjs:use-data-prefix" content="true"/>` | None. You can simply use the data- prefix without specifying a meta tag. htmx will automatically recognize htmx attributes like this: `<a data-hx-post="/click">Click Me!</a>`
-| `<meta name="intercoolerjs:use-actual-http-method" content="true"/>` | None. By default htmx sends the actual http method. You can however achieve the same outcome via the [`method-override` extension](https://htmx.org/extensions/method-override)
+| `<meta name="intercoolerjs:use-data-prefix" content="true"/>` | None. You can simply use the `data-` prefix without specifying a meta tag. htmx will automatically recognize htmx attributes like this: `<a data-hx-post="/click">Click Me!</a>`
+| `<meta name="intercoolerjs:use-actual-http-method" content="true"/>` | None. By default htmx sends the actual http method. You can however change the verb for all non-GET requests to POST via the [`method-override` extension](https://htmx.org/extensions/method-override)
