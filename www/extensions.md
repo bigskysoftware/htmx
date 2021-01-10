@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: </> htmx - high power tools for html
+title: </> htmx - Extensions
 ---
 
 ## htmx Extensions
@@ -10,14 +10,14 @@ Htmx provides an extension mechanism for defining and using extensions within ht
 ## <a name="using"></a>[Using Extensions](#using)
 
 Using an extension involves two steps:
- 
+
  * include the extension definition, which will add it to the `htmx` extension registry
  * reference the extension via  the [hx-ext](/attributes/hx-ext) attribute
- 
+
 Here is an example
 
 ```html
-  <script src="https://unpkg.com/htmx.org@0.0.8/dist/ext/debug.js"></script>  
+  <script src="https://unpkg.com/htmx.org@0.0.8/dist/ext/debug.js"></script>
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
