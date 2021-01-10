@@ -4,7 +4,7 @@ layout: demo_layout.njk
         
 ## Sortable
 
-In this example we show how to integrate the [Sortable](https://sortablejs.github.io/sortablejs/)
+In this example we show how to integrate the [Sortable](https://sortablejs.github.io/Sortable/)
 javascript library with htmx.
 
 To begin we intialize the `.sortable` class with the `Sortable` javascript library:
