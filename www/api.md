@@ -256,7 +256,7 @@ or
     htmx.off("click", myEventListener);
 
     // remove this click listener from the given div
-    var allParagraphsInMyDiv = htmx.find(htmx.find("#my-div"), "click", myEventListener)
+    var allParagraphsInMyDiv = htmx.off(htmx.find("#my-div"), "click", myEventListener)
 ```
 
 ### <a name="on"></a> Method -  [`htmx.on()`](#on)
