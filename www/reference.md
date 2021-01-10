@@ -120,6 +120,7 @@ title: </> htmx - Attributes
 | [`htmx:onLoadError`](/events#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
 | [`htmx:oobErrorNoTarget`](/events#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
 | [`htmx:prompt`](/events#htmx:prompt)  | triggered after a prompt is shown
+| [`htmx:pushedIntoHistory`](/events#htmx:pushedIntoHistory)  | triggered after an url is pushed into history
 | [`htmx:responseError`](/events#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`htmx:sendError`](/events#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
 | [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
