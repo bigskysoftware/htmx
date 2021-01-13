@@ -38,6 +38,9 @@ You can add the `preload` attribute to the top-level element that contains sever
     </ul>
 ```
 
+### Preloading of Linked Resources
+
+After an HTML page (or page fragment) is preloaded, this extension parses it as a DOM element, but does not add the new DOM node into your document.  This is done so that any images included in the preloaded HTML via `<img>` tags are also preloaded.  This extension does not load or run linked Javascript or Cascading Stylesheet content, whether linked or embedded in the preloaded HTML.
 ### Configuration
 
 Defaults for this extension are chosen to balance users' perceived performance with potential load on your servers from unused requests.  As a developer, you can modify two settings to customize this behavior to your specific use cases.
