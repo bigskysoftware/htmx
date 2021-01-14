@@ -337,7 +337,33 @@ return (function () {
             } else {
                 return arg2;
             }
-        }
+		}
+		
+		// Like querySelectorAll, but supports [closest] and [find]
+		// and other features that might have been added w/o updating this comment
+		// returns Array | NodeList
+		function querySelectorAllWithFeatures(eltOrSelector, selector) {
+			var elt;
+			if (selector === undefined) {
+				selector = eltOrSelector;
+				elt = getDocument();
+			} else {
+				elt = eltOrSelector;
+			}
+
+			if (selector.indexOf("closest ") === 0) {
+				return [closest(elt, selector.substr(8))];
+			} else if (selector.indexOf("find ") === 0) {
+				return [find(elt, selector.substr(5))];
+			} else {
+				return getDocument().querySelectorAll(selector);
+			}
+		}
+
+		// See querySelectorAllWithFeatures
+		function querySelectorWithFeatures(eltOrSelector, selector) {
+			return querySelectorAllWithFeatures(eltOrSelector, selector)[0]
+		}
 
         function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg2)) {
@@ -381,15 +407,11 @@ return (function () {
             var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
             if (explicitTarget) {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
-                if (targetStr === "this") {
-                    return explicitTarget;
-                } else if (targetStr.indexOf("closest ") === 0) {
-                    return closest(elt, targetStr.substr(8));
-                } else if (targetStr.indexOf("find ") === 0) {
-                    return find(elt, targetStr.substr(5));
-                } else {
-                    return getDocument().querySelector(targetStr);
-                }
+				if (targetStr === "this") {
+					return explicitTarget;
+				} else {
+					return querySelectorWithFeatures(elt, targetStr)
+				}
             } else {
                 var data = getInternalData(elt);
                 if (data.boosted) {
@@ -1616,7 +1638,7 @@ return (function () {
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
-                var nodes = getDocument().querySelectorAll(includes);
+				var nodes = querySelectorAllWithFeatures(elt, includes);
                 forEach(nodes, function(node) {
                     processInputValue(processed, values.includes, errors, node, validate);
                 });
