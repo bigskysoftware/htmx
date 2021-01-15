@@ -331,6 +331,32 @@ return (function () {
             while (elt = elt && parentElt(elt));
         }
 
+        // Like querySelectorAll, but supports [closest] and [find]
+        // and other features that might have been added w/o updating this comment
+        // returns Array | NodeList
+        function querySelectorAllWithFeatures(eltOrSelector, selector) {
+            var elt;
+            if (selector === undefined) {
+                selector = eltOrSelector;
+                elt = getDocument();
+            } else {
+                elt = eltOrSelector;
+            }
+
+            if (selector.indexOf("closest ") === 0) {
+                return [closest(elt, selector.substr(8))];
+            } else if (selector.indexOf("find ") === 0) {
+                return [find(elt, selector.substr(5))];
+            } else {
+                return getDocument().querySelectorAll(selector);
+            }
+        }
+
+        // See querySelectorAllWithFeatures
+        function querySelectorWithFeatures(eltOrSelector, selector) {
+            return querySelectorAllWithFeatures(eltOrSelector, selector)[0]
+        }
+
         function resolveTarget(arg2) {
             if (isType(arg2, 'String')) {
                 return find(arg2);
@@ -383,12 +409,8 @@ return (function () {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
                     return explicitTarget;
-                } else if (targetStr.indexOf("closest ") === 0) {
-                    return closest(elt, targetStr.substr(8));
-                } else if (targetStr.indexOf("find ") === 0) {
-                    return find(elt, targetStr.substr(5));
                 } else {
-                    return getDocument().querySelector(targetStr);
+                    return querySelectorWithFeatures(elt, targetStr)
                 }
             } else {
                 var data = getInternalData(elt);
@@ -1593,6 +1615,18 @@ return (function () {
             }
         }
 
+        function descendantsToInclude(elt) {
+            var rv = [];
+            var descendants = elt.querySelectorAll('*')
+            forEach(descendants, function (descendant) {
+                if (shouldInclude(descendant)) {
+                   rv.push(descendant);
+                }
+            })
+
+            return rv;
+        }
+
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {
@@ -1616,9 +1650,15 @@ return (function () {
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
-                var nodes = getDocument().querySelectorAll(includes);
+                var nodes = querySelectorAllWithFeatures(elt, includes);
                 forEach(nodes, function(node) {
                     processInputValue(processed, values.includes, errors, node, validate);
+                    if (!shouldInclude(node)) {
+                        var descendants = descendantsToInclude(node);
+                        forEach(descendants, function (descendant) {
+                            processInputValue(processed, values.includes, errors, descendant, validate);
+                        })
+                    }
                 });
             }
 
