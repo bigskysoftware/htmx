@@ -165,33 +165,5 @@ describe("hx-include attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
-    it('If the element is not includeable, its descendant inputs are included', function () {
-        this.server.respondWith("POST", "/include", function (xhr) {
-            var params = getParameters(xhr);
-            params['i1'].should.equal("test");
-            params['i2'].should.equal("test");
-            xhr.respond(200, {}, "Clicked!")
-        });
-        make('<div id="i"><input name="i1" value="test"/><input name="i2" value="test"/></div>');
-        var div = make('<div hx-post="/include" hx-include="#i"></div>')
-        div.click();
-        this.server.respond();
-        div.innerHTML.should.equal("Clicked!");
-    })
-
-    it('The `closest` modifier can be used in the hx-include selector', function () {
-        this.server.respondWith("POST", "/include", function (xhr) {
-            var params = getParameters(xhr);
-            params['i1'].should.equal("test");
-            params['i2'].should.equal("test");
-            xhr.respond(200, {}, "Clicked!")
-        });
-        make('<div id="i"><input name="i1" value="test"/><input name="i2" value="test"/>'+
-            '<button id="btn" hx-post="/include" hx-include="closest div"></button></div>');
-        var btn = byId('btn')
-        btn.click();
-        this.server.respond();
-        btn.innerHTML.should.equal("Clicked!");
-    })
 
 });
