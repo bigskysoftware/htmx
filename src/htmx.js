@@ -1598,7 +1598,7 @@ return (function () {
                 }
             }
             if (matches(elt, 'form')) {
-                var inputs = elt.querySelectorAll('*');
+                var inputs = elt.elements;
                 forEach(inputs, function(input) {
                     processInputValue(processed, values, errors, input, validate);
                 });
