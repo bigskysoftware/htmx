@@ -9,11 +9,13 @@ In this example we show how to create a keyboard shortcut for an action.
 We start with a simple button that loads some content from the server:
 
 ```html
-<button hx-trigger="click, keyup[altKey&&shiftKey&&key=='D']"
+<button hx-trigger="click, keyup[altKey&&shiftKey&&key=='D'] from:body"
         hx-post="/doit">Do It! (alt-shift-D)</button>
 ```
 
-Note that the button responds to both the `click` event (as usual) and then the keyup event when `alt-shift-D` is pressed, coming from the body (making it a global shortcut).
+Note that the button responds to both the `click` event (as usual) and also the keyup event when `alt-shift-D` is pressed.
+The `from:` modifier is used to listen for the keyup event on the `body` element, thus making it a "global" keyboard
+shortcut.
 
 You can trigger the demo below by either clicking on the button, or by hitting alt-shift-D.
 
