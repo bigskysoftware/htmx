@@ -1598,7 +1598,7 @@ return (function () {
                 }
             }
             if (matches(elt, 'form')) {
-                var inputs = elt.elements;
+                var inputs = elt.querySelectorAll('*');
                 forEach(inputs, function(input) {
                     processInputValue(processed, values, errors, input, validate);
                 });
@@ -1613,7 +1613,19 @@ return (function () {
                     triggerEvent(element, "htmx:validation:failed", {message:element.validationMessage, validity:element.validity})
                 }
             }
-        }
+		}
+		
+		function descendantsToInclude(elt) {
+			var rv = [];
+			var descendants = elt.querySelectorAll('*')
+			forEach(descendants, function (descendant) {
+				if (shouldInclude(descendant)) {
+					rv.push(descendant);
+				}
+			})
+
+			return rv;
+		}
 
         function getInputValues(elt, verb) {
             var processed = [];
@@ -1640,7 +1652,13 @@ return (function () {
             if (includes) {
 				var nodes = querySelectorAllWithFeatures(elt, includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values.includes, errors, node, validate);
+					processInputValue(processed, values.includes, errors, node, validate);
+					if (!shouldInclude(node)) {
+						var descendants = descendantsToInclude(node);
+						forEach(descendants, function (descendant) {
+							processInputValue(processed, values.includes, errors, descendant, validate);
+						})
+					}
                 });
             }
 
