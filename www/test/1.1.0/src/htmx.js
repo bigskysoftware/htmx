@@ -337,33 +337,33 @@ return (function () {
             } else {
                 return arg2;
             }
-		}
-		
-		// Like querySelectorAll, but supports [closest] and [find]
-		// and other features that might have been added w/o updating this comment
-		// returns Array | NodeList
-		function querySelectorAllWithFeatures(eltOrSelector, selector) {
-			var elt;
-			if (selector === undefined) {
-				selector = eltOrSelector;
-				elt = getDocument();
-			} else {
-				elt = eltOrSelector;
-			}
+        }
 
-			if (selector.indexOf("closest ") === 0) {
-				return [closest(elt, selector.substr(8))];
-			} else if (selector.indexOf("find ") === 0) {
-				return [find(elt, selector.substr(5))];
-			} else {
-				return getDocument().querySelectorAll(selector);
-			}
-		}
+        // Like querySelectorAll, but supports [closest] and [find]
+        // and other features that might have been added w/o updating this comment
+        // returns Array | NodeList
+        function querySelectorAllWithFeatures(eltOrSelector, selector) {
+            var elt;
+            if (selector === undefined) {
+                selector = eltOrSelector;
+                elt = getDocument();
+            } else {
+                elt = eltOrSelector;
+            }
 
-		// See querySelectorAllWithFeatures
-		function querySelectorWithFeatures(eltOrSelector, selector) {
-			return querySelectorAllWithFeatures(eltOrSelector, selector)[0]
-		}
+            if (selector.indexOf("closest ") === 0) {
+                return [closest(elt, selector.substr(8))];
+            } else if (selector.indexOf("find ") === 0) {
+                return [find(elt, selector.substr(5))];
+            } else {
+                return getDocument().querySelectorAll(selector);
+            }
+        }
+
+        // See querySelectorAllWithFeatures
+        function querySelectorWithFeatures(eltOrSelector, selector) {
+            return querySelectorAllWithFeatures(eltOrSelector, selector)[0]
+        }
 
         function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg2)) {
@@ -407,11 +407,11 @@ return (function () {
             var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
             if (explicitTarget) {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
-				if (targetStr === "this") {
-					return explicitTarget;
-				} else {
-					return querySelectorWithFeatures(elt, targetStr)
-				}
+                if (targetStr === "this") {
+                    return explicitTarget;
+                } else {
+                    return querySelectorWithFeatures(elt, targetStr)
+                }
             } else {
                 var data = getInternalData(elt);
                 if (data.boosted) {
@@ -1613,19 +1613,19 @@ return (function () {
                     triggerEvent(element, "htmx:validation:failed", {message:element.validationMessage, validity:element.validity})
                 }
             }
-		}
-		
-		function descendantsToInclude(elt) {
-			var rv = [];
-			var descendants = elt.querySelectorAll('*')
-			forEach(descendants, function (descendant) {
-				if (shouldInclude(descendant)) {
-					rv.push(descendant);
-				}
-			})
+        }
 
-			return rv;
-		}
+        function descendantsToInclude(elt) {
+            var rv = [];
+            var descendants = elt.querySelectorAll('*')
+            forEach(descendants, function (descendant) {
+                if (shouldInclude(descendant)) {
+                   rv.push(descendant);
+                }
+            })
+
+            return rv;
+        }
 
         function getInputValues(elt, verb) {
             var processed = [];
@@ -1650,15 +1650,15 @@ return (function () {
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
-				var nodes = querySelectorAllWithFeatures(elt, includes);
+                var nodes = querySelectorAllWithFeatures(elt, includes);
                 forEach(nodes, function(node) {
-					processInputValue(processed, values.includes, errors, node, validate);
-					if (!shouldInclude(node)) {
-						var descendants = descendantsToInclude(node);
-						forEach(descendants, function (descendant) {
-							processInputValue(processed, values.includes, errors, descendant, validate);
-						})
-					}
+                    processInputValue(processed, values.includes, errors, node, validate);
+                    if (!shouldInclude(node)) {
+                        var descendants = descendantsToInclude(node);
+                        forEach(descendants, function (descendant) {
+                            processInputValue(processed, values.includes, errors, descendant, validate);
+                        })
+                    }
                 });
             }
 
