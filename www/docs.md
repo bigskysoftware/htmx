@@ -1,11 +1,11 @@
 ---
 layout: layout.njk
-title: </> htmx - high power tools for html
+title: </> htmx - Documentation
 ---
 <div class="row">
 <div class="2 col nav">
 
-**Contents** 
+**Contents**
 
 <div id="contents">
 
@@ -41,7 +41,7 @@ title: </> htmx - high power tools for html
 ## <a name="introduction"></a>[Htmx in a Nutshell](#introduction)
 
 Htmx is a library that allows you to access modern browser features directly from HTML, rather than using
-javascript.  
+javascript.
 
 To understand htmx, first lets take a look at an anchor tag:
 
@@ -51,7 +51,7 @@ To understand htmx, first lets take a look at an anchor tag:
 
 This anchor tag tells a browser:
 
-> "When a user clicks on this link, issue an HTTP GET request to '/blog' and load the response content 
+> "When a user clicks on this link, issue an HTTP GET request to '/blog' and load the response content
 >  into the browser window".
 
 With that in mind, consider the following bit of HTML:
@@ -70,8 +70,8 @@ This tells htmx:
 > "When a user clicks on this div, issue an HTTP POST request to '/clicked' and use the content from the response
 >  to replace the element with the id `parent-div` in the DOM"
 
-Htmx extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly 
-within the language: 
+Htmx extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly
+within the language:
 
 * Now any element, not just anchors and forms, can issue an HTTP request
 * Now any event, not just clicks or form submissions, can trigger requests
@@ -79,7 +79,7 @@ within the language:
 * Now any element, not just the entire window, can be the target for update by the request
 
 Note that when you are using htmx, on the server side you typically respond with *HTML*, not *JSON*.  This keeps you firmly
-within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), 
+within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm),
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
@@ -91,9 +91,9 @@ It's worth mentioning that, if you prefer, you can use the `data-` prefix when u
 
 ## <a name="installing"></a> [Installing](#installing)
 
-Htmx is a dependency-free javascript library.  
+Htmx is a dependency-free javascript library.
 
-It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded or included from 
+It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded or included from
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
@@ -135,7 +135,7 @@ By default, AJAX requests are triggered by the "natural" event of an element:
 * everything else is triggered by the `click` event
 
 If you want different behavior you can use the [hx-trigger](/attributes/hx-trigger)
-attribute to specify which event will cause the request.  
+attribute to specify which event will cause the request.
 
 Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 
@@ -169,10 +169,10 @@ so the request will trigger at the end of the time period.
 You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
 ```html
-   <input type="text" name="q" 
-          hx-get="/trigger_delay" 
-          hx-trigger="keyup changed delay:500ms" 
-          hx-target="#search-results" 
+   <input type="text" name="q"
+          hx-get="/trigger_delay"
+          hx-trigger="keyup changed delay:500ms"
+          hx-target="#search-results"
           placeholder="Search..."/>
     <div id="search-results"></div>
 ```
@@ -227,17 +227,17 @@ Another technique that can be used to achieve polling in htmx is "load polling",
 an `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
-<div hx-get="/messages" 
+<div hx-get="/messages"
      hx-trigger="load delay:1s"
      hx-swap="outerHTML">
-     
+
 </div>
 ```
 
 If the `/messages` end point keeps returning a div set up this way, it will keep "polling" back to the URL every
 second.
 
-Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as 
+Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
 when you are showing the user a [progress bar](/examples/progress-bar).
 
 ### <a name="indicators"></a> [Request Indicators](#indicators)
@@ -246,7 +246,7 @@ When an AJAX request is issued it is often good to let the user know that someth
 will not give them any feedback.  You can accomplish this in htmx by using `htmx-indicator` class.
 
 The `htmx-indicator` class is defined so that the opacity of any element with this class is 0 by default, making it invisible
-but present in the DOM.  
+but present in the DOM.
 
 When htmx issues a request, it will put a `htmx-request` class onto an element (either the requesting element or
 another element, if specified).  The `htmx-request` class will cause a child element with the `htmx-indicator` class
@@ -285,7 +285,7 @@ attribute with a CSS selector to do so:
       <button hx-get="/click" hx-indicator="#indicator">
         Click Me!
       </button>
-      <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>  
+      <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>
   </div>
 ```
 
@@ -298,9 +298,9 @@ If you want the response to be loaded into a different element other than the on
 use the  [hx-target](/attributes/hx-target) attribute, which takes a CSS selector.  Looking back at our Live Search example:
 
 ```html
-   <input type="text" name="q" 
-          hx-get="/trigger_delay" 
-          hx-trigger="keyup delay:500ms changed" 
+   <input type="text" name="q"
+          hx-get="/trigger_delay"
+          hx-trigger="keyup delay:500ms changed"
           hx-target="#search-results"
           placeholder="Search..."/>
     <div id="search-results"></div>
@@ -312,10 +312,10 @@ input tag.
 ### <a name="swapping"></a> [Swapping](#swapping)
 
 htmx offers a few different ways to swap the HTML returned into the DOM.  By default, the content replaces the
-`innerHTML` of the target element.  You can modify this by using the [hx-swap](/attributes/hx-swap) attribute 
+`innerHTML` of the target element.  You can modify this by using the [hx-swap](/attributes/hx-swap) attribute
 with any of the following values:
 
-| Name | Description 
+| Name | Description
 |------|-------------
 | `innerHTML` | the default, puts the content inside the target element
 | `outerHTML` | replaces the entire target element with the returned content
@@ -379,7 +379,7 @@ CSS transition.  So you can write, for example, this CSS:
 
 And the newly swapped content will gently transition to a red text color over one second.
 
-All of that may seem a little crazy, but it can be summarized as this: 
+All of that may seem a little crazy, but it can be summarized as this:
 
 > In htmx, all you need to do to use CSS transitions for an element is keep its `id` stable across requests
 
@@ -396,7 +396,7 @@ If you want to swap content from a response directly into the DOM by using the `
 In this response, `div#message` would be swapped directly into the matching DOM element, while the additional content
 would be swapped into the target in the normal manner.
 
-You can use this technique to "piggy-back" updates on other requests.  
+You can use this technique to "piggy-back" updates on other requests.
 
 Note that out of band elements must be in the top level of the response, and not children of the top level elements.
 
@@ -418,19 +418,19 @@ with a CSS selector of all the elements whose values you want to include in the 
 
 If you wish to filter out some parameters you can use the [hx-params](/attributes/hx-params) attribute.
 
-Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](/events#htmx:configRequest) 
+Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](/events#htmx:configRequest)
 event.
 
 #### <a name="files"></a> [File Upload](#files)
 
-If you wish to upload files via an htmx request, you can set the [hx-encoding](/attributes/hx-encoding) attribute to 
+If you wish to upload files via an htmx request, you can set the [hx-encoding](/attributes/hx-encoding) attribute to
 `multipart/form-data`.  This will use a `FormData` object to submit the request, which will properly include the file
 in the request.
 
-Note that depending on your server-side technology, you may have to handle requests with this type of body content very 
+Note that depending on your server-side technology, you may have to handle requests with this type of body content very
 differently.
 
-Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload, 
+Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload,
 which you can hook into to show the progress of the upload.
 
 #### <a name="extra-values"></a> [Extra Values](#extra-values)
@@ -458,10 +458,10 @@ htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enh
 
 ### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
-Htmx has experimental support for declarative use of both 
-[WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) 
+Htmx has experimental support for declarative use of both
+[WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
-  
+
 These features are under active development, so please let us know if you are willing to experiment with them.
 
 #### <a name="websockets">[WebSockets](#websockets)
@@ -482,7 +482,7 @@ If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/
 The `source` declaration established the connection, and the `send` declaration tells the form to submit values to the
 socket on `submit`.
 
-More details can be found on the [hx-ws attribute page](/attributes/hx-ws) 
+More details can be found on the [hx-ws attribute page](/attributes/hx-ws)
 
 #### <a name="sse"></a> [Server Sent Events](#sse)
 
@@ -495,7 +495,7 @@ If you want an element to respond to a Server Sent Event via htmx, you need to d
 1. Define an SSE source.  To do this, add a [hx-sse](/attributes/hx-sse) attribute on a parent element with
 a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
 
-2. Define elements that are descendents of this element that are triggered by server sent events using the 
+2. Define elements that are descendents of this element that are triggered by server sent events using the
 `hx-trigger="sse:<event_name>"` syntax
 
 Here is an example:
@@ -519,8 +519,8 @@ to the browser's history, include the [hx-push-url](/attributes/hx-push-url) att
 ```html
     <a hx-get="/blog" hx-push-url="true">Blog</a>
 ```
-  
-When a user clicks on this link, htmx will snapshot the current DOM and store it before it makes a request to /blog. 
+
+When a user clicks on this link, htmx will snapshot the current DOM and store it before it makes a request to /blog.
 It then does the swap and pushes a new location onto the history stack.
 
 When a user hits the back button, htmx will retrieve the old content from storage and swap it back into the target,
@@ -530,13 +530,13 @@ When a user hits the back button, htmx will retrieve the old content from storag
 
 By default, htmx will use the `body` to take and restore the history snapshot from.  This is usually the right thing, but
 if you want to use a narrower element for snapshotting you can use the [hx-history-elt](/attributes/hx-history-elt)
-attribute to specify a different one.  
+attribute to specify a different one.
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
 
 ## <a name="requests">[Requests &amp; Responses](#requests)
 
-Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML 
+Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML
 document, matched with a [hx-select](/attributes/hx-select) tag can be useful too).  Htmx will then swap the returned
 HTML into the document at the target specified and with the swap strategy specified.
 
@@ -544,7 +544,7 @@ Sometimes you might want to do nothing in the swap, but still perhaps trigger a 
 For this situation you can return a `204 - No Content` response code, and htmx will ignore the content of the response.
 
 In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](/events#htmx:responseError)
-event, which you can handle.  
+event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
 
@@ -588,7 +588,7 @@ The order of operations in a htmx request are:
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
 
-You can use the `htmx-swapping` and `htmx-settling` classes to create 
+You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
 ## <a name="validation">[Validation](#validation)
@@ -604,7 +604,7 @@ Htmx fires events around validation that can be used to hook in custom validatio
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
   in the `event.details.errors` object
-   
+
 ### Validation Example
 
 Here is an example of an input that uses the `htmx:validation:validate` event to require that an input have the value
@@ -612,11 +612,11 @@ Here is an example of an input that uses the `htmx:validation:validate` event to
 
 ```html
 <form hx-post="/test">
-  <input _="on htmx:validation:validate 
-               if my.value != 'foo' 
-                  call me.setCustomValidity('Please enter the value foo')   
-               else 
-                  call me.setCustomValidity('')" 
+  <input _="on htmx:validation:validate
+               if my.value != 'foo'
+                  call me.setCustomValidity('Please enter the value foo')
+               else
+                  call me.setCustomValidity('')"
          name="example">
 </form>
 ```
@@ -626,7 +626,7 @@ Note that all client side validations must be re-done on the server side, as the
 ## <a name="animations"></a> [Animations](#animations)
 
 Htmx allows you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
-in many situations using only HTML and CSS.  
+in many situations using only HTML and CSS.
 
 Please see the [Animation Guide](/examples/animations) for more details on the options available.
 
@@ -660,13 +660,13 @@ See the [extensions page](/extensions#included) for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 
-Htmx has an extensive events mechanism, which doubles as the logging system.  
+Htmx has an extensive events mechanism, which doubles as the logging system.
 
 If you want to register for a given htmx event you can use the following javascript:
 
 ```javascript
   htmx.on("htmx:load", function(evt) {
-        myJavascriptLib.init(evt.details.elt);  
+        myJavascriptLib.init(evt.details.elt);
   });
 ```
 
@@ -675,10 +675,10 @@ fact this is so common, you can use the helper function:
 
 ```javascript
   htmx.onLoad(function(target) {
-        myJavascriptLib.init(target);  
+        myJavascriptLib.init(target);
   });
 ```
-This does the same thing as the first example, but is a little cleaner.  
+This does the same thing as the first example, but is a little cleaner.
 
 The full set of events can be seen [on the reference page](/reference#events).
 
@@ -714,8 +714,8 @@ if you want to log everything while developing.
 
 **NOTE: hyperscript is in very early alpha**
 
-Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML, 
-handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf), 
+Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML,
+handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),
 javascript, [gosu](https://gosu-lang.github.io/) and others.
 
 You can explore the language more fully on its main website:
@@ -738,12 +738,12 @@ This will log `Settled!` to the console when the `htmx:afterSettle` event is tri
 
 #### intercooler.js features & hyperscript implementations
 
-Below are some examples of intercooler features and the hyperscript equivalent.  
+Below are some examples of intercooler features and the hyperscript equivalent.
 
 ##### `ic-remove-after`
 
 Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
-for removing an element after a given amount of time.  
+for removing an element after a given amount of time.
 
 In hyperscript this is implemented like so:
 
