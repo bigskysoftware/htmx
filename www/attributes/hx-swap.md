@@ -55,12 +55,12 @@ These attributes can be used to synchronize htmx with the timing of CSS transiti
 
 #### Scrolling: `scroll` & `show`
 
-You can also change the scrolling behavior of the target element by using the `scroll` and `view` modifiers, both
+You can also change the scrolling behavior of the target element by using the `scroll` and `show` modifiers, both
 of which take the values `top` and `bottom`:
 
 ```html
   <!-- this fixed-height div will scroll to the bottom of the div after content is appended -->
-  <div style="height:200px;overflow: scroll" 
+  <div style="height:200px; overflow: scroll" 
        hx-get="/example" 
        hx-swap="beforeEnd scroll:bottom">
      Get Some HTML & Append It & Scroll To Bottom
