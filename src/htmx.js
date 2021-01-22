@@ -1595,10 +1595,8 @@ return (function () {
 
         function getInputValues(elt, verb) {
             var processed = [];
-            var values = {
-                form: {},
-                other: {},
-            };
+            var values = {};
+	    var formValues = {};
             var errors = [];
 
             // only validate when form is directly submitted and novalidate is not set
@@ -1606,25 +1604,25 @@ return (function () {
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values.form, errors, closest(elt, 'form'), validate);
+                processInputValue(processed, formValues, errors, closest(elt, 'form'), validate);
             }
 
             // include the element itself
-            processInputValue(processed, values.other, errors, elt, validate);
+            processInputValue(processed, values, errors, elt, validate);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values.other, errors, node, validate);
+                    processInputValue(processed, values, errors, node, validate);
                 });
             }
 
             // values in closest form take precedence
-            var mergedValues = mergeObjects(values.other, values.form);
+            values = mergeObjects(values, formValues);
 
-            return {errors:errors, values:mergedValues};
+            return {errors:errors, values};
         }
 
         function appendParam(returnStr, name, realValue) {
