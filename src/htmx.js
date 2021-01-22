@@ -1596,7 +1596,7 @@ return (function () {
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
-	    var formValues = {};
+            var formValues = {};
             var errors = [];
 
             // only validate when form is directly submitted and novalidate is not set
