@@ -82,6 +82,22 @@ describe("hx-include attribute", function() {
             params['i1'].should.deep.equal(["test", "test2"]);
             xhr.respond(200, {}, "Clicked!")
         });
+        var div = make('<div hx-target="this">' +
+            '<input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/>' +
+            '<input name="i1" value="test2"/>' +
+            '</div>')
+        var input = byId("i1")
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('Two inputs are included twice when in form when they have the same name', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.deep.equal(["test", "test2"]);
+            xhr.respond(200, {}, "Clicked!")
+        });
         var div = make('<form hx-target="this">' +
             '<input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/>' +
             '<input name="i1" value="test2"/>' +
