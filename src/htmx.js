@@ -1597,8 +1597,7 @@ return (function () {
             var processed = [];
             var values = {
                 form: {},
-                element: {},
-                includes: {},
+                other: {},
             };
             var errors = [];
 
@@ -1611,19 +1610,19 @@ return (function () {
             }
 
             // include the element itself
-            processInputValue(processed, values.element, errors, elt, validate);
+            processInputValue(processed, values.other, errors, elt, validate);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = getDocument().querySelectorAll(includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values.includes, errors, node, validate);
+                    processInputValue(processed, values.other, errors, node, validate);
                 });
             }
 
-            var mergedValues = mergeObjects(values.includes, values.element);
-            mergedValues = mergeObjects(mergedValues, values.form);
+            // values in closest form take precedence
+            var mergedValues = mergeObjects(values.other, values.form);
 
             return {errors:errors, values:mergedValues};
         }
