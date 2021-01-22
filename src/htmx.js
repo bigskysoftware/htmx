@@ -1622,7 +1622,7 @@ return (function () {
             // values in closest form take precedence
             values = mergeObjects(values, formValues);
 
-            return {errors:errors, values};
+            return {errors:errors, values:values};
         }
 
         function appendParam(returnStr, name, realValue) {
