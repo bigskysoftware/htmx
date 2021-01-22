@@ -82,7 +82,7 @@ describe("hx-include attribute", function() {
             params['i1'].should.deep.equal(["test", "test2"]);
             xhr.respond(200, {}, "Clicked!")
         });
-        var div = make('<div hx-target="this">' +
+        var div = make('<div hx-include="*" hx-target="this">' +
             '<input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/>' +
             '<input name="i1" value="test2"/>' +
             '</div>')
