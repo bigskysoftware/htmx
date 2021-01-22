@@ -63,7 +63,7 @@ describe("hx-include attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
-    it('Input not included twice when in form', function () {
+    it('Single input not included twice when in form', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
             var params = getParameters(xhr);
             params['i1'].should.equal("test");
