@@ -1619,7 +1619,7 @@ return (function () {
                 });
             }
 
-            // values in closest form take precedence
+            // form values take precedence, overriding the regular values
             values = mergeObjects(values, formValues);
 
             return {errors:errors, values:values};
