@@ -526,16 +526,23 @@ return (function () {
             }
         }
 
-        function closeConnections(target) {
-            var internalData = getInternalData(target);
+        function cleanUpElement(element) {
+            var internalData = getInternalData(element);
             if (internalData.webSocket) {
                 internalData.webSocket.close();
             }
             if (internalData.sseEventSource) {
                 internalData.sseEventSource.close();
             }
-            if (target.children) { // IE
-                forEach(target.children, function(child) { closeConnections(child) });
+            if (internalData.listenerInfos) {
+                forEach(internalData.listenerInfos, function(info) {
+                    if (element !== info.on) {
+                        info.on.removeEventListener(info.trigger, info.listener);
+                    }
+                });
+            }
+            if (element.children) { // IE
+                forEach(element.children, function(child) { cleanUpElement(child) });
             }
         }
 
@@ -558,7 +565,7 @@ return (function () {
                     }
                     newElt = newElt.nextElementSibling;
                 }
-                closeConnections(target);
+                cleanUpElement(target);
                 parentElt(target).removeChild(target);
             }
         }
@@ -584,10 +591,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
-                    closeConnections(firstChild.nextSibling)
+                    cleanUpElement(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
-                closeConnections(firstChild)
+                cleanUpElement(firstChild)
                 target.removeChild(firstChild);
             }
         }
@@ -971,8 +978,14 @@ return (function () {
                     }
                 }
             };
-            nodeData.trigger = triggerSpec.trigger;
-            nodeData.eventListener = eventListener;
+            if (nodeData.listenerInfos == null) {
+                nodeData.listenerInfos = [];
+            }
+            nodeData.listenerInfos.push({
+                trigger: triggerSpec.trigger,
+                listener: eventListener,
+                on: eltToListenOn
+            })
             eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
         }
 
