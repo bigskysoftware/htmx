@@ -1765,21 +1765,23 @@ return (function () {
             return {tasks: [], elts: [target]};
         }
 
-        function updateScrollState(target, altContent, swapSpec) {
+        function updateScrollState(content, swapSpec) {
+            var first = content[0];
+            var last = content[content.length - 1];
             if (swapSpec.scroll) {
-                if (swapSpec.scroll === "top") {
-                    target.scrollTop = 0;
+                if (swapSpec.scroll === "top" && first) {
+                    first.scrollTop = 0;
                 }
-                if (swapSpec.scroll === "bottom") {
-                    target.scrollTop = target.scrollHeight;
+                if (swapSpec.scroll === "bottom" && last) {
+                    last.scrollTop = last.scrollHeight;
                 }
             }
             if (swapSpec.show) {
-                if (swapSpec.show === "top") {
-                    target.scrollIntoView(true);
+                if (swapSpec.show === "top" && first) {
+                    first.scrollIntoView(true);
                 }
-                if (swapSpec.show === "bottom") {
-                    target.scrollIntoView(false);
+                if (swapSpec.show === "bottom" && last) {
+                    last.scrollIntoView(false);
                 }
             }
         }
@@ -2145,7 +2147,7 @@ return (function () {
                                     pushUrlIntoHistory(pathToPush);
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                 }
-                                updateScrollState(target, settleInfo.elts, swapSpec);
+                                updateScrollState(settleInfo.elts, swapSpec);
 
                                 if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
                                     handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
