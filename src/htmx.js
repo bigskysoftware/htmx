@@ -548,16 +548,23 @@ return (function () {
             }
         }
 
-        function closeConnections(target) {
-            var internalData = getInternalData(target);
+        function cleanUpElement(element) {
+            var internalData = getInternalData(element);
             if (internalData.webSocket) {
                 internalData.webSocket.close();
             }
             if (internalData.sseEventSource) {
                 internalData.sseEventSource.close();
             }
-            if (target.children) { // IE
-                forEach(target.children, function(child) { closeConnections(child) });
+            if (internalData.listenerInfos) {
+                forEach(internalData.listenerInfos, function(info) {
+                    if (element !== info.on) {
+                        info.on.removeEventListener(info.trigger, info.listener);
+                    }
+                });
+            }
+            if (element.children) { // IE
+                forEach(element.children, function(child) { cleanUpElement(child) });
             }
         }
 
@@ -573,13 +580,14 @@ return (function () {
                     var newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
+                settleInfo.elts = [] // clear existing elements
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
                         settleInfo.elts.push(newElt);
                     }
                     newElt = newElt.nextElementSibling;
                 }
-                closeConnections(target);
+                cleanUpElement(target);
                 parentElt(target).removeChild(target);
             }
         }
@@ -605,10 +613,10 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
-                    closeConnections(firstChild.nextSibling)
+                    cleanUpElement(firstChild.nextSibling)
                     target.removeChild(firstChild.nextSibling);
                 }
-                closeConnections(firstChild)
+                cleanUpElement(firstChild)
                 target.removeChild(firstChild);
             }
         }
@@ -992,8 +1000,14 @@ return (function () {
                     }
                 }
             };
-            nodeData.trigger = triggerSpec.trigger;
-            nodeData.eventListener = eventListener;
+            if (nodeData.listenerInfos == null) {
+                nodeData.listenerInfos = [];
+            }
+            nodeData.listenerInfos.push({
+                trigger: triggerSpec.trigger,
+                listener: eventListener,
+                on: eltToListenOn
+            })
             eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
         }
 
@@ -1629,11 +1643,8 @@ return (function () {
 
         function getInputValues(elt, verb) {
             var processed = [];
-            var values = {
-                form: {},
-                element: {},
-                includes: {},
-            };
+            var values = {};
+            var formValues = {};
             var errors = [];
 
             // only validate when form is directly submitted and novalidate is not set
@@ -1641,31 +1652,31 @@ return (function () {
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, values.form, errors, closest(elt, 'form'), validate);
+                processInputValue(processed, formValues, errors, closest(elt, 'form'), validate);
             }
 
             // include the element itself
-            processInputValue(processed, values.element, errors, elt, validate);
+            processInputValue(processed, values, errors, elt, validate);
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
                 var nodes = querySelectorAllWithFeatures(elt, includes);
                 forEach(nodes, function(node) {
-                    processInputValue(processed, values.includes, errors, node, validate);
+                    processInputValue(processed, values, errors, node, validate);
                     if (!shouldInclude(node)) {
                         var descendants = descendantsToInclude(node);
                         forEach(descendants, function (descendant) {
-                            processInputValue(processed, values.includes, errors, descendant, validate);
+                            processInputValue(processed, values, errors, descendant, validate);
                         })
                     }
                 });
             }
 
-            var mergedValues = mergeObjects(values.includes, values.element);
-            mergedValues = mergeObjects(mergedValues, values.form);
+            // form values take precedence, overriding the regular values
+            values = mergeObjects(values, formValues);
 
-            return {errors:errors, values:mergedValues};
+            return {errors:errors, values:values};
         }
 
         function appendParam(returnStr, name, realValue) {
@@ -1807,21 +1818,23 @@ return (function () {
             return {tasks: [], elts: [target]};
         }
 
-        function updateScrollState(target, altContent, swapSpec) {
+        function updateScrollState(content, swapSpec) {
+            var first = content[0];
+            var last = content[content.length - 1];
             if (swapSpec.scroll) {
-                if (swapSpec.scroll === "top") {
-                    target.scrollTop = 0;
+                if (swapSpec.scroll === "top" && first) {
+                    first.scrollTop = 0;
                 }
-                if (swapSpec.scroll === "bottom") {
-                    target.scrollTop = target.scrollHeight;
+                if (swapSpec.scroll === "bottom" && last) {
+                    last.scrollTop = last.scrollHeight;
                 }
             }
             if (swapSpec.show) {
-                if (swapSpec.show === "top") {
-                    target.scrollIntoView(true);
+                if (swapSpec.show === "top" && first) {
+                    first.scrollIntoView(true);
                 }
-                if (swapSpec.show === "bottom") {
-                    target.scrollIntoView(false);
+                if (swapSpec.show === "bottom" && last) {
+                    last.scrollIntoView(false);
                 }
             }
         }
@@ -2187,7 +2200,7 @@ return (function () {
                                     pushUrlIntoHistory(pathToPush);
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
                                 }
-                                updateScrollState(target, settleInfo.elts, swapSpec);
+                                updateScrollState(settleInfo.elts, swapSpec);
 
                                 if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
                                     handleTrigger(xhr, "HX-Trigger-After-Settle", elt);

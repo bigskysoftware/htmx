@@ -23,7 +23,7 @@
 * Added `on load` support for the newest version of [hyperscript](https://hyperscript.org)
 * Added the `htmx.config.allowEval` configuration value, for CSP compatibility
 * Bug fixes & improvements 
-  
+
 ## [1.0.2] - 2020-12-12
 
 * Extend all API methods to take a string selector as well as an element
