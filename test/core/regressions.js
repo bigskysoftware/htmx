@@ -98,4 +98,16 @@ describe("Core htmx Regression Tests", function(){
         byId("d1").innerText.should.equal('Replaced');
     });
 
+    it('does not submit with a false condition on a form', function() {
+        this.server.respondWith("POST", "/test", "Submitted");
+        var defaultPrevented = false;
+        htmx.on("click", function(evt) {
+            defaultPrevented = evt.defaultPrevented;
+        })
+        var form = make('<form hx-post="/test" hx-trigger="click[false]"></form>');
+        form.click()
+        this.server.respond();
+        defaultPrevented.should.equal(true);
+    })
+
 })
