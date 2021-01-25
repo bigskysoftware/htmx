@@ -930,14 +930,14 @@ return (function () {
                     eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
                     return;
                 }
-                if (maybeFilterEvent(triggerSpec, evt)) {
-                    return;
-                }
                 if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                     return;
                 }
                 if(explicitCancel || shouldCancel(elt)){
                     evt.preventDefault();
+                }
+                if (maybeFilterEvent(triggerSpec, evt)) {
+                    return;
                 }
                 var eventData = getInternalData(evt);
                 var elementData = getInternalData(elt);
