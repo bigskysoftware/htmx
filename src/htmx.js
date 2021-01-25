@@ -70,7 +70,7 @@ return (function () {
 			}
 			if (str.slice(-2) == "ms") {
 				return parseFloat(str.slice(0,-2)) || undefined
-			}			
+			}
 			if (str.slice(-1) == "s") {
 				return (parseFloat(str.slice(0,-1)) * 1000) || undefined
 			}
@@ -331,19 +331,8 @@ return (function () {
             while (elt = elt && parentElt(elt));
         }
 
-        // Like querySelectorAll, but supports [closest] and [find]
-        // and other features that might have been added w/o updating this comment
-        // returns Array | NodeList
-        function querySelectorAllWithFeatures(eltOrSelector, selector) {
-            var elt;
-            if (selector === undefined) {
-                selector = eltOrSelector;
-                elt = getDocument();
-            } else {
-                elt = eltOrSelector;
-            }
-
-            if (selector.indexOf("closest ") === 0) {
+        function querySelectorAllExt(elt, selector) {
+		    if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
@@ -352,9 +341,8 @@ return (function () {
             }
         }
 
-        // See querySelectorAllWithFeatures
-        function querySelectorWithFeatures(eltOrSelector, selector) {
-            return querySelectorAllWithFeatures(eltOrSelector, selector)[0]
+        function querySelectorExt(eltOrSelector, selector) {
+            return querySelectorAllExt(eltOrSelector, selector)[0]
         }
 
         function resolveTarget(arg2) {
@@ -410,7 +398,7 @@ return (function () {
                 if (targetStr === "this") {
                     return explicitTarget;
                 } else {
-                    return querySelectorWithFeatures(elt, targetStr)
+                    return querySelectorExt(elt, targetStr)
                 }
             } else {
                 var data = getInternalData(elt);
@@ -817,6 +805,7 @@ return (function () {
             return result;
         }
 
+        var INPUT_SELECTOR = 'input, textarea, select';
         function getTriggerSpecs(elt) {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
@@ -874,7 +863,7 @@ return (function () {
                 return triggerSpecs;
             } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            } else if (matches(elt, 'input, textarea, select')) {
+            } else if (matches(elt, INPUT_SELECTOR)) {
                 return [{trigger: 'change'}];
             } else {
                 return [{trigger: 'click'}];
@@ -1527,12 +1516,7 @@ return (function () {
         function mutateRequestIndicatorClasses(elt, action) {
             var indicator = getClosestAttributeValue(elt, 'hx-indicator');
             if (indicator) {
-                var indicators;
-                if (indicator.indexOf("closest ") === 0) {
-                    indicators = [closest(elt, indicator.substr(8))];
-                } else {
-                    indicators = getDocument().querySelectorAll(indicator);
-                }
+                var indicators = querySelectorAllExt(elt, indicator);
             } else {
                 indicators = [elt];
             }
@@ -1629,18 +1613,6 @@ return (function () {
             }
         }
 
-        function descendantsToInclude(elt) {
-            var rv = [];
-            var descendants = elt.querySelectorAll('*')
-            forEach(descendants, function (descendant) {
-                if (shouldInclude(descendant)) {
-                   rv.push(descendant);
-                }
-            })
-
-            return rv;
-        }
-
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
@@ -1661,12 +1633,12 @@ return (function () {
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
-                var nodes = querySelectorAllWithFeatures(elt, includes);
+                var nodes = querySelectorAllExt(elt, includes);
                 forEach(nodes, function(node) {
                     processInputValue(processed, values, errors, node, validate);
-                    if (!shouldInclude(node)) {
-                        var descendants = descendantsToInclude(node);
-                        forEach(descendants, function (descendant) {
+                    // if a non-form is included, include any input values within it
+                    if (!matches(node, 'form')) {
+                        forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
                             processInputValue(processed, values, errors, descendant, validate);
                         })
                     }
