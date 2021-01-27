@@ -21,9 +21,9 @@ hierarchy and it will apply to all child elements.
 
 
 ```html
-<div ext="example">
+<div hx-ext="example">
   "Example" extension is used in this part of the tree...
-  <div ext="ignore:example">
+  <div hx-ext="ignore:example">
     ... but it will not be used in this part.
   </div>
 </div>
