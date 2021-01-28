@@ -23,12 +23,11 @@ htmx.defineExtension("preload", {
 		// preloading an htmx resource (this sends the same HTTP headers as a regular htmx request)
 		var load = function(node) {
 
-			// This is used after a successful AJAX request, to mark the
+			// Called after a successful AJAX request, to mark the
 			// content as loaded (and prevent additional AJAX calls.)
-			var handleResponse = function(responseText) {
+			var done = function(html) {
 				node.preloadState = "DONE"
-				var ghost = document.createElement("div") // populate a "ghost" node
-				ghost.innerHTML = responseText            // to preload images, too.
+				document.createElement("div").innerHTML = html // create and populate a node to load linked resources, too.
 			}
 
 			return function() {
@@ -44,7 +43,7 @@ htmx.defineExtension("preload", {
 				// in the future
 				if (node.getAttribute("hx-get")) {
 					htmx.ajax("GET", node.getAttribute("hx-get"), {handler:function(elt, info) {
-						handleResponse(info.xhr.responseText);
+						done(info.xhr.responseText);
 					}});
 					return;
 				}
@@ -55,7 +54,7 @@ htmx.defineExtension("preload", {
 				if (node.getAttribute("href")) {
 					var r = new XMLHttpRequest();
 					r.open("GET", node.getAttribute("href"));
-					r.onload = function() {handleResponse(r.responseText);};
+					r.onload = function() {done(r.responseText);};
 					r.send();
 					return;
 				}
