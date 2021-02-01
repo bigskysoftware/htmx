@@ -32,6 +32,7 @@ title: </> htmx - Attributes
 | [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
 | [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
 | [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
+| [`hx-preserve`](/attributes/hx-preserve) | preserves an element between requests
 | [`hx-prompt`](/attributes/hx-prompt) | shows a prompt before submitting a request
 | [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
@@ -69,11 +70,7 @@ title: </> htmx - Attributes
 | Header | Description |
 |-------|-------------|
 | `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
-| `HX-Active-Element-Name` | the `name` of the active element if it exists
-| `HX-Active-Element-Value` | the `value` of the active element if it exists
-| `HX-Active-Element` | the `id` of the active element if it exists
 | `HX-Current-URL` | the current URL of the browser
-| `HX-Event-Target` | the `id` of the original event target
 | `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
 | `HX-Request` | always `true`
 | `HX-Target` | the `id` of the target element if it exists
@@ -124,6 +121,7 @@ title: </> htmx - Attributes
 | [`htmx:onLoadError`](/events#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
 | [`htmx:oobErrorNoTarget`](/events#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
 | [`htmx:prompt`](/events#htmx:prompt)  | triggered after a prompt is shown
+| [`htmx:pushedIntoHistory`](/events#htmx:pushedIntoHistory)  | triggered after an url is pushed into history
 | [`htmx:responseError`](/events#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`htmx:sendError`](/events#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
 | [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
