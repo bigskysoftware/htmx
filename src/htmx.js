@@ -327,8 +327,16 @@ return (function () {
 
         function closest(elt, selector) {
             elt = resolveTarget(elt);
-            do if (elt == null || matches(elt, selector)) return elt;
-            while (elt = elt && parentElt(elt));
+            if (elt.closest) {
+                elt.closest(selector);
+            } else {
+                do{
+                    if (elt == null || matches(elt, selector)){
+                        return elt;
+                    }
+                }
+                while (elt = elt && parentElt(elt));
+            }
         }
 
         function querySelectorAllExt(elt, selector) {
@@ -1705,6 +1713,7 @@ return (function () {
                 "HX-Target" : getAttributeValue(target, "id"),
                 "HX-Current-URL" : getDocument().location.href,
             }
+            getValuesForElement(elt, "hx-headers", false, headers)
             if (prompt !== undefined) {
                 headers["HX-Prompt"] = prompt;
             }
@@ -1811,7 +1820,7 @@ return (function () {
             }
         }
 
-        function getValuesForElement(elt, attr, strToValues, expressionVars) {
+        function getValuesForElement(elt, attr, evalAsDefault, expressionVars) {
             if (expressionVars == null) {
                 expressionVars = {};
             }
@@ -1821,10 +1830,20 @@ return (function () {
             var attributeValue = getAttributeValue(elt, attr);
             if (attributeValue) {
                 var str = attributeValue.trim();
+                var evaluateValue = evalAsDefault;
+                if (str.indexOf("javascript:") === 0) {
+                    str = str.substr(11);
+                    evaluateValue = true;
+                }
                 if (str.indexOf('{') !== 0) {
                     str = "{" + str + "}";
                 }
-                var varsValues = strToValues(str);
+                var varsValues;
+                if (evaluateValue) {
+                    varsValues = maybeEval(elt,function () {return Function("return (" + str + ")")();}, {});
+                } else {
+                    varsValues = parseJSON(str);
+                }
                 for (var key in varsValues) {
                     if (varsValues.hasOwnProperty(key)) {
                         if (expressionVars[key] == null) {
@@ -1833,7 +1852,7 @@ return (function () {
                     }
                 }
             }
-            return getValuesForElement(parentElt(elt), attr, strToValues, expressionVars);
+            return getValuesForElement(parentElt(elt), attr, evalAsDefault, expressionVars);
         }
 
         function maybeEval(elt, toEval, defaultVal) {
@@ -1846,15 +1865,11 @@ return (function () {
         }
 
         function getHXVarsForElement(elt, expressionVars) {
-            return getValuesForElement(elt, "hx-vars", function(valueStr){
-                return maybeEval(elt,function () {return Function("return (" + valueStr + ")")();}, {});
-            }, expressionVars);
+            return getValuesForElement(elt, "hx-vars", true, expressionVars);
         }
 
         function getHXValsForElement(elt, expressionVars) {
-            return getValuesForElement(elt, "hx-vals", function(valueStr){
-                return parseJSON(valueStr);
-            }, expressionVars);
+            return getValuesForElement(elt, "hx-vals", false, expressionVars);
         }
 
         function getExpressionVars(elt) {
