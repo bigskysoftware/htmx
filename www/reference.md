@@ -32,6 +32,7 @@ title: </> htmx - Attributes
 | [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
 | [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
 | [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
+| [`hx-preserve`](/attributes/hx-preserve) | preserves an element between requests
 | [`hx-prompt`](/attributes/hx-prompt) | shows a prompt before submitting a request
 | [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL

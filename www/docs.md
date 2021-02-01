@@ -411,6 +411,12 @@ Note that out of band elements must be in the top level of the response, and not
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](/attributes/hx-select)
 attribute, which takes a CSS selector and selects the matching elements from the response.
 
+#### Preserving Content During A Swap
+
+If there is content that you wish to be preserved across swaps (e.g. a video player that you wish to remain playing
+even if a swap occurs) you can use the [hx-preserve](/attributes/hx-preserve)
+attribute on the elements you wish to be preserved.
+
 ### <a name="parameters"></a> [Parameters](#parameters)
 
 By default, an element that causes a request will include its value if it has one.  If the element is a form it
