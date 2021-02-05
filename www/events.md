@@ -233,6 +233,14 @@ attribute.  If this event is cancelled, the AJAX request will not occur.
 * `detail.target` - the target of the request
 * `detail.prompt` - the user response to the prompt
 
+### <a name="htmx:pushedIntoHistory"></a> Event - [`htmx:pushedIntoHistory`](#htmx:pushedIntoHistory)
+
+This event is triggered after an url has been pushed into history.
+
+##### Details
+
+* `detail.path` - the path and query of the url that has been pushed into history
+
 ### <a name="htmx:responseError"></a> Event - [`htmx:responseError`](#htmx:responseError)
 
 This event is triggered when an HTTP error response occurs
