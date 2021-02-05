@@ -158,4 +158,16 @@ describe("path-deps extension", function() {
         div2.innerHTML.should.equal("Path deps 2 fired!");
     });
 
+    it('path-deps replacing containing element fires event', function () {
+        this.server.respondWith("POST", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test2", "Deps fired!");
+        var div1 = make('<div><button id="buttonSubmit" hx-post="/test" hx-swap="outerHTML" hx-ext="path-deps" >Click Me!</button></div>')
+        var div2 = make('<div hx-get="/test2" hx-trigger="path-deps" path-deps="/test">FOO</div>')
+        byId("buttonSubmit").click();
+        this.server.respond();
+        div1.innerHTML.should.equal('Clicked!');
+        div2.innerHTML.should.equal("FOO");
+        this.server.respond();
+        div2.innerHTML.should.equal("Deps fired!");
+    });
 });
