@@ -497,7 +497,9 @@ return (function () {
             forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function (preservedElt) {
                 var id = getAttributeValue(preservedElt, "id");
                 var oldElt = getDocument().getElementById(id);
-                preservedElt.parentNode.replaceChild(oldElt, preservedElt);
+                if (oldElt != null) {
+                    preservedElt.parentNode.replaceChild(oldElt, preservedElt);
+                }
             });
         }
 
