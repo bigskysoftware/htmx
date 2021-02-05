@@ -22,6 +22,8 @@ Here is an example that includes a separate input value:
 This is a little contrived as you would typically enclose both of these elements in a `form` and submit
 the value automatically, but it demonstrates the concept.
 
+Note that if you include a non-input element, all input elements enclosed in that element will be included.
+
 ### Notes
 
 * `hx-include` is inherited and can be placed on a parent element

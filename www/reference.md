@@ -26,6 +26,7 @@ title: </> htmx - Attributes
 | [`hx-encoding`](/attributes/hx-encoding) | changes the request encoding type
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
+| [`hx-headers`](/attributes/hx-headers) | adds to the headers that will be submitted with the request
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
 | [`hx-indicator`](/attributes/hx-indicator) | the element to put the `htmx-request` class on during the AJAX request
@@ -42,8 +43,7 @@ title: </> htmx - Attributes
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
-| [`hx-vals`](/attributes/hx-vals) | safely adds to the parameters that will be submitted with the request
-| [`hx-vars`](/attributes/hx-vars) | dynamically adds to the parameters that will be submitted with the request
+| [`hx-vals`](/attributes/hx-vals) | adds to the parameters that will be submitted with the request
 | [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
 
 </div>
