@@ -513,7 +513,7 @@ a `connect <url>` declaration that specifies the URL from which Server Sent Even
 Here is an example:
 
 ```html
-    <body hx-sse="connect /news_updates">
+    <body hx-sse="connect:/news_updates">
         <div hx-trigger="sse:new_news" hx-get="/news"></div>
     </body>
 ```
