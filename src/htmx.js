@@ -328,7 +328,7 @@ return (function () {
         function closest(elt, selector) {
             elt = resolveTarget(elt);
             if (elt.closest) {
-                elt.closest(selector);
+                return elt.closest(selector);
             } else {
                 do{
                     if (elt == null || matches(elt, selector)){
@@ -1820,12 +1820,12 @@ return (function () {
             }
         }
 
-        function getValuesForElement(elt, attr, evalAsDefault, expressionVars) {
-            if (expressionVars == null) {
-                expressionVars = {};
+        function getValuesForElement(elt, attr, evalAsDefault, values) {
+            if (values == null) {
+                values = {};
             }
             if (elt == null) {
-                return expressionVars;
+                return values;
             }
             var attributeValue = getAttributeValue(elt, attr);
             if (attributeValue) {
@@ -1846,13 +1846,13 @@ return (function () {
                 }
                 for (var key in varsValues) {
                     if (varsValues.hasOwnProperty(key)) {
-                        if (expressionVars[key] == null) {
-                            expressionVars[key] = varsValues[key];
+                        if (values[key] == null) {
+                            values[key] = varsValues[key];
                         }
                     }
                 }
             }
-            return getValuesForElement(parentElt(elt), attr, evalAsDefault, expressionVars);
+            return getValuesForElement(parentElt(elt), attr, evalAsDefault, values);
         }
 
         function maybeEval(elt, toEval, defaultVal) {
