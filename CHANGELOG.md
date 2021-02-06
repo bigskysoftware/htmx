@@ -1,6 +1,23 @@
 # Changelog
 
 
+## [1.2.0] - 2021-2-6
+
+* New Features
+    * `hx-vars` has been deprecated in favor of `hx-vals`
+    * `hx-vals` now supports a `javascript:` prefix to achieve the behavior that `hx-vars` provided
+    * The new `hx-headers` attribute allows you to add headers to a request via an attribute.  Like `hx-vals` it supports
+      JSON or javascript via the `javascript:` prefix
+    * `hx-include` will now include all inputs under an element, even if that element is not a form tag
+    * The [preload extension](https://htmx.org/extensions/preload/) now offers a `preload-images="true"` attribute that will aggressively load impages in preloaded content
+* Improvements & Bug fixes
+  * Improved handling of precedence of input values to favor the enclosing form (see [here](https://github.com/bigskysoftware/htmx/commit/a10e43d619dc340aa324d37772c06a69a2f47ec9)
+  * Moved event filtering logic *after* `preventDefault` so filtering still allows events to be properly handled
+  * No longer trigger after swap events on elements that have been removed via an `outerHTML` swap
+  * Properly remove event handlers added to other elements when an element is removed from the DOM
+  * Handle the `scroll:` modifier in `hx-swap` properly when an `outerHTML` swap occurs
+  * Lots of docs fixes
+
 ## [1.1.0] - 2021-1-6
 
 * Newly added [preload extension](https://htmx.org/extensions/preload/) allows you to preload resources for lower
