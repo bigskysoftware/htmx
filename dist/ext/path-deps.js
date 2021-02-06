@@ -32,7 +32,7 @@
 
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
-            if (name === "htmx:afterRequest") {
+            if (name === "htmx:beforeOnLoad") {
                 var config = evt.detail.requestConfig;
                 // mutating call
                 if (config.verb !== "get") {
