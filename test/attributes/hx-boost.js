@@ -57,5 +57,19 @@ describe("hx-boost attribute", function() {
     })
 
 
+    it('overriding default swap style does not effect boosting', function () {
+        htmx.config.defaultSwapStyle = "afterend";
+        try {
+            this.server.respondWith("GET", "/test", "Boosted");
+            var a = make('<a hx-target="this" hx-boost="true" id="a1" href="/test">Foo</a>');
+            a.click();
+            this.server.respond();
+            a.innerHTML.should.equal("Boosted");
+        } finally {
+            htmx.config.defaultSwapStyle = "innerHTML";
+        }
+    })
+
+
 });
 

@@ -5,9 +5,12 @@ title: </> htmx - hx-vals
 
 ## `hx-vals`
 
-The `hx-vals` attribute allows you to safely add to the parameters that will be submitted with an AJAX request.  
+The `hx-vals` attribute allows you to add to the parameters that will be submitted with an AJAX request.  
 
-The value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html) format.
+By default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html) 
+format.
+
+If you wish for `hx-vals` to *evaluate* the values given, you can prefix the values with `javascript:`.
 
 ```html
   <div hx-get="/example" hx-vals='{"myVal": "My Value"}'>Get Some HTML, Including A Value in the Request</div>
@@ -15,7 +18,10 @@ The value of this attribute is a list of name-expression values in [JSON (JavaSc
 
 ### Security Considerations
 
-* The value of `hx-vals` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON). It is **not** dynamically computed, making it a safer alternative to [hx-vars](/attributes/hx-vars), especially when dealing with user input such as query strings or user-generated content, which could otherwise introduce a [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/) vulnerability. 
+* By default, the value of `hx-vals` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON). 
+  It is **not** dynamically computed.  If you use the `javascript:` prefix, be aware that you are introducing
+   security considerations, especially when dealing with user input such as query strings or user-generated content, 
+   which could introduce a [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/) vulnerability. 
 
 ### Notes
 

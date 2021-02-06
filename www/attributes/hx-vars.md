@@ -5,6 +5,8 @@ title: </> htmx - hx-vars
 
 ## `hx-vars`
 
+**NOTE: `hx-vars` has been deprecated in favor of [`hx-vals`](/attributes/hx-vals), which is safer by default.**
+
 The `hx-vars` attribute allows you to dynamically add to the parameters that will be submitted with an AJAX request.  
 
 The value of this attribute is a comma separated list of `name`:`<expression>` values, the same as the internal
