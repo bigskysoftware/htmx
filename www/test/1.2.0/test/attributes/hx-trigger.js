@@ -366,6 +366,36 @@ describe("hx-trigger attribute", function(){
         div1.innerHTML.should.equal("Requests: 1");
     });
 
+    it('event listeners on other elements are removed when an element is swapped out', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/test2", "Clicked");
+
+        var div1 = make('<div hx-get="/test2">' +
+            '<div id="d2" hx-trigger="click from:body" hx-get="/test">Requests: 0</div>' +
+            '</div>');
+        var div2 = byId("d2");
+
+        div2.innerHTML.should.equal("Requests: 0");
+        document.body.click();
+        this.server.respond();
+        requests.should.equal(1);
+
+        div1.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked");
+
+        document.body.click();
+        this.server.respond();
+
+        // event listener should have been removed when this element was removed
+        requests.should.equal(1);
+    });
+
     it('multiple triggers with from clauses mixed in work', function()
     {
         var requests = 0;

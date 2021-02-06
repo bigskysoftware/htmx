@@ -271,4 +271,20 @@ describe("hx-swap attribute", function(){
         div.innerHTML.should.equal('Foo');
     });
 
+
+    it('swap outerHTML does not trigger htmx:afterSwap on original element', function()
+    {
+        this.server.respondWith("GET", "/test", 'Clicked!');
+        var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
+        div.addEventListener("htmx:afterSwap", function(){
+            count++;
+        })
+        div.click();
+        var count = 0;
+        should.equal(byId("d1"), div);
+        this.server.respond();
+        should.equal(byId("d1"), null);
+        count.should.equal(0);
+    });
+
 })
