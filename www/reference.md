@@ -69,7 +69,6 @@ title: </> htmx - Attributes
 
 | Header | Description |
 |-------|-------------|
-| `X-HTTP-Method-Override` | the HTTP verb for non-`GET` and `POST` requests
 | `HX-Current-URL` | the current URL of the browser
 | `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
 | `HX-Request` | always `true`
