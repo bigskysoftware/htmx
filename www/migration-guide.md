@@ -129,7 +129,7 @@ See the [htmx documentation on hyperscript](https://htmx.org/docs/#hyperscript) 
 
 | Intercooler | htmx |
 |-----------|-------------|
-| `X-IC-Trigger` | `HX-Trigger`, `HX-Trigger-After-Settle`, `HX-Trigger-After-Swap`. See [documentation](https://htmx.org/headers/x-hx-trigger) for more details
+| `X-IC-Trigger` | `HX-Trigger`, `HX-Trigger-After-Settle`, `HX-Trigger-After-Swap`. See [documentation](https://htmx.org/headers/hx-trigger) for more details
 | `X-IC-Refresh` | `HX-Refresh`
 | `X-IC-Redirect` | `HX-Redirect`
 | `X-IC-Script` | None. No  direct equivalent functionality exists (TBC)
