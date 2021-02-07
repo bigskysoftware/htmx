@@ -20,8 +20,6 @@ This example will cause the `button` to issue a `PUT` to `/account` and swap the
 ### Notes
 
 * `hx-put` is not inherited
-* Since most browsers do not support issuing an actual `PUT`, the request will actually be issued
-  as a `POST`, with the [`X-HTTP-Method-Override`](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields) header set to `PUT`.
 * You can control the target of the swap using the [hx-target](/attributes/hx-target) attribute
 * You can control the swap strategy by using the [hx-swap](/attributes/hx-swap) attribute
 * You can control what event triggers the request with the [hx-trigger](/attributes/hx-trigger) attribute
