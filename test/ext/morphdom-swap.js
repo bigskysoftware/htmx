@@ -28,4 +28,13 @@ describe("morphdom-swap extension", function() {
         btn.innerHTML.should.equal("Clicked!Loaded!");
     });
 
+    it('works with hx-select', function () {
+        this.server.respondWith("GET", "/test", "<button>Clicked!</button>!");
+        var btn = make('<button hx-get="/test" hx-ext="morphdom-swap" hx-swap="morphdom" hx-select="button" >Click Me!</button>')
+        btn.click();
+        should.equal(btn.getAttribute("hx-get"), "/test");
+        this.server.respond();
+        should.equal(btn.getAttribute("hx-get"), null);
+        btn.innerHTML.should.equal("Clicked!");
+    });
 });

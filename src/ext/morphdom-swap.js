@@ -4,8 +4,13 @@ htmx.defineExtension('morphdom-swap', {
     },
     handleSwap: function (swapStyle, target, fragment) {
         if (swapStyle === 'morphdom') {
-            morphdom(target, fragment.outerHTML);
-            return [target]; // let htmx handle the new content
+            if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+                morphdom(target, fragment.firstElementChild);
+                return [target];
+            } else {
+                morphdom(target, fragment.outerHTML);
+                return [target];
+            }
         }
     }
 });
