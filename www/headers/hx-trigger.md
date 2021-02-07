@@ -1,14 +1,20 @@
 ---
 layout: layout.njk
-title: </> htmx - HX-Trigger
+title: </> htmx - HX-Trigger Response Headers
 ---
 
-## `HX-Trigger` Response Header
+## `HX-Trigger` Response Headers
 
-The `HX-Trigger` response header can be used to trigger client side actions from a response to htmx.  You can
-trigger a single event or as many uniquely named events as you would like.
+These response headers can be used to trigger client side actions on the target element within a response to htmx.  You
+can trigger a single event or as many uniquely named events as you would like.
 
-To trigger a single event with no additional details you can simply send the header like so:
+The headers are:
+
+* `HX-Trigger` - trigger events as soon as the response is received.
+* `HX-Trigger-After-Settle` - trigger events after the [settling step](/docs/#request-operations).
+* `HX-Trigger-After-Swap` - trigger events after the [swap step](/docs/#request-operations).
+
+To trigger a single event with no additional details you can simply send the event name in a header like so:
 
 `HX-Trigger: myEvent`
 

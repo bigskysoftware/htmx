@@ -576,14 +576,16 @@ htmx includes a number of useful headers in requests:
 
 htmx supports some htmx-specific response headers:
 
-* `HX-Push` - can be used to push a new URL into the browsers address bar
-* `HX-Redirect` - can be used to do a client-side redirect to a new location
+* `HX-Push` - pushes a new URL into the browser’s address bar
+* `HX-Redirect` - triggers a client-side redirect to a new location
 * `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
-* `HX-Trigger` - can be used to trigger client side events, see the [documentation](/headers/x-hx-trigger) for examples.
-* `HX-Trigger-After-Swap` - can be used to trigger client side events after the swap step.
-* `HX-Trigger-After-Settle` - can be used to trigger client side events after the settle step.
+* `HX-Trigger` - triggers client side events
+* `HX-Trigger-After-Swap` - triggers client side events after the swap step
+* `HX-Trigger-After-Settle` - triggers client side events after the settle step
 
-### Request Order of Operations
+For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/headers/hx-trigger).
+
+### <a name="request-operations"></a> [Request Order of Operations](#request-opeartions)
 
 The order of operations in a htmx request are:
 
