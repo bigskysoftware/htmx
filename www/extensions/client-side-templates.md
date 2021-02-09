@@ -17,7 +17,7 @@ When you add this extension on an element, any element below it in the DOM can u
 the template the standard way for that template engine:
 
 * `mustache` - looks a mustache &lt;script> tag up by ID for the template content
-* `handlebars` - looks in the `Handlebars.partials` collection fot a template with that name
+* `handlebars` - looks in the `Handlebars.partials` collection for a template with that name
 * `nunjucks` - resolves the template by name via `nunjucks.render(<template-name>)
 
 The AJAX response body will be parsed as JSON and passed into the template rendering.
