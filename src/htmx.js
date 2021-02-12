@@ -70,7 +70,7 @@ return (function () {
 			}
 			if (str.slice(-2) == "ms") {
 				return parseFloat(str.slice(0,-2)) || undefined
-			}			
+			}
 			if (str.slice(-1) == "s") {
 				return (parseFloat(str.slice(0,-1)) * 1000) || undefined
 			}
@@ -439,18 +439,18 @@ return (function () {
         }
 
         function oobSwap(oobValue, oobElement, settleInfo) {
-            var selector = "#" + oobElement.id;
+            var target = oobElement;
             var swapStyle = "outerHTML";
             if (oobValue === "true") {
                 // do nothing
             } else if (oobValue.indexOf(":") > 0) {
                 swapStyle = oobValue.substr(0, oobValue.indexOf(":"));
                 selector  = oobValue.substr(oobValue.indexOf(":") + 1, oobValue.length);
+                var target = getDocument().querySelector(selector);
             } else {
                 swapStyle = oobValue;
             }
 
-            var target = getDocument().querySelector(selector);
             if (target) {
                 var fragment;
                 fragment = getDocument().createDocumentFragment();
