@@ -446,7 +446,7 @@ return (function () {
             } else if (oobValue.indexOf(":") > 0) {
                 swapStyle = oobValue.substr(0, oobValue.indexOf(":"));
                 selector  = oobValue.substr(oobValue.indexOf(":") + 1, oobValue.length);
-                var target = getDocument().querySelector(selector);
+                target = getDocument().querySelector(selector);
             } else {
                 swapStyle = oobValue;
             }
