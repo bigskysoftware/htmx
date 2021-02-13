@@ -8,6 +8,8 @@ title: </> htmx - high power tools for html
 This extension allows you to use the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the
 swapping mechanism in htmx.
 
+The `morphdom` library does not support morph element to multiple elements. If the result of `hx-select` is more than one element, it will pick the first one.
+
 #### Usage
 
 ```html

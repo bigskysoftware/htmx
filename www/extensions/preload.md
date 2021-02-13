@@ -36,6 +36,17 @@ You can add the `preload` attribute to the top-level element that contains sever
         <li><a href="/server/2">This will also be preloaded for the same reason.</a>
         <li><a href="/server/3">This will be preloaded, too.  Lorem ipsum.</a>
     </ul>
+</body>
+```
+
+### Preloading of Linked Images
+
+After an HTML page (or page fragment) is preloaded, this extension can also preload linked image resources.  It will not load or run linked Javascript or Cascading Stylesheet content, whether linked or embedded in the preloaded HTML.  To preload images as well, use the following syntax.
+
+```html
+<div hx-ext="preload">
+    <a href="/my-next-page" preload="mouseover" preload-images="true">Next Page</a>
+</div>
 ```
 
 ### Configuration
