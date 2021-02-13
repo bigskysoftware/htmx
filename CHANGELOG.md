@@ -11,6 +11,8 @@
   JSON or javascript via the `javascript:` prefix
 * `hx-include` will now include all inputs under an element, even if that element is not a form tag
 * The [preload extension](https://htmx.org/extensions/preload/) now offers a `preload-images="true"` attribute that will aggressively load images in preloaded content
+* On requests driven by a history cache miss, the new `HX-History-Restore-Request` header is included so that the server
+  can differentiate between history requests and normal requests 
 
 ### Improvements & Bug fixes
 
