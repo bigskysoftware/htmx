@@ -55,6 +55,17 @@ process.removeListener = function(e, fn) {
 };
 
 /**
+ * Implements listenerCount for 'uncaughtException'.
+ */
+
+process.listenerCount = function(name) {
+  if (name === 'uncaughtException') {
+    return uncaughtExceptionHandlers.length;
+  }
+  return 0;
+};
+
+/**
  * Implements uncaughtException listener.
  */
 
@@ -608,12 +619,75 @@ Context.prototype.retries = function(n) {
 
 },{}],6:[function(require,module,exports){
 'use strict';
-/**
- * @module Errors
- */
+
+var format = require('util').format;
+
 /**
  * Factory functions to create throwable error objects
+ * @module Errors
  */
+
+/**
+ * When Mocha throw exceptions (or otherwise errors), it attempts to assign a
+ * `code` property to the `Error` object, for easier handling.  These are the
+ * potential values of `code`.
+ */
+var constants = {
+  /**
+   * An unrecoverable error.
+   */
+  FATAL: 'ERR_MOCHA_FATAL',
+
+  /**
+   * The type of an argument to a function call is invalid
+   */
+  INVALID_ARG_TYPE: 'ERR_MOCHA_INVALID_ARG_TYPE',
+
+  /**
+   * The value of an argument to a function call is invalid
+   */
+  INVALID_ARG_VALUE: 'ERR_MOCHA_INVALID_ARG_VALUE',
+
+  /**
+   * Something was thrown, but it wasn't an `Error`
+   */
+  INVALID_EXCEPTION: 'ERR_MOCHA_INVALID_EXCEPTION',
+
+  /**
+   * An interface (e.g., `Mocha.interfaces`) is unknown or invalid
+   */
+  INVALID_INTERFACE: 'ERR_MOCHA_INVALID_INTERFACE',
+
+  /**
+   * A reporter (.e.g, `Mocha.reporters`) is unknown or invalid
+   */
+  INVALID_REPORTER: 'ERR_MOCHA_INVALID_REPORTER',
+
+  /**
+   * `done()` was called twice in a `Test` or `Hook` callback
+   */
+  MULTIPLE_DONE: 'ERR_MOCHA_MULTIPLE_DONE',
+
+  /**
+   * No files matched the pattern provided by the user
+   */
+  NO_FILES_MATCH_PATTERN: 'ERR_MOCHA_NO_FILES_MATCH_PATTERN',
+
+  /**
+   * Known, but unsupported behavior of some kind
+   */
+  UNSUPPORTED: 'ERR_MOCHA_UNSUPPORTED',
+
+  /**
+   * Invalid state transition occuring in `Mocha` instance
+   */
+  INSTANCE_ALREADY_RUNNING: 'ERR_MOCHA_INSTANCE_ALREADY_RUNNING',
+
+  /**
+   * Invalid state transition occuring in `Mocha` instance
+   */
+  INSTANCE_ALREADY_DISPOSED: 'ERR_MOCHA_INSTANCE_ALREADY_DISPOSED'
+};
 
 /**
  * Creates an error object to be thrown when no files to be tested could be found using specified pattern.
@@ -625,7 +699,7 @@ Context.prototype.retries = function(n) {
  */
 function createNoFilesMatchPatternError(message, pattern) {
   var err = new Error(message);
-  err.code = 'ERR_MOCHA_NO_FILES_MATCH_PATTERN';
+  err.code = constants.NO_FILES_MATCH_PATTERN;
   err.pattern = pattern;
   return err;
 }
@@ -640,7 +714,7 @@ function createNoFilesMatchPatternError(message, pattern) {
  */
 function createInvalidReporterError(message, reporter) {
   var err = new TypeError(message);
-  err.code = 'ERR_MOCHA_INVALID_REPORTER';
+  err.code = constants.INVALID_REPORTER;
   err.reporter = reporter;
   return err;
 }
@@ -655,7 +729,7 @@ function createInvalidReporterError(message, reporter) {
  */
 function createInvalidInterfaceError(message, ui) {
   var err = new Error(message);
-  err.code = 'ERR_MOCHA_INVALID_INTERFACE';
+  err.code = constants.INVALID_INTERFACE;
   err.interface = ui;
   return err;
 }
@@ -669,7 +743,7 @@ function createInvalidInterfaceError(message, ui) {
  */
 function createUnsupportedError(message) {
   var err = new Error(message);
-  err.code = 'ERR_MOCHA_UNSUPPORTED';
+  err.code = constants.UNSUPPORTED;
   return err;
 }
 
@@ -697,7 +771,7 @@ function createMissingArgumentError(message, argument, expected) {
  */
 function createInvalidArgumentTypeError(message, argument, expected) {
   var err = new TypeError(message);
-  err.code = 'ERR_MOCHA_INVALID_ARG_TYPE';
+  err.code = constants.INVALID_ARG_TYPE;
   err.argument = argument;
   err.expected = expected;
   err.actual = typeof argument;
@@ -716,7 +790,7 @@ function createInvalidArgumentTypeError(message, argument, expected) {
  */
 function createInvalidArgumentValueError(message, argument, value, reason) {
   var err = new TypeError(message);
-  err.code = 'ERR_MOCHA_INVALID_ARG_VALUE';
+  err.code = constants.INVALID_ARG_VALUE;
   err.argument = argument;
   err.value = value;
   err.reason = typeof reason !== 'undefined' ? reason : 'is invalid';
@@ -732,9 +806,110 @@ function createInvalidArgumentValueError(message, argument, value, reason) {
  */
 function createInvalidExceptionError(message, value) {
   var err = new Error(message);
-  err.code = 'ERR_MOCHA_INVALID_EXCEPTION';
+  err.code = constants.INVALID_EXCEPTION;
   err.valueType = typeof value;
   err.value = value;
+  return err;
+}
+
+/**
+ * Creates an error object to be thrown when an unrecoverable error occurs.
+ *
+ * @public
+ * @param {string} message - Error message to be displayed.
+ * @returns {Error} instance detailing the error condition
+ */
+function createFatalError(message, value) {
+  var err = new Error(message);
+  err.code = constants.FATAL;
+  err.valueType = typeof value;
+  err.value = value;
+  return err;
+}
+
+/**
+ * Dynamically creates a plugin-type-specific error based on plugin type
+ * @param {string} message - Error message
+ * @param {"reporter"|"interface"} pluginType - Plugin type. Future: expand as needed
+ * @param {string} [pluginId] - Name/path of plugin, if any
+ * @throws When `pluginType` is not known
+ * @public
+ * @returns {Error}
+ */
+function createInvalidPluginError(message, pluginType, pluginId) {
+  switch (pluginType) {
+    case 'reporter':
+      return createInvalidReporterError(message, pluginId);
+    case 'interface':
+      return createInvalidInterfaceError(message, pluginId);
+    default:
+      throw new Error('unknown pluginType "' + pluginType + '"');
+  }
+}
+
+/**
+ * Creates an error object to be thrown when a mocha object's `run` method is executed while it is already disposed.
+ * @param {string} message The error message to be displayed.
+ * @param {boolean} cleanReferencesAfterRun the value of `cleanReferencesAfterRun`
+ * @param {Mocha} instance the mocha instance that throw this error
+ */
+function createMochaInstanceAlreadyDisposedError(
+  message,
+  cleanReferencesAfterRun,
+  instance
+) {
+  var err = new Error(message);
+  err.code = constants.INSTANCE_ALREADY_DISPOSED;
+  err.cleanReferencesAfterRun = cleanReferencesAfterRun;
+  err.instance = instance;
+  return err;
+}
+
+/**
+ * Creates an error object to be thrown when a mocha object's `run` method is called while a test run is in progress.
+ * @param {string} message The error message to be displayed.
+ */
+function createMochaInstanceAlreadyRunningError(message, instance) {
+  var err = new Error(message);
+  err.code = constants.INSTANCE_ALREADY_RUNNING;
+  err.instance = instance;
+  return err;
+}
+
+/*
+ * Creates an error object to be thrown when done() is called multiple times in a test
+ *
+ * @public
+ * @param {Runnable} runnable - Original runnable
+ * @param {Error} [originalErr] - Original error, if any
+ * @returns {Error} instance detailing the error condition
+ */
+function createMultipleDoneError(runnable, originalErr) {
+  var title;
+  try {
+    title = format('<%s>', runnable.fullTitle());
+    if (runnable.parent.root) {
+      title += ' (of root suite)';
+    }
+  } catch (ignored) {
+    title = format('<%s> (of unknown suite)', runnable.title);
+  }
+  var message = format(
+    'done() called multiple times in %s %s',
+    runnable.type ? runnable.type : 'unknown runnable',
+    title
+  );
+  if (runnable.file) {
+    message += format(' of file %s', runnable.file);
+  }
+  if (originalErr) {
+    message += format('; in addition, done() received error: %s', originalErr);
+  }
+
+  var err = new Error(message);
+  err.code = constants.MULTIPLE_DONE;
+  err.valueType = typeof originalErr;
+  err.value = originalErr;
   return err;
 }
 
@@ -746,10 +921,16 @@ module.exports = {
   createInvalidReporterError: createInvalidReporterError,
   createMissingArgumentError: createMissingArgumentError,
   createNoFilesMatchPatternError: createNoFilesMatchPatternError,
-  createUnsupportedError: createUnsupportedError
+  createUnsupportedError: createUnsupportedError,
+  createInvalidPluginError: createInvalidPluginError,
+  createMochaInstanceAlreadyDisposedError: createMochaInstanceAlreadyDisposedError,
+  createMochaInstanceAlreadyRunningError: createMochaInstanceAlreadyRunningError,
+  createFatalError: createFatalError,
+  createMultipleDoneError: createMultipleDoneError,
+  constants: constants
 };
 
-},{}],7:[function(require,module,exports){
+},{"util":89}],7:[function(require,module,exports){
 'use strict';
 
 var Runnable = require('./runnable');
@@ -778,6 +959,14 @@ function Hook(title, fn) {
  * Inherit from `Runnable.prototype`.
  */
 inherits(Hook, Runnable);
+
+/**
+ * Resets the state for a next run.
+ */
+Hook.prototype.reset = function() {
+  Runnable.prototype.reset.call(this);
+  delete this._error;
+};
 
 /**
  * Get or set the test `err`.
@@ -923,6 +1112,7 @@ module.exports.description = 'BDD or RSpec style [default]';
 var Suite = require('../suite');
 var errors = require('../errors');
 var createMissingArgumentError = errors.createMissingArgumentError;
+var createUnsupportedError = errors.createUnsupportedError;
 
 /**
  * Functions common to more than one interface.
@@ -1046,14 +1236,14 @@ module.exports = function(suites, context, mocha) {
         suites.unshift(suite);
         if (opts.isOnly) {
           if (mocha.options.forbidOnly && shouldBeTested(suite)) {
-            throw new Error('`.only` forbidden');
+            throw createUnsupportedError('`.only` forbidden');
           }
 
           suite.parent.appendOnlySuite(suite);
         }
         if (suite.pending) {
           if (mocha.options.forbidPending && shouldBeTested(suite)) {
-            throw new Error('Pending test forbidden');
+            throw createUnsupportedError('Pending test forbidden');
           }
         }
         if (typeof opts.fn === 'function') {
@@ -1085,7 +1275,9 @@ module.exports = function(suites, context, mocha) {
        * @returns {*}
        */
       only: function(mocha, test) {
-        test.parent.appendOnlyTest(test);
+        if (mocha.options.forbidOnly)
+          throw createUnsupportedError('`.only` forbidden');
+        test.markOnly();
         return test;
       },
 
@@ -1412,6 +1604,10 @@ var esmUtils = utils.supportsEsModules() ? require('./esm-utils') : undefined;
 var createStatsCollector = require('./stats-collector');
 var createInvalidReporterError = errors.createInvalidReporterError;
 var createInvalidInterfaceError = errors.createInvalidInterfaceError;
+var createMochaInstanceAlreadyDisposedError =
+  errors.createMochaInstanceAlreadyDisposedError;
+var createMochaInstanceAlreadyRunningError =
+  errors.createMochaInstanceAlreadyRunningError;
 var EVENT_FILE_PRE_REQUIRE = Suite.constants.EVENT_FILE_PRE_REQUIRE;
 var EVENT_FILE_POST_REQUIRE = Suite.constants.EVENT_FILE_POST_REQUIRE;
 var EVENT_FILE_REQUIRE = Suite.constants.EVENT_FILE_REQUIRE;
@@ -1420,11 +1616,35 @@ var sQuote = utils.sQuote;
 exports = module.exports = Mocha;
 
 /**
+ * A Mocha instance is a finite state machine.
+ * These are the states it can be in.
+ */
+var mochaStates = utils.defineConstants({
+  /**
+   * Initial state of the mocha instance
+   */
+  INIT: 'init',
+  /**
+   * Mocha instance is running tests
+   */
+  RUNNING: 'running',
+  /**
+   * Mocha instance is done running tests and references to test functions and hooks are cleaned.
+   * You can reset this state by unloading the test files.
+   */
+  REFERENCES_CLEANED: 'referencesCleaned',
+  /**
+   * Mocha instance is disposed and can no longer be used.
+   */
+  DISPOSED: 'disposed'
+});
+
+/**
  * To require local UIs and reporters when running in node.
  */
 
-if (!process.browser) {
-  var cwd = process.cwd();
+if (!process.browser && typeof module.paths !== 'undefined') {
+  var cwd = utils.cwd();
   module.paths.push(cwd, path.join(cwd, 'node_modules'));
 }
 
@@ -1484,6 +1704,8 @@ exports.Test = require('./test');
  * @param {number} [options.slow] - Slow threshold value.
  * @param {number|string} [options.timeout] - Timeout threshold value.
  * @param {string} [options.ui] - Interface name.
+ * @param {MochaRootHookObject} [options.rootHooks] - Hooks to bootstrap the root
+ * suite with
  */
 function Mocha(options) {
   options = utils.assign({}, mocharc, options || {});
@@ -1491,6 +1713,7 @@ function Mocha(options) {
   this.options = options;
   // root suite
   this.suite = new exports.Suite('', new exports.Context(), true);
+  this._cleanReferencesAfterRun = true;
 
   this.grep(options.grep)
     .fgrep(options.fgrep)
@@ -1530,6 +1753,10 @@ function Mocha(options) {
       this[opt]();
     }
   }, this);
+
+  if (options.rootHooks) {
+    this.rootHooks(options.rootHooks);
+  }
 }
 
 /**
@@ -1596,24 +1823,24 @@ Mocha.prototype.reporter = function(reporter, reporterOptions) {
         _reporter = require(reporter);
       } catch (err) {
         if (
-          err.code !== 'MODULE_NOT_FOUND' ||
-          err.message.indexOf('Cannot find module') !== -1
+          err.code === 'MODULE_NOT_FOUND' ||
+          err.message.indexOf('Cannot find module') >= 0
         ) {
           // Try to load reporters from a path (absolute or relative)
           try {
-            _reporter = require(path.resolve(process.cwd(), reporter));
+            _reporter = require(path.resolve(utils.cwd(), reporter));
           } catch (_err) {
-            _err.code !== 'MODULE_NOT_FOUND' ||
-            _err.message.indexOf('Cannot find module') !== -1
-              ? console.warn(sQuote(reporter) + ' reporter not found')
-              : console.warn(
+            _err.code === 'MODULE_NOT_FOUND' ||
+            _err.message.indexOf('Cannot find module') >= 0
+              ? utils.warn(sQuote(reporter) + ' reporter not found')
+              : utils.warn(
                   sQuote(reporter) +
                     ' reporter blew up with error:\n' +
                     err.stack
                 );
           }
         } else {
-          console.warn(
+          utils.warn(
             sQuote(reporter) + ' reporter blew up with error:\n' + err.stack
           );
         }
@@ -1782,7 +2009,18 @@ Mocha.unloadFile = function(file) {
  * @chainable
  */
 Mocha.prototype.unloadFiles = function() {
-  this.files.forEach(Mocha.unloadFile);
+  if (this._state === mochaStates.DISPOSED) {
+    throw createMochaInstanceAlreadyDisposedError(
+      'Mocha instance is already disposed, it cannot be used again.',
+      this._cleanReferencesAfterRun,
+      this
+    );
+  }
+
+  this.files.forEach(function(file) {
+    Mocha.unloadFile(file);
+  });
+  this._state = mochaStates.INIT;
   return this;
 };
 
@@ -1898,6 +2136,38 @@ Mocha.prototype.ignoreLeaks = function(ignoreLeaks) {
 Mocha.prototype.checkLeaks = function(checkLeaks) {
   this.options.checkLeaks = checkLeaks !== false;
   return this;
+};
+
+/**
+ * Enables or disables whether or not to dispose after each test run.
+ * Disable this to ensure you can run the test suite multiple times.
+ * If disabled, be sure to dispose mocha when you're done to prevent memory leaks.
+ * @public
+ * @see {@link Mocha#dispose}
+ * @param {boolean} cleanReferencesAfterRun
+ * @return {Mocha} this
+ * @chainable
+ */
+Mocha.prototype.cleanReferencesAfterRun = function(cleanReferencesAfterRun) {
+  this._cleanReferencesAfterRun = cleanReferencesAfterRun !== false;
+  return this;
+};
+
+/**
+ * Manually dispose this mocha instance. Mark this instance as `disposed` and unable to run more tests.
+ * It also removes function references to tests functions and hooks, so variables trapped in closures can be cleaned by the garbage collector.
+ * @public
+ */
+Mocha.prototype.dispose = function() {
+  if (this._state === mochaStates.RUNNING) {
+    throw createMochaInstanceAlreadyRunningError(
+      'Cannot dispose while the mocha instance is still running tests.'
+    );
+  }
+  this.unloadFiles();
+  this._previousRunner && this._previousRunner.dispose();
+  this.suite.dispose();
+  this._state = mochaStates.DISPOSED;
 };
 
 /**
@@ -2251,6 +2521,28 @@ Mocha.prototype.forbidPending = function(forbidPending) {
 };
 
 /**
+ * Throws an error if mocha is in the wrong state to be able to transition to a "running" state.
+ */
+Mocha.prototype._guardRunningStateTransition = function() {
+  if (this._state === mochaStates.RUNNING) {
+    throw createMochaInstanceAlreadyRunningError(
+      'Mocha instance is currently running tests, cannot start a next test run until this one is done',
+      this
+    );
+  }
+  if (
+    this._state === mochaStates.DISPOSED ||
+    this._state === mochaStates.REFERENCES_CLEANED
+  ) {
+    throw createMochaInstanceAlreadyDisposedError(
+      'Mocha instance is already disposed, cannot start a new test run. Please create a new mocha instance. Be sure to set disable `cleanReferencesAfterRun` when you want to reuse the same mocha instance for multiple test runs.',
+      this._cleanReferencesAfterRun,
+      this
+    );
+  }
+};
+
+/**
  * Mocha version as specified by "package.json".
  *
  * @name Mocha#version
@@ -2290,13 +2582,23 @@ Object.defineProperty(Mocha.prototype, 'version', {
  * mocha.run(failures => process.exitCode = failures ? 1 : 0);
  */
 Mocha.prototype.run = function(fn) {
+  this._guardRunningStateTransition();
+  this._state = mochaStates.RUNNING;
+  if (this._previousRunner) {
+    this._previousRunner.dispose();
+    this.suite.reset();
+  }
   if (this.files.length && !this.loadAsync) {
     this.loadFiles();
   }
+  var self = this;
   var suite = this.suite;
   var options = this.options;
   options.files = this.files;
-  var runner = new exports.Runner(suite, options.delay);
+  var runner = new exports.Runner(suite, {
+    delay: options.delay,
+    cleanReferencesAfterRun: this._cleanReferencesAfterRun
+  });
   createStatsCollector(runner);
   var reporter = new this._reporter(runner, options);
   runner.checkLeaks = options.checkLeaks === true;
@@ -2321,6 +2623,12 @@ Mocha.prototype.run = function(fn) {
   exports.reporters.Base.hideDiff = !options.diff;
 
   function done(failures) {
+    self._previousRunner = runner;
+    if (self._cleanReferencesAfterRun) {
+      self._state = mochaStates.REFERENCES_CLEANED;
+    } else {
+      self._state = mochaStates.INIT;
+    }
     fn = fn || utils.noop;
     if (reporter.done) {
       reporter.done(failures, fn);
@@ -2331,6 +2639,49 @@ Mocha.prototype.run = function(fn) {
 
   return runner.run(done);
 };
+
+/**
+ * Assigns hooks to the root suite
+ * @param {MochaRootHookObject} [hooks] - Hooks to assign to root suite
+ * @chainable
+ */
+Mocha.prototype.rootHooks = function rootHooks(hooks) {
+  if (utils.type(hooks) === 'object') {
+    var beforeAll = [].concat(hooks.beforeAll || []);
+    var beforeEach = [].concat(hooks.beforeEach || []);
+    var afterAll = [].concat(hooks.afterAll || []);
+    var afterEach = [].concat(hooks.afterEach || []);
+    var rootSuite = this.suite;
+    beforeAll.forEach(function(hook) {
+      rootSuite.beforeAll(hook);
+    });
+    beforeEach.forEach(function(hook) {
+      rootSuite.beforeEach(hook);
+    });
+    afterAll.forEach(function(hook) {
+      rootSuite.afterAll(hook);
+    });
+    afterEach.forEach(function(hook) {
+      rootSuite.afterEach(hook);
+    });
+  }
+  return this;
+};
+
+/**
+ * An alternative way to define root hooks that works with parallel runs.
+ * @typedef {Object} MochaRootHookObject
+ * @property {Function|Function[]} [beforeAll] - "Before all" hook(s)
+ * @property {Function|Function[]} [beforeEach] - "Before each" hook(s)
+ * @property {Function|Function[]} [afterAll] - "After all" hook(s)
+ * @property {Function|Function[]} [afterEach] - "After each" hook(s)
+ */
+
+/**
+ * An function that returns a {@link MochaRootHookObject}, either sync or async.
+ * @callback MochaRootHookFunction
+ * @returns {MochaRootHookObject|Promise<MochaRootHookObject>}
+ */
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../package.json":90,"./context":5,"./errors":6,"./esm-utils":42,"./growl":2,"./hook":7,"./interfaces":11,"./mocharc.json":15,"./reporters":21,"./runnable":33,"./runner":34,"./stats-collector":35,"./suite":36,"./test":37,"./utils":38,"_process":69,"escape-string-regexp":49,"path":42}],15:[function(require,module,exports){
@@ -2952,6 +3303,7 @@ function Doc(runner, options) {
 
   runner.on(EVENT_TEST_PASS, function(test) {
     Base.consoleLog('%s  <dt>%s</dt>', indent(), utils.escape(test.title));
+    Base.consoleLog('%s  <dt>%s</dt>', indent(), utils.escape(test.file));
     var code = utils.escape(utils.clean(test.body));
     Base.consoleLog('%s  <dd><pre><code>%s</code></pre></dd>', indent(), code);
   });
@@ -2961,6 +3313,11 @@ function Doc(runner, options) {
       '%s  <dt class="error">%s</dt>',
       indent(),
       utils.escape(test.title)
+    );
+    Base.consoleLog(
+      '%s  <dt class="error">%s</dt>',
+      indent(),
+      utils.escape(test.file)
     );
     var code = utils.escape(utils.clean(test.body));
     Base.consoleLog(
@@ -3564,6 +3921,7 @@ function clean(test) {
   return {
     title: test.title,
     fullTitle: test.fullTitle(),
+    file: test.file,
     duration: test.duration,
     currentRetry: test.currentRetry()
   };
@@ -3663,6 +4021,7 @@ function clean(test) {
   return {
     title: test.title,
     fullTitle: test.fullTitle(),
+    file: test.file,
     duration: test.duration,
     currentRetry: test.currentRetry(),
     err: cleanCycles(err)
@@ -3812,6 +4171,14 @@ function Landing(runner, options) {
     cursor.show();
     process.stdout.write('\n');
     self.epilogue();
+  });
+
+  // if cursor is hidden when we ctrl-C, then it will remain hidden unless...
+  process.once('SIGINT', function() {
+    cursor.show();
+    process.nextTick(function() {
+      process.kill(process.pid, 'SIGINT');
+    });
   });
 }
 
@@ -5093,8 +5460,9 @@ var Pending = require('./pending');
 var debug = require('debug')('mocha:runnable');
 var milliseconds = require('ms');
 var utils = require('./utils');
-var createInvalidExceptionError = require('./errors')
-  .createInvalidExceptionError;
+var errors = require('./errors');
+var createInvalidExceptionError = errors.createInvalidExceptionError;
+var createMultipleDoneError = errors.createMultipleDoneError;
 
 /**
  * Save timer references to avoid Sinon interfering (see GH-237).
@@ -5124,16 +5492,25 @@ function Runnable(title, fn) {
   this._timeout = 2000;
   this._slow = 75;
   this._enableTimeouts = true;
-  this.timedOut = false;
   this._retries = -1;
-  this._currentRetry = 0;
-  this.pending = false;
+  this.reset();
 }
 
 /**
  * Inherit from `EventEmitter.prototype`.
  */
 utils.inherits(Runnable, EventEmitter);
+
+/**
+ * Resets the state initially or for a next run.
+ */
+Runnable.prototype.reset = function() {
+  this.timedOut = false;
+  this._currentRetry = 0;
+  this.pending = false;
+  delete this.state;
+  delete this.err;
+};
 
 /**
  * Get current timeout value in msecs.
@@ -5311,31 +5688,6 @@ Runnable.prototype.clearTimeout = function() {
 };
 
 /**
- * Inspect the runnable void of private properties.
- *
- * @private
- * @return {string}
- */
-Runnable.prototype.inspect = function() {
-  return JSON.stringify(
-    this,
-    function(key, val) {
-      if (key[0] === '_') {
-        return;
-      }
-      if (key === 'parent') {
-        return '#<Suite>';
-      }
-      if (key === 'ctx') {
-        return '#<Context>';
-      }
-      return val;
-    },
-    2
-  );
-};
-
-/**
  * Reset the timeout.
  *
  * @private
@@ -5381,7 +5733,7 @@ Runnable.prototype.run = function(fn) {
   var start = new Date();
   var ctx = this.ctx;
   var finished;
-  var emitted;
+  var errorWasHandled = false;
 
   // Sometimes the ctx exists, but it is not runnable
   if (ctx && ctx.runnable) {
@@ -5390,17 +5742,11 @@ Runnable.prototype.run = function(fn) {
 
   // called multiple times
   function multiple(err) {
-    if (emitted) {
+    if (errorWasHandled) {
       return;
     }
-    emitted = true;
-    var msg = 'done() called multiple times';
-    if (err && err.message) {
-      err.message += " (and Mocha's " + msg + ')';
-      self.emit('error', err);
-    } else {
-      self.emit('error', new Error(msg));
-    }
+    errorWasHandled = true;
+    self.emit('error', createMultipleDoneError(self, err));
   }
 
   // finished
@@ -5451,7 +5797,7 @@ Runnable.prototype.run = function(fn) {
       callFnAsync(this.fn);
     } catch (err) {
       // handles async runnables which actually run synchronously
-      emitted = true;
+      errorWasHandled = true;
       if (err instanceof Pending) {
         return; // done() is already called in this.skip()
       } else if (this.allowUncaught) {
@@ -5470,7 +5816,7 @@ Runnable.prototype.run = function(fn) {
       callFn(this.fn);
     }
   } catch (err) {
-    emitted = true;
+    errorWasHandled = true;
     if (err instanceof Pending) {
       return done();
     } else if (this.allowUncaught) {
@@ -5615,7 +5961,6 @@ var EVENT_ROOT_SUITE_RUN = Suite.constants.EVENT_ROOT_SUITE_RUN;
 var STATE_FAILED = Runnable.constants.STATE_FAILED;
 var STATE_PASSED = Runnable.constants.STATE_PASSED;
 var dQuote = utils.dQuote;
-var ngettext = utils.ngettext;
 var sQuote = utils.sQuote;
 var stackFilter = utils.stackTraceFilter();
 var stringify = utils.stringify;
@@ -5623,6 +5968,7 @@ var type = utils.type;
 var errors = require('./errors');
 var createInvalidExceptionError = errors.createInvalidExceptionError;
 var createUnsupportedError = errors.createUnsupportedError;
+var createFatalError = errors.createFatalError;
 
 /**
  * Non-enumerable globals.
@@ -5705,7 +6051,19 @@ var constants = utils.defineConstants(
     /**
      * Emitted when {@link Test} execution has failed, but will retry
      */
-    EVENT_TEST_RETRY: 'retry'
+    EVENT_TEST_RETRY: 'retry',
+    /**
+     * Initial state of Runner
+     */
+    STATE_IDLE: 'idle',
+    /**
+     * State set to this value when the Runner has started running
+     */
+    STATE_RUNNING: 'running',
+    /**
+     * State set to this value when the Runner has stopped
+     */
+    STATE_STOPPED: 'stopped'
   }
 );
 
@@ -5717,21 +6075,32 @@ module.exports = Runner;
  * @extends external:EventEmitter
  * @public
  * @class
- * @param {Suite} suite Root suite
- * @param {boolean} [delay] Whether or not to delay execution of root suite
- * until ready.
+ * @param {Suite} suite - Root suite
+ * @param {Object|boolean} [opts] - Options. If `boolean`, whether or not to delay execution of root suite until ready (for backwards compatibility).
+ * @param {boolean} [opts.delay] - Whether to delay execution of root suite until ready.
+ * @param {boolean} [opts.cleanReferencesAfterRun] - Whether to clean references to test fns and hooks when a suite is done.
  */
-function Runner(suite, delay) {
+function Runner(suite, opts) {
+  if (opts === undefined) {
+    opts = {};
+  }
+  if (typeof opts === 'boolean') {
+    this._delay = opts;
+    opts = {};
+  } else {
+    this._delay = opts.delay;
+  }
   var self = this;
   this._globals = [];
   this._abort = false;
-  this._delay = delay;
   this.suite = suite;
-  this.started = false;
+  this._opts = opts;
+  this.state = constants.STATE_IDLE;
   this.total = suite.total();
   this.failures = 0;
+  this._eventListeners = [];
   this.on(constants.EVENT_TEST_END, function(test) {
-    if (test.retriedTest() && test.parent) {
+    if (test.type === 'test' && test.retriedTest() && test.parent) {
       var idx =
         test.parent.tests && test.parent.tests.indexOf(test.retriedTest());
       if (idx > -1) test.parent.tests[idx] = test;
@@ -5744,6 +6113,8 @@ function Runner(suite, delay) {
   this._defaultGrep = /.*/;
   this.grep(this._defaultGrep);
   this.globals(this.globalProps());
+
+  this.uncaught = this._uncaught.bind(this);
 }
 
 /**
@@ -5760,6 +6131,56 @@ Runner.immediately = global.setImmediate || process.nextTick;
 inherits(Runner, EventEmitter);
 
 /**
+ * Replacement for `target.on(eventName, listener)` that does bookkeeping to remove them when this runner instance is disposed.
+ * @param {EventEmitter} target - The `EventEmitter`
+ * @param {string} eventName - The event name
+ * @param {string} fn - Listener function
+ */
+Runner.prototype._addEventListener = function(target, eventName, listener) {
+  target.on(eventName, listener);
+  this._eventListeners.push([target, eventName, listener]);
+};
+
+/**
+ * Replacement for `target.removeListener(eventName, listener)` that also updates the bookkeeping.
+ * @param {EventEmitter} target - The `EventEmitter`
+ * @param {string} eventName - The event anme
+ * @param {function} listener - Listener function
+ */
+Runner.prototype._removeEventListener = function(target, eventName, listener) {
+  var eventListenerIndex = -1;
+  for (var i = 0; i < this._eventListeners.length; i++) {
+    var eventListenerDescriptor = this._eventListeners[i];
+    if (
+      eventListenerDescriptor[0] === target &&
+      eventListenerDescriptor[1] === eventName &&
+      eventListenerDescriptor[2] === listener
+    ) {
+      eventListenerIndex = i;
+      break;
+    }
+  }
+  if (eventListenerIndex !== -1) {
+    var removedListener = this._eventListeners.splice(eventListenerIndex, 1)[0];
+    removedListener[0].removeListener(removedListener[1], removedListener[2]);
+  }
+};
+
+/**
+ * Removes all event handlers set during a run on this instance.
+ * Remark: this does _not_ clean/dispose the tests or suites themselves.
+ */
+Runner.prototype.dispose = function() {
+  this.removeAllListeners();
+  this._eventListeners.forEach(function(eventListenerDescriptor) {
+    eventListenerDescriptor[0].removeListener(
+      eventListenerDescriptor[1],
+      eventListenerDescriptor[2]
+    );
+  });
+};
+
+/**
  * Run tests with full titles matching `re`. Updates runner.total
  * with number of tests matched.
  *
@@ -5770,7 +6191,7 @@ inherits(Runner, EventEmitter);
  * @return {Runner} Runner instance.
  */
 Runner.prototype.grep = function(re, invert) {
-  debug('grep %s', re);
+  debug('grep(): setting to %s', re);
   this._grep = re;
   this._invert = invert;
   this.total = this.grepTotal(this.suite);
@@ -5835,7 +6256,7 @@ Runner.prototype.globals = function(arr) {
   if (!arguments.length) {
     return this._globals;
   }
-  debug('globals %j', arr);
+  debug('globals(): setting to %O', arr);
   this._globals = this._globals.concat(arr);
   return this;
 };
@@ -5867,12 +6288,8 @@ Runner.prototype.checkGlobals = function(test) {
   this._globals = this._globals.concat(leaks);
 
   if (leaks.length) {
-    var format = ngettext(
-      leaks.length,
-      'global leak detected: %s',
-      'global leaks detected: %s'
-    );
-    var error = new Error(util.format(format, leaks.map(sQuote).join(', ')));
+    var msg = 'global leak(s) detected: %s';
+    var error = new Error(util.format(msg, leaks.map(sQuote).join(', ')));
     this.fail(test, error);
   }
 };
@@ -5888,8 +6305,18 @@ Runner.prototype.fail = function(test, err) {
   if (test.isPending()) {
     return;
   }
+  if (this.state === constants.STATE_STOPPED) {
+    if (err.code === errors.constants.MULTIPLE_DONE) {
+      throw err;
+    }
+    throw createFatalError(
+      'Test failed after root suite execution completed!',
+      err
+    );
+  }
 
   ++this.failures;
+  debug('total number of failures: %d', this.failures);
   test.state = STATE_FAILED;
 
   if (!isError(err)) {
@@ -5977,7 +6404,7 @@ Runner.prototype.hook = function(name, fn) {
     self.emit(constants.EVENT_HOOK_BEGIN, hook);
 
     if (!hook.listeners('error').length) {
-      hook.on('error', function(err) {
+      self._addEventListener(hook, 'error', function(err) {
         self.failHook(hook, err);
       });
     }
@@ -6120,18 +6547,10 @@ Runner.prototype.runTest = function(fn) {
     return;
   }
 
-  var suite = this.parents().reverse()[0] || this.suite;
-  if (this.forbidOnly && suite.hasOnly()) {
-    fn(new Error('`.only` forbidden'));
-    return;
-  }
   if (this.asyncOnly) {
     test.asyncOnly = true;
   }
-  test.on('error', function(err) {
-    if (err instanceof Pending) {
-      return;
-    }
+  this._addEventListener(test, 'error', function(err) {
     self.fail(test, err);
   });
   if (this.allowUncaught) {
@@ -6326,9 +6745,10 @@ Runner.prototype.runSuite = function(suite, fn) {
   var self = this;
   var total = this.grepTotal(suite);
 
-  debug('run suite %s', suite.fullTitle());
+  debug('runSuite(): running %s', suite.fullTitle());
 
   if (!total || (self.failures && suite._bail)) {
+    debug('runSuite(): bailing');
     return fn();
   }
 
@@ -6394,22 +6814,49 @@ Runner.prototype.runSuite = function(suite, fn) {
 /**
  * Handle uncaught exceptions within runner.
  *
- * @param {Error} err
+ * This function is bound to the instance as `Runner#uncaught` at instantiation
+ * time. It's intended to be listening on the `Process.uncaughtException` event.
+ * In order to not leak EE listeners, we need to ensure no more than a single
+ * `uncaughtException` listener exists per `Runner`.  The only way to do
+ * this--because this function needs the context (and we don't have lambdas)--is
+ * to use `Function.prototype.bind`. We need strict equality to unregister and
+ * _only_ unregister the _one_ listener we set from the
+ * `Process.uncaughtException` event; would be poor form to just remove
+ * everything. See {@link Runner#run} for where the event listener is registered
+ * and unregistered.
+ * @param {Error} err - Some uncaught error
  * @private
  */
-Runner.prototype.uncaught = function(err) {
+Runner.prototype._uncaught = function(err) {
+  // this is defensive to prevent future developers from mis-calling this function.
+  // it's more likely that it'd be called with the incorrect context--say, the global
+  // `process` object--than it would to be called with a context that is not a "subclass"
+  // of `Runner`.
+  if (!(this instanceof Runner)) {
+    throw createFatalError(
+      'Runner#uncaught() called with invalid context',
+      this
+    );
+  }
   if (err instanceof Pending) {
+    debug('uncaught(): caught a Pending');
     return;
   }
   // browser does not exit script when throwing in global.onerror()
   if (this.allowUncaught && !process.browser) {
+    debug('uncaught(): bubbling exception due to --allow-uncaught');
+    throw err;
+  }
+
+  if (this.state === constants.STATE_STOPPED) {
+    debug('uncaught(): throwing after run has completed!');
     throw err;
   }
 
   if (err) {
-    debug('uncaught exception %O', err);
+    debug('uncaught(): got truthy exception %O', err);
   } else {
-    debug('uncaught undefined/falsy exception');
+    debug('uncaught(): undefined/falsy exception');
     err = createInvalidExceptionError(
       'Caught falsy/undefined exception which would otherwise be uncaught. No stack trace found; try a debugger',
       err
@@ -6418,6 +6865,7 @@ Runner.prototype.uncaught = function(err) {
 
   if (!isError(err)) {
     err = thrown2Error(err);
+    debug('uncaught(): converted "error" %o to Error', err);
   }
   err.uncaught = true;
 
@@ -6425,12 +6873,15 @@ Runner.prototype.uncaught = function(err) {
 
   if (!runnable) {
     runnable = new Runnable('Uncaught error outside test suite');
+    debug('uncaught(): no current Runnable; created a phony one');
     runnable.parent = this.suite;
 
-    if (this.started) {
+    if (this.state === constants.STATE_RUNNING) {
+      debug('uncaught(): failing gracefully');
       this.fail(runnable, err);
     } else {
       // Can't recover from this failure
+      debug('uncaught(): test run has not yet started; unrecoverable');
       this.emit(constants.EVENT_RUN_BEGIN);
       this.fail(runnable, err);
       this.emit(constants.EVENT_RUN_END);
@@ -6442,9 +6893,11 @@ Runner.prototype.uncaught = function(err) {
   runnable.clearTimeout();
 
   if (runnable.isFailed()) {
+    debug('uncaught(): Runnable has already failed');
     // Ignore error if already failed
     return;
   } else if (runnable.isPending()) {
+    debug('uncaught(): pending Runnable wound up failing!');
     // report 'pending test' retrospectively as failed
     runnable.isPending = alwaysFalse;
     this.fail(runnable, err);
@@ -6455,23 +6908,13 @@ Runner.prototype.uncaught = function(err) {
   // we cannot recover gracefully if a Runnable has already passed
   // then fails asynchronously
   if (runnable.isPassed()) {
+    debug('uncaught(): Runnable has already passed; bailing gracefully');
     this.fail(runnable, err);
     this.abort();
   } else {
-    debug(runnable);
+    debug('uncaught(): forcing Runnable to complete with Error');
     return runnable.callback(err);
   }
-};
-
-/**
- * Handle uncaught exceptions after runner's end event.
- *
- * @param {Error} err
- * @private
- */
-Runner.prototype.uncaughtEnd = function uncaughtEnd(err) {
-  if (err instanceof Pending) return;
-  throw err;
 };
 
 /**
@@ -6489,51 +6932,56 @@ Runner.prototype.run = function(fn) {
 
   fn = fn || function() {};
 
-  function uncaught(err) {
-    self.uncaught(err);
-  }
-
   function start() {
+    debug('run(): starting');
     // If there is an `only` filter
     if (rootSuite.hasOnly()) {
       rootSuite.filterOnly();
+      debug('run(): filtered exclusive Runnables');
     }
-    self.started = true;
+    self.state = constants.STATE_RUNNING;
     if (self._delay) {
       self.emit(constants.EVENT_DELAY_END);
+      debug('run(): "delay" ended');
     }
+    debug('run(): emitting %s', constants.EVENT_RUN_BEGIN);
     self.emit(constants.EVENT_RUN_BEGIN);
+    debug('run(): emitted %s', constants.EVENT_RUN_BEGIN);
 
     self.runSuite(rootSuite, function() {
-      debug('finished running');
+      debug(
+        'run(): root suite completed; emitting %s',
+        constants.EVENT_RUN_END
+      );
       self.emit(constants.EVENT_RUN_END);
+      debug('run(): emitted %s', constants.EVENT_RUN_END);
     });
   }
 
-  debug(constants.EVENT_RUN_BEGIN);
-
   // references cleanup to avoid memory leaks
-  this.on(constants.EVENT_SUITE_END, function(suite) {
-    suite.cleanReferences();
-  });
+  if (this._opts.cleanReferencesAfterRun) {
+    this.on(constants.EVENT_SUITE_END, function(suite) {
+      suite.cleanReferences();
+    });
+  }
 
   // callback
   this.on(constants.EVENT_RUN_END, function() {
+    self.state = constants.STATE_STOPPED;
     debug(constants.EVENT_RUN_END);
-    process.removeListener('uncaughtException', uncaught);
-    process.on('uncaughtException', self.uncaughtEnd);
+    debug('run(): emitted %s', constants.EVENT_RUN_END);
     fn(self.failures);
   });
 
-  // uncaught exception
-  process.removeListener('uncaughtException', self.uncaughtEnd);
-  process.on('uncaughtException', uncaught);
+  self._removeEventListener(process, 'uncaughtException', self.uncaught);
+  self._addEventListener(process, 'uncaughtException', self.uncaught);
 
   if (this._delay) {
     // for reporters, I guess.
     // might be nice to debounce some dots while we wait.
     this.emit(constants.EVENT_DELAY_BEGIN, rootSuite);
     rootSuite.once(EVENT_ROOT_SUITE_RUN, start);
+    debug('run(): waiting for green light due to --delay');
   } else {
     Runner.immediately(function() {
       start();
@@ -6551,7 +6999,7 @@ Runner.prototype.run = function(fn) {
  * @return {Runner} Runner instance.
  */
 Runner.prototype.abort = function() {
-  debug('aborting');
+  debug('abort(): aborting');
   this._abort = true;
 
   return this;
@@ -6786,20 +7234,20 @@ function Suite(title, parentContext, isRoot) {
   this.ctx = new Context();
   this.suites = [];
   this.tests = [];
+  this.root = isRoot === true;
   this.pending = false;
+  this._retries = -1;
   this._beforeEach = [];
   this._beforeAll = [];
   this._afterEach = [];
   this._afterAll = [];
-  this.root = isRoot === true;
   this._timeout = 2000;
   this._enableTimeouts = true;
   this._slow = 75;
   this._bail = false;
-  this._retries = -1;
   this._onlyTests = [];
   this._onlySuites = [];
-  this.delayed = false;
+  this.reset();
 
   this.on('newListener', function(event) {
     if (deprecatedEvents[event]) {
@@ -6816,6 +7264,22 @@ function Suite(title, parentContext, isRoot) {
  * Inherit from `EventEmitter.prototype`.
  */
 inherits(Suite, EventEmitter);
+
+/**
+ * Resets the state initially or for a next run.
+ */
+Suite.prototype.reset = function() {
+  this.delayed = false;
+  function doReset(thingToReset) {
+    thingToReset.reset();
+  }
+  this.suites.forEach(doReset);
+  this.tests.forEach(doReset);
+  this._beforeEach.forEach(doReset);
+  this._afterEach.forEach(doReset);
+  this._beforeAll.forEach(doReset);
+  this._afterAll.forEach(doReset);
+};
 
 /**
  * Return a clone of this `Suite`.
@@ -7237,6 +7701,16 @@ Suite.prototype.getHooks = function getHooks(name) {
 };
 
 /**
+ * cleans all references from this suite and all child suites.
+ */
+Suite.prototype.dispose = function() {
+  this.suites.forEach(function(suite) {
+    suite.dispose();
+  });
+  this.cleanReferences();
+};
+
+/**
  * Cleans up the references to all the deferred functions
  * (before/after/beforeEach/afterEach) and tests of a Suite.
  * These must be deleted otherwise a memory leak can happen,
@@ -7395,15 +7869,24 @@ function Test(title, fn) {
       'string'
     );
   }
-  Runnable.call(this, title, fn);
-  this.pending = !fn;
   this.type = 'test';
+  Runnable.call(this, title, fn);
+  this.reset();
 }
 
 /**
  * Inherit from `Runnable.prototype`.
  */
 utils.inherits(Test, Runnable);
+
+/**
+ * Resets the state initially or for a next run.
+ */
+Test.prototype.reset = function() {
+  Runnable.prototype.reset.call(this);
+  this.pending = !this.fn;
+  delete this.state;
+};
 
 /**
  * Set or get retried test
@@ -7415,6 +7898,15 @@ Test.prototype.retriedTest = function(n) {
     return this._retriedTest;
   }
   this._retriedTest = n;
+};
+
+/**
+ * Add test to the list of tests marked `only`.
+ *
+ * @private
+ */
+Test.prototype.markOnly = function() {
+  this.parent.appendOnlyTest(this);
 };
 
 Test.prototype.clone = function() {
@@ -7499,8 +7991,9 @@ exports.isString = function(obj) {
 exports.slug = function(str) {
   return str
     .toLowerCase()
-    .replace(/ +/g, '-')
-    .replace(/[^-\w]/g, '');
+    .replace(/\s+/g, '-')
+    .replace(/[^-\w]/g, '')
+    .replace(/-{2,}/g, '-');
 };
 
 /**
@@ -8073,7 +8566,7 @@ exports.stackTraceFilter = function() {
   var slash = path.sep;
   var cwd;
   if (is.node) {
-    cwd = process.cwd() + slash;
+    cwd = exports.cwd() + slash;
   } else {
     cwd = (typeof location === 'undefined'
       ? window.location
@@ -8190,38 +8683,6 @@ exports.dQuote = function(str) {
 };
 
 /**
- * Provides simplistic message translation for dealing with plurality.
- *
- * @description
- * Use this to create messages which need to be singular or plural.
- * Some languages have several plural forms, so _complete_ message clauses
- * are preferable to generating the message on the fly.
- *
- * @private
- * @param {number} n - Non-negative integer
- * @param {string} msg1 - Message to be used in English for `n = 1`
- * @param {string} msg2 - Message to be used in English for `n = 0, 2, 3, ...`
- * @returns {string} message corresponding to value of `n`
- * @example
- * var sprintf = require('util').format;
- * var pkgs = ['one', 'two'];
- * var msg = sprintf(
- *   ngettext(
- *     pkgs.length,
- *     'cannot load package: %s',
- *     'cannot load packages: %s'
- *   ),
- *   pkgs.map(sQuote).join(', ')
- * );
- * console.log(msg); // => cannot load packages: 'one', 'two'
- */
-exports.ngettext = function(n, msg1, msg2) {
-  if (typeof n === 'number' && n >= 0) {
-    return n === 1 ? msg1 : msg2;
-  }
-};
-
-/**
  * It's a noop.
  * @public
  */
@@ -8288,6 +8749,16 @@ exports.supportsEsModules = function() {
       return true;
     }
   }
+};
+
+/**
+ * Returns current working directory
+ *
+ * Wrapper around `process.cwd()` for isolation
+ * @private
+ */
+exports.cwd = function cwd() {
+  return process.cwd();
 };
 
 }).call(this,require('_process'),require("buffer").Buffer)
@@ -13840,7 +14311,6 @@ module.exports = Array.isArray || function (arr) {
 };
 
 },{}],59:[function(require,module,exports){
-(function (process){
 var path = require('path');
 var fs = require('fs');
 var _0777 = parseInt('0777', 8);
@@ -13860,7 +14330,7 @@ function mkdirP (p, opts, f, made) {
     var xfs = opts.fs || fs;
     
     if (mode === undefined) {
-        mode = _0777 & (~process.umask());
+        mode = _0777
     }
     if (!made) made = null;
     
@@ -13874,6 +14344,7 @@ function mkdirP (p, opts, f, made) {
         }
         switch (er.code) {
             case 'ENOENT':
+                if (path.dirname(p) === p) return cb(er);
                 mkdirP(path.dirname(p), opts, function (er, made) {
                     if (er) cb(er, made);
                     else mkdirP(p, opts, cb, made);
@@ -13904,7 +14375,7 @@ mkdirP.sync = function sync (p, opts, made) {
     var xfs = opts.fs || fs;
     
     if (mode === undefined) {
-        mode = _0777 & (~process.umask());
+        mode = _0777
     }
     if (!made) made = null;
 
@@ -13940,8 +14411,7 @@ mkdirP.sync = function sync (p, opts, made) {
     return made;
 };
 
-}).call(this,require('_process'))
-},{"_process":69,"fs":42,"path":42}],60:[function(require,module,exports){
+},{"fs":42,"path":42}],60:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -18171,7 +18641,7 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":88,"_process":69,"inherits":56}],90:[function(require,module,exports){
 module.exports={
   "name": "mocha",
-  "version": "7.1.1",
+  "version": "7.2.0",
   "homepage": "https://mochajs.org/",
   "notifyLogo": "https://ibin.co/4QuRuGjXvl36.png"
 }
