@@ -4,7 +4,9 @@
 
 [![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
 [![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
-[![Circle CI](https://circleci.com/gh/bigskysoftware/htmx.svg?style=shield)](https://app.circleci.com/pipelines/github/bigskysoftware/htmx)
+[![Bundlephobia](https://badgen.net/bundlephobia/dependency-count/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
+[![Bundlephobia](https://badgen.net/bundlephobia/minzip/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
+
 
 ## introduction
 
