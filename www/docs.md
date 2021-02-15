@@ -481,7 +481,7 @@ These features are under active development, so please let us know if you are wi
 If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
 
 ```html
-  <div hx-ws="connect wss:/chatroom">
+  <div hx-ws="connect:wss:/chatroom">
     <div id="chat_room">
       ...
     </div>
