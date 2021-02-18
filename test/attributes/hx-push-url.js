@@ -23,8 +23,7 @@ describe("hx-push-url attribute", function() {
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
-        cache.length.should.equal(2);
-        cache[1].url.should.equal("/test");
+        cache[cache.length - 1].url.should.equal("/test");
     });
 
     it("navigation should push an element into the cache when string", function () {
@@ -78,9 +77,6 @@ describe("hx-push-url attribute", function() {
         this.server.respond();
         workArea.textContent.should.equal("test2")
 
-        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
-
-        cache.length.should.equal(2);
         htmx._('restoreHistory')("/test1")
         getWorkArea().getElementsByClassName("htmx-request").length.should.equal(0);
     });
@@ -149,6 +145,27 @@ describe("hx-push-url attribute", function() {
         cache.length.should.equal(1);
     });
 
+    it("does not blow out cache when saving a URL twice", function () {
+        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
+        cache.length.should.equal(3);
+    });
+
+    it("history cache is LRU", function () {
+        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
+        var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
+        cache.length.should.equal(3);
+        cache[0].url.should.equal("url3");
+        cache[1].url.should.equal("url2");
+        cache[2].url.should.equal("url1");
+    });
 
     it("htmx:afterSettle is called when replacing outerHTML", function () {
         var called = false;

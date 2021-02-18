@@ -1410,7 +1410,7 @@ return (function () {
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
-                    historyCache = historyCache.slice(i, 1);
+                    historyCache.splice(i, 1);
                     break;
                 }
             }
