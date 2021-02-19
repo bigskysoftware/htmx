@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [1.2.1] - 2021-2-19
+
+* Fixed an issue with the history cache, where the cache was getting blown out after the first navigation backwards
+* Added the `htmx.config.refreshOnHistoryMiss` option, allowing users to trigger a full page refresh on history cache miss
+  rather than issuing an AJAX request
+
 ## [1.2.0] - 2021-2-13
 
 ### New Features

@@ -536,7 +536,14 @@ When a user clicks on this link, htmx will snapshot the current DOM and store it
 It then does the swap and pushes a new location onto the history stack.
 
 When a user hits the back button, htmx will retrieve the old content from storage and swap it back into the target,
- simulating "going back" to the previous state.
+ simulating "going back" to the previous state.  If the location is not found in the cache, htmx will make an ajax
+ request to the given URL, with the header `HX-History-Restore-Request` set to true, and expects back the HTML needed
+ for the entire page.  Alternatively, if the `htmx.config.refreshOnHistoryMiss` config variable is set to true, it will
+ issue a hard browser refresh.
+
+**NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
+A user could copy and paste the URL into an email, or new tab.  Additionally, htmx will need the entire page when restoring
+history if the page is not in the history cache.
 
 ### Specifying History Snapshot Element
 
@@ -804,6 +811,7 @@ Htmx allows you to configure a few defaults:
 |-----------------|-------
 |  `htmx.config.historyEnabled` | defaults to `true`, really only useful for testing
 |  `htmx.config.historyCacheSize` | defaults to 10
+|  `htmx.config.refreshOnHistoryMiss` | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request
 |  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
 |  `htmx.config.defaultSwapDelay` | defaults to 0
 |  `htmx.config.defaultSettleDelay` | defaults to 100
