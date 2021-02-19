@@ -34,6 +34,7 @@ return (function () {
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
+                refreshOnHistoryMiss:false,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
@@ -1410,7 +1411,7 @@ return (function () {
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
-                    historyCache = historyCache.slice(i, 1);
+                    historyCache.splice(i, 1);
                     break;
                 }
             }
@@ -1418,10 +1419,14 @@ return (function () {
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
-            try {
-                localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
-            } catch (e) {
-                triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e})
+            while(historyCache.length > 0){
+                try {
+                    localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+                    return;
+                } catch (e) {
+                    triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
+                    historyCache.shift(); // shrink the cache and retry
+                }
             }
         }
 
@@ -1501,7 +1506,11 @@ return (function () {
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
             } else {
-                loadHistoryFromServer(path);
+                if (htmx.config.refreshOnHistoryMiss) {
+                    window.location.reload(true);
+                } else {
+                    loadHistoryFromServer(path);
+                }
             }
         }
 
