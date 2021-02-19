@@ -34,6 +34,7 @@ return (function () {
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
+                refreshOnHistoryMiss:false,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:100,
@@ -1505,7 +1506,11 @@ return (function () {
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
             } else {
-                loadHistoryFromServer(path);
+                if (htmx.config.refreshOnHistoryMiss) {
+                    window.location.reload(true);
+                } else {
+                    loadHistoryFromServer(path);
+                }
             }
         }
 
