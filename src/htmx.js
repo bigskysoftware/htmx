@@ -1422,7 +1422,7 @@ return (function () {
             while(historyCache.length > 0){
                 try {
                     localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
-                    return;
+                    break;
                 } catch (e) {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
                     historyCache.shift(); // shrink the cache and retry
