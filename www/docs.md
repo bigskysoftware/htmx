@@ -97,13 +97,13 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.2.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.2.1"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.2.0" integrity="sha384-DK9cslo5RE1LAnW8sCw7cSHU2nlzkXfo2NmCQD+4disC90ClC1ywgMbijNPxFVki" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.2.1" integrity="sha384-t37OW0DbqgL50XZW+Tl8TLchxsPoxIJ7NQ/l4aSZIXZVJQAhyQvvkWZgL/SiY/jD" crossorigin="anonymous"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
