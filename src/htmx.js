@@ -1061,6 +1061,15 @@ return (function () {
                 triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
             };
+
+            socket.onclose = function (e) {
+                if ([1006, 1012, 1013].includes(e.code)) {  // Abnormal Closure/Service Restart/Try Again Later
+                    setTimeout(function() {
+                        processWebSocketSource(elt, wssSource);  // creates a websocket with a new timeout
+                    }, htmx.config.wsReconnectInterval);
+                }
+            };
+
             getInternalData(elt).webSocket = socket;
             socket.addEventListener('message', function (event) {
                 if (maybeCloseWebSocketSource(elt)) {
