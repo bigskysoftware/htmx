@@ -44,7 +44,8 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
-                attributesToSettle:["class", "style", "width", "height"]
+                attributesToSettle:["class", "style", "width", "height"],
+                wsReconnectInterval: 10000
             },
             parseInterval:parseInterval,
             _:internalEval,

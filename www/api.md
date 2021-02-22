@@ -96,6 +96,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 * `settlingClass:'htmx-settling'` - string: the class to place on target elements when htmx is in the settling phase
 * `swappingClass:'htmx-swapping'` - string: the class to place on target elements when htmx is in the swapping phase
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility
+* `wsReconnectInterval:10000` - int: the default interval of `hx-ws` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
 
 ##### Example
 

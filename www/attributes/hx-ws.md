@@ -34,6 +34,9 @@ and send to the nearest enclosing `WebSocket`.
 The serialized values will include a field, `HEADERS`, that includes the headers normally submitted with an htmx
 request.
 
+After an unexpected connection loss due to `Abnormal Closure`, `Service Restart` or `Try Again Later`,
+reconnecting is done after `htmx.config.wsReconnectInterval` milliseconds until successful.
+
 ### Notes
 
 * `hx-ws` is not inherited
