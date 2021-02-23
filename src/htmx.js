@@ -1169,6 +1169,7 @@ return (function () {
                     var settleInfo = makeSettleInfo(elt);
 
                     selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
 
