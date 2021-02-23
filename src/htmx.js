@@ -2065,7 +2065,10 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(indicators);
-                    var finalElt = getInternalData(elt).replacedWith || elt;
+                    var finalElt = elt;
+                    if (!bodyContains(elt)) {
+                        finalElt = getInternalData(target).replacedWith || target;
+                    }
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
                     endRequestLock();
@@ -2073,12 +2076,22 @@ return (function () {
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
-                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
+                var finalElt = elt;
+                if (!bodyContains(elt)) {
+                    finalElt = getInternalData(target).replacedWith || target;
+                }
+                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
+                var finalElt = elt;
+                if (!bodyContains(elt)) {
+                    finalElt = getInternalData(target).replacedWith || target;
+                }
+                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
