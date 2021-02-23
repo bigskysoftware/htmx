@@ -1052,8 +1052,13 @@ return (function () {
         }
 
         function processWebSocketSource(elt, wssSource) {
-            if (wssSource.indexOf("ws:") !== 0 && wssSource.indexOf("wss:") !== 0) {
-                wssSource = "wss:" + wssSource;
+            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
+                var base_part = location.hostname + (location.port ? ':'+location.port: '');
+                if (location.protocol == 'https:') {
+                    wssSource = "wss://" + base_part + wssSource;
+                } else if (location.protocol == 'http:') {
+                    wssSource = "ws://" + base_part + wssSource;
+                }
             }
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
