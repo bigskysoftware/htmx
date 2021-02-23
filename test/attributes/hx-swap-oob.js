@@ -92,5 +92,32 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped");
     })
 
-});
+    it('oob swaps can swap elements without id', function () {
+        this.server.respondWith("GET", "/test", "<div>Clicked<div hx-swap-oob='innerHTML:.c1'>Swapped</div></div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div class="c1" foo="bar"></div>');
+        div.click();
+        this.server.respond();
+        let elems = getWorkArea().getElementsByClassName("c1")
+        elems.length.should.equal(1);
+        should.equal(elems[0].getAttribute("foo"), "bar");
+        elems[0].innerHTML.should.equal("<div>Clicked</div>");
+        elems[0].innerHTML.should.equal("Swapped");
+    })
 
+    it('oob swaps can swap multiple elements without id', function () {
+        this.server.respondWith("GET", "/test", "<div>Clicked<div hx-swap-oob='innerHTML:.c1'>Swapped</div></div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div class="c1" foo="bar"></div><div class="c1" foo="bar2"></div>');
+        div.click();
+        this.server.respond();
+        let elems = getWorkArea().getElementsByClassName("c1");
+        elems.length.should.equal(2);
+        should.equal(elems[0].getAttribute("foo"), "bar");
+        elems[0].innerHTML.should.equal("<div>Clicked</div>");
+        elems[0].innerHTML.should.equal("Swapped");
+        should.equal(elems[1].getAttribute("foo"), "bar2");
+        elems[1].innerHTML.should.equal("<div>Clicked</div>");
+        elems[1].innerHTML.should.equal("Swapped");
+    })
+});
