@@ -1526,22 +1526,21 @@ return (function () {
         }
 
         function addRequestIndicatorClasses(elt) {
-            mutateRequestIndicatorClasses(elt, "add");
-        }
-
-        function removeRequestIndicatorClasses(elt) {
-            mutateRequestIndicatorClasses(elt, "remove");
-        }
-
-        function mutateRequestIndicatorClasses(elt, action) {
             var indicator = getClosestAttributeValue(elt, 'hx-indicator');
             if (indicator) {
                 var indicators = querySelectorAllExt(elt, indicator);
             } else {
                 indicators = [elt];
             }
-            forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, htmx.config.requestClass);
+            forEach(indicators, function (ic) {
+                ic.classList["add"].call(ic.classList, htmx.config.requestClass);
+            });
+            return indicators;
+        }
+
+        function removeRequestIndicatorClasses(indicators) {
+            forEach(indicators, function (ic) {
+                ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
             });
         }
 
@@ -2060,7 +2059,7 @@ return (function () {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
                 } finally {
-                    removeRequestIndicatorClasses(elt);
+                    removeRequestIndicatorClasses(indicators);
                     var finalElt = getInternalData(elt).replacedWith || elt;
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
@@ -2068,17 +2067,17 @@ return (function () {
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);
+                removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 endRequestLock();
             }
             xhr.onabort = function() {
-                removeRequestIndicatorClasses(elt);
+                removeRequestIndicatorClasses(indicators);
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
-            addRequestIndicatorClasses(elt);
+            var indicators = addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
                 forEach([xhr, xhr.upload], function (target) {
