@@ -21,6 +21,7 @@ Let's focus on the final row (or the last element of your content):
 This last element contains a listener which, when scrolled into view, will trigger a request. The result is then appended after it.
 The last element of the results will itself contain the listener to load the *next* page of results, and so on.
 
+```
 {% include demo_ui.html.liquid %}
 
 <script>
@@ -86,6 +87,6 @@ The last element of the results will itself contain the listener to load the *ne
       return txt;
     }
 </script>
-
+```
 
 
