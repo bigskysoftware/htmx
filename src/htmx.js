@@ -853,6 +853,9 @@ return (function () {
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                } else if (token === "target" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
@@ -965,6 +968,11 @@ return (function () {
                 var elementData = getInternalData(elt);
                 if (!eventData.handled) {
                     eventData.handled = true;
+                    if (triggerSpec.target && evt.target) {
+                        if (!evt.target.matches(triggerSpec.target)) {
+                            return;
+                        }
+                    }
                     if (triggerSpec.once) {
                         if (elementData.triggeredOnce) {
                             return;

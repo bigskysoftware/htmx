@@ -414,4 +414,41 @@ describe("hx-trigger attribute", function(){
         div1.innerHTML.should.equal("Requests: 2");
     });
 
+    it('event listeners can filter on target', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+
+        var div1 = make('<div>' +
+            '<div id="d1" hx-trigger="click from:body target:#d3" hx-get="/test">Requests: 0</div>' +
+            '<div id="d2"></div>' +
+            '<div id="d3"></div>' +
+            '</div>');
+        var div1 = byId("d1");
+        var div2 = byId("d2");
+        var div3 = byId("d3");
+
+        div1.innerHTML.should.equal("Requests: 0");
+        document.body.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div1.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div2.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div3.click();
+        this.server.respond();
+        requests.should.equal(1);
+
+    });
+
+
 })
