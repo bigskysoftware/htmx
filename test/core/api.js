@@ -261,5 +261,36 @@ describe("Core htmx API test", function(){
         calledEvent.should.equal(true);
     });
 
+    it('ajax api works', function()
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div></div>");
+        htmx.ajax("GET", "/test", div)
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+    });
+
+    it('ajax api works by ID', function()
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("GET", "/test", "#d1")
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+    });
+
+    it('ajax returns a promise', function(done)
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div id='d1'></div>");
+        var promise = htmx.ajax("GET", "/test", "#d1");
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+        promise.then(function(){
+            done();
+        })
+    });
+
+
 
 })

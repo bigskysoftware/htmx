@@ -1923,16 +1923,22 @@ return (function () {
         function ajaxHelper(verb, path, context) {
             if (context) {
                 if (context instanceof Element || isType(context, 'String')) {
-                    issueAjaxRequest(verb, path, null, null, null, resolveTarget(context));
+                    return issueAjaxRequest(verb, path, null, null, null, resolveTarget(context));
                 } else {
-                    issueAjaxRequest(verb, path, resolveTarget(context.source), context.event, context.handler, resolveTarget(context.target));
+                    return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event, context.handler, resolveTarget(context.target));
                 }
             } else {
-                issueAjaxRequest(verb, path);
+                return issueAjaxRequest(verb, path);
             }
         }
 
         function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
+            var resolve = null;
+            var reject = null;
+            var promise = new Promise(function (_resolve, _reject) {
+                resolve = _resolve;
+                reject = _reject;
+            });
             if(elt == null) {
                 elt = getDocument().body;
             }
@@ -1970,12 +1976,18 @@ return (function () {
                 // prompt returns null if cancelled and empty string if accepted with no entry
                 if (promptResponse === null ||
                     !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target}))
-                    return endRequestLock();
+                    resolve();
+                    endRequestLock();
+                    return promise;
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
             if (confirmQuestion) {
-                if(!confirm(confirmQuestion)) return endRequestLock();
+                if(!confirm(confirmQuestion)) {
+                    resolve();
+                    endRequestLock()
+                    return promise;
+                }
             }
 
             var xhr = new XMLHttpRequest();
@@ -2018,7 +2030,9 @@ return (function () {
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
-                return endRequestLock();
+                resolve();
+                endRequestLock();
+                return promise;
             }
 
             var splitPath = path.split("#");
@@ -2071,6 +2085,7 @@ return (function () {
                     }
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
+                    resolve();
                     endRequestLock();
                 }
             }
@@ -2082,6 +2097,7 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
+                reject();
                 endRequestLock();
             }
             xhr.onabort = function() {
@@ -2092,9 +2108,14 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
+                reject();
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)){
+                resolve();
+                endRequestLock()
+                return promise
+            }
             var indicators = addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
@@ -2109,6 +2130,7 @@ return (function () {
                 });
             });
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            return promise;
         }
 
         function handleAjaxResponse(elt, responseInfo) {
