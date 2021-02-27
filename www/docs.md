@@ -821,7 +821,7 @@ Htmx allows you to configure a few defaults:
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`
-|  `htmx.config.wsReconnectInterval` | defaults to 10000
+|  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 
 </div>
 

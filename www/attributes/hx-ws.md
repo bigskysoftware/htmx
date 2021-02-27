@@ -35,7 +35,10 @@ The serialized values will include a field, `HEADERS`, that includes the headers
 request.
 
 After an unexpected connection loss due to `Abnormal Closure`, `Service Restart` or `Try Again Later`,
-reconnecting is done after `htmx.config.wsReconnectInterval` milliseconds until successful.
+reconnecting is tried until successful.
+The default reconnection interval is implemented with the full-jitter exponential-backoff algorithm.
+Own implementations can be provided by setting `htmx.config.wsReconnectDelay` to a function with
+`retryCount` as its only parameter.
 
 ### Notes
 
