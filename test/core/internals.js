@@ -41,4 +41,24 @@ describe("Core htmx internals Tests", function() {
         chai.expect(htmx._("tokenizeString")("aa.aa")).to.be.deep.equal(['aa', '.', 'aa']);
     })
 
+    it("tags respond correctly to shouldCancel", function() {
+        var anchorThatShouldCancel = make("<a href='/foo'></a>");
+        htmx._("shouldCancel")(anchorThatShouldCancel).should.equal(true);
+
+        var anchorThatShouldNotCancel = make("<a href='#'></a>");
+        htmx._("shouldCancel")(anchorThatShouldNotCancel).should.equal(false);
+
+        var form = make("<form></form>");
+        htmx._("shouldCancel")(form).should.equal(true);
+
+        var form = make("<form><input id='i1' type='submit'></form>");
+        var input = byId("i1");
+        htmx._("shouldCancel")(input).should.equal(true);
+
+        var form = make("<form><button id='b1' type='submit'></form>");
+        var button = byId("b1");
+        htmx._("shouldCancel")(button).should.equal(true);
+
+    })
+
 });
