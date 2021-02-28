@@ -385,15 +385,18 @@ describe("hx-trigger attribute", function(){
         this.server.respond();
         requests.should.equal(1);
 
+        requests.should.equal(1);
+
         div1.click();
         this.server.respond();
         div1.innerHTML.should.equal("Clicked");
 
+        requests.should.equal(2);
+
         document.body.click();
         this.server.respond();
 
-        // event listener should have been removed when this element was removed
-        requests.should.equal(1);
+        requests.should.equal(2);
     });
 
     it('multiple triggers with from clauses mixed in work', function()
@@ -413,5 +416,58 @@ describe("hx-trigger attribute", function(){
         this.server.respond();
         div1.innerHTML.should.equal("Requests: 2");
     });
+
+    it('event listeners can filter on target', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+
+        var div1 = make('<div>' +
+            '<div id="d1" hx-trigger="click from:body target:#d3" hx-get="/test">Requests: 0</div>' +
+            '<div id="d2"></div>' +
+            '<div id="d3"></div>' +
+            '</div>');
+        var div1 = byId("d1");
+        var div2 = byId("d2");
+        var div3 = byId("d3");
+
+        div1.innerHTML.should.equal("Requests: 0");
+        document.body.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div1.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div2.click();
+        this.server.respond();
+        requests.should.equal(0);
+
+        div3.click();
+        this.server.respond();
+        requests.should.equal(1);
+
+    });
+
+    it('consume prevents event propogation', function()
+    {
+        this.server.respondWith("GET", "/foo", "foo");
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click' hx-get='/foo'>" +
+            "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
+            "</div>");
+
+        byId("d1").click();
+        this.server.respond();
+
+        // should not have been replaced by click
+        byId("d1").parentElement.should.equal(div);
+        byId("d1").innerText.should.equal("bar");
+    });
+
 
 })

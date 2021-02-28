@@ -58,6 +58,9 @@ is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
 is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
 * `from:<CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
+* `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
+triggers from elements that might not be in the DOM at the point of initialization, by listening on the body, but with a target filter for a
+child
 
 Here is an example of a search box that searches on `keyup`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:
