@@ -847,6 +847,8 @@ return (function () {
                                     triggerSpec.changed = true;
                                 } else if (token === "once") {
                                     triggerSpec.once = true;
+                                } else if (token === "consume") {
+                                    triggerSpec.consume = true;
                                 } else if (token === "delay" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
@@ -965,9 +967,15 @@ return (function () {
                     return;
                 }
                 var eventData = getInternalData(evt);
+                if (eventData.handledFor == null) {
+                    eventData.handledFor = [];
+                }
                 var elementData = getInternalData(elt);
-                if (!eventData.handled) {
-                    eventData.handled = true;
+                if (eventData.handledFor.indexOf(elt) < 0) {
+                    eventData.handledFor.push(elt);
+                    if (triggerSpec.consume) {
+                        evt.stopPropagation();
+                    }
                     if (triggerSpec.target && evt.target) {
                         if (!evt.target.matches(triggerSpec.target)) {
                             return;

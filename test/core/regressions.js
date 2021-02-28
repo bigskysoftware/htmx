@@ -110,4 +110,21 @@ describe("Core htmx Regression Tests", function(){
         defaultPrevented.should.equal(true);
     })
 
+    it('two elements can listen for the same event on another element', function() {
+        this.server.respondWith("GET", "/test", "triggered");
+
+        make('<div id="d1" hx-trigger="click from:body" hx-get="/test"></div>' +
+            '        <div id="d2" hx-trigger="click from:body" hx-get="/test"></div>');
+
+
+        var div1 = byId("d1");
+        var div2 = byId("d2");
+
+        document.body.click();
+        this.server.respond();
+
+        div2.innerHTML.should.equal("triggered");
+        div1.innerHTML.should.equal("triggered");
+    })
+
 })

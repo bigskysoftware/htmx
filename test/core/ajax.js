@@ -84,26 +84,22 @@ describe("Core htmx AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterbegin">*</div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1*");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("21*");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("2**");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("***");
+        div.innerText.should.equal("321*");
     });
 
     it('handles afterbegin properly with no initial content', function()
@@ -111,26 +107,22 @@ describe("Core htmx AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterbegin"></div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("*");
+        div.innerText.should.equal("21");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("2*");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("321");
     });
 
     it('handles afterend properly', function()
@@ -168,26 +160,22 @@ describe("Core htmx AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforeend">*</div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("*1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("*12");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("**2");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("***");
+        div.innerText.should.equal("*123");
     });
 
     it('handles beforeend properly with no initial content', function()
@@ -195,26 +183,22 @@ describe("Core htmx AJAX Tests", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforeend"></div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("*");
+        div.innerText.should.equal("12");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("*2");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("123");
     });
 
     it('handles hx-target properly', function()
@@ -551,7 +535,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('text nodes dont screw up settling via variable capture', function()
     {
-        this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test2'></div>fooo");
+        this.server.respondWith("GET", "/test", "<div id='d1' hx-trigger='click consume' hx-get='/test2'></div>fooo");
         this.server.respondWith("GET", "/test2", "clicked");
         var div = make("<div hx-get='/test'/>");
         div.click();
@@ -560,7 +544,6 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         byId("d1").innerHTML.should.equal("clicked");
     });
-
 
     it('script nodes evaluate', function()
     {

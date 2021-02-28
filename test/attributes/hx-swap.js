@@ -73,26 +73,22 @@ describe("hx-swap attribute", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterbegin">*</div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1*");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("21*");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("2**");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("***");
+        div.innerText.should.equal("321*");
     });
 
     it('swap afterbegin properly with no initial content', function()
@@ -100,26 +96,22 @@ describe("hx-swap attribute", function(){
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterbegin"></div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("*");
+        div.innerText.should.equal("21");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("2*");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("321");
     });
 
     it('swap afterend properly', function()
@@ -152,58 +144,50 @@ describe("hx-swap attribute", function(){
         removeWhiteSpace(parent.innerText).should.equal("***");
     });
 
-    it('swap beforeend properly', function()
+    it('handles beforeend properly', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforeend">*</div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("*1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("*12");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("**2");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("***");
+        div.innerText.should.equal("*123");
     });
 
-    it('swap beforeend properly with no initial content', function()
+    it('handles beforeend properly with no initial content', function()
     {
         var i = 0;
         this.server.respondWith("GET", "/test", function(xhr){
             i++;
-            xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
+            xhr.respond(200, {}, "" + i);
         });
-        this.server.respondWith("GET", "/test2", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforeend"></div>')
+
         div.click();
         this.server.respond();
         div.innerText.should.equal("1");
 
-        byId("a1").click();
+        div.click();
         this.server.respond();
-        div.innerText.should.equal("*");
+        div.innerText.should.equal("12");
 
         div.click();
         this.server.respond();
-        div.innerText.should.equal("*2");
-
-        byId("a2").click();
-        this.server.respond();
-        div.innerText.should.equal("**");
+        div.innerText.should.equal("123");
     });
 
     it('properly parses various swap specifications', function(){

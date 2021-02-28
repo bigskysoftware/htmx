@@ -385,15 +385,18 @@ describe("hx-trigger attribute", function(){
         this.server.respond();
         requests.should.equal(1);
 
+        requests.should.equal(1);
+
         div1.click();
         this.server.respond();
         div1.innerHTML.should.equal("Clicked");
 
+        requests.should.equal(2);
+
         document.body.click();
         this.server.respond();
 
-        // event listener should have been removed when this element was removed
-        requests.should.equal(1);
+        requests.should.equal(2);
     });
 
     it('multiple triggers with from clauses mixed in work', function()
@@ -448,6 +451,22 @@ describe("hx-trigger attribute", function(){
         this.server.respond();
         requests.should.equal(1);
 
+    });
+
+    it('consume prevents event propogation', function()
+    {
+        this.server.respondWith("GET", "/foo", "foo");
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click' hx-get='/foo'>" +
+            "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
+            "</div>");
+
+        byId("d1").click();
+        this.server.respond();
+
+        // should not have been replaced by click
+        byId("d1").parentElement.should.equal(div);
+        byId("d1").innerText.should.equal("bar");
     });
 
 
