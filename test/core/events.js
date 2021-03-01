@@ -346,5 +346,25 @@ describe("Core htmx Events", function() {
             htmx.off("htmx:afterProcessNode", handler);
         }
     });
+
+    it("htmx:afterRequest is called when targeting a parent div", function () {
+        var called = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<div hx-target='this'><button id='b1' hx-post='/test' hx-swap='outerHTML'>Foo</button></div>");
+            var button = byId('b1');
+            button.click();
+            this.server.respond();
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    });
+
 });
 

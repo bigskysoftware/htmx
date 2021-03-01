@@ -62,4 +62,16 @@ describe("hx-indicator attribute", function(){
         btn.classList.contains("htmx-request").should.equal(false);
         div.classList.contains("htmx-request").should.equal(false);
     });
+
+    it('is removed when initiating element is removed from the DOM', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var indicator = make('<div id="ind1">Indicator</div>')
+        var div = make('<div id="d1" hx-target="this" hx-indicator="#ind1"><button id="b1" hx-get="/test">Click Me!</button></div>')
+        var btn = byId("b1");
+        btn.click();
+        indicator.classList.contains("htmx-request").should.equal(true);
+        this.server.respond();
+        indicator.classList.contains("htmx-request").should.equal(false);
+    });
 })

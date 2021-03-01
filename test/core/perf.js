@@ -29,25 +29,6 @@ describe("Core htmx perf Tests", function() {
         return result;
     }
 
-    it("DOM processing should be fast", function(){
-        this.server.respondWith("GET", "/test", "Clicked!");
-
-        // create an entry with a large content string (256k) and see how fast we can write and read it
-        // to local storage as a single entry
-        var str = stringRepeat("<div>", 30) + stringRepeat("<div><div><span><button hx-get='/test'> Test Get Button </button></span></div></div>\n", 500) + stringRepeat("</div>", 30);
-        var start = performance.now();
-        var stuff = make(str);
-        var end = performance.now();
-        var timeInMs = end - start;
-
-        // make sure the DOM actually processed
-        var firstBtn = stuff.querySelector("button");
-        firstBtn.click();
-        this.server.respond();
-        firstBtn.innerHTML.should.equal("Clicked!");
-
-        chai.assert(timeInMs < 100, "Should take less than 100ms on most platforms, took: " + timeInMs + "ms");
-    })
 
     it("history implementation should be fast", function(){
         // create an entry with a large content string (256k) and see how fast we can write and read it
