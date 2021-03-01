@@ -25,7 +25,7 @@ We'll define some nice animations in CSS, and use some Hyperscript events (or al
 
 ### Modal HTML Fragment
 ```html
-<div id="modal" _="on closeModal add .closing then wait 150ms then remove me">
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 	<div class="modal-underlay" _="on click trigger closeModal"></div>
 	<div class="modal-content">
 		<h1>Modal Dialog</h1>
@@ -140,7 +140,7 @@ We'll define some nice animations in CSS, and use some Hyperscript events (or al
     // routes
     init("/modal", function(request){
 		return `
-		<div id="modal" _="on closeModal add .closing then wait 150ms then remove me">
+		<div id="modal" _="on closeModal add .closing wait for animationend then remove me">
 			<div class="modal-underlay" _="on click trigger closeModal"></div>
 			<div class="modal-content">
 				<h1>Modal Dialog</h1>
