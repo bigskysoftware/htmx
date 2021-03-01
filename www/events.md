@@ -93,6 +93,17 @@ This event is triggered before an AJAX request is issued.  If the event is cance
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### <a name="htmx:beforeSend"></a> Event - [`htmx:beforeSend`](#htmx:beforeSend)
+
+This event is triggered right before a request is sent.  You may not cancel the request with this event.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
 ### <a name="htmx:beforeSwap"></a> Event - [`htmx:beforeSwap`](#htmx:beforeSwap)
 
 This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If the event is cancelled, no swap will occur.

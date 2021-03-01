@@ -2146,6 +2146,7 @@ return (function () {
                     })
                 });
             });
+            triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
             return promise;
         }
