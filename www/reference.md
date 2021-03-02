@@ -109,6 +109,7 @@ title: </> htmx - Attributes
 | [`htmx:beforeProcessNode`](/events#htmx:afterProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
 | [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
+| [`htmx:beforeSend`](/events#htmx:beforeSend)  | triggered just before an ajax request is sent
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
