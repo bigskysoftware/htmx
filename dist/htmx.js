@@ -698,8 +698,8 @@ return (function () {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
-                handlePreservedElements(fragment);
                 fragment = maybeSelectFromResponse(elt, fragment);
+                handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
             }
         }
@@ -922,7 +922,7 @@ return (function () {
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && elt.href.indexOf('#') !== 0);
+                (elt.tagName === "A" && elt.href && elt.getAttribute('href').indexOf('#') !== 0);
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
@@ -1052,8 +1052,13 @@ return (function () {
         }
 
         function processWebSocketSource(elt, wssSource) {
-            if (wssSource.indexOf("ws:") !== 0 && wssSource.indexOf("wss:") !== 0) {
-                wssSource = "wss:" + wssSource;
+            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
+                var base_part = location.hostname + (location.port ? ':'+location.port: '');
+                if (location.protocol == 'https:') {
+                    wssSource = "wss://" + base_part + wssSource;
+                } else if (location.protocol == 'http:') {
+                    wssSource = "ws://" + base_part + wssSource;
+                }
             }
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
@@ -1526,22 +1531,21 @@ return (function () {
         }
 
         function addRequestIndicatorClasses(elt) {
-            mutateRequestIndicatorClasses(elt, "add");
-        }
-
-        function removeRequestIndicatorClasses(elt) {
-            mutateRequestIndicatorClasses(elt, "remove");
-        }
-
-        function mutateRequestIndicatorClasses(elt, action) {
             var indicator = getClosestAttributeValue(elt, 'hx-indicator');
             if (indicator) {
                 var indicators = querySelectorAllExt(elt, indicator);
             } else {
                 indicators = [elt];
             }
-            forEach(indicators, function(ic) {
-                ic.classList[action].call(ic.classList, htmx.config.requestClass);
+            forEach(indicators, function (ic) {
+                ic.classList["add"].call(ic.classList, htmx.config.requestClass);
+            });
+            return indicators;
+        }
+
+        function removeRequestIndicatorClasses(indicators) {
+            forEach(indicators, function (ic) {
+                ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
             });
         }
 
@@ -2060,25 +2064,38 @@ return (function () {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
                 } finally {
-                    removeRequestIndicatorClasses(elt);
-                    var finalElt = getInternalData(elt).replacedWith || elt;
+                    removeRequestIndicatorClasses(indicators);
+                    var finalElt = elt;
+                    if (!bodyContains(elt)) {
+                        finalElt = getInternalData(target).replacedWith || target;
+                    }
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
                     endRequestLock();
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(elt);
-                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
+                removeRequestIndicatorClasses(indicators);
+                var finalElt = elt;
+                if (!bodyContains(elt)) {
+                    finalElt = getInternalData(target).replacedWith || target;
+                }
+                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
                 endRequestLock();
             }
             xhr.onabort = function() {
-                removeRequestIndicatorClasses(elt);
+                removeRequestIndicatorClasses(indicators);
+                var finalElt = elt;
+                if (!bodyContains(elt)) {
+                    finalElt = getInternalData(target).replacedWith || target;
+                }
+                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
-            addRequestIndicatorClasses(elt);
+            var indicators = addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
                 forEach([xhr, xhr.upload], function (target) {
