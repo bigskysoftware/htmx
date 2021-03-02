@@ -1661,7 +1661,7 @@ return (function () {
             var errors = [];
 
             // only validate when form is directly submitted and novalidate is not set
-            var validate = matches(elt, 'form') && elt.noValidate !== true;
+            var validate = (matches(elt, 'form') || closest(elt, 'form')) && elt.noValidate !== true;
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
