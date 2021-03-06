@@ -702,8 +702,8 @@ return (function () {
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
-                handlePreservedElements(fragment);
                 fragment = maybeSelectFromResponse(elt, fragment);
+                handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
             }
         }
