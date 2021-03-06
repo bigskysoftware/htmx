@@ -22,6 +22,10 @@ return (function () {
             find : find,
             findAll : findAll,
             closest : closest,
+            values : function(elt, type){
+                var inputValues = getInputValues(elt, type || "post");
+                return inputValues.values;
+            },
             remove : removeElement,
             addClass : addClassToElement,
             removeClass : removeClassFromElement,
@@ -1940,18 +1944,27 @@ return (function () {
         function ajaxHelper(verb, path, context) {
             if (context) {
                 if (context instanceof Element || isType(context, 'String')) {
-                    return issueAjaxRequest(verb, path, null, null, null, resolveTarget(context));
+                    return issueAjaxRequest(verb, path, null, null, {
+                        targetOverride: resolveTarget(context)
+                    });
                 } else {
-                    return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event, context.handler, resolveTarget(context.target));
+                    return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
+                        {
+                            handler : context.handler,
+                            headers : context.headers,
+                            values : context.values,
+                            targetOverride: resolveTarget(context.target)
+                        });
                 }
             } else {
                 return issueAjaxRequest(verb, path);
             }
         }
 
-        function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
+        function issueAjaxRequest(verb, path, elt, event, etc) {
             var resolve = null;
             var reject = null;
+            etc = etc != null ? etc : {};
             var promise = new Promise(function (_resolve, _reject) {
                 resolve = _resolve;
                 reject = _reject;
@@ -1959,13 +1972,12 @@ return (function () {
             if(elt == null) {
                 elt = getDocument().body;
             }
-            if (responseHandler == null) {
-                responseHandler = handleAjaxResponse;
-            }
+            var responseHandler = etc.handler || handleAjaxResponse;
+
             if (!bodyContains(elt)) {
                 return; // do not issue requests for elements removed from the DOM
             }
-            var target = targetOverride || getTarget(elt);
+            var target = etc.targetOverride || getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
@@ -2010,9 +2022,15 @@ return (function () {
             var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse);
+            if (etc.headers) {
+                headers = mergeObjects(headers, etc.values);
+            }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
             var rawParameters = results.values;
+            if (etc.values) {
+                rawParameters = mergeObjects(rawParameters, etc.values);
+            }
             var expressionVars = getExpressionVars(elt);
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);

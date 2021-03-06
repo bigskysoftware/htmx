@@ -166,6 +166,7 @@ title: </> htmx - Attributes
 | [`htmx.takeClass()`](/api#takeClass)  | Takes a class from other elements for the given element
 | [`htmx.toggleClass()`](/api#toggleClass)  | Toggles a class from the given element
 | [`htmx.trigger()`](/api#trigger)  | Triggers an event on an element
+| [`htmx.values()`](/api#values)  | Returns the input values associated with the given element
 
 </div>
 

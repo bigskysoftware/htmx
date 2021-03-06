@@ -291,6 +291,17 @@ describe("Core htmx API test", function(){
         })
     });
 
-
+    it('ajax api can pass parameters', function()
+    {
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("POST", "/test", {target:"#d1", values:{i1: 'test'}})
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
 
 })
