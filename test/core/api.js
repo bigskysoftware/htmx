@@ -261,5 +261,47 @@ describe("Core htmx API test", function(){
         calledEvent.should.equal(true);
     });
 
+    it('ajax api works', function()
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div></div>");
+        htmx.ajax("GET", "/test", div)
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+    });
+
+    it('ajax api works by ID', function()
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("GET", "/test", "#d1")
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+    });
+
+    it('ajax returns a promise', function(done)
+    {
+        this.server.respondWith("GET", "/test", "foo!");
+        var div = make("<div id='d1'></div>");
+        var promise = htmx.ajax("GET", "/test", "#d1");
+        this.server.respond();
+        div.innerHTML.should.equal("foo!");
+        promise.then(function(){
+            done();
+        })
+    });
+
+    it('ajax api can pass parameters', function()
+    {
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("POST", "/test", {target:"#d1", values:{i1: 'test'}})
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
 
 })

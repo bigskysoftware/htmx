@@ -51,6 +51,8 @@ or
     * `event` - an event that "triggered" the request
     * `handler` - a callback that will handle the response HTML
     * `target` - the target to swap the response into
+    * `values` - values to submit with the request
+    * `headers` - headers to submit with the request
 
 
 ##### Example
@@ -425,4 +427,21 @@ Triggers a given event on an element
 ```js
   // triggers the myEvent event on #tab2 with the answer 42
   htmx.trigger(htmx.find("#tab2"), "myEvent", {answer:42});
+```
+
+### <a name="values"></a> Method -  [`htmx.values()`](#values)
+
+Returns the intput values that would resolve for a given element via the htmx value resolution mechanism
+
+##### Parameters
+
+* `elt` - the element to resolve values on
+* `request type` - the request type (e.g. `get` or `post`)  non-GET's will include the enclosing form of the element.
+   Defaults to `post`
+
+##### Example
+
+```js
+  // gets the values associated with this form
+  var values = htmx.values(htmx.find("#myForm"));
 ```

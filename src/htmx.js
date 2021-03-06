@@ -22,6 +22,10 @@ return (function () {
             find : find,
             findAll : findAll,
             closest : closest,
+            values : function(elt, type){
+                var inputValues = getInputValues(elt, type || "post");
+                return inputValues.values;
+            },
             remove : removeElement,
             addClass : addClassToElement,
             removeClass : removeClassFromElement,
@@ -847,12 +851,17 @@ return (function () {
                                     triggerSpec.changed = true;
                                 } else if (token === "once") {
                                     triggerSpec.once = true;
+                                } else if (token === "consume") {
+                                    triggerSpec.consume = true;
                                 } else if (token === "delay" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                } else if (token === "target" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
@@ -962,9 +971,20 @@ return (function () {
                     return;
                 }
                 var eventData = getInternalData(evt);
+                if (eventData.handledFor == null) {
+                    eventData.handledFor = [];
+                }
                 var elementData = getInternalData(elt);
-                if (!eventData.handled) {
-                    eventData.handled = true;
+                if (eventData.handledFor.indexOf(elt) < 0) {
+                    eventData.handledFor.push(elt);
+                    if (triggerSpec.consume) {
+                        evt.stopPropagation();
+                    }
+                    if (triggerSpec.target && evt.target) {
+                        if (!evt.target.matches(triggerSpec.target)) {
+                            return;
+                        }
+                    }
                     if (triggerSpec.once) {
                         if (elementData.triggeredOnce) {
                             return;
@@ -1174,6 +1194,7 @@ return (function () {
                     var settleInfo = makeSettleInfo(elt);
 
                     selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
 
@@ -1427,7 +1448,7 @@ return (function () {
             while(historyCache.length > 0){
                 try {
                     localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
-                    return;
+                    break;
                 } catch (e) {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
                     historyCache.shift(); // shrink the cache and retry
@@ -1923,26 +1944,40 @@ return (function () {
         function ajaxHelper(verb, path, context) {
             if (context) {
                 if (context instanceof Element || isType(context, 'String')) {
-                    issueAjaxRequest(verb, path, null, null, null, resolveTarget(context));
+                    return issueAjaxRequest(verb, path, null, null, {
+                        targetOverride: resolveTarget(context)
+                    });
                 } else {
-                    issueAjaxRequest(verb, path, resolveTarget(context.source), context.event, context.handler, resolveTarget(context.target));
+                    return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
+                        {
+                            handler : context.handler,
+                            headers : context.headers,
+                            values : context.values,
+                            targetOverride: resolveTarget(context.target)
+                        });
                 }
             } else {
-                issueAjaxRequest(verb, path);
+                return issueAjaxRequest(verb, path);
             }
         }
 
-        function issueAjaxRequest(verb, path, elt, event, responseHandler, targetOverride) {
+        function issueAjaxRequest(verb, path, elt, event, etc) {
+            var resolve = null;
+            var reject = null;
+            etc = etc != null ? etc : {};
+            var promise = new Promise(function (_resolve, _reject) {
+                resolve = _resolve;
+                reject = _reject;
+            });
             if(elt == null) {
                 elt = getDocument().body;
             }
-            if (responseHandler == null) {
-                responseHandler = handleAjaxResponse;
-            }
+            var responseHandler = etc.handler || handleAjaxResponse;
+
             if (!bodyContains(elt)) {
                 return; // do not issue requests for elements removed from the DOM
             }
-            var target = targetOverride || getTarget(elt);
+            var target = etc.targetOverride || getTarget(elt);
             if (target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
@@ -1970,20 +2005,32 @@ return (function () {
                 // prompt returns null if cancelled and empty string if accepted with no entry
                 if (promptResponse === null ||
                     !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target}))
-                    return endRequestLock();
+                    resolve();
+                    endRequestLock();
+                    return promise;
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
             if (confirmQuestion) {
-                if(!confirm(confirmQuestion)) return endRequestLock();
+                if(!confirm(confirmQuestion)) {
+                    resolve();
+                    endRequestLock()
+                    return promise;
+                }
             }
 
             var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse);
+            if (etc.headers) {
+                headers = mergeObjects(headers, etc.values);
+            }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
             var rawParameters = results.values;
+            if (etc.values) {
+                rawParameters = mergeObjects(rawParameters, etc.values);
+            }
             var expressionVars = getExpressionVars(elt);
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
@@ -2018,7 +2065,9 @@ return (function () {
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
-                return endRequestLock();
+                resolve();
+                endRequestLock();
+                return promise;
             }
 
             var splitPath = path.split("#");
@@ -2071,6 +2120,7 @@ return (function () {
                     }
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
+                    resolve();
                     endRequestLock();
                 }
             }
@@ -2082,6 +2132,7 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
+                reject();
                 endRequestLock();
             }
             xhr.onabort = function() {
@@ -2092,9 +2143,14 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
+                reject();
                 endRequestLock();
             }
-            if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)){
+                resolve();
+                endRequestLock()
+                return promise
+            }
             var indicators = addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
@@ -2108,7 +2164,9 @@ return (function () {
                     })
                 });
             });
+            triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            return promise;
         }
 
         function handleAjaxResponse(elt, responseInfo) {
