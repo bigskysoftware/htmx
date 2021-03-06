@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [1.3.0] - 2021-3-6
+
+* Support a `target` modifier on `hx-trigger` to filter based on the element targeted by an event.  This allows
+  lazy binding to that target selector.
+* Events are no longer consumed by the first element that might handle them, unless the `consume` keyword is
+  added to the `hx-trigger` specification
+* Added the `htmx:beforeSend` event, fired just before an ajax request begins
+* SSE swaps are properly settled
+* Fixed bug that was improperly cancelling all clicks on anchors
+* `htmx.ajax()` now returns a promise
+
 ## [1.2.1] - 2021-2-19
 
 * Fixed an issue with the history cache, where the cache was getting blown out after the first navigation backwards
