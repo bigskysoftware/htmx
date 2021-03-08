@@ -1044,7 +1044,7 @@ return (function () {
             for (var i = 0; i < values.length; i++) {
                 var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
-                    processWebSocketSource(elt, value[1], 0);
+                    ensureWebSocket(elt, value[1], 0);
                 }
                 if (value[0] === "send") {
                     processWebSocketSend(elt);
@@ -1052,7 +1052,11 @@ return (function () {
             }
         }
 
-        function processWebSocketSource(elt, wssSource, retryCount) {
+        function ensureWebSocket(elt, wssSource, retryCount) {
+            if (!bodyContains(elt)) {
+                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
+            }
+
             if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
                 var base_part = location.hostname + (location.port ? ':'+location.port: '');
                 if (location.protocol == 'https:') {
@@ -1071,7 +1075,7 @@ return (function () {
                 if ([1006, 1012, 1013].includes(e.code)) {  // Abnormal Closure/Service Restart/Try Again Later
                     var delay = getWebSocketReconnectDelay(retryCount);
                     setTimeout(function() {
-                        processWebSocketSource(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
+                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
                     }, delay);
                 }
             };
