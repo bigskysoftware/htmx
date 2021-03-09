@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.3.1] - 2021-3-9
+
+* IE11 fixes
+
 ## [1.3.0] - 2021-3-6
 
 * Support a `target` modifier on `hx-trigger` to filter based on the element targeted by an event.  This allows
