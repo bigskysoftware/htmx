@@ -177,6 +177,12 @@ return (function () {
             }
         }
 
+        function maybeCall(func){
+            if(func) {
+                func();
+            }
+        }
+
         function isType(o, type) {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
@@ -1965,10 +1971,12 @@ return (function () {
             var resolve = null;
             var reject = null;
             etc = etc != null ? etc : {};
-            var promise = new Promise(function (_resolve, _reject) {
-                resolve = _resolve;
-                reject = _reject;
-            });
+            if(typeof Promise !== "undefined"){
+                var promise = new Promise(function (_resolve, _reject) {
+                    resolve = _resolve;
+                    reject = _reject;
+                });
+            }
             if(elt == null) {
                 elt = getDocument().body;
             }
@@ -2005,7 +2013,7 @@ return (function () {
                 // prompt returns null if cancelled and empty string if accepted with no entry
                 if (promptResponse === null ||
                     !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target}))
-                    resolve();
+                    maybeCall(resolve);
                     endRequestLock();
                     return promise;
             }
@@ -2013,7 +2021,7 @@ return (function () {
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
             if (confirmQuestion) {
                 if(!confirm(confirmQuestion)) {
-                    resolve();
+                    maybeCall(resolve);
                     endRequestLock()
                     return promise;
                 }
@@ -2120,7 +2128,7 @@ return (function () {
                     }
                     triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
-                    resolve();
+                    maybeCall(resolve);
                     endRequestLock();
                 }
             }
@@ -2132,7 +2140,7 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
-                reject();
+                maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
@@ -2143,11 +2151,11 @@ return (function () {
                 }
                 triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
-                reject();
+                maybeCall(reject);
                 endRequestLock();
             }
             if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)){
-                resolve();
+                maybeCall(resolve);
                 endRequestLock()
                 return promise
             }
