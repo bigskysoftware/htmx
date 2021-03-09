@@ -281,14 +281,19 @@ describe("Core htmx API test", function(){
 
     it('ajax returns a promise', function(done)
     {
-        this.server.respondWith("GET", "/test", "foo!");
-        var div = make("<div id='d1'></div>");
-        var promise = htmx.ajax("GET", "/test", "#d1");
-        this.server.respond();
-        div.innerHTML.should.equal("foo!");
-        promise.then(function(){
+        // in IE we do not return a promise
+        if (typeof Promise !== "undefined") {
+            this.server.respondWith("GET", "/test", "foo!");
+            var div = make("<div id='d1'></div>");
+            var promise = htmx.ajax("GET", "/test", "#d1");
+            this.server.respond();
+            div.innerHTML.should.equal("foo!");
+            promise.then(function(){
+                done();
+            })
+        } else {
             done();
-        })
+        }
     });
 
     it('ajax api can pass parameters', function()

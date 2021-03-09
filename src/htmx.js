@@ -987,7 +987,7 @@ return (function () {
                         evt.stopPropagation();
                     }
                     if (triggerSpec.target && evt.target) {
-                        if (!evt.target.matches(triggerSpec.target)) {
+                        if (!matches(evt.target, triggerSpec.target)) {
                             return;
                         }
                     }
@@ -2073,7 +2073,7 @@ return (function () {
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
-                resolve();
+                maybeCall(resolve);
                 endRequestLock();
                 return promise;
             }
