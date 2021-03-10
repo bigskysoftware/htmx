@@ -31,6 +31,7 @@ title: </> htmx - Documentation
 * [extensions](#extensions)
 * [events & logging](#events)
 * [hyperscript](#hyperscript)
+* [3rd party integration](#3rd-party)
 * [configuring](#config)
 
 </div>
@@ -733,15 +734,17 @@ if you want to log everything while developing.
 
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
-**NOTE: hyperscript is in very early alpha**
-
-Hyperscript is a small scripting language designed to be expressive, making it ideal for embedding directly in HTML,
-handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),
+Hyperscript is an experimental front end scripting language designed to be expressive and easily embeddable directly in HTML
+for handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),
 javascript, [gosu](https://gosu-lang.github.io/) and others.
 
 You can explore the language more fully on its main website:
 
 <http://hyperscript.org>
+
+Hyperscript is *not* required when using htmx, anything you can do in hyperscript can be done in vanilla JS or with
+ another javascript library like jQuery, but the two technologies were designed with one another in mind and play
+ well together.
 
 ### Events & Hyperscript
 
@@ -766,10 +769,12 @@ Below are some examples of intercooler features and the hyperscript equivalent.
 Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
 for removing an element after a given amount of time.
 
-In hyperscript this is implemented like so:
+In hyperscript you can implement this, as well as fade effect, like so:
 
 ```html
-<div _="on load wait 5s then remove me">Here is a temporary message!</div>
+<div _="on load wait 5s then transition opacity to 0 then remove me">
+  Here is a temporary message!
+</div>
 ```
 
 ##### `ic-post-errors-to`
@@ -780,7 +785,7 @@ for posting errors that occured during requests and responses.
 In hyperscript similar functionality is implemented like so:
 
 ```html
-<body _="on htmx:error(errorInfo) ajax POST errorInfo to /errors">
+<body _="on htmx:error(errorInfo) fetch /errors {method:'POST', body:{errorInfo:errorInfo} as JSON} ">
   ...
 </body>
 ```
@@ -803,7 +808,72 @@ In hyperscript you can implement similar functionality like so:
 
 ## <a name="config"></a>[Configuring htmx](#config)
 
-Htmx allows you to configure a few defaults:
+Htmx integrates fairly well with third party libraries.  If the library fires events on the DOM, you can use those events to
+trigger requests from htmx.  
+
+A good example of this is the [SortableJS demo](/examples/sortable/):
+
+```html
+<form class="sortable" hx-post="/items" hx-trigger="end">
+  <div class="htmx-indicator">Updating...</div>
+  <div><input type='hidden' name='item' value='1'/>Item 1</div>
+  <div><input type='hidden' name='item' value='2'/>Item 2</div>
+  <div><input type='hidden' name='item' value='2'/>Item 3</div>
+</form>
+```
+
+With Sortable, as with most javascript libraries, you need to initialize content at some point.  
+
+In jquery you might do this like so:
+
+```javascript
+$(document).ready(function() {
+    var sortables = document.body.querySelectorAll(".sortable");
+    for (var i = 0; i < sortables.length; i++) {
+      var sortable = sortables[i];
+      new Sortable(sortable, {
+          animation: 150,
+          ghostClass: 'blue-background-class'
+      });
+    }
+});
+```
+
+In htmx, you would instead use the `htmx.onLoad` function, and you would select only from the newly loaded content,
+rather than the entire document:
+
+```js
+htmx.onLoad(function(content) {
+    var sortables = content.querySelectorAll(".sortable");
+    for (var i = 0; i < sortables.length; i++) {
+      var sortable = sortables[i];
+      new Sortable(sortable, {
+          animation: 150,
+          ghostClass: 'blue-background-class'
+      });
+    }
+})
+```
+
+This will ensure that as new content is added to the DOM by htmx, sortable elements are properly initialized.
+
+If javascript adds content to the DOM that has htmx attributes on it, you need to make sure that this content 
+is initialized with the `htmx.process()` function.
+
+For example, if you were to fetch some data and put it into a div using the `fetch` API, and that HTML had 
+htmx attributes in it, you would need to add a call to `htmx.process()` like this:
+
+```ecmascript 6
+  let myDiv = document.getElementById('my-div')
+  fetch('http://example.com/movies.json')
+    .then(response => response.text())
+    .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
+```
+
+## <a name="config"></a>[Configuring htmx](#config)
+
+Htmx has some configuration options that can be accessed either programatically or declaratively.  They are
+listed below:
 
 <div class="info-table">
 
