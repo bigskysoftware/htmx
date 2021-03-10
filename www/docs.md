@@ -21,6 +21,7 @@ title: </> htmx - Documentation
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
+  * [css transitions](#css_transitions)
   * [parameters](#parameters)
 * [boosting](#boosting)
 * [websockets & SSE](#websockets-and-sse)
