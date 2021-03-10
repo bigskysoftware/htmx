@@ -1526,7 +1526,6 @@ return (function () {
         function restoreHistory(path) {
             saveHistory();
             path = path || location.pathname+location.search;
-            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             var cached = getCachedHistory(path);
             if (cached) {
                 var fragment = makeFragment(cached.content);
@@ -1544,6 +1543,7 @@ return (function () {
                     loadHistoryFromServer(path);
                 }
             }
+            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
         }
 
         function shouldPush(elt) {
