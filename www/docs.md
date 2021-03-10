@@ -807,7 +807,7 @@ In hyperscript you can implement similar functionality like so:
 <div id="content">Tab 1 Content</div>
 ```
 
-## <a name="config"></a>[Configuring htmx](#config)
+## <a name="3rd-party"></a>[3rd Party Javascript](#3rd-party)
 
 Htmx integrates fairly well with third party libraries.  If the library fires events on the DOM, you can use those events to
 trigger requests from htmx.  
