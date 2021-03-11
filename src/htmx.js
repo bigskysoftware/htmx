@@ -1516,6 +1516,7 @@ return (function () {
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
+                    triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
                 } else {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
@@ -1536,6 +1537,7 @@ return (function () {
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
+                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
                     window.location.reload(true);
@@ -1543,7 +1545,6 @@ return (function () {
                     loadHistoryFromServer(path);
                 }
             }
-            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
         }
 
         function shouldPush(elt) {
