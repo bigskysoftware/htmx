@@ -31,6 +31,7 @@ title: </> htmx - Documentation
 * [animations](#animations)
 * [extensions](#extensions)
 * [events & logging](#events)
+* [debugging](#debugging)
 * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [configuring](#config)
