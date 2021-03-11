@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
 </head>
-<body hx-ext="class-tools, preload">
+<body hx-ext="class-tools, preload" _="on keyup[key is '/'] call #search.focus()" >
+
 <div class="top-nav">
     <div class="c">
         <div class="menu">
@@ -54,7 +55,7 @@
                     </div>
                     <div>
                         <input _="on keyup[key is 'Escape'] or click elsewhere call me.blur() then set my.value to ''"
-                                placeholder="&#128269; Docs Search" style="width:150px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin-right: 6px" type="text" id="search"/>
+                                placeholder="&#128269; / to Search Docs" style="width:150px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin-right: 6px" type="text" id="search"/>
                     </div>
                 </div>
                 <div class="github-stars">
