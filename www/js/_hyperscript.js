@@ -209,8 +209,8 @@
                         var tokenList = [];
                         var currentToken = token(0, true);
                         while ((type == null || currentToken.type !== type) &&
-                               (value == null || currentToken.value !== value) &&
-                                currentToken.type !== "EOF") {
+                        (value == null || currentToken.value !== value) &&
+                        currentToken.type !== "EOF") {
                             var match = tokens.shift();
                             consumed.push(match);
                             tokenList.push(currentToken);
@@ -570,6 +570,8 @@
                         var commandDefinition = COMMANDS[tokens.currentToken().value];
                         if (commandDefinition) {
                             return commandDefinition(parser, runtime, tokens);
+                        } else if (tokens.currentToken().type === "IDENTIFIER" && tokens.token(1).value === "(") {
+                            return parser.requireElement("pseudoCommand", tokens);
                         }
                     }
                 })
@@ -873,7 +875,7 @@
                             next.then(function (resolvedNext) {
                                 unifiedExec(resolvedNext, ctx);
                             }).catch(function(reason){
-                                 _runtime.registerHyperTrace(ctx, reason);
+                                _runtime.registerHyperTrace(ctx, reason);
                                 if (ctx.meta.errorHandler && !ctx.meta.handlingError) {
                                     ctx.meta.handlingError = true;
                                     ctx[ctx.meta.errorSymmbol] = reason;
@@ -1133,7 +1135,7 @@
                     if (str === "me" || str === "my" || str === "I") {
                         return context["me"];
                     } if (str === "it" || str === "its") {
-                        return context["it"];
+                        return context["result"];
                     } else {
                         if (context.meta && context.meta.context) {
                             var fromMetaContext = context.meta.context[str];
@@ -1816,7 +1818,7 @@
                             index: index,
                             args: [root, index],
                             op: function(ctx, root, index) {
-                                    return root[index]
+                                return root[index]
                             },
                             evaluate: function(context){
                                 return _runtime.unifiedEval(this, context);
@@ -2313,8 +2315,8 @@
                                     onFeature.executing = false;
                                     var queued = onFeature.queue.shift();
                                     if (queued) {
-                                    setTimeout(function () {
-                                        onFeature.execute(queued);
+                                        setTimeout(function () {
+                                            onFeature.execute(queued);
                                         }, 1);
                                     }
                                 }
@@ -2362,7 +2364,7 @@
                                                 var inElement = evt.target;
                                                 while(true) {
                                                     if (inElement.matches && inElement.matches(eventSpec.inExpr.css)) {
-                                                        ctx.it = inElement;
+                                                        ctx.result = inElement;
                                                         break;
                                                     } else {
                                                         inElement = inElement.parentElement;
@@ -2670,12 +2672,12 @@
                                 if (result && typeof result.then === 'function') {
                                     return Promise(function (resolve) {
                                         result.then(function (actualResult) {
-                                            context.it = actualResult
+                                            context.result = actualResult
                                             resolve(runtime.findNext(this, context));
                                         })
                                     })
                                 } else {
-                                    context.it = result
+                                    context.result = result
                                     return runtime.findNext(this, context);
                                 }
                             }
@@ -2926,8 +2928,8 @@
                     var callCmd = {
                         expr: expr,
                         args: [expr],
-                        op: function (context, it) {
-                            context.it = it;
+                        op: function (context, result) {
+                            context.result = result;
                             return runtime.findNext(callCmd, context);
                         }
                     };
@@ -2946,6 +2948,41 @@
                     if (tokens.matchToken('get')) {
                         return parseCallOrGet(parser, runtime, tokens);
                     }
+                })
+
+                _parser.addGrammarElement("pseudoCommand", function(parser, runtime, tokens) {
+                    var expr = parser.requireElement("primaryExpression", tokens);
+                    if (expr.type !== 'functionCall' && expr.root.type !== "symbol") {
+                        parser.raiseParseError("Implicit function calls must start with a simple function", tokens);
+                    }
+                    // optional "with"
+                    if (!tokens.matchToken("with") && parser.commandBoundary(tokens.currentToken())) {
+                        var target = parser.requireElement("implicitMeTarget", tokens);
+                    } else {
+                        var target = parser.requireElement("expression", tokens);
+                    }
+                    var functionName = expr.root.name;
+                    var functionArgs = expr.argExressions;
+
+                    var pseudoCommand = {
+                        type: "pseudoCommand",
+                        expr: expr,
+                        args: [target, functionArgs],
+                        op: function (context, target, args) {
+                            var func = target[functionName];
+                            if (func.hyperfunc) {
+                                args.push(context);
+                            }
+                            var result = func.apply(target, args);
+                            context.result = result;
+                            return runtime.findNext(pseudoCommand, context);
+                        },
+                        execute : function (context) {
+                            return runtime.unifiedExec(this, context);
+                        }
+                    };
+
+                    return pseudoCommand;
                 })
 
                 _parser.addCommand("set", function(parser, runtime, tokens) {
@@ -3107,9 +3144,9 @@
                             if (keepLooping) {
                                 if (iterator.value) {
                                     context[identifier] = iterator.value[iterator.index];
-                                    context.it = iterator.value[iterator.index];
+                                    context.result = iterator.value[iterator.index];
                                 } else {
-                                    context.it = iterator.index;
+                                    context.result = iterator.index;
                                 }
                                 if (indexIdentifier) {
                                     context[indexIdentifier] = iterator.index;
@@ -3193,16 +3230,16 @@
                                     fetch(url, args)
                                         .then(function (value) {
                                             if (type === "response") {
-                                                context.it = value;
+                                                context.result = value;
                                                 resolve(runtime.findNext(fetchCmd, context));
                                             } else if (type === "json") {
                                                 value.json().then(function (result) {
-                                                    context.it = result;
+                                                    context.result = result;
                                                     resolve(runtime.findNext(fetchCmd, context));
                                                 })
                                             } else {
                                                 value.text().then(function (result) {
-                                                    context.it = result;
+                                                    context.result = result;
                                                     resolve(runtime.findNext(fetchCmd, context));
                                                 })
                                             }
@@ -3294,7 +3331,7 @@
                     }
                 }
             )
-    }
+        }
     )()
 }));
 ///=========================================================================
