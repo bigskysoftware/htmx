@@ -1118,8 +1118,8 @@ return (function () {
                 return getInternalData(parent).webSocket != null;
             });
             if (webSocketSourceElt) {
-                var webSocket = getInternalData(webSocketSourceElt).webSocket;
                 elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
+                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
                     var headers = getHeaders(elt, webSocketSourceElt);
                     var results = getInputValues(elt, 'post');
                     var errors = results.errors;
