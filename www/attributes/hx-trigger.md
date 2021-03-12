@@ -58,6 +58,7 @@ is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
 is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
 * `from:<CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
+  * Note that this modifier must be used with <code>body</code> selector, if you're trying to fire an event from <code>HX-Trigger</code> header. I.e. if you're sending <code>HX-Trigger: my-custom-event</code> header, the element attr must be <code>hx-trigger="my-custom-event from:body"</code> in order to fire.
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body, 
 but with a target filter for a child element
