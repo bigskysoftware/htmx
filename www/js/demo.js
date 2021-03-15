@@ -134,7 +134,7 @@ function showTimelineEntry(id) {
 }
 
 function pushActivityChip(name, id, content) {
-    document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><a onclick="showTimelineEntry('${id}')">${name}</a></li>`);
+    document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><a onclick="showTimelineEntry('${id}')" style="cursor: pointer">${name}</a></li>`);
     if (content.length > 750) {
         content = content.substr(0, 750) + "...";
     }
