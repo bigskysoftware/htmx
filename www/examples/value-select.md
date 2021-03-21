@@ -2,7 +2,7 @@
 layout: demo_layout.njk
 ---
         
-## Value Select
+## Cascading Selects
 
 In this example we show how to make the values in one `select` depend on the value selected in another `select`.
 
