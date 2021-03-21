@@ -61,6 +61,19 @@ describe("Core htmx AJAX headers", function () {
         invokedEvent.should.equal(true);
     })
 
+    it("should handle dot path HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo.bar"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEvent = false;
+        div.addEventListener("foo.bar", function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+    })
+
     it("should handle simple string HX-Trigger response header in different case properly", function () {
         this.server.respondWith("GET", "/test", [200, {"hx-trigger": "foo"}, ""]);
 
