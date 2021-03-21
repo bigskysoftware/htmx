@@ -80,6 +80,23 @@ There are two special events that are non-standard that htmx supports:
 * `load` - triggered on load (useful for lazy-loading something)
 * `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading)
 
+### Triggering via the `HX-Trigger` header 
+
+If you're trying to fire an event from <code>HX-Trigger</code> response  header, you will likely want to 
+use the `from:body` modifier.  E.g. if you send a header like this <code>HX-Trigger: my-custom-event</code> 
+with a response, an element would likely need to look like this:
+
+```html
+  <div hx-get="/example" hx-trigger="my-custom-event from:body">
+    Triggered by HX-Trigger header...
+  </div>
+```
+
+in order to fire.
+  
+This is because the header will likely trigger the event in a different DOM hierarchy than the element that you
+wish to be triggered.  For a similar reason, you will often listen for hot keys from the body.
+
 ### Polling
 
 By using the syntax `every <timing declaration>` you can have an element poll periodically:

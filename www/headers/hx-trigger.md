@@ -27,6 +27,13 @@ document.body.addEventListener("myEvent", function(evt){
 })
 ```
 
+... or like this, if you're trying to trigger some element without using JS code:
+
+```html
+<!-- Since it bubbles up to the <body>, we must use the `from:body` modifier below -->
+<div hx-trigger="myEvent from:body" hx-get="/example"></div>
+```
+
 If you want to pass details along with the event, you can move to JSON for the value of the trigger:
 
 `HX-Trigger: {"showMessage":"Here Is A Message"}`
