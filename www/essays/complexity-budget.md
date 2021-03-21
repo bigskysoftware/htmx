@@ -30,7 +30,7 @@ A good software architect is someone who manages their software budget effective
 ### Complexity Growth
 
 I assert, without evidence, that Stewartian Application Complexity grows roughly geometrically with the size of an 
-application.  By proper factoring by experience developers, this curve can be held down for quite some time, and this 
+application.  By proper factoring by experienced developers, this curve can be held down for quite some time, and this 
 is one major reason why many good developers are so much more productive than others.  
 
 However, this doesn't change the fact that, somewhere out there, there is a Complexity Wall lurking and, if you aren't 
