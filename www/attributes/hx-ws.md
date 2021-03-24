@@ -35,6 +35,12 @@ and send to the nearest enclosing `WebSocket`.
 The serialized values will include a field, `HEADERS`, that includes the headers normally submitted with an htmx
 request.
 
+After an unexpected connection loss due to `Abnormal Closure`, `Service Restart` or `Try Again Later`,
+reconnecting is tried until successful.
+The default reconnection interval is implemented with the full-jitter exponential-backoff algorithm.
+Own implementations can be provided by setting `htmx.config.wsReconnectDelay` to a function with
+`retryCount` as its only parameter.
+
 ### Notes
 
 * `hx-ws` is not inherited

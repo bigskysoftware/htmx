@@ -921,6 +921,7 @@ listed below:
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`
+|  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 
 </div>
 

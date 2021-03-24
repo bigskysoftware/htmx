@@ -48,7 +48,8 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
-                attributesToSettle:["class", "style", "width", "height"]
+                attributesToSettle:["class", "style", "width", "height"],
+                wsReconnectDelay: 'full-jitter'
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -1069,7 +1070,7 @@ return (function () {
             for (var i = 0; i < values.length; i++) {
                 var value = values[i].split(/:(.+)/);
                 if (value[0] === "connect") {
-                    processWebSocketSource(elt, value[1]);
+                    ensureWebSocket(elt, value[1], 0);
                 }
                 if (value[0] === "send") {
                     processWebSocketSend(elt);
@@ -1077,7 +1078,11 @@ return (function () {
             }
         }
 
-        function processWebSocketSource(elt, wssSource) {
+        function ensureWebSocket(elt, wssSource, retryCount) {
+            if (!bodyContains(elt)) {
+                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
+            }
+
             if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
                 var base_part = location.hostname + (location.port ? ':'+location.port: '');
                 if (location.protocol == 'https:') {
@@ -1091,6 +1096,19 @@ return (function () {
                 triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
             };
+
+            socket.onclose = function (e) {
+                if ([1006, 1012, 1013].includes(e.code)) {  // Abnormal Closure/Service Restart/Try Again Later
+                    var delay = getWebSocketReconnectDelay(retryCount);
+                    setTimeout(function() {
+                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
+                    }, delay);
+                }
+            };
+            socket.onopen = function (e) {
+                retryCount = 0;
+            }
+
             getInternalData(elt).webSocket = socket;
             socket.addEventListener('message', function (event) {
                 if (maybeCloseWebSocketSource(elt)) {
@@ -1126,8 +1144,8 @@ return (function () {
                 return getInternalData(parent).webSocket != null;
             });
             if (webSocketSourceElt) {
-                var webSocket = getInternalData(webSocketSourceElt).webSocket;
                 elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
+                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
                     var headers = getHeaders(elt, webSocketSourceElt);
                     var results = getInputValues(elt, 'post');
                     var errors = results.errors;
@@ -1148,6 +1166,19 @@ return (function () {
             } else {
                 triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
             }
+        }
+
+        function getWebSocketReconnectDelay(retryCount) {
+            var delay = htmx.config.wsReconnectDelay;
+            if (typeof delay === 'function') {
+                return delay(retryCount);
+            }
+            if (delay === 'full-jitter') {
+                var exp = Math.min(retryCount, 6);
+                var maxDelay = 1000 * Math.pow(2, exp);
+                return maxDelay * Math.random();
+            }
+            logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
         }
 
         //====================================================================
