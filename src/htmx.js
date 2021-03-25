@@ -937,7 +937,8 @@ return (function () {
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && elt.getAttribute('href') === '#');
+                (elt.tagName === "A" && elt.href && (elt.getAttribute('href') === '#' ||
+                                                     elt.getAttribute('href').indexOf("#") !== 0));
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
