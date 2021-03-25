@@ -154,4 +154,48 @@ describe("Core htmx AJAX headers", function () {
         this.server.respond();
     })
 
+    it("should handle simple string HX-Trigger response header properly w/ outerHTML swap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo"}, ""]);
+
+        var div = make('<div hx-swap="outerHTML" hx-get="/test"></div>');
+        var invokedEvent = false;
+        var handler = htmx.on('foo', function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+        htmx.off('foo', handler);
+    })
+
+
+    it("should handle simple string HX-Trigger-After-Swap response header properly w/ outerHTML swap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Swap": "foo"}, ""]);
+
+        var div = make('<div hx-swap="outerHTML" hx-get="/test"></div>');
+        var invokedEvent = false;
+        var handler = htmx.on('foo', function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+        htmx.off('foo', handler);
+    })
+
+    it("should handle simple string HX-Trigger-After-Settle response header properly w/ outerHTML swap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Settle": "foo"}, ""]);
+
+        var div = make('<div hx-swap="outerHTML" hx-get="/test"></div>');
+        var invokedEvent = false;
+        var handler = htmx.on('foo', function (evt) {
+            invokedEvent = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEvent.should.equal(true);
+        htmx.off('foo', handler);
+    })
+
+
 });

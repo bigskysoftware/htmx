@@ -2272,7 +2272,11 @@ return (function () {
                             }
 
                             if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-                                handleTrigger(xhr, "HX-Trigger-After-Swap", elt);
+                                var finalElt = elt;
+                                if (!bodyContains(elt)) {
+                                    finalElt = getDocument().body;
+                                }
+                                handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
                             }
 
                             var doSettle = function(){
@@ -2294,7 +2298,11 @@ return (function () {
                                 updateScrollState(settleInfo.elts, swapSpec);
 
                                 if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                                    handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
+                                    var finalElt = elt;
+                                    if (!bodyContains(elt)) {
+                                        finalElt = getDocument().body;
+                                    }
+                                    handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                                 }
                             }
 
