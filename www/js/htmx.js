@@ -937,7 +937,8 @@ return (function () {
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && elt.getAttribute('href').indexOf('#') !== 0);
+                (elt.tagName === "A" && elt.href && (elt.getAttribute('href') === '#' ||
+                                                     elt.getAttribute('href').indexOf("#") !== 0));
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
@@ -1516,6 +1517,7 @@ return (function () {
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
+                    triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
                 } else {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
@@ -1526,7 +1528,6 @@ return (function () {
         function restoreHistory(path) {
             saveHistory();
             path = path || location.pathname+location.search;
-            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             var cached = getCachedHistory(path);
             if (cached) {
                 var fragment = makeFragment(cached.content);
@@ -1537,6 +1538,7 @@ return (function () {
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
+                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
                     window.location.reload(true);
@@ -1789,12 +1791,19 @@ return (function () {
             }
         }
 
+        function isAnchorLink(elt) {
+          return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
+        }
+
         function getSwapSpecification(elt) {
             var swapInfo = getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
+            }
+            if (getInternalData(elt).boosted && !isAnchorLink(elt)) {
+              swapSpec["show"] = "top"
             }
             if (swapInfo) {
                 var split = splitOnWhitespace(swapInfo);
@@ -2263,7 +2272,11 @@ return (function () {
                             }
 
                             if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-                                handleTrigger(xhr, "HX-Trigger-After-Swap", elt);
+                                var finalElt = elt;
+                                if (!bodyContains(elt)) {
+                                    finalElt = getDocument().body;
+                                }
+                                handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
                             }
 
                             var doSettle = function(){
@@ -2285,7 +2298,11 @@ return (function () {
                                 updateScrollState(settleInfo.elts, swapSpec);
 
                                 if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                                    handleTrigger(xhr, "HX-Trigger-After-Settle", elt);
+                                    var finalElt = elt;
+                                    if (!bodyContains(elt)) {
+                                        finalElt = getDocument().body;
+                                    }
+                                    handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                                 }
                             }
 
