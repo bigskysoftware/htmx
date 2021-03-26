@@ -106,7 +106,7 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.3.1" integrity="sha384-fIzHaKYVrEFxI4/dWpMzf9tlIUPU0HmW8w/8s4nQHvZmGQhXhnEM6aenC6QFkd7e" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.3.1" integrity="sha384-LqfMp9rzRO06qYdH0QYkCVtBR5YDXUbG8L0foeJKKqtVaP+uDXSTQOvimcxZ148o" crossorigin="anonymous"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
