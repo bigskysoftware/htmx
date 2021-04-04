@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [1.3.3] - 2021-4-5
+
+* Added the [`hx-disabled`](/docs#security) attribute to allow htmx to be turned off for parts of the DOM
+* SSE now uses a full-jitter exponential backoff algorithm on reconnection, using the `htmx.config.wsReconnectDelay`
+  setting
+
 ## [1.3.2] - 2021-3-9
 
 * Bug fixes

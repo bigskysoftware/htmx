@@ -23,6 +23,7 @@ title: </> htmx - Attributes
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
+| [`hx-disable`](/attributes/hx-disable) | disables htmx processing for the given node and any children nodes
 | [`hx-encoding`](/attributes/hx-encoding) | changes the request encoding type
 | [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
 | [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
