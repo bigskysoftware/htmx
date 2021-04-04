@@ -50,7 +50,7 @@ return (function () {
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
                 wsReconnectDelay: 'full-jitter',
-                disableSelector: "[disable-htmx], [data-disable-htmx]",
+                disableSelector: "[hx-disable], [data-hx-disable]",
             },
             parseInterval:parseInterval,
             _:internalEval,

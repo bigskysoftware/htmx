@@ -919,12 +919,12 @@ team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) tha
 have *no effect* on htmx functionality, and is almost certainly not what you (or your security team) intends.
 
 To address this, if you don't want a particular part of the DOM to allow for htmx functionality, you may place a
-`disable-htmx` or `data-disable-htmx` attribute on the enclosing element of that area.  
+`hx-disable` or `data-hx-disable` attribute on the enclosing element of that area.  
 
 This will prevent htmx from executing within that area in the DOM:
 
 ```html
-  <div disable-htmx>
+  <div hx-disable>
     <%= user_content %>
   </div>
 ```
