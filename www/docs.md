@@ -34,6 +34,7 @@ title: </> htmx - Documentation
 * [debugging](#debugging)
 * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
+* [security](#security)
 * [configuring](#config)
 
 </div>
@@ -899,6 +900,37 @@ htmx attributes in it, you would need to add a call to `htmx.process()` like thi
     .then(response => response.text())
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
 ```
+
+## <a name="security"></a>[Security](#security)
+
+htmx allows you to define logic directly in your DOM.  This has a number of advantages, the
+largest being [Locality of Behavior](https://htmx.org/essays/locality-of-behaviour/) making your system 
+more coherent.
+
+One concern with this approach, however, is security.  This is especially the case if you are injecting user-created
+content into your site without any sort of HTML escaping discipline.  
+
+You should, of course, escape all 3rd party untrusted content that is injected into your site to prevent, among other 
+issues, [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). Attributes starting with `hx-` and `data-hx`, 
+as well as inline `<script>` tags should all be filtered.
+
+Note that it is important to understand that htmx does *not* use eval for most of its features. You (or your security 
+team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that disallows inline scripting.  This will 
+have *no effect* on htmx functionality, and is almost certainly not what you (or your security team) intends.
+
+To address this, if you don't want a particular part of the DOM to allow for htmx functionality, you may place a
+`disable-htmx` or `data-disable-htmx` attribute on the enclosing element of that area.  
+
+This will prevent htmx from executing within that area in the DOM:
+
+```html
+  <div disable-htmx>
+    <%= user_content %>
+  </div>
+```
+
+This approach allows you enjoy the benefits of [Locality of Behavior](https://htmx.org/essays/locality-of-behaviour/) 
+while still providing additional safety if your HTML-escaping discipline fails. 
 
 ## <a name="config"></a>[Configuring htmx](#config)
 

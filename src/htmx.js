@@ -49,7 +49,8 @@ return (function () {
                 swappingClass:'htmx-swapping',
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
-                wsReconnectDelay: 'full-jitter'
+                wsReconnectDelay: 'full-jitter',
+                disableSelector: "[disable-htmx], [data-disable-htmx]",
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -1355,6 +1356,9 @@ return (function () {
         }
 
         function initNode(elt) {
+            if (elt.closest && elt.closest(htmx.config.disableSelector)) {
+                return;
+            }
             var nodeData = getInternalData(elt);
             if (!nodeData.initialized) {
                 nodeData.initialized = true;
