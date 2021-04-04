@@ -954,6 +954,7 @@ listed below:
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
+|  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 
 </div>
 
