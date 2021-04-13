@@ -2274,11 +2274,15 @@ return (function () {
                         try {
 
                             var activeElt = document.activeElement;
-                            var selectionInfo = {
-                                elt: activeElt,
-                                start: activeElt ? activeElt.selectionStart : null,
-                                end: activeElt ? activeElt.selectionEnd : null
-                            };
+                            try {
+                                var selectionInfo = {
+                                    elt: activeElt,
+                                    start: activeElt ? activeElt.selectionStart : null,
+                                    end: activeElt ? activeElt.selectionEnd : null
+                                };
+                            } catch (e) {
+                                var selectionInfo = {}; // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                            }
 
                             var settleInfo = makeSettleInfo(target);
                             selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
