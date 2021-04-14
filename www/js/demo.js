@@ -10,7 +10,7 @@ server.autoRespond = true;
 server.autoRespondAfter = 200;
 server.xhr.useFilters = true;
 server.xhr.addFilter(function (method, url, async, username, password){
-    return url === "/";
+    return url === "/" || url.indexOf("http") === 0;
 })
 
 //====================================
