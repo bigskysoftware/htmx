@@ -271,4 +271,14 @@ describe("hx-swap attribute", function(){
         count.should.equal(0);
     });
 
+    it("inherits the parent's hx-swap", function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var parentDiv = make('<div hx-swap="outerHTML"><button hx-get="/test">Click me!</button></div>')
+        var btn = parentDiv.querySelector("button");
+        btn.click();
+        this.server.respond();
+        parentDiv.innerHTML.should.equal('Clicked!');
+    });
+
 })

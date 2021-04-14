@@ -37,4 +37,24 @@ describe("BOOTSTRAP - htmx AJAX Tests", function(){
         this.server.respond();
         div.innerHTML.should.equal("<div id=\"d1\">foo</div>");
     });
+
+    it("inherits the parent's hx-select", function()
+    {
+        this.server.respondWith("GET", "/test", '<section><p id="d2"></p></section>');
+        var parent = make('<div id="parent" hx-select="#d2"><div id="child" hx-get="/test"></div></div>');
+        var child = parent.querySelector('#child');
+        child.click();
+        this.server.respond();
+        child.innerHTML.should.equal('<p id="d2"></p>');
+    });
+
+    it("overrides the parent's hx-select when using an empty hx-select", function()
+    {
+        this.server.respondWith("GET", "/test", '<section><p id="d2"></p></section>');
+        var parent = make('<div id="parent" hx-select="#d2"><div id="child" hx-get="/test" hx-select=""></div></div>');
+        var child = parent.querySelector('#child');
+        child.click();
+        this.server.respond();
+        child.innerHTML.should.equal('<section><p id="d2"></p></section>');
+    });
 })
