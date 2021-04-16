@@ -61,17 +61,17 @@ This anchor tag tells a browser:
 With that in mind, consider the following bit of HTML:
 
 ``` html
-  <div hx-post="/clicked"
+  <button hx-post="/clicked"
        hx-trigger="click"
        hx-target="#parent-div"
        hx-swap="outerHTML">
     Click Me!
-  </div>
+  </button>
 ```
 
 This tells htmx:
 
-> "When a user clicks on this div, issue an HTTP POST request to '/clicked' and use the content from the response
+> "When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
 >  to replace the element with the id `parent-div` in the DOM"
 
 Htmx extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly
