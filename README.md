@@ -60,6 +60,7 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 * if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
 keep the core htmx code tidy
 * development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
+* No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
 ## haiku
 
