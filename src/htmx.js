@@ -2011,6 +2011,29 @@ return (function () {
             }
         }
 
+        function eltsToTriggerOn(elt, hierarchy){
+            var arr = [elt];
+            if (!bodyContains(elt)) {
+                for (var i = 0; i < hierarchy.length; i++) {
+                    var parent = hierarchy[i];
+                    if (bodyContains(parent)) {
+                        arr.push(parent);
+                        break;
+                    }
+                }
+            }
+            return arr;
+        }
+
+        function getPathForElt(elt) {
+            var arr = [];
+            while (elt) {
+                arr.push(elt);
+                elt = elt.parentElement;
+            }
+            return arr;
+        }
+
         function issueAjaxRequest(verb, path, elt, event, etc) {
             var resolve = null;
             var reject = null;
@@ -2158,6 +2181,9 @@ return (function () {
                   path:path, finalPath:finalPathForGet, anchor:anchor
                 }
             };
+
+            var hierarchy = getPathForElt(elt);
+
             xhr.onload = function () {
                 try {
                     responseHandler(elt, responseInfo);
@@ -2166,35 +2192,29 @@ return (function () {
                     throw e;
                 } finally {
                     removeRequestIndicatorClasses(indicators);
-                    var finalElt = elt;
-                    if (!bodyContains(elt)) {
-                        finalElt = getInternalData(target).replacedWith || target;
-                    }
-                    triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                    triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
+                    forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
+                        triggerEvent(elt, 'htmx:afterRequest', responseInfo);
+                        triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
+                    })
                     maybeCall(resolve);
                     endRequestLock();
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
-                var finalElt = elt;
-                if (!bodyContains(elt)) {
-                    finalElt = getInternalData(target).replacedWith || target;
-                }
-                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
+                forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
+                    triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                    triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
+                })
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
-                var finalElt = elt;
-                if (!bodyContains(elt)) {
-                    finalElt = getInternalData(target).replacedWith || target;
-                }
-                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
+                forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
+                    triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                    triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
+                })
                 maybeCall(reject);
                 endRequestLock();
             }
@@ -2274,14 +2294,15 @@ return (function () {
                         try {
 
                             var activeElt = document.activeElement;
+                            var selectionInfo = {};
                             try {
-                                var selectionInfo = {
+                                selectionInfo = {
                                     elt: activeElt,
                                     start: activeElt ? activeElt.selectionStart : null,
                                     end: activeElt ? activeElt.selectionEnd : null
                                 };
                             } catch (e) {
-                                var selectionInfo = {}; // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                                 // safari issue - see https://github.com/microsoft/playwright/issues/5894
                             }
 
                             var settleInfo = makeSettleInfo(target);
