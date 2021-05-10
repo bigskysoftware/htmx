@@ -469,5 +469,80 @@ describe("hx-trigger attribute", function(){
         byId("d1").innerText.should.equal("bar");
     });
 
+    it('throttle prevents multiple requests from happening', function(done)
+    {
+        var requests = 0;
+        var server = this.server;
+        server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click throttle:10ms' hx-get='/test'></div>");
+
+        div.click();
+        server.respond();
+
+        div.click();
+        server.respond();
+
+        div.click();
+        server.respond();
+
+        div.click();
+        server.respond();
+
+        // should not have been replaced by click
+        div.innerText.should.equal("Requests: 1");
+
+        setTimeout(function () {
+            div.click();
+            server.respond();
+            div.innerText.should.equal("Requests: 2");
+
+            div.click();
+            server.respond();
+            div.innerText.should.equal("Requests: 2");
+
+            done();
+        }, 50);
+    });
+
+    it('delay delays the request', function(done)
+    {
+        var requests = 0;
+        var server = this.server;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click delay:10ms' hx-get='/test'></div>");
+
+        div.click();
+        this.server.respond();
+
+        div.click();
+        this.server.respond();
+
+        div.click();
+        this.server.respond();
+
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("");
+
+        setTimeout(function () {
+            server.respond();
+            div.innerText.should.equal("Requests: 1");
+
+            div.click();
+            server.respond();
+            div.innerText.should.equal("Requests: 1");
+
+            done();
+        }, 50);
+    });
+
 
 })
