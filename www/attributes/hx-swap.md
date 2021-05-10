@@ -16,6 +16,7 @@ The possible values of this attribute are:
 * `afterbegin` - Insert the response before the first child of the target element
 * `beforeend` - Insert the response after the last child of the target element
 * `afterend` - Insert the response after the target element
+* `none`- Does not append content from response (out of band items will still be processed).
 
 These options are based on standard DOM naming and the 
 [`Element.insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
