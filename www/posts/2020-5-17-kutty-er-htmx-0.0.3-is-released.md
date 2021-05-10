@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-tags: post
+tags: posts
 title: kutty, er, htmx 0.0.3 has been released!
 date: 2020-05-17
 ---

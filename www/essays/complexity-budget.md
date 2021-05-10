@@ -1,5 +1,6 @@
 ---
 layout: layout.njk
+tags: posts
 title: Complexity Budget
 ---
 
