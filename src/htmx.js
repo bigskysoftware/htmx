@@ -49,6 +49,7 @@ return (function () {
                 swappingClass:'htmx-swapping',
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
+                withCredentials:false,
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
             },
@@ -581,7 +582,7 @@ return (function () {
 
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
-                return swapInnerHTML(target, fragment);
+                return swapInnerHTML(target, fragment, settleInfo);
             } else {
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
@@ -1016,10 +1017,12 @@ return (function () {
                     }
 
                     if (triggerSpec.throttle) {
-                        elementData.throttle = setTimeout(function(){
+                        if(!elementData.throttle) {
                             issueAjaxRequest(verb, path, elt, evt);
-                            elementData.throttle = null;
-                        }, triggerSpec.throttle);
+                            elementData.throttle = setTimeout(function(){
+                                elementData.throttle = null;
+                            }, triggerSpec.throttle);
+                        }
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
                             issueAjaxRequest(verb, path, elt, evt);
@@ -2145,6 +2148,7 @@ return (function () {
             }
 
             xhr.overrideMimeType("text/html");
+            xhr.withCredentials = htmx.config.withCredentials;
 
             // request headers
             for (var header in headers) {
