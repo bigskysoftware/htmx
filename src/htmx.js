@@ -945,7 +945,7 @@ return (function () {
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
-            return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && evt.ctrlKey;
+            return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && (evt.ctrlKey || evt.metaKey);
         }
 
         function maybeFilterEvent(triggerSpec, evt) {
