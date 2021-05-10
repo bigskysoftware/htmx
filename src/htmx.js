@@ -49,6 +49,7 @@ return (function () {
                 swappingClass:'htmx-swapping',
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
+                withCredentials:false,
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
             },
@@ -2145,6 +2146,7 @@ return (function () {
             }
 
             xhr.overrideMimeType("text/html");
+            xhr.withCredentials = htmx.config.withCredentials;
 
             // request headers
             for (var header in headers) {
