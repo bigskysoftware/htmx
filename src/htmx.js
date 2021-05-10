@@ -1017,10 +1017,12 @@ return (function () {
                     }
 
                     if (triggerSpec.throttle) {
-                        elementData.throttle = setTimeout(function(){
+                        if(!elementData.throttle) {
                             issueAjaxRequest(verb, path, elt, evt);
-                            elementData.throttle = null;
-                        }, triggerSpec.throttle);
+                            elementData.throttle = setTimeout(function(){
+                                elementData.throttle = null;
+                            }, triggerSpec.throttle);
+                        }
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
                             issueAjaxRequest(verb, path, elt, evt);
