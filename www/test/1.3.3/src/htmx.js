@@ -49,6 +49,7 @@ return (function () {
                 swappingClass:'htmx-swapping',
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
+                withCredentials:false,
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
             },
@@ -581,7 +582,7 @@ return (function () {
 
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
-                return swapInnerHTML(target, fragment);
+                return swapInnerHTML(target, fragment, settleInfo);
             } else {
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
@@ -944,7 +945,7 @@ return (function () {
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
-            return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && evt.ctrlKey;
+            return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && (evt.ctrlKey || evt.metaKey);
         }
 
         function maybeFilterEvent(triggerSpec, evt) {
@@ -1016,10 +1017,12 @@ return (function () {
                     }
 
                     if (triggerSpec.throttle) {
-                        elementData.throttle = setTimeout(function(){
+                        if(!elementData.throttle) {
                             issueAjaxRequest(verb, path, elt, evt);
-                            elementData.throttle = null;
-                        }, triggerSpec.throttle);
+                            elementData.throttle = setTimeout(function(){
+                                elementData.throttle = null;
+                            }, triggerSpec.throttle);
+                        }
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
                             issueAjaxRequest(verb, path, elt, evt);
@@ -2056,10 +2059,11 @@ return (function () {
                 var promptResponse = prompt(promptQuestion);
                 // prompt returns null if cancelled and empty string if accepted with no entry
                 if (promptResponse === null ||
-                    !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target}))
+                    !triggerEvent(elt, 'htmx:prompt', {prompt: promptResponse, target:target})) {
                     maybeCall(resolve);
                     endRequestLock();
                     return promise;
+                }
             }
 
             var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
@@ -2145,6 +2149,7 @@ return (function () {
             }
 
             xhr.overrideMimeType("text/html");
+            xhr.withCredentials = htmx.config.withCredentials;
 
             // request headers
             for (var header in headers) {
@@ -2274,11 +2279,15 @@ return (function () {
                         try {
 
                             var activeElt = document.activeElement;
-                            var selectionInfo = {
-                                elt: activeElt,
-                                start: activeElt ? activeElt.selectionStart : null,
-                                end: activeElt ? activeElt.selectionEnd : null
-                            };
+                            try {
+                                var selectionInfo = {
+                                    elt: activeElt,
+                                    start: activeElt ? activeElt.selectionStart : null,
+                                    end: activeElt ? activeElt.selectionEnd : null
+                                };
+                            } catch (e) {
+                                var selectionInfo = {}; // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                            }
 
                             var settleInfo = makeSettleInfo(target);
                             selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
