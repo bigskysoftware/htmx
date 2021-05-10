@@ -582,7 +582,7 @@ return (function () {
 
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
-                return swapInnerHTML(target, fragment);
+                return swapInnerHTML(target, fragment, settleInfo);
             } else {
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
