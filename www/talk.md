@@ -23,6 +23,10 @@ title: </> htmx - high power tools for html
 <div class="row">
 <div class="1 col">
 
+## Atom Feed (Announcements & Essays)
+
+[feed.xml](/feed.xml)
+
 ## Announcements
 
 <ul> 
