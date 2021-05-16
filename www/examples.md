@@ -20,7 +20,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Infinite Scroll](/examples/infinite-scroll) | Demonstrates infinite scrolling of a page
 | [Active Search](/examples/active-search) | Demonstrates the active search box pattern
 | [Progress Bar](/examples/progress-bar) | Demonstrates a job-runner like progress bar
-| [Value Select](/examples/value-select) | Demonstrates making the values of a select dependent on another select
+| [Cascading Select](/examples/cascading-select) | Demonstrates making the values of a select dependent on another select
 | [Animations](/examples/animations) | Demonstrates various animation techniques
 | [File Upload](/examples/file-upload) | Demonstrates how to upload a file via ajax with a progress bar
 | [Dialogs - Browser](/examples/dialogs) | Demonstrates the prompt and confirm dialogs
