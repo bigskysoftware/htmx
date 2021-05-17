@@ -1074,7 +1074,15 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.revealed && isScrolledIntoView(elt)) {
                 nodeData.revealed = true;
-                issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                if (nodeData.initialized) {
+                    issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                } else {
+                    // if the node isn't initialized, wait for it before triggering the request
+                    elt.addEventListener("htmx:afterProcessNode",
+                        function () {
+                            issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                        }, {once: true});
+                }
             }
         }
 
