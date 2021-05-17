@@ -789,6 +789,33 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal("htmx rocks!");
     });
 
+    it('svg title tags do not update title', function()
+    {
+        var originalTitle = window.document.title
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "<svg><title>" + originalTitle + "UPDATE" + "</title></svg>Clicked!");
+        });
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Clicked!");
+        window.document.title.should.equal(originalTitle);
+    });
+
+    it('title tags before svg title tags do update title', function()
+    {
+        var originalTitle = window.document.title
+        var newTitle = originalTitle + "!!!";
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "<title>" + newTitle + "</title><svg><title>foo</title></svg>Clicked!");
+        });
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Clicked!");
+        window.document.title.should.equal(newTitle);
+    });
+
     it('title update does not URL escapte', function()
     {
         this.server.respondWith("GET", "/test", function (xhr) {

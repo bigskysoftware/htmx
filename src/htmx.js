@@ -692,9 +692,13 @@ return (function () {
 
         var TITLE_FINDER = /<title>([\s\S]+?)<\/title>/im;
         function findTitle(content) {
-            var result = TITLE_FINDER.exec(content);
-            if (result) {
-                return result[1];
+            if(content.indexOf('<title>') > -1 &&
+                (content.indexOf('<svg>') == -1 ||
+                    content.indexOf('<title>') < content.indexOf('<svg>'))) {
+                var result = TITLE_FINDER.exec(content);
+                if (result) {
+                    return result[1];
+                }
             }
         }
 
