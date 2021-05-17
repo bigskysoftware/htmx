@@ -596,7 +596,7 @@ htmx supports some htmx-specific response headers:
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/headers/hx-trigger).
 
-### <a name="request-operations"></a> [Request Order of Operations](#request-opeartions)
+### <a name="request-operations"></a> [Request Order of Operations](#request-operations)
 
 The order of operations in a htmx request are:
 
