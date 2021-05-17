@@ -930,7 +930,7 @@ return (function () {
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
-                    if (verb === true) {
+                    if (verb === "get") {
                         nodeData.pushURL = true;
                     }
                     path = getRawAttribute(elt, 'action');
