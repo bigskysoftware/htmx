@@ -41,7 +41,7 @@ return (function () {
                 refreshOnHistoryMiss:false,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
-                defaultSettleDelay:100,
+                defaultSettleDelay:20,
                 includeIndicatorStyles:true,
                 indicatorClass:'htmx-indicator',
                 requestClass:'htmx-request',
@@ -2014,21 +2014,7 @@ return (function () {
             }
         }
 
-        function eltsToTriggerOn(elt, hierarchy){
-            var arr = [elt];
-            if (!bodyContains(elt)) {
-                for (var i = 0; i < hierarchy.length; i++) {
-                    var parent = hierarchy[i];
-                    if (bodyContains(parent)) {
-                        arr.push(parent);
-                        break;
-                    }
-                }
-            }
-            return arr;
-        }
-
-        function getPathForElt(elt) {
+        function hierarchyForElt(elt) {
             var arr = [];
             while (elt) {
                 arr.push(elt);
@@ -2187,39 +2173,46 @@ return (function () {
                 }
             };
 
-            var hierarchy = getPathForElt(elt);
-
             xhr.onload = function () {
                 try {
+                    var hierarchy = hierarchyForElt(elt);
                     responseHandler(elt, responseInfo);
+                    removeRequestIndicatorClasses(indicators);
+                    triggerEvent(elt, 'htmx:afterRequest', responseInfo);
+                    triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
+                    // if the body no longer contains the element, trigger the even on the closest parent
+                    // remaining in the DOM
+                    if (!bodyContains(elt)) {
+                        var secondaryTriggerElt = null;
+                        while (hierarchy.length > 0 && secondaryTriggerElt == null) {
+                            var parentEltInHierarchy = hierarchy.shift();
+                            if (bodyContains(parentEltInHierarchy)) {
+                                secondaryTriggerElt = parentEltInHierarchy;
+                            }
+                        }
+                        if (secondaryTriggerElt) {
+                            triggerEvent(secondaryTriggerElt, 'htmx:afterRequest', responseInfo);
+                            triggerEvent(secondaryTriggerElt, 'htmx:afterOnLoad', responseInfo);
+                        }
+                    }
+                    maybeCall(resolve);
+                    endRequestLock();
                 } catch (e) {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
-                } finally {
-                    removeRequestIndicatorClasses(indicators);
-                    forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
-                        triggerEvent(elt, 'htmx:afterRequest', responseInfo);
-                        triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
-                    })
-                    maybeCall(resolve);
-                    endRequestLock();
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
-                forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
-                    triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                    triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
-                })
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
-                forEach(eltsToTriggerOn(elt, hierarchy), function(elt){
-                    triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                    triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
-                })
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
@@ -2243,7 +2236,7 @@ return (function () {
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
-            return promise;
+            return promise;25
         }
 
         function handleAjaxResponse(elt, responseInfo) {
