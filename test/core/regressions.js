@@ -151,4 +151,25 @@ describe("Core htmx Regression Tests", function(){
         input.value.should.equal(""); // form should be reset
     })
 
+    it('supports image maps', function() {
+        this.server.respondWith("GET", "/test", "triggered");
+
+        make('<div>' +
+            '    <div id="d1"></div>' +
+            '    <img src="img/bars.svg" usemap="#workmap" width="400" height="379">' +
+            '' +
+            '    <map name="workmap">' +
+            '        <area shape="rect" coords="34,44,270,350" alt="Computer" hx-get="/test" hx-target="#d1">' +
+            '    </map>' +
+            '</div>');
+
+        var div1 = byId("d1");
+        var area = document.getElementsByTagName('area')[0];
+
+        area.click();
+        this.server.respond();
+
+        div1.innerHTML.should.equal("triggered");
+    })
+
 })
