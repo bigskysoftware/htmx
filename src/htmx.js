@@ -878,6 +878,9 @@ return (function () {
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                                } else if ((token === "root" || token === "threshold") && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else {
                                     triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
                                 }
@@ -1324,6 +1327,25 @@ return (function () {
                         } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
+                        } else if (triggerSpec.trigger === "intersect") {
+                            var observerOptions = {};
+                            if (triggerSpec.root) {
+                                observerOptions.root = querySelectorExt(triggerSpec.root)
+                            }
+                            if (triggerSpec.threshold) {
+                                observerOptions.threshold = parseFloat(triggerSpec.threshold);
+                            }
+                            var observer = new IntersectionObserver(function (entries) {
+                                for (var i = 0; i < entries.length; i++) {
+                                    var entry = entries[i];
+                                    if (entry.isIntersecting) {
+                                        triggerEvent(elt, "intersect");
+                                        break;
+                                    }
+                                }
+                            }, observerOptions);
+                            observer.observe(elt);
+                            addEventListener(elt, verb, path, nodeData, triggerSpec);
                         } else if (triggerSpec.trigger === "load") {
                             loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                         } else if (triggerSpec.pollInterval) {
