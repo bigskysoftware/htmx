@@ -35,6 +35,7 @@ return (function () {
             removeExtension : removeExtension,
             logAll : logAll,
             logger : null,
+            useTemplateFragments: false,
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
@@ -158,25 +159,30 @@ return (function () {
         }
 
         function makeFragment(resp) {
-            var startTag = getStartTag(resp);
-            switch (startTag) {
-                case "thead":
-                case "tbody":
-                case "tfoot":
-                case "colgroup":
-                case "caption":
-                    return parseHTML("<table>" + resp + "</table>", 1);
-                case "col":
-                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
-                case "tr":
-                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
-                case "td":
-                case "th":
-                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
-                case "script":
-                    return parseHTML("<div>" + resp + "</div>", 1);
-                default:
-                    return parseHTML(resp, 0);
+            if (htmx.config.useTemplateFragments) {
+                var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
+                return documentFragment.querySelector('template').content;
+            } else {
+                var startTag = getStartTag(resp);
+                switch (startTag) {
+                    case "thead":
+                    case "tbody":
+                    case "tfoot":
+                    case "colgroup":
+                    case "caption":
+                        return parseHTML("<table>" + resp + "</table>", 1);
+                    case "col":
+                        return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
+                    case "tr":
+                        return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
+                    case "td":
+                    case "th":
+                        return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                    case "script":
+                        return parseHTML("<div>" + resp + "</div>", 1);
+                    default:
+                        return parseHTML(resp, 0);
+                }
             }
         }
 
