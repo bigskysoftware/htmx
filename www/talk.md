@@ -7,13 +7,14 @@ title: </> htmx - high power tools for html
 
 [htmx discord server](/discord)
 
-## Features & Bug Reports
+## Feature Requests & Bug Reports
 
 [https://github.com/bigskysoftware/htmx/issues](https://github.com/bigskysoftware/htmx/issues)
 
 ## Social
 
 [@htmx_org on Twitter](https://twitter.com/htmx_org)
+
 [#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx)
 
 ## Sponsor
@@ -38,6 +39,15 @@ title: </> htmx - high power tools for html
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
+
+## Podcasts
+
+* [Devmode.fm - Dynamic HTML with htmx](https://devmode.fm/episodes/dynamic-html-with-htmx)
+* [JS Party - Less JavaScript more htmx](https://changelog.com/jsparty/171)
+* *Coming Soon* [Django Chat](#)
+* *Coming Soon* [Python Bytes](#)
+
+[Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
 
 </div>
 </div>
