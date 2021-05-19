@@ -90,7 +90,7 @@ And they become available in the `model` select.
     var dataStore = function(){
       var data = {
         audi : { models : ["A1", "A4", "A6"] },
-        toyota : { models : ["Landcruiser", "Landcruiser", "Landcruiser"] },
+        toyota : { models : ["Landcruiser", "Tacoma", "Yaris"] },
         bmw : { models : ["325i", "325ix", "X5"] }
       };
       return {
