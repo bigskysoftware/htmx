@@ -884,6 +884,9 @@ return (function () {
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                                } else if (token === "queue" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else if ((token === "root" || token === "threshold") && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
@@ -998,6 +1001,7 @@ return (function () {
                     return;
                 }
                 var eventData = getInternalData(evt);
+                eventData.triggerSpec = triggerSpec;
                 if (eventData.handledFor == null) {
                     eventData.handledFor = [];
                 }
@@ -2092,18 +2096,37 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
-                eltData.queuedRequest = function(){
-                    issueAjaxRequest(verb, path, elt, event)
-                };
+                var queueStrategy = 'last';
+                var eventData = getInternalData(event);
+                if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                    queueStrategy = eventData.triggerSpec.queue;
+                }
+                if (eltData.queuedRequests == null) {
+                    eltData.queuedRequests = [];
+                }
+                if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                } else if (queueStrategy === "all") {
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                } else if (queueStrategy === "last") {
+                    eltData.queuedRequests = []; // dump existing queue
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                }
                 return;
             } else {
                 eltData.requestInFlight = true;
             }
             var endRequestLock = function(){
                 eltData.requestInFlight = false
-                var queuedRequest = eltData.queuedRequest;
-                eltData.queuedRequest = null;
-                if (queuedRequest) {
+                if (eltData.queuedRequests != null &&
+                    eltData.queuedRequests.length > 0) {
+                    var queuedRequest = eltData.queuedRequests.shift();
                     queuedRequest();
                 }
             }
