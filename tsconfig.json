@@ -1,12 +1,16 @@
 {
     "compilerOptions": {
-        "target": "es3",
+        "target": "es5",
         "module": "amd",
         "allowJs": true,
         "checkJs": true,
         "noEmit": true,
-        "baseUrl": "./src"
+        "baseUrl": "./src",
+        "lib": [
+            "ES6",
+            "dom"
+        ]
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/htmx.js"],
     "verbose": true
 }

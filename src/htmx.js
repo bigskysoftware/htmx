@@ -22,6 +22,9 @@ return (function () {
             find : find,
             findAll : findAll,
             closest : closest,
+            /**
+             * @param {HTMLElement} elt
+             */
             values : function(elt, type){
                 var inputValues = getInputValues(elt, type || "post");
                 return inputValues.values;
@@ -55,9 +58,16 @@ return (function () {
             },
             parseInterval:parseInterval,
             _:internalEval,
+            /**
+             * @param {string} url
+             * @returns {EventSource}
+             */
             createEventSource: function(url){
                 return new EventSource(url, {withCredentials:true})
             },
+            /**
+             * @param {string} url
+             */
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             }
@@ -71,7 +81,10 @@ return (function () {
         //====================================================================
         // Utilities
         //====================================================================
-
+    /**
+       @param {string} str
+       @returns {{undefined|number}}
+       */
 		function parseInterval(str) {
 			if (str == undefined)  {
 				return undefined
@@ -82,9 +95,13 @@ return (function () {
 			if (str.slice(-1) == "s") {
 				return (parseFloat(str.slice(0,-1)) * 1000) || undefined
 			}
+
 			return parseFloat(str) || undefined
         }
-
+    /**
+     * @param {HTMLElement} elt
+     * @param {string} name
+     */
         function getRawAttribute(elt, name) {
             return elt.getAttribute && elt.getAttribute(name);
         }
@@ -94,15 +111,22 @@ return (function () {
             return elt.hasAttribute && (elt.hasAttribute(qualifiedName) ||
                 elt.hasAttribute("data-" + qualifiedName));
         }
-
+    /**
+     * @param {HTMLElement}  elt
+     * @param {string} qualifiedName
+     */
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
-
+    /**
+     * @param {HTMLElement}  elt
+     */
         function parentElt(elt) {
             return elt.parentElement;
         }
-
+    /**
+     * @return {HTMLDocument}
+     */
         function getDocument() {
             return document;
         }
@@ -2013,7 +2037,10 @@ return (function () {
                 return issueAjaxRequest(verb, path);
             }
         }
-
+    /**
+     * @param {string}  verb
+     * @param {string} path 
+     */
         function issueAjaxRequest(verb, path, elt, event, etc) {
             var resolve = null;
             var reject = null;
