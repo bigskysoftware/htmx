@@ -19,7 +19,6 @@
 * The `throttle` option on `hx-trigger` does not delay the initial request any longer
 * The `meta` key is ignored on boosted links
 * `hx-swap` now supports the `none` option
-* Added the [`hx-disabled`](/docs#security) attribute to allow htmx to be turned off for parts of the DOM
 * Safari text selection bug - <https://github.com/bigskysoftware/htmx/issues/438>
   
 ## [1.3.3] - 2021-4-5
