@@ -12,6 +12,40 @@ describe("Core htmx internals Tests", function() {
         htmx._("makeFragment")("<tr></tr>").tagName.should.equal("TBODY");
     })
 
+    it("makeFragment works with template wrapping", function(){
+        htmx.config.useTemplateFragments = true;
+        try {
+            htmx._("makeFragment")("<html></html>").children.length.should.equal(0);
+            htmx._("makeFragment")("<html><body></body></html>").children.length.should.equal(0);
+
+            var fragment = htmx._("makeFragment")("<td></td>");
+            fragment.firstElementChild.tagName.should.equal("TD");
+
+            fragment = htmx._("makeFragment")("<thead></thead>");
+            fragment.firstElementChild.tagName.should.equal("THEAD");
+
+            fragment = htmx._("makeFragment")("<col></col>");
+            fragment.firstElementChild.tagName.should.equal("COL");
+
+            fragment = htmx._("makeFragment")("<tr></tr>");
+            fragment.firstElementChild.tagName.should.equal("TR");
+
+        } finally {
+            htmx.config.useTemplateFragments = false;
+        }
+    })
+
+    it("makeFragment works with template wrapping and funky combos", function(){
+        htmx.config.useTemplateFragments = true;
+        try {
+            var fragment = htmx._("makeFragment")("<td></td><div></div>");
+            fragment.children[0].tagName.should.equal("TD");
+            fragment.children[1].tagName.should.equal("DIV");
+        } finally {
+            htmx.config.useTemplateFragments = false;
+        }
+    })
+
     it("set header works with non-ASCII values", function(){
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/dummy");

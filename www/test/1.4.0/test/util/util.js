@@ -99,3 +99,8 @@ function getParameters(xhr) {
         return parseParams(xhr.requestBody);
     }
 }
+
+function log(val) {
+    console.log(val);
+    return val;
+}

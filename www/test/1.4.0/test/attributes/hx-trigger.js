@@ -544,5 +544,102 @@ describe("hx-trigger attribute", function(){
         }, 50);
     });
 
+    it('requests are queued with last one winning by default', function()
+    {
+        var requests = 0;
+        var server = this.server;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click' hx-get='/test'></div>");
+
+        div.click();
+        div.click();
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 2");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 2");
+    });
+
+    it('queue:all queues all requests', function()
+    {
+        var requests = 0;
+        var server = this.server;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click queue:all' hx-get='/test'></div>");
+
+        div.click();
+        div.click();
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 2");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 3");
+    });
+
+
+    it('queue:first queues first request', function()
+    {
+        var requests = 0;
+        var server = this.server;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click queue:first' hx-get='/test'></div>");
+
+        div.click();
+        div.click();
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 2");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 2");
+    });
+
+    it('queue:none queues no requests', function()
+    {
+        var requests = 0;
+        var server = this.server;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        this.server.respondWith("GET", "/bar", "bar");
+        var div = make("<div hx-trigger='click queue:none' hx-get='/test'></div>");
+
+        div.click();
+        div.click();
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+
+        this.server.respond();
+        div.innerText.should.equal("Requests: 1");
+    });
+
 
 })

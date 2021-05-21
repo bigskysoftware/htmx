@@ -35,13 +35,14 @@ return (function () {
             removeExtension : removeExtension,
             logAll : logAll,
             logger : null,
+            useTemplateFragments: false,
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
                 refreshOnHistoryMiss:false,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
-                defaultSettleDelay:100,
+                defaultSettleDelay:20,
                 includeIndicatorStyles:true,
                 indicatorClass:'htmx-indicator',
                 requestClass:'htmx-request',
@@ -158,25 +159,30 @@ return (function () {
         }
 
         function makeFragment(resp) {
-            var startTag = getStartTag(resp);
-            switch (startTag) {
-                case "thead":
-                case "tbody":
-                case "tfoot":
-                case "colgroup":
-                case "caption":
-                    return parseHTML("<table>" + resp + "</table>", 1);
-                case "col":
-                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
-                case "tr":
-                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
-                case "td":
-                case "th":
-                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
-                case "script":
-                    return parseHTML("<div>" + resp + "</div>", 1);
-                default:
-                    return parseHTML(resp, 0);
+            if (htmx.config.useTemplateFragments) {
+                var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
+                return documentFragment.querySelector('template').content;
+            } else {
+                var startTag = getStartTag(resp);
+                switch (startTag) {
+                    case "thead":
+                    case "tbody":
+                    case "tfoot":
+                    case "colgroup":
+                    case "caption":
+                        return parseHTML("<table>" + resp + "</table>", 1);
+                    case "col":
+                        return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
+                    case "tr":
+                        return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
+                    case "td":
+                    case "th":
+                        return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                    case "script":
+                        return parseHTML("<div>" + resp + "</div>", 1);
+                    default:
+                        return parseHTML(resp, 0);
+                }
             }
         }
 
@@ -692,9 +698,13 @@ return (function () {
 
         var TITLE_FINDER = /<title>([\s\S]+?)<\/title>/im;
         function findTitle(content) {
-            var result = TITLE_FINDER.exec(content);
-            if (result) {
-                return result[1];
+            if(content.indexOf('<title>') > -1 &&
+                (content.indexOf('<svg>') == -1 ||
+                    content.indexOf('<title>') < content.indexOf('<svg>'))) {
+                var result = TITLE_FINDER.exec(content);
+                if (result) {
+                    return result[1];
+                }
             }
         }
 
@@ -874,6 +884,12 @@ return (function () {
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                                } else if (token === "queue" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                } else if ((token === "root" || token === "threshold") && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else {
                                     triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
                                 }
@@ -926,9 +942,13 @@ return (function () {
                 if (elt.tagName === "A") {
                     verb = "get";
                     path = getRawAttribute(elt, 'href');
+                    nodeData.pushURL = true;
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
+                    if (verb === "get") {
+                        nodeData.pushURL = true;
+                    }
                     path = getRawAttribute(elt, 'action');
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
@@ -981,6 +1001,7 @@ return (function () {
                     return;
                 }
                 var eventData = getInternalData(evt);
+                eventData.triggerSpec = triggerSpec;
                 if (eventData.handledFor == null) {
                     eventData.handledFor = [];
                 }
@@ -1066,7 +1087,15 @@ return (function () {
             var nodeData = getInternalData(elt);
             if (!nodeData.revealed && isScrolledIntoView(elt)) {
                 nodeData.revealed = true;
-                issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                if (nodeData.initialized) {
+                    issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                } else {
+                    // if the node isn't initialized, wait for it before triggering the request
+                    elt.addEventListener("htmx:afterProcessNode",
+                        function () {
+                            issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                        }, {once: true});
+                }
             }
         }
 
@@ -1308,6 +1337,25 @@ return (function () {
                         } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
+                        } else if (triggerSpec.trigger === "intersect") {
+                            var observerOptions = {};
+                            if (triggerSpec.root) {
+                                observerOptions.root = querySelectorExt(triggerSpec.root)
+                            }
+                            if (triggerSpec.threshold) {
+                                observerOptions.threshold = parseFloat(triggerSpec.threshold);
+                            }
+                            var observer = new IntersectionObserver(function (entries) {
+                                for (var i = 0; i < entries.length; i++) {
+                                    var entry = entries[i];
+                                    if (entry.isIntersecting) {
+                                        triggerEvent(elt, "intersect");
+                                        break;
+                                    }
+                                }
+                            }, observerOptions);
+                            observer.observe(elt);
+                            addEventListener(elt, verb, path, nodeData, triggerSpec);
                         } else if (triggerSpec.trigger === "load") {
                             loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                         } else if (triggerSpec.pollInterval) {
@@ -1589,7 +1637,7 @@ return (function () {
         function shouldPush(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
             return (pushUrl && pushUrl !== "false") ||
-                (elt.tagName === "A" && getInternalData(elt).boosted);
+                (getInternalData(elt).boosted && getInternalData(elt).pushURL);
         }
 
         function getPushUrl(elt) {
@@ -2014,6 +2062,15 @@ return (function () {
             }
         }
 
+        function hierarchyForElt(elt) {
+            var arr = [];
+            while (elt) {
+                arr.push(elt);
+                elt = elt.parentElement;
+            }
+            return arr;
+        }
+
         function issueAjaxRequest(verb, path, elt, event, etc) {
             var resolve = null;
             var reject = null;
@@ -2039,18 +2096,37 @@ return (function () {
             }
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
-                eltData.queuedRequest = function(){
-                    issueAjaxRequest(verb, path, elt, event)
-                };
+                var queueStrategy = 'last';
+                var eventData = getInternalData(event);
+                if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                    queueStrategy = eventData.triggerSpec.queue;
+                }
+                if (eltData.queuedRequests == null) {
+                    eltData.queuedRequests = [];
+                }
+                if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                } else if (queueStrategy === "all") {
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                } else if (queueStrategy === "last") {
+                    eltData.queuedRequests = []; // dump existing queue
+                    eltData.queuedRequests.push(function () {
+                        issueAjaxRequest(verb, path, elt, event)
+                    });
+                }
                 return;
             } else {
                 eltData.requestInFlight = true;
             }
             var endRequestLock = function(){
                 eltData.requestInFlight = false
-                var queuedRequest = eltData.queuedRequest;
-                eltData.queuedRequest = null;
-                if (queuedRequest) {
+                if (eltData.queuedRequests != null &&
+                    eltData.queuedRequests.length > 0) {
+                    var queuedRequest = eltData.queuedRequests.shift();
                     queuedRequest();
                 }
             }
@@ -2163,43 +2239,47 @@ return (function () {
                   path:path, finalPath:finalPathForGet, anchor:anchor
                 }
             };
+
             xhr.onload = function () {
                 try {
+                    var hierarchy = hierarchyForElt(elt);
                     responseHandler(elt, responseInfo);
+                    removeRequestIndicatorClasses(indicators);
+                    triggerEvent(elt, 'htmx:afterRequest', responseInfo);
+                    triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
+                    // if the body no longer contains the element, trigger the even on the closest parent
+                    // remaining in the DOM
+                    if (!bodyContains(elt)) {
+                        var secondaryTriggerElt = null;
+                        while (hierarchy.length > 0 && secondaryTriggerElt == null) {
+                            var parentEltInHierarchy = hierarchy.shift();
+                            if (bodyContains(parentEltInHierarchy)) {
+                                secondaryTriggerElt = parentEltInHierarchy;
+                            }
+                        }
+                        if (secondaryTriggerElt) {
+                            triggerEvent(secondaryTriggerElt, 'htmx:afterRequest', responseInfo);
+                            triggerEvent(secondaryTriggerElt, 'htmx:afterOnLoad', responseInfo);
+                        }
+                    }
+                    maybeCall(resolve);
+                    endRequestLock();
                 } catch (e) {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
-                } finally {
-                    removeRequestIndicatorClasses(indicators);
-                    var finalElt = elt;
-                    if (!bodyContains(elt)) {
-                        finalElt = getInternalData(target).replacedWith || target;
-                    }
-                    triggerEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                    triggerEvent(finalElt, 'htmx:afterOnLoad', responseInfo);
-                    maybeCall(resolve);
-                    endRequestLock();
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
-                var finalElt = elt;
-                if (!bodyContains(elt)) {
-                    finalElt = getInternalData(target).replacedWith || target;
-                }
-                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(finalElt, 'htmx:sendError', responseInfo);
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
-                var finalElt = elt;
-                if (!bodyContains(elt)) {
-                    finalElt = getInternalData(target).replacedWith || target;
-                }
-                triggerErrorEvent(finalElt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(finalElt, 'htmx:sendAbort', responseInfo);
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
@@ -2223,7 +2303,7 @@ return (function () {
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
-            return promise;
+            return promise;25
         }
 
         function handleAjaxResponse(elt, responseInfo) {
@@ -2279,14 +2359,15 @@ return (function () {
                         try {
 
                             var activeElt = document.activeElement;
+                            var selectionInfo = {};
                             try {
-                                var selectionInfo = {
+                                selectionInfo = {
                                     elt: activeElt,
                                     start: activeElt ? activeElt.selectionStart : null,
                                     end: activeElt ? activeElt.selectionEnd : null
                                 };
                             } catch (e) {
-                                var selectionInfo = {}; // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                                 // safari issue - see https://github.com/microsoft/playwright/issues/5894
                             }
 
                             var settleInfo = makeSettleInfo(target);
