@@ -98,6 +98,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 * `settlingClass:'htmx-settling'` - string: the class to place on target elements when htmx is in the settling phase
 * `swappingClass:'htmx-swapping'` - string: the class to place on target elements when htmx is in the swapping phase
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility
+* `htmx.config.useTemplateFraments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `wsReconnectDelay:full-jitter` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
 

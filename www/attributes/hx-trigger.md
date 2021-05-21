@@ -63,6 +63,11 @@ triggers from elements that might not be in the DOM at the point of initializati
 but with a target filter for a child element
 * `consume` - if this option is included the event will not trigger any other htmx requests on parents (or on elements
   listening on parents)
+* `queue:<queue option>` - determines how events are queued if an event occurs while a request for another event is in flight.  Options are:
+  * `first` - queue the first event
+  * `last` - queue the last event (default)
+  * `all` - queue all events (issue a request for each event)
+  * `none` - do not queue new events
 
 Here is an example of a search box that searches on `keyup`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:
