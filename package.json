@@ -22,6 +22,8 @@
   "unpkg": "dist/htmx.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
+    "eslint": "eslint src/htmx.js",
+    "eslint-fix": "eslint src/htmx.js --fix",
     "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
@@ -34,9 +36,13 @@
     "@11ty/eleventy": "^0.10.0",
     "chai": "^4.3.0",
     "eleventy-plugin-sass": "^1.1.1",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "fs-extra": "^9.1.0",
     "mocha": "^7.2.0",
     "mocha-chrome": "^2.2.0",
+    "prettier": "2.3.0",
     "sinon": "^9.2.4",
     "uglify-js": "^3.12.6"
   }
