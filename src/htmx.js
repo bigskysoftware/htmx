@@ -1,7 +1,9 @@
 //AMD insanity
 (function (root, factory) {
+    //@ts-ignore
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
+        //@ts-ignore
         define([], factory);
     } else {
         // Browser globals
@@ -150,9 +152,11 @@ return (function () {
             var responseNode = responseDoc.body;
             while (depth > 0) {
                 depth--;
+                // @ts-ignore
                 responseNode = responseNode.firstChild;
             }
             if (responseNode == null) {
+                // @ts-ignore
                 responseNode = getDocument().createDocumentFragment();
             }
             return responseNode;
@@ -1205,6 +1209,7 @@ return (function () {
         function getWebSocketReconnectDelay(retryCount) {
             var delay = htmx.config.wsReconnectDelay;
             if (typeof delay === 'function') {
+                // @ts-ignore
                 return delay(retryCount);
             }
             if (delay === 'full-jitter') {
@@ -1598,9 +1603,11 @@ return (function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
                     var fragment = makeFragment(this.response);
+                    // @ts-ignore
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
+                    // @ts-ignore
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
@@ -2369,7 +2376,9 @@ return (function () {
                             try {
                                 selectionInfo = {
                                     elt: activeElt,
+                                    // @ts-ignore
                                     start: activeElt ? activeElt.selectionStart : null,
+                                    // @ts-ignore
                                     end: activeElt ? activeElt.selectionEnd : null
                                 };
                             } catch (e) {
@@ -2384,7 +2393,9 @@ return (function () {
                                 selectionInfo.elt.id) {
                                 var newActiveElt = document.getElementById(selectionInfo.elt.id);
                                 if (newActiveElt) {
+                                    // @ts-ignore
                                     if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                        // @ts-ignore
                                         newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                     }
                                     newActiveElt.focus();
@@ -2536,6 +2547,7 @@ return (function () {
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
+                // @ts-ignore
                 return parseJSON(element.content);
             } else {
                 return null;
