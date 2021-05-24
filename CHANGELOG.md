@@ -8,6 +8,7 @@
 * The `htmx.config.useTemplateFraments` option was added, allowing you to use HTML template tags for parsing content
   from the server.  This allows you to use Out of Band content when returning things like table rows, but it is not
   IE11 compatible.
+* The `defaultSettleDelay` was dropped to 20ms from 100ms
 * Introduced a new synthetic event, [intersect](/docs#pecial-events) that allows you to trigger when an item is scrolled into view
   as specified by the `IntersectionObserver` API
 * Fixed timing issue that caused exceptions in the `reveal` logic when scrolling at incredible speeds - <https://github.com/bigskysoftware/htmx/issues/463>

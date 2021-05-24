@@ -32,7 +32,7 @@ This event is triggered after htmx has initialized a DOM node.  It can be useful
 
 This event is triggered after an AJAX request has finished either in the case of a successful request (although
 one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
-can be paried with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.
+can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.
 
 ##### Details
 

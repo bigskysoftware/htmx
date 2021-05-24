@@ -366,5 +366,83 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("adding an error in htmx:configRequest stops the request", function () {
+        try {
+            var handler = htmx.on("htmx:configRequest", function (evt) {
+                evt.detail.errors.push("An error");
+            });
+            var request = false;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                request = true;
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(request, false);
+        } finally {
+            htmx.off("htmx:configRequest", handler);
+        }
+    });
+
+    it("preventDefault() in htmx:configRequest stops the request", function () {
+        try {
+            var handler = htmx.on("htmx:configRequest", function (evt) {
+                evt.detail.errors.push("An error");
+            });
+            var request = false;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                request = true;
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(request, false);
+        } finally {
+            htmx.off("htmx:configRequest", handler);
+        }
+    });
+
+    it("preventDefault() in the htmx:beforeRequest event cancels the request", function () {
+        try {
+            var handler = htmx.on("htmx:beforeRequest", function (evt) {
+                evt.preventDefault();
+            });
+            var request = false;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                request = true;
+                xhr.respond(200, {}, "<button>Bar</button>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(request, false);
+        } finally {
+            htmx.off("htmx:beforeRequest", handler);
+        }
+    });
+
+    it("preventDefault() in the htmx:beforeOnLoad event cancels the swap", function () {
+        try {
+            var handler = htmx.on("htmx:beforeOnLoad", function (evt) {
+                evt.preventDefault();
+            });
+            var request = false;
+            this.server.respondWith("POST", "/test", function (xhr) {
+                request = true;
+                xhr.respond(200, {}, "Bar");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(request, true);
+            div.innerText.should.equal("Foo");
+        } finally {
+            htmx.off("htmx:beforeOnLoad", handler);
+        }
+    });
+
+
 });
 

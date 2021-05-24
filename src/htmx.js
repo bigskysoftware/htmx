@@ -2187,7 +2187,12 @@ return (function () {
                 triggeringEvent:event
             };
 
-            if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)) return endRequestLock();
+            if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)){
+                maybeCall(resolve);
+                endRequestLock();
+                return promise;
+            }
+
             // copy out in case the object was overwritten
             path = requestConfig.path;
             verb = requestConfig.verb;
