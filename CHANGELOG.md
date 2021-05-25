@@ -5,7 +5,7 @@
 
 * Added the `queue` option to the [hx-trigger](/attributes/hx-trigger) attribute, allowing you to specify how events
   should be queued when they are received with a request in flight
-* The `htmx.config.useTemplateFraments` option was added, allowing you to use HTML template tags for parsing content
+* The `htmx.config.useTemplateFragments` option was added, allowing you to use HTML template tags for parsing content
   from the server.  This allows you to use Out of Band content when returning things like table rows, but it is not
   IE11 compatible.
 * The `defaultSettleDelay` was dropped to 20ms from 100ms
