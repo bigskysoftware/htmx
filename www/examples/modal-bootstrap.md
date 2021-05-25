@@ -85,7 +85,7 @@ function closeModal() {
 		document.getElementById("modal-backdrop").classList.remove("show")
 
 		setTimeout(function() {
-			document.getElementById("show-modals-here").innerHTML = ""
+			document.getElementById("modals-here").innerHTML = ""
 		}, 200)
 	}
 
@@ -115,7 +115,7 @@ function closeModal() {
 				<p>Modal body text goes here.</p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+				<button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
 			</div>
 		</div>
 	</div>
