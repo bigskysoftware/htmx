@@ -19,6 +19,7 @@
 * The `htmx.config.withCredentials` option was added, to send credentials with ajax requests (default is `false`)
 * The `throttle` option on `hx-trigger` does not delay the initial request any longer
 * The `meta` key is ignored on boosted links
+* `<script>` tags are now evaluated in the global scope
 * `hx-swap` now supports the `none` option
 * Safari text selection bug - <https://github.com/bigskysoftware/htmx/issues/438>
   

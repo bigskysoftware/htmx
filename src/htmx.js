@@ -1374,7 +1374,8 @@ return (function () {
             if (script.type === "text/javascript" || script.type === "") {
                 try {
                     maybeEval(script, function () {
-                        Function(script.innerText)()
+                        // wtf - https://stackoverflow.com/questions/9107240/1-evalthis-vs-evalthis-in-javascript
+                        (1, eval)(script.innerText);
                     });
                 } catch (e) {
                     logError(e);
