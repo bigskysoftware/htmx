@@ -579,6 +579,19 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
+    it('script nodes can define global functions', function()
+    {
+        try {
+            this.server.respondWith("GET", "/test", "<script type='text/javascript'>function foo() { return 42 }</script>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            foo().should.equal(42);
+        } finally {
+            delete window.foo;
+        }
+    });
+
     it('child script nodes evaluate when children', function()
     {
         var globalWasCalled = false;
@@ -613,7 +626,7 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
-    it('child script nodes evaluate when not explicity marked javascript', function()
+    it('child script nodes evaluate when not explicitly marked javascript', function()
     {
         var globalWasCalled = false;
         window.callGlobal = function() {
