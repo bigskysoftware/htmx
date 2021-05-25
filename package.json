@@ -33,12 +33,13 @@
   "devDependencies": {
     "@11ty/eleventy": "^0.10.0",
     "@11ty/eleventy-plugin-rss": "^1.1.1",
-    "chai": "^4.3.0",
-    "eleventy-plugin-sass": "^1.1.1",
+    "chai": "^4.3.4",
+    "eleventy-plugin-sass": "^1.2.0",
     "fs-extra": "^9.1.0",
     "mocha": "^7.2.0",
     "mocha-chrome": "^2.2.0",
     "sinon": "^9.2.4",
-    "uglify-js": "^3.12.6"
+    "uglify-js": "^3.13.7",
+    "sass": "^1.34.0"
   }
 }

@@ -31,7 +31,7 @@ title: </> htmx - high power tools for html
 ## Announcements
 
 <ul> 
-{%- for post in collections.post reversed -%}
+{%- for post in collections.announcements reversed -%}
   <li><a href="{{ post.url  }}">{{ post.date | date: "%Y-%m-%d"}} - {{ post.data.title }} </a>🔥🔥</li>
 {%- endfor -%}
 </ul>
@@ -48,6 +48,7 @@ title: </> htmx - high power tools for html
 
 * [Devmode.fm - Dynamic HTML with htmx](https://devmode.fm/episodes/dynamic-html-with-htmx)
 * [JS Party - Less JavaScript more htmx](https://changelog.com/jsparty/171)
+* [Software Breakthroughs for the 21s Century](https://www.youtube.com/watch?v=O4ZFIx1ckSg)
 * *Coming Soon* [Django Chat](#)
 * *Coming Soon* [Python Bytes](#)
 

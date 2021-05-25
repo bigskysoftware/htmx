@@ -1,5 +1,5 @@
-const pluginSass = require("eleventy-plugin-sass");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
+const pluginSass = require("eleventy-plugin-sass");
 
 module.exports = function(config) {
     config.addPassthroughCopy("js");
@@ -7,6 +7,6 @@ module.exports = function(config) {
     config.addPassthroughCopy("img");
     config.addPassthroughCopy("test");
     config.addPassthroughCopy("_redirects");
-    config.addPlugin(pluginSass, {});
     config.addPlugin(pluginRss);
+    config.addPlugin(pluginSass, {});
 }
