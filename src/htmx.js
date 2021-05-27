@@ -35,7 +35,6 @@ return (function () {
             removeExtension : removeExtension,
             logAll : logAll,
             logger : null,
-            useTemplateFragments: false,
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
@@ -52,7 +51,8 @@ return (function () {
                 attributesToSettle:['class', 'style', 'width', 'height'],
                 withCredentials:false,
                 wsReconnectDelay: 'full-jitter',
-                disableSelector: '[hx-disable], [data-hx-disable]',
+                disableSelector: "[hx-disable], [data-hx-disable]",
+                useTemplateFragments: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
