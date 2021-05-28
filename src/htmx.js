@@ -54,6 +54,9 @@ return (function () {
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
             },
+            getTriggerSpecs: getTriggerSpecs,
+            addEventListenerFn: addEventListenerFn,
+            getInternalData: getInternalData,
             parseInterval:parseInterval,
             _:internalEval,
             createEventSource: function(url){
@@ -977,8 +980,16 @@ return (function () {
             }
             return false;
         }
+        
 
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
+          var fn = function(evt){
+            issueAjaxRequest(verb, path, elt, evt);
+          };
+          return addEventListenerFn(elt, fn, nodeData, triggerSpec, explicitCancel);
+        }
+
+        function addEventListenerFn(elt, fn, nodeData, triggerSpec, explicitCancel){
             var eltToListenOn = elt;
             if (triggerSpec.from) {
                 eltToListenOn = find(triggerSpec.from);
@@ -1035,17 +1046,17 @@ return (function () {
 
                     if (triggerSpec.throttle) {
                         if(!elementData.throttle) {
-                            issueAjaxRequest(verb, path, elt, evt);
+                            fn(evt);
                             elementData.throttle = setTimeout(function(){
                                 elementData.throttle = null;
                             }, triggerSpec.throttle);
                         }
                     } else if (triggerSpec.delay) {
                         elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(verb, path, elt, evt);
+                          fn(evt);
                         }, triggerSpec.delay);
                     } else {
-                        issueAjaxRequest(verb, path, elt, evt);
+                      fn(evt);
                     }
                 }
             };

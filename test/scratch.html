@@ -20,6 +20,7 @@
 <body style="padding:20px;font-family: sans-serif">
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../src/htmx.js"></script>
+<script src="../src/ext/actions.js"></script>
 <script src="util/util.js"></script>
 <script src="util/scratch_server.js"></script>
 
@@ -31,11 +32,16 @@
 
     htmx.logAll();
 
+    function logAction(){
+      console.log("Hello World")
+    }
+
     this.server.respondWith("GET", "/test", function(xhr){
         xhr.respond(201, {}, '<form><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1" value="blahblah"/></form>')
     });
 
-    make('<form hx-target="this"><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1"/></form>');
+    //make('<form hx-target="this"><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1"/></form>');
+  make('<form hx-ext="actions"><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-action="logAction()" id="i1"/></form>');
 </script>
 
 
