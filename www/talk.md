@@ -15,7 +15,7 @@ title: </> htmx - high power tools for html
 
 [@htmx_org on Twitter](https://twitter.com/htmx_org)
 
-[#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx)
+[#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx) Please send  us the URL via Discord after creating the question.
 
 ## Sponsor
 
