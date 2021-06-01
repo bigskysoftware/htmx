@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "1.4.0",
+  "version": "1.4.1",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"

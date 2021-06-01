@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.4.1] - 2021-6-1
+
+* typo fix
+
 ## [1.4.0] - 2021-5-25
 
 * Added the `queue` option to the [hx-trigger](/attributes/hx-trigger) attribute, allowing you to specify how events
