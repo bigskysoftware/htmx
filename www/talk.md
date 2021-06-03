@@ -17,6 +17,8 @@ title: </> htmx - high power tools for html
 
 [#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx) Please send  us the URL via Discord after creating the question.
 
+[r/htmx on reddit](https://www.reddit.com/r/htmx/)
+
 ## Sponsor
 
 <iframe src="https://github.com/sponsors/bigskysoftware/card" title="Sponsor bigskysoftware" height="225" width="600" style="border: 0;"></iframe>
