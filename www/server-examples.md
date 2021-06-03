@@ -10,70 +10,70 @@ most server-side frameworks are already pretty well set up to integrate with htm
 rendering HTML long before before JSON became popular.
 
 Different frameworks and platforms may offer alternative systems for installing htmx - for example, in the Java / JVM
-ecosystem, [WebJars](<https://www.webjars.org) allows the use of npm packages with popular Java build tools such as 
+ecosystem, [WebJars](https://www.webjars.org) allows the use of npm packages with popular Java build tools such as 
 Maven and Gradle.
 
 These examples may make it a bit easier to get started using htmx with your platform of choice.
 
 ## General Resources
 
-<https://github.com/rajasegar/awesome-htmx>
+- <https://github.com/rajasegar/awesome-htmx>
 
 ## JavaScript
 
 ### Node.js
 
-<https://github.com/rajasegar/todomvc-htmx>
-<https://github.com/TomekKosakowski/express-ejs-htmx-playground>
-<https://github.com/rajasegar/htmx-twitter-clone>
-<https://github.com/rajasegar/htmx-trello>
+- <https://github.com/rajasegar/todomvc-htmx>
+- <https://github.com/TomekKosakowski/express-ejs-htmx-playground>
+- <https://github.com/rajasegar/htmx-twitter-clone>
+- <https://github.com/rajasegar/htmx-trello>
 
 ### hapi
 
-<https://github.com/DamianStanger/hapi-htmx>
+- <https://github.com/DamianStanger/hapi-htmx>
 
 ## Python
 
 ### Django
 
-<https://github.com/adamchainz/django-htmx>
+- <https://github.com/adamchainz/django-htmx>
 
 ### Flask
 
-<https://github.com/cscortes/htmxflask>
+- <https://github.com/cscortes/htmxflask>
 
 ### py4web
 
-<https://github.com/jpsteil/py4web_htmx_demo>
+- <https://github.com/jpsteil/py4web_htmx_demo>
 
 ### jinja
 
-<https://github.com/renceInbox/fastapi-todo>
+- <https://github.com/renceInbox/fastapi-todo>
 
 ## Java
 
 ### Spring Boot
 
-<https://github.com/wiverson/htmx-demo>
+- <https://github.com/wiverson/htmx-demo>
 
 ### Quarkus
 
-<https://github.com/derkoe/quarkus-htmx-todos>
+- <https://github.com/derkoe/quarkus-htmx-todos>
 
 ## C#
 
 ### ASP.NET Core
 
-<https://github.com/jerriepelser-blog/htmx-with-aspnet-core>
+- <https://github.com/jerriepelser-blog/htmx-with-aspnet-core>
 
 ## Prolog
 
-<https://github.com/Anniepoo/declswiplweb>
+- <https://github.com/Anniepoo/declswiplweb>
 
 ## Clojure
 
-<https://github.com/whamtet/ctmx>
-<https://github.com/jcpsantiago/htmx-clj-dashboard>
+- <https://github.com/whamtet/ctmx>
+- <https://github.com/jcpsantiago/htmx-clj-dashboard>
 
 ## Ruby
 
@@ -83,10 +83,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Sinatra
 
-<https://github.com/libsyz/htmx-to-do-app>
-<https://github.com/beechnut/pokebutt-htmx>
+- <https://github.com/libsyz/htmx-to-do-app>
+- <https://github.com/beechnut/pokebutt-htmx>
 
 ## Julia
 
-<https://github.com/clarkevans/TodoMVC.jl>
-
+- <https://github.com/clarkevans/TodoMVC.jl>
