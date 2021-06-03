@@ -17,7 +17,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## General Resources
 
-<<https://github.com/rajasegar/awesome-htmx>
+<https://github.com/rajasegar/awesome-htmx>
 
 ## JavaScript
 
