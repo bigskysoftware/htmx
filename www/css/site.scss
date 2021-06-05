@@ -101,11 +101,11 @@ p {
 pre[class*="language-"] {
     font-size: 16px;
     margin-top: 24px !important;
-    margin-bottom: 24px !important;    
+    margin-bottom: 24px !important;
 }
 
 @media(min-width:45rem) {
-    pre[class*="language-"] {       
+    pre[class*="language-"] {
         margin-left: 48px !important;
         margin-right: 48px !important;
     }
@@ -143,6 +143,7 @@ a {
         list-style: none;
         padding-left: 12px;
     }
+    margin-bottom: 1em;
 }
 
 .hamburger {
@@ -195,7 +196,7 @@ h4 {
         display: none !important;
     }
     .hamburger {
-        display: inline-block;
+        // display: inline-block;
         float: right;
     }
     .nav {
@@ -329,25 +330,25 @@ h1,h2,h3,h4{
 .nav ul{
     padding-left: 0;
     li ul {
-        padding-left:12px;       
+        padding-left:12px;
     }
 }
 
 
 @media(min-width:45em) {
 
-    // Menu 
+    // Menu
     .menu,
     .navigation > div{
         display:flex;
         align-items:center;
-    }    
+    }
     .navigation{
        flex:1;
        display:flex;
        justify-content: space-between;
        padding-left: calc(1em + 1.5vw);
-    }    
+    }
     .navigation-items > *:not(:last-child){
         margin-right: calc(.5em + .7vw);
     }
@@ -357,9 +358,9 @@ h1,h2,h3,h4{
         a{
             margin:0 calc(.5em + .7vw);
         }
-        
+
     }
-    
+
     // Content
     .content .col:not(.nav) {
         padding-left: calc(1em + 1.5vw);
@@ -367,18 +368,23 @@ h1,h2,h3,h4{
     .content .nav > p,
     .content .nav #contents{
         position: sticky;
-       
+
     }
-   
+
     .content .nav #contents{
         top: 3.5em;
     }
+    .content .nav #contents > ul {
+        max-height: calc(100vh - 5rem);
+        overflow-y: scroll;
+    }
+
     .content .nav > p
     {
         position: sticky;
         top: 2vh;
     }
-    
+
 }
 
 @media(max-width:45rem) {
