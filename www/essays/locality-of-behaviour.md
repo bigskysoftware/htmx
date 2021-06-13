@@ -21,7 +21,7 @@ a code element obvious on inspection.
 Consider two different implementations of an AJAX request in HTML, the first in [htmx](https://htmx.org):
 
 ```html
-<div hx-get="/clicked">Click Me</div>
+<button hx-get="/clicked">Click Me</button>
 ```
 
 and the second in [jQuery](https://jquery.com/):
@@ -29,13 +29,13 @@ and the second in [jQuery](https://jquery.com/):
 ```javascript
   $("#d1").on("click", function(){
     $.ajax({
-         ...
+         /* AJAX options... */
     });
   });
 ```
 
 ```html
-<div id="d1">Click Me</div>
+<button id="d1">Click Me</button>
 ```
 
 In the former, the behaviour of the `div` element is obvious on inspection, satisfying the LoB principle.
