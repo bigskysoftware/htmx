@@ -24,10 +24,11 @@ describe("Core htmx Regression Tests", function(){
             "<div id='message2' hx-swap-oob='true'>I came from a message2 oob swap I should be third  but I am in the wrong spot</div>" +
             "I'm page2 content (non-swap) I should be first")
 
-        var h1 = make("<h1 hx-get='/index2a.php' hx-target='#page2' hx-trigger='click'>Kutty CLICK ME</h1>" +
+        var h1 = make("" +
             "<div id='page2' ></div>" +
             "<div id='message'></div>" +
-            "<div id='message2'></div>")
+            "<div id='message2'></div>" +
+        "<h1 hx-get='/index2a.php' hx-target='#page2' hx-trigger='click'>Kutty CLICK ME</h1>")
         h1.click();
         this.server.respond();
         htmx.find("#page2").innerHTML.should.equal("I'm page2 content (non-swap) I should be first")
@@ -125,6 +126,29 @@ describe("Core htmx Regression Tests", function(){
 
         div2.innerHTML.should.equal("triggered");
         div1.innerHTML.should.equal("triggered");
+    })
+
+    it('a form can reset based on the htmx:afterRequest event', function() {
+        this.server.respondWith("POST", "/test", "posted");
+        //htmx.logAll();
+
+        var form = make('<div id="d1"></div><form _="on htmx:afterRequest reset() me" hx-post="/test" hx-target="#d1">' +
+            '  <input type="text" name="input" id="i1"/>' +
+            '  <input type="submit" id="s1"/>' +
+            '</form>');
+        htmx.trigger(form, "htmx:load"); // have to manually trigger the load event for non-AJAX dynamic content
+
+        var div1 = byId("d1");
+        var input = byId("i1");
+        input.value = "foo";
+        var submit = byId("s1");
+
+        input.value.should.equal("foo");
+        submit.click();
+        this.server.respond();
+
+        div1.innerHTML.should.equal("posted");
+        input.value.should.equal(""); // form should be reset
     })
 
 })

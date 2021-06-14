@@ -5,17 +5,18 @@ function byId(id) {
 }
 
 function make(htmlStr) {
-    var makeFn = function(){
-        var  range = document.createRange();
-        var  fragment = range.createContextualFragment(htmlStr);
-        var  wa = getWorkArea();
-        for (var  i = fragment.childNodes.length - 1; i >= 0; i--) {
-            var child = fragment.childNodes[i];
+    var makeFn = function () {
+        var range = document.createRange();
+        var fragment = range.createContextualFragment(htmlStr);
+        var wa = getWorkArea();
+        var child = null;
+        while(fragment.children.length > 0) {
+            child = fragment.children[0];
             wa.appendChild(child);
             htmx.process(child);
         }
-        return wa.lastChild;
-    }
+        return child; // return last added element
+    };
     if (getWorkArea()) {
         return makeFn();
     } else {
