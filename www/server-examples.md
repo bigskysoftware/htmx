@@ -38,6 +38,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/adamchainz/django-htmx>
 
+### FastAPI
+
+- <https://github.com/renceInbox/fastapi-todo>
+
 ### Flask
 
 - <https://github.com/cscortes/htmxflask>
@@ -45,10 +49,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
-
-### jinja
-
-- <https://github.com/renceInbox/fastapi-todo>
 
 ## Java
 
