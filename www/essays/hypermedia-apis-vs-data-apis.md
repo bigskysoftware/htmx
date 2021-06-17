@@ -7,28 +7,30 @@ title: Hypermedia APIs vs. Data APIs
 ## Hypermedia APIs vs. Data APIs
 
 A *hypermedia* API is an API that returns [hypermedia](https://en.wikipedia.org/wiki/Hypermedia), typically HTML over
-HTTP.  This style of API is distinguished from data APIs.  
+HTTP.  This style of API is distinguished from data APIs that do not return a hypermedia.  The most familiar form of this
+latter style of API today is the ubiquitous JSON API.  
 
-These two API categories have different design needs and should use different design constraints when being constructed.
+These two different types of API have distinctly different design needs and, therefore, should use different design 
+constraints and adopt different goals when being created.
 
 Hypermedia APIs:
  
- * Will be trivially [REST-ful](https://en.wikipedia.org/wiki/Representational_state_transfer)
+ * Will be trivially [REST-ful](https://en.wikipedia.org/wiki/Representational_state_transfer), since they are simply what [Roy Fielding was describing](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm).
  * Should be driven by the needs of the underlying hypermedia application
- * May change dramatically without versioning information, because of the [self describing messages](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) inherent to them 
+ * May change dramatically *without* versioning information, because hypermedia utilizes [self describing messages](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) 
  * Should be passed directly to humans, to maximize the flexibility of the system
  
  Data APIs, on the other hand:
  
  * Will not benefit dramatically from REST-fulness, beyond perhaps [Level 2 of the Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model)
- * Should strive for regularity and expressivity due to the arbitrary data needs of consumers
- * Should be versioned and very stable within a particular version
+ * Should strive for both regularity and expressivity due to the arbitrary data needs of consumers
+ * Should be versioned and should be very stable within a particular version of the API
  * Should be consumed by code, processed and then potentially presented to a human
  
  ## APIs Today
  
  Today, APIs are typically thought of in terms of JSON-over-HTTP.  These are almost always data-oriented APIs rather
- than hypermedia APIs, although occasionally hypermedia concepts are incorporated into them (typically badly and to
+ than hypermedia APIs, although occasionally hypermedia concepts are incorporated into them (typically to
  little benefit of the end users.)  There has been a [movement away](https://graphql.org/) from REST-ful APIs as the industry has begun
  to [recognize the problems with fitting data APIs into the REST-ful model.](https://kieranpotts.com/rebranding-rest/)
  
