@@ -7,17 +7,18 @@ title: Hypermedia APIs vs. Data APIs
 ## Hypermedia APIs vs. Data APIs
 
 A *hypermedia* API is an API that returns [hypermedia](https://en.wikipedia.org/wiki/Hypermedia), typically HTML over
-HTTP.  This style of API is distinguished from data-oriented APIs.  These two categories have different design needs and 
-should be considered separately.
+HTTP.  This style of API is distinguished from data APIs.  
+
+These two API categories have different design needs and should use different design constraints when being constructed.
 
 Hypermedia APIs:
  
- * Will be [REST-ful](https://en.wikipedia.org/wiki/Representational_state_transfer) almost trivially
+ * Will be trivially [REST-ful](https://en.wikipedia.org/wiki/Representational_state_transfer)
  * Should be driven by the needs of the underlying hypermedia application
- * May change dramatically without versioning information, because of the [self describing messages](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) inherent to the 
+ * May change dramatically without versioning information, because of the [self describing messages](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) inherent to them 
  * Should be passed directly to humans, to maximize the flexibility of the system
  
- Data-Oriented APIs, on the other hand:
+ Data APIs, on the other hand:
  
  * Will not benefit dramatically from REST-fulness, beyond perhaps [Level 2 of the Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model)
  * Should strive for regularity and expressivity due to the arbitrary data needs of consumers
@@ -73,7 +74,7 @@ with HTML that looks something like this:
 ```
 
 So far, so standard web 1.0 application, and thus far the data-API and hypermedia API needs haven't diverged very much,
-although note that the hypermedia API is *self describing* and could be modified (say, changing the URL for creating
+although it is worth noteing that the hypermedia API is *self describing* and could be modified (say, changing the URL for creating
 contacts) without breaking the hypermedia application.
 
 Now we get to the part where htmx is needed: polling the server for updates to the table occasionally.  To do this
@@ -98,7 +99,7 @@ and then add a poll trigger to the table:
  </div>
  ```
 Here we see the hypermedia API and data API begin to diverge.  This new end point is driven entirely by hypermedia
-needs, not data model needs.  It can go away if the hypermedia needs of the application change, its form may change 
+needs, not data model needs.  This end point can go away if the hypermedia needs of the application change; its form may change 
 dramatically and so on, which is entirely acceptable since the system is self-describing.
 
 Since we have updated the HTML to use htmx for polling, we may as well make the form use htmx as well for a better
@@ -121,14 +122,15 @@ we think in terms of what we are trying to achieve with our application.
 
 ## API Churn
 
-The crux point of this essay is this: API churn is fine in a hypermedia system because *the messages in a hypermedia system are self-describing*.
-We can thrash the API around and the application doesn't break: human users simply see the new hypermedia and select what
+The crux point of this short essay is this: API churn is fine in a hypermedia system because *the messages in a hypermedia system are self-describing*.
+We can thrash the API around and the application doesn't break: human users simply see the new hypermedia (HTML) and select what
 actions they want to do.
 
-Humans, compared with computers, are [good at deciding what to do](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
+Humans, compared with computers, are [good at deciding what to do](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
+and are reasonably OK with change.
 
-This is in contrast with data apis.  Data apis cannot be modified without breaking client code and thus must be much
-more disciplined in their changes.  They also face pressure to provide higher levels of expressiveness so that they
+This is in contrast with data APIs.  Data APIs cannot be modified without breaking client code and thus must be much
+more disciplined in their changes.  Data APIs also face pressure to provide higher levels of expressiveness so that they
 can satisfy more client needs without modification.  
 
 *NB: This latter situation is especially dangerous when these data APIs are 
@@ -139,4 +141,4 @@ a [whitelist](https://twitter.com/AdamChainz/status/1392162996844212232) to deal
 # Conclusion
 
 When designing a hypermedia API, you should use a different design mindset than you use for data APIs.  Churn is
-less of a concern, and providing the end points you need for a good hypermedia experience should be your primary goal.
+much less of a concern, and providing the end points you need for a good hypermedia experience should be your primary goal.
