@@ -135,10 +135,13 @@ This is in contrast with data APIs.  Data APIs cannot be modified without breaki
 more disciplined in their changes.  Data APIs also face pressure to provide higher levels of expressiveness so that they
 can satisfy more client needs without modification.  
 
-*NB: This latter situation is especially dangerous when these data APIs are 
-consumed in a browser, because any data-api expressiveness you give to a front-end developer, you also are giving to
-a potentially hostile user, who can fire up a console and begin hammering away at your API.  Apparently, facebook uses
-a [whitelist](https://twitter.com/AdamChainz/status/1392162996844212232) to deal with this.  Do you?*
+<aside>
+
+*This latter situation is especially dangerous when these data APIs are consumed in a browser, because any data-api expressiveness you give to a front-end developer, you also are giving to a potentially hostile user, who can fire up a console and begin hammering away at your API.  Apparently, facebook uses a [whitelist](https://twitter.com/AdamChainz/status/1392162996844212232) to deal with this.*
+
+*Do you?*
+
+</aside>
 
 # Conclusion
 
