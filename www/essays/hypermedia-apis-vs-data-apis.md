@@ -49,13 +49,13 @@ Let's consider this UI in terms of a base url, `/contacts`
 The first thing we will need is an end point to retrieve the form and the table of current contacts.  This will
 live at `/contacts`, giving:
 
-```
+```text
   GET /contacts -> render the form & contacts table
 ```
 
 Next, we want to be able to create contacts.  This would be done via a POST to the same URL:
 
-```
+```text
   GET /contacts -> render the form & contacts table
   POST /contacts -> create the new contant, redirect to GET /contacts
 ```
@@ -80,7 +80,7 @@ contacts) without breaking the hypermedia application.
 Now we get to the part where htmx is needed: polling the server for updates to the table occasionally.  To do this
  we will add a new end point, `/contacts/table`, which renders only the table of contacts:
  
-```
+```text
   GET /contacts -> render the form & contacts table
   POST /contacts -> create the new contant, redirect to GET /contacts
   GET /contacts/table -> render the contacts table
