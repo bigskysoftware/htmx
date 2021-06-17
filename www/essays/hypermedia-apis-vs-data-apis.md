@@ -137,7 +137,7 @@ can satisfy more client needs without modification.
 
 <aside>
 
-*This latter situation is especially dangerous when these data APIs are consumed in a browser, because any data-api expressiveness available to a front-end developer is also available to a potentially hostile user, who can fire up a console and begin hammering away at the API.  Apparently, facebook uses a [whitelist](https://twitter.com/AdamChainz/status/1392162996844212232) to deal with this.*
+*This latter situation is [especially dangerous](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html) when these data APIs are consumed in a browser, because any data-api expressiveness available to a front-end developer is also available to a potentially hostile user, who can fire up a console and begin hammering away at the API.  Apparently, facebook uses a [whitelist](https://twitter.com/AdamChainz/status/1392162996844212232) to deal with this.*
 
 *Do you?*
 
