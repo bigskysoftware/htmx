@@ -1,4 +1,4 @@
-describe("protocol handler support", function() {
+describe("scheme handler support", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -8,18 +8,18 @@ describe("protocol handler support", function() {
         clearWorkArea();
     });
 
-    it('handles generic protocol properly', function () {
-        htmx.config.protocolHandlers['foo'] = function(){
+    it('handles generic scheme properly', function () {
+        htmx.config.schemeHandlers['foo'] = function(){
             window.foo = "bar";
         }
         var div = make('<div hx-post="foo:blah blah blah">click me</div>');
         div.click();
         window.foo.should.equal("bar");
         delete window.foo
-        delete htmx.config.protocolHandlers['foo']
+        delete htmx.config.schemeHandlers['foo']
     })
 
-    it('handles javascript protocol properly', function () {
+    it('handles javascript scheme properly', function () {
         var div = make('<div hx-post="javascript:window.foo = \'bar\'">click me</div>');
         div.click();
         window.foo.should.equal("bar");

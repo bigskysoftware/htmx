@@ -53,7 +53,7 @@ return (function () {
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
-                protocolHandlers: {
+                schemeHandlers: {
                     /** TODO add 'javascript' **/
                 },
             },
@@ -2313,8 +2313,8 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            if (requestConfig.path.indexOf(":") && htmx.config.protocolHandlers[requestConfig.path.split(":")[0]]) {
-                var handler = htmx.config.protocolHandlers[requestConfig.path.split(":")[0]];
+            if (requestConfig.path.indexOf(":") && htmx.config.schemeHandlers[requestConfig.path.split(":")[0]]) {
+                var handler = htmx.config.schemeHandlers[requestConfig.path.split(":")[0]];
                 handler(requestConfig, xhr);
             } else {
                 xhr.send(requestConfig.body);
