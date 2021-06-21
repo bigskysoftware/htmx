@@ -53,6 +53,9 @@ return (function () {
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
+                protocolHandlers: {
+                    /** TODO add 'javascript' **/
+                },
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2185,7 +2188,9 @@ return (function () {
                 verb:verb,
                 errors:errors,
                 path:path,
-                triggeringEvent:event
+                triggeringEvent:event,
+                body: verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters),
+                responseHandler: responseHandler
             };
 
             if(!triggerEvent(elt, 'htmx:configRequest', requestConfig)){
@@ -2249,7 +2254,7 @@ return (function () {
             xhr.onload = function () {
                 try {
                     var hierarchy = hierarchyForElt(elt);
-                    responseHandler(elt, responseInfo);
+                    requestConfig.responseHandler(elt, responseInfo);
                     removeRequestIndicatorClasses(indicators);
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
@@ -2308,7 +2313,12 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            if (requestConfig.path.indexOf(":") && htmx.config.protocolHandlers[requestConfig.path.split(":")[0]]) {
+                var handler = htmx.config.protocolHandlers[requestConfig.path.split(":")[0]];
+                handler(requestConfig, xhr);
+            } else {
+                xhr.send(requestConfig.body);
+            }
             return promise;
         }
 
