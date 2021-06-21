@@ -10,7 +10,7 @@ title: </> htmx - high power tools for html
 
 ### The LoB Principle:
 
-> The behaviour of a code unit should be as obvious as possible by looking only at that unit of code
+> The behaviour of a unit of code should be as obvious as possible by looking only at that unit of code
 
 ### Discussion
 
@@ -41,15 +41,21 @@ and the second in [jQuery](https://jquery.com/):
 In the former, the behaviour of the `div` element is obvious on inspection, satisfying the LoB principle.
 
 In the latter, the behaviour of the `div` element is spread out amongst multiple files.  It is difficult to know
-exactly what the div does without a total knowledge of the code base.
+exactly what the div does without a total knowledge of the code base.  This "spooky action at a distance" is a source
+of maintenance issues and stands in the way of developers understanding of the code base.
 
 #### Surfacing Behaviour vs. Inlining Implementation
 
-A common conflation is surfacing behaviour with inlining implementation of that behaviour.  These are separate concepts
-and, while inlining the implementation of a behaviour isn't *always* incorrect, it may *often* be incorrect.
+A common objection to Locality of Behavior is that it is inlining implementation details within a code unit, making the
+code unit less abstract and more brittle.  However, it is important to make the distinction between inlining the
+*implementation* of some behavior and inlining the invocation (or declaration) of some behavior.  
+
+Consider functions in most programming languages: there is a distinction between the declaration of function and its 
+use at call sites.  A good function abstracts away its implementation details, but is also invoked in an obvious manner, 
+without any spooky action at a distance.
 
 Increasing the obviousness of the behaviour of an element is, ceteris paribus, a good thing, but it falls to both end-developers
-and especially framework developers to make LoB as easy as possible.
+and especially framework developers to make LoB both as easy and as conceptually clean as possible.
 
 #### Conflict With Other Development Principles
 
@@ -72,12 +78,12 @@ are:
 * [SoC - Separation Of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
   
   Separation of concerns a design principle for separating a computer program into distinct sections such that each 
-  section addresses a separate concern.  A canonical example of this is CSS vs. Javascript.  Again, on its own and
-  in isolation this may, indeed, be a good thing.  Inlining styles has become more prevalent lately, but there are
-  still strong arguments in favor of SoC in this regard.
+  section addresses a separate concern.  A canonical example of this is splitting HTML, CSS, and Javascript.  Again, on its own and
+  in isolation this may, indeed, be a good thing.  Inlining styles [has become more prevalent lately](https://tailwindcss.com/), 
+  but there are still strong arguments in favor of SoC in this regard.
   
   Note that SoC is, however, in conflict with LoB.  By tweaking a CSS file the look and, to an extent, behaviour of an
-  element can change dramatically, and it is not obvious where this dramatic change came from.  Tools help to an extent
+  element can change dramatically, and it is not obvious where this dramatic change came from.  Tools can help to an extent
   here, but there is still "spooky action at a distance" going on.
   
   Again, this isn't to condemn SoC wholesale, just to say that there are subjective tradeoffs that must be made when
@@ -86,7 +92,7 @@ are:
   
 #### Conclusion
 
-LoB is a software design principle that can help make a code bases more humane and maintainable.  It must be traded
+Locality of Behavior is a software design principle that can help make a code bases more humane and maintainable.  It must be traded
 off against other design principles and be considered in terms of the limitations of the system a code unit is
-written in, but, as much as is it is practical, adherence to this principle will increase your developer productivity 
-and well-being. 
+written in, but, as much as is it is practical, adherence to this principle will increase your software maintainability
+and quality.
