@@ -43,6 +43,7 @@ title: </> htmx - high power tools for html
 ## Essays
 
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
+* [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
 

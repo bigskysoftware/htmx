@@ -40,7 +40,7 @@ Conditions can also refer to global functions or state
 And can also be combined using the standard javascript syntax
 
 ```html
-<div hx-get="/clicked" hx-trigger="click[ctrlKey&&shfitKey]">Control-Shift Click Me</div>
+<div hx-get="/clicked" hx-trigger="click[ctrlKey&&shiftKey]">Control-Shift Click Me</div>
 ```
 
 Note that all symbols used in the expression will be resolved first against the triggering event, and then next

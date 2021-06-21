@@ -780,6 +780,15 @@ Hyperscript is *not* required when using htmx, anything you can do in hyperscrip
  another javascript library like jQuery, but the two technologies were designed with one another in mind and play
  well together.
 
+### Installing Hyperscript
+ 
+ To use hyperscript in combination with htmx, you need to [install the hyperscript library](https://unpkg.com/browse/hyperscript.org/)
+ either via a CDN or locally.  See the [hyperscript website](https://hyperscript.org) for the latest version of the
+ library.  
+ 
+ When hyperscript is included, it will automatically integrate with htmx and begin processing all hyperscripts embedded
+ in your HTML.
+
 ### Events & Hyperscript
 
 Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
