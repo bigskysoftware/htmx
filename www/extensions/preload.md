@@ -65,7 +65,7 @@ The default behavior for this extension is to begin loading a resource when the 
 
 To preload links more aggressively, you can trigger the preload to happen when the user's mouse hovers over the link instead.  To prevent many resources from being loaded when the user scrolls or moves the mouse across a large list of objects, a 100ms delay is built in to this action.  If the user's mouse leaves the element *before* this timeout expires, then the resource is not preloaded.
 
-Typical users hover over links for several hundred milliseconds before they click, which gives your server even more time to respond to the request than the `mousedown` option above.  [Test your own hover timing here.](http://instantclick.io/click-test).  However, be careful when using this option because it can increase server load by requesting resources uncnecessarily.
+Typical users hover over links for several hundred milliseconds before they click, which gives your server even more time to respond to the request than the `mousedown` option above.  [Test your own hover timing here.](http://instantclick.io/click-test).  However, be careful when using this option because it can increase server load by requesting resources unnecessarily.
 
 ```html
 <a href="/server/1" preload="mouseover">This will be preloaded when the user's mouse remains over it for more than 100ms.</a>
