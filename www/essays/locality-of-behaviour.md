@@ -64,7 +64,7 @@ are:
 
 * [DRY - Don't Repeat Yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
   
-  Software developers typically strive to avoid redundancy in their code or data.  This as come to be called "Staying DRY",
+  Software developers typically strive to avoid redundancy in their code or data.  This has come to be called "Staying DRY",
   i.e. Don't Repeat Yourself.  Like other software design principles this, on its own, is a good thing.  htmx, for example, 
   allows you to place many attributes on parent elements in a DOM and avoid repeating these attributes on children.  This is a 
   violation of LoB, in favor of DRY, and such tradeoffs need to be made judiciously by developers.
