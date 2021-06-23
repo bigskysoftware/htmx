@@ -94,7 +94,7 @@ are:
   
 #### Conclusion
 
-Locality of Behavior is a software design principle that can help make a code bases more humane and maintainable.  It must be traded
+Locality of Behavior is a subjective software design principle that can help make a code base more humane and maintainable.  It must be traded
 off against other design principles and be considered in terms of the limitations of the system a code unit is
-written in, but, as much as is it is practical, adherence to this principle will increase your software maintainability
-and quality.
+written in, but, as much as is it is practical, adherence to this principle will increase your software maintainability,
+quality and sustainability.
