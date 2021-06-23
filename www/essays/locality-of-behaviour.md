@@ -38,11 +38,13 @@ and the second in [jQuery](https://jquery.com/):
 <button id="d1">Click Me</button>
 ```
 
-In the former, the behaviour of the `div` element is obvious on inspection, satisfying the LoB principle.
+In the former, the behaviour of the `button` element is obvious on inspection, satisfying the LoB principle.
 
-In the latter, the behaviour of the `div` element is spread out amongst multiple files.  It is difficult to know
-exactly what the div does without a total knowledge of the code base.  This "spooky action at a distance" is a source
+In the latter, the behaviour of the `button` element is spread out amongst multiple files.  It is difficult to know
+exactly what the button does without a total knowledge of the code base.  This "spooky action at a distance" is a source
 of maintenance issues and stands in the way of developers understanding of the code base.
+
+The first example demonstrates good Locality of Behavior, while the second has poor Locality of Behavior.
 
 #### Surfacing Behaviour vs. Inlining Implementation
 
