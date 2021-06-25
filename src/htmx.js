@@ -2156,7 +2156,7 @@ return (function () {
 
             var headers = getHeaders(elt, target, promptResponse);
             if (etc.headers) {
-                headers = mergeObjects(headers, etc.values);
+                headers = mergeObjects(headers, etc.headers);
             }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
