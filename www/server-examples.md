@@ -7,7 +7,7 @@ title: </> htmx - Server-Side Examples
 
 There are many examples of integrating htmx with server-side frameworks available on GitHub. Generally speaking,
 most server-side frameworks are already pretty well set up to integrate with htmx - after all, most of them were
-rendering HTML long before before JSON became popular.
+rendering HTML long before JSON became popular.
 
 Different frameworks and platforms may offer alternative systems for installing htmx - for example, in the Java / JVM
 ecosystem, [WebJars](https://www.webjars.org) allows the use of npm packages with popular Java build tools such as 
