@@ -117,5 +117,51 @@ describe("Core htmx Parameter Handling", function() {
         htmx._("urlEncode")({"foo": "bar", "do" : ["rey", "blah"]}).should.equal("foo=bar&do=rey&do=blah");
     });
 
+    it('form includes last focused button', function () {
+        var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><button id="b1" name="btn" value="bar"></button></form>');
+        var input = byId('i1');
+        var button = byId('b1');
+        button.focus();
+        var vals = htmx._('getInputValues')(form).values;
+        vals['foo'].should.equal('bar');
+        vals['do'].should.equal('rey');
+        vals['btn'].should.equal('bar');
+    })
+
+    it('form includes last focused submit', function () {
+        var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input type="submit" id="s1" name="s1" value="bar"/></form>');
+        var input = byId('i1');
+        var button = byId('s1');
+        button.focus();
+        var vals = htmx._('getInputValues')(form).values;
+        vals['foo'].should.equal('bar');
+        vals['do'].should.equal('rey');
+        vals['s1'].should.equal('bar');
+    })
+
+    it('form does not include button when focus is lost', function () {
+        var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input type="submit" id="s1" name="s1" value="bar"/></form>');
+        var input = byId('i1');
+        var button = byId('s1');
+        button.focus();
+        input.focus();
+        var vals = htmx._('getInputValues')(form).values;
+        vals['foo'].should.equal('bar');
+        vals['do'].should.equal('rey');
+        should.equal(vals['s1'], undefined);
+    })
+
+    it('form does not include button when focus is lost outside of form', function () {
+        var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input type="submit" id="s1" name="s1" value="bar"/></form>');
+        var anchor = make('<button id="a1"></button>');
+        var button = byId('s1');
+        button.focus();
+        anchor.focus();
+        var vals = htmx._('getInputValues')(form).values;
+        vals['foo'].should.equal('bar');
+        vals['do'].should.equal('rey');
+        should.equal(vals['s1'], undefined);
+    })
+
 });
 

@@ -1407,6 +1407,19 @@ return (function () {
             }
         }
 
+        function initButtonTracking(form){
+            form.addEventListener('focusin', function(evt){
+                if (matches(evt.target, "button, input[type='submit']")) {
+                    var internalData = getInternalData(form);
+                    internalData.lastButtonClicked = evt.target;
+                }
+            })
+            form.addEventListener('focusout', function(evt){
+                var internalData = getInternalData(form);
+                internalData.lastButtonClicked = null;
+            })
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1425,6 +1438,10 @@ return (function () {
 
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
+                }
+
+                if (elt.tagName === "FORM") {
+                    initButtonTracking(elt);
                 }
 
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
@@ -1769,6 +1786,14 @@ return (function () {
 
             // include the element itself
             processInputValue(processed, values, errors, elt, validate);
+
+            // if a button or submit was clicked last, include its value
+            var internalData = getInternalData(elt);
+            if (internalData.lastButtonClicked) {
+                var name = getRawAttribute(internalData.lastButtonClicked,"name");
+                var value = internalData.lastButtonClicked.value;
+                values[name] = value;
+            }
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
