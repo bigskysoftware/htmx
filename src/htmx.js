@@ -1798,8 +1798,9 @@ return (function () {
             var internalData = getInternalData(elt);
             if (internalData.lastButtonClicked) {
                 var name = getRawAttribute(internalData.lastButtonClicked,"name");
-                var value = internalData.lastButtonClicked.value;
-                values[name] = value;
+                if (name) {
+                    values[name] = internalData.lastButtonClicked.value;
+                }
             }
 
             // include any explicit includes
