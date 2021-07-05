@@ -63,7 +63,6 @@ against `htmx` in each distribution
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
-| [`rails-method`](/extensions/rails-method) | includes the `_method` parameter in requests for rails compatibility
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
 | [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
