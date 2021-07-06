@@ -381,6 +381,20 @@ describe("hx-trigger attribute", function(){
         div1.innerHTML.should.equal("Requests: 1");
     });
 
+    it('from clause works with document selector', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div1 = make('<div hx-trigger="foo from:document" hx-get="/test">Requests: 0</div>');
+        div1.innerHTML.should.equal("Requests: 0");
+        htmx.trigger(document, 'foo');
+        this.server.respond();
+        div1.innerHTML.should.equal("Requests: 1");
+    });
+
     it('event listeners on other elements are removed when an element is swapped out', function()
     {
         var requests = 0;

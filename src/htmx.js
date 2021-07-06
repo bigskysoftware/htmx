@@ -364,6 +364,8 @@ return (function () {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
+            } else if (selector === 'document') {
+                return [document];
             } else {
                 return getDocument().querySelectorAll(selector);
             }
@@ -988,86 +990,90 @@ return (function () {
         }
 
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
-            var eltToListenOn = elt;
+            var eltsToListenOn;
             if (triggerSpec.from) {
-                eltToListenOn = find(triggerSpec.from);
+                eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
+            } else {
+                eltsToListenOn = [elt];
             }
-            var eventListener = function (evt) {
-                if (!bodyContains(elt)) {
-                    eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
-                    return;
-                }
-                if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
-                    return;
-                }
-                if(explicitCancel || shouldCancel(elt)){
-                    evt.preventDefault();
-                }
-                if (maybeFilterEvent(triggerSpec, evt)) {
-                    return;
-                }
-                var eventData = getInternalData(evt);
-                eventData.triggerSpec = triggerSpec;
-                if (eventData.handledFor == null) {
-                    eventData.handledFor = [];
-                }
-                var elementData = getInternalData(elt);
-                if (eventData.handledFor.indexOf(elt) < 0) {
-                    eventData.handledFor.push(elt);
-                    if (triggerSpec.consume) {
-                        evt.stopPropagation();
-                    }
-                    if (triggerSpec.target && evt.target) {
-                        if (!matches(evt.target, triggerSpec.target)) {
-                            return;
-                        }
-                    }
-                    if (triggerSpec.once) {
-                        if (elementData.triggeredOnce) {
-                            return;
-                        } else {
-                            elementData.triggeredOnce = true;
-                        }
-                    }
-                    if (triggerSpec.changed) {
-                        if (elementData.lastValue === elt.value) {
-                            return;
-                        } else {
-                            elementData.lastValue = elt.value;
-                        }
-                    }
-                    if (elementData.delayed) {
-                        clearTimeout(elementData.delayed);
-                    }
-                    if (elementData.throttle) {
+            forEach(eltsToListenOn, function (eltToListenOn) {
+                var eventListener = function (evt) {
+                    if (!bodyContains(elt)) {
+                        eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
                         return;
                     }
-
-                    if (triggerSpec.throttle) {
-                        if(!elementData.throttle) {
-                            issueAjaxRequest(verb, path, elt, evt);
-                            elementData.throttle = setTimeout(function(){
-                                elementData.throttle = null;
-                            }, triggerSpec.throttle);
-                        }
-                    } else if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(verb, path, elt, evt);
-                        }, triggerSpec.delay);
-                    } else {
-                        issueAjaxRequest(verb, path, elt, evt);
+                    if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
+                        return;
                     }
+                    if (explicitCancel || shouldCancel(elt)) {
+                        evt.preventDefault();
+                    }
+                    if (maybeFilterEvent(triggerSpec, evt)) {
+                        return;
+                    }
+                    var eventData = getInternalData(evt);
+                    eventData.triggerSpec = triggerSpec;
+                    if (eventData.handledFor == null) {
+                        eventData.handledFor = [];
+                    }
+                    var elementData = getInternalData(elt);
+                    if (eventData.handledFor.indexOf(elt) < 0) {
+                        eventData.handledFor.push(elt);
+                        if (triggerSpec.consume) {
+                            evt.stopPropagation();
+                        }
+                        if (triggerSpec.target && evt.target) {
+                            if (!matches(evt.target, triggerSpec.target)) {
+                                return;
+                            }
+                        }
+                        if (triggerSpec.once) {
+                            if (elementData.triggeredOnce) {
+                                return;
+                            } else {
+                                elementData.triggeredOnce = true;
+                            }
+                        }
+                        if (triggerSpec.changed) {
+                            if (elementData.lastValue === elt.value) {
+                                return;
+                            } else {
+                                elementData.lastValue = elt.value;
+                            }
+                        }
+                        if (elementData.delayed) {
+                            clearTimeout(elementData.delayed);
+                        }
+                        if (elementData.throttle) {
+                            return;
+                        }
+
+                        if (triggerSpec.throttle) {
+                            if (!elementData.throttle) {
+                                issueAjaxRequest(verb, path, elt, evt);
+                                elementData.throttle = setTimeout(function () {
+                                    elementData.throttle = null;
+                                }, triggerSpec.throttle);
+                            }
+                        } else if (triggerSpec.delay) {
+                            elementData.delayed = setTimeout(function () {
+                                issueAjaxRequest(verb, path, elt, evt);
+                            }, triggerSpec.delay);
+                        } else {
+                            issueAjaxRequest(verb, path, elt, evt);
+                        }
+                    }
+                };
+                if (nodeData.listenerInfos == null) {
+                    nodeData.listenerInfos = [];
                 }
-            };
-            if (nodeData.listenerInfos == null) {
-                nodeData.listenerInfos = [];
-            }
-            nodeData.listenerInfos.push({
-                trigger: triggerSpec.trigger,
-                listener: eventListener,
-                on: eltToListenOn
+                nodeData.listenerInfos.push({
+                    trigger: triggerSpec.trigger,
+                    listener: eventListener,
+                    on: eltToListenOn
+                })
+                eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
             })
-            eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
         }
 
         var windowIsScrolling = false // used by initScrollHandler
