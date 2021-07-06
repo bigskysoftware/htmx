@@ -19,9 +19,11 @@
     "dist/*.js.gz"
   ],
   "main": "dist/htmx.min.js",
+  "types": "src/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "scripts": {
     "test": "mocha-chrome test/index.html",
+    "test-types": "tsc --project ./jsconfig.json",
     "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
@@ -38,8 +40,9 @@
     "fs-extra": "^9.1.0",
     "mocha": "^7.2.0",
     "mocha-chrome": "^2.2.0",
+    "sass": "^1.34.0",
     "sinon": "^9.2.4",
-    "uglify-js": "^3.13.7",
-    "sass": "^1.34.0"
+    "typescript": "^4.3.5",
+    "uglify-js": "^3.13.7"
   }
 }
