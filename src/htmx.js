@@ -1407,6 +1407,26 @@ return (function () {
             }
         }
 
+        function initButtonTracking(form){
+            var maybeSetLastButtonClicked = function(evt){
+                if (matches(evt.target, "button, input[type='submit']")) {
+                    var internalData = getInternalData(form);
+                    internalData.lastButtonClicked = evt.target;
+                }
+            };
+
+            // need to handle both click and focus in:
+            //   focusin - in case someone tabs in to a button and hits the space bar
+            //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
+
+            form.addEventListener('click', maybeSetLastButtonClicked)
+            form.addEventListener('focusin', maybeSetLastButtonClicked)
+            form.addEventListener('focusout', function(evt){
+                var internalData = getInternalData(form);
+                internalData.lastButtonClicked = null;
+            })
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1425,6 +1445,10 @@ return (function () {
 
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
+                }
+
+                if (elt.tagName === "FORM") {
+                    initButtonTracking(elt);
                 }
 
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
@@ -1769,6 +1793,15 @@ return (function () {
 
             // include the element itself
             processInputValue(processed, values, errors, elt, validate);
+
+            // if a button or submit was clicked last, include its value
+            var internalData = getInternalData(elt);
+            if (internalData.lastButtonClicked) {
+                var name = getRawAttribute(internalData.lastButtonClicked,"name");
+                if (name) {
+                    values[name] = internalData.lastButtonClicked.value;
+                }
+            }
 
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
