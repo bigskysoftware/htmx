@@ -853,7 +853,11 @@ return (function () {
                         if (trigger === "every") {
                             var every = {trigger: 'every'};
                             consumeUntil(tokens, NOT_WHITESPACE);
-                            every.pollInterval = parseInterval(consumeUntil(tokens, WHITESPACE));
+                            every.pollInterval = parseInterval(consumeUntil(tokens, /[,\[\s]/));
+                            var eventFilter = maybeGenerateConditional(elt, tokens, "event");
+                            if (eventFilter) {
+                                every.eventFilter = eventFilter;
+                            }
                             triggerSpecs.push(every);
                         } else if (trigger.indexOf("sse:") === 0) {
                             triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
@@ -919,14 +923,16 @@ return (function () {
             getInternalData(elt).cancelled = true;
         }
 
-        function processPolling(elt, verb, path, interval) {
+        function processPolling(elt, verb, path, spec) {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    issueAjaxRequest(verb, path, elt);
-                    processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), interval);
+                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec}))) {
+                        issueAjaxRequest(verb, path, elt);
+                    }
+                    processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), spec);
                 }
-            }, interval);
+            }, spec.pollInterval);
         }
 
         function isLocalLink(elt) {
@@ -1360,7 +1366,7 @@ return (function () {
                             loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                         } else if (triggerSpec.pollInterval) {
                             nodeData.polling = true;
-                            processPolling(elt, verb, path, triggerSpec.pollInterval);
+                            processPolling(elt, verb, path, triggerSpec);
                         } else {
                             addEventListener(elt, verb, path, nodeData, triggerSpec);
                         }
@@ -2131,9 +2137,11 @@ return (function () {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 var queueStrategy = 'last';
-                var eventData = getInternalData(event);
-                if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
-                    queueStrategy = eventData.triggerSpec.queue;
+                if (event) {
+                    var eventData = getInternalData(event);
+                    if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                        queueStrategy = eventData.triggerSpec.queue;
+                    }
                 }
                 if (eltData.queuedRequests == null) {
                     eltData.queuedRequests = [];

@@ -316,6 +316,21 @@ describe("hx-trigger attribute", function(){
         }
     })
 
+    it('can filter polling', function(complete){
+        this.server.respondWith("GET", "/test", "Called!");
+        window.foo = false;
+        var div = make('<div hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>');
+        var div2 = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>');
+        this.server.autoRespond = true;
+        this.server.autoRespondAfter = 0;
+        setTimeout(function () {
+            div.innerHTML.should.equal("Not Called");
+            div2.innerHTML.should.equal("Called!");
+            delete window.foo;
+            complete();
+        }, 100);
+    })
+
     it('bad condition issues error', function(){
         this.server.respondWith("GET", "/test", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[a.b]">Not Called</div>');
