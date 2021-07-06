@@ -62,6 +62,33 @@ keep the core htmx code tidy
 * development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
 * No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
+### hacking guide
+
+to develop htmx locally, you will need to install the development dependencies:
+
+* `npm install`
+
+and then run a web server in the root (easiest with python):
+
+* `python3 -m http.server
+`
+
+you can then run the test suite by navigating to:
+
+<http://0.0.0.0:8000/test/>
+
+at this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`
+
+* `/test/index.html` - the root test page from which all other tests are included
+* `/test/attributres` - attribute specific tests
+* `/test/core` - core functionality tests
+* `/test/core/regressions.js` - regresssion tests
+* `/test/ext` - extension tests
+* `/test/manual` - manual tests that cannot be automated
+
+htmx use the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion frame work, 
+and [sinon](https://sinonjs.org/releases/v11.1.1/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
+
 ## haiku
 
 *javascript fatigue:<br/>
