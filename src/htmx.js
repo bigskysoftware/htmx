@@ -1138,7 +1138,7 @@ return (function () {
             };
 
             socket.onclose = function (e) {
-                if ([1006, 1012, 1013].includes(e.code)) {  // Abnormal Closure/Service Restart/Try Again Later
+                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
                     var delay = getWebSocketReconnectDelay(retryCount);
                     setTimeout(function() {
                         ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
