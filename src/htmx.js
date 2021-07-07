@@ -50,6 +50,7 @@ return (function () {
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
+                timeout:0,
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
@@ -2018,6 +2019,9 @@ return (function () {
                 if (str.indexOf("javascript:") === 0) {
                     str = str.substr(11);
                     evaluateValue = true;
+                } else if (str.indexOf("js:") === 0) {
+                    str = str.substr(3);
+                    evaluateValue = true;
                 }
                 if (str.indexOf('{') !== 0) {
                     str = "{" + str + "}";
@@ -2224,6 +2228,8 @@ return (function () {
                 path = getDocument().location.href;
             }
 
+            var requestAttrValues = getValuesForElement(elt, 'hx-request');
+
             var requestConfig = {
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
@@ -2231,6 +2237,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
+                withCredentials: requestAttrValues.credentials || htmx.config.withCredentials,
+                timeout:  requestAttrValues.timeout || htmx.config.timeout,
                 path:path,
                 triggeringEvent:event
             };
@@ -2278,13 +2286,18 @@ return (function () {
             }
 
             xhr.overrideMimeType("text/html");
-            xhr.withCredentials = htmx.config.withCredentials;
+            xhr.withCredentials = requestConfig.withCredentials;
+            xhr.timeout = requestConfig.timeout;
 
             // request headers
-            for (var header in headers) {
-                if (headers.hasOwnProperty(header)) {
-                    var headerValue = headers[header];
-                    safelySetHeaderValue(xhr, header, headerValue);
+            if (requestAttrValues.noHeaders) {
+                // ignore all headers
+            } else {
+                for (var header in headers) {
+                    if (headers.hasOwnProperty(header)) {
+                        var headerValue = headers[header];
+                        safelySetHeaderValue(xhr, header, headerValue);
+                    }
                 }
             }
 
@@ -2333,6 +2346,13 @@ return (function () {
                 removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
+                maybeCall(reject);
+                endRequestLock();
+            }
+            xhr.ontimeout = function() {
+                removeRequestIndicatorClasses(indicators);
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:timeout', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
