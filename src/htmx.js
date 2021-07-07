@@ -2237,8 +2237,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
-                withCredentials: requestAttrValues.credentials || htmx.config.withCredentials,
-                timeout:  requestAttrValues.timeout || htmx.config.timeout,
+                withCredentials: etc.credentials || requestAttrValues.credentials || htmx.config.withCredentials,
+                timeout:  etc.timeout || requestAttrValues.timeout || htmx.config.timeout,
                 path:path,
                 triggeringEvent:event
             };
