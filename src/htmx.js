@@ -54,6 +54,7 @@ return (function () {
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
+                scrollBehavior: 'smooth',
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -1952,10 +1953,20 @@ return (function () {
                             swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
                         }
                         if (modifier.indexOf("scroll:") === 0) {
-                            swapSpec["scroll"] = modifier.substr(7);
+                            var scrollSpec = modifier.substr(7);
+                            var splitSpec = scrollSpec.split(":");
+                            var scrollVal = splitSpec.pop();
+                            var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
+                            swapSpec["scroll"] = scrollVal;
+                            swapSpec["scrollTarget"] = selectorVal;
                         }
                         if (modifier.indexOf("show:") === 0) {
-                            swapSpec["show"] = modifier.substr(5);
+                            var showSpec = modifier.substr(5);
+                            var splitSpec = showSpec.split(":");
+                            var showVal = showSpec.pop();
+                            var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
+                            swapSpec["show"] = showVal;
+                            swapSpec["showTarget"] = selectorVal;
                         }
                     }
                 }
@@ -1989,19 +2000,40 @@ return (function () {
             var first = content[0];
             var last = content[content.length - 1];
             if (swapSpec.scroll) {
-                if (swapSpec.scroll === "top" && first) {
-                    first.scrollTop = 0;
+                var target = null;
+                if (swapSpec.scrollTarget) {
+                    target = querySelectorExt(first, swapSpec.scrollTarget);
                 }
-                if (swapSpec.scroll === "bottom" && last) {
-                    last.scrollTop = last.scrollHeight;
+                if (swapSpec.scroll === "top" && (first || target)) {
+                    target = target || first;
+                    target.scrollTop = 0;
+                }
+                if (swapSpec.scroll === "bottom" && (last || target)) {
+                    target = target || last;
+                    target.scrollTop = target.scrollHeight;
                 }
             }
             if (swapSpec.show) {
-                if (swapSpec.show === "top" && first) {
-                    first.scrollIntoView(true);
+                if (swapSpec.scrollTarget) {
+                    if (swapSpec.scrollTarget === "window") {
+                        if (swapSpec.show === "top") {
+                            window.scrollTo(0, 0);
+                        }
+                        if (swapSpec.show === "bottom") {
+                            window.scrollTo(0,document.body.scrollHeight);
+                        }
+                        return;
+                    } else {
+                        target = querySelectorExt(first, swapSpec.scrollTarget);
+                    }
                 }
-                if (swapSpec.show === "bottom" && last) {
-                    last.scrollIntoView(false);
+                if (swapSpec.show === "top" && (first || target)) {
+                    target = target || first;
+                    target.scrollIntoView({block:'start', behavior: htmx.config.scrollBehavior});
+                }
+                if (swapSpec.show === "bottom" && (last || target)) {
+                    target = target || last;
+                    target.scrollIntoView({block:'end', behavior: htmx.config.scrollBehavior});
                 }
             }
         }
