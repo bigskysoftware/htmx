@@ -62,7 +62,8 @@ return (function () {
             },
             createWebSocket: function(url){
                 return new WebSocket(url, []);
-            }
+            },
+            version: "1.5.0"
         };
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
