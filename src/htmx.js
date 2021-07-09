@@ -859,6 +859,7 @@ return (function () {
                             var every = {trigger: 'every'};
                             consumeUntil(tokens, NOT_WHITESPACE);
                             every.pollInterval = parseInterval(consumeUntil(tokens, /[,\[\s]/));
+                            consumeUntil(tokens, NOT_WHITESPACE);
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
                             if (eventFilter) {
                                 every.eventFilter = eventFilter;
