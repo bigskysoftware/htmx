@@ -1963,7 +1963,7 @@ return (function () {
                         if (modifier.indexOf("show:") === 0) {
                             var showSpec = modifier.substr(5);
                             var splitSpec = showSpec.split(":");
-                            var showVal = showSpec.pop();
+                            var showVal = splitSpec.pop();
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
                             swapSpec["show"] = showVal;
                             swapSpec["showTarget"] = selectorVal;
@@ -2014,18 +2014,13 @@ return (function () {
                 }
             }
             if (swapSpec.show) {
-                if (swapSpec.scrollTarget) {
-                    if (swapSpec.scrollTarget === "window") {
-                        if (swapSpec.show === "top") {
-                            window.scrollTo(0, 0);
-                        }
-                        if (swapSpec.show === "bottom") {
-                            window.scrollTo(0,document.body.scrollHeight);
-                        }
-                        return;
-                    } else {
-                        target = querySelectorExt(first, swapSpec.scrollTarget);
+                var target = null;
+                if (swapSpec.showTarget) {
+                    var targetStr = swapSpec.showTarget;
+                    if (swapSpec.showTarget === "window") {
+                        targetStr = "body";
                     }
+                    target = querySelectorExt(first, targetStr);
                 }
                 if (swapSpec.show === "top" && (first || target)) {
                     target = target || first;
