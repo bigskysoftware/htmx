@@ -22,7 +22,7 @@
             }
             if (value instanceof Window) return 'Window';
             return value;
-        }, ' ');
+        });
     }
 
     htmx.defineExtension('event-header', {
