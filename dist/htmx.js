@@ -748,7 +748,14 @@ return (function () {
                     }
                 }
             } else {
-                triggerEvent(elt, triggerBody, []);
+                if (typeof triggerBody === "string") {
+                    const eventNames = triggerBody.split(", ")
+                    for (var eventName of eventNames) {
+                        triggerEvent(elt, eventName, []);
+                    }
+                } else {
+                    triggerEvent(elt, triggerBody, []);
+                }
             }
         }
 
