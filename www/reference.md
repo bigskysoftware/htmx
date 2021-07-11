@@ -20,6 +20,7 @@ title: </> htmx - Attributes
 
 | Attribute | Description |
 |-----------|-------------|
+| [`hx-allow-error-codes`](/attributes/hx-allow-error-codes) | allow error codes to be accepted from AJAX requests
 | [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
 | [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
 | [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
