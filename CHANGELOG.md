@@ -3,7 +3,18 @@
 
 ## [1.5.0] - 2021-7-9
 
-* TODO document
+* Support tracking of button clicked during a form submission
+* Conditional polling via the [hx-trigger](/attributes/hx-trigger) attribute
+* `document` is now a valid pseudo-selector on the [hx-trigger](/attributes/hx-trigger) `from:` argument, allowing you
+  to listen for events on the document.
+* Added the [hx-request](/attributes/hx-request) attribute, allowing you to configure the following aspects of the request
+    * `timeout` - the timeout of the request
+    * `credentials` - if the request will send credentials
+    * `noHeaders` - strips all headers from the request
+* Along with the above attribute, you can configure the default values for each of these via the corresponding `htmx.config`
+  properties (e.g. `htmx.config.timeout`)
+* Both the `scroll` and `show` options on [hx-swap](/attributes/hx-swap) now support extended syntax for selecting the
+  element to scroll or to show, including the pseudo-selectors `window:top` and `window:bottom`.
 
 ## [1.4.1] - 2021-6-1
 

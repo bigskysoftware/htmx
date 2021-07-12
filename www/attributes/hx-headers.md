@@ -10,7 +10,7 @@ The `hx-headers` attribute allows you to add to the headers that will be submitt
 By default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html) 
 format.
 
-If you wish for `hx-headers` to *evaluate* the values given, you can prefix the values with `javascript:`.
+If you wish for `hx-headers` to *evaluate* the values given, you can prefix the values with `javascript:` or `js:`.
 
 ```html
   <div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>Get Some HTML, Including A Custom Header in the Request</div>

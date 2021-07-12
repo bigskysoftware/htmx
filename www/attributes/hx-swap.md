@@ -78,6 +78,29 @@ of which take the values `top` and `bottom`:
   </div>
 ```
 
+If you wish to target a different element for scrolling or showing, you may place a CSS selector after the `scroll:`
+or `swap:`, followed by `:top` or ':bottom':
+
+```html
+  <!-- this will get some content and swap it into the current div, then ensure that the top of #another-div is visible in the 
+       viewport -->
+  <div hx-get="/example" 
+       hx-swap="innerHTML show:#another-div:top">
+    Get Some Content
+  </div>
+```
+
+You may also use `window:top` and `window:bottom` to scroll to the top and bottom of the current window.
+
+
+```html
+  <!-- this will get some content and swap it into the current div, then ensure that the viewport is scrolled to the
+       very top -->
+  <div hx-get="/example" 
+       hx-swap="innerHTML show:window:top">
+    Get Some Content
+  </div>
+```
 ### Notes
 
 * `hx-swap` is inherited and can be placed on a parent element
