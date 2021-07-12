@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [1.5.0] - 2021-7-9
+## [1.5.0] - 2021-7-12
 
 * Support tracking of button clicked during a form submission
 * Conditional polling via the [hx-trigger](/attributes/hx-trigger) attribute
