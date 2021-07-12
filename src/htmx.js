@@ -56,10 +56,13 @@ return (function () {
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
             },
+            eventSources: [],
             parseInterval:parseInterval,
             _:internalEval,
             createEventSource: function(url){
-                return new EventSource(url, {withCredentials:true})
+                const eventSource = new EventSource(url, {withCredentials:true})
+                htmx.eventSources.push(eventSource)
+                return eventSource
             },
             createWebSocket: function(url){
                 return new WebSocket(url, []);
