@@ -135,6 +135,10 @@ Multiple triggers can be provided, seprarated by commas.  Each trigger gets its 
 ```
 This example will load `/news` immediate on the page load, and then again with a delay of one second after each click.
 
+### Via Javascript
+
+The AJAX request can be triggered via Javascript [`htmx.trigger()`](/api#trigger), too.
+
 ### Notes
 
 * `hx-trigger` is not inherited
