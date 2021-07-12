@@ -1,0 +1,101 @@
+describe("Core htmx internals Tests", function() {
+
+    it("makeFragment works with janky stuff", function(){
+        htmx._("makeFragment")("<html></html>").tagName.should.equal("BODY");
+        htmx._("makeFragment")("<html><body></body></html>").tagName.should.equal("BODY");
+
+        //NB - the tag name should be the *parent* element hosting the HTML since we use the fragment children
+        // for the swap
+        htmx._("makeFragment")("<td></td>").tagName.should.equal("TR");
+        htmx._("makeFragment")("<thead></thead>").tagName.should.equal("TABLE");
+        htmx._("makeFragment")("<col></col>").tagName.should.equal("COLGROUP");
+        htmx._("makeFragment")("<tr></tr>").tagName.should.equal("TBODY");
+    })
+
+    it("makeFragment works with template wrapping", function(){
+        htmx.config.useTemplateFragments = true;
+        try {
+            htmx._("makeFragment")("<html></html>").children.length.should.equal(0);
+            htmx._("makeFragment")("<html><body></body></html>").children.length.should.equal(0);
+
+            var fragment = htmx._("makeFragment")("<td></td>");
+            fragment.firstElementChild.tagName.should.equal("TD");
+
+            fragment = htmx._("makeFragment")("<thead></thead>");
+            fragment.firstElementChild.tagName.should.equal("THEAD");
+
+            fragment = htmx._("makeFragment")("<col></col>");
+            fragment.firstElementChild.tagName.should.equal("COL");
+
+            fragment = htmx._("makeFragment")("<tr></tr>");
+            fragment.firstElementChild.tagName.should.equal("TR");
+
+        } finally {
+            htmx.config.useTemplateFragments = false;
+        }
+    })
+
+    it("makeFragment works with template wrapping and funky combos", function(){
+        htmx.config.useTemplateFragments = true;
+        try {
+            var fragment = htmx._("makeFragment")("<td></td><div></div>");
+            fragment.children[0].tagName.should.equal("TD");
+            fragment.children[1].tagName.should.equal("DIV");
+        } finally {
+            htmx.config.useTemplateFragments = false;
+        }
+    })
+
+    it("set header works with non-ASCII values", function(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/dummy");
+        htmx._("safelySetHeaderValue")(xhr, "Example", "привет");
+        // unfortunately I can't test the value :/
+        // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+    })
+
+    it("handles parseInterval correctly", function() {
+        chai.expect(htmx.parseInterval("1ms")).to.be.equal(1);
+        chai.expect(htmx.parseInterval("300ms")).to.be.equal(300);
+        chai.expect(htmx.parseInterval("1s")).to.be.equal(1000)
+        chai.expect(htmx.parseInterval("1.5s")).to.be.equal(1500)
+        chai.expect(htmx.parseInterval("2s")).to.be.equal(2000)
+
+        chai.expect(htmx.parseInterval(null)).to.be.undefined
+        chai.expect(htmx.parseInterval("")).to.be.undefined
+        chai.expect(htmx.parseInterval("undefined")).to.be.undefined
+        chai.expect(htmx.parseInterval("true")).to.be.undefined
+        chai.expect(htmx.parseInterval("false")).to.be.undefined
+    })
+
+    it("tokenizes correctly", function() {
+        chai.expect(htmx._("tokenizeString")("a,")).to.be.deep.equal(['a', ',']);
+        chai.expect(htmx._("tokenizeString")("aa,")).to.be.deep.equal(['aa', ',']);
+        chai.expect(htmx._("tokenizeString")("aa,aa")).to.be.deep.equal(['aa', ',', 'aa']);
+        chai.expect(htmx._("tokenizeString")("aa.aa")).to.be.deep.equal(['aa', '.', 'aa']);
+    })
+
+    it("tags respond correctly to shouldCancel", function() {
+        var anchorThatShouldCancel = make("<a href='/foo'></a>");
+        htmx._("shouldCancel")(anchorThatShouldCancel).should.equal(true);
+
+        var anchorThatShouldCancel = make("<a href='#'></a>");
+        htmx._("shouldCancel")(anchorThatShouldCancel).should.equal(true);
+
+        var anchorThatShouldNotCancel = make("<a href='#foo'></a>");
+        htmx._("shouldCancel")(anchorThatShouldNotCancel).should.equal(false);
+
+        var form = make("<form></form>");
+        htmx._("shouldCancel")(form).should.equal(true);
+
+        var form = make("<form><input id='i1' type='submit'></form>");
+        var input = byId("i1");
+        htmx._("shouldCancel")(input).should.equal(true);
+
+        var form = make("<form><button id='b1' type='submit'></form>");
+        var button = byId("b1");
+        htmx._("shouldCancel")(button).should.equal(true);
+
+    })
+
+});
