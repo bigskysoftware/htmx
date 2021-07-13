@@ -189,7 +189,7 @@ You don't need to know much about this, except that [CDNs exist](https://en.wiki
 ### [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
 
 Again, you don't need to know much about this, except that [Javascript exists](https://developer.mozilla.org/en-US/docs/Web/javascript), and 
-you [shouldn't use it](https://htmx.org). (I kid.  Kinda.)
+that it's the only part that's optional.
 
 ## Section 5.2 - [REST Architectural Elements](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2)
 
