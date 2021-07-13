@@ -87,7 +87,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 ##### Properties
 
 * `attributesToSettle:["class", "style", "width", "height"]` - array of strings: the attributes to settle during the settling phase
-* `defaultSettleDelay:100` - int: the default delay between completing the content swap and settling attributes
+* `defaultSettleDelay:20` - int: the default delay between completing the content swap and settling attributes
 * `defaultSwapDelay:0` - int: the default delay between receiving a response from the server and doing the swap
 * `defaultSwapStyle:'innerHtml'` - string: the default swap style to use if [`hx-swap`](/attributes/hx-swap) is omitted
 * `historyCacheSize:10` - int: the number of pages to keep in `localStorage` for history support
