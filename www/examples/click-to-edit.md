@@ -32,7 +32,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
     <input type="text" name="lastName" value="Blow">
   </div>
   <div class="form-group">
-    <label>Email address</label>
+    <label>Email Address</label>
     <input type="email" name="email" value="joe@blow.com">
   </div>
   <button class="btn">Submit</button>
@@ -84,7 +84,7 @@ return `<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
     <input type="text" name="lastName" value="${contact.lastName}">
   </div>
   <div class="form-group">
-    <label>Email address</label>
+    <label>Email Address</label>
     <input type="email" name="email" value="${contact.email}">
   </div>
   <button class="btn">Submit</button>
@@ -96,7 +96,7 @@ return `<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
         return `<div hx-target="this" hx-swap="outerHTML">
     <div><label>First Name</label>: ${contact.firstName}</div>
     <div><label>Last Name</label>: ${contact.lastName}</div>
-    <div><label>Email</label>: ${contact.email}</div>
+    <div><label>Email Address</label>: ${contact.email}</div>
     <button hx-get="/contact/1/edit" class="btn btn-primary">
     Click To Edit
     </button>
