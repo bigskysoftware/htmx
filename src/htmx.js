@@ -271,6 +271,17 @@ return (function () {
             }
         }
 
+        function blobToBase64(blob) {
+            var reader = new FileReader();
+            var result = new Promise(resolve => {
+                reader.onloadend = () => {
+                    resolve(result.substr(result.indexOf(',') + 1));
+                };
+            });
+            reader.readAsDataURL(blob);
+            return result;
+        };
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -1212,7 +1223,51 @@ return (function () {
                         triggerEvent(elt, 'htmx:validation:halted', errors);
                         return;
                     }
-                    webSocket.send(JSON.stringify(filteredParameters));
+                    var oobQueue = [];
+                    var promiseQueue = [];
+
+                    for (var name in filteredParameters) {
+                        if (filteredParameters.hasOwnProperty(name)) {
+                            var paramArr = filteredParameters[name]
+                            for (var i=0; i<paramArr.length; i++) {
+                                var fileObj = paramArr[i];
+                                if (!(fileObj instanceof File)) {
+                                    continue;
+                                }
+                                var newFileObj = {
+                                    name: fileObj.name,
+                                    lastModified: fileObj.lastModified,
+                                    size: fileObj.size,
+                                    type: fileObj.type
+                                }
+                                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/json-files-inline") {
+                                    if (fileObj.type.startsWith("text/")) {
+                                        newFileObj.serialization = "file/inline-text"
+                                        promiseQueue.push(fileObj.text().then(function(body) {
+                                            newFileObj.body = body;
+                                        }));
+                                    } else {
+                                        newFileObj.serialization = "file/inline-base64"
+                                        promiseQueue.push(blobToBase64(fileObj).then(function(body) {
+                                            newFileObj.body = body;
+                                        }));
+                                    }
+                                } else {
+                                    // multipart/json-files-oob
+                                    newFileObj.serialization = "file/oob";
+                                    newFileObj.offset = oobQueue.length;
+                                    oobQueue.push(fileObj);
+                                }
+                                paramArr[i] = newFileObj;
+                            }
+                        }
+                    }
+                    Promise.all(promiseQueue).then(function() {
+                        webSocket.send(JSON.stringify(filteredParameters));
+                        for (var i=0; i<oobQueue.length; i++) {
+                            webSocket.send(oobQueue[i]);
+                        }
+                    })
                     if(shouldCancel(elt)){
                         evt.preventDefault();
                     }
