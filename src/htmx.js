@@ -2194,16 +2194,16 @@ return (function () {
                 }
                 if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 } else if (queueStrategy === "all") {
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 } else if (queueStrategy === "last") {
                     eltData.queuedRequests = []; // dump existing queue
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 }
                 return;
