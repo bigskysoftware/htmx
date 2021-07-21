@@ -24,3 +24,4 @@ which will replace the entire button in the DOM.
 ### Notes
 
 * `hx-select` is inherited and can be placed on a parent element
+* If your element is inheriting an `hx-select` and you don't want one, you can explicitly opt-out by writing `hx-select=""`

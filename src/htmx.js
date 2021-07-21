@@ -124,11 +124,10 @@ return (function () {
         }
 
         function getClosestAttributeValue(elt, attributeName) {
-            var closestAttr = null;
-            getClosestMatch(elt, function (e) {
-                return closestAttr = getAttributeValue(e, attributeName);
+            elt = getClosestMatch(elt, function (e) {
+                return hasAttribute(e, attributeName);
             });
-            return closestAttr;
+            return elt != null ? getAttributeValue(elt, attributeName) : null;
         }
 
         function matches(elt, selector) {
