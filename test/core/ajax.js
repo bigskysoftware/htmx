@@ -841,5 +841,15 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal("</> htmx rocks!");
     });
 
-
+    it('allows error codes to be handled like a success', function()
+    {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(404, {}, "Could not be found");
+        });
+        make('<div hx-allow-error-codes="true"><button id="btn1" hx-get="/test">Click Me!</button></div>')
+        var btn = byId('btn1')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Could not be found");
+    });
 })

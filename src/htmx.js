@@ -2442,8 +2442,9 @@ return (function () {
             }
 
             var shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            var shouldAllowErrorCodes = getAllowErrorCodes(elt);
 
-            if (xhr.status >= 200 && xhr.status < 400) {
+            if (xhr.status >= 200 && xhr.status < 400 || shouldAllowErrorCodes) {
                 if (xhr.status === 286) {
                     cancelPolling(elt);
                 }
@@ -2564,6 +2565,10 @@ return (function () {
             } else {
                 triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
             }
+        }
+
+        function getAllowErrorCodes(elt) {
+            return getClosestAttributeValue(elt, "hx-allow-error-codes") === 'true';
         }
 
         //====================================================================
