@@ -44,5 +44,6 @@
     "sinon": "^9.2.4",
     "typescript": "^4.3.5",
     "uglify-js": "^3.13.7"
-  }
+  },
+  "dependencies": {}
 }
