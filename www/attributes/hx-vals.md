@@ -10,7 +10,7 @@ The `hx-vals` attribute allows you to add to the parameters that will be submitt
 By default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html) 
 format.
 
-If you wish for `hx-vals` to *evaluate* the values given, you can prefix the values with `javascript:`.
+If you wish for `hx-vals` to *evaluate* the values given, you can prefix the values with `javascript:` or `js:`.
 
 ```html
   <div hx-get="/example" hx-vals='{"myVal": "My Value"}'>Get Some HTML, Including A Value in the Request</div>

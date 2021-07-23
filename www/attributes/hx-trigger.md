@@ -57,7 +57,11 @@ Standard events can also have modifiers that change how they behave.  The modifi
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
 is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
-* `from:<CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
+* `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
+  * The extended CSS selector here allows for the following non-standard CSS values:
+    * `document` - listen for events on the document
+    * `closest <CSS selector>` - finds the closest parent matching the given css selector
+    * `find <CSS selector>` - finds the closest child matching the given css selector
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body, 
 but with a target filter for a child element
@@ -114,6 +118,14 @@ By using the syntax `every <timing declaration>` you can have an element poll pe
 
 This example will issue a `GET` to the `/latest_updates` URL every second and swap the results into
 the innerHTML of this div.
+
+If you want to add a filter to polling, it should be added *after* the poll declaration:
+
+```html
+<div hx-get="/latest_updates" hx-trigger="every 1s [someConditional]">
+  Nothing Yet!
+</div>
+```
 
 ### Multiple Triggers
 

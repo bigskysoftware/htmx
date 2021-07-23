@@ -35,7 +35,6 @@ return (function () {
             removeExtension : removeExtension,
             logAll : logAll,
             logger : null,
-            useTemplateFragments: false,
             config : {
                 historyEnabled:true,
                 historyCacheSize:10,
@@ -51,8 +50,11 @@ return (function () {
                 allowEval:true,
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
+                timeout:0,
                 wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
+                useTemplateFragments: false,
+                scrollBehavior: 'smooth',
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -61,7 +63,8 @@ return (function () {
             },
             createWebSocket: function(url){
                 return new WebSocket(url, []);
-            }
+            },
+            version: "1.5.0"
         };
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
@@ -364,6 +367,8 @@ return (function () {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
+            } else if (selector === 'document') {
+                return [document];
             } else {
                 return getDocument().querySelectorAll(selector);
             }
@@ -853,7 +858,12 @@ return (function () {
                         if (trigger === "every") {
                             var every = {trigger: 'every'};
                             consumeUntil(tokens, NOT_WHITESPACE);
-                            every.pollInterval = parseInterval(consumeUntil(tokens, WHITESPACE));
+                            every.pollInterval = parseInterval(consumeUntil(tokens, /[,\[\s]/));
+                            consumeUntil(tokens, NOT_WHITESPACE);
+                            var eventFilter = maybeGenerateConditional(elt, tokens, "event");
+                            if (eventFilter) {
+                                every.eventFilter = eventFilter;
+                            }
                             triggerSpecs.push(every);
                         } else if (trigger.indexOf("sse:") === 0) {
                             triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
@@ -919,14 +929,16 @@ return (function () {
             getInternalData(elt).cancelled = true;
         }
 
-        function processPolling(elt, verb, path, interval) {
+        function processPolling(elt, verb, path, spec) {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    issueAjaxRequest(verb, path, elt);
-                    processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), interval);
+                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec}))) {
+                        issueAjaxRequest(verb, path, elt);
+                    }
+                    processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), spec);
                 }
-            }, interval);
+            }, spec.pollInterval);
         }
 
         function isLocalLink(elt) {
@@ -982,86 +994,90 @@ return (function () {
         }
 
         function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
-            var eltToListenOn = elt;
+            var eltsToListenOn;
             if (triggerSpec.from) {
-                eltToListenOn = find(triggerSpec.from);
+                eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
+            } else {
+                eltsToListenOn = [elt];
             }
-            var eventListener = function (evt) {
-                if (!bodyContains(elt)) {
-                    eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
-                    return;
-                }
-                if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
-                    return;
-                }
-                if(explicitCancel || shouldCancel(elt)){
-                    evt.preventDefault();
-                }
-                if (maybeFilterEvent(triggerSpec, evt)) {
-                    return;
-                }
-                var eventData = getInternalData(evt);
-                eventData.triggerSpec = triggerSpec;
-                if (eventData.handledFor == null) {
-                    eventData.handledFor = [];
-                }
-                var elementData = getInternalData(elt);
-                if (eventData.handledFor.indexOf(elt) < 0) {
-                    eventData.handledFor.push(elt);
-                    if (triggerSpec.consume) {
-                        evt.stopPropagation();
-                    }
-                    if (triggerSpec.target && evt.target) {
-                        if (!matches(evt.target, triggerSpec.target)) {
-                            return;
-                        }
-                    }
-                    if (triggerSpec.once) {
-                        if (elementData.triggeredOnce) {
-                            return;
-                        } else {
-                            elementData.triggeredOnce = true;
-                        }
-                    }
-                    if (triggerSpec.changed) {
-                        if (elementData.lastValue === elt.value) {
-                            return;
-                        } else {
-                            elementData.lastValue = elt.value;
-                        }
-                    }
-                    if (elementData.delayed) {
-                        clearTimeout(elementData.delayed);
-                    }
-                    if (elementData.throttle) {
+            forEach(eltsToListenOn, function (eltToListenOn) {
+                var eventListener = function (evt) {
+                    if (!bodyContains(elt)) {
+                        eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener);
                         return;
                     }
-
-                    if (triggerSpec.throttle) {
-                        if(!elementData.throttle) {
-                            issueAjaxRequest(verb, path, elt, evt);
-                            elementData.throttle = setTimeout(function(){
-                                elementData.throttle = null;
-                            }, triggerSpec.throttle);
-                        }
-                    } else if (triggerSpec.delay) {
-                        elementData.delayed = setTimeout(function(){
-                            issueAjaxRequest(verb, path, elt, evt);
-                        }, triggerSpec.delay);
-                    } else {
-                        issueAjaxRequest(verb, path, elt, evt);
+                    if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
+                        return;
                     }
+                    if (explicitCancel || shouldCancel(elt)) {
+                        evt.preventDefault();
+                    }
+                    if (maybeFilterEvent(triggerSpec, evt)) {
+                        return;
+                    }
+                    var eventData = getInternalData(evt);
+                    eventData.triggerSpec = triggerSpec;
+                    if (eventData.handledFor == null) {
+                        eventData.handledFor = [];
+                    }
+                    var elementData = getInternalData(elt);
+                    if (eventData.handledFor.indexOf(elt) < 0) {
+                        eventData.handledFor.push(elt);
+                        if (triggerSpec.consume) {
+                            evt.stopPropagation();
+                        }
+                        if (triggerSpec.target && evt.target) {
+                            if (!matches(evt.target, triggerSpec.target)) {
+                                return;
+                            }
+                        }
+                        if (triggerSpec.once) {
+                            if (elementData.triggeredOnce) {
+                                return;
+                            } else {
+                                elementData.triggeredOnce = true;
+                            }
+                        }
+                        if (triggerSpec.changed) {
+                            if (elementData.lastValue === elt.value) {
+                                return;
+                            } else {
+                                elementData.lastValue = elt.value;
+                            }
+                        }
+                        if (elementData.delayed) {
+                            clearTimeout(elementData.delayed);
+                        }
+                        if (elementData.throttle) {
+                            return;
+                        }
+
+                        if (triggerSpec.throttle) {
+                            if (!elementData.throttle) {
+                                issueAjaxRequest(verb, path, elt, evt);
+                                elementData.throttle = setTimeout(function () {
+                                    elementData.throttle = null;
+                                }, triggerSpec.throttle);
+                            }
+                        } else if (triggerSpec.delay) {
+                            elementData.delayed = setTimeout(function () {
+                                issueAjaxRequest(verb, path, elt, evt);
+                            }, triggerSpec.delay);
+                        } else {
+                            issueAjaxRequest(verb, path, elt, evt);
+                        }
+                    }
+                };
+                if (nodeData.listenerInfos == null) {
+                    nodeData.listenerInfos = [];
                 }
-            };
-            if (nodeData.listenerInfos == null) {
-                nodeData.listenerInfos = [];
-            }
-            nodeData.listenerInfos.push({
-                trigger: triggerSpec.trigger,
-                listener: eventListener,
-                on: eltToListenOn
+                nodeData.listenerInfos.push({
+                    trigger: triggerSpec.trigger,
+                    listener: eventListener,
+                    on: eltToListenOn
+                })
+                eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
             })
-            eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
         }
 
         var windowIsScrolling = false // used by initScrollHandler
@@ -1132,7 +1148,7 @@ return (function () {
             };
 
             socket.onclose = function (e) {
-                if ([1006, 1012, 1013].includes(e.code)) {  // Abnormal Closure/Service Restart/Try Again Later
+                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
                     var delay = getWebSocketReconnectDelay(retryCount);
                     setTimeout(function() {
                         ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
@@ -1360,7 +1376,7 @@ return (function () {
                             loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
                         } else if (triggerSpec.pollInterval) {
                             nodeData.polling = true;
-                            processPolling(elt, verb, path, triggerSpec.pollInterval);
+                            processPolling(elt, verb, path, triggerSpec);
                         } else {
                             addEventListener(elt, verb, path, nodeData, triggerSpec);
                         }
@@ -1407,6 +1423,26 @@ return (function () {
             }
         }
 
+        function initButtonTracking(form){
+            var maybeSetLastButtonClicked = function(evt){
+                if (matches(evt.target, "button, input[type='submit']")) {
+                    var internalData = getInternalData(form);
+                    internalData.lastButtonClicked = evt.target;
+                }
+            };
+
+            // need to handle both click and focus in:
+            //   focusin - in case someone tabs in to a button and hits the space bar
+            //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
+
+            form.addEventListener('click', maybeSetLastButtonClicked)
+            form.addEventListener('focusin', maybeSetLastButtonClicked)
+            form.addEventListener('focusout', function(evt){
+                var internalData = getInternalData(form);
+                internalData.lastButtonClicked = null;
+            })
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1425,6 +1461,10 @@ return (function () {
 
                 if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
                     boostElement(elt, nodeData, triggerSpecs);
+                }
+
+                if (elt.tagName === "FORM") {
+                    initButtonTracking(elt);
                 }
 
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
@@ -1770,6 +1810,15 @@ return (function () {
             // include the element itself
             processInputValue(processed, values, errors, elt, validate);
 
+            // if a button or submit was clicked last, include its value
+            var internalData = getInternalData(elt);
+            if (internalData.lastButtonClicked) {
+                var name = getRawAttribute(internalData.lastButtonClicked,"name");
+                if (name) {
+                    values[name] = internalData.lastButtonClicked.value;
+                }
+            }
+
             // include any explicit includes
             var includes = getClosestAttributeValue(elt, "hx-include");
             if (includes) {
@@ -1905,10 +1954,20 @@ return (function () {
                             swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
                         }
                         if (modifier.indexOf("scroll:") === 0) {
-                            swapSpec["scroll"] = modifier.substr(7);
+                            var scrollSpec = modifier.substr(7);
+                            var splitSpec = scrollSpec.split(":");
+                            var scrollVal = splitSpec.pop();
+                            var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
+                            swapSpec["scroll"] = scrollVal;
+                            swapSpec["scrollTarget"] = selectorVal;
                         }
                         if (modifier.indexOf("show:") === 0) {
-                            swapSpec["show"] = modifier.substr(5);
+                            var showSpec = modifier.substr(5);
+                            var splitSpec = showSpec.split(":");
+                            var showVal = splitSpec.pop();
+                            var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
+                            swapSpec["show"] = showVal;
+                            swapSpec["showTarget"] = selectorVal;
                         }
                     }
                 }
@@ -1942,19 +2001,35 @@ return (function () {
             var first = content[0];
             var last = content[content.length - 1];
             if (swapSpec.scroll) {
-                if (swapSpec.scroll === "top" && first) {
-                    first.scrollTop = 0;
+                var target = null;
+                if (swapSpec.scrollTarget) {
+                    target = querySelectorExt(first, swapSpec.scrollTarget);
                 }
-                if (swapSpec.scroll === "bottom" && last) {
-                    last.scrollTop = last.scrollHeight;
+                if (swapSpec.scroll === "top" && (first || target)) {
+                    target = target || first;
+                    target.scrollTop = 0;
+                }
+                if (swapSpec.scroll === "bottom" && (last || target)) {
+                    target = target || last;
+                    target.scrollTop = target.scrollHeight;
                 }
             }
             if (swapSpec.show) {
-                if (swapSpec.show === "top" && first) {
-                    first.scrollIntoView(true);
+                var target = null;
+                if (swapSpec.showTarget) {
+                    var targetStr = swapSpec.showTarget;
+                    if (swapSpec.showTarget === "window") {
+                        targetStr = "body";
+                    }
+                    target = querySelectorExt(first, targetStr);
                 }
-                if (swapSpec.show === "bottom" && last) {
-                    last.scrollIntoView(false);
+                if (swapSpec.show === "top" && (first || target)) {
+                    target = target || first;
+                    target.scrollIntoView({block:'start', behavior: htmx.config.scrollBehavior});
+                }
+                if (swapSpec.show === "bottom" && (last || target)) {
+                    target = target || last;
+                    target.scrollIntoView({block:'end', behavior: htmx.config.scrollBehavior});
                 }
             }
         }
@@ -1972,6 +2047,9 @@ return (function () {
                 var evaluateValue = evalAsDefault;
                 if (str.indexOf("javascript:") === 0) {
                     str = str.substr(11);
+                    evaluateValue = true;
+                } else if (str.indexOf("js:") === 0) {
+                    str = str.substr(3);
                     evaluateValue = true;
                 }
                 if (str.indexOf('{') !== 0) {
@@ -2098,9 +2176,11 @@ return (function () {
             var eltData = getInternalData(elt);
             if (eltData.requestInFlight) {
                 var queueStrategy = 'last';
-                var eventData = getInternalData(event);
-                if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
-                    queueStrategy = eventData.triggerSpec.queue;
+                if (event) {
+                    var eventData = getInternalData(event);
+                    if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                        queueStrategy = eventData.triggerSpec.queue;
+                    }
                 }
                 if (eltData.queuedRequests == null) {
                     eltData.queuedRequests = [];
@@ -2156,7 +2236,7 @@ return (function () {
 
             var headers = getHeaders(elt, target, promptResponse);
             if (etc.headers) {
-                headers = mergeObjects(headers, etc.values);
+                headers = mergeObjects(headers, etc.headers);
             }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
@@ -2177,6 +2257,8 @@ return (function () {
                 path = getDocument().location.href;
             }
 
+            var requestAttrValues = getValuesForElement(elt, 'hx-request');
+
             var requestConfig = {
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
@@ -2184,6 +2266,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
+                withCredentials: etc.credentials || requestAttrValues.credentials || htmx.config.withCredentials,
+                timeout:  etc.timeout || requestAttrValues.timeout || htmx.config.timeout,
                 path:path,
                 triggeringEvent:event
             };
@@ -2231,13 +2315,18 @@ return (function () {
             }
 
             xhr.overrideMimeType("text/html");
-            xhr.withCredentials = htmx.config.withCredentials;
+            xhr.withCredentials = requestConfig.withCredentials;
+            xhr.timeout = requestConfig.timeout;
 
             // request headers
-            for (var header in headers) {
-                if (headers.hasOwnProperty(header)) {
-                    var headerValue = headers[header];
-                    safelySetHeaderValue(xhr, header, headerValue);
+            if (requestAttrValues.noHeaders) {
+                // ignore all headers
+            } else {
+                for (var header in headers) {
+                    if (headers.hasOwnProperty(header)) {
+                        var headerValue = headers[header];
+                        safelySetHeaderValue(xhr, header, headerValue);
+                    }
                 }
             }
 
@@ -2286,6 +2375,13 @@ return (function () {
                 removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
+                maybeCall(reject);
+                endRequestLock();
+            }
+            xhr.ontimeout = function() {
+                removeRequestIndicatorClasses(indicators);
+                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
+                triggerErrorEvent(elt, 'htmx:timeout', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
