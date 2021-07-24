@@ -450,6 +450,18 @@ return (function () {
             }
         }
 
+        function getErrorTarget(elt) {
+            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-error-target") !== null});
+            if (explicitTarget) {
+                var targetStr = getAttributeValue(explicitTarget, "hx-error-target");
+                if (targetStr === "this") {
+                    return explicitTarget;
+                } else {
+                    return querySelectorExt(elt, targetStr)
+                }
+            }
+        }
+
         function shouldSettleAttribute(name) {
             var attributesToSettle = htmx.config.attributesToSettle;
             for (var i = 0; i < attributesToSettle.length; i++) {
@@ -1294,7 +1306,7 @@ return (function () {
                         response = extension.transformResponse(response, null, elt);
                     });
 
-                    var swapSpec = getSwapSpecification(elt)
+                    var swapSpec = getSwapSpecification(elt, false)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
@@ -1951,8 +1963,8 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        function getSwapSpecification(elt) {
-            var swapInfo = getClosestAttributeValue(elt, "hx-swap");
+        function getSwapSpecification(elt, isError) {
+            var swapInfo = getClosestAttributeValue(elt, isError ? "hx-error-swap" : "hx-swap");
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2473,7 +2485,15 @@ return (function () {
                     saveHistory();
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var isError = xhr.status >= 300
+                if (isError) {
+                    target = getErrorTarget(elt)
+                    if (!target) {
+                        return
+                    }
+                }
+
+                var swapSpec = getSwapSpecification(elt, isError);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
