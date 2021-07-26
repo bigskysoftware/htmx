@@ -38,6 +38,7 @@ title: </> htmx - Attributes
 | [`hx-prompt`](/attributes/hx-prompt) | shows a prompt before submitting a request
 | [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
+| [`hx-request`](/attributes/hx-request) | configures various aspects of the request
 | [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
 | [`hx-sse`](/attributes/hx-sse) | establishes and listens to [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) sources for events
 | [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
