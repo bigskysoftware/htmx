@@ -40,7 +40,7 @@ The problem here is that, when you submit a new contact in the form, you want th
 
 What solutions to we have?
 
-### Solution 1: Expand the Target
+### <a name="expand"></a> [Solution 1: Expand the Target](#expand)
 
 The easiest solution here is to "expand the target" of the form to enclose both the table and the form.  For example
 you could wrap the whole thing in a `div` and target that div:
@@ -78,7 +78,7 @@ Note that we are targeting the enclosing div using the [hx-target](/attributes/h
 
 This is a simple and reliable approach, although it might not feel the most elegant.
 
-### Solution 2: Out of Band Responses
+###  <a name="oob"></a> [Solution 2: Out of Band Responses](#oob)
 
 A more sophisticated approach to this problem would use [out of band swaps](/attributes/hx-swap-oob/) to swap in
 updated content to the DOM.  
@@ -139,7 +139,7 @@ Note that because we are using table rows here, we must enable template fragment
   htmx.config.useTemplateFragments = true;
 ```
 
-### Solution 3: Triggering Events
+###  <a name="events"></a> [Solution 3: Triggering Events](#events)
 
 An even more sophisticated approach would be to trigger a client side event when a successful contact is created and
 then listen for that event on the table, causing it to refresh.
@@ -183,7 +183,7 @@ HX-Trigger:newContact
 This will trigger the table it issue a `GET` to `/contacts/table` and refresh the table.  Very clean, event
 driven programming!
 
-### Solution 4: Using the Path Dependencies Extension
+###  <a name="path-deps"></a>[Solution 4: Using the Path Dependencies Extension](#path-deps)
 
 A final solution is to use REST-ful path dependencies to refresh the table.  Intercooler.js, the predecessor 
  to htmx, had [path-based dependencies](https://intercoolerjs.org/docs.html#dependencies) integrated into the 
