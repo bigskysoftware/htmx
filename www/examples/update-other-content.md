@@ -137,7 +137,7 @@ Instead of modifying something on the front end, in your response to the `POST` 
 </form>
 ```
 
-This content uses the [hx-oob-swap](/attributes/hx-oob-swap) attribute to append itself to the `#contacts-table`, updating
+This content uses the [hx-swap-oob](/attributes/hx-swap-oob/) attribute to append itself to the `#contacts-table`, updating
 the table after a contact is added successfully.
 
 Note that because we are using table rows here, we must enable template fragment parsing (thus sacrificing IE11 compatibility)
