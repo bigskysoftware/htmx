@@ -1306,7 +1306,7 @@ return (function () {
                         response = extension.transformResponse(response, null, elt);
                     });
 
-                    var swapSpec = getSwapSpecification(elt, false)
+                    var swapSpec = getSwapSpecification(elt, false, true)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
@@ -1963,8 +1963,16 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        function getSwapSpecification(elt, isError) {
-            var swapInfo = getClosestAttributeValue(elt, isError ? "hx-error-swap" : "hx-swap");
+        function getSwapSpecification(elt, isError, isSse) {
+            var swapInfo;
+            if (isError) {
+                swapInfo = getClosestAttributeValue(elt, "hx-error-swap");
+            } else if (isSse) {
+                swapInfo = getClosestAttributeValue(elt, "hx-sse-swap");
+            }
+            if (!isError && !swapInfo) {
+                swapInfo = getClosestAttributeValue(elt, "hx-swap");
+            }
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2493,7 +2501,7 @@ return (function () {
                     }
                 }
 
-                var swapSpec = getSwapSpecification(elt, isError);
+                var swapSpec = getSwapSpecification(elt, isError, false);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
