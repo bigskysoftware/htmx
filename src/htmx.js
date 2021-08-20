@@ -373,6 +373,8 @@ return (function () {
                 return [find(elt, selector.substr(5))];
             } else if (selector === 'document') {
                 return [document];
+            } else if (selector === 'window') {
+                return [window];
             } else {
                 return getDocument().querySelectorAll(selector);
             }
