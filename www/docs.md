@@ -498,7 +498,7 @@ If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/
   </div>
 ```
 
-The `source` declaration established the connection, and the `send` declaration tells the form to submit values to the
+The `connect` declaration established the connection, and the `send` declaration tells the form to submit values to the
 socket on `submit`.
 
 More details can be found on the [hx-ws attribute page](/attributes/hx-ws)
