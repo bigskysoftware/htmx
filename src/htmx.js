@@ -2379,7 +2379,11 @@ return (function () {
                 try {
                     var hierarchy = hierarchyForElt(elt);
                     responseHandler(elt, responseInfo);
-                    removeRequestIndicatorClasses(indicators);
+
+                    if (!hasHeader(xhr, /HX-Redirect:/i)) {
+                        removeRequestIndicatorClasses(indicators);
+                    }
+                    
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
                     // if the body no longer contains the element, trigger the even on the closest parent
