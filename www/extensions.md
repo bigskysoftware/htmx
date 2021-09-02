@@ -71,7 +71,7 @@ against `htmx` in each distribution
 
 </div>
 
-## <a name="defining"></a>[Defining an Extensions](#defining)
+## <a name="defining"></a>[Defining an Extension](#defining)
 
 To define an extension you call the `htmx.defineExtension()` function:
 
