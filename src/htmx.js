@@ -707,15 +707,12 @@ return (function () {
             }
         }
 
-        var TITLE_FINDER = /<title>([\s\S]+?)<\/title>/im;
-        function findTitle(content) {
-            if(content.indexOf('<title>') > -1 &&
-                (content.indexOf('<svg>') == -1 ||
-                    content.indexOf('<title>') < content.indexOf('<svg>'))) {
-                var result = TITLE_FINDER.exec(content);
-                if (result) {
-                    return result[1];
-                }
+        function findTitle(content) { 
+            var contentWithSvgsRemoved = content.replace('/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim', '');
+            var result = contentWithSvgsRemoved.match('/<title(\s[^>]*>|>)([\s\S]*?)<\/title>/im');
+        
+            if (result) { 
+                return result[2]; 
             }
         }
 
