@@ -793,7 +793,7 @@ describe("Core htmx AJAX Tests", function(){
     it('title tags update title', function()
     {
         this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(200, {}, "<title>htmx rocks!</title>Clicked!");
+            xhr.respond(200, {}, "<title class=''>htmx rocks!</title>Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
@@ -806,7 +806,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         var originalTitle = window.document.title
         this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(200, {}, "<svg><title>" + originalTitle + "UPDATE" + "</title></svg>Clicked!");
+            xhr.respond(200, {}, "<svg class=''><title>" + originalTitle + "UPDATE" + "</title></svg>Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
@@ -815,12 +815,12 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal(originalTitle);
     });
 
-    it('title tags before svg title tags do update title', function()
+    it('first title tag outside svg title tags does update title', function()
     {
         var originalTitle = window.document.title
         var newTitle = originalTitle + "!!!";
         this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(200, {}, "<title>" + newTitle + "</title><svg><title>foo</title></svg>Clicked!");
+            xhr.respond(200, {}, "<title class=''>" + newTitle + "</title><svg class=''><title>foo</title></svg>Clicked!<title class=''>x</title>");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
