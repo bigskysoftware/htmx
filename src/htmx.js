@@ -707,12 +707,14 @@ return (function () {
             }
         }
 
-        function findTitle(content) { 
-            var contentWithSvgsRemoved = content.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
-            var result = contentWithSvgsRemoved.match(/<title(\s[^>]*>|>)([\s\S]*?)<\/title>/im);
-        
-            if (result) { 
-                return result[2]; 
+        function findTitle(content) {
+            if (content.indexOf('<title>') > -1) {
+                var contentWithSvgsRemoved = content.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
+                var result = contentWithSvgsRemoved.match(/<title(\s[^>]*>|>)([\s\S]*?)<\/title>/im);
+
+                if (result) {
+                    return result[2];
+                }
             }
         }
 
