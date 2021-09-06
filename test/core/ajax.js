@@ -815,7 +815,7 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal(originalTitle);
     });
 
-    it('first title tag outside svg title tags does update title', function()
+    it('first title tag outside svg title tags updates title', function()
     {
         var originalTitle = window.document.title
         var newTitle = originalTitle + "!!!";
@@ -829,7 +829,7 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal(newTitle);
     });
 
-    it('title update does not URL escapte', function()
+    it('title update does not URL escape', function()
     {
         this.server.respondWith("GET", "/test", function (xhr) {
             xhr.respond(200, {}, "<title>&lt;/> htmx rocks!</title>Clicked!");
