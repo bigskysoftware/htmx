@@ -1,7 +1,9 @@
 //AMD insanity
 (function (root, factory) {
+    //@ts-ignore
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
+        //@ts-ignore
         define([], factory);
     } else {
         // Browser globals
@@ -64,7 +66,7 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
-            version: "1.5.0"
+            version: "1.5.1"
         };
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
@@ -153,9 +155,11 @@ return (function () {
             var responseNode = responseDoc.body;
             while (depth > 0) {
                 depth--;
+                // @ts-ignore
                 responseNode = responseNode.firstChild;
             }
             if (responseNode == null) {
+                // @ts-ignore
                 responseNode = getDocument().createDocumentFragment();
             }
             return responseNode;
@@ -369,6 +373,8 @@ return (function () {
                 return [find(elt, selector.substr(5))];
             } else if (selector === 'document') {
                 return [document];
+            } else if (selector === 'window') {
+                return [window];
             } else {
                 return getDocument().querySelectorAll(selector);
             }
@@ -701,15 +707,12 @@ return (function () {
             }
         }
 
-        var TITLE_FINDER = /<title>([\s\S]+?)<\/title>/im;
-        function findTitle(content) {
-            if(content.indexOf('<title>') > -1 &&
-                (content.indexOf('<svg>') == -1 ||
-                    content.indexOf('<title>') < content.indexOf('<svg>'))) {
-                var result = TITLE_FINDER.exec(content);
-                if (result) {
-                    return result[1];
-                }
+        function findTitle(content) { 
+            var contentWithSvgsRemoved = content.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
+            var result = contentWithSvgsRemoved.match(/<title(\s[^>]*>|>)([\s\S]*?)<\/title>/im);
+        
+            if (result) { 
+                return result[2]; 
             }
         }
 
@@ -1221,6 +1224,7 @@ return (function () {
         function getWebSocketReconnectDelay(retryCount) {
             var delay = htmx.config.wsReconnectDelay;
             if (typeof delay === 'function') {
+                // @ts-ignore
                 return delay(retryCount);
             }
             if (delay === 'full-jitter') {
@@ -1638,9 +1642,11 @@ return (function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
                     var fragment = makeFragment(this.response);
+                    // @ts-ignore
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
+                    // @ts-ignore
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
@@ -2187,16 +2193,16 @@ return (function () {
                 }
                 if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 } else if (queueStrategy === "all") {
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 } else if (queueStrategy === "last") {
                     eltData.queuedRequests = []; // dump existing queue
                     eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event)
+                        issueAjaxRequest(verb, path, elt, event, etc)
                     });
                 }
                 return;
@@ -2465,7 +2471,9 @@ return (function () {
                             try {
                                 selectionInfo = {
                                     elt: activeElt,
+                                    // @ts-ignore
                                     start: activeElt ? activeElt.selectionStart : null,
+                                    // @ts-ignore
                                     end: activeElt ? activeElt.selectionEnd : null
                                 };
                             } catch (e) {
@@ -2480,7 +2488,9 @@ return (function () {
                                 selectionInfo.elt.id) {
                                 var newActiveElt = document.getElementById(selectionInfo.elt.id);
                                 if (newActiveElt) {
+                                    // @ts-ignore
                                     if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                        // @ts-ignore
                                         newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                     }
                                     newActiveElt.focus();
@@ -2632,6 +2642,7 @@ return (function () {
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
+                // @ts-ignore
                 return parseJSON(element.content);
             } else {
                 return null;
