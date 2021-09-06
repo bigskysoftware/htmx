@@ -2148,7 +2148,9 @@ return (function () {
                         });
                 }
             } else {
-                return issueAjaxRequest(verb, path);
+                return issueAjaxRequest(verb, path, null, null, {
+                        returnPromise: true
+                });
             }
         }
 
