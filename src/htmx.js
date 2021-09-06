@@ -2130,6 +2130,7 @@ return (function () {
         }
 
         function ajaxHelper(verb, path, context) {
+            verb = verb.toLowerCase();
             if (context) {
                 if (context instanceof Element || isType(context, 'String')) {
                     return issueAjaxRequest(verb, path, null, null, {
