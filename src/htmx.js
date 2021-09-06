@@ -2134,7 +2134,8 @@ return (function () {
             if (context) {
                 if (context instanceof Element || isType(context, 'String')) {
                     return issueAjaxRequest(verb, path, null, null, {
-                        targetOverride: resolveTarget(context)
+                        targetOverride: resolveTarget(context),
+                        returnPromise: true
                     });
                 } else {
                     return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
@@ -2142,7 +2143,8 @@ return (function () {
                             handler : context.handler,
                             headers : context.headers,
                             values : context.values,
-                            targetOverride: resolveTarget(context.target)
+                            targetOverride: resolveTarget(context.target),
+                            returnPromise: true
                         });
                 }
             } else {
@@ -2163,7 +2165,7 @@ return (function () {
             var resolve = null;
             var reject = null;
             etc = etc != null ? etc : {};
-            if(typeof Promise !== "undefined"){
+            if(etc.returnPromise && typeof Promise !== "undefined"){
                 var promise = new Promise(function (_resolve, _reject) {
                     resolve = _resolve;
                     reject = _reject;

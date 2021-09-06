@@ -31,11 +31,20 @@
 
     htmx.logAll();
 
-    this.server.respondWith("GET", "/test", function(xhr){
-        xhr.respond(201, {}, '<form><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1" value="blahblah"/></form>')
+    // var i = 1;
+    // this.server.respondWith("GET", "/test", function(xhr){
+    //     xhr.respond(201, {}, "" + i++);
+    // });
+    //
+    // make('<div hx-get="/test" hx-trigger="load, every 5s">Init</div>');
+
+    let xhr;
+
+    htmx.on('htmx:beforeSend', function(evt) {
+        xhr = evt.detail.xhr;
     });
 
-    make('<form hx-target="this"><input hx-trigger="keyup delay:1s changed" hx-swap="outerHTML" hx-get="/test" id="i1"/></form>');
+
 </script>
 
 
@@ -49,8 +58,14 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 <hr/>
 
 <div id="work-area" hx-history-elt>
-
+    <button hx-get="/foo" id="my-button">My Button</button>
 </div>
 
+<script>
+    htmx.on('#my-button', 'click', function (evt) {
+        xhr.abort();
+    });
+
+</script>
 </body>
 </html>
