@@ -48,6 +48,16 @@ The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htm
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
+### installing as a node package
+
+To install using npm:
+
+```
+npm install htmx.org --save
+```
+
+Note there is an old broken package called `htmx`.  This is `htmx.org`.
+
 ## website & docs
 
 * <https://htmx.org>

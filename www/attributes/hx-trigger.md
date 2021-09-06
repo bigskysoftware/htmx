@@ -83,7 +83,7 @@ and the user hasn't typed anything new for 1 second:
        hx-target="#search-results"/>
 ```
 
-The response from the `/register` url will be appended to the `div` with the id `response-div`.
+The response from the `/search` url will be appended to the `div` with the id `search-results`.
 
 There are two special events that are non-standard that htmx supports:
 
