@@ -124,7 +124,7 @@ htmx.defineExtension("preload", {
 			init(node)
 
 			// Initialize all child elements that are anchors or have `hx-get` (use with care)
-			node.querySelectorAll("a,[hx-get],[data-hx-get").forEach(init)
+			node.querySelectorAll("a,[hx-get],[data-hx-get]").forEach(init)
 		})
 	}
 })
