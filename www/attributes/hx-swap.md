@@ -79,7 +79,7 @@ of which take the values `top` and `bottom`:
 ```
 
 If you wish to target a different element for scrolling or showing, you may place a CSS selector after the `scroll:`
-or `swap:`, followed by `:top` or ':bottom':
+or `show:`, followed by `:top` or `:bottom`:
 
 ```html
   <!-- this will get some content and swap it into the current div, then ensure that the top of #another-div is visible in the 
