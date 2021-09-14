@@ -15,7 +15,7 @@ We start with this form:
 <form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" hx-get="/contact/email" hx-indicator="#ind">
+    <input name="email" hx-post="/contact/email" hx-indicator="#ind">
     <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
@@ -94,7 +94,7 @@ Below is a working demo of this example.  The only email that will be accepted i
       return formTemplate();
     });
     
-    onGet(/\/contact\/email.*/, function(request, params){
+    onPost(/\/contact\/email.*/, function(request, params){
         var email = params['email'];
         if(!/\S+@\S+\.\S+/.test(email)) {
           return emailInputTemplate(email, "Please enter a valid email address");
@@ -115,7 +115,7 @@ Below is a working demo of this example.  The only email that will be accepted i
       return `<form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
-    <input name="email" hx-get="/contact/email" hx-indicator="#ind">
+    <input name="email" hx-post="/contact/email" hx-indicator="#ind">
     <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
@@ -133,7 +133,7 @@ Below is a working demo of this example.  The only email that will be accepted i
         function emailInputTemplate(val, errorMsg) {
             return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
-  <input name="email" hx-get="/contact/email" hx-indicator="#ind" value="${val}">
+  <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}">
   <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   ${errorMsg ? ("<div class='error-message'>" + errorMsg + "</div>") : ""}
 </div>`;
