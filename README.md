@@ -8,3 +8,4 @@
 - The event sources array ([SSE](https://htmx.org/attributes/hx-sse/)) is now exposed in the htmx API, so client can add eventListeners to the same sources created by htmx with the [hx-sse](https://htmx.org/attributes/hx-sse/) attribute
 - The htmx-indicator is not hidden on request's response if the response has a `HX-Redirect` header set (just a personal visual preference)
 - If the target specified to `htmx.ajax()` (and so the `targetOverride` passed to `issueAjaxRequest()`) can't be found, an error is thrown (instead of the HTMX default implementation that crawls the hierarchy to find the first `hx-target` specified on a parent element as a fallback)
+- [`htmx.ajax()`](https://htmx.org/api/#ajax) supports an additional property `swap` in the `context` argument, to override the swapping behaviour. This argument follows the syntax of the attribute [`hx-swap`](https://htmx.org/attributes/hx-swap/)

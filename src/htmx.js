@@ -1963,9 +1963,11 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        function getSwapSpecification(elt, isError, isSse) {
+        function getSwapSpecification(elt, isError, isSse, swapOverride) {
             var swapInfo;
-            if (isError) {
+            if (typeof swapOverride === "string") {
+                swapInfo = swapOverride
+            } else if (isError) {
                 swapInfo = getClosestAttributeValue(elt, "hx-error-swap");
             } else if (isSse) {
                 swapInfo = getClosestAttributeValue(elt, "hx-sse-swap");
@@ -2173,7 +2175,8 @@ return (function () {
                             handler : context.handler,
                             headers : context.headers,
                             values : context.values,
-                            targetOverride: resolveTarget(context.target)
+                            targetOverride: resolveTarget(context.target),
+                            swapOverride: context.swap,
                         });
                 }
             } else {
@@ -2373,7 +2376,7 @@ return (function () {
 
             var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
-                }
+                }, swapOverride: etc.swapOverride
             };
 
             xhr.onload = function () {
@@ -2506,7 +2509,7 @@ return (function () {
                     }
                 }
 
-                var swapSpec = getSwapSpecification(elt, isError, false);
+                var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
