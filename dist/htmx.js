@@ -2209,7 +2209,8 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
-            if (target == null) {
+            // Don't use hx-target in the hierarchy as a fallback is targetOverride was specified but the element wasn't found (i.e null instead of undefined)
+            if (etc.targetOverride === null || target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
