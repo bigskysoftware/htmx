@@ -15,6 +15,8 @@ TLDR is
 He then discusses some of the different needs of a general purpose API and your application API.  He lists the 
 following as needs for a generic API:
 
+<div style="padding-left:64px">
+
 1. How to predict and enable all possible workflows
 1. How to avoid N+1 requests for awkward workflows
 1. How to test functionality, performance, and security of every possible request
@@ -22,16 +24,22 @@ following as needs for a generic API:
 1. How to prioritize API changes between internal and community requirements
 1. How to document everything so that all parties can get stuff done
 
+</div>
+
 And these as application API needs:
+
+<div style="padding-left:64px">
 
 1. How to collect all the data needed to render a page
 1. How to optimize requests to multiple endpoints
 1. How to avoid using API data fields in unintended ways
 1. How to weigh the benefit of new features against the cost of new API requests
 
-I will term this mis-alignment of needs the "Data/App API Impedance Mismatch" problem.
+</div>
 
-Max's recommendation is to split the API into two "halves", a generic API and an application API:
+I will term this mis-alignment of needs the **Data/App API Impedance Mismatch** problem.
+
+Max's recommendation is to split the API into two "halves": a generic API and an application API:
 
 > I suggest you stop treating your frontend as some generic API client, and start treating it as a half of your app.
 >
@@ -41,7 +49,9 @@ Max's recommendation is to split the API into two "halves", a generic API and an
 
 ## Right about What's Wrong
 
-I agree entirely with Max on the problem here.  I would particularly emphasise the fact that the generic API needs to
+I agree entirely with Max on the problem here.  
+
+I would particularly emphasise the fact that the generic API needs to
 be stable, whereas the application API must change rapidly to address application needs.  Jean-Jacques Dubray, in 
 [this article](https://www.infoq.com/articles/no-more-mvc-frameworks/) relates the following sad state of affairs for
 API designers:
@@ -60,17 +70,17 @@ As Max points out:
 
 ## Wrong about What's Right
 
-So, again, I agree entirely with Max on noticing the Data/App Impedance Mismatch problem and applaud him for suggesting 
+So, again, I agree entirely with Max that there is a Data/App API Impedance Mismatch problem and I applaud him for suggesting 
 that, rather than bailing out to a solution to like GraphQL, you split the APIs into two.
 
-However, there is a next step here:
+However, there is a **next step** to take:
 
-Once you have split your application API from your generic data API, you are no longer bound by the constraints of
- a public data API and are free to reconsider the *entire form* of that application API.  You can do whatever you'd like with 
+Once you have split your application API from your generic data API, *you are no longer bound by the constraints of
+ a public data API and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
  it, so let's get a bit expansive in our thinking.
  
 Note that core problems with the application API are rapid change and page (or resources) specific tuning.  It turns out that we
-have a very good technology for dealing with this: hypermedia!  
+have a very good technology for dealing with this: [hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
 
 Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API
 that's fine: the new API is simply reflected in the new HTML returned by the server.  You can add and modify end points
@@ -79,14 +89,17 @@ and, lo and behold (to a first order of approximation) your clients (that is, br
 The browsers simply see the new HTML, and [the human driving them react to the new functionality appropriately](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
 
 So, while I feel Max is on the right track, I also think he *doesn't go far enough*: once you have made the mental 
-jump to solving the Data/APP API Impedence Mismatch by splitting the two, it is only a bit further to rediscovering
-the advantages of hypermedia.
+jump to solving the Data/APP API Impedance Mismatch problem by splitting the two into separate concerns, it is only a 
+bit further down the road to rediscovering the advantages of hypermedia.
 
 You may object that: "Oh, but hypermedia applications aren't very usable, we don't want to go back to web 1.0."
 
 That is a perfectly reasonable objection, but people have been working on that problem and there are now many libraries 
-available that address the usability issues of HTML *within the hypermedia model*.  Two of my favorites are [unpoly](https://unpoly.com/) and,
-of course, my own [htmx](/).
+available that address the usability issues of HTML *within the hypermedia model*.  
+
+Two of my favorites are [unpoly](https://unpoly.com/) and, of course, my own [htmx](/).
+
+## In Conclusion
 
 If you switch to a hypermedia application API (which really just means "use HTML, like you used to") then you get all
 of the benefits of the REST-ful web model (simplicity, reliability, etc.) and of server-side rendering in mature web frameworks
