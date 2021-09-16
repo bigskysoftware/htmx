@@ -4,7 +4,6 @@ tags: posts
 title: Splitting Your Data & APIs: Going Further
 ---
 
-
 ## Splitting Your Data & APIs: Going Further
 
 **TLDR:** If you split your API into Data and Application APIs, [as advocated here](https://max.engineer/server-informed-ui), 
