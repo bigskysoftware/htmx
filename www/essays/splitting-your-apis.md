@@ -1,7 +1,7 @@
 ---
 layout: layout.njk
 tags: posts
-title: Splitting Your Data & APIs: Going Further
+title: Splitting Your Data and Application APIs - Going Further
 ---
 
 ## Splitting Your Data & APIs: Going Further
