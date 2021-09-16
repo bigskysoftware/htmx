@@ -1,14 +1,21 @@
 ---
 layout: layout.njk
 tags: posts
-title: Splitting Your APIs
+title: Splitting Your Data & APIs: Going Further
 ---
 
-## Splitting Your APIs
+
+## Splitting Your Data & APIs: Going Further
+
+**TLDR:** If you split your API into Data and Application APIs, [as advocated here](https://max.engineer/server-informed-ui), 
+you should consider changing your Application API from JSON to Hypermedia (HTML) & using a *hypermedia-oriented* library like
+[htmx](/) to reap the benefits of the hypermedia model (simplicity, reliability, flexibility, etc.)
+
+## The Problem
 
 Recently, [Max Chernyak](https://max.engineer/) wrote an essay entitled 
 [Don’t Build A General Purpose API To Power Your Own Front End](https://max.engineer/server-informed-ui).  His
-TLDR is
+TLDR is this:
 
 > YAGNI, unless you’re working in a big company with federated front-ends or GraphQL.
 
