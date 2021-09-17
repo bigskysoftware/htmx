@@ -96,7 +96,7 @@ at this point you can modify `/src/htmx.js` to add features, and then add tests 
 * `/test/ext` - extension tests
 * `/test/manual` - manual tests that cannot be automated
 
-htmx use the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion frame work, 
+htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion frame work, 
 and [sinon](https://sinonjs.org/releases/v11.1.1/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
 
 ## haiku
