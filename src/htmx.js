@@ -50,7 +50,6 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
-                attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
                 wsReconnectDelay: 'full-jitter',
@@ -462,29 +461,6 @@ return (function () {
             }
         }
 
-        function shouldSettleAttribute(name) {
-            var attributesToSettle = htmx.config.attributesToSettle;
-            for (var i = 0; i < attributesToSettle.length; i++) {
-                if (name === attributesToSettle[i]) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function cloneAttributes(mergeTo, mergeFrom) {
-            forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
-                    mergeTo.removeAttribute(attr.name)
-                }
-            });
-            forEach(mergeFrom.attributes, function (attr) {
-                if (shouldSettleAttribute(attr.name)) {
-                    mergeTo.setAttribute(attr.name, attr.value);
-                }
-            });
-        }
-
         function isInlineSwap(swapStyle, target) {
             var extensions = getExtensions(target);
             for (var i = 0; i < extensions.length; i++) {
@@ -547,21 +523,6 @@ return (function () {
             });
         }
 
-        function handleAttributes(parentNode, fragment, settleInfo) {
-            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                if (newNode.id && newNode.id.length > 0) {
-                    var oldNode = parentNode.querySelector(newNode.tagName + "[id='" + newNode.id + "']");
-                    if (oldNode && oldNode !== parentNode) {
-                        var newAttributes = newNode.cloneNode();
-                        cloneAttributes(newNode, oldNode);
-                        settleInfo.tasks.push(function () {
-                            cloneAttributes(newNode, newAttributes);
-                        });
-                    }
-                }
-            });
-        }
-
         function makeAjaxLoadTask(child) {
             return function () {
                 processNode(child);
@@ -580,7 +541,6 @@ return (function () {
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
-            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 parentNode.insertBefore(child, insertBefore);
