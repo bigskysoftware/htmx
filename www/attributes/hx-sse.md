@@ -62,7 +62,7 @@ data: <div>Content to swap into your HTML page.</div>
 ```
 
 ```html
-<div hx-sse="connect:/server-url swap:eventName></div>
+<div hx-sse="connect:/server-url swap:eventName"></div>
 ```
 
 ### Data Only Events
@@ -74,7 +74,7 @@ data: <div>Content to swap into your HTML page.</div>
 ```
 
 ```html
-<div hx-sse="connect:/server-url swap:message></div>
+<div hx-sse="connect:/server-url swap:message"></div>
 ```
 
 ### Notes
