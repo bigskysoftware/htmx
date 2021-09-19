@@ -128,7 +128,9 @@ return (function () {
             getClosestMatch(elt, function (e) {
                 return closestAttr = getAttributeValue(e, attributeName);
             });
-            return closestAttr;
+            if (closestAttr !== "unset") {
+                return closestAttr;
+            }
         }
 
         function matches(elt, selector) {

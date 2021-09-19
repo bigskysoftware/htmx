@@ -1,5 +1,14 @@
 describe("Core htmx internals Tests", function() {
 
+    beforeEach(function () {
+        this.server = makeServer();
+        clearWorkArea();
+    });
+    afterEach(function () {
+        this.server.restore();
+        clearWorkArea();
+    });
+
     it("makeFragment works with janky stuff", function(){
         htmx._("makeFragment")("<html></html>").tagName.should.equal("BODY");
         htmx._("makeFragment")("<html><body></body></html>").tagName.should.equal("BODY");
@@ -34,6 +43,7 @@ describe("Core htmx internals Tests", function() {
             htmx.config.useTemplateFragments = false;
         }
     })
+
 
     it("makeFragment works with template wrapping and funky combos", function(){
         htmx.config.useTemplateFragments = true;
@@ -96,6 +106,24 @@ describe("Core htmx internals Tests", function() {
         var button = byId("b1");
         htmx._("shouldCancel")(button).should.equal(true);
 
+    })
+
+    it("unset properly unsets a given attribute", function(){
+        make("<div foo='1'><div foo='2'><div foo='unset' id='d1'></div></div></div>");
+        var div = byId("d1");
+        should.equal(undefined, htmx._("getClosestAttributeValue")(div, "foo"));
+    })
+
+    it("unset properly unsets a given attribute on a parent", function(){
+        make("<div foo='1'><div foo='unset'><div id='d1'></div></div></div>");
+        var div = byId("d1");
+        should.equal(undefined, htmx._("getClosestAttributeValue")(div, "foo"));
+    })
+
+    it("unset does not unset a value below it in the hierarchy", function(){
+        make("<div foo='unset'><div foo='2'><div id='d1'></div></div></div>");
+        var div = byId("d1");
+        should.equal("2", htmx._("getClosestAttributeValue")(div, "foo"));
     })
 
 });
