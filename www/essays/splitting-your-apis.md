@@ -57,13 +57,16 @@ Max's recommendation is to split the API into two "halves": a generic API and an
 
 I agree entirely with Max on the problem here.  
 
-I would particularly emphasise the fact that the generic API needs to
-be stable, whereas the application API must change rapidly to address application needs.  Jean-Jacques Dubray, in 
-[this article](https://www.infoq.com/articles/no-more-mvc-frameworks/) relates the following sad state of affairs for
+I would particularly emphasise the fact that the generic API needs to be stable, whereas the application API must change 
+rapidly to address application needs.  
+
+Jean-Jacques Dubray, in [this article](https://www.infoq.com/articles/no-more-mvc-frameworks/) relates the following sad state of affairs for
 API designers:
 
 > The worst part of my job these days is designing APIs for front-end developers. The conversation goes inevitably as: 
+>
 >  Dev – So, this screen has data element x,y,z… could you please create an API with the response format {x: , y:, z: }
+>
 >  Me – Ok
 
 This is a perfect encapsulation of the tension that Max has noticed, where API engineers want to design general, 
@@ -82,7 +85,7 @@ that, rather than bailing out to a solution to like GraphQL, you split the APIs 
 However, there is a **next step** to take:
 
 Once you have split your application API from your generic data API, *you are no longer bound by the constraints of
- a public data API and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
+ a public data API* and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
  it, so let's get a bit expansive in our thinking.
  
 Note that core problems with the application API are rapid change and page (or resources) specific tuning.  It turns out that we
