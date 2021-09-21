@@ -91,11 +91,11 @@ Once you have split your application API from your generic data API, *you are no
 Note that core problems with the application API are rapid change and page (or resource) specific tuning.  It turns out that we
 have a very good technology for dealing with *exactly* this problem: [Hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
 
-Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API
-that's fine: the new API is simply reflected in the new HTML returned by the server.  You can add and modify end points
+Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API, well, 
+that's fine: the *new* API is simply reflected in the *new* HTML returned by the server.  You can add and modify end points
 and, lo and behold (to a first order of approximation) your clients (that is, browsers) don't need to be updated.
 
-The browsers simply see the new HTML, and [the human driving them react to the new functionality appropriately](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
+The browsers simply see the new HTML, and [the humans driving them react to the new functionality appropriately](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
 
 So, while I feel Max is on the right track, I also think he *doesn't go far enough*: once you have made the mental 
 jump to solving the Data/APP API Impedance Mismatch problem by splitting the two into separate concerns, it is only a 
