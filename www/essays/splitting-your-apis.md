@@ -88,7 +88,7 @@ Once you have split your application API from your generic data API, *you are no
  a public data API* and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
  it, so let's get a bit expansive in our thinking.
  
-Note that core problems with the application API are rapid change and page (or resources) specific tuning.  It turns out that we
+Note that core problems with the application API are rapid change and page (or resource) specific tuning.  It turns out that we
 have a very good technology for dealing with this: [hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
 
 Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API
