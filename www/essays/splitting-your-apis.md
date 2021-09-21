@@ -89,7 +89,7 @@ Once you have split your application API from your generic data API, *you are no
  it, so let's get a bit expansive in our thinking.
  
 Note that core problems with the application API are rapid change and page (or resource) specific tuning.  It turns out that we
-have a very good technology for dealing with this: [hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
+have a very good technology for dealing with *exactly* this problem: [Hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
 
 Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API
 that's fine: the new API is simply reflected in the new HTML returned by the server.  You can add and modify end points
