@@ -121,7 +121,7 @@ Using this approach, the HTML doesn't need to change from the original setup at 
 Instead of modifying something on the front end, in your response to the `POST` to `/contacts` you would include some additional content:
 
 ```html
-<tr hx-oob-swap="beforeend:#contacts-table">
+<tr hx-swap-oob="beforeend:#contacts-table">
     <td>Joe Smith</td>
     <td>joe@smith.com</td>
 </tr>
