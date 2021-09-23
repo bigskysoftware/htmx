@@ -50,8 +50,24 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
+<div class="row">
+<div class="col 2" style="padding: 0">
+
 ## haiku
 
 *javascript fatigue:<br/>
 longing for a hypertext<br/>
 already in hand*
+
+</div>
+<div class="col 2" style="padding: 0">
+
+## support
+
+If you use htmx commercially & wish to support the 
+project you can sponsor us on [Github](https://github.com/sponsors/bigskysoftware)
+
+For consulting & training on htmx, [contact us](mailto:consulting@bigsky.software)
+
+
+</div>

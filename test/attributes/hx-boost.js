@@ -71,5 +71,18 @@ describe("hx-boost attribute", function() {
     })
 
 
+    it('includes an HX-Boosted Header', function()
+    {
+        this.server.respondWith("GET", "/test", function(xhr){
+            should.equal(xhr.requestHeaders['HX-Boosted'], "true");
+            xhr.respond(200, {}, "Boosted!");
+        });
+
+        var btn = make('<a hx-boost="true" hx-target="this" href="/test">Click Me!</a>')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("Boosted!");
+    });
+
 });
 
