@@ -1905,6 +1905,9 @@ return (function () {
             if (prompt !== undefined) {
                 headers["HX-Prompt"] = prompt;
             }
+            if (getInternalData(elt).boosted) {
+                headers["HX-Boosted"] = "true";
+            }
             return headers;
         }
 

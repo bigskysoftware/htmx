@@ -71,6 +71,7 @@ title: </> htmx - Attributes
 
 | Header | Description |
 |-------|-------------|
+| `HX-Boosted` | indicates that the request is via an element using [hx-boost](/attributes/hx-boost)
 | `HX-Current-URL` | the current URL of the browser
 | `HX-History-Restore-Request` | `true` if the request is for history restoration after a miss in the local history cache
 | `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
