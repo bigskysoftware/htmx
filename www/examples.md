@@ -37,3 +37,4 @@ You can copy and paste them and then adjust them for your needs.
 | [Keyboard Shortcuts](/examples/keyboard-shortcuts) | Demonstrates how to create keyboard shortcuts for htmx enabled elements
 | [Sortable](/examples/sortable) | Demonstrates how to use htmx with the Sortable.js plugin to implement drag-and-drop reordering
 | [Updating Other Content](/examples/update-other-content) | Demonstrates how to update content beyond just the target elements
+| [Confirm](/examples/confirm) | Demonstrates how to implement a custom confirmation dialog with htmx
