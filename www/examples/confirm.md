@@ -24,7 +24,7 @@ The technique here is to make the button issue a request on the `confirmed` even
 We then add some hyperscript to invoke Sweet Alert 2 on a click, asking for confirmation.  If the user confirms
 the dialog, we trigger the `confirmed` event, which then triggers the htmx request.
 
-Note that we are taking advantage of the fact that hyperscript is (async-transparent)[https://hyperscript.org/docs/#async]
+Note that we are taking advantage of the fact that hyperscript is [async-transparent](https://hyperscript.org/docs/#async)
 and automatically resolves the Promise returned by `Swal.fire()`.
 
 A VanillaJS implementation is left as an exercise for the reader.  :)
