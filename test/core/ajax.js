@@ -890,26 +890,6 @@ describe("Core htmx AJAX Tests", function(){
         htmx.off("htmx:shouldSwap", handler);
     });
 
-    it('400 content can be retargeted if configured to do so', function()
-    {
-        var handler = htmx.on("htmx:beforeSwap", function (event) {
-            if (event.detail.xhr.status === 400) {
-                event.detail.shouldSwap = true;
-                event.detail.target = byId('d1')
-            }
-        });
-
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(400, {}, "Clicked!");
-        });
-        var btn = make('<button hx-get="/test">Click Me!</button>')
-        var div = make('<div id="d1"></div>')
-        btn.click();
-        this.server.respond();
-        div.innerText.should.equal("Clicked!");
-        htmx.off("htmx:shouldSwap", handler);
-    });
-
 
     it('content can be modified if configured to do so', function()
     {
