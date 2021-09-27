@@ -2454,123 +2454,130 @@ return (function () {
 
             var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
-            if (xhr.status >= 200 && xhr.status < 400) {
+            // by default htmx only swaps on 200 return codes and does not swap
+            // on 204 'No Content'
+            // this can be ovverriden by responding to the htmx:beforeSwap event and
+            // overriding the detail.shouldSwap property
+            var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
+            var serverResponse = xhr.response;
+            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse}, responseInfo);
+            if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
+
+            target = beforeSwapDetails.target; // allow re-targeting
+            serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+
+            if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
                     cancelPolling(elt);
                 }
-                // don't process 'No Content'
-                if (xhr.status !== 204) {
-                    if (!triggerEvent(target, 'htmx:beforeSwap', responseInfo)) return;
 
-                    var serverResponse = xhr.response;
-                    withExtensions(elt, function(extension){
-                        serverResponse = extension.transformResponse(serverResponse, xhr, elt);
-                    });
+                withExtensions(elt, function (extension) {
+                    serverResponse = extension.transformResponse(serverResponse, xhr, elt);
+                });
 
-                    // Save current page
-                    if (shouldSaveHistory) {
-                        saveHistory();
-                    }
+                // Save current page
+                if (shouldSaveHistory) {
+                    saveHistory();
+                }
 
-                    var swapSpec = getSwapSpecification(elt);
+                var swapSpec = getSwapSpecification(elt);
 
-                    target.classList.add(htmx.config.swappingClass);
-                    var doSwap = function () {
+                target.classList.add(htmx.config.swappingClass);
+                var doSwap = function () {
+                    try {
+
+                        var activeElt = document.activeElement;
+                        var selectionInfo = {};
                         try {
+                            selectionInfo = {
+                                elt: activeElt,
+                                // @ts-ignore
+                                start: activeElt ? activeElt.selectionStart : null,
+                                // @ts-ignore
+                                end: activeElt ? activeElt.selectionEnd : null
+                            };
+                        } catch (e) {
+                            // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                        }
 
-                            var activeElt = document.activeElement;
-                            var selectionInfo = {};
-                            try {
-                                selectionInfo = {
-                                    elt: activeElt,
-                                    // @ts-ignore
-                                    start: activeElt ? activeElt.selectionStart : null,
-                                    // @ts-ignore
-                                    end: activeElt ? activeElt.selectionEnd : null
-                                };
-                            } catch (e) {
-                                 // safari issue - see https://github.com/microsoft/playwright/issues/5894
-                            }
+                        var settleInfo = makeSettleInfo(target);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
 
-                            var settleInfo = makeSettleInfo(target);
-                            selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
-
-                            if (selectionInfo.elt &&
-                                !bodyContains(selectionInfo.elt) &&
-                                selectionInfo.elt.id) {
-                                var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                                if (newActiveElt) {
+                        if (selectionInfo.elt &&
+                            !bodyContains(selectionInfo.elt) &&
+                            selectionInfo.elt.id) {
+                            var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                            if (newActiveElt) {
+                                // @ts-ignore
+                                if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
-                                    if (selectionInfo.start && newActiveElt.setSelectionRange) {
-                                        // @ts-ignore
-                                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
-                                    }
-                                    newActiveElt.focus();
+                                    newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                 }
+                                newActiveElt.focus();
                             }
+                        }
 
-                            target.classList.remove(htmx.config.swappingClass);
+                        target.classList.remove(htmx.config.swappingClass);
+                        forEach(settleInfo.elts, function (elt) {
+                            if (elt.classList) {
+                                elt.classList.add(htmx.config.settlingClass);
+                            }
+                            triggerEvent(elt, 'htmx:afterSwap', responseInfo);
+                        });
+                        if (responseInfo.pathInfo.anchor) {
+                            location.hash = responseInfo.pathInfo.anchor;
+                        }
+
+                        if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                            var finalElt = elt;
+                            if (!bodyContains(elt)) {
+                                finalElt = getDocument().body;
+                            }
+                            handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
+                        }
+
+                        var doSettle = function () {
+                            forEach(settleInfo.tasks, function (task) {
+                                task.call();
+                            });
                             forEach(settleInfo.elts, function (elt) {
                                 if (elt.classList) {
-                                    elt.classList.add(htmx.config.settlingClass);
+                                    elt.classList.remove(htmx.config.settlingClass);
                                 }
-                                triggerEvent(elt, 'htmx:afterSwap', responseInfo);
+                                triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
-                            if (responseInfo.pathInfo.anchor) {
-                                location.hash = responseInfo.pathInfo.anchor;
+                            // push URL and save new page
+                            if (shouldSaveHistory) {
+                                var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
+                                pushUrlIntoHistory(pathToPush);
+                                triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
                             }
+                            updateScrollState(settleInfo.elts, swapSpec);
 
-                            if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                            if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
                                 var finalElt = elt;
                                 if (!bodyContains(elt)) {
                                     finalElt = getDocument().body;
                                 }
-                                handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
+                                handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                             }
-
-                            var doSettle = function(){
-                                forEach(settleInfo.tasks, function (task) {
-                                    task.call();
-                                });
-                                forEach(settleInfo.elts, function (elt) {
-                                    if (elt.classList) {
-                                        elt.classList.remove(htmx.config.settlingClass);
-                                    }
-                                    triggerEvent(elt, 'htmx:afterSettle', responseInfo);
-                                });
-                                // push URL and save new page
-                                if (shouldSaveHistory) {
-                                    var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
-                                    pushUrlIntoHistory(pathToPush);
-                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path:pathToPush});
-                                }
-                                updateScrollState(settleInfo.elts, swapSpec);
-
-                                if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                                    var finalElt = elt;
-                                    if (!bodyContains(elt)) {
-                                        finalElt = getDocument().body;
-                                    }
-                                    handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
-                                }
-                            }
-
-                            if (swapSpec.settleDelay > 0) {
-                                setTimeout(doSettle, swapSpec.settleDelay)
-                            } else {
-                                doSettle();
-                            }
-                        } catch (e) {
-                            triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
-                            throw e;
                         }
-                    };
 
-                    if (swapSpec.swapDelay > 0) {
-                        setTimeout(doSwap, swapSpec.swapDelay)
-                    } else {
-                        doSwap();
+                        if (swapSpec.settleDelay > 0) {
+                            setTimeout(doSettle, swapSpec.settleDelay)
+                        } else {
+                            doSettle();
+                        }
+                    } catch (e) {
+                        triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
+                        throw e;
                     }
+                };
+
+                if (swapSpec.swapDelay > 0) {
+                    setTimeout(doSwap, swapSpec.swapDelay)
+                } else {
+                    doSwap();
                 }
             } else {
                 triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
