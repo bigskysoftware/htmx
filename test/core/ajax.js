@@ -815,7 +815,7 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal(originalTitle);
     });
 
-    it('first title tag outside svg title tags does update title', function()
+    it('first title tag outside svg title tags updates title', function()
     {
         var originalTitle = window.document.title
         var newTitle = originalTitle + "!!!";
