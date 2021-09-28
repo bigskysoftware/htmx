@@ -1396,13 +1396,20 @@ return (function () {
 
         function evalScript(script) {
             if (script.type === "text/javascript" || script.type === "") {
+                var newScript = getDocument().createElement("script");
+                forEach(script.attributes, function (attr) {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                newScript.textContent = script.textContent;
+                newScript.async = false;
+                var parent = script.parentElement;
+
                 try {
-                    maybeEval(script, function () {
-                        // wtf - https://stackoverflow.com/questions/9107240/1-evalthis-vs-evalthis-in-javascript
-                        (1, eval)(script.innerText);
-                    });
+                    parent.insertBefore(newScript, script);
                 } catch (e) {
                     logError(e);
+                } finally {
+                    parent.removeChild(script);
                 }
             }
         }
