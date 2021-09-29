@@ -383,7 +383,11 @@ return (function () {
         }
 
         function querySelectorExt(eltOrSelector, selector) {
-            return querySelectorAllExt(eltOrSelector, selector)[0]
+            if (selector) {
+                return querySelectorAllExt(eltOrSelector, selector)[0];
+            } else {
+                return querySelectorAllExt(getDocument().body, eltOrSelector)[0];
+            }
         }
 
         function resolveTarget(arg2) {
