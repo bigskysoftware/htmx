@@ -1361,7 +1361,7 @@ return (function () {
                         } else if (triggerSpec.trigger === "intersect") {
                             var observerOptions = {};
                             if (triggerSpec.root) {
-                                observerOptions.root = querySelectorExt(triggerSpec.root)
+                                observerOptions.root = querySelectorExt(elt, triggerSpec.root)
                             }
                             if (triggerSpec.threshold) {
                                 observerOptions.threshold = parseFloat(triggerSpec.threshold);
