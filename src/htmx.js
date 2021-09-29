@@ -2005,7 +2005,8 @@ return (function () {
             if (encodedParameters != null) {
                 return encodedParameters;
             } else {
-                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data") {
+                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
+                    (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data")) {
                     return makeFormData(filteredParameters);
                 } else {
                     return urlEncode(filteredParameters);

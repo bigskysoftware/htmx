@@ -126,4 +126,10 @@ describe("Core htmx internals Tests", function() {
         should.equal("2", htmx._("getClosestAttributeValue")(div, "foo"));
     })
 
+    it("encoding values respects enctype on forms", function(){
+        var form = make("<form enctype='multipart/form-data'></form>");
+        var value = htmx._("encodeParamsForBody")(null, form, {});
+        (value instanceof FormData).should.equal(true);
+    })
+
 });
