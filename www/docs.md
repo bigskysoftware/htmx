@@ -688,9 +688,17 @@ See the [extensions page](/extensions#included) for a complete list.
 
 ## <a name="events"></a> [Events & Logging](#events)
 
-Htmx has an extensive events mechanism, which doubles as the logging system.
+Htmx has an extensive [events mechanism](https://htmx.org/reference/#events), which doubles as the logging system.
 
-If you want to register for a given htmx event you can use the following javascript:
+If you want to register for a given htmx event you can use
+
+```js
+   document.body.addEventListener('htmx:load', function(evt) {
+      myJavascriptLib.init(evt.details.elt);
+   });
+```
+ 
+or, if you would prefer, you can use the following htmx helper:
 
 ```javascript
   htmx.on("htmx:load", function(evt) {
@@ -698,8 +706,14 @@ If you want to register for a given htmx event you can use the following javascr
   });
 ```
 
-This event is fired every time an element is loaded into the DOM by htmx, and is effectively the load event.  In
-fact this is so common, you can use the helper function:
+The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent 
+ to the normal `load` event.  
+
+Some common uses for htmx events are:
+
+## <a name="init_3rd_party_with_events">[Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
+
+Using the `htmx:load` event to initialize content is so common that htmx provides a helper function:
 
 ```javascript
   htmx.onLoad(function(target) {
@@ -708,7 +722,46 @@ fact this is so common, you can use the helper function:
 ```
 This does the same thing as the first example, but is a little cleaner.
 
-The full set of events can be seen [on the reference page](/reference#events).
+## <a name="config_request_with_events">[Configure a Request With Events](#config_request_with_events)
+
+You can handle the [`htmx:configRequest`](/events/#htmx:configRequest) event in order to modify an AJAX request before it is issued:
+
+```javascript
+document.body.addEventListener('htmx:configRequest', function(evt) {
+    evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the request
+    evt.detail.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
+});
+```
+
+Here we add a parameter and header to the request before it is sent.
+
+## <a name="modifying_swapping_behavior_with_events">[Modifying Swapping Behavior With Events](#modifying_swapping_behavior_with_events)
+
+You can handle the [`htmx:beforeSwap`](/events/#htmx:beforeSwap) event in order to modify the swap behavior of htmx:
+
+```javascript
+document.body.addEventListener('htmx:beforeSwap', function(evt) {
+    if(evt.detail.xhr.status === 404){
+        // alert the user when a 404 occurs (maybe use a nicer mechanism than alert())
+        alert("Error: Could Not Find Resource");
+    } else if(evt.detail.xhr.status === 422){
+        // allow 422 responses to swap as we are using this as a signal that
+        // a form was submitted with bad data and want to rerender with the
+        // errors
+        evt.detail.shouldSwap = true;
+    } else if(evt.detail.xhr.status === 418){
+        // if the response code 418 (I'm a teapot) is returned, retarget the
+        // content of the response to the element with the id `teapot`
+        evt.detail.shouldSwap = true;        
+        evt.detail.target = htmx.find("#teapot");
+    }
+});
+```
+
+Here we handle a few [400-level error response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses) 
+that would normally not do a swap in htmx.
+
+## <a name="event_naming">[Event Naming](#event_naming)
 
 Note that all events are fired with two different names
 
@@ -716,9 +769,7 @@ Note that all events are fired with two different names
 * Kebab Case
 
 So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
-with other libraries.
- 
-[Alpine.js](https://github.com/alpinejs/alpine/), for example, requires kebab case.
+with other libraries.  [Alpine.js](https://github.com/alpinejs/alpine/), for example, requires kebab case.
 
 ### Logging
 
