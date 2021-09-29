@@ -19,6 +19,12 @@
 			margin-bottom:20px;
 			padding:20px;
 		}
+		.container {
+			height:200px;
+			padding:20px;
+			border:1px solid black;
+			overflow:auto;
+		}
 	</style>
 
 </head>
@@ -35,6 +41,18 @@
 <div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
 <div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
 <div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+
+<h1>Root</h1>
+
+<div class="container" id="wrapper">
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+</div>
 
 <h1>Threshold .5</h1>
 
