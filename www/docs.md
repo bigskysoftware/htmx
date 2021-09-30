@@ -340,48 +340,25 @@ with any of the following values:
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
-htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without javascript.  To understand how CSS transitions
-work in htmx, you must first understand the swap & settle model that htmx uses.
-
-When new content is received from a server, before the content is swapped in, the existing
-content of the page is examined for elements that match by the `id` attribute.  If a match
-is found for an element in the new content, the attributes of the old content are copied
-onto the new element before the swap occurs.  The new content is then swapped in, but with the
-*old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
-(100ms by default).
-
-This may seem a bit complicated, but with this mechanic for swapping content, you can write
-CSS transitions from old to new attribute values.
-
-An example will help clarify.  Consider this original content:
+htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without 
+javascript.  Consider this HTML content:
 
 ```html
   <div id="div1">Original Content</div>
 ```
 
-And this content, which has been received by htmx after an AJAX request, to replace it:
+Imagine this content is replaced by htmx via an ajax request with this new content:
 
 ```html
   <div id="div1" class="red">New Content</div>
 ```
 
-The first thing that htmx does, before it swaps in this new content, is note that these two elements match by `id` (and tag type).  It therefore swaps the *old* attribute values onto the *new* content:
+Note two things: 
 
-```html
-  <div id="div1">New Content</div>
-```
+* The div has the *same* id in the original an in the new content
+* The `red` class has been added to the new content
 
-Note that the new content no longer has a `class` attribute.  This modified new content is then
-swapped into the DOM.  This is the swap step.
-
-Next, after a "settle" delay, the new div will have its attributes updated to the actual values received from the server:
-
-```html
-  <div id="div1" class="red">New Content</div>
-```
-
-Because this `div` was in the DOM with the original `div`'s attributes, this is will trigger a
-CSS transition.  So you can write, for example, this CSS:
+Given this situation, we can write a CSS transition from the old state to the new state:
 
 ```css
 .red {
@@ -390,11 +367,24 @@ CSS transition.  So you can write, for example, this CSS:
 }
 ```
 
-And the newly swapped content will gently transition to a red text color over one second.
+When htmx does the swap, it will it is in such a way that this CSS transition will apply to the new content, and
+you will get a nice, smooth transition to the new state.
 
-All of that may seem a little crazy, but it can be summarized as this:
+So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
 
-> In htmx, all you need to do to use CSS transitions for an element is keep its `id` stable across requests
+You can see the [Animation Examples](/examples/animiations) for more details and live demonstrations.
+
+##### Details
+
+To understand how CSS transitions actually work in htmx, you must understand the underlying swap & settle model that htmx uses.
+
+When new content is received from a server, before the content is swapped in, the existing
+content of the page is examined for elements that match by the `id` attribute.  If a match
+is found for an element in the new content, the attributes of the old content are copied
+onto the new element before the swap occurs.  The new content is then swapped in, but with the
+*old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
+(100ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
+the developer.
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 

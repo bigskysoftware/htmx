@@ -8,7 +8,74 @@ Htmx is designed to allow you to use [CSS transitions](https://developer.mozilla
 to add smooth animations and transitions to your web page using only CSS and HTML.  Below are a few examples of
 various animation techniques.
 
-### Swap Fade Out
+### <a name='basic'></a>[Basic CSS Animations](#basic)
+
+#### Color Throb
+
+The simplest animation technique in htmx is to keep the `id` of an element stable across a content swap.  If the
+`id` of an element is kept stable, htmx will swap it in such a way that CSS transitions can be written between
+the old version of the element and the new one.
+
+Consider this div:
+
+```html
+<style>
+.smooth {
+  transition: all 1s ease-in;
+}
+</style>
+<div id="color-demo" class="smooth" style="color:red"
+      hx-get="/colors" hx-swap="outerHTML" hx-trigger="every 1s">
+  Color Swap Demo
+</div>
+
+```
+
+This div will poll every second and will get replaced with new content which changes the `color` style to a new value
+(e.g. `blue`):
+
+```html
+<div id="color-demo" class="smooth" style="color:blue"
+      hx-get="/colors" hx-swap="outerHTML" hx-trigger="every 1s">
+  Color Swap Demo
+</div>
+```
+  
+Because the div has a stable id, `color-demo`, htmx will structure the swap such that a CSS transition, defined on the
+`.smooth` class, applies to the style update from `red` to `blue`, and smoothly transitions between them.
+
+##### Demo
+
+<style>
+.smooth {
+  transition: all 1s ease-in;
+}
+</style>
+<div id="color-demo" class="smooth" style="color:red"
+      hx-get="/colors" hx-swap="outerHTML" hx-trigger="every 1s">
+  Color Swap Demo
+</div>
+
+<script>
+    var colors = ['blue', 'green', 'orange', 'red'];
+    onGet("/colors", function () {
+      var color = colors.shift();
+      colors.push(color);
+      return '<div id="color-demo" hx-get="/colors" hx-swap="outerHTML" class="smooth" hx-trigger="every 1s" style="color:' + color + '">\n'+
+             '  Color Swap Demo\n'+
+             '</div>\n'
+    });
+</script>
+
+#### Smooth Progress Bar
+
+
+The [Progress Bar](/examples/progress-bar) demo uses this basic CSS animation technique as well, by updating the `length` 
+property of a progress bar element, allowing for a smooth animation.
+
+### <a name='swapping'></a>[Swap Transitions](#swapping)
+
+#### Fade Out On Swap
 
 If you want to fade out an element that is going to be removed when the request ends, you want to take advantage
 of the `htmx-swapping` class with some CSS and extend the swap phase to be long enough for your animation to 
@@ -28,7 +95,7 @@ complete.  This can be done like so:
 </button>
 ```
 
-#### Demo
+##### Demo
 
 <style>
 .fade-me-out.htmx-swapping {
@@ -47,7 +114,9 @@ complete.  This can be done like so:
     onDelete("/fade_out_demo", function () {return ""});
 </script>
 
-### Settle Fade In
+### <a name='settling'></a>[Settling Transitions](#settling)
+
+#### Fade In On Settle
 
 Building on the last example, we can fade in the new content by using the `htmx-settling` class during the settle
 phase.
@@ -69,7 +138,7 @@ phase.
 </button>
 ```
 
-#### Demo
+##### Demo
 
 <style>
 #fade-me-in.htmx-settling {
@@ -95,7 +164,7 @@ phase.
                                                "</button>"});
 </script>
 
-### Request In Flight Animation
+### <a name='request'></a>[Request In Flight Animation](#request)
 
 You can also take advantage of the `htmx-request` class, which is applied to the element that triggers a request.  Below
 is a form that on submit will change its look to indicate that a request is being processed:
@@ -113,7 +182,7 @@ is a form that on submit will change its look to indicate that a request is bein
 </form>
 ```
 
-#### Demo
+##### Demo
 
 <style>
   form.htmx-request {
@@ -164,16 +233,6 @@ the transition time.  This avoids flickering that can happen if the transition i
 </style>
 <div class="demo" classes="toggle faded:1s">Toggle Demo</div>
 
-### Swap/Settle Animations
-
-Htmx has a swap-and-settle strategy that allows you to write CSS transitions between attribute changes on elements with
-stable ids between requests.  All you need to do is make sure that ids line up between requests and you should be 
-able to smoothly animate changes to attributes despite returning new content.
-
-The best demonstration of this is the [Progress Bar](/examples/progress-bar) demo, which shows the `length` property
-being updated smoothly.
-
-
 #### Conclusion
 
-You can use the tools above to create quite a few interesting and pleasing effects with plain old HTML while using htmx.
+You can use the techniques above to create quite a few interesting and pleasing effects with plain old HTML while using htmx.
