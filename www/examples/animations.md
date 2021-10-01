@@ -116,14 +116,15 @@ complete.  This can be done like so:
 
 ### <a name='settling'></a>[Settling Transitions](#settling)
 
-#### Fade In On Settle
+#### Fade In On Addition
 
-Building on the last example, we can fade in the new content by using the `htmx-settling` class during the settle
-phase.
+Building on the last example, we can fade in the new content by using the `htmx-added` class during the settle
+phase.  You can also write CSS transitions against the target, rather than the new content, by using the `htmx-settling`
+class.
 
 ```html
 <style>
-#fade-me-in.htmx-settling {
+#fade-me-in.htmx-added {
   opacity: 0;
 }
 #fade-me-in {
@@ -141,7 +142,7 @@ phase.
 ##### Demo
 
 <style>
-#fade-me-in.htmx-settling {
+#fade-me-in.htmx-added {
   opacity: 0;
 }
 #fade-me-in {

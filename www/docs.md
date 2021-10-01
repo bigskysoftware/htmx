@@ -601,10 +601,12 @@ The order of operations in a htmx request are:
     * An optional swap delay is applied (see the [hx-swap](/attributes/hx-swap) attribute)
     * The actual content swap is done
         * the `htmx-swapping` class is removed from the target
+        * the `htmx-added` class is added to each new piece of content
         * the `htmx-settling` class is applied to the target
         * A settle delay is done (default: 100ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
+        * the `htmx-added` class is removed from each new piece of content
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
@@ -1001,6 +1003,7 @@ listed below:
 |  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
 |  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
 |  `htmx.config.requestClass` | defaults to `htmx-request`
+|  `htmx.config.addedClass` | defaults to `htmx-added`
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`

@@ -47,6 +47,7 @@ return (function () {
                 includeIndicatorStyles:true,
                 indicatorClass:'htmx-indicator',
                 requestClass:'htmx-request',
+                addedClass:'htmx-added',
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
@@ -557,6 +558,7 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
+                child.classList && child.classList.remove(htmx.config.addedClass);
                 processNode(child);
                 processScripts(child);
                 processFocus(child)
@@ -576,6 +578,7 @@ return (function () {
             handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
+                child.classList && child.classList.add(htmx.config.addedClass);
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                     settleInfo.tasks.push(makeAjaxLoadTask(child));
