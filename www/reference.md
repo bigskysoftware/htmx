@@ -111,7 +111,7 @@ title: </> htmx - Attributes
 | [`htmx:beforeOnLoad`](/events#htmx:beforeOnLoad)  | triggered before any response processing occurs
 | [`htmx:beforeProcessNode`](/events#htmx:afterProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
-| [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
+| [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done, allows you to configure the swap
 | [`htmx:beforeSend`](/events#htmx:beforeSend)  | triggered just before an ajax request is sent
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
