@@ -329,7 +329,7 @@ return (function () {
             if (delay) {
                 setTimeout(function(){addClassToElement(elt, clazz);}, delay)
             } else {
-                elt.classList.add(clazz);
+                elt.classList && elt.classList.add(clazz);
             }
         }
 
@@ -338,7 +338,13 @@ return (function () {
             if (delay) {
                 setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
             } else {
-                elt.classList.remove(clazz);
+                if (elt.classList) {
+                    elt.classList.remove(clazz);
+                    // if there are no classes left, remove the class attribute
+                    if (elt.classList.length === 0) {
+                        elt.removeAttribute("class");
+                    }
+                }
             }
         }
 
@@ -558,7 +564,7 @@ return (function () {
 
         function makeAjaxLoadTask(child) {
             return function () {
-                child.classList && child.classList.remove(htmx.config.addedClass);
+                removeClassFromElement(child, htmx.config.addedClass);
                 processNode(child);
                 processScripts(child);
                 processFocus(child)
@@ -578,7 +584,7 @@ return (function () {
             handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
-                child.classList && child.classList.add(htmx.config.addedClass);
+                addClassToElement(child, htmx.config.addedClass);
                 parentNode.insertBefore(child, insertBefore);
                 if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
                     settleInfo.tasks.push(makeAjaxLoadTask(child));
