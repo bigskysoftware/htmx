@@ -372,7 +372,7 @@ giving you a nice, smooth transition to the new state.
 
 So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
 
-You can see the [Animation Examples](/examples/animiations) for more details and live demonstrations.
+You can see the [Animation Examples](/examples/animations) for more details and live demonstrations.
 
 ##### Details
 
