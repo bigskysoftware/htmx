@@ -367,8 +367,8 @@ Given this situation, we can write a CSS transition from the old state to the ne
 }
 ```
 
-When htmx does the swap, it will it is in such a way that this CSS transition will apply to the new content, and
-you will get a nice, smooth transition to the new state.
+When htmx swaps in this new content, it will do so in such a way that the CSS transition will apply to the new content,
+giving you a nice, smooth transition to the new state.
 
 So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
 
