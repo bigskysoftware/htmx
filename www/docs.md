@@ -23,6 +23,8 @@ title: </> htmx - Documentation
   * [swapping](#swapping)
   * [css transitions](#css_transitions)
   * [parameters](#parameters)
+  * [confirming](#confirming)
+* [inheritance](#inheritance)
 * [boosting](#boosting)
 * [websockets & SSE](#websockets-and-sse)
 * [history](#history)
@@ -446,6 +448,68 @@ which you can hook into to show the progress of the upload.
 
 You can include extra values in a request using the [hx-vals](/attributes/hx-vals) (name-expression pairs in JSON format) and
 [hx-vars](/attributes/hx-vars) attributes (comma-separated name-expression pairs that are dynamically computed).
+
+### <a name="confirming"></a> [Confirming Requests](#confirming)
+
+Often you will want to confirm an action before issuing a request.  htmx supports the [`hx-confirm`](/attributes/hx-confirm)
+attribute, which allows you to confirm an action using a simple javascript dialog:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
+  Delete My Account
+</button>
+```
+
+Using events you can implement more sophisticated confirmation dialogs.  The [confirm example](/examples/confirm/)
+shows how to use [sweetalert2](https://sweetalert2.github.io/) library for confirmation of htmx actions.
+
+## <a name="inheritance"></a>[Attribute Inheritance](#inheritance)
+
+Most attributes in htmx are inherited: they apply to the element they are on as well as any children elements.  This
+allows you to "hoist" attributes up the DOM to avoid code duplication.  Consider the following htmx:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure?">
+  Delete My Account
+</button>
+<button hx-put="/account" hx-confirm="Are you sure?">
+  Update My Account
+</button>
+```
+
+Here we have a duplicate `hx-confirm` attribute.  We can hoist this attribute to a parent element:
+
+```html
+<div hx-confirm="Are you sure?">
+    <button hx-delete="/account">
+      Delete My Account
+    </button>
+    <button hx-put="/account">
+      Update My Account
+    </button>
+</div>
+```
+
+This `hx-confirm` attribute will now apply to all htmx-powered elements within it.
+
+Sometimes you wish to undo this inheritance.  Consider if we had a cancel button to this group, but didn't want it to
+be confirmed.  We could add an `unset` directive on it like so:
+
+```html
+<div hx-confirm="Are you sure?">
+    <button hx-delete="/account">
+      Delete My Account
+    </button>
+    <button hx-put="/account">
+      Update My Account
+    </button>
+    <button hx-confirm="unset" hx-get="/">
+      Cancel
+    </button>
+</div>
+```
+
+The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
