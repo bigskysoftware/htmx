@@ -1742,7 +1742,7 @@ return (function () {
             if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
                 return false;
             }
-            if (elt.type === "checkbox" || elt.type === "radio" ) {
+            if (elt.type === "radio" ) {
                 return elt.checked;
             }
             return true;
@@ -1757,6 +1757,9 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
+                if (elt.getAttribute("type") === "checkbox") {
+                    value = elt.checked
+                }
                 if (elt.multiple) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
                 }
@@ -2510,7 +2513,7 @@ return (function () {
                     }
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
