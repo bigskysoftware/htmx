@@ -57,13 +57,16 @@ Max's recommendation is to split the API into two "halves": a generic API and an
 
 I agree entirely with Max on the problem here.  
 
-I would particularly emphasise the fact that the generic API needs to
-be stable, whereas the application API must change rapidly to address application needs.  Jean-Jacques Dubray, in 
-[this article](https://www.infoq.com/articles/no-more-mvc-frameworks/) relates the following sad state of affairs for
+I would particularly emphasise the fact that the generic API needs to be stable, whereas the application API must change 
+rapidly to address application needs.  
+
+Jean-Jacques Dubray, in [this article](https://www.infoq.com/articles/no-more-mvc-frameworks/) relates the following sad state of affairs for
 API designers:
 
 > The worst part of my job these days is designing APIs for front-end developers. The conversation goes inevitably as: 
+>
 >  Dev – So, this screen has data element x,y,z… could you please create an API with the response format {x: , y:, z: }
+>
 >  Me – Ok
 
 This is a perfect encapsulation of the tension that Max has noticed, where API engineers want to design general, 
@@ -82,17 +85,17 @@ that, rather than bailing out to a solution to like GraphQL, you split the APIs 
 However, there is a **next step** to take:
 
 Once you have split your application API from your generic data API, *you are no longer bound by the constraints of
- a public data API and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
+ a public data API* and are free to reconsider the *entire form* of that application API.  We can do whatever we'd like with 
  it, so let's get a bit expansive in our thinking.
  
-Note that core problems with the application API are rapid change and page (or resources) specific tuning.  It turns out that we
-have a very good technology for dealing with this: [hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
+Note that core problems with the application API are rapid change and page (or resource) specific tuning.  It turns out that we
+have a very good technology for dealing with *exactly* this problem: [Hypermedia](https://en.wikipedia.org/wiki/Hypermedia)!  
 
-Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API
-that's fine: the new API is simply reflected in the new HTML returned by the server.  You can add and modify end points
+Hypermedia, by way of HATEOAS, makes API churn [much less of a problem](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html).  When you change the shape of your hypermedia API, well, 
+that's fine: the *new* API is simply reflected in the *new* HTML returned by the server.  You can add and modify end points
 and, lo and behold (to a first order of approximation) your clients (that is, browsers) don't need to be updated.
 
-The browsers simply see the new HTML, and [the human driving them react to the new functionality appropriately](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
+The browsers simply see the new HTML, and [the humans driving them react to the new functionality appropriately](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html).
 
 So, while I feel Max is on the right track, I also think he *doesn't go far enough*: once you have made the mental 
 jump to solving the Data/APP API Impedance Mismatch problem by splitting the two into separate concerns, it is only a 

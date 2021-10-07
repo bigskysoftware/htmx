@@ -61,26 +61,26 @@ everyone reading this will understand:
 ```html
 <html
   <body>
-  <div>
-    <div>
+  <section>
+    <p>
       Name: Joe Blow
-    </div>
-    <div>
+    </p>
+    <p>
       Email: joe@blow.com
-    </div>
-    <div>
+    </p>
+    <p>
       <a href="/contacts/42/edit">Edit</a>
       <a href="/contacts/42/email">Email</a>
       <a href="/contacts/42/archive">Archive</a>
-    </div>
-  </div>
+    </p>
+  </section>
 </body>
 </html>
 ```
 
 Here we have a basic bit of html, with some divs, a bit of information and then some anchor tags to perform various 
 operations on a contact.  Nothing fancy.  Again, for the discussion, imagine this content could be found at 
-<http://example.com/contacts/1>.
+<http://example.com/contacts/42>.
 
 Back to the dissertation:
 

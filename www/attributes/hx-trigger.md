@@ -60,6 +60,7 @@ is seen again before the delay completes it is ignored, the element will trigger
 * `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
   * The extended CSS selector here allows for the following non-standard CSS values:
     * `document` - listen for events on the document
+    * `window` - listen for events on the window
     * `closest <CSS selector>` - finds the closest parent matching the given css selector
     * `find <CSS selector>` - finds the closest child matching the given css selector
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for

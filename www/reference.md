@@ -58,6 +58,7 @@ title: </> htmx - Attributes
 |-----------|-------------|
 | `htmx-indicator` | A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present
 | `htmx-request` | Applied to either the element or the element specified with [`hx-indicator`](/attributes/hx-indicator) while a request is ongoing
+| `htmx-added` | Applied to a new piece of content before it is swapped, removed after it is settled.
 | `htmx-settling` | Applied to a target after content is swapped, removed after it is settled. The duration can be modified via [`hx-swap`](/attributes/hx-swap).
 | `htmx-swapping` | Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via [`hx-swap`](/attributes/hx-swap).
 
@@ -71,6 +72,7 @@ title: </> htmx - Attributes
 
 | Header | Description |
 |-------|-------------|
+| `HX-Boosted` | indicates that the request is via an element using [hx-boost](/attributes/hx-boost)
 | `HX-Current-URL` | the current URL of the browser
 | `HX-History-Restore-Request` | `true` if the request is for history restoration after a miss in the local history cache
 | `HX-Prompt` | the user response to an [hx-prompt](/attributes/hx-prompt)
@@ -110,7 +112,7 @@ title: </> htmx - Attributes
 | [`htmx:beforeOnLoad`](/events#htmx:beforeOnLoad)  | triggered before any response processing occurs
 | [`htmx:beforeProcessNode`](/events#htmx:afterProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](/events#htmx:beforeRequest)  | triggered before an AJAX request is made
-| [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done
+| [`htmx:beforeSwap`](/events#htmx:beforeSwap)  | triggered before a swap is done, allows you to configure the swap
 | [`htmx:beforeSend`](/events#htmx:beforeSend)  | triggered just before an ajax request is sent
 | [`htmx:configRequest`](/events#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
