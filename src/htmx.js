@@ -2510,7 +2510,7 @@ return (function () {
                     }
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
