@@ -19,9 +19,12 @@ title: </> htmx - high power tools for html
 
 [r/htmx on reddit](https://www.reddit.com/r/htmx/)
 
-## Sponsor
 
 <iframe src="https://github.com/sponsors/bigskysoftware/card" title="Sponsor bigskysoftware" height="225" width="600" style="border: 0;"></iframe>
+
+## Training
+
+[HTMX + Flask: Modern Python Web Apps, Hold the JavaScript Course by Michael Kennedy](https://training.talkpython.fm/courses/htmx-flask-modern-python-web-apps-hold-the-javascript)
 
 <div class="row">
 <div class="1 col">
