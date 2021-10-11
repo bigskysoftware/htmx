@@ -2600,7 +2600,7 @@ return (function () {
                 } else {
                     doSwap();
                 }
-            } else {
+            } else if (xhr.status != 204) {
                 triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
             }
         }
