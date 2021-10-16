@@ -4,13 +4,16 @@ tags: posts
 title: HATEOAS
 ---
 
-# META: HATEOAS: An Alternative Explanation
+
+<div style="margin-left: 2em;margin-right: 2em; background-color: whitesmoke; border: 1px solid gray; border-radius: 5px; margin-bottom: 40px">
+
+**META** - HATEOAS: An Alternative Explanation
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
 Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explaination of the
 concept than would be appropriate for Wikipedia, but it is more correct in our opinon.
 
----
+</div>
 
 # HATEOAS
 
@@ -72,7 +75,7 @@ HTTP/1.1 200 OK
 
 Now only one link is available: to deposit more money. In its current state, the other links are not available. Hence the term Engine of Application State. What actions are possible varies as the state of the resource varies.
 
-Contrast this with a typical JSON API that, instead, returns a status field instead:
+Contrast the HTML response above with a typical JSON API that, instead, returns representation of the account with a status field:
 
 ```http request
 HTTP/1.1 200 OK
@@ -148,4 +151,8 @@ Fielding to say:
 > I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today’s example is the SocialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
 
 While attempts have been made to impose more elaborate hypermedia controls on JSON APIs, broadly the industry has rejected
-this approach in favor of RPC-style JSON apis.
+this approach in favor of RPC-style JSON apis.  
+
+This is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
+necessity for RESTful systems.
+
