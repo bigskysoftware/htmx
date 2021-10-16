@@ -210,11 +210,17 @@ necessity for RESTful systems.
     font-weight: inherit;
   }
 
+  .content code {
+    filter: brightness(.8);
+  }
+
   .content pre {
-    margin: 0 2em;
+    padding: 0 1em;
     scrollbar-width: thin;
     scrollbar-color: #aaa transparent;
-    filter: brightness(.8);g
+    background: #f5f5f5;
+    margin: 16px 32px !important;
+    border-radius: 0;
   }
 
   .content a {
