@@ -214,6 +214,7 @@ necessity for RESTful systems.
     margin: 0 2em;
     scrollbar-width: thin;
     scrollbar-color: #aaa transparent;
+    filter: brightness(.8);g
   }
 
   .content a {
