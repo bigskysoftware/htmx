@@ -8,7 +8,7 @@ title: HATEOAS
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap&text=HATEOAS" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap" rel="stylesheet"> 
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
 
 # HATEOAS
 
@@ -166,15 +166,27 @@ necessity for RESTful systems.
     font-family: 'Source Serif Pro', serif;
     text-align: justify;
     hyphens: auto;
+    margin-bottom: 3em;
   }
 
   .content h1 {
     font-family: 'Lexend Zetta', Haettenschweiler, Impact, sans-serif;
     margin: 16px;
-    font-size: 11vw;
+    font-size: min(10vw, 7em);
     line-height: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 5rem;
     text-align: center;
+  }
+
+  .content section:after {
+    content: '< / >';
+    content: '< / >' / '';
+    display: block;
+    margin-bottom: 32px;
+    text-align: center;
+    color: #aaa;
+    font-weight: bold;
+    letter-spacing: .5em;
   }
 
   .content h2 {
@@ -195,11 +207,24 @@ necessity for RESTful systems.
     padding: none;
     color: black;
     text-shadow: none;
+    font-weight: inherit;
   }
 
   .content pre {
     margin: 0 2em;
     scrollbar-width: thin;
     scrollbar-color: #aaa transparent;
+  }
+
+  .content a {
+    font-variant: all-small-caps;
+    letter-spacing: .08em;
+    font-weight: 600;
+  }
+
+  .content blockquote {
+    border: none;
+    font-style: italic;
+    font-size: 1.1em;
   }
 </style>
