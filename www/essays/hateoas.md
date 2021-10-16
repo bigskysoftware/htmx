@@ -17,8 +17,8 @@ title: HATEOAS
 ## Preface: _HATEOAS &mdash; An Alternative Explanation_
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
-Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explaination of the
-concept than would be appropriate for Wikipedia, but it is more correct in our opinon.
+Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explanation of the
+concept than would be appropriate for Wikipedia, but it is more correct in our opinion.
 
 </section>
 
@@ -38,8 +38,8 @@ A user-agent that implements HTTP makes a HTTP request of a REST end point throu
 For example, this GET request fetches an account resource, requesting details in an HTML representation:
 
 ```http request
-  GET /accounts/12345 HTTP/1.1
-  Host: bank.example.com
+GET /accounts/12345 HTTP/1.1
+Host: bank.example.com
 ```
 The response is:
 
