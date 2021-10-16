@@ -8,12 +8,13 @@ title: HATEOAS
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap&text=HATEOAS" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
 
 # HATEOAS
 
 <section>
 
-## *Preface: _HATEOAS &mdash; An Alternative Explanation_
+## Preface: _HATEOAS &mdash; An Alternative Explanation_
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
 Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explaination of the
@@ -167,11 +168,27 @@ necessity for RESTful systems.
 
   .content h1 {
     font-family: 'Lexend Zetta', Haettenschweiler, Impact, sans-serif;
+    margin: 16px;
+    font-size: 11vw;
+    line-height: 1em;
+    margin-bottom: 1em;
+    text-align: center;
   }
+
+  .content h2 {
+    font-size: 1em;
+    margin: 16px;
+    text-transform: uppercase;
+  }
+    .content h2 em {
+      text-transform: none;
+    }
 
   .content pre, code {
     background: none;
     padding: none;
+
+  .content pre {
     margin: 0 4em;
   }
 </style>
