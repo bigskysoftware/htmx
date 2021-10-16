@@ -172,7 +172,7 @@ necessity for RESTful systems.
   .content h1 {
     font-family: 'Lexend Zetta', Haettenschweiler, Impact, sans-serif;
     margin: 16px;
-    font-size: min(10vw, 7em);
+    font-size: min(10vw, 6em);
     line-height: 1em;
     margin-bottom: 5rem;
     text-align: center;
