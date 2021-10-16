@@ -164,6 +164,8 @@ necessity for RESTful systems.
 <style>
   .content {
     font-family: 'Source Serif Pro', serif;
+    text-align: justify;
+    hyphens: auto;
   }
 
   .content h1 {
@@ -178,17 +180,26 @@ necessity for RESTful systems.
   .content h2 {
     font-size: 1em;
     margin: 16px;
+    margin-top: 32px;
     text-transform: uppercase;
+    letter-spacing: .1em;
+    text-align: center;
   }
     .content h2 em {
       text-transform: none;
+      letter-spacing: 0;
     }
 
-  .content pre, code {
+  .content pre, .content code {
     background: none;
     padding: none;
+    color: black;
+    text-shadow: none;
+  }
 
   .content pre {
-    margin: 0 4em;
+    margin: 0 2em;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa transparent;
   }
 </style>
