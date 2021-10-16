@@ -105,7 +105,7 @@ API.
 
 This shows the core difference between the two approaches: in the RESTful, HATEOAS HTML representation, all operations are encoded
 directly in the response.  In the JSON API example, out-of-band information is necessary for processing and working with
-the knowledge.
+the remote resource.
 
 ## Origins
 
