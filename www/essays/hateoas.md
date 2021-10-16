@@ -4,18 +4,22 @@ tags: posts
 title: HATEOAS
 ---
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap&text=HATEOAS" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap" rel="stylesheet"> 
 
-<div style="margin-left: 2em;margin-right: 2em; background-color: whitesmoke; border: 1px solid gray; border-radius: 5px; margin-bottom: 40px">
+# HATEOAS
 
-**META** - HATEOAS: An Alternative Explanation
+<section>
+
+## *Preface: _HATEOAS &mdash; An Alternative Explanation_
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
 Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explaination of the
 concept than would be appropriate for Wikipedia, but it is more correct in our opinon.
 
-</div>
-
-# HATEOAS
+</section>
 
 Hypermedia as the Engine of Application State (HATEOAS) is a constraint of the [REST application architecture](https://en.wikipedia.org/wiki/Representational_state_transfer) that distinguishes it from other network application architectures.
 
@@ -156,3 +160,18 @@ this approach in favor of RPC-style JSON apis.
 This is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
 necessity for RESTful systems.
 
+<style>
+  .content {
+    font-family: 'Source Serif Pro', serif;
+  }
+
+  .content h1 {
+    font-family: 'Lexend Zetta', Haettenschweiler, Impact, sans-serif;
+  }
+
+  .content pre, code {
+    background: none;
+    padding: none;
+    margin: 0 4em;
+  }
+</style>
