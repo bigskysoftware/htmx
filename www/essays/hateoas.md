@@ -99,7 +99,7 @@ API.
 
 ## Origins
 
-The HATEOAS constraint is an essential part of the ["uniform interface"](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) feature of REST, as defined in Roy Fielding's [doctoral dissertation](). Fielding's dissertation was a discussion of the
+The HATEOAS constraint is an essential part of the ["uniform interface"](https://en.wikipedia.org/wiki/Representational_state_transfer#Uniform_interface) feature of REST, as defined in Roy Fielding's [doctoral dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm). Fielding's dissertation was a discussion of the
 early web architecture, consisting mainly of HTML and HTTP at the time.
 
 Fielding has further described the concept, and the crucial requirement of hypermedia, [on his blog](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven).
