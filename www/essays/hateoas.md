@@ -10,7 +10,7 @@ title: HATEOAS
 **META** - HATEOAS: An Alternative Explanation
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
-Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explaination of the
+Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explanation of the
 concept than would be appropriate for Wikipedia, but it is more correct in our opinon.
 
 </div>
