@@ -4,18 +4,23 @@ tags: posts
 title: HATEOAS
 ---
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap&text=HATEOAS" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
 
-<div style="margin-left: 2em;margin-right: 2em; background-color: whitesmoke; border: 1px solid gray; border-radius: 5px; margin-bottom: 40px">
+# HATEOAS
 
-**META** - HATEOAS: An Alternative Explanation
+<section>
+
+## Preface: _HATEOAS &mdash; An Alternative Explanation_
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.
 Here we use HTML to explain the concept, and contrast it with JSON APIs.  It is a more opinionated explanation of the
-concept than would be appropriate for Wikipedia, but it is more correct in our opinon.
+concept than would be appropriate for Wikipedia, but it is more correct in our opinion.
 
-</div>
-
-# HATEOAS
+</section>
 
 Hypermedia as the Engine of Application State (HATEOAS) is a constraint of the [REST application architecture](https://en.wikipedia.org/wiki/Representational_state_transfer) that distinguishes it from other network application architectures.
 
@@ -33,8 +38,8 @@ A user-agent that implements HTTP makes a HTTP request of a REST end point throu
 For example, this GET request fetches an account resource, requesting details in an HTML representation:
 
 ```http request
-  GET /accounts/12345 HTTP/1.1
-  Host: bank.example.com
+GET /accounts/12345 HTTP/1.1
+Host: bank.example.com
 ```
 The response is:
 
@@ -156,3 +161,77 @@ this approach in favor of RPC-style JSON apis.
 This is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
 necessity for RESTful systems.
 
+<style>
+  .content {
+    font-family: 'Source Serif Pro', serif;
+    text-align: justify;
+    hyphens: auto;
+    margin-bottom: 3em;
+  }
+
+  .content h1 {
+    font-family: 'Lexend Zetta', Haettenschweiler, Impact, sans-serif;
+    margin: 16px;
+    font-size: min(10vw, 6em);
+    line-height: 1em;
+    margin-bottom: 5rem;
+    text-align: center;
+  }
+
+  .content section:after {
+    content: '< / >';
+    content: '< / >' / '';
+    display: block;
+    margin-bottom: 32px;
+    text-align: center;
+    color: #aaa;
+    font-weight: bold;
+    letter-spacing: .5em;
+  }
+
+  .content h2 {
+    font-size: 1em;
+    margin: 16px;
+    margin-top: 32px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    text-align: center;
+  }
+    .content h2 em {
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+  .content pre, .content code {
+    background: none;
+    padding: none;
+    color: black;
+    text-shadow: none;
+    font-weight: inherit;
+  }
+
+  .content code {
+    filter: brightness(.8);
+  }
+
+  .content pre {
+    padding: 0 1em;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa transparent;
+    background: #f5f5f5;
+    margin: 16px 32px !important;
+    border-radius: 0;
+  }
+
+  .content a {
+    font-variant: all-small-caps;
+    letter-spacing: .08em;
+    font-weight: 600;
+  }
+
+  .content blockquote {
+    border: none;
+    font-style: italic;
+    font-size: 1.1em;
+  }
+</style>
