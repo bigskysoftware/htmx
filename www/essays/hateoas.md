@@ -156,7 +156,7 @@ Fielding to say:
 > I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today’s example is the SocialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
 
 While attempts have been made to impose more elaborate hypermedia controls on JSON APIs, broadly the industry has rejected
-this approach in favor of RPC-style JSON apis.  
+this approach in favor of RPC-style JSON APIs.  
 
 This is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
 necessity for RESTful systems.
