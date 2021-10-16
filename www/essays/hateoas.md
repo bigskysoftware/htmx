@@ -35,7 +35,7 @@ The restrictions imposed by HATEOAS decouples client and server. This enables se
 
 A user-agent that implements HTTP makes a HTTP request of a REST end point through a simple URL. All subsequent requests the user-agent may make are discovered inside the responses to each request. The media types used for these representations, and the link relations they may contain, are standardized. The client transitions through application states by selecting from the links within a representation or by manipulating the representation in other ways afforded by its media type. In this way, RESTful interaction is driven by hypermedia, rather than out-of-band information.
 
-For example, this GET request fetches an account resource, requesting details in an HTML representation:
+For example, this GET request fetches a bank account resource, requesting details in an HTML representation:
 
 ```http request
 GET /accounts/12345 HTTP/1.1
@@ -62,7 +62,8 @@ HTTP/1.1 200 OK
 
 The response contains these possible follow-up links: navigate to a UI to enter a deposit, withdrawal, transfer, or to close request (to close the account).
 
-As an example, later, after the account has been overdrawn, there is a different set of available links, because the account is overdrawn.
+Consider the situation at a later point, after the account has been overdrawn.  There would then be a different set of available links, due to this
+account status.
 
 ```http request
 HTTP/1.1 200 OK
@@ -101,6 +102,10 @@ Here we can see that the client must know specifically what the value of the `st
 the rendering of a user interface.  The client must also know what URLs must be used for manipulation of this resource
 since they are not encoded in the response.  This would typically be achieved by consulting documentation for the JSON
 API.
+
+This shows the core difference between the two approaches: in the RESTful, HATEOAS HTML representation, all operations are encoded
+directly in the response.  In the JSON API example, out-of-band information is necessary for processing and working with
+the knowledge.
 
 ## Origins
 
