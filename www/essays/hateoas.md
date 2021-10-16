@@ -1,3 +1,9 @@
+---
+layout: layout.njk
+tags: posts
+title: HATEOAS
+---
+
 # META: HATEOAS: An Alternative Explanation
 
 This page is a reworking on the [Wikipedia Entry on HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), which uses JSON.

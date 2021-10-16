@@ -45,6 +45,7 @@ title: </> htmx - high power tools for html
 
 ## Essays
 
+* [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
 * [Splitting Your Data & APIs: Going Further](/essays/splitting-your-apis)
 * [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
