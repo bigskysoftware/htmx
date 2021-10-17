@@ -71,7 +71,7 @@ HTTP/1.1 200 OK
 <html>
   <body>
     <div>Account number: 12345</div>
-    <div>Balance: $100.00 USD</div>
+    <div>Balance: -$50.00 USD</div>
     <div>Links:
         <a href="/accounts/12345/deposits">deposits</a>
     </div>
@@ -91,7 +91,7 @@ HTTP/1.1 200 OK
         "account_number": 12345,
         "balance": {
             "currency": "usd",
-            "value": 100.00
+            "value": -50.00
         },
         "status": "overdrawn"
     }
