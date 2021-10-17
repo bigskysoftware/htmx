@@ -33,15 +33,17 @@ The restrictions imposed by HATEOAS decouples client and server. This enables se
 
 ## Example
 
-A user-agent that implements HTTP makes a HTTP request of a REST end point through a simple URL. All subsequent requests the user-agent may make are discovered inside the responses to each request. The media types used for these representations, and the link relations they may contain, are standardized. The client transitions through application states by selecting from the links within a representation or by manipulating the representation in other ways afforded by its media type. In this way, RESTful interaction is driven by hypermedia, rather than out-of-band information.
+A user-agent that implements HTTP makes a HTTP request of a REST end point through a simple URL. All subsequent requests the user-agent may make are discovered withing the hypermedia responses to each request. The media types used for these representations, and the link relations they may contain, are standardized. The client transitions through application states by selecting from links within a hypermedia representation or by manipulating the representation in other ways afforded by its media type. 
 
-For example, this GET request fetches a bank account resource, requesting details in an HTML representation:
+In this way, RESTful interaction is driven by hypermedia, rather than out-of-band information.
+
+A concrete example will clarify this.  Consider this GET request, issued by a web browser, which fetches a bank account resource:
 
 ```http request
 GET /accounts/12345 HTTP/1.1
 Host: bank.example.com
 ```
-The response is:
+The server responds with a hypermedia representation using HTML:
 
 ```http request
 HTTP/1.1 200 OK
@@ -60,10 +62,10 @@ HTTP/1.1 200 OK
 </html>
 ```
 
-The response contains these possible follow-up links: navigate to a UI to enter a deposit, withdrawal, transfer, or to close request (to close the account).
+The response contains following possible follow-up actions: navigate to a UI to enter a deposit, withdrawal, transfer, or to close request (to close the account).
 
-Consider the situation at a later point, after the account has been overdrawn.  There would then be a different set of available links, due to this
-account status.
+Consider the situation at a later point, after the account has been overdrawn.  Now, a different set of links are available due to this
+account status change.
 
 ```http request
 HTTP/1.1 200 OK
@@ -79,9 +81,15 @@ HTTP/1.1 200 OK
 </html>
 ```
 
-Now only one link is available: to deposit more money. In its current state, the other links are not available. Hence the term Engine of Application State. What actions are possible varies as the state of the resource varies.
+Only one link is available: to deposit more money. In the accounts current overdrawn state the other actions are not available, and
+this fact is reflected internally in *the hypermedia*.  The web browser does not know about the concept of an overdrawn account or,
+indeed, even what an account is.  It simply knows how to present hypermedia representations to a user.
 
-Contrast the HTML response above with a typical JSON API that, instead, returns representation of the account with a status field:
+Hence we have the notion of the Hypermedia being the Engine of Application State. What actions are possible varies as the 
+state of the resource varies and this information is encoded in the hypermedia.
+
+Contrast the HTML response above with a typical JSON API which, instead, might return a representation of the account with a 
+status field:
 
 ```http request
 HTTP/1.1 200 OK
@@ -99,9 +107,12 @@ HTTP/1.1 200 OK
 ```
 
 Here we can see that the client must know specifically what the value of the `status` field means and how it might affect
-the rendering of a user interface.  The client must also know what URLs must be used for manipulation of this resource
-since they are not encoded in the response.  This would typically be achieved by consulting documentation for the JSON
-API.
+the rendering of a user interface, and what actions can be taken with it.  The client must also know what URLs must be used 
+for manipulation of this resource since they are not encoded in the response.  This would typically be achieved by 
+consulting documentation for the JSON API.
+
+It is this requirement of out-of-band information that distinguishes this JSON API from a RESTful API that implements
+HATEOAS.
 
 This shows the core difference between the two approaches: in the RESTful, HATEOAS HTML representation, all operations are encoded
 directly in the response.  In the JSON API example, out-of-band information is necessary for processing and working with
