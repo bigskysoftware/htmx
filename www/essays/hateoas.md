@@ -166,16 +166,36 @@ Unfortunately, the client of this API still needs to know quite a bit of additio
 * Can it issue a `GET` to these URLs in order to get a representation of the mutation in question?
 * If it can `POST` to a given URL, what values are expected?
 
-This representation does not have the same self-contained "uniform interface" as the HTML representation does, leading
-Fielding to say:
+Compare the above JSON with the following HTTP response, retrieved by a browser after a user has clicked on the 
+link to `/accounts/12345/deposits` found in the first HTML example:
+
+```http request
+HTTP/1.1 200 OK
+
+<html>
+  <body>
+    <form method="post" action="/accounts/12345/deposits">
+        <input name="amount" type="number'/>
+        <button>Submit</button>
+    </div>
+  <body>
+</html>
+```
+
+Note that this HTML response encodes all the information necessary to update the account balance, providing a `form` with a `method`
+and `action` attribute, as well as the inputs necessary for updating the resource correctly.  
+
+The JSON representation does not have the same self-contained "uniform interface" as the HTML representation does.
+
+Labelling JSON APIs, no matter how far they stray from RESTful concepts, as 'REST' has lead Roy Fielding to say:
 
 > I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today’s example is the SocialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
 
 While attempts have been made to impose more elaborate hypermedia controls on JSON APIs, broadly the industry has rejected
-this approach in favor of RPC-style JSON APIs.  
+this approach in favor of simpler RPC-style APIs that forego HATEOAS and other elements of the REST-ful architecture.
 
-This is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
-necessity for RESTful systems.
+This fact is strong evidence for the assertion that a natural hypermedia such as HTML is a practical
+necessity for building RESTful systems.
 
 <style>
   .content {
