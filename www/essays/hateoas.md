@@ -33,7 +33,7 @@ The restrictions imposed by HATEOAS decouples client and server. This enables se
 
 ## Example
 
-A user-agent that implements HTTP makes a HTTP request of a REST end point through a simple URL. All subsequent requests the user-agent may make are discovered withing the hypermedia responses to each request. The media types used for these representations, and the link relations they may contain, are standardized. The client transitions through application states by selecting from links within a hypermedia representation or by manipulating the representation in other ways afforded by its media type. 
+A user-agent that implements HTTP makes a HTTP request of a REST end point through a simple URL. All subsequent requests the user-agent may make are discovered within the hypermedia responses to each request. The media types used for these representations, and the link relations they may contain, are standardized. The client transitions through application states by selecting from links within a hypermedia representation or by manipulating the representation in other ways afforded by its media type. 
 
 In this way, RESTful interaction is driven by hypermedia, rather than out-of-band information.
 
