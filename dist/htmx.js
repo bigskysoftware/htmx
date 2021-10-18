@@ -2490,6 +2490,15 @@ return (function () {
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+                
+            var isError = xhr.status >= 300
+            if (isError) {
+                target = getErrorTarget(elt)
+                if (!target) {
+                    return
+                }
+                beforeSwapDetails.shouldSwap = true
+            }
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2503,14 +2512,6 @@ return (function () {
                 // Save current page
                 if (shouldSaveHistory) {
                     saveHistory();
-                }
-                
-                var isError = xhr.status >= 300
-                if (isError) {
-                    target = getErrorTarget(elt)
-                    if (!target) {
-                        return
-                    }
                 }
 
                 var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
