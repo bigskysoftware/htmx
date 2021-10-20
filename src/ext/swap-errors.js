@@ -7,4 +7,3 @@ htmx.defineExtension("swap-errors", {
     }
   },
 });
-

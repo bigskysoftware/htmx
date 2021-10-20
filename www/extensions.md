@@ -68,6 +68,7 @@ against `htmx` in each distribution
 | [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
 | [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
 | [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
+| [`swap-errors`](/extensions/swap-errors) | an extension allow  swapping response when HTTP Error code is returned.
 
 </div>
 

@@ -1,4 +1,4 @@
-describe("swap-error extension", function () {
+describe("swap-errors extension", function () {
   beforeEach(function () {
     this.server = makeServer();
     clearWorkArea();
@@ -8,7 +8,7 @@ describe("swap-error extension", function () {
     clearWorkArea();
   });
 
-  it(" test les erreursr", function () {
+  it("should should swap  HTTP Error", function () {
     this.server.respondWith("GET", "/test", function (xhr) {
       xhr.respond(400, { "HX-SWAP-ERRORS": 1 }, "SWAPPED");
     });
