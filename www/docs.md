@@ -338,7 +338,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from response (out of band items will still be processed)
+| `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
