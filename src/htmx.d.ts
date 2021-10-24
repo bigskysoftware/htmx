@@ -24,3 +24,21 @@ export interface HtmxConfig {
 }
 
 export declare var htmx: HtmxApi
+
+export interface HtmxExtension {
+    onEvent: (name: string, event: Event, api: HtmxExtensionApi) => boolean;
+    transformResponse: (text: string, xhr: XMLHttpRequest, elt: HTMLElement, api: HtmxExtensionApi) => string;
+    isInlineSwap: (swapStyle: string, api: HtmxExtensionApi) => boolean;
+    handleSwap: (swapStyle: string, target: HTMLElement, fragment: string, settleInfo: Object, api: HtmxExtensionApi) => boolean;
+    encodeParameters: (xhr: XMLHttpRequest, parameters: Object, elt: HTMLElement, api: HtmxExtensionApi) => void;
+}
+
+export interface HtmxExtensionApi {
+    bodyContains: (element: HTMLElement) => boolean;
+    hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean;
+    getAttributeValue: (element: HTMLElement, qualifiedName: string) => string | null;
+    getInternalData: (element: HTMLElement) => Object;
+    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void;
+    triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void;
+    swap:  (element: HTMLElement, content: string) => void;
+}
