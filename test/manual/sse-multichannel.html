@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<script src="../../src/htmx.js"></script>
+		<script src="../../src/ext/sse.js"></script>
 		<script>
 			htmx.createEventSource = function(url){
                 return new EventSource(url, {withCredentials:false})
@@ -29,13 +30,12 @@
 	</head>
 
 	<body>
-
-		<div id="page" hx-sse="connect:http://sseplaceholder.openfollow.org/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
+		<div id="page" hx-ext="sse" sse-url="http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
 			<h3>Multiple Listeners. message only</h3>
-			<div class="container" hx-sse="swap:Event1">Waiting for Posts in Event1 channel...</div>
-			<div class="container" hx-sse="swap:Event2">Waiting for Posts in Event2 channel...</div>
-			<div class="container" hx-sse="swap:Event3">Waiting for Posts in Event3 channel...</div>
-			<div class="container" hx-sse="swap:Event4">Waiting for Posts in Event4 channel...</div>
+			<div class="container" sse-swap="Event1">Waiting for Posts in Event1 channel...</div>
+			<div class="container" sse-swap="Event2">Waiting for Posts in Event2 channel...</div>
+			<div class="container" sse-swap="Event3">Waiting for Posts in Event3 channel...</div>
+			<div class="container" sse-swap="Event4">Waiting for Posts in Event4 channel...</div>
 		</div>
 	</body>
 </html>

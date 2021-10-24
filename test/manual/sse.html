@@ -1,8 +1,7 @@
 <html>
 	<head>
 		<script src="../../src/htmx.js"></script>
-		<script src="../../src/ext/server-sent-events.js"></script>
-		<script src="../../src/ext/debug.js"></script>
+		<script src="../../src/ext/sse.js"></script>
 		<script>
 			// "withCredentials:false" is necessary to circumvent CORS restrictions
 			htmx.createEventSource = function(url){
@@ -32,7 +31,7 @@
 	</head>
 
 	<body>
-		<div id="page" hx-ext="debug">
+		<div id="page">
 			<h3>Multiple Listeners. message only</h3>
 			<div class="container" hx-ext="sse" sse-url="http://localhost/posts.html" sse-swap="message">Waiting for Posts...</div>
 			<div class="container" hx-ext="sse" sse-url="http://localhost/comments.html" sse-swap="message">Waiting for Comments...</div>
