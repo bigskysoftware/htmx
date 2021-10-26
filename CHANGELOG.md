@@ -7,7 +7,7 @@
 * You can now use the value `unset` to clear a property that would normally be inherited (e.g. hx-confirm)
 * The `htmx-added` class is added to new content before a swap and removed after the settle phase, which allows you
   more flexibility in writing CSS transitions for added content (rather than relying on the target, as with `htmx-settling`)
-* The `htmx:beforeSwap` event has been updated to allow you to [configure swapping](/docs/#modifying_swapping_behavior_with_events)
+* The `htmx:beforeSwap` event has been updated to allow you to [configure swapping](https://htmx.org/docs/#modifying_swapping_behavior_with_events)
   behavior
 * Improved `<title>` extraction support
 * You can listen to events on the `window` object using the `from:` modifier in `hx-trigger`
@@ -19,16 +19,16 @@
 ## [1.5.0] - 2021-7-12
 
 * Support tracking of button clicked during a form submission
-* Conditional polling via the [hx-trigger](/attributes/hx-trigger) attribute
-* `document` is now a valid pseudo-selector on the [hx-trigger](/attributes/hx-trigger) `from:` argument, allowing you
+* Conditional polling via the [hx-trigger](https://htmx.org/attributes/hx-trigger) attribute
+* `document` is now a valid pseudo-selector on the [hx-trigger](https://htmx.org/attributes/hx-trigger) `from:` argument, allowing you
   to listen for events on the document.
-* Added the [hx-request](/attributes/hx-request) attribute, allowing you to configure the following aspects of the request
+* Added the [hx-request](https://htmx.org/attributes/hx-request) attribute, allowing you to configure the following aspects of the request
     * `timeout` - the timeout of the request
     * `credentials` - if the request will send credentials
     * `noHeaders` - strips all headers from the request
 * Along with the above attribute, you can configure the default values for each of these via the corresponding `htmx.config`
   properties (e.g. `htmx.config.timeout`)
-* Both the `scroll` and `show` options on [hx-swap](/attributes/hx-swap) now support extended syntax for selecting the
+* Both the `scroll` and `show` options on [hx-swap](https://htmx.org/attributes/hx-swap) now support extended syntax for selecting the
   element to scroll or to show, including the pseudo-selectors `window:top` and `window:bottom`.
 
 ## [1.4.1] - 2021-6-1
@@ -37,13 +37,13 @@
 
 ## [1.4.0] - 2021-5-25
 
-* Added the `queue` option to the [hx-trigger](/attributes/hx-trigger) attribute, allowing you to specify how events
+* Added the `queue` option to the [hx-trigger](https://htmx.org/attributes/hx-trigger) attribute, allowing you to specify how events
   should be queued when they are received with a request in flight
 * The `htmx.config.useTemplateFragments` option was added, allowing you to use HTML template tags for parsing content
   from the server.  This allows you to use Out of Band content when returning things like table rows, but it is not
   IE11 compatible.
 * The `defaultSettleDelay` was dropped to 20ms from 100ms
-* Introduced a new synthetic event, [intersect](/docs#pecial-events) that allows you to trigger when an item is scrolled into view
+* Introduced a new synthetic event, [intersect](https://htmx.org/docs#pecial-events) that allows you to trigger when an item is scrolled into view
   as specified by the `IntersectionObserver` API
 * Fixed timing issue that caused exceptions in the `reveal` logic when scrolling at incredible speeds - <https://github.com/bigskysoftware/htmx/issues/463>
 * Fixed bug causing SVG titles to be incorrectly used as page title - <https://github.com/bigskysoftware/htmx/issues/459>
@@ -59,7 +59,7 @@
   
 ## [1.3.3] - 2021-4-5
 
-* Added the [`hx-disabled`](/docs#security) attribute to allow htmx to be turned off for parts of the DOM
+* Added the [`hx-disabled`](https://htmx.org/docs#security) attribute to allow htmx to be turned off for parts of the DOM
 * SSE now uses a full-jitter exponential backoff algorithm on reconnection, using the `htmx.config.wsReconnectDelay`
   setting
 
