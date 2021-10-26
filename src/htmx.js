@@ -121,6 +121,12 @@ return (function () {
             }
         }
 
+        /**
+         * 
+         * @param {HTMLElement} elt 
+         * @param {string} attributeName 
+         * @returns string | null
+         */
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
@@ -1628,6 +1634,8 @@ return (function () {
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
+
+                    // @ts-ignore: optional parameter in reload() function throws error
                     window.location.reload(true);
                 } else {
                     loadHistoryFromServer(path);
@@ -1865,6 +1873,7 @@ return (function () {
         }
 
         function filterValues(inputValues, elt) {
+            /** @type {string | null} */
             var paramsValue = getClosestAttributeValue(elt, "hx-params");
             if (paramsValue) {
                 if (paramsValue === "none") {
