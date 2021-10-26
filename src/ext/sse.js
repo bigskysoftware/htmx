@@ -53,7 +53,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 				source.onerror = function (err) {
 					api.triggerErrorEvent(parent, "htmx:sseError", {error:err, source:source});
-					maybeCloseSSESource(parent);
+					maybeCloseSSESource(api, parent);
 				};
 				
 				api.getInternalData(parent).sseEventSource = source;
@@ -79,7 +79,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 					// Register the new listener
 					api.getInternalData(parent).sseEventListener = listener;
 					source.addEventListener(sseEventName, listener);
-				})
+				});
 
 				// Add message handlers for every `hx-trigger="sse:*"` attribute
 				queryAttributeOnThisOrChildren(api, parent, "hx-trigger").forEach(function(child) {
@@ -100,13 +100,13 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 						}
 
 						// Trigger events to be handled by the rest of htmx
-						api.triggerEvent(child, sseEventName, event)
-						api.triggerEvent(child, "htmx:sseMessage", event)
+						htmx.trigger(child, sseEventName, event)
+						htmx.trigger(child, "htmx:sseMessage", event)
 					}
 
 					// Register the new listener
 					api.getInternalData(parent).sseEventListener = listener;
-					source.addEventListener(sseEventName, listener);
+					source.addEventListener(sseEventName.slice(4), listener);
 				})
 			}
 		}
