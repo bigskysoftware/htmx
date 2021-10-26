@@ -23,13 +23,11 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 			// Try to remove remove an EventSource when elements are removed
 			case "htmx:beforeCleanupElement":
-				if (api.hasAttribute("hx-swap")) {
-					var source = api.getInternalData(evt.target, "sseEventSource")
-					if (source != null) {
-						source.close();
-					}
-					return;
+				var source = api.getInternalData(evt.target, "sseEventSource")
+				if (source != null) {
+					source.close();
 				}
+				return;
 
 			// Try to create EventSources when elements are processed
 			case "htmx:afterProcessNode":
