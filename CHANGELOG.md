@@ -1,7 +1,20 @@
 # Changelog
 
 
-## [1.6.0] - 2021-?-??
+## [1.6.0] - 2021-10-01
+
+* Completely reworked `<script>` tag support that now supports the `<script src="...'/>` form
+* You can now use the value `unset` to clear a property that would normally be inherited (e.g. hx-confirm)
+* The `htmx-added` class is added to new content before a swap and removed after the settle phase, which allows you
+  more flexibility in writing CSS transitions for added content (rather than relying on the target, as with `htmx-settling`)
+* The `htmx:beforeSwap` event has been updated to allow you to [configure swapping](/docs/#modifying_swapping_behavior_with_events)
+  behavior
+* Improved `<title>` extraction support
+* You can listen to events on the `window` object using the `from:` modifier in `hx-trigger`
+* The `root` option of the `intersect` event was fixed
+* Boosted forms respect the `enctype` declaration
+* The `HX-Boosted` header will be sent on requests from boosted elements
+* Promises are not returned from the main ajax function unless it is an api call (i.e. `htmx.ajax`)
 
 ## [1.5.0] - 2021-7-12
 
