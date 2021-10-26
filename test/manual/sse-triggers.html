@@ -31,7 +31,7 @@
 
 	<body>
 		<div id="page" hx-ext="sse" sse-url="http://localhost/posts.html?types=event1%2cevent2%2cevent3%2cevent4">
-			<h3>Multiple Listeners. message only</h3>
+			<h3>Testing Triggers</h3>
 			<div id="first" class="container" hx-get="http://localhost/page/random" hx-trigger="sse:event1">Waiting for Posts in Event1 channel...</div>
 			<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:event2">Waiting for Posts in Event2 channel...</div>
 			<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:event3">Waiting for Posts in Event3 channel...</div>
