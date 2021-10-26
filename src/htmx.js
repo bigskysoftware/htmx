@@ -54,16 +54,12 @@ return (function () {
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
-                wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
             },
             parseInterval:parseInterval,
             _:internalEval,
-            createWebSocket: function(url){
-                return new WebSocket(url, []);
-            },
             version: "1.6.0"
         };
 
@@ -600,9 +596,6 @@ return (function () {
 
             triggerEvent(element, "htmx:beforeCleanupElement")
 
-            if (internalData.webSocket) {
-                internalData.webSocket.close();
-            }
             if (internalData.listenerInfos) {
                 forEach(internalData.listenerInfos, function(info) {
                     if (element !== info.on) {
@@ -1136,123 +1129,6 @@ return (function () {
             }
         }
 
-        function processWebSocketInfo(elt, nodeData, info) {
-            var values = splitOnWhitespace(info);
-            for (var i = 0; i < values.length; i++) {
-                var value = values[i].split(/:(.+)/);
-                if (value[0] === "connect") {
-                    ensureWebSocket(elt, value[1], 0);
-                }
-                if (value[0] === "send") {
-                    processWebSocketSend(elt);
-                }
-            }
-        }
-
-        function ensureWebSocket(elt, wssSource, retryCount) {
-            if (!bodyContains(elt)) {
-                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
-            }
-
-            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
-                var base_part = location.hostname + (location.port ? ':'+location.port: '');
-                if (location.protocol == 'https:') {
-                    wssSource = "wss://" + base_part + wssSource;
-                } else if (location.protocol == 'http:') {
-                    wssSource = "ws://" + base_part + wssSource;
-                }
-            }
-            var socket = htmx.createWebSocket(wssSource);
-            socket.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
-                maybeCloseWebSocketSource(elt);
-            };
-
-            socket.onclose = function (e) {
-                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
-                    var delay = getWebSocketReconnectDelay(retryCount);
-                    setTimeout(function() {
-                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
-                    }, delay);
-                }
-            };
-            socket.onopen = function (e) {
-                retryCount = 0;
-            }
-
-            getInternalData(elt).webSocket = socket;
-            socket.addEventListener('message', function (event) {
-                if (maybeCloseWebSocketSource(elt)) {
-                    return;
-                }
-
-                var response = event.data;
-                withExtensions(elt, function(extension, api){
-                    response = extension.transformResponse(response, null, elt, api);
-                });
-
-                var settleInfo = makeSettleInfo(elt);
-                var fragment = makeFragment(response);
-                var children = toArray(fragment.children);
-                for (var i = 0; i < children.length; i++) {
-                    var child = children[i];
-                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
-                }
-
-                settleImmediately(settleInfo.tasks);
-            });
-        }
-
-        function maybeCloseWebSocketSource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).webSocket.close();
-                return true;
-            }
-        }
-
-        function processWebSocketSend(elt) {
-            var webSocketSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).webSocket != null;
-            });
-            if (webSocketSourceElt) {
-                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
-                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
-                    var headers = getHeaders(elt, webSocketSourceElt);
-                    var results = getInputValues(elt, 'post');
-                    var errors = results.errors;
-                    var rawParameters = results.values;
-                    var expressionVars = getExpressionVars(elt);
-                    var allParameters = mergeObjects(rawParameters, expressionVars);
-                    var filteredParameters = filterValues(allParameters, elt);
-                    filteredParameters['HEADERS'] = headers;
-                    if (errors && errors.length > 0) {
-                        triggerEvent(elt, 'htmx:validation:halted', errors);
-                        return;
-                    }
-                    webSocket.send(JSON.stringify(filteredParameters));
-                    if(shouldCancel(elt)){
-                        evt.preventDefault();
-                    }
-                });
-            } else {
-                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
-            }
-        }
-
-        function getWebSocketReconnectDelay(retryCount) {
-            var delay = htmx.config.wsReconnectDelay;
-            if (typeof delay === 'function') {
-                // @ts-ignore
-                return delay(retryCount);
-            }
-            if (delay === 'full-jitter') {
-                var exp = Math.min(retryCount, 6);
-                var maxDelay = 1000 * Math.pow(2, exp);
-                return maxDelay * Math.random();
-            }
-            logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
-        }
-
         //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
@@ -1350,9 +1226,7 @@ return (function () {
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
-                // var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [data-hx-ext], [hx-ws], [data-hx-ws]");
-                // TODO: Probably **remove** [hx-ext] from this list before done.  I'm not sure it actually belongs here long-term.
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-ext], [data-hx-ext], [hx-ws], [data-hx-ws]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-ext], [data-hx-ext]");
                 return results;
             } else {
                 return [];
@@ -1403,10 +1277,6 @@ return (function () {
                     initButtonTracking(elt);
                 }
 
-                var wsInfo = getAttributeValue(elt, 'hx-ws');
-                if (wsInfo) {
-                    processWebSocketInfo(elt, nodeData, wsInfo);
-                }
                 triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
