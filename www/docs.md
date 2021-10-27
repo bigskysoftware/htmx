@@ -628,6 +628,17 @@ event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
 
+### <a name="cors"></a> [CORS](#cors)
+
+When using htmx in a cross origin context, remember to configure your web
+server to set Access-Control headers in order for htmx headers to be visible
+on the client side.
+
+- [Access-Control-Allow-Headers (for request headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers)
+- [Access-Control-Expose-Headers (for response headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers)
+
+[See all the request and response headers that htmx implements.](/reference/#request_headers)
+
 ### <a name="request-header"></a> [Request Headers](#request-headers)
 
 htmx includes a number of useful headers in requests:
