@@ -1187,8 +1187,8 @@ return (function () {
                 }
 
                 var response = event.data;
-                withExtensions(elt, function(extension, api){
-                    response = extension.transformResponse(response, null, elt, api);
+                withExtensions(elt, function(extension){
+                    response = extension.transformResponse(response, null, elt);
                 });
 
                 var settleInfo = makeSettleInfo(elt);
@@ -1450,37 +1450,13 @@ return (function () {
          * be called internally at every extendable execution point in htmx.
          * 
          * @param {HTMLElement} elt 
-         * @param {(elt:any, api?: Object) => void} toDo 
+         * @param {(extension:import("./htmx").HtmxExtension) => void} toDo 
          * @returns void
          */
         function withExtensions(elt, toDo) {
-
-            // create API object to pass into each toDo function
-            /** @type {import("./htmx").HtmxExtensionApi} */
-            var api = {
-                hasAttribute: hasAttribute,
-                getAttributeValue: getAttributeValue,
-                getInternalData: getInternalData,
-                bodyContains: bodyContains,
-                triggerEvent: triggerEvent,
-                triggerErrorEvent: triggerErrorEvent,
-                swap: function(elt, content) {
-                    withExtensions(elt, function(extension){
-                        content = extension.transformResponse(content, null, elt);
-                    });
-        
-                    var swapSpec = getSwapSpecification(elt)
-                    var target = getTarget(elt)
-                    var settleInfo = makeSettleInfo(elt);
-        
-                    selectAndSwap(swapSpec.swapStyle, elt, target, content, settleInfo)
-                    settleImmediately(settleInfo.tasks)
-                }
-            };
-
             forEach(getExtensions(elt), function(extension){
                 try {
-                    toDo(extension, api);
+                    toDo(extension);
                 } catch (e) {
                     logError(e);
                 }
@@ -1515,8 +1491,8 @@ return (function () {
                 var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
-            withExtensions(elt, function (extension, api) {
-                eventResult = eventResult && (extension.onEvent(eventName, event, api) !== false)
+            withExtensions(elt, function (extension) {
+                eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
             return eventResult;
         }
@@ -1949,9 +1925,9 @@ return (function () {
 
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
-            withExtensions(elt, function (extension, api) {
+            withExtensions(elt, function (extension) {
                 if (encodedParameters == null) {
-                    encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt, api);
+                    encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt);
                 }
             });
             if (encodedParameters != null) {
@@ -2431,8 +2407,8 @@ return (function () {
                     cancelPolling(elt);
                 }
 
-                withExtensions(elt, function (extension, api) {
-                    serverResponse = extension.transformResponse(serverResponse, xhr, elt, api);
+                withExtensions(elt, function (extension) {
+                    serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
 
                 // Save current page
@@ -2558,7 +2534,14 @@ return (function () {
             }
         }
 
+        /**
+         * defineExtension initializes the extension and adds it to the htmx registry
+         * 
+         * @param {string} name 
+         * @param {import("./htmx").HtmxExtension} extension 
+         */
         function defineExtension(name, extension) {
+            extension.init(this)
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 

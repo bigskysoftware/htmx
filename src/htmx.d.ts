@@ -26,11 +26,12 @@ export interface HtmxConfig {
 export declare var htmx: HtmxApi
 
 export interface HtmxExtension {
-    onEvent: (name: string, event: Event, api: HtmxExtensionApi) => boolean;
-    transformResponse: (text: string, xhr: XMLHttpRequest, elt: HTMLElement, api: HtmxExtensionApi) => string;
-    isInlineSwap: (swapStyle: string, api: HtmxExtensionApi) => boolean;
-    handleSwap: (swapStyle: string, target: HTMLElement, fragment: string, settleInfo: Object, api: HtmxExtensionApi) => boolean;
-    encodeParameters: (xhr: XMLHttpRequest, parameters: Object, elt: HTMLElement, api: HtmxExtensionApi) => void;
+    init: (api: HtmxInternalApi) => void;
+    onEvent: (name: string, event: Event) => boolean;
+    transformResponse: (text: string, xhr: XMLHttpRequest, elt: HTMLElement) => string;
+    isInlineSwap: (swapStyle: string) => boolean;
+    handleSwap: (swapStyle: string, target: HTMLElement, fragment: string, settleInfo: Object) => boolean;
+    encodeParameters: (xhr: XMLHttpRequest, parameters: Object, elt: HTMLElement) => void;
 }
 
 export interface HtmxExtensionApi {
