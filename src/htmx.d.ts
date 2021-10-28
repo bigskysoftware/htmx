@@ -34,12 +34,25 @@ export interface HtmxExtension {
     encodeParameters: (xhr: XMLHttpRequest, parameters: Object, elt: HTMLElement) => void;
 }
 
-export interface HtmxExtensionApi {
-    bodyContains: (element: HTMLElement) => boolean;
-    hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean;
-    getAttributeValue: (element: HTMLElement, qualifiedName: string) => string | null;
-    getInternalData: (element: HTMLElement) => Object;
-    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void;
-    triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void;
-    swap:  (element: HTMLElement, content: string) => void;
+export interface HtmxInternalApi {
+    bodyContains: (element: HTMLElement) => boolean
+    hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean
+    getAttributeValue: (element: HTMLElement, qualifiedName: string) => string | null
+    getInternalData: (element: HTMLElement) => Object
+    getSwapSpecification: (element: HTMLElement) => HtmxSwapSpecification
+    getTarget: (element: HTMLElement) => object
+    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
+    triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void
+    withExtensions: (element: HTMLElement, toDo:(ext:HtmxExtension) => void) => void
+    swap:  (element: HTMLElement, content: string) => void
+}
+
+export interface HtmxSwapSpecification {
+    swapStyle: string
+    swapDelay: number
+    settleDelay: number
+    show:? string
+    showTarget:? string
+    scroll:? string
+    scrollTarget:? string
 }

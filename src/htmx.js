@@ -103,14 +103,26 @@ return (function () {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @returns {HTMLElement | null}
+         */
         function parentElt(elt) {
             return elt.parentElement;
         }
 
+        /**
+         * @returns {Document}
+         */
         function getDocument() {
             return document;
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {(e:HTMLElement) => boolean} condition 
+         * @returns {HTMLElement | null}
+         */
         function getClosestMatch(elt, condition) {
             if (condition(elt)) {
                 return elt;
@@ -122,10 +134,9 @@ return (function () {
         }
 
         /**
-         * 
          * @param {HTMLElement} elt 
          * @param {string} attributeName 
-         * @returns string | null
+         * @returns {string | null}
          */
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
@@ -137,6 +148,11 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {string} selector 
+         * @returns {boolean}
+         */
         function matches(elt, selector) {
             // noinspection JSUnresolvedVariable
             var matchesFunction = elt.matches ||
@@ -145,6 +161,10 @@ return (function () {
             return matchesFunction && matchesFunction.call(elt, selector);
         }
 
+        /**
+         * @param {string} str 
+         * @returns {string}
+         */
         function getStartTag(str) {
             var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
             var match = tagMatcher.exec( str );
@@ -209,10 +229,18 @@ return (function () {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
 
+        /**
+         * @param {*} o 
+         * @returns {o is Function} 
+         */
         function isFunction(o) {
             return isType(o, "Function");
         }
 
+        /**
+         * @param {*} o 
+         * @returns {o is Object}
+         */
         function isRawObject(o) {
             return isType(o, "Object");
         }
@@ -1403,10 +1431,11 @@ return (function () {
                     initButtonTracking(elt);
                 }
 
-                var wsInfo = getAttributeValue(elt, 'hx-ws');
+                var wsInfo = getAttributeValue(elt, "hx-ws");
                 if (wsInfo) {
                     processWebSocketInfo(elt, nodeData, wsInfo);
                 }
+
                 triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
@@ -1879,6 +1908,11 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
+        /**
+         * 
+         * @param {HTMLElement} elt 
+         * @returns import("./htmx").HtmxSwapSpecification
+         */
         function getSwapSpecification(elt) {
             var swapInfo = getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
@@ -2523,9 +2557,12 @@ return (function () {
         //====================================================================
         // Extensions API
         //====================================================================
+
+        /** @type {Object<string, import("./htmx").HtmxExtension>} */
         var extensions = {};
         function extensionBase() {
             return {
+                init: function(api) {return null;},
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
                 isInlineSwap : function(swapStyle) {return false;},
@@ -2545,11 +2582,23 @@ return (function () {
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 
+        /**
+         * removeExtension removes an extension from the htmx registry
+         * 
+         * @param {string} name 
+         */
         function removeExtension(name) {
             delete extensions[name];
         }
 
-        function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+        /**
+         * getExtensions searches up the DOM tree to return all extensions that can be applied to a given element
+         * 
+         * @param {HTMLElement} elt 
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToReturn
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToIgnore
+         */
+         function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
 
             if (elt == undefined) {
                 return extensionsToReturn;
