@@ -7,17 +7,30 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 (function(){
 
+	/** @type {import("../htmx").HtmxInternalApi} */
+	var api
+
 	htmx.defineExtension("sse", {
+
+		/**
+		 * Init saves the provided reference to the internal HTMX API.
+		 * 
+		 * @param {import("../htmx").HtmxInternalApi} api 
+		 * @param {HTMLElement} elt 
+		 * @returns void
+		 */
+		init: function(apiRef, _elt) {
+			api = apiRef
+		},
 
 		/**
 		 * onEvent handles all events passed to this extension.
 		 * 
 		 * @param {string} name 
 		 * @param {Event} evt 
-		 * @param {import("../htmx").HtmxExtensionApi} api 
 		 * @returns void
 		 */
-		onEvent: function(name, evt, api) {
+		onEvent: function(name, evt) {
 
 			switch (name) {
 
@@ -130,11 +143,10 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 * maybeCloseSSESource confirms that the parent element still exists.
 	 * If not, then any associated SSE source is closed and the function returns true.
 	 * 
-	 * @param {import("../htmx").HtmxExtensionApi} api 
 	 * @param {HTMLElement} elt 
 	 * @returns boolean
 	 */
-	function maybeCloseSSESource(api, elt) {
+	function maybeCloseSSESource(elt) {
 		if (!api.bodyContains(elt)) {
 			var source = api.getInternalData("sseEventSource")            
 			if (source != undefined) {
@@ -152,7 +164,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 * @param {HTMLElement} elt 
 	 * @param {string} attributeName 
 	 */
-	function queryAttributeOnThisOrChildren(api, elt, attributeName) {
+	function queryAttributeOnThisOrChildren(elt, attributeName) {
 
 		var result = []
 
@@ -167,5 +179,23 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		})
 
 		return result
+	}
+
+	/**
+	 * @param {HTMLElement} elt
+	 * @param {string} content 
+	 */
+	function swap(elt, content) {
+			api.withExtensions(elt, function(extension){
+				content = extension.transformResponse(content, null, elt);
+			});
+
+			var swapSpec = api.getSwapSpecification(elt)
+			var target = api.getTarget(elt)
+			var settleInfo = api.makeSettleInfo(elt);
+
+			selectAndSwap(swapSpec.swapStyle, elt, target, content, settleInfo)
+			settleImmediately(settleInfo.tasks)
+		}		
 	}
 })();
