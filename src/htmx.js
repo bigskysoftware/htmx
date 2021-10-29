@@ -14,6 +14,8 @@ return (function () {
         'use strict';
 
         // Public API
+        //** @type {import("./htmx").HtmxApi} */
+        // TODO: list all methods in public API
         var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
@@ -63,6 +65,22 @@ return (function () {
             version: "1.6.0"
         };
 
+        /** @type {import("./htmx").HtmxInternalApi} */
+        var internalAPI = {
+            bodyContains: bodyContains,
+            hasAttribute: hasAttribute,
+            getAttributeValue: getAttributeValue,
+            getInternalData: getInternalData,
+            getSwapSpecification: getSwapSpecification,
+            getTarget: getTarget,
+            makeSettleInfo: makeSettleInfo,
+            selectAndSwap: selectAndSwap,
+            settleImmediately: settleImmediately,
+            triggerEvent: triggerEvent,
+            triggerErrorEvent: triggerErrorEvent,
+            withExtensions: withExtensions,
+        }
+
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
@@ -99,14 +117,26 @@ return (function () {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @returns {HTMLElement | null}
+         */
         function parentElt(elt) {
             return elt.parentElement;
         }
 
+        /**
+         * @returns {Document}
+         */
         function getDocument() {
             return document;
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {(e:HTMLElement) => boolean} condition 
+         * @returns {HTMLElement | null}
+         */
         function getClosestMatch(elt, condition) {
             if (condition(elt)) {
                 return elt;
@@ -118,10 +148,9 @@ return (function () {
         }
 
         /**
-         * 
          * @param {HTMLElement} elt 
          * @param {string} attributeName 
-         * @returns string | null
+         * @returns {string | null}
          */
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
@@ -133,14 +162,22 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {string} selector 
+         * @returns {boolean}
+         */
         function matches(elt, selector) {
+            // @ts-ignore: non-standard properties for browser compatability
             // noinspection JSUnresolvedVariable
-            var matchesFunction = elt.matches ||
-                elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
-                || elt.webkitMatchesSelector || elt.oMatchesSelector;
+            var matchesFunction = elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector;
             return matchesFunction && matchesFunction.call(elt, selector);
         }
 
+        /**
+         * @param {string} str 
+         * @returns {string}
+         */
         function getStartTag(str) {
             var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
             var match = tagMatcher.exec( str );
@@ -205,14 +242,27 @@ return (function () {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
 
+        /**
+         * @param {*} o 
+         * @returns {o is Function} 
+         */
         function isFunction(o) {
             return isType(o, "Function");
         }
 
+        /**
+         * @param {*} o 
+         * @returns {o is Object}
+         */
         function isRawObject(o) {
             return isType(o, "Object");
         }
 
+        /**
+         * getInternalData retrieves "private" data stored by htmx within an element
+         * @param {HTMLElement} elt 
+         * @returns {*}
+         */
         function getInternalData(elt) {
             var dataProp = 'htmx-internal-data';
             var data = elt[dataProp];
@@ -222,6 +272,11 @@ return (function () {
             return data;
         }
 
+        /**
+         * toArray converts an ArrayLike object into a real array.
+         * @param {ArrayLike} arr 
+         * @returns {any[]}
+         */
         function toArray(arr) {
             var returnArr = [];
             if (arr) {
@@ -612,12 +667,14 @@ return (function () {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment, settleInfo);
             } else {
+                // @type {HTMLElement}
+                var newElt
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
                 if (eltBeforeNewContent == null) {
-                    var newElt = parentElt(target).firstChild;
+                    newElt = parentElt(target).firstChild;
                 } else {
-                    var newElt = eltBeforeNewContent.nextSibling;
+                    newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = [] // clear existing elements
@@ -1320,37 +1377,13 @@ return (function () {
          * be called internally at every extendable execution point in htmx.
          * 
          * @param {HTMLElement} elt 
-         * @param {(elt:any, api?: Object) => void} toDo 
+         * @param {(extension:import("./htmx").HtmxExtension) => void} toDo 
          * @returns void
          */
         function withExtensions(elt, toDo) {
-
-            // create API object to pass into each toDo function
-            /** @type {import("./htmx").HtmxExtensionApi} */
-            var api = {
-                hasAttribute: hasAttribute,
-                getAttributeValue: getAttributeValue,
-                getInternalData: getInternalData,
-                bodyContains: bodyContains,
-                triggerEvent: triggerEvent,
-                triggerErrorEvent: triggerErrorEvent,
-                swap: function(elt, content) {
-                    withExtensions(elt, function(extension){
-                        content = extension.transformResponse(content, null, elt);
-                    });
-        
-                    var swapSpec = getSwapSpecification(elt)
-                    var target = getTarget(elt)
-                    var settleInfo = makeSettleInfo(elt);
-        
-                    selectAndSwap(swapSpec.swapStyle, elt, target, content, settleInfo)
-                    settleImmediately(settleInfo.tasks)
-                }
-            };
-
             forEach(getExtensions(elt), function(extension){
                 try {
-                    toDo(extension, api);
+                    toDo(extension);
                 } catch (e) {
                     logError(e);
                 }
@@ -1385,8 +1418,8 @@ return (function () {
                 var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
-            withExtensions(elt, function (extension, api) {
-                eventResult = eventResult && (extension.onEvent(eventName, event, api) !== false)
+            withExtensions(elt, function (extension) {
+                eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
             return eventResult;
         }
@@ -1773,6 +1806,11 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
+        /**
+         * 
+         * @param {HTMLElement} elt 
+         * @returns {import("./htmx").HtmxSwapSpecification}
+         */
         function getSwapSpecification(elt) {
             var swapInfo = getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
@@ -1819,9 +1857,9 @@ return (function () {
 
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
-            withExtensions(elt, function (extension, api) {
+            withExtensions(elt, function (extension) {
                 if (encodedParameters == null) {
-                    encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt, api);
+                    encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt);
                 }
             });
             if (encodedParameters != null) {
@@ -2301,8 +2339,8 @@ return (function () {
                     cancelPolling(elt);
                 }
 
-                withExtensions(elt, function (extension, api) {
-                    serverResponse = extension.transformResponse(serverResponse, xhr, elt, api);
+                withExtensions(elt, function (extension) {
+                    serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
 
                 // Save current page
@@ -2417,9 +2455,17 @@ return (function () {
         //====================================================================
         // Extensions API
         //====================================================================
+
+        /** @type {Object<string, import("./htmx").HtmxExtension>} */
         var extensions = {};
+
+        /**
+         * extensionBase defines the default functions for all extensions.
+         * @returns {import("./htmx").HtmxExtension}
+         */
         function extensionBase() {
             return {
+                init: function(api) {return null;},
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
                 isInlineSwap : function(swapStyle) {return false;},
@@ -2428,15 +2474,34 @@ return (function () {
             }
         }
 
+        /**
+         * defineExtension initializes the extension and adds it to the htmx registry
+         * 
+         * @param {string} name 
+         * @param {import("./htmx").HtmxExtension} extension 
+         */
         function defineExtension(name, extension) {
+            extension.init(internalAPI)
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 
+        /**
+         * removeExtension removes an extension from the htmx registry
+         * 
+         * @param {string} name 
+         */
         function removeExtension(name) {
             delete extensions[name];
         }
 
-        function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+        /**
+         * getExtensions searches up the DOM tree to return all extensions that can be applied to a given element
+         * 
+         * @param {HTMLElement} elt 
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToReturn
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToIgnore
+         */
+         function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
 
             if (elt == undefined) {
                 return extensionsToReturn;
