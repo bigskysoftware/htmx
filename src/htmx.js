@@ -14,6 +14,8 @@ return (function () {
         'use strict';
 
         // Public API
+        //** @type {import("./htmx").HtmxApi} */
+        // TODO: list all methods in public API
         var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
@@ -66,6 +68,22 @@ return (function () {
             },
             version: "1.6.0"
         };
+
+        /** @type {import("./htmx").HtmxInternalApi} */
+        var internalAPI = {
+            bodyContains: bodyContains,
+            hasAttribute: hasAttribute,
+            getAttributeValue: getAttributeValue,
+            getInternalData: getInternalData,
+            getSwapSpecification: getSwapSpecification,
+            getTarget: getTarget,
+            makeSettleInfo: makeSettleInfo,
+            selectAndSwap: selectAndSwap,
+            settleImmediately: settleImmediately,
+            triggerEvent: triggerEvent,
+            triggerErrorEvent: triggerErrorEvent,
+            withExtensions: withExtensions,
+        }
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
@@ -154,10 +172,9 @@ return (function () {
          * @returns {boolean}
          */
         function matches(elt, selector) {
+            // @ts-ignore: non-standard properties for browser compatability
             // noinspection JSUnresolvedVariable
-            var matchesFunction = elt.matches ||
-                elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
-                || elt.webkitMatchesSelector || elt.oMatchesSelector;
+            var matchesFunction = elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector;
             return matchesFunction && matchesFunction.call(elt, selector);
         }
 
@@ -245,6 +262,11 @@ return (function () {
             return isType(o, "Object");
         }
 
+        /**
+         * getInternalData retrieves "private" data stored by htmx within an element
+         * @param {HTMLElement} elt 
+         * @returns {*}
+         */
         function getInternalData(elt) {
             var dataProp = 'htmx-internal-data';
             var data = elt[dataProp];
@@ -254,6 +276,11 @@ return (function () {
             return data;
         }
 
+        /**
+         * toArray converts an ArrayLike object into a real array.
+         * @param {ArrayLike} arr 
+         * @returns {any[]}
+         */
         function toArray(arr) {
             var returnArr = [];
             if (arr) {
@@ -647,12 +674,14 @@ return (function () {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment, settleInfo);
             } else {
+                // @type {HTMLElement}
+                var newElt
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
                 if (eltBeforeNewContent == null) {
-                    var newElt = parentElt(target).firstChild;
+                    newElt = parentElt(target).firstChild;
                 } else {
-                    var newElt = eltBeforeNewContent.nextSibling;
+                    newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = [] // clear existing elements
@@ -1911,7 +1940,7 @@ return (function () {
         /**
          * 
          * @param {HTMLElement} elt 
-         * @returns import("./htmx").HtmxSwapSpecification
+         * @returns {import("./htmx").HtmxSwapSpecification}
          */
         function getSwapSpecification(elt) {
             var swapInfo = getClosestAttributeValue(elt, "hx-swap");
@@ -2560,6 +2589,11 @@ return (function () {
 
         /** @type {Object<string, import("./htmx").HtmxExtension>} */
         var extensions = {};
+
+        /**
+         * extensionBase defines the default functions for all extensions.
+         * @returns {import("./htmx").HtmxExtension}
+         */
         function extensionBase() {
             return {
                 init: function(api) {return null;},
@@ -2578,7 +2612,7 @@ return (function () {
          * @param {import("./htmx").HtmxExtension} extension 
          */
         function defineExtension(name, extension) {
-            extension.init(this)
+            extension.init(internalAPI)
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 
