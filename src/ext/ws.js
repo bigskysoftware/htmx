@@ -7,17 +7,27 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 (function(){
 
+	/** @type {import("../htmx").HtmxInternalApi} */
+	var api;
+
 	htmx.defineExtension("ws", {
+
+		/**
+		 * init stores a reference to the internal API.
+		 * @param {import("../htmx").HtmxInternalApi} apiRef 
+		 */
+		init: function(apiRef) {
+			api = apiRef;
+		},
 
 		/**
 		 * onEvent handles all events passed to this extension.
 		 * 
 		 * @param {string} name 
 		 * @param {Event} evt 
-		 * @param {import("../htmx").HtmxExtensionApi} api 
 		 * @returns void
 		 */
-		onEvent: function(name, evt, api) {
+		onEvent: function(name, evt) {
 
 			switch (name) {
 
@@ -136,11 +146,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 * maybeCloseSSESource confirms that the parent element still exists.
 	 * If not, then any associated SSE source is closed and the function returns true.
 	 * 
-	 * @param {import("../htmx").HtmxExtensionApi} api 
 	 * @param {HTMLElement} elt 
 	 * @returns boolean
 	 */
-	function maybeCloseSSESource(api, elt) {
+	function maybeCloseSSESource(elt) {
 		if (!api.bodyContains(elt)) {
 			var source = api.getInternalData("sseEventSource")            
 			if (source != undefined) {
@@ -158,7 +167,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 * @param {HTMLElement} elt 
 	 * @param {string} attributeName 
 	 */
-	function queryAttributeOnThisOrChildren(api, elt, attributeName) {
+	function queryAttributeOnThisOrChildren(elt, attributeName) {
 
 		var result = []
 
@@ -222,7 +231,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			retryCount = 0;
 		}
 
-		getInternalData(elt).webSocket = socket;
+		api.getInternalData(elt).webSocket = socket;
 		socket.addEventListener('message', function (event) {
 			if (maybeCloseWebSocketSource(elt)) {
 				return;
@@ -251,11 +260,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 * returns TRUE.  If the element DOES EXIST, then no action is taken, and this function
 	 * returns FALSE.
 	 * 
-	 * @param {import("../htmx").HtmxExtensionApi} api 
 	 * @param {*} elt 
 	 * @returns 
 	 */
-	function maybeCloseWebSocketSource(api, elt) {
+	function maybeCloseWebSocketSource(elt) {
 		if (!api.bodyContains(elt)) {
 			api.getInternalData(elt).webSocket.close();
 			return true;
@@ -265,11 +273,11 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 	function processWebSocketSend(elt) {
 		var webSocketSourceElt = getClosestMatch(elt, function (parent) {
-			return getInternalData(parent).webSocket != null;
+			return api.getInternalData(parent).webSocket != null;
 		});
 		if (webSocketSourceElt) {
 			elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
-				var webSocket = getInternalData(webSocketSourceElt).webSocket;
+				var webSocket = api.getInternalData(webSocketSourceElt).webSocket;
 				var headers = getHeaders(elt, webSocketSourceElt);
 				var results = getInputValues(elt, 'post');
 				var errors = results.errors;
@@ -305,26 +313,5 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 		logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
 	}
-
-	/***********************
-	 * COPIED FROM HTMX
-	 ***********************/
-
-	/**
-	 * getInternalData returns the set of custom properties that htmx stores in
-	 * a DOM node.
-	 * 
-	 * @param {HTMLElement} elt 
-	 * @returns Object
-	 */
-	function getInternalData(elt) {
-		var dataProp = 'htmx-internal-data';
-		var data = elt[dataProp];
-		if (!data) {
-			data = elt[dataProp] = {};
-		}
-		return data;
-	}
-
 
 })();
