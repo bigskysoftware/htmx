@@ -13,11 +13,23 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	htmx.defineExtension("ws", {
 
 		/**
-		 * init stores a reference to the internal API.
+		 * init is called once, when this extension is first registered.
 		 * @param {import("../htmx").HtmxInternalApi} apiRef 
 		 */
 		init: function(apiRef) {
+
+			// Store reference to internal API
 			api = apiRef;
+
+			// Default function for creating new EventSource objects
+			if (htmx.createWebSocket == undefined) {
+				htmx.createWebSocket = createWebSocket;
+			}
+
+			// Default setting for reconnect delay
+			if (htmx.config.wsReconnectDelay == undefined) {
+				htmx.config.wsReconnectDelay = "full-jitter";
+			}
 		},
 
 		/**
@@ -25,7 +37,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		 * 
 		 * @param {string} name 
 		 * @param {Event} evt 
-		 * @returns void
 		 */
 		onEvent: function(name, evt) {
 
@@ -43,85 +54,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	
 			// Try to create EventSources when elements are processed
 			case "htmx:afterProcessNode":
-
-				var parent = evt.target;
-
-				// get URL from element's attribute
-				var wsURL = api.getAttributeValue(evt.target, "ws-url")
-
-				if (wsURL == undefined) {
-					return;
-				}
-		
-				// Default function for creating new EventSource objects
-				if (htmx.createWebSocket == undefined) {
-					htmx.createWebSocket = createWebSocket;
-				}
-
-				if (htmx.config.wsReconnectDelay == undefined) {
-					htmx.config.wsReconnectDelay = "full-jitter";
-				}
-
-				// Connect to the EventSource
-				var socket = ensureWebSocket(parent, wsURL);
-
-				source.onerror = function (err) {
-					api.triggerErrorEvent(parent, "htmx:sseError", {error:err, source:source});
-					maybeCloseWebSocketource(api, parent);
-				};
-				
-				api.getInternalData(parent).sseEventSource = source;
-
-				// Add message handlers for every `sse-swap` attribute
-				queryAttributeOnThisOrChildren(api, parent, "sse-swap").forEach(function(child) {
-
-					var sseEventName = api.getAttributeValue(child, "sse-swap")
-
-					var listener = function(event) {
-
-						// If the parent is missing then close SSE and remove listener
-						if (maybeCloseSSESource(api, parent)) {
-							source.removeEventListener(sseEventName, listener);
-							return;
-						}
-			
-						// swap the response into the DOM and trigger a notification
-						api.swap(child, event.data)
-						api.triggerEvent(parent, "htmx:sseMessage", event)
-					};
-			
-					// Register the new listener
-					api.getInternalData(parent).sseEventListener = listener;
-					source.addEventListener(sseEventName, listener);
-				});
-
-				// Add message handlers for every `hx-trigger="sse:*"` attribute
-				queryAttributeOnThisOrChildren(api, parent, "hx-trigger").forEach(function(child) {
-
-					var sseEventName = api.getAttributeValue(child, "hx-trigger")
-
-					// Only process hx-triggers for events with the "sse:" prefix
-					if (sseEventName.slice(0, 4) != "sse:") {
-						return;
-					}
-
-					var listener = function(event) {
-
-						// If parent is missing, then close SSE and remove listener
-						if (maybeCloseSSESource(api, parent)) {
-							source.removeEventListener(sseEventName, listener);
-							return;
-						}
-
-						// Trigger events to be handled by the rest of htmx
-						htmx.trigger(child, sseEventName, event)
-						htmx.trigger(child, "htmx:sseMessage", event)
-					}
-
-					// Register the new listener
-					api.getInternalData(parent).sseEventListener = listener;
-					source.addEventListener(sseEventName.slice(4), listener);
-				})
+				createWebSocketOnElement(evt.target);
 			}
 		}
 	});
