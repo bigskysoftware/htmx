@@ -1,7 +1,7 @@
 // This adds the "preload" extension to htmx.  By default, this will 
 // preload the targets of any tags with `href` or `hx-get` attributes 
 // if they also have a `preload` attribute as well.  See documentation
-// for more detauls
+// for more details
 htmx.defineExtension("preload", {
 
 	onEvent: function(name, event) {
