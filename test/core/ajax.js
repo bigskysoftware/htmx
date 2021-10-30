@@ -871,7 +871,7 @@ describe("Core htmx AJAX Tests", function(){
         btn.click();
         this.server.respond();
         btn.innerText.should.equal("Clicked!");
-        htmx.off("htmx:shouldSwap", handler);
+        htmx.off("htmx:beforeSwap", handler);
     });
 
     it('400 content can be retargeted if configured to do so', function()
@@ -891,7 +891,29 @@ describe("Core htmx AJAX Tests", function(){
         btn.click();
         this.server.respond();
         div.innerText.should.equal("Clicked!");
-        htmx.off("htmx:shouldSwap", handler);
+        htmx.off("htmx:beforeSwap", handler);
+    });
+
+    it('errors are triggered only on 400+', function()
+    {
+        var errors = 0;
+        var handler = htmx.on("htmx:responseError", function(){
+            errors++;
+        })
+        this.server.respondWith("GET", "/test1", function (xhr) {
+            xhr.respond(204, {}, "Clicked!");
+        });
+        this.server.respondWith("GET", "/test2", function (xhr) {
+            xhr.respond(400, {}, "Clicked!");
+        });
+        var btn1 = make('<button hx-get="/test1">Click Me!</button>')
+        var btn2 = make('<button hx-get="/test2">Click Me!</button>')
+        btn1.click();
+        btn2.click();
+        this.server.respond();
+        this.server.respond();
+        errors.should.equal(1);
+        htmx.off("htmx:responseError", handler);
     });
 
 
@@ -908,11 +930,10 @@ describe("Core htmx AJAX Tests", function(){
             xhr.respond(400, {}, "Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
-        var div = make('<div id="d1"></div>')
         btn.click();
         this.server.respond();
-        div.innerText.should.equal("Clicked!!!");
-        htmx.off("htmx:shouldSwap", handler);
+        btn.innerText.should.equal("Clicked!!!");
+        htmx.off("htmx:beforeSwap", handler);
     });
 
     it('scripts w/ src attribute are properly loaded', function(done)
