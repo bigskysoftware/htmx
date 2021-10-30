@@ -2454,6 +2454,9 @@ return (function () {
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
+                
+            var isError = xhr.status >= 400
+            responseInfo.isError = isError
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -2486,18 +2489,19 @@ return (function () {
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
             var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse}, responseInfo);
+            if (isError) {
+                beforeSwapDetails.shouldSwap = true
+            }
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
-                
-            var isError = xhr.status >= 300
+            
             if (isError) {
                 target = getErrorTarget(elt)
                 if (!target) {
                     return
                 }
-                beforeSwapDetails.shouldSwap = true
             }
 
             if (beforeSwapDetails.shouldSwap) {
