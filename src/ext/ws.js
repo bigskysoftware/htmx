@@ -54,7 +54,15 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	
 			// Try to create EventSources when elements are processed
 			case "htmx:afterProcessNode":
-				createWebSocketOnElement(evt.target);
+				var parent = evt.target;
+
+				foreach(queryAttributeOnThisOrChildren(parent, "ws-connect"), function(child) {
+					ensureWebSocket(child)
+				});
+
+				foreach(queryAttributeOnThisOrChildren(parent, "ws-send"), function(child) {
+					processWebSocketSend(child)
+				});
 			}
 		}
 	});
@@ -76,13 +84,13 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	}
 
 	/**
-	 * maybeCloseSSESource confirms that the parent element still exists.
+	 * maybeCloseWebSocket confirms that the parent element still exists.
 	 * If not, then any associated SSE source is closed and the function returns true.
 	 * 
 	 * @param {HTMLElement} elt 
 	 * @returns boolean
 	 */
-	function maybeCloseSSESource(elt) {
+	function maybeCloseWebsocket(elt) {
 		if (!api.bodyContains(elt)) {
 			var source = api.getInternalData("sseEventSource")            
 			if (source != undefined) {
@@ -133,12 +141,35 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 	}
 
-	function ensureWebSocket(elt, wssSource, retryCount) {
+	/**
+	 * ensureWebSocket creates a new WebSocket on the designated element, using
+	 * the element's "ws-connect" attribute.  
+	 * @param {HTMLElement} elt 
+	 * @param {number=} retryCount 
+	 * @returns 
+	 */
+	function ensureWebSocket(elt, retryCount) {
+
+		// If the element containing the WebSocket connection no longer exists, then 
+		// do not connect/reconnect the WebSocket.
 		if (!bodyContains(elt)) {
-			return;  // stop ensuring websocket connection when socket bearing element ceases to exist
+			return;
 		}
 
-		if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
+		// Get the source straight from the element's value
+		var wssSource = api.getAttributeValue(elt, "ws-connect")
+
+		if (wssSource == "") {
+			return;
+		}
+
+		// Default value for retryCount
+		if (retryCount == undefined) {
+			retryCount = 0;
+		}
+
+		// Guarantee that the wssSource value is a fully qualified URL
+		if (wssSource.indexOf("/") == 0) {
 			var base_part = location.hostname + (location.port ? ':'+location.port: '');
 			if (location.protocol == 'https:') {
 				wssSource = "wss://" + base_part + wssSource;
@@ -146,25 +177,30 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				wssSource = "ws://" + base_part + wssSource;
 			}
 		}
+
+		// Create a new WebSocket and event handlers
+		/** @type {WebSocket} */
 		var socket = htmx.createWebSocket(wssSource);
-		socket.onerror = function (e) {
+
+		 socket.onerror = function (e) {
 			triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
 			maybeCloseWebSocketSource(elt);
 		};
 
 		socket.onclose = function (e) {
-			if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
+			// If Abnormal Closure/Service Restart/Try Again Later, then set a timer to reconnect after a pause.
+			if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  
 				var delay = getWebSocketReconnectDelay(retryCount);
 				setTimeout(function() {
-					ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
+					ensureWebSocket(elt, retryCount+1);  
 				}, delay);
 			}
 		};
+
 		socket.onopen = function (e) {
 			retryCount = 0;
 		}
 
-		api.getInternalData(elt).webSocket = socket;
 		socket.addEventListener('message', function (event) {
 			if (maybeCloseWebSocketSource(elt)) {
 				return;
@@ -175,16 +211,19 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				response = extension.transformResponse(response, null, elt, api);
 			});
 
-			var settleInfo = makeSettleInfo(elt);
-			var fragment = makeFragment(response);
+			var settleInfo = api.makeSettleInfo(elt);
+			var fragment = api.makeFragment(response);
 			var children = toArray(fragment.children);
 			for (var i = 0; i < children.length; i++) {
 				var child = children[i];
-				oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
+				api.oobSwap(api.getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
 			}
 
 			settleImmediately(settleInfo.tasks);
 		});
+
+		// Put the WebSocket into the HTML Element's custom data.
+		api.getInternalData(elt).webSocket = socket;
 	}
 
 	/**
@@ -204,6 +243,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param {HTMLElement} elt 
+	 */	
 	function processWebSocketSend(elt) {
 		var webSocketSourceElt = getClosestMatch(elt, function (parent) {
 			return api.getInternalData(parent).webSocket != null;
@@ -233,10 +276,16 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 	}
 
+	/**
+	 * getWebSocketReconnectDelay is the default easing function for WebSocket reconnects.
+	 * @param {number} retryCount // The number of retries that have already taken place
+	 * @returns {number}
+	 */
 	function getWebSocketReconnectDelay(retryCount) {
+
+		/** @type {"full-jitter" | (retryCount:number) => number} */
 		var delay = htmx.config.wsReconnectDelay;
 		if (typeof delay === 'function') {
-			// @ts-ignore
 			return delay(retryCount);
 		}
 		if (delay === 'full-jitter') {
@@ -244,6 +293,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			var maxDelay = 1000 * Math.pow(2, exp);
 			return maxDelay * Math.random();
 		}
+
 		logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
 	}
 
