@@ -72,6 +72,8 @@ return (function () {
             getAttributeValue: getAttributeValue,
             getInternalData: getInternalData,
             getSwapSpecification: getSwapSpecification,
+            oobSwap: oobSwap,
+            makeFragment: makeFragment,
             getTarget: getTarget,
             makeSettleInfo: makeSettleInfo,
             selectAndSwap: selectAndSwap,
@@ -188,9 +190,17 @@ return (function () {
             }
         }
 
+        /**
+         * 
+         * @param {string} resp 
+         * @param {number} depth 
+         * @returns {Element}
+         */
         function parseHTML(resp, depth) {
             var parser = new DOMParser();
             var responseDoc = parser.parseFromString(resp, "text/html");
+
+            /** @type {Element} */
             var responseNode = responseDoc.body;
             while (depth > 0) {
                 depth--;
@@ -204,9 +214,16 @@ return (function () {
             return responseNode;
         }
 
+        /**
+         * 
+         * @param {string} resp 
+         * @returns {Element}
+         */
         function makeFragment(resp) {
             if (htmx.config.useTemplateFragments) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
+                // @ts-ignore type mismatch between DocumentFragment and Element.  
+                // TODO: Are these close enough for htmx to use interchangably?
                 return documentFragment.querySelector('template').content;
             } else {
                 var startTag = getStartTag(resp);
@@ -232,12 +249,20 @@ return (function () {
             }
         }
 
+        /**
+         * @param {Function} func 
+         */
         function maybeCall(func){
             if(func) {
                 func();
             }
         }
 
+        /**
+         * @param {any} o 
+         * @param {string} type 
+         * @returns 
+         */
         function isType(o, type) {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
@@ -554,6 +579,13 @@ return (function () {
             return swapStyle === "outerHTML";
         }
 
+        /**
+         * 
+         * @param {string} oobValue 
+         * @param {HTMLElement} oobElement 
+         * @param {*} settleInfo 
+         * @returns 
+         */
         function oobSwap(oobValue, oobElement, settleInfo) {
             var selector = "#" + oobElement.id;
             var swapStyle = "outerHTML";
@@ -1874,6 +1906,11 @@ return (function () {
             }
         }
 
+        /**
+         * 
+         * @param {Element} target 
+         * @returns {import("./htmx").HtmxSettleInfo}
+         */
         function makeSettleInfo(target) {
             return {tasks: [], elts: [target]};
         }

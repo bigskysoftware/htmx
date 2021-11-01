@@ -45,7 +45,9 @@ export interface HtmxInternalApi {
     getInternalData: (element: HTMLElement) => Object
     getSwapSpecification: (element: HTMLElement) => HtmxSwapSpecification
     getTarget: (element: HTMLElement) => object
-    makeSettleInfo: () => Object
+    oobSwap: (oobValue: string, oobElement: HTMLElement, settleInfo: *) => void
+    makeSettleInfo: (element: Element) => HtmxSettleInfo
+    makeFragment: () => Element
     selectAndSwap: (swapStyle: any, target: any, elt: any, responseText: any, settleInfo: any) => void // TODO: improve parameter definitions
     settleImmediately: (tasks: any) => void // TODO: improve parameter definitions
     triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
@@ -61,4 +63,9 @@ export interface HtmxSwapSpecification {
     showTarget?: string
     scroll?: string
     scrollTarget?: string
+}
+
+export interface HtmxSettleInfo {
+    tasks: *[], 
+    elts: HTMLELement[]
 }
