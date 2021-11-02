@@ -40,18 +40,20 @@ export interface HtmxExtension {
 
 export interface HtmxInternalApi {
     bodyContains: (element: HTMLElement) => boolean
-    hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean
-    getAttributeValue: (element: HTMLElement, qualifiedName: string) => string | null
+    getAttributeValue: (element: HTMLElement, qualifiedName: string) => (string | null)
+    getClosestMatch: (element: HTMLElement, condition: (e:HTMLElement) => boolean) => (HTMLElement | null)
     getInternalData: (element: HTMLElement) => Object
     getSwapSpecification: (element: HTMLElement) => HtmxSwapSpecification
     getTarget: (element: HTMLElement) => object
-    oobSwap: (oobValue: string, oobElement: HTMLElement, settleInfo: *) => void
+    getTriggerSpecs: (element: HTMLElement) => HtmxTriggerSpecification[]
+    hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean
     makeSettleInfo: (element: Element) => HtmxSettleInfo
-    makeFragment: () => Element
+    makeFragment: (response: string) => Element
+    oobSwap: (oobValue: string, oobElement: HTMLElement, settleInfo: *) => void
     selectAndSwap: (swapStyle: any, target: any, elt: any, responseText: any, settleInfo: any) => void // TODO: improve parameter definitions
     settleImmediately: (tasks: any) => void // TODO: improve parameter definitions
-    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
     triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void
+    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
     withExtensions: (element: HTMLElement, toDo:(ext:HtmxExtension) => void) => void
 }
 
@@ -63,6 +65,22 @@ export interface HtmxSwapSpecification {
     showTarget?: string
     scroll?: string
     scrollTarget?: string
+}
+
+export interface HtmxTriggerSpecification {
+    trigger: string
+    pollInterval?:number
+    eventFilter?: * // TODO: improve definition
+    changed?: boolean
+    once?: boolean
+    consumed?: boolean
+    delay?: string
+    from?: string
+    throttle?: string
+    target?: string
+    queue?: string
+    root?: string
+    threshold?: string
 }
 
 export interface HtmxSettleInfo {

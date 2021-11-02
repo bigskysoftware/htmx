@@ -72,8 +72,10 @@ return (function () {
             getAttributeValue: getAttributeValue,
             getInternalData: getInternalData,
             getSwapSpecification: getSwapSpecification,
+            getTriggerSpecs: getTriggerSpecs,
             oobSwap: oobSwap,
             makeFragment: makeFragment,
+            getClosestMatch: getClosestMatch,
             getTarget: getTarget,
             makeSettleInfo: makeSettleInfo,
             selectAndSwap: selectAndSwap,
@@ -950,6 +952,11 @@ return (function () {
         }
 
         var INPUT_SELECTOR = 'input, textarea, select';
+
+        /**
+         * @param {HTMLElement} elt 
+         * @returns {import("./htmx").HtmxTriggerSpecification[]}
+         */
         function getTriggerSpecs(elt) {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
