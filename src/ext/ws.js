@@ -67,80 +67,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 	});
 
-	///////////////////////////////////////////////
-	// HELPER FUNCTIONS
-	///////////////////////////////////////////////
-
-
-	/**
-	 * createWebSocket is the default method for creating new WebSocket objects.
-	 * it is hoisted into htmx.createWebSocket to be overridden by the user, if needed.
-	 * 
-	 * @param {string} url 
-	 * @returns WebSocket
-	 */
-	 function createWebSocket(url){
-		return new WebSocket(url, []);
-	}
-
-	/**
-	 * maybeCloseWebSocket confirms that the parent element still exists.
-	 * If not, then any associated SSE source is closed and the function returns true.
-	 * 
-	 * @param {HTMLElement} elt 
-	 * @returns boolean
-	 */
-	function maybeCloseWebsocket(elt) {
-		if (!api.bodyContains(elt)) {
-			var source = api.getInternalData("sseEventSource")            
-			if (source != undefined) {
-				source.close()
-				// source = null
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * queryAttributeOnThisOrChildren returns all nodes that contain the requested attributeName, INCLUDING THE PROVIDED ROOT ELEMENT.
-	 * 
-	 * @param {HTMLElement} elt 
-	 * @param {string} attributeName 
-	 */
-	function queryAttributeOnThisOrChildren(elt, attributeName) {
-
-		var result = []
-
-		// If the parent element also contains the requested attribute, then add it to the results too.
-		if (api.hasAttribute(elt, attributeName)) {
-			result.push(elt);
-		}
-
-		// Search all child nodes that match the requested attribute
-		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "]").forEach(function(node) {
-			result.push(node)
-		})
-
-		return result
-	}
-
-	/********************************************/
-	// ORIGINAL WS CODE
-
-	function processWebSocketInfo(elt, nodeData, info) {
-		var values = splitOnWhitespace(info);
-		for (var i = 0; i < values.length; i++) {
-			var value = values[i].split(/:(.+)/);
-			if (value[0] === "connect") {
-				ensureWebSocket(elt, value[1], 0);
-			}
-			if (value[0] === "send") {
-				processWebSocketSend(elt);
-			}
-		}
-	}
-
 	/**
 	 * ensureWebSocket creates a new WebSocket on the designated element, using
 	 * the element's "ws-connect" attribute.  
@@ -183,7 +109,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		var socket = htmx.createWebSocket(wssSource);
 
 		 socket.onerror = function (e) {
-			triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
+			api.triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
 			maybeCloseWebSocketSource(elt);
 		};
 
@@ -207,19 +133,22 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			}
 
 			var response = event.data;
-			withExtensions(elt, function(extension, api){
-				response = extension.transformResponse(response, null, elt, api);
+			api.withExtensions(elt, function(extension){
+				response = extension.transformResponse(response, null, elt);
 			});
 
 			var settleInfo = api.makeSettleInfo(elt);
 			var fragment = api.makeFragment(response);
+
+			/** @type {HTMLElement[]} */ 
 			var children = toArray(fragment.children);
+
 			for (var i = 0; i < children.length; i++) {
 				var child = children[i];
 				api.oobSwap(api.getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
 			}
 
-			settleImmediately(settleInfo.tasks);
+			api.settleImmediately(settleInfo.tasks);
 		});
 
 		// Put the WebSocket into the HTML Element's custom data.
@@ -227,32 +156,15 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	}
 
 	/**
-	 * maybeCloseWebSocketSource checks to the if the element that created the WebSocket
-	 * still exists in the DOM.  If NOT, then the WebSocket is closed and this function 
-	 * returns TRUE.  If the element DOES EXIST, then no action is taken, and this function
-	 * returns FALSE.
-	 * 
-	 * @param {*} elt 
-	 * @returns 
-	 */
-	function maybeCloseWebSocketSource(elt) {
-		if (!api.bodyContains(elt)) {
-			api.getInternalData(elt).webSocket.close();
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * 
 	 * @param {HTMLElement} elt 
 	 */	
 	function processWebSocketSend(elt) {
-		var webSocketSourceElt = getClosestMatch(elt, function (parent) {
+		var webSocketSourceElt = api.getClosestMatch(elt, function (parent) {
 			return api.getInternalData(parent).webSocket != null;
 		});
 		if (webSocketSourceElt) {
-			elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
+			elt.addEventListener(api.getTriggerSpecs(elt)[0].trigger, function (evt) {
 				var webSocket = api.getInternalData(webSocketSourceElt).webSocket;
 				var headers = getHeaders(elt, webSocketSourceElt);
 				var results = getInputValues(elt, 'post');
@@ -295,6 +207,57 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 
 		logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
+	}
+
+	/**
+	 * maybeCloseWebSocketSource checks to the if the element that created the WebSocket
+	 * still exists in the DOM.  If NOT, then the WebSocket is closed and this function 
+	 * returns TRUE.  If the element DOES EXIST, then no action is taken, and this function
+	 * returns FALSE.
+	 * 
+	 * @param {*} elt 
+	 * @returns 
+	 */
+	 function maybeCloseWebSocketSource(elt) {
+		if (!api.bodyContains(elt)) {
+			api.getInternalData(elt).webSocket.close();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * createWebSocket is the default method for creating new WebSocket objects.
+	 * it is hoisted into htmx.createWebSocket to be overridden by the user, if needed.
+	 * 
+	 * @param {string} url 
+	 * @returns WebSocket
+	 */
+	 function createWebSocket(url){
+		return new WebSocket(url, []);
+	}
+
+	/**
+	 * queryAttributeOnThisOrChildren returns all nodes that contain the requested attributeName, INCLUDING THE PROVIDED ROOT ELEMENT.
+	 * 
+	 * @param {HTMLElement} elt 
+	 * @param {string} attributeName 
+	 */
+	function queryAttributeOnThisOrChildren(elt, attributeName) {
+
+		var result = []
+
+		// If the parent element also contains the requested attribute, then add it to the results too.
+		if (api.hasAttribute(elt, attributeName)) {
+			result.push(elt);
+		}
+
+		// Search all child nodes that match the requested attribute
+		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "]").forEach(function(node) {
+			result.push(node)
+		})
+
+		return result
 	}
 
 })();
