@@ -1177,6 +1177,11 @@ return (function () {
             };
             socket.onopen = function (e) {
                 retryCount = 0;
+                var init = getAttributeValue(elt, "hx-ws-send-on-open")
+                if (init !== null) {
+                    socket.send(init)
+                }
+                triggerEvent(elt, "htmx:wsOnOpen", e)
             }
 
             getInternalData(elt).webSocket = socket;
