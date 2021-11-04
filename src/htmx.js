@@ -51,6 +51,7 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
+                inlineScriptNonce:'',
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
@@ -1415,6 +1416,9 @@ return (function () {
                 });
                 newScript.textContent = script.textContent;
                 newScript.async = false;
+                if (htmx.config.inlineScriptNonce) {
+                    newScript.nonce = htmx.config.inlineScriptNonce;
+                }
                 var parent = script.parentElement;
 
                 try {
