@@ -769,8 +769,8 @@ return (function () {
         function swapAfterEnd(target, fragment, settleInfo) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
-	function swapDelete(target, fragment, settleInfo) {
-	        cleanUpElement(target);
+        function swapDelete(target, fragment, settleInfo) {
+            cleanUpElement(target);
             return parentElt(target).removeChild(target);
         }
 
