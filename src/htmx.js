@@ -770,7 +770,7 @@ return (function () {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
 	function swapDelete(target, fragment, settleInfo) {
-	    cleanUpElement(target);
+	        cleanUpElement(target);
             return parentElt(target).removeChild(target);
         }
 
@@ -818,7 +818,7 @@ return (function () {
                 case "afterend":
                     swapAfterEnd(target, fragment, settleInfo);
                     return;
-		case "delete":
+                case "delete":
                     swapDelete(target, fragment, settleInfo);
                     return;
                 default:
