@@ -115,7 +115,6 @@ the documentation on [configuring swapping](/docs#modifying_swapping_behavior_wi
 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
