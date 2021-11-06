@@ -25,7 +25,7 @@ IE11 compatible
 
 * Why should only `<a>` and `<form>` be able to make HTTP requests?
 * Why should only `click` & `submit` events trigger them?
-* Why should only GET & POST be available?
+* Why should only [GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [POST]*(https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
 * Why should you only be able to replace the *entire* screen?
 
 By removing these arbitrary constraints htmx completes HTML as a 
