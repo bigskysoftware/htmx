@@ -50,8 +50,30 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
+## sponsors
+
+Thank you to our corporate sponsors!
+
 <div class="row">
 <div class="col 2" style="padding: 0">
+
+[![CommSpace](/img/commspace.svg)](https://www.commspace.co.za/)
+
+</div>
+
+<div class="col 2" style="padding: 0">
+
+</div>
+
+<div class="col 2" style="padding: 0">
+
+</div>
+</div>
+
+If you use htmx commercially & wish to support the 
+project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
+
+For htmx consulting or training [email us](mailto:htmx@bigsky.software)
 
 ## haiku
 
@@ -59,15 +81,4 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 longing for a hypertext<br/>
 already in hand*
 
-</div>
-<div class="col 2" style="padding: 0">
 
-## support
-
-If you use htmx commercially & wish to support the 
-project you can sponsor us on [Github](https://github.com/sponsors/bigskysoftware)
-
-For consulting & training on htmx, [contact us](mailto:consulting@bigsky.software)
-
-
-</div>
