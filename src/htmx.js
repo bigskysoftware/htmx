@@ -1286,7 +1286,7 @@ return (function () {
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
