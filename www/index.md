@@ -23,13 +23,12 @@ IE11 compatible
 
 ## motivation
 
-* Why should only `<a>` and `<form>` be able to make HTTP requests?
-* Why should only `click` & `submit` events trigger them?
-* Why should only [GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
-* Why should you only be able to replace the *entire* screen?
+* Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
+* Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
+* Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
+* Why should you only be able to replace the **entire** screen?
 
-By removing these arbitrary constraints htmx completes HTML as a 
-[hypertext](https://en.wikipedia.org/wiki/Hypertext)
+By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 ## quick start
 
