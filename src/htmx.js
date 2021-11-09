@@ -357,9 +357,9 @@ return (function () {
         /**
          * mergeObjects takes all of the keys from 
          * obj2 and duplicates them into obj1
-         * @param {{}} obj1 
-         * @param {{}} obj2 
-         * @returns {{}}
+         * @param {Object} obj1 
+         * @param {Object} obj2 
+         * @returns {Object}
          */
         function mergeObjects(obj1, obj2) {
             for (var key in obj2) {
@@ -1832,7 +1832,7 @@ return (function () {
          * @param {HTMLElement} elt 
          * @param {HTMLElement} target 
          * @param {string} prompt 
-         * @returns {{}} // TODO: Define/Improve HtmxHeaderSpecification
+         * @returns {Object} // TODO: Define/Improve HtmxHeaderSpecification
          */
         function getHeaders(elt, target, prompt) {
             var headers = {
@@ -1856,9 +1856,9 @@ return (function () {
          * filterValues takes an object containing form input values
          * and returns a new object that only contains keys that are 
          * specified by the closest "hx-params" attribute
-         * @param {{}} inputValues 
+         * @param {Object} inputValues 
          * @param {HTMLElement} elt 
-         * @returns {{}}
+         * @returns {Object}
          */
         function filterValues(inputValues, elt) {
             var paramsValue = getClosestAttributeValue(elt, "hx-params");
@@ -2007,9 +2007,9 @@ return (function () {
         /**
          * @param {HTMLElement} elt 
          * @param {string} attr 
-         * @param {boolean} evalAsDefault 
-         * @param {{}} values 
-         * @returns {{}}
+         * @param {boolean=} evalAsDefault 
+         * @param {Object=} values 
+         * @returns {Object}
          */
         function getValuesForElement(elt, attr, evalAsDefault, values) {
             if (values == null) {
@@ -2078,7 +2078,7 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt 
-         * @returns {{}}
+         * @returns {Object}
          */
         function getExpressionVars(elt) {
             return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt));

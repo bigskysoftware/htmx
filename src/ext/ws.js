@@ -56,12 +56,8 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			case "htmx:afterProcessNode":
 				var parent = evt.target;
 
-				foreach(queryAttributeOnThisOrChildren(parent, "ws-connect"), function(child) {
+				forEach(queryAttributeOnThisOrChildren(parent, "ws-connect"), function(child) {
 					ensureWebSocket(child)
-				});
-
-				foreach(queryAttributeOnThisOrChildren(parent, "ws-send"), function(child) {
-					processWebSocketSend(child)
 				});
 			}
 		}
@@ -78,7 +74,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 		// If the element containing the WebSocket connection no longer exists, then 
 		// do not connect/reconnect the WebSocket.
-		if (!bodyContains(elt)) {
+		if (!api.bodyContains(elt)) {
 			return;
 		}
 
@@ -140,15 +136,18 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			var settleInfo = api.makeSettleInfo(elt);
 			var fragment = api.makeFragment(response);
 
-			/** @type {HTMLElement[]} */ 
-			var children = toArray(fragment.children);
-
-			for (var i = 0; i < children.length; i++) {
-				var child = children[i];
-				api.oobSwap(api.getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
+			if (fragment.children.length) {
+				for (var i = 0; i < fragment.children.length; i++) {
+					api.oobSwap(api.getAttributeValue(fragment.children[i], "hx-swap-oob") || "true", fragment.children[i], settleInfo);
+				}
 			}
 
 			api.settleImmediately(settleInfo.tasks);
+		});
+
+		// Re-connect any ws-send commands as well.
+		forEach(queryAttributeOnThisOrChildren(elt, "ws-send"), function(child) {
+			processWebSocketSend(elt, child)
 		});
 
 		// Put the WebSocket into the HTML Element's custom data.
@@ -158,37 +157,31 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	/**
 	 * processWebSocketSend adds event listeners to the <form> element so that
 	 * messages can be sent to the WebSocket server when the form is submitted.
-	 * @param {HTMLElement} elt 
+	 * @param {HTMLElement} parent
+	 * @param {HTMLElement} child
 	 */	
-	function processWebSocketSend(elt) {
-		var webSocketSourceElt = api.getClosestMatch(elt, function (parent) {
-			return api.getInternalData(parent).webSocket != null;
+	function processWebSocketSend(parent, child) {
+		child.addEventListener(api.getTriggerSpecs(child)[0].trigger, function (evt) {
+			var webSocket = api.getInternalData(parent).webSocket;
+			var headers = api.getHeaders(child, parent);
+			var results = api.getInputValues(child, 'post');
+			var errors = results.errors;
+			var rawParameters = results.values;
+			var expressionVars = api.getExpressionVars(child);
+			var allParameters = api.mergeObjects(rawParameters, expressionVars);
+			var filteredParameters = api.filterValues(allParameters, child);
+			filteredParameters['HEADERS'] = headers;
+			if (errors && errors.length > 0) {
+				api.triggerEvent(child, 'htmx:validation:halted', errors);
+				return;
+			}
+			webSocket.send(JSON.stringify(filteredParameters));
+			if(api.shouldCancel(child)){
+				evt.preventDefault();
+			}
 		});
-		if (webSocketSourceElt) {
-			elt.addEventListener(api.getTriggerSpecs(elt)[0].trigger, function (evt) {
-				var webSocket = api.getInternalData(webSocketSourceElt).webSocket;
-				var headers = api.getHeaders(elt, webSocketSourceElt);
-				var results = api.getInputValues(elt, 'post');
-				var errors = results.errors;
-				var rawParameters = results.values;
-				var expressionVars = api.getExpressionVars(elt);
-				var allParameters = api.mergeObjects(rawParameters, expressionVars);
-				var filteredParameters = api.filterValues(allParameters, elt);
-				filteredParameters['HEADERS'] = headers;
-				if (errors && errors.length > 0) {
-					api.triggerEvent(elt, 'htmx:validation:halted', errors);
-					return;
-				}
-				webSocket.send(JSON.stringify(filteredParameters));
-				if(api.shouldCancel(elt)){
-					evt.preventDefault();
-				}
-			});
-		} else {
-			triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
-		}
 	}
-
+	
 	/**
 	 * getWebSocketReconnectDelay is the default easing function for WebSocket reconnects.
 	 * @param {number} retryCount // The number of retries that have already taken place
@@ -259,6 +252,19 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		})
 
 		return result
+	}
+
+	/**
+	 * @template T
+	 * @param {T[]} arr 
+	 * @param {(T) => void} func 
+	 */
+	function forEach(arr, func) {
+		if (arr) {
+			for (var i = 0; i < arr.length; i++) {
+				func(arr[i]);
+			}
+		}
 	}
 
 })();
