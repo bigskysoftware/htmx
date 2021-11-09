@@ -68,18 +68,24 @@ return (function () {
         /** @type {import("./htmx").HtmxInternalApi} */
         var internalAPI = {
             bodyContains: bodyContains,
+            filterValues: filterValues,
             hasAttribute: hasAttribute,
             getAttributeValue: getAttributeValue,
+            getClosestMatch: getClosestMatch,
+            getExpressionVars: getExpressionVars,
+            getHeaders: getHeaders,
+            getInputValues: getInputValues,
             getInternalData: getInternalData,
             getSwapSpecification: getSwapSpecification,
             getTriggerSpecs: getTriggerSpecs,
-            oobSwap: oobSwap,
-            makeFragment: makeFragment,
-            getClosestMatch: getClosestMatch,
             getTarget: getTarget,
+            makeFragment: makeFragment,
+            mergeObjects: mergeObjects,
             makeSettleInfo: makeSettleInfo,
+            oobSwap: oobSwap,
             selectAndSwap: selectAndSwap,
             settleImmediately: settleImmediately,
+            shouldCancel: shouldCancel,
             triggerEvent: triggerEvent,
             triggerErrorEvent: triggerErrorEvent,
             withExtensions: withExtensions,
@@ -107,6 +113,11 @@ return (function () {
 			return parseFloat(str) || undefined
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {string} name 
+         * @returns {(string | null)}
+         */
         function getRawAttribute(elt, name) {
             return elt.getAttribute && elt.getAttribute(name);
         }
@@ -117,6 +128,12 @@ return (function () {
                 elt.hasAttribute("data-" + qualifiedName));
         }
 
+        /**
+         * 
+         * @param {HTMLElement} elt 
+         * @param {string} qualifiedName 
+         * @returns {(string | null)}
+         */
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -337,6 +354,13 @@ return (function () {
             return trigger.trim().split(/\s+/);
         }
 
+        /**
+         * mergeObjects takes all of the keys from 
+         * obj2 and duplicates them into obj1
+         * @param {{}} obj1 
+         * @param {{}} obj2 
+         * @returns {{}}
+         */
         function mergeObjects(obj1, obj2) {
             for (var key in obj2) {
                 if (obj2.hasOwnProperty(key)) {
@@ -1079,6 +1103,10 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @returns {boolean}
+         */
         function shouldCancel(elt) {
             return elt.tagName === "FORM" ||
                 (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
@@ -1703,6 +1731,10 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {string} verb 
+         */
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
@@ -1796,6 +1828,12 @@ return (function () {
         // Ajax
         //====================================================================
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {HTMLElement} target 
+         * @param {string} prompt 
+         * @returns {{}} // TODO: Define/Improve HtmxHeaderSpecification
+         */
         function getHeaders(elt, target, prompt) {
             var headers = {
                 "HX-Request" : "true",
@@ -1814,8 +1852,15 @@ return (function () {
             return headers;
         }
 
+        /**
+         * filterValues takes an object containing form input values
+         * and returns a new object that only contains keys that are 
+         * specified by the closest "hx-params" attribute
+         * @param {{}} inputValues 
+         * @param {HTMLElement} elt 
+         * @returns {{}}
+         */
         function filterValues(inputValues, elt) {
-            /** @type {string | null} */
             var paramsValue = getClosestAttributeValue(elt, "hx-params");
             if (paramsValue) {
                 if (paramsValue === "none") {
@@ -1959,6 +2004,13 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {string} attr 
+         * @param {boolean} evalAsDefault 
+         * @param {{}} values 
+         * @returns {{}}
+         */
         function getValuesForElement(elt, attr, evalAsDefault, values) {
             if (values == null) {
                 values = {};
@@ -2006,14 +2058,28 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {*} expressionVars 
+         * @returns 
+         */
         function getHXVarsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vars", true, expressionVars);
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @param {*} expressionVars 
+         * @returns 
+         */
         function getHXValsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vals", false, expressionVars);
         }
 
+        /**
+         * @param {HTMLElement} elt 
+         * @returns {{}}
+         */
         function getExpressionVars(elt) {
             return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt));
         }

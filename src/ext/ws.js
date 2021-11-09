@@ -108,10 +108,9 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		/** @type {WebSocket} */
 		var socket = htmx.createWebSocket(wssSource);
 
-		 socket.onerror = function (e) {
-			api.triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
-			maybeCloseWebSocketSource(elt);
-		};
+		socket.onopen = function (e) {
+			retryCount = 0;
+		}
 
 		socket.onclose = function (e) {
 			// If Abnormal Closure/Service Restart/Try Again Later, then set a timer to reconnect after a pause.
@@ -123,9 +122,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			}
 		};
 
-		socket.onopen = function (e) {
-			retryCount = 0;
-		}
+		socket.onerror = function (e) {
+			api.triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
+			maybeCloseWebSocketSource(elt);
+		};
 
 		socket.addEventListener('message', function (event) {
 			if (maybeCloseWebSocketSource(elt)) {
@@ -156,7 +156,8 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	}
 
 	/**
-	 * 
+	 * processWebSocketSend adds event listeners to the <form> element so that
+	 * messages can be sent to the WebSocket server when the form is submitted.
 	 * @param {HTMLElement} elt 
 	 */	
 	function processWebSocketSend(elt) {
@@ -166,20 +167,20 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		if (webSocketSourceElt) {
 			elt.addEventListener(api.getTriggerSpecs(elt)[0].trigger, function (evt) {
 				var webSocket = api.getInternalData(webSocketSourceElt).webSocket;
-				var headers = getHeaders(elt, webSocketSourceElt);
-				var results = getInputValues(elt, 'post');
+				var headers = api.getHeaders(elt, webSocketSourceElt);
+				var results = api.getInputValues(elt, 'post');
 				var errors = results.errors;
 				var rawParameters = results.values;
-				var expressionVars = getExpressionVars(elt);
-				var allParameters = mergeObjects(rawParameters, expressionVars);
-				var filteredParameters = filterValues(allParameters, elt);
+				var expressionVars = api.getExpressionVars(elt);
+				var allParameters = api.mergeObjects(rawParameters, expressionVars);
+				var filteredParameters = api.filterValues(allParameters, elt);
 				filteredParameters['HEADERS'] = headers;
 				if (errors && errors.length > 0) {
-					triggerEvent(elt, 'htmx:validation:halted', errors);
+					api.triggerEvent(elt, 'htmx:validation:halted', errors);
 					return;
 				}
 				webSocket.send(JSON.stringify(filteredParameters));
-				if(shouldCancel(elt)){
+				if(api.shouldCancel(elt)){
 					evt.preventDefault();
 				}
 			});

@@ -40,8 +40,12 @@ export interface HtmxExtension {
 
 export interface HtmxInternalApi {
     bodyContains: (element: HTMLElement) => boolean
+    filterValues: (inputValues: {}, elt: HTMLElement) => {}
     getAttributeValue: (element: HTMLElement, qualifiedName: string) => (string | null)
     getClosestMatch: (element: HTMLElement, condition: (e:HTMLElement) => boolean) => (HTMLElement | null)
+    getExpressionVars: (element: HTMLELement) => {}
+    getHeaders: (element:HTMLElement, target: HTMLElement, prompt:string) => {}
+    getInputValues: (element: HTMLElement, verb:string) => {errors:any[], values:{}}
     getInternalData: (element: HTMLElement) => Object
     getSwapSpecification: (element: HTMLElement) => HtmxSwapSpecification
     getTarget: (element: HTMLElement) => object
@@ -49,9 +53,11 @@ export interface HtmxInternalApi {
     hasAttribute: (element: HTMLElement, qualifiedName: string) => boolean
     makeSettleInfo: (element: Element) => HtmxSettleInfo
     makeFragment: (response: string) => Element
+    mergeObjects: (obj1:{}, obj2:{}) => {}
     oobSwap: (oobValue: string, oobElement: HTMLElement, settleInfo: *) => void
     selectAndSwap: (swapStyle: any, target: any, elt: any, responseText: any, settleInfo: any) => void // TODO: improve parameter definitions
     settleImmediately: (tasks: any) => void // TODO: improve parameter definitions
+    shouldCancel: (element: HTMLElement) => boolean
     triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void
     triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
     withExtensions: (element: HTMLElement, toDo:(ext:HtmxExtension) => void) => void
