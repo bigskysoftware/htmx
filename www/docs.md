@@ -1022,6 +1022,27 @@ htmx attributes in it, you would need to add a call to `htmx.process()` like thi
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
 ```
 
+Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if` 
+attribute on templates to add content conditionally. Such templates are not initially part of the DOM and,
+if they contain htmx attributes, will need a call to `htmx.process()` after they are loaded. The following
+example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
+
+```html
+  <div x-data="{show_new: false}"
+       x-init="$watch('show_new', value => {
+         if (show_new) {
+           htmx.process(document.querySelector('#new_content'))
+         }
+      })">
+    <button @click = "show_new = !show_new">Toggle New Content</button>
+    <template x-if="show_new">
+      <div id="new_content">
+        <a hx-get="/server/newstuff" href="#">New Clickable</a>
+      </div>
+    </template>
+  </div>
+```
+
 ## <a name="security"></a>[Security](#security)
 
 htmx allows you to define logic directly in your DOM.  This has a number of advantages, the
