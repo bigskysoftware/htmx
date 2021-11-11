@@ -2705,6 +2705,9 @@ return (function () {
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
+                    forEach(getDocument().querySelectorAll("[hx-trigger='restored'],[data-hx-trigger='restored']"), function (elt) {
+                        triggerEvent(elt, 'restored')
+                    })
                 }
             };
             setTimeout(function () {
