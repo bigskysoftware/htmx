@@ -1,0 +1,34 @@
+<head>
+	<link rel="stylesheet" href="/stylesheet.css">
+	<script src="/htmx/htmx.js"></script>
+	<script src="/htmx/ext/sse.js"></script>
+</head>
+
+<body>
+	<div id="header"></div>
+	<div id="page" hx-ext="sse">
+		<h1><a href="index.html">SSE Test Server</a> - Event Target Test</h1>
+
+		<h3>Description</h3>
+		<p>
+			This page connects to several different different Server Sent Event (SSE) stream.  
+			Contents from each stream are sent to a single DOM element.
+		</p>
+		<h3>Example HTML</h3>
+<pre class="code">
+&lt;div sse-connect="/users/sse.html" sse-target="#otherNode"&gt;&lt;/div&gt;
+&lt;div id="otherNode"&gt;&lt;/div&gt;
+</pre>
+		<h3>Test Cases</h3>
+
+			<h3>Multiple Listeners using HX-Target to write to a single target node.</h3>
+			<div sse-connect="/posts/sse.html" hx-target="#otherNode"></div>
+			<div sse-connect="/comments/sse.html" hx-target="#otherNode"></div>
+			<div sse-connect="/albums/sse.html" hx-target="#otherNode"></div>
+			<div sse-connect="/todos/sse.html" hx-target="#otherNode"></div>
+			<div sse-connect="/users/sse.html" hx-target="#otherNode"></div>
+
+			<div class="container" id="otherNode">Waiting for records from any of: Posts/Comments/Albums/ToDos/Users</div>
+		</div>
+	</body>
+</html>

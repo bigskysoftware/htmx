@@ -1,0 +1,30 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/stylesheet.css">
+	<script src="/htmx/htmx.js"></script>
+	<script src="/htmx/ext/sse.js"></script>
+</head>
+
+<body>
+	<div id="header"></div>
+	<div id="page">
+		<h1><a href="index.html">SSE Test Server</a> - Simple Test</h1>
+		<h3>Description</h3>
+		<p>
+			This page connects to several different Server Sent Event (SSE) streams, listening on the default event name "message".  
+			Each stream should populate its own container.
+		</p>
+		<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-ext="sse" sse-url="http://localhost/posts.html" sse-swap="message"&gt;Waiting for Posts...&lt;/div&gt;
+</pre>
+
+		<h3>Test Cases</h3>
+		<div class="container" hx-ext="sse" sse-url="http://localhost/posts.html" sse-swap="message">Waiting for Posts...</div>
+		<div class="container" hx-ext="sse" sse-url="http://localhost/comments.html" sse-swap="message">Waiting for Comments...</div>
+		<div class="container" hx-ext="sse" sse-url="http://localhost/albums.html" sse-swap="message">Waiting for Albums...</div>
+		<div class="container" hx-ext="sse" sse-url="http://localhost/todos.html" sse-swap="message">Waiting for ToDos...</div>
+		<div class="container" hx-ext="sse" sse-url="http://localhost/users.html" sse-swap="message">Waiting for Users...</div>
+	</div>
+</body>
+</html>
