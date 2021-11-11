@@ -20,8 +20,27 @@ body {
 	background-color:black;
 }
 
+#navigation {
+	position:absolute;
+	width:150px;
+	margin-top:50px;
+	margin-left:20px;
+}
+
+#navigation > a {
+	display:block;
+	cursor: pointer;
+	text-decoration:none;
+	padding:10px 20px;
+}
+
+#navigation > a:hover {
+	background-color:#eee;
+}
+
 #page {
 	margin: 50px;
+	padding-left:150px;
 }
 
 .container {
@@ -40,13 +59,27 @@ pre.code {
 	display:block;
 }
 
-.htmx-settling {
+.container.htmx-settling {
 	border:solid 3px red!important;
 	padding:8px!important;
 }
 
 .bold {
 	font-weight:bold;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+td {
+	padding:10px 20px;
+	border:solid 1px #ddd;
+	vertical-align: top;
 }
 
 .demo {

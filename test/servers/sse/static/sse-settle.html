@@ -1,33 +1,21 @@
-<html>
-<head>
-<link rel="stylesheet" href="/stylesheet.css">
-	<script src="/htmx/htmx.js"></script>
-	<script src="/htmx/ext/sse.js"></script>
-</head>
-
-<body>
-	<div id="header"></div>
-	<div id="page">
-		<h1><a href="index.html">SSE Test Server</a> - Settling Test</h1>
-		<h3>Description</h3>
-		<p>
-			This page connects to a single different Server Sent Event (SSE) stream.  
-			Multiple containers all listen for the same default "message" event name, but using different values for hx-swap.
-		</p>
-		<h3>Example HTML</h3>
+<h1>Settling Test</h1>
+<h3>Description</h3>
+<p>
+	This page connects to a single different Server Sent Event (SSE) stream.  
+	Multiple containers all listen for the same default "message" event name, but using different values for hx-swap.
+</p>
+<h3>Example HTML</h3>
 <pre class="code">
 &lt;div hx-ext="sse" sse-url="http://localhost/comments.html"&gt;
-  &lt;div sse-swap="message" hx-swap="settle:100ms"&gt;Waiting for Comments...&lt;/div&gt;
+	&lt;div sse-swap="message" hx-swap="settle:100ms"&gt;Waiting for Comments...&lt;/div&gt;
 &lt;/div&gt;
 </pre>
-		<h3>Test Cases</h3>
-		<div hx-ext="sse" sse-url="http://localhost/comments.html">
-			<div class="container" sse-swap="message" sse-settle="100ms" hx-swap="settle:100ms">Waiting for Comments...</div>
-			<div class="container" sse-swap="message" sse-settle="200ms" hx-swap="settle:200ms">Waiting for Comments...</div>
-			<div class="container" sse-swap="message" sse-settle="300ms" hx-swap="settle:300ms">Waiting for Comments...</div>
-			<div class="container" sse-swap="message" sse-settle="400ms" hx-swap="settle:400ms">Waiting for Comments...</div>
-			<div class="container" sse-swap="message" sse-settle="500ms" hx-swap="settle:500ms">Waiting for Comments...</div>
-		</div>
-	</div>
-</body>
-</html>
+<h3>Test Cases</h3>
+<div hx-ext="sse" sse-url="http://localhost/comments.html">
+	<div class="container" sse-swap="message" sse-settle="100ms" hx-swap="settle:100ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" sse-settle="200ms" hx-swap="settle:200ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" sse-settle="300ms" hx-swap="settle:300ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" sse-settle="400ms" hx-swap="settle:400ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" sse-settle="500ms" hx-swap="settle:500ms">Waiting for Comments...</div>
+</div>
+</div>
