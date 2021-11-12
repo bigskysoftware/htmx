@@ -239,7 +239,7 @@ and the element will cancel the polling.
 #### <a name="load_polling"></a> [Load Polling](#load_polling)
 
 Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
-an `load` trigger along with a delay, and replaces itself with the response:
+a `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
 <div hx-get="/messages"
