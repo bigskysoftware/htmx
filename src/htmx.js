@@ -1238,7 +1238,7 @@ return (function () {
                         return;
                     }
                     webSocket.send(JSON.stringify(filteredParameters));
-                    if(shouldCancel(elt)){
+                    if(shouldCancel(evt, elt)){
                         evt.preventDefault();
                     }
                 });
