@@ -239,7 +239,7 @@ and the element will cancel the polling.
 #### <a name="load_polling"></a> [Load Polling](#load_polling)
 
 Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
-an `load` trigger along with a delay, and replaces itself with the response:
+a `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
 <div hx-get="/messages"
@@ -338,7 +338,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from response (out of band items will still be processed)
+| `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
@@ -628,6 +628,17 @@ event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
 
+### <a name="cors"></a> [CORS](#cors)
+
+When using htmx in a cross origin context, remember to configure your web
+server to set Access-Control headers in order for htmx headers to be visible
+on the client side.
+
+- [Access-Control-Allow-Headers (for request headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers)
+- [Access-Control-Expose-Headers (for response headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers)
+
+[See all the request and response headers that htmx implements.](/reference/#request_headers)
+
 ### <a name="request-header"></a> [Request Headers](#request-headers)
 
 htmx includes a number of useful headers in requests:
@@ -653,6 +664,9 @@ htmx supports some htmx-specific response headers:
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/headers/hx-trigger).
 
+Submitting a form via htmx has the benefit, that the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) is not needed
+ any more. After successful processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+ 
 ### <a name="request-operations"></a> [Request Order of Operations](#request-operations)
 
 The order of operations in a htmx request are:
@@ -1023,6 +1037,27 @@ htmx attributes in it, you would need to add a call to `htmx.process()` like thi
   fetch('http://example.com/movies.json')
     .then(response => response.text())
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
+```
+
+Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if` 
+attribute on templates to add content conditionally. Such templates are not initially part of the DOM and,
+if they contain htmx attributes, will need a call to `htmx.process()` after they are loaded. The following
+example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
+
+```html
+  <div x-data="{show_new: false}"
+       x-init="$watch('show_new', value => {
+         if (show_new) {
+           htmx.process(document.querySelector('#new_content'))
+         }
+      })">
+    <button @click = "show_new = !show_new">Toggle New Content</button>
+    <template x-if="show_new">
+      <div id="new_content">
+        <a hx-get="/server/newstuff" href="#">New Clickable</a>
+      </div>
+    </template>
+  </div>
 ```
 
 ## <a name="security"></a>[Security](#security)
