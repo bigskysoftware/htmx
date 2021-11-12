@@ -989,11 +989,20 @@ return (function () {
             }
         }
 
-        function shouldCancel(elt) {
-            return elt.tagName === "FORM" ||
-                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && (elt.getAttribute('href') === '#' ||
-                                                     elt.getAttribute('href').indexOf("#") !== 0));
+        function shouldCancel(evt, elt) {
+            if (evt.type === "submit" || evt.type === "click") {
+                if (elt.tagName === "FORM") {
+                    return true;
+                }
+                if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
+                    return true;
+                }
+                if (elt.tagName === "A" && elt.href &&
+                    (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf("#") !== 0)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
@@ -1029,7 +1038,7 @@ return (function () {
                     if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                         return;
                     }
-                    if (explicitCancel || shouldCancel(elt)) {
+                    if (explicitCancel || shouldCancel(evt, elt)) {
                         evt.preventDefault();
                     }
                     if (maybeFilterEvent(triggerSpec, evt)) {
