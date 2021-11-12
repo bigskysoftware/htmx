@@ -1444,7 +1444,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws]");
+                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
                 return results;
             } else {
                 return [];
