@@ -2501,6 +2501,9 @@ return (function () {
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
+		
+            responseInfo.failed = isError; // Make failed property available to response events
+            responseInfo.successful = !isError; // Make successful property available to response events		
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
