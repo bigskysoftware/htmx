@@ -1536,11 +1536,11 @@ return (function () {
             });
         }
 
-        function logError(msg) {
+        function logError(...data) {
             if(console.error) {
-                console.error(msg);
+                console.error(...data);
             } else if (console.log) {
-                console.log("ERROR: ", msg);
+                console.log("ERROR: ", ...data);
             }
         }
 
@@ -1555,7 +1555,7 @@ return (function () {
                 htmx.logger(elt, eventName, detail);
             }
             if (detail.error) {
-                logError(detail.error);
+                logError(detail.error, detail);
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
