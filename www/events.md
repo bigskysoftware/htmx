@@ -40,6 +40,8 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
+* `detail.succesful` - true if the response has a 20x status code, else false
+* `detail.failed` - true if the response does not have a 20x status code, else false
 
 ### <a name="htmx:afterSettle"></a> Event - [`htmx:afterSettle`](#htmx:afterSettle)
 
