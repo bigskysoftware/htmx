@@ -15,10 +15,10 @@ We start with a search input and an empty table:
     <img src="/img/bars.svg"/> Searching... 
    </span> 
 </h3>
-<input class="form-control" type="text" 
+<input class="form-control" type="search" 
        name="search" placeholder="Begin Typing To Search Users..." 
        hx-post="/search" 
-       hx-trigger="keyup changed delay:500ms" 
+       hx-trigger="keyup changed delay:500ms, search" 
        hx-target="#search-results" 
        hx-indicator=".htmx-indicator">
 
@@ -40,6 +40,11 @@ The input issues a `POST` to `/search` on the `keyup` event and sets the body of
 We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
 value of the input (e.g. they hit an arrow key).  
+
+Since we use a `search` type input we will get an `x` in the input field to clear the input. 
+To make this trigger a new `POST` we have to specify another trigger. We specify another trigger by using a comma to 
+separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override 
+the 500 ms delay on `keyup` by just pressing enter.
 
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
 
@@ -72,10 +77,10 @@ Search Contacts
 </span>
 </h3>
 
-<input class="form-control" type="text" 
+<input class="form-control" type="search" 
        name="search" placeholder="Begin Typing To Search Users..." 
        hx-post="/search" 
-       hx-trigger="keyup changed delay:500ms" 
+       hx-trigger="keyup changed delay:500ms, search" 
        hx-target="#search-results" 
        hx-indicator=".htmx-indicator">
 
