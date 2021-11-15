@@ -1,10 +1,10 @@
 # WebSocket - Test Server
 
-This package implements a bare-bones WebSocket server for testing htmx.  It can be used in conjunction with the manual tests in the `/test/manual` directory.
+This package implements a test-suite WebSocket server for testing htmx.
 
 ## What It Does
 
-This listens for incoming WebSocket connections coming in to ws://localhost:1323/echo.  When it receives messages from any WebSocket client, it responds with that same content in a way that htmx can process.  This means, that the response message will look like this: `<div id="idMessage" hx-swap-oob="true">{your message here}</div>`
+This server listens for incoming WebSocket connections coming in to ws://localhost:1323/echo.  When it receives messages from any WebSocket client, it responds with that same content in a way that htmx can process.  This means, that the response message will look like this: `<div id="idMessage" hx-swap-oob="true">{your message here}</div>`
 
 ## How to Use This Server
 
