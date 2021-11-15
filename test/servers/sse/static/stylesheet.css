@@ -32,10 +32,15 @@ body {
 	cursor: pointer;
 	text-decoration:none;
 	padding:10px 20px;
+	white-space: nowrap;
 }
 
 #navigation > a:hover {
 	background-color:#eee;
+}
+
+#navigation > a.selected {
+	font-weight:bold;
 }
 
 #page {

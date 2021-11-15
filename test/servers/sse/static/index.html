@@ -8,7 +8,6 @@
 	<script src="https://unpkg.com/hyperscript.org@0.8.3"></script>
 	<script type="text/hyperscript">
 		on click(target) from <#navigation a/>
-			log "got it"
 			take .selected for target
 	</script>
 </head>
@@ -16,7 +15,7 @@
 <body>
 	<div id="header"></div>
 	<div id="navigation" hx-target="#page" hx-push-url="false">
-		<a href="index.html" hx-boost="false">About</a>
+		<a href="index.html" class="selected" hx-boost="false">About</a>
 		<a href="" hx-get="sse-simple.html">Simple</a>
 		<a href="" hx-get="sse-multichannel.html">Multi-Channel</a>
 		<a href="" hx-get="sse-triggers.html">Event Trigger</a>
