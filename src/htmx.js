@@ -62,7 +62,7 @@ return (function () {
             },
             parseInterval:parseInterval,
             _:internalEval,
-            version: "1.6.0"
+            version: "1.6.1"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1082,7 +1082,7 @@ return (function () {
         }
 
         function boostElement(elt, nodeData, triggerSpecs) {
-            if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
+            if ((elt.tagName === "A" && isLocalLink(elt) && elt.target === "") || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
                 if (elt.tagName === "A") {
@@ -1104,14 +1104,25 @@ return (function () {
         }
 
         /**
+         * 
+         * @param {Event} evt 
          * @param {HTMLElement} elt 
-         * @returns {boolean}
+         * @returns 
          */
-        function shouldCancel(elt) {
-            return elt.tagName === "FORM" ||
-                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && (elt.getAttribute('href') === '#' ||
-                                                     elt.getAttribute('href').indexOf("#") !== 0));
+        function shouldCancel(evt, elt) {
+            if (evt.type === "submit" || evt.type === "click") {
+                if (elt.tagName === "FORM") {
+                    return true;
+                }
+                if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
+                    return true;
+                }
+                if (elt.tagName === "A" && elt.href &&
+                    (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf("#") !== 0)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
@@ -1147,7 +1158,7 @@ return (function () {
                     if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                         return;
                     }
-                    if (explicitCancel || shouldCancel(elt)) {
+                    if (explicitCancel || shouldCancel(evt, elt)) {
                         evt.preventDefault();
                     }
                     if (maybeFilterEvent(triggerSpec, evt)) {
@@ -1238,9 +1249,9 @@ return (function () {
         }
 
         function maybeReveal(elt) {
-            var nodeData = getInternalData(elt);
-            if (!nodeData.revealed && isScrolledIntoView(elt)) {
-                nodeData.revealed = true;
+            if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
+                elt.setAttribute('data-hx-revealed', 'true');
+                var nodeData = getInternalData(elt);
                 if (nodeData.initialized) {
                     issueAjaxRequest(nodeData.verb, nodeData.path, elt);
                 } else {
@@ -2430,6 +2441,10 @@ return (function () {
                 }
             }
 
+            if (hasHeader(xhr,/HX-Retarget:/i)) {
+                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+            }
+
             var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
             // by default htmx only swaps on 200 return codes and does not swap
@@ -2438,11 +2453,13 @@ return (function () {
             // overriding the detail.shouldSwap property
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
-            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse}, responseInfo);
+            var isError = xhr.status >= 400;
+            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError}, responseInfo);
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+            isError = beforeSwapDetails.isError; // allow updating error
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2557,7 +2574,8 @@ return (function () {
                 } else {
                     doSwap();
                 }
-            } else {
+            }
+            if (isError) {
                 triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
             }
         }

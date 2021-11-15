@@ -23,6 +23,8 @@ title: </> htmx - Documentation
   * [swapping](#swapping)
   * [css transitions](#css_transitions)
   * [parameters](#parameters)
+  * [confirming](#confirming)
+* [inheritance](#inheritance)
 * [boosting](#boosting)
 * [websockets & SSE](#websockets-and-sse)
 * [history](#history)
@@ -101,13 +103,13 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -237,7 +239,7 @@ and the element will cancel the polling.
 #### <a name="load_polling"></a> [Load Polling](#load_polling)
 
 Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
-an `load` trigger along with a delay, and replaces itself with the response:
+a `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
 <div hx-get="/messages"
@@ -336,7 +338,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from response (out of band items will still be processed)
+| `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
@@ -367,12 +369,12 @@ Given this situation, we can write a CSS transition from the old state to the ne
 }
 ```
 
-When htmx does the swap, it will it is in such a way that this CSS transition will apply to the new content, and
-you will get a nice, smooth transition to the new state.
+When htmx swaps in this new content, it will do so in such a way that the CSS transition will apply to the new content,
+giving you a nice, smooth transition to the new state.
 
 So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
 
-You can see the [Animation Examples](/examples/animiations) for more details and live demonstrations.
+You can see the [Animation Examples](/examples/animations) for more details and live demonstrations.
 
 ##### Details
 
@@ -446,6 +448,68 @@ which you can hook into to show the progress of the upload.
 
 You can include extra values in a request using the [hx-vals](/attributes/hx-vals) (name-expression pairs in JSON format) and
 [hx-vars](/attributes/hx-vars) attributes (comma-separated name-expression pairs that are dynamically computed).
+
+### <a name="confirming"></a> [Confirming Requests](#confirming)
+
+Often you will want to confirm an action before issuing a request.  htmx supports the [`hx-confirm`](/attributes/hx-confirm)
+attribute, which allows you to confirm an action using a simple javascript dialog:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
+  Delete My Account
+</button>
+```
+
+Using events you can implement more sophisticated confirmation dialogs.  The [confirm example](/examples/confirm/)
+shows how to use [sweetalert2](https://sweetalert2.github.io/) library for confirmation of htmx actions.
+
+## <a name="inheritance"></a>[Attribute Inheritance](#inheritance)
+
+Most attributes in htmx are inherited: they apply to the element they are on as well as any children elements.  This
+allows you to "hoist" attributes up the DOM to avoid code duplication.  Consider the following htmx:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure?">
+  Delete My Account
+</button>
+<button hx-put="/account" hx-confirm="Are you sure?">
+  Update My Account
+</button>
+```
+
+Here we have a duplicate `hx-confirm` attribute.  We can hoist this attribute to a parent element:
+
+```html
+<div hx-confirm="Are you sure?">
+    <button hx-delete="/account">
+      Delete My Account
+    </button>
+    <button hx-put="/account">
+      Update My Account
+    </button>
+</div>
+```
+
+This `hx-confirm` attribute will now apply to all htmx-powered elements within it.
+
+Sometimes you wish to undo this inheritance.  Consider if we had a cancel button to this group, but didn't want it to
+be confirmed.  We could add an `unset` directive on it like so:
+
+```html
+<div hx-confirm="Are you sure?">
+    <button hx-delete="/account">
+      Delete My Account
+    </button>
+    <button hx-put="/account">
+      Update My Account
+    </button>
+    <button hx-confirm="unset" hx-get="/">
+      Cancel
+    </button>
+</div>
+```
+
+The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
@@ -564,6 +628,17 @@ event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
 
+### <a name="cors"></a> [CORS](#cors)
+
+When using htmx in a cross origin context, remember to configure your web
+server to set Access-Control headers in order for htmx headers to be visible
+on the client side.
+
+- [Access-Control-Allow-Headers (for request headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers)
+- [Access-Control-Expose-Headers (for response headers)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers)
+
+[See all the request and response headers that htmx implements.](/reference/#request_headers)
+
 ### <a name="request-header"></a> [Request Headers](#request-headers)
 
 htmx includes a number of useful headers in requests:
@@ -589,6 +664,9 @@ htmx supports some htmx-specific response headers:
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/headers/hx-trigger).
 
+Submitting a form via htmx has the benefit, that the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) is not needed
+ any more. After successful processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+ 
 ### <a name="request-operations"></a> [Request Order of Operations](#request-operations)
 
 The order of operations in a htmx request are:
@@ -740,7 +818,10 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
         // allow 422 responses to swap as we are using this as a signal that
         // a form was submitted with bad data and want to rerender with the
         // errors
+        //
+        // set isError to false to avoid error logging in console
         evt.detail.shouldSwap = true;
+        evt.detail.isError = false;
     } else if(evt.detail.xhr.status === 418){
         // if the response code 418 (I'm a teapot) is returned, retarget the
         // content of the response to the element with the id `teapot`
@@ -956,6 +1037,27 @@ htmx attributes in it, you would need to add a call to `htmx.process()` like thi
   fetch('http://example.com/movies.json')
     .then(response => response.text())
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
+```
+
+Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if` 
+attribute on templates to add content conditionally. Such templates are not initially part of the DOM and,
+if they contain htmx attributes, will need a call to `htmx.process()` after they are loaded. The following
+example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
+
+```html
+  <div x-data="{show_new: false}"
+       x-init="$watch('show_new', value => {
+         if (show_new) {
+           htmx.process(document.querySelector('#new_content'))
+         }
+      })">
+    <button @click = "show_new = !show_new">Toggle New Content</button>
+    <template x-if="show_new">
+      <div id="new_content">
+        <a hx-get="/server/newstuff" href="#">New Clickable</a>
+      </div>
+    </template>
+  </div>
 ```
 
 ## <a name="security"></a>[Security](#security)

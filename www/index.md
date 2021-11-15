@@ -23,19 +23,18 @@ IE11 compatible
 
 ## motivation
 
-* Why should only `<a>` and `<form>` be able to make HTTP requests?
-* Why should only `click` & `submit` events trigger them?
-* Why should only GET & POST be available?
-* Why should you only be able to replace the *entire* screen?
+* Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
+* Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
+* Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
+* Why should you only be able to replace the **entire** screen?
 
-By removing these arbitrary constraints htmx completes HTML as a 
-[hypertext](https://en.wikipedia.org/wiki/Hypertext)
+By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 ## quick start
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+  <script src="https://unpkg.com/htmx.org@1.6.1"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -50,8 +49,30 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
+## sponsors
+
+Thank you to our corporate sponsors!
+
 <div class="row">
 <div class="col 2" style="padding: 0">
+
+[![CommSpace](/img/commspace.svg)](https://www.commspace.co.za/)
+
+</div>
+
+<div class="col 2" style="padding: 0">
+
+</div>
+
+<div class="col 2" style="padding: 0">
+
+</div>
+</div>
+
+If you use htmx commercially & wish to support the 
+project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
+
+For htmx consulting or training [email us](mailto:htmx@bigsky.software)
 
 ## haiku
 
@@ -59,15 +80,4 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 longing for a hypertext<br/>
 already in hand*
 
-</div>
-<div class="col 2" style="padding: 0">
 
-## support
-
-If you use htmx commercially & wish to support the 
-project you can sponsor us on [Github](https://github.com/sponsors/bigskysoftware)
-
-For consulting & training on htmx, [contact us](mailto:consulting@bigsky.software)
-
-
-</div>

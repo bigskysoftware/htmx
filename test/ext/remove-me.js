@@ -39,5 +39,15 @@ describe("remove-me extension", function(){
         }, 100);
     });
 
+    it('extension can be on a child', function(done)
+    {
+        var div = make('<div><div hx-ext="remove-me" id="d1" remove-me="20ms">Click Me!</div></div>')
+        should.equal(div.classList.length, 0);
+        setTimeout(function(){
+            should.equal(byId("d1"), null);
+            done();
+        }, 100);
+    });
+
 
 })

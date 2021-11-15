@@ -109,13 +109,12 @@ This event is triggered right before a request is sent.  You may not cancel the 
 This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If the event is cancelled, no swap will occur.
 
 You can modify the default swap behavior by modifying the `shouldSwap` and `target` properties of the event detail. See
-the documentation on [configuring swapping](#modifying_swapping_behavior_with_events) for more details.
+the documentation on [configuring swapping](/docs#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
