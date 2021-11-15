@@ -6,15 +6,15 @@
 </p>
 <h3>Example HTML</h3>
 <pre class="code">
-&lt;div hx-ext="sse" sse-url="http://localhost/posts.html" sse-swap="message"&gt;Waiting for Posts...&lt;/div&gt;
+&lt;div hx-ext="sse" sse-connect="http://localhost/posts.html" sse-swap="message"&gt;Waiting for Posts...&lt;/div&gt;
 </pre>
 
 <h3>Test Cases</h3>
 
-<div hx-ext="sse">
-	<div class="container" hx-ext="sse" sse-url="http://localhost/posts.html" sse-swap="message">Waiting for Posts...</div>
-	<div class="container" hx-ext="sse" sse-url="http://localhost/comments.html" sse-swap="message">Waiting for Comments...</div>
-	<div class="container" hx-ext="sse" sse-url="http://localhost/albums.html" sse-swap="message">Waiting for Albums...</div>
-	<div class="container" hx-ext="sse" sse-url="http://localhost/todos.html" sse-swap="message">Waiting for ToDos...</div>
-	<div class="container" hx-ext="sse" sse-url="http://localhost/users.html" sse-swap="message">Waiting for Users...</div>
+<div>
+	<div class="container" hx-ext="sse" sse-connect="http://localhost/posts.html" sse-swap="message">Waiting for Posts...</div>
+	<div class="container" hx-ext="sse" sse-connect="http://localhost/comments.html" sse-swap="message">Waiting for Comments...</div>
+	<div class="container" hx-ext="sse" sse-connect="http://localhost/albums.html" sse-swap="message">Waiting for Albums...</div>
+	<div class="container" hx-ext="sse" sse-connect="http://localhost/todos.html" sse-swap="message">Waiting for ToDos...</div>
+	<div class="container" hx-ext="sse" sse-connect="http://localhost/users.html" sse-swap="message">Waiting for Users...</div>
 </div>

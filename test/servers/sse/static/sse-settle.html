@@ -6,16 +6,16 @@
 </p>
 <h3>Example HTML</h3>
 <pre class="code">
-&lt;div hx-ext="sse" sse-url="http://localhost/comments.html"&gt;
+&lt;div hx-ext="sse" sse-connect="http://localhost/comments.html"&gt;
 	&lt;div sse-swap="message" hx-swap="settle:100ms"&gt;Waiting for Comments...&lt;/div&gt;
 &lt;/div&gt;
 </pre>
 <h3>Test Cases</h3>
-<div hx-ext="sse" sse-url="http://localhost/comments.html">
-	<div class="container" sse-swap="message" sse-settle="100ms" hx-swap="settle:100ms">Waiting for Comments...</div>
-	<div class="container" sse-swap="message" sse-settle="200ms" hx-swap="settle:200ms">Waiting for Comments...</div>
-	<div class="container" sse-swap="message" sse-settle="300ms" hx-swap="settle:300ms">Waiting for Comments...</div>
-	<div class="container" sse-swap="message" sse-settle="400ms" hx-swap="settle:400ms">Waiting for Comments...</div>
-	<div class="container" sse-swap="message" sse-settle="500ms" hx-swap="settle:500ms">Waiting for Comments...</div>
+<div hx-ext="sse" sse-connect="http://localhost/comments.html">
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:50ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:100ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:150ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:200ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:250ms">Waiting for Comments...</div>
 </div>
 </div>

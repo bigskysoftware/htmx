@@ -53,6 +53,8 @@ body {
 	border: solid 1px gray;
 	margin-bottom: 20px;
 	background-color:#f7f7f7;
+	height:130px;
+	overflow:hidden;
 }
 
 .container.htmx-settling {

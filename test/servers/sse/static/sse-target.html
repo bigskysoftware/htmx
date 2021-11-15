@@ -13,12 +13,12 @@
 <h3>Test Cases</h3>
 <h3>Multiple Listeners using HX-Target to write to a single target node.</h3>
 
-<div hx-ext="sse">
-	<div sse-connect="/posts/sse.html" hx-target="#otherNode"></div>
-	<div sse-connect="/comments/sse.html" hx-target="#otherNode"></div>
-	<div sse-connect="/albums/sse.html" hx-target="#otherNode"></div>
-	<div sse-connect="/todos/sse.html" hx-target="#otherNode"></div>
-	<div sse-connect="/users/sse.html" hx-target="#otherNode"></div>
+<div>
+	<div hx-ext="sse" sse-connect="/posts.html" sse-swap="message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" sse-connect="/comments.html" sse-swap="message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" sse-connect="/albums.html" sse-swap="message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" sse-connect="/todos.html" sse-swap="message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" sse-connect="/users.html" sse-swap="message" hx-target="#otherNode"></div>
 </div>
 
 <div class="container" id="otherNode">Waiting for records from any of: Posts/Comments/Albums/ToDos/Users</div>

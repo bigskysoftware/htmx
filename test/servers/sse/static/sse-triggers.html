@@ -7,12 +7,12 @@
 </p>
 <h3>Example HTML</h3>
 <pre class="code">
-&lt;div hx-ext="sse" sse-url="http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4"&gt;
+&lt;div hx-ext="sse" sse-connect="http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4"&gt;
 	&lt;div hx-get="http://localhost/page/random" hx-trigger="sse:Event1"&gt;Waiting for Posts...&lt;/div&gt;
 &lt;/div&gt;
 </pre>
 
-<div hx-ext="sse" sse-url="http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
+<div hx-ext="sse" sse-connect="http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
 	<h3>Test Cases</h3>
 	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event1">Waiting for Posts in Event1 channel...</div>
 	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event2">Waiting for Posts in Event2 channel...</div>

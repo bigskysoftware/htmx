@@ -83,7 +83,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		var internalData = api.getInternalData(parent);
 
 		// get URL from element's attribute
-		var sseURL = api.getAttributeValue(parent, "sse-url");
+		var sseURL = api.getAttributeValue(parent, "sse-connect");
 
 		if (sseURL == undefined) {
 			return;
@@ -126,7 +126,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 					source.removeEventListener(sseEventName, listener);
 					return;
 				}
-	
+				
 				// swap the response into the DOM and trigger a notification
 				swap(child, event.data);
 				api.triggerEvent(parent, "htmx:sseMessage", event);
@@ -222,8 +222,45 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		var target = api.getTarget(elt);
 		var settleInfo = api.makeSettleInfo(elt);
 
-		api.selectAndSwap(swapSpec.swapStyle, elt, target, content, settleInfo);
-		api.settleImmediately(settleInfo.tasks);
+		api.selectAndSwap(swapSpec.swapStyle, target, elt, content, settleInfo);
+
+		settleInfo.elts.forEach(function (elt) {
+			if (elt.classList) {
+				elt.classList.add(htmx.config.settlingClass);
+			}
+			api.triggerEvent(elt, 'htmx:beforeSettle');
+		});
+
+		// Handle settle tasks (with delay if requested)
+		if (swapSpec.settleDelay > 0) {
+			setTimeout(doSettle(settleInfo), swapSpec.settleDelay);
+		} else {
+			doSettle(settleInfo)();
+		}
+	}
+
+	/**
+	 * doSettle mirrors much of the functionality in htmx that 
+	 * settles elements after their content has been swapped.
+	 * TODO: this should be published by htmx, and not duplicated here
+	 * @param {import("../htmx").HtmxSettleInfo} settleInfo 
+	 * @returns () => void
+	 */
+	function doSettle(settleInfo) {
+
+		return function() {
+			settleInfo.tasks.forEach(function (task) {
+				task.call();
+			});
+
+			settleInfo.elts.forEach(function (elt) {
+				console.log(elt.classList);
+				if (elt.classList) {
+					elt.classList.remove(htmx.config.settlingClass);
+				}
+				triggerEvent(elt, 'htmx:afterSettle', responseInfo);
+			});
+		}
 	}
 
 })();
