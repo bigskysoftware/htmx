@@ -47,7 +47,12 @@ body {
 	padding: 10px;
 	border: solid 1px gray;
 	margin-bottom: 20px;
-	background-color:white;
+	background-color:#f7f7f7;
+}
+
+.container.htmx-settling {
+	border:solid 3px red!important;
+	padding:8px!important;
 }
 
 pre.code {
@@ -57,11 +62,6 @@ pre.code {
 	padding:30px 5px 30px 15px;
 	overflow-y:scroll;
 	display:block;
-}
-
-.container.htmx-settling {
-	border:solid 3px red!important;
-	padding:8px!important;
 }
 
 .bold {
