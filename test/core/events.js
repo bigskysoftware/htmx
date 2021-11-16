@@ -447,8 +447,8 @@ describe("Core htmx Events", function() {
         var successful = false;
         var failed = true;
         var handler = htmx.on("htmx:afterRequest", function (evt) {
-            successful = evt.successful;
-            failed = evt.failed;
+            successful = evt.detail.successful;
+            failed = evt.detail.failed;
         });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
@@ -468,8 +468,8 @@ describe("Core htmx Events", function() {
         var successful = true;
         var failed = false;
         var handler = htmx.on("htmx:afterRequest", function (evt) {
-            successful = evt.successful;
-            failed = evt.failed;
+            successful = evt.detail.successful;
+            failed = evt.detail.failed;
         });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
