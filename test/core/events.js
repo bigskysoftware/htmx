@@ -230,7 +230,7 @@ describe("Core htmx Events", function() {
         });
         try {
             this.server.respondWith("POST", "/test", function (xhr) {
-                xhr.respond(200, {}, "");
+                xhr.respond(500, {}, "");
             });
             var div = make("<button hx-post='/test'>Foo</button>");
             div.click();
@@ -443,6 +443,48 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:afterRequest event contains 'successful' and 'failed' properties indicating success after successful request", function () {
+        var successful = false;
+        var failed = true;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            successful = evt.successful;
+            failed = evt.failed;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(successful, true);
+            should.equal(failed, false);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    });
+    
+    it("htmx:afterRequest event contains 'successful' and 'failed' properties indicating failure after failed request", function () {
+        var successful = true;
+        var failed = false;
+        var handler = htmx.on("htmx:afterRequest", function (evt) {
+            successful = evt.successful;
+            failed = evt.failed;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(500, {}, "");
+            });
+            var div = make("<button hx-post='/test'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(successful, false);
+            should.equal(failed, true);
+        } finally {
+            htmx.off("htmx:afterRequest", handler);
+        }
+    });    
+    
 
 });
 
