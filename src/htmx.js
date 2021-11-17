@@ -907,7 +907,17 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    if (from_arg === "closest" || from_arg === "find") {
+                                        tokens.shift();
+                                        from_arg +=
+                                            " " +
+                                            consumeUntil(
+                                                tokens,
+                                                WHITESPACE_OR_COMMA
+                                            );
+                                    }
+                                    triggerSpec.from = from_arg;
                                 } else if (token === "target" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
