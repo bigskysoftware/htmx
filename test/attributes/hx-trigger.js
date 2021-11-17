@@ -409,6 +409,36 @@ describe("hx-trigger attribute", function(){
         div1.innerHTML.should.equal("Requests: 1");
     });
 
+    it('from clause works with closest clause', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div1 = make('<div><a id="a1" hx-trigger="click from:closest div" hx-get="/test">Requests: 0</a></div>');
+        var a1 = byId('a1');
+        a1.innerHTML.should.equal("Requests: 0");
+        div1.click();
+        this.server.respond();
+        a1.innerHTML.should.equal("Requests: 1");
+    });
+
+    it('from clause works with find clause', function()
+    {
+        var requests = 0;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            requests++;
+            xhr.respond(200, {}, "Requests: " + requests);
+        });
+        var div1 = make('<div hx-trigger="click from:find a" hx-target="#a1" hx-get="/test"><a id="a1">Requests: 0</a></div>');
+        var a1 = byId('a1');
+        a1.innerHTML.should.equal("Requests: 0");
+        a1.click();
+        this.server.respond();
+        a1.innerHTML.should.equal("Requests: 1");
+    });
+
     it('event listeners on other elements are removed when an element is swapped out', function()
     {
         var requests = 0;
