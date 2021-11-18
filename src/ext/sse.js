@@ -80,6 +80,10 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 */
 	function createEventSourceOnElement(parent, retryCount) {
 
+		if (parent == null) {
+			return;
+		}
+
 		var internalData = api.getInternalData(parent);
 
 		// get URL from element's attribute
@@ -117,24 +121,27 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		// Add message handlers for every `sse-swap` attribute
 		queryAttributeOnThisOrChildren(parent, "sse-swap").forEach(function(child) {
 
-			var sseEventName = api.getAttributeValue(child, "sse-swap");
+			var sseEventNames = api.getAttributeValue(child, "sse-swap").split(",");
 
-			var listener = function(event) {
+			for (var i = 0 ; i < sseEventNames.length ; i++) {
+				var sseEventName = sseEventNames[i].trim();
+				var listener = function(event) {
 
-				// If the parent is missing then close SSE and remove listener
-				if (maybeCloseSSESource(parent)) {
-					source.removeEventListener(sseEventName, listener);
-					return;
-				}
-				
-				// swap the response into the DOM and trigger a notification
-				swap(child, event.data);
-				api.triggerEvent(parent, "htmx:sseMessage", event);
-			};
-	
-			// Register the new listener
-			api.getInternalData(parent).sseEventListener = listener;
-			source.addEventListener(sseEventName, listener);
+					// If the parent is missing then close SSE and remove listener
+					if (maybeCloseSSESource(parent)) {
+						source.removeEventListener(sseEventName, listener);
+						return;
+					}
+					
+					// swap the response into the DOM and trigger a notification
+					swap(child, event.data);
+					api.triggerEvent(parent, "htmx:sseMessage", event);
+				};
+		
+				// Register the new listener
+				api.getInternalData(parent).sseEventListener = listener;
+				source.addEventListener(sseEventName, listener);
+			}
 		});
 
 		// Add message handlers for every `hx-trigger="sse:*"` attribute
@@ -254,11 +261,10 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			});
 
 			settleInfo.elts.forEach(function (elt) {
-				console.log(elt.classList);
 				if (elt.classList) {
 					elt.classList.remove(htmx.config.settlingClass);
 				}
-				triggerEvent(elt, 'htmx:afterSettle', responseInfo);
+				api.triggerEvent(elt, 'htmx:afterSettle');
 			});
 		}
 	}
