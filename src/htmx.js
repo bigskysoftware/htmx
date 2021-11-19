@@ -641,13 +641,23 @@ return (function () {
                         if (!isInlineSwap(swapStyle, target)) {
                             fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
                         }
-                        swap(swapStyle, target, target, fragment, settleInfo);
+                        var beforeSwapDetails = {shouldSwap: true, target: target, fragment:fragment };
+                        if (!triggerEvent(target, 'htmx:beforeOOBSwap', beforeSwapDetails)) return;
+
+
+                        target = beforeSwapDetails.target; // allow re-targeting
+                        if (beforeSwapDetails['shouldSwap']){
+                            swap(swapStyle, target, target, fragment, settleInfo);
+                        }
+                        forEach(settleInfo.elts, function (elt) {
+                            triggerEvent(elt, 'htmx:afterOOBSwap', beforeSwapDetails);
+                        });
                     }
                 );
                 oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
-                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement})
+                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement});
             }
             return oobValue;
         }
