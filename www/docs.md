@@ -103,13 +103,13 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1" integrity="UPDATE" crossorigin="anonymous"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
