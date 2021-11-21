@@ -47,7 +47,7 @@ title: </> htmx - high power tools for html
 
 * [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
-* [Splitting Your Data & APIs: Going Further](/essays/splitting-your-apis)
+* [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
 * [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
