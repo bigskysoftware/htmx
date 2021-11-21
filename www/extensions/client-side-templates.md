@@ -61,8 +61,8 @@ If you wish to put a template into another file, you can use a directive such as
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>JS Bin</title>
-  <script src="https://unpkg.com/htmx.org@1.6.1"></script>
-  <script src="https://unpkg.com/htmx.org@1.6.1/dist/ext/client-side-templates.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+  <script src="https://unpkg.com/htmx.org@1.6.0/dist/ext/client-side-templates.js"></script>
   <script src="https://unpkg.com/mustache@latest"></script>
 </head>
 <body>
