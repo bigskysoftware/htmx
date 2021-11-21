@@ -1607,7 +1607,7 @@ return (function () {
         //====================================================================
         // History Support
         //====================================================================
-        var currentPathForHistory = null;
+        var currentPathForHistory = location.pathname+location.search;
 
         function getHistoryElement() {
             var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
