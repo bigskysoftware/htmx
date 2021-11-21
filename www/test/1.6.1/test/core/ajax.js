@@ -947,7 +947,7 @@ describe("Core htmx AJAX Tests", function(){
                 window.globalWasCalled.should.equal(true);
                 delete window.globalWasCalled;
                 done();
-            }, 100);
+            }, 400);
         } finally {
             delete window.globalWasCalled;
         }
