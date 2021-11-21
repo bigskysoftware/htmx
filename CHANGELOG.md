@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.6.1] - 2021-11-22
+
+
 ## [1.6.0] - 2021-10-01
 
 * Completely reworked `<script>` tag support that now supports the `<script src="...'/>` form
