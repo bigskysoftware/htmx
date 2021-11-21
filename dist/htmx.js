@@ -907,7 +907,17 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    if (from_arg === "closest" || from_arg === "find") {
+                                        tokens.shift();
+                                        from_arg +=
+                                            " " +
+                                            consumeUntil(
+                                                tokens,
+                                                WHITESPACE_OR_COMMA
+                                            );
+                                    }
+                                    triggerSpec.from = from_arg;
                                 } else if (token === "target" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
@@ -968,7 +978,7 @@ return (function () {
         }
 
         function boostElement(elt, nodeData, triggerSpecs) {
-            if ((elt.tagName === "A" && isLocalLink(elt)) || elt.tagName === "FORM") {
+            if ((elt.tagName === "A" && isLocalLink(elt) && elt.target === "") || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
                 if (elt.tagName === "A") {
@@ -989,11 +999,20 @@ return (function () {
             }
         }
 
-        function shouldCancel(elt) {
-            return elt.tagName === "FORM" ||
-                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
-                (elt.tagName === "A" && elt.href && (elt.getAttribute('href') === '#' ||
-                                                     elt.getAttribute('href').indexOf("#") !== 0));
+        function shouldCancel(evt, elt) {
+            if (evt.type === "submit" || evt.type === "click") {
+                if (elt.tagName === "FORM") {
+                    return true;
+                }
+                if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
+                    return true;
+                }
+                if (elt.tagName === "A" && elt.href &&
+                    (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf("#") !== 0)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function ignoreBoostedAnchorCtrlClick(elt, evt) {
@@ -1029,7 +1048,7 @@ return (function () {
                     if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                         return;
                     }
-                    if (explicitCancel || shouldCancel(elt)) {
+                    if (explicitCancel || shouldCancel(evt, elt)) {
                         evt.preventDefault();
                     }
                     if (maybeFilterEvent(triggerSpec, evt)) {
@@ -1120,9 +1139,9 @@ return (function () {
         }
 
         function maybeReveal(elt) {
-            var nodeData = getInternalData(elt);
-            if (!nodeData.revealed && isScrolledIntoView(elt)) {
-                nodeData.revealed = true;
+            if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
+                elt.setAttribute('data-hx-revealed', 'true');
+                var nodeData = getInternalData(elt);
                 if (nodeData.initialized) {
                     issueAjaxRequest(nodeData.verb, nodeData.path, elt);
                 } else {
@@ -1229,7 +1248,7 @@ return (function () {
                         return;
                     }
                     webSocket.send(JSON.stringify(filteredParameters));
-                    if(shouldCancel(elt)){
+                    if(shouldCancel(evt, elt)){
                         evt.preventDefault();
                     }
                 });
@@ -1444,7 +1463,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws]");
+                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
                 return results;
             } else {
                 return [];
@@ -1588,7 +1607,7 @@ return (function () {
         //====================================================================
         // History Support
         //====================================================================
-        var currentPathForHistory = null;
+        var currentPathForHistory = location.pathname+location.search;
 
         function getHistoryElement() {
             var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
@@ -2473,6 +2492,10 @@ return (function () {
                 }
             }
 
+            if (hasHeader(xhr,/HX-Retarget:/i)) {
+                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+            }
+
             var shouldSaveHistory = shouldPush(elt) || pushedUrl;
 
             // by default htmx only swaps on 200 return codes and does not swap
@@ -2481,11 +2504,16 @@ return (function () {
             // overriding the detail.shouldSwap property
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
-            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse}, responseInfo);
+            var isError = xhr.status >= 400;
+            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError}, responseInfo);
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+            isError = beforeSwapDetails.isError; // allow updating error
+		
+            responseInfo.failed = isError; // Make failed property available to response events
+            responseInfo.successful = !isError; // Make successful property available to response events		
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2600,7 +2628,8 @@ return (function () {
                 } else {
                     doSwap();
                 }
-            } else {
+            }
+            if (isError) {
                 triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
             }
         }

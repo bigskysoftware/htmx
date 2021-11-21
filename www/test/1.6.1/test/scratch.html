@@ -58,14 +58,10 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 <hr/>
 
 <div id="work-area" hx-history-elt>
-    <button hx-get="/foo" id="my-button">My Button</button>
+    <a id="a1" hx-boost="true" href="#" target="">Asdf</a>
 </div>
 
 <script>
-    htmx.on('#my-button', 'click', function (evt) {
-        xhr.abort();
-    });
-
 </script>
 </body>
 </html>
