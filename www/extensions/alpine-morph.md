@@ -5,7 +5,7 @@ title: </> htmx - high power tools for html
 
 ## The `alpine-morph` Extension
 
-Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morph) and this extension allows you to use it as swapping mechanism in htmx which is necessary to retain Alpine state when you have entire Alpine components swapped by htmx.
+Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morph) and this extension allows you to use it as the swapping mechanism in htmx which is necessary to retain Alpine state when you have entire Alpine components swapped by htmx.
 
 #### Usage
 
