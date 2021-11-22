@@ -5,11 +5,13 @@ title: </> htmx - high power tools for html
 
 ## htmx Talk
 
-[htmx discord server](/discord)
+[htmx Discord Server](/discord)
+
+[Github Discussions](https://github.com/bigskysoftware/htmx/discussions)
 
 ## Feature Requests & Bug Reports
 
-[https://github.com/bigskysoftware/htmx/issues](https://github.com/bigskysoftware/htmx/issues)
+[Github Issues](https://github.com/bigskysoftware/htmx/issues)
 
 ## Social
 
