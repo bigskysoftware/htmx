@@ -92,5 +92,31 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped");
     })
 
+    it('swaps into all targets that match the selector (innerHTML)', function () {
+        this.server.respondWith("GET", "/test", "<div>Clicked</div><div class='target' hx-swap-oob='innerHTML:.target'>Swapped</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d1">No swap</div>');
+        make('<div id="d2" class="target">Not swapped</div>');
+        make('<div id="d3" class="target">Not swapped</div>');
+        div.click();
+        this.server.respond();
+        byId("d1").innerHTML.should.equal("No swap");
+        byId("d2").innerHTML.should.equal("Swapped");
+        byId("d3").innerHTML.should.equal("Swapped");
+    })
+
+    it('swaps into all targets that match the selector (outerHTML)', function () {
+        var oobSwapContent = '<div class="new-target" hx-swap-oob="outerHTML:.target">Swapped</div>';
+        this.server.respondWith("GET", "/test", "<div>Clicked</div>" + oobSwapContent);
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d1"><div>No swap</div></div>');
+        make('<div id="d2"><div class="target">Not swapped</div></div>');
+        make('<div id="d3"><div class="target">Not swapped</div></div>');
+        div.click();
+        this.server.respond();
+        byId("d1").innerHTML.should.equal("<div>No swap</div>");
+        byId("d2").innerHTML.should.equal(oobSwapContent);
+        byId("d3").innerHTML.should.equal(oobSwapContent);
+    })
 });
 

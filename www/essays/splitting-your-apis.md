@@ -4,7 +4,7 @@ tags: posts
 title: Splitting Your Data and Application APIs - Going Further
 ---
 
-## Splitting Your Data & APIs: Going Further
+## Splitting Your Data & Application APIs: Going Further
 
 **TLDR:** If you split your API into Data and Application APIs, [as advocated here](https://max.engineer/server-informed-ui), 
 you should consider changing your Application API from JSON to Hypermedia (HTML) & using a *hypermedia-oriented* library like

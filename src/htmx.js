@@ -62,7 +62,7 @@ return (function () {
             },
             parseInterval:parseInterval,
             _:internalEval,
-            version: "1.6.1"
+            version: "1.7.0"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -114,8 +114,8 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {string} name 
+         * @param {HTMLElement} elt
+         * @param {string} name
          * @returns {(string | null)}
          */
         function getRawAttribute(elt, name) {
@@ -129,9 +129,9 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {HTMLElement} elt 
-         * @param {string} qualifiedName 
+         *
+         * @param {HTMLElement} elt
+         * @param {string} qualifiedName
          * @returns {(string | null)}
          */
         function getAttributeValue(elt, qualifiedName) {
@@ -139,7 +139,7 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
+         * @param {HTMLElement} elt
          * @returns {HTMLElement | null}
          */
         function parentElt(elt) {
@@ -154,8 +154,8 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {(e:HTMLElement) => boolean} condition 
+         * @param {HTMLElement} elt
+         * @param {(e:HTMLElement) => boolean} condition
          * @returns {HTMLElement | null}
          */
         function getClosestMatch(elt, condition) {
@@ -169,8 +169,8 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {string} attributeName 
+         * @param {HTMLElement} elt
+         * @param {string} attributeName
          * @returns {string | null}
          */
         function getClosestAttributeValue(elt, attributeName) {
@@ -184,8 +184,8 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {string} selector 
+         * @param {HTMLElement} elt
+         * @param {string} selector
          * @returns {boolean}
          */
         function matches(elt, selector) {
@@ -196,7 +196,7 @@ return (function () {
         }
 
         /**
-         * @param {string} str 
+         * @param {string} str
          * @returns {string}
          */
         function getStartTag(str) {
@@ -210,9 +210,9 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {string} resp 
-         * @param {number} depth 
+         *
+         * @param {string} resp
+         * @param {number} depth
          * @returns {Element}
          */
         function parseHTML(resp, depth) {
@@ -234,14 +234,14 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {string} resp 
+         *
+         * @param {string} resp
          * @returns {Element}
          */
         function makeFragment(resp) {
             if (htmx.config.useTemplateFragments) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
-                // @ts-ignore type mismatch between DocumentFragment and Element.  
+                // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangably?
                 return documentFragment.querySelector('template').content;
             } else {
@@ -269,7 +269,7 @@ return (function () {
         }
 
         /**
-         * @param {Function} func 
+         * @param {Function} func
          */
         function maybeCall(func){
             if(func) {
@@ -278,24 +278,24 @@ return (function () {
         }
 
         /**
-         * @param {any} o 
-         * @param {string} type 
-         * @returns 
+         * @param {any} o
+         * @param {string} type
+         * @returns
          */
         function isType(o, type) {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
 
         /**
-         * @param {*} o 
-         * @returns {o is Function} 
+         * @param {*} o
+         * @returns {o is Function}
          */
         function isFunction(o) {
             return isType(o, "Function");
         }
 
         /**
-         * @param {*} o 
+         * @param {*} o
          * @returns {o is Object}
          */
         function isRawObject(o) {
@@ -304,7 +304,7 @@ return (function () {
 
         /**
          * getInternalData retrieves "private" data stored by htmx within an element
-         * @param {HTMLElement} elt 
+         * @param {HTMLElement} elt
          * @returns {*}
          */
         function getInternalData(elt) {
@@ -318,7 +318,7 @@ return (function () {
 
         /**
          * toArray converts an ArrayLike object into a real array.
-         * @param {ArrayLike} arr 
+         * @param {ArrayLike} arr
          * @returns {any[]}
          */
         function toArray(arr) {
@@ -355,10 +355,10 @@ return (function () {
         }
 
         /**
-         * mergeObjects takes all of the keys from 
+         * mergeObjects takes all of the keys from
          * obj2 and duplicates them into obj1
-         * @param {Object} obj1 
-         * @param {Object} obj2 
+         * @param {Object} obj1
+         * @param {Object} obj2
          * @returns {Object}
          */
         function mergeObjects(obj1, obj2) {
@@ -606,11 +606,11 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {string} oobValue 
-         * @param {HTMLElement} oobElement 
-         * @param {*} settleInfo 
-         * @returns 
+         *
+         * @param {string} oobValue
+         * @param {HTMLElement} oobElement
+         * @param {*} settleInfo
+         * @returns
          */
         function oobSwap(oobValue, oobElement, settleInfo) {
             var selector = "#" + oobElement.id;
@@ -624,15 +624,22 @@ return (function () {
                 swapStyle = oobValue;
             }
 
-            var target = getDocument().querySelector(selector);
-            if (target) {
-                var fragment;
-                fragment = getDocument().createDocumentFragment();
-                fragment.appendChild(oobElement); // pulls the child out of the existing fragment
-                if (!isInlineSwap(swapStyle, target)) {
-                    fragment = oobElement; // if this is not an inline swap, we use the content of the node, not the node itself
-                }
-                swap(swapStyle, target, target, fragment, settleInfo);
+            var targets = getDocument().querySelectorAll(selector);
+            if (targets) {
+                forEach(
+                    targets,
+                    function (target) {
+                        var fragment;
+                        var oobElementClone = oobElement.cloneNode(true);
+                        fragment = getDocument().createDocumentFragment();
+                        fragment.appendChild(oobElementClone);
+                        if (!isInlineSwap(swapStyle, target)) {
+                            fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
+                        }
+                        swap(swapStyle, target, target, fragment, settleInfo);
+                    }
+                );
+                oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
                 triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement})
@@ -978,7 +985,7 @@ return (function () {
         var INPUT_SELECTOR = 'input, textarea, select';
 
         /**
-         * @param {HTMLElement} elt 
+         * @param {HTMLElement} elt
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
          */
         function getTriggerSpecs(elt) {
@@ -1021,7 +1028,17 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.from = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    if (from_arg === "closest" || from_arg === "find") {
+                                        tokens.shift();
+                                        from_arg +=
+                                            " " +
+                                            consumeUntil(
+                                                tokens,
+                                                WHITESPACE_OR_COMMA
+                                            );
+                                    }
+                                    triggerSpec.from = from_arg;
                                 } else if (token === "target" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
@@ -1104,10 +1121,10 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {Event} evt 
-         * @param {HTMLElement} elt 
-         * @returns 
+         *
+         * @param {Event} evt
+         * @param {HTMLElement} elt
+         * @returns
          */
         function shouldCancel(evt, elt) {
             if (evt.type === "submit" || evt.type === "click") {
@@ -1450,12 +1467,12 @@ return (function () {
         }
 
         /**
-         * `withExtensions` locates all active extensions for a provided element, then 
+         * `withExtensions` locates all active extensions for a provided element, then
          * executes the provided function using each of the active extensions.  It should
          * be called internally at every extendable execution point in htmx.
-         * 
-         * @param {HTMLElement} elt 
-         * @param {(extension:import("./htmx").HtmxExtension) => void} toDo 
+         *
+         * @param {HTMLElement} elt
+         * @param {(extension:import("./htmx").HtmxExtension) => void} toDo
          * @returns void
          */
         function withExtensions(elt, toDo) {
@@ -1505,7 +1522,7 @@ return (function () {
         //====================================================================
         // History Support
         //====================================================================
-        var currentPathForHistory = null;
+        var currentPathForHistory = location.pathname+location.search;
 
         function getHistoryElement() {
             var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
@@ -1743,8 +1760,8 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {string} verb 
+         * @param {HTMLElement} elt
+         * @param {string} verb
          */
         function getInputValues(elt, verb) {
             var processed = [];
@@ -1840,9 +1857,9 @@ return (function () {
         //====================================================================
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {HTMLElement} target 
-         * @param {string} prompt 
+         * @param {HTMLElement} elt
+         * @param {HTMLElement} target
+         * @param {string} prompt
          * @returns {Object} // TODO: Define/Improve HtmxHeaderSpecification
          */
         function getHeaders(elt, target, prompt) {
@@ -1865,10 +1882,10 @@ return (function () {
 
         /**
          * filterValues takes an object containing form input values
-         * and returns a new object that only contains keys that are 
+         * and returns a new object that only contains keys that are
          * specified by the closest "hx-params" attribute
-         * @param {Object} inputValues 
-         * @param {HTMLElement} elt 
+         * @param {Object} inputValues
+         * @param {HTMLElement} elt
          * @returns {Object}
          */
         function filterValues(inputValues, elt) {
@@ -1902,8 +1919,8 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {HTMLElement} elt 
+         *
+         * @param {HTMLElement} elt
          * @returns {import("./htmx").HtmxSwapSpecification}
          */
         function getSwapSpecification(elt) {
@@ -1970,8 +1987,8 @@ return (function () {
         }
 
         /**
-         * 
-         * @param {Element} target 
+         *
+         * @param {Element} target
          * @returns {import("./htmx").HtmxSettleInfo}
          */
         function makeSettleInfo(target) {
@@ -2016,10 +2033,10 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {string} attr 
-         * @param {boolean=} evalAsDefault 
-         * @param {Object=} values 
+         * @param {HTMLElement} elt
+         * @param {string} attr
+         * @param {boolean=} evalAsDefault
+         * @param {Object=} values
          * @returns {Object}
          */
         function getValuesForElement(elt, attr, evalAsDefault, values) {
@@ -2070,25 +2087,25 @@ return (function () {
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {*} expressionVars 
-         * @returns 
+         * @param {HTMLElement} elt
+         * @param {*} expressionVars
+         * @returns
          */
         function getHXVarsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vars", true, expressionVars);
         }
 
         /**
-         * @param {HTMLElement} elt 
-         * @param {*} expressionVars 
-         * @returns 
+         * @param {HTMLElement} elt
+         * @param {*} expressionVars
+         * @returns
          */
         function getHXValsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vals", false, expressionVars);
         }
 
         /**
-         * @param {HTMLElement} elt 
+         * @param {HTMLElement} elt
          * @returns {Object}
          */
         function getExpressionVars(elt) {
@@ -2461,6 +2478,9 @@ return (function () {
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
 
+            responseInfo.failed = isError; // Make failed property available to response events
+            responseInfo.successful = !isError; // Make successful property available to response events
+
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
                     cancelPolling(elt);
@@ -2604,9 +2624,9 @@ return (function () {
 
         /**
          * defineExtension initializes the extension and adds it to the htmx registry
-         * 
-         * @param {string} name 
-         * @param {import("./htmx").HtmxExtension} extension 
+         *
+         * @param {string} name
+         * @param {import("./htmx").HtmxExtension} extension
          */
         function defineExtension(name, extension) {
             extension.init(internalAPI)
@@ -2615,8 +2635,8 @@ return (function () {
 
         /**
          * removeExtension removes an extension from the htmx registry
-         * 
-         * @param {string} name 
+         *
+         * @param {string} name
          */
         function removeExtension(name) {
             delete extensions[name];
@@ -2624,8 +2644,8 @@ return (function () {
 
         /**
          * getExtensions searches up the DOM tree to return all extensions that can be applied to a given element
-         * 
-         * @param {HTMLElement} elt 
+         *
+         * @param {HTMLElement} elt
          * @param {import("./htmx").HtmxExtension[]=} extensionsToReturn
          * @param {import("./htmx").HtmxExtension[]=} extensionsToIgnore
          */
