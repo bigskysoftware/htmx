@@ -63,7 +63,8 @@ faster service.)*
 * [JS Party - Less JavaScript more htmx](https://changelog.com/jsparty/171)
 * [Software Breakthroughs for the 21s Century](https://www.youtube.com/watch?v=O4ZFIx1ckSg)
 * [Django Chat](https://djangochat.com/episodes/htmx-carson-gross)
-* [Talk Python](#https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
+* [Talk Python](https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
+* [.NET Rocks!](https://podtail.com/en/podcast/-net-rocks/htmx-with-carson-gross/)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
 
