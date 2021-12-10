@@ -103,13 +103,13 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.0" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1" integrity="sha384-tvG/2mnCFmGQzYC1Oh3qxQ7CkQ9kMzYjWZSNtrRZygHPDDqottzEJsqS4oUVodhW" crossorigin="anonymous"></script>
 ```
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -818,7 +818,10 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
         // allow 422 responses to swap as we are using this as a signal that
         // a form was submitted with bad data and want to rerender with the
         // errors
+        //
+        // set isError to false to avoid error logging in console
         evt.detail.shouldSwap = true;
+        evt.detail.isError = false;
     } else if(evt.detail.xhr.status === 418){
         // if the response code 418 (I'm a teapot) is returned, retarget the
         // content of the response to the element with the id `teapot`

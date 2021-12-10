@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "1.6.0",
+  "version": "1.6.1",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
@@ -14,6 +14,7 @@
   "files": [
     "LICENSE",
     "README.md",
+    "src/htmx.d.ts",
     "dist/*.js",
     "dist/ext/*.js",
     "dist/*.js.gz"
