@@ -1710,13 +1710,32 @@ return (function () {
         }
 
         function shouldPush(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            var pushUrl = getAttributeValue(elt, "hx-push-url");
+            if (!pushUrl || pushUrl === "false") {
+                return false
+            }
+            if (pushUrl === "inherit") {
+                var parent = parentElt(elt)
+                if (!parent) {
+                    triggerErrorEvent(elt, "htmx:pushUrlInheritNoParentError");
+                    return false
+                }
+                pushUrl = getClosestAttributeValue(parent, "hx-push-url");
+            }
             return (pushUrl && pushUrl !== "false") ||
                 (getInternalData(elt).boosted && getInternalData(elt).pushURL);
         }
 
         function getPushUrl(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            if (pushUrl === "inherit") {
+                var parent = parentElt(elt)
+                if (!parent) {
+                    triggerErrorEvent(elt, "htmx:pushUrlInheritNoParentError");
+                    return false
+                }
+                pushUrl = getClosestAttributeValue(parent, "hx-push-url");
+            }
             return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
         }
 

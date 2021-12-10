@@ -51,7 +51,6 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
-                attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
                 wsReconnectDelay: 'full-jitter',
@@ -59,10 +58,13 @@ return (function () {
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
             },
+            eventSources: [],
             parseInterval:parseInterval,
             _:internalEval,
             createEventSource: function(url){
-                return new EventSource(url, {withCredentials:true})
+                const eventSource = new EventSource(url, {withCredentials:true})
+                htmx.eventSources.push(eventSource)
+                return eventSource
             },
             createWebSocket: function(url){
                 return new WebSocket(url, []);
@@ -462,27 +464,16 @@ return (function () {
             }
         }
 
-        function shouldSettleAttribute(name) {
-            var attributesToSettle = htmx.config.attributesToSettle;
-            for (var i = 0; i < attributesToSettle.length; i++) {
-                if (name === attributesToSettle[i]) {
-                    return true;
+        function getErrorTarget(elt) {
+            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-error-target") !== null});
+            if (explicitTarget) {
+                var targetStr = getAttributeValue(explicitTarget, "hx-error-target");
+                if (targetStr === "this") {
+                    return explicitTarget;
+                } else {
+                    return querySelectorExt(elt, targetStr)
                 }
             }
-            return false;
-        }
-
-        function cloneAttributes(mergeTo, mergeFrom) {
-            forEach(mergeTo.attributes, function (attr) {
-                if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
-                    mergeTo.removeAttribute(attr.name)
-                }
-            });
-            forEach(mergeFrom.attributes, function (attr) {
-                if (shouldSettleAttribute(attr.name)) {
-                    mergeTo.setAttribute(attr.name, attr.value);
-                }
-            });
         }
 
         function isInlineSwap(swapStyle, target) {
@@ -547,21 +538,6 @@ return (function () {
             });
         }
 
-        function handleAttributes(parentNode, fragment, settleInfo) {
-            forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                if (newNode.id && newNode.id.length > 0) {
-                    var oldNode = parentNode.querySelector(newNode.tagName + "[id='" + newNode.id + "']");
-                    if (oldNode && oldNode !== parentNode) {
-                        var newAttributes = newNode.cloneNode();
-                        cloneAttributes(newNode, oldNode);
-                        settleInfo.tasks.push(function () {
-                            cloneAttributes(newNode, newAttributes);
-                        });
-                    }
-                }
-            });
-        }
-
         function makeAjaxLoadTask(child) {
             return function () {
                 removeClassFromElement(child, htmx.config.addedClass);
@@ -581,7 +557,6 @@ return (function () {
         }
 
         function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
-            handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
                 addClassToElement(child, htmx.config.addedClass);
@@ -616,6 +591,9 @@ return (function () {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment, settleInfo);
             } else {
+                if (!parentElt(target)) {
+                    return
+                }
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
                 if (eltBeforeNewContent == null) {
@@ -766,7 +744,14 @@ return (function () {
                     }
                 }
             } else {
-                triggerEvent(elt, triggerBody, []);
+                if (typeof triggerBody === "string") {
+                    const eventNames = triggerBody.split(", ")
+                    for (var eventName of eventNames) {
+                        triggerEvent(elt, eventName, []);
+                    }
+                } else {
+                    triggerEvent(elt, triggerBody, []);
+                }
             }
         }
 
@@ -1316,11 +1301,11 @@ return (function () {
                         response = extension.transformResponse(response, null, elt);
                     });
 
-                    var swapSpec = getSwapSpecification(elt)
+                    var swapSpec = getSwapSpecification(elt, false, true)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
@@ -1570,11 +1555,11 @@ return (function () {
             });
         }
 
-        function logError(msg) {
+        function logError(...data) {
             if(console.error) {
-                console.error(msg);
+                console.error(...data);
             } else if (console.log) {
-                console.log("ERROR: ", msg);
+                console.log("ERROR: ", ...data);
             }
         }
 
@@ -1589,7 +1574,7 @@ return (function () {
                 htmx.logger(elt, eventName, detail);
             }
             if (detail.error) {
-                logError(detail.error);
+                logError(detail.error, detail);
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
@@ -1725,13 +1710,32 @@ return (function () {
         }
 
         function shouldPush(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            var pushUrl = getAttributeValue(elt, "hx-push-url");
+            if (!pushUrl || pushUrl === "false") {
+                return false
+            }
+            if (pushUrl === "inherit") {
+                var parent = parentElt(elt)
+                if (!parent) {
+                    triggerErrorEvent(elt, "htmx:pushUrlInheritNoParentError");
+                    return false
+                }
+                pushUrl = getClosestAttributeValue(parent, "hx-push-url");
+            }
             return (pushUrl && pushUrl !== "false") ||
                 (getInternalData(elt).boosted && getInternalData(elt).pushURL);
         }
 
         function getPushUrl(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            if (pushUrl === "inherit") {
+                var parent = parentElt(elt)
+                if (!parent) {
+                    triggerErrorEvent(elt, "htmx:pushUrlInheritNoParentError");
+                    return false
+                }
+                pushUrl = getClosestAttributeValue(parent, "hx-push-url");
+            }
             return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
         }
 
@@ -1776,7 +1780,7 @@ return (function () {
             if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
                 return false;
             }
-            if (elt.type === "checkbox" || elt.type === "radio" ) {
+            if (elt.type === "radio" ) {
                 return elt.checked;
             }
             return true;
@@ -1791,6 +1795,9 @@ return (function () {
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
+                if (elt.getAttribute("type") === "checkbox") {
+                    value = elt.checked
+                }
                 if (elt.multiple) {
                     value = toArray(elt.querySelectorAll("option:checked")).map(function (e) { return e.value });
                 }
@@ -1983,8 +1990,18 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        function getSwapSpecification(elt) {
-            var swapInfo = getClosestAttributeValue(elt, "hx-swap");
+        function getSwapSpecification(elt, isError, isSse, swapOverride) {
+            var swapInfo;
+            if (typeof swapOverride === "string") {
+                swapInfo = swapOverride
+            } else if (isError) {
+                swapInfo = getClosestAttributeValue(elt, "hx-error-swap");
+            } else if (isSse) {
+                swapInfo = getClosestAttributeValue(elt, "hx-sse-swap");
+            }
+            if (!isError && !swapInfo) {
+                swapInfo = getClosestAttributeValue(elt, "hx-swap");
+            }
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2189,7 +2206,8 @@ return (function () {
                             headers : context.headers,
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
-                            returnPromise: true
+                            swapOverride: context.swap,
+                            returnPromise: true,
                         });
                 }
             } else {
@@ -2227,7 +2245,8 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
-            if (target == null) {
+            // Don't use hx-target in the hierarchy as a fallback if targetOverride was specified but the element wasn't found (i.e null instead of undefined)
+            if (etc.targetOverride === null || target == null) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
@@ -2390,14 +2409,18 @@ return (function () {
 
             var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
-                }
+                }, swapOverride: etc.swapOverride
             };
 
             xhr.onload = function () {
                 try {
                     var hierarchy = hierarchyForElt(elt);
                     responseHandler(elt, responseInfo);
-                    removeRequestIndicatorClasses(indicators);
+
+                    if (!hasHeader(xhr, /HX-Redirect:/i)) {
+                        removeRequestIndicatorClasses(indicators);
+                    }
+                    
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
                     // if the body no longer contains the element, trigger the even on the closest parent
@@ -2469,6 +2492,9 @@ return (function () {
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
+                
+            var isError = xhr.status >= 400
+            responseInfo.isError = isError
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -2504,16 +2530,26 @@ return (function () {
             // overriding the detail.shouldSwap property
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
-            var isError = xhr.status >= 400;
             var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError}, responseInfo);
+            if (isError) {
+                beforeSwapDetails.shouldSwap = true
+            }
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+            
             isError = beforeSwapDetails.isError; // allow updating error
 		
             responseInfo.failed = isError; // Make failed property available to response events
-            responseInfo.successful = !isError; // Make successful property available to response events		
+            responseInfo.successful = !isError; // Make successful property available to response events	
+            
+            if (isError) {
+                target = getErrorTarget(elt)
+                if (!target) {
+                    return
+                }
+            }	
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2529,7 +2565,7 @@ return (function () {
                     saveHistory();
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
