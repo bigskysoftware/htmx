@@ -451,6 +451,10 @@ return (function () {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
                     return explicitTarget;
+                } else if (targetStr === "next-sibling") {
+                    return elt.nextElementSibling
+                } else if (targetStr === "previous-sibling") {
+                    return elt.previousElementSibling
                 } else {
                     return querySelectorExt(elt, targetStr)
                 }
