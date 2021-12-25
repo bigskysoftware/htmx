@@ -105,7 +105,7 @@ But there is a technical one as well:
 
 The technical issue is what we will call "The Hypermedia Approach" vs. "The Remote Procedure Call (RPC) Approach".  When web applications moved from MPAs to SPAs, they adopted, often unwittingly, an RPC approach to application development: AJAX moved to JSON as a data serialization format and largely ([and correctly](/essays/hypermedia-apis-vs-data-apis/)) abandoned the hypermedia concept.   This abandonment of The Hypermedia Approach was driven by the admitted usability issues with vanilla MPAs.
 
-It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach: rather than *abandoning* Hypermedia for RPC, what we needed and need today is a *more powerful* Hypermedia.  This is exactly what htmx gives you.
+It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach: rather than *abandoning* Hypermedia for RPC, what we needed then and need today is a *more powerful* Hypermedia.  This is exactly what htmx gives you.
 
 By returning to The Hypermedia Approach, you can build reasonably sophisticated web applications that address many of 
 Mr. Harris's concerns regarding MPAs at a fraction of the complexity required by most popular SPA frameworks.  And, for free,
