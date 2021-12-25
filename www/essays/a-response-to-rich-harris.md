@@ -48,10 +48,10 @@ Mr. Harris then moves on to problems with Multi-Page Applications (MPAs) which a
 click-a-link-load-a-page-of-HTML web applications we are all familiar with and that are, to an extent, 
 being supplanted by SPAs.
 
-Below, we will go through the problems he outlines, all of which are valid when discussing "standard" MPAs, 
-and we will demonstrate how a hypermedia-centric technology like htmx can solve each of them.
+Below, we will go through the various problems he outlines, all of which are true of "standard" MPAs, 
+and we will demonstrate how an MPA using a hypermedia-oriented technology, [htmx](/), can solve each of them.
 
-### "You Can't Keep A Video Running"
+### "You Can't Keep A Video Running On Navigations"
 
 A general problem with standard MPAs is that they issue a full page refresh on 
 every request.  This means something like a video or audio player will be replaced and, thus, stop playing, when a request is made.  
@@ -65,7 +65,7 @@ In the presence of infinite scroll behavior (presumably implemented via javascri
 
 That said, [infinite scroll](/examples/infinite-scroll) can be achieved quite easily using htmx, in a hypermedia-oriented and obvious manner.  When combined with the [`hx-push-url`](/attributes/hx-push-url) attribute, history and the back button works properly with very little effort by the developer, all with nice Copy-and-Pasteable URLs, sometimes referred to as "Deep Links" by people in the SPA community.
 
-### "What about Nice Transitions"
+### "What about Nice Navigation Transitions?"
 
 Nice transitions are, well, nice.  We think that designers tend to over-estimate their contribution to application usability, however.  Yes, the demo sizzles, but on the 20th click users often just want the UI to get on with it.
 
@@ -99,14 +99,15 @@ require far more sophisticated engineering work to resolve.
 
 ## Transitional Applications
 
-Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  This terminology is reasonable and we will see if it sticks.  
+Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  
+This terminology is reasonable, and we will see if the term sticks in the industry.  
 
 We often recommend using htmx for the parts of the app it makes sense to keep things simple, and then using other 
 technologies when needed: [alpine.js](https://alpinejs.dev/), [hyperscript](https://hypersciprt.org), a small reactive 
 framework, etc.
 
 So we can agree with Mr. Harris here to an extent and recommend a "transitional" approach to web development, although
-we would recommend leaning MPA/hypermedia when possible for the complexity savings.
+we would recommend leaning MPA/hypermedia when possible, whereas it seems fairly certain Mr. Harris would lean SPA/javascript.
 
 ## The Elephant In The Room: Complexity
 
