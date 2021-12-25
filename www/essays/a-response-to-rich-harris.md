@@ -6,7 +6,7 @@ title: A Response To Rich Harris
 
 # A Response To Rich Harris
 
-[Rich Harris](https://twitter.com/rich_harris) is a well-known web developer who on [Svelte.js](https://svelte.dev/), a novel 
+[Rich Harris](https://twitter.com/rich_harris) is a well-known web developer who works on [Svelte.js](https://svelte.dev/), a novel 
 Single-Page Application (SPA) framework.  
 
 In October of 2021, he gave a talk at JamStack entitled ["Have Single-Page Apps Ruined the Web?"](https://www.youtube.com/watch?v=860d8usGC0o).
