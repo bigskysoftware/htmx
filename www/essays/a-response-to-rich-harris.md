@@ -6,17 +6,22 @@ title: A Response To Rich Harris
 
 # A Response To Rich Harris
 
-[Rich Harris](https://twitter.com/rich_harris) is a well known web developer who works works on [Svelte.js](https://svelte.dev/), a novel Single-Page Application (SPA) framework.  
+[Rich Harris](https://twitter.com/rich_harris) is a well-known web developer who on [Svelte.js](https://svelte.dev/), a novel 
+Single-Page Application (SPA) framework.  
 
 In October of 2021, he gave a talk at JamStack entitled ["Have Single-Page Apps Ruined the Web?"](https://www.youtube.com/watch?v=860d8usGC0o).
 
 We have been asked for our opinion on the talk, so this essay is our response.
 
-The first thing to say about the talk is that it is well done: funny, fair to both sides of the debate and reasonable throughout.  We don't agree with a lot that Mr. Harris has to say, as we will detail below, but we respect both his opinions and the technologies he works on.
+The first thing to say about the talk is that it is very well done: thoughtful, funny, fair to both sides of the debate 
+and reasonable throughout.  We don't agree with a lot that Mr. Harris has to say, as we will detail below, but we respect 
+and appreciate his opinions as well as the technologies he works on.
 
 ## Problems with SPAs
 
-The talk begins with some reasonable criticisms of SPAs, particularly pointing out usability issues found with Instagram, a canonical SPA implementation.  All in all, a very fair look at the drawbacks to SPAs, including the following criticisms:
+The talk begins with some reasonable criticisms of SPAs, particularly pointing out usability issues found 
+with Instagram, a canonical SPA implementation from our friends at Facebook.  All in all, he takes a very fair look at 
+the drawbacks to SPAs, including the following:
 
 * You will need a bloated JS framework
 * Performance will suffer
@@ -25,21 +30,26 @@ The talk begins with some reasonable criticisms of SPAs, particularly pointing o
 * The tooling is complicated
 * It will be less resilient
 
-Regarding the usability issues with Instagram, Rich has this to say:
+After considering the usability issues with Instagram, Mr. Harris has this to say:
 
 > Come on people.  If the best front end engineers in the world can't make
 > text and images work without five megabytes of javascript, then  maybe
 > we should just give up on the web platform.
 
-Here we are in violent agreement with Rich, although we would substitute "javascript web platform" for just "web platform".  
+Here we find ourselves in violent agreement with Mr. Harris, with the caveat that we would substitute "the *javascript* web platform" 
+for just "the web platform", since that is what is in play with Instagram.
 
-We would further point
-out that the problem with SPA applications and frameworks is that they often simply *ignore* the web platform, that is, 
-the original, [REST-ful model](/essays/rest-explained.md) of the web.  But more on that in a bit.
+We would further clarify that SPA applications and frameworks often simply *ignore* the web platform, that is, 
+the original, [REST-ful model](/essays/rest-explained.md) of the web, except perhaps as a bootstrap mechanism.
 
 ## Problems with MPAs
 
-Mr. Harris then moves on to problems with MPAs.  In this section we will go through the problems he outlines, all valid when discussing "vanilla" MPAs, and show how a technology like htmx can address them.
+Mr. Harris then moves on to problems with Multi-Page Applications (MPAs) which are the "traditional", 
+click-a-link-load-a-page-of-HTML web applications that are, to an extent, being supplanted by SPAs.  
+
+We will go through the problems he outlines, all of which are valid when discussing "standard" MPAs, 
+we will demonstrate how a Hypermedia-centric technology like htmx can solve each of them, while still remaining within the
+general category of MPA.
 
 ### "You Can't Keep A Video Running"
 
@@ -58,44 +68,47 @@ Nice transitions are, well, nice, although we think that designers tend to over-
 
 ### "Multipage Apps Load Javascript Libraries Every Request"
 
-Rich focuses heavily on "crappy Ad Tech" as a culprit for web usability issues, and who can defend the 2.5MB payload of tracking, spyware and adware that most websites deliver to their users today?  He says that SPAs ameliorate this issue by loading up the bundle of garbage once, rather than over and over as an MPA does.
+Mr. Harris focuses heavily on "crappy Ad Tech" as a culprit for web usability issues, and who can defend the 2.5MB payload of tracking, spyware and adware that most websites deliver to their users today?  He says that SPAs ameliorate this issue by loading up the bundle of garbage once, rather than over and over as an MPA does.
 
-Now, a vanilla MPA would typically have the garbage cached after the first request, so the download cost is at least about the same as with SPAs.  However, an MPA powered by htmx has exactly the same characteristics as an SPA: the garbage would be downloaded and executed once, and after that all requests would be relatively light-weight replacements of DOM elements.
+Now, a vanilla MPA would typically have said garbage cached after the first request, so the download cost, at least, is about the same as with SPAs.  However, an MPA powered by htmx has exactly the same characteristics as an SPA: said garbage would be downloaded and executed once, and after that all requests would be relatively light-weight replacements of DOM elements.
 
 ### "MPAs Have Network Latency Issues"
 
-This is a valid point: with an MPA-style hypermedia approach you are gated by how fast your server can respond to requests.  However, there are well known techniques, developed over decades, for monitoring and optimizing this time and, to be frank, the SPAs we work with are often plenty laggy.  And, on top of that, the complexity of optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues.
+This is a valid point: with an MPA-style hypermedia approach you are gated by how fast your server can respond to requests.  However, there are well-known techniques, developed over decades, for monitoring and optimizing this response time and, to be frank, the SPAs we work with day-to-day are often plenty laggy.  On top of that, the complexity of optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues and, a topic we will return to, a significant increase in application complexity.
 
 ### "Github Has UI Bugs"
 
-Github does, indeed, have UI bugs, but none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of them would work to solve the few issues pointed out.
+Github does, indeed, have UI bugs, it's true.  But none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues pointed out.
 
-Compare and contrast with the engineering work required to fix the bugs in Instagrams web application.  We know which issues we'd rather fix.
+Compare and contrast with the engineering work required to fix the bugs that Mr. Harris pointed out in Instagrams web application.  We know which issues we'd rather fix.
 
 ## Transitional Applications
 
-Rich then discusses "transitonal applications" which are a mix of SPA and MPA technologies.  The terminology is reasonable, we'll see if it sticks.  We recommend using htmx for the parts of the app it makes sense and kicking out to other technologies when needed: vue.js, alpine.js, etc. and so we can recommend a "transitional" approach to web development.
+Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  This terminology is reasonable, we'll see if it sticks.  We recommend using htmx for the parts of the app it makes sense and kicking out to other technologies when needed: vue.js, alpine.js, etc. and so we can recommend a "transitional" approach to web development.
 
 ## The Elephant In The Room: Complexity
 
-Unfortunately, there is a topic that Rich does not discuss, and we believe this is because he doesn't see it.  As he is a javascript developer who is passionate about that language and swims in the engineering culture of front end frameworks, the complexity of javascript front end development seems natural to him.  But the javascript ecosystem is *insanely* complicated.  Comically so.
+Unfortunately, there is a topic that Mr. Harris does not discuss, and we believe this may be because he doesn't see it.  As he is a javascript developer who is passionate about that language and swims in the engineering culture of front end frameworks, the current *complexity* of javascript front end development seems natural to him.  But, for many of us, the javascript ecosystem is simply *insanely* overly-complicated.  Comically so, given the requirements of most web applications.
 
-Many of the "transitional" technologies that Rich mentions: [React Server Components](https://vercel.com/blog/everything-about-react-server-components) (which he calls "like html over the wire, but vastly more sophisticated), [Marko](https://markojs.com/) (which is doing "partial hydration"), [Quik](https://github.com/BuilderIO/qwik) (which aggressively lazy loads things, apparently), are all remarkable engineering achievements, but are also all quite complicated.
+Many of the "transitional" technologies that Mr. Harris goes on to mention: [React Server Components](https://vercel.com/blog/everything-about-react-server-components) (which he calls "like html over the wire, but vastly more sophisticated), [Marko](https://markojs.com/) (which is doing "partial hydration"), [Quik](https://github.com/BuilderIO/qwik) (which aggressively lazy loads things, apparently), are all remarkable engineering achievements, but are also all, we must say, quite complicated.
 
-This is, unfortunately, part of the culture of front end development right now: sky high levels of complexity are tolerated in application frameworks, in build tool chains and so on, and, when problems arise due to all that complexity, more complexity is often offered as the answer.  "Simple" is disparaging and "sophistication" is high praise.
+This is, unfortunately, part of the culture of front end development right now: sky-high levels of complexity are tolerated in application frameworks, in build tool chains, in deployment models and so on, and, when problems arise due to all this complexity, more complexity is often offered as the answer.  "Simple" is disparaging and "sophisticated" is high praise.
 
-This complexity is overwhelming many developers and development teams.  As Rich himself points out when discussing Instagram, even some of 
+This complexity is overwhelming many developers and development teams.  As Mr. Harris himself points out when discussing Instagram, even some of 
 the best front engineers in the world appear to be unable to keep it all under control.
 
-So there is a cultural issue here.  
+So there is a cultural issue here.
 
 But there is a technical one as well:
 
-The technical issue is The Hypermedia Approach vs. the Remote Procedure Call (RPC) approach.  When web applications moved from MPAs to SPAs, they adopted, often unwittingly, the latter RPC approach to application development.  This abandonment of The Hypermedia Approach was driven by the admitted usability issues with vanilla MPAs.
+The technical issue is what we will call "The Hypermedia Approach" vs. "The Remote Procedure Call (RPC) Approach".  When web applications moved from MPAs to SPAs, they adopted, often unwittingly, the latter RPC approach to application development: AJAX moved to JSON as a data serialization format and largely ([and correctly](/essays/hypermedia-apis-vs-data-apis/)) abandoned the hypermedia concept.   This abandonment of The Hypermedia Approach was driven by the admitted usability issues with vanilla MPAs.
 
-Those usability issues, it turns out, often *can* be addressed using The Hypermedia Approach.  Rather than *abandoning* Hypermedia for RPC, what we need is a *more powerful* Hypermedia.  This is exactly what htmx, for example, gives you.
+It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach: rather than *abandoning* Hypermedia for RPC, what we need is a *more powerful* Hypermedia.  This is exactly what htmx gives you.
 
-By returning to The Hypermedia approach, you can build reasonably sophisticated web applications that address many of Rich's concerns regarding MPAs, with the simplicity and robustness of the original web architecture.  
+By returning to The Hypermedia Approach, you can build reasonably sophisticated web applications that address many of 
+Mr. Harris's concerns regarding MPAs, at a fraction of the complexity required by most popular SPA frameworks.  And, for free,
+you get all [the benefits](https://en.wikipedia.org/wiki/Representational_state_transfer#Architectural_concepts) that Roy Fielding 
+outlined with a truly REST-ful architecture.
 
 Is this architecture right for all web applications?  Obviously not.  
 
@@ -103,11 +116,17 @@ Is it right for many, perhaps most, web applications?  We certainly think so.
 
 ## Javascript: The Resistance
 
-Rich says that "the ship has sailed" on javascript, and we should accept that it will be the dominant programming language in web development going forward.  We are not so sure about that.  
+Now we get to the most emotionally charged claim made in the talk: that "the ship has sailed" on javascript, and we should 
+accept that it will be the dominant programming language in web development going forward.  
 
-Rich mentions edge computing as a driver for javascript adoption, but we do not expect edge computing to figure in the majority of web applications for the forseeable future, or, frankly ever.  CPU is cheap, and microservices are a mess.  Don't @ us.
+We are not so sure about that.
 
-And, contra what Rich says, today the [trend is not obviously in javascripts favor](https://insights.stackoverflow.com/trends?tags=java%2Cc%2Cc%2B%2B%2Cpython%2Cc%23%2Cvb.net%2Cjavascript%2Cassembly%2Cphp%2Cperl%2Cruby%2Cvb%2Cswift%2Cr%2Cobjective-c).  Five years ago, we (as, yes, members of the javascript resistance) were despairing of any hope of stopping the Javascript juggernaut.  But then something unexpected happened: Python took off and, from the looks of it, javascript has, well, flat lined:
+Mr. Harris mentions edge computing as a driver for javascript adoption, but we do not expect edge computing to figure in the 
+majority of web applications for the forseeable future, or, frankly ever.  CPU is cheap and microservices are a mess.  Don't @ us.
+
+And, contra what Mr. Harris says, today the [trend is not obviously in javascripts favor](https://insights.stackoverflow.com/trends?tags=java%2Cc%2Cc%2B%2B%2Cpython%2Cc%23%2Cvb.net%2Cjavascript%2Cassembly%2Cphp%2Cperl%2Cruby%2Cvb%2Cswift%2Cr%2Cobjective-c).  Five years ago, we (as, yes, members of the javascript resistance) were despairing of any hope of stopping the Javascript juggernaut.  
+
+But then something unexpected happened: Python took off and, from the looks of it, javascript has, well, flat lined:
 
 <div style="text-align:center">
 
@@ -117,18 +136,17 @@ And, contra what Rich says, today the [trend is not obviously in javascripts fav
 
 Does this mean javascript will go away?  
 
-Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built htmx (or [hyperscript](https://hyperscript.org)) to replace it!
+Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
+htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
 
-But it means that the future does not *necessarily* belong to javascript, as appeared to be the case say five years ago.  
+But this does mean that the future does not *necessarily* belong to javascript, as appeared to be the case say five years ago.  
 
-We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  
+We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
 
-Heck, even javascript if you like.  There's no accounting for taste, after all.
+That's a world we'd rather live in: many programming language options, each with their own strengths, technical cultures and thriving 
+communities, all able to participate in the web development world through the magic more powerful hypermedia.  Diversity, after all, is our strength.
 
-That's a world we'd rather live in: many programming language options, each with their own strengths, cultures and thriving 
-communities, all able to participate in the web development world through the magic of more powerful hypermedia.  Diversity, after all, is our strength.
-
-And, finally, let us be honest: javascript sucks.
+And so, in conclusion,
 
 <dov style="text-align:center">
 
