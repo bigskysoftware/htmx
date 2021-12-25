@@ -139,12 +139,12 @@ Does this mean javascript will go away?
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
 htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
 
-But this does mean that the future does not *necessarily* belong to javascript, as appeared to be the case say five years ago.  
+But this does mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case say five years ago.  
 
-We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
+We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
 
 That's a world we'd rather live in: many programming language options, each with their own strengths, technical cultures and thriving 
-communities, all able to participate in the web development world through the magic more powerful hypermedia.  Diversity, after all, is our strength.
+communities, all able to participate in the web development world through the magic of more powerful hypermedia.  Diversity, after all, is our strength.
 
 And so, in conclusion,
 
