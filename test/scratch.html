@@ -24,12 +24,12 @@
 <script src="util/scratch_server.js"></script>
 
 <script>
-    // this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
+
     // this.server.respondWith("GET", "/test2", "Clicked!");
     //
     // make('<div hx-get="/test">dd</div>')
 
-    htmx.logAll();
+//    htmx.logAll();
 
     // var i = 1;
     // this.server.respondWith("GET", "/test", function(xhr){
@@ -62,6 +62,12 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 </div>
 
 <script>
+    this.server.respondWith("GET", "/preserve", 'foo');
 </script>
+
+<div hx-post="/preserve" hx-trigger="every 1s">
+    <iframe hx-preserve='true' id='iframe1' width="300" height="200" src="https://www.youtube.com/embed/Z1oB2EDu5XA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 </body>
 </html>
