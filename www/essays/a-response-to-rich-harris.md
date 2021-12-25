@@ -48,8 +48,7 @@ Mr. Harris then moves on to problems with Multi-Page Applications (MPAs) which a
 click-a-link-load-a-page-of-HTML web applications that are, to an extent, being supplanted by SPAs.  
 
 We will go through the problems he outlines, all of which are valid when discussing "standard" MPAs, 
-we will demonstrate how a Hypermedia-centric technology like htmx can solve each of them, while still remaining within the
-general category of MPA.
+and we will demonstrate how a Hypermedia-centric technology like htmx can solve each of them.
 
 ### "You Can't Keep A Video Running"
 
@@ -74,13 +73,16 @@ Now, a vanilla MPA would typically have said garbage cached after the first requ
 
 ### "MPAs Have Network Latency Issues"
 
-This is a valid point: with an MPA-style hypermedia approach you are gated by how fast your server can respond to requests.  However, there are well-known techniques, developed over decades, for monitoring and optimizing this response time and, to be frank, the SPAs we work with day-to-day are often plenty laggy.  On top of that, the complexity of optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues and, a topic we will return to, a significant increase in application complexity.
+This is a valid point: with an MPA-style hypermedia approach you are gated by how fast your server can respond to requests.  Part of that is network latency, which is hard to overcome without giving up one of the tremendously simplifying aspects of traditional web applications: a centralized data store.  However, networks are fast and are getting faster, and there are well-known techniques for optimizing *server* latency (i.e. how fast your server returns a response), developed over decades, for monitoring and optimizing this response time.  SQL and Redis caching, to name a two.  Many htmx users remark just how fast htmx-based applications feel, but we won't pretend that latency isn't an issue to be considered.
+
+Now, the problem with latency issues is that they can make an app feel laggy.  But, like you, we have worked with plenty of laggy SPAs, so the problem isn't neatly solved by simply using SPA frameworks.  On top of that, optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues and, a topic we will return to later, a significant increase in overall application complexity.
 
 ### "Github Has UI Bugs"
 
-Github does, indeed, have UI bugs, it's true.  But none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues pointed out.
+Github does, indeed, have UI bugs, it's true.  However, none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues pointed out.
 
-Compare and contrast with the engineering work required to fix the bugs that Mr. Harris pointed out in Instagrams web application.  We know which issues we'd rather fix.
+Contrast the Github UI issues with the Instagram UI issues Mr. Harris pointed out earlier: the Instagram issues would 
+require far more sophisticated engineering work to resolve.
 
 ## Transitional Applications
 
@@ -88,7 +90,7 @@ Mr. Harris then discusses the concept of "transitional applications" which are a
 
 ## The Elephant In The Room: Complexity
 
-Unfortunately, there is a topic that Mr. Harris does not discuss, and we believe this may be because he doesn't see it.  As he is a javascript developer who is passionate about that language and swims in the engineering culture of front end frameworks, the current *complexity* of javascript front end development seems natural to him.  But, for many of us, the javascript ecosystem is simply *insanely* overly-complicated.  Comically so, given the requirements of most web applications.
+Unfortunately, there is a topic that Mr. Harris does not discuss, and we believe this may be because he doesn't see it.  As he is a javascript developer who is passionate about that language and who swims in the engineering culture of front end frameworks, the current *complexity* of javascript front end development seems natural to him.  But, for many of us, the javascript ecosystem is simply *insanely* overly-complicated.  Comically so, in fact, given the requirements of most web applications.
 
 Many of the "transitional" technologies that Mr. Harris goes on to mention: [React Server Components](https://vercel.com/blog/everything-about-react-server-components) (which he calls "like html over the wire, but vastly more sophisticated), [Marko](https://markojs.com/) (which is doing "partial hydration"), [Quik](https://github.com/BuilderIO/qwik) (which aggressively lazy loads things, apparently), are all remarkable engineering achievements, but are also all, we must say, quite complicated.
 
@@ -101,14 +103,14 @@ So there is a cultural issue here.
 
 But there is a technical one as well:
 
-The technical issue is what we will call "The Hypermedia Approach" vs. "The Remote Procedure Call (RPC) Approach".  When web applications moved from MPAs to SPAs, they adopted, often unwittingly, the latter RPC approach to application development: AJAX moved to JSON as a data serialization format and largely ([and correctly](/essays/hypermedia-apis-vs-data-apis/)) abandoned the hypermedia concept.   This abandonment of The Hypermedia Approach was driven by the admitted usability issues with vanilla MPAs.
+The technical issue is what we will call "The Hypermedia Approach" vs. "The Remote Procedure Call (RPC) Approach".  When web applications moved from MPAs to SPAs, they adopted, often unwittingly, an RPC approach to application development: AJAX moved to JSON as a data serialization format and largely ([and correctly](/essays/hypermedia-apis-vs-data-apis/)) abandoned the hypermedia concept.   This abandonment of The Hypermedia Approach was driven by the admitted usability issues with vanilla MPAs.
 
-It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach: rather than *abandoning* Hypermedia for RPC, what we need is a *more powerful* Hypermedia.  This is exactly what htmx gives you.
+It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach: rather than *abandoning* Hypermedia for RPC, what we needed and need today is a *more powerful* Hypermedia.  This is exactly what htmx gives you.
 
 By returning to The Hypermedia Approach, you can build reasonably sophisticated web applications that address many of 
-Mr. Harris's concerns regarding MPAs, at a fraction of the complexity required by most popular SPA frameworks.  And, for free,
+Mr. Harris's concerns regarding MPAs at a fraction of the complexity required by most popular SPA frameworks.  And, for free,
 you get all [the benefits](https://en.wikipedia.org/wiki/Representational_state_transfer#Architectural_concepts) that Roy Fielding 
-outlined with a truly REST-ful architecture.
+outlined when adopting a truly REST-ful architecture.
 
 Is this architecture right for all web applications?  Obviously not.  
 
