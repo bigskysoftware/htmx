@@ -152,19 +152,17 @@ Is it right for many, and perhaps most, web applications?  We certainly think so
 Now we get to the most emotionally charged claim made in the talk: that "the ship has sailed" on javascript, and that
  we should accept that it will be the dominant programming language in web development going forward.  
 
+Mr. Harris believes that it will be [edge computing](https://en.wikipedia.org/wiki/Edge_computing) that will be the
+driver that finally eliminates the remaining scattered opposition to javascript.
+
 We are not so sure about that.
 
-Mr. Harris believes that it will be [edge computing](https://en.wikipedia.org/wiki/Edge_computing) that will deliver the
-final blow to the nails in many programming languages coffins.
-
 To the contrary, we do not expect edge computing to figure in the majority of web applications for the foreseeable future.  
-Or, frankly, ever. CPU is cheap, network speeds are increasing and microservices are a mess.  Don't @ us.
+Or, frankly, ever. CPU is cheap, network speeds are fast and increasing and microservices are a mess.  Don't @ us.
 
 And, contra what Mr. Harris says, today the [trend is not obviously in javascripts favor](https://insights.stackoverflow.com/trends?tags=java%2Cc%2Cc%2B%2B%2Cpython%2Cc%23%2Cvb.net%2Cjavascript%2Cassembly%2Cphp%2Cperl%2Cruby%2Cvb%2Cswift%2Cr%2Cobjective-c).  Five years ago, we, as founding members 
-of the javascript resistance, were despairing of any hope of stopping the Javascript juggernaut.  
-
-But then something unexpected and wonderful happened: Python took off and, from the looks of it, javascript has, well, 
-flat lined:
+of the javascript resistance, were despairing of any hope of stopping the Javascript juggernaut.  But then something 
+unexpected happened: Python took off and, at the same time, javascript flat lined:
 
 <div style="text-align:center">
 
@@ -172,7 +170,7 @@ flat lined:
 
 </div>
 
-Does this mean javascript will go away?  
+Does this mean javascript will go away?
 
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
 htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
