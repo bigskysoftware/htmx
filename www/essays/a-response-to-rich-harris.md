@@ -79,14 +79,14 @@ Now, the problem with latency issues is that they can make an app feel laggy.  B
 
 ### "Github Has UI Bugs"
 
-Github does, indeed, have UI bugs, it's true.  However, none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues pointed out.
+Github does, indeed, have UI bugs, it's true.  However, none of them are particularly difficult to solve.  htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues Mr. Harris points out.
 
 Contrast the Github UI issues with the Instagram UI issues Mr. Harris pointed out earlier: the Instagram issues would 
 require far more sophisticated engineering work to resolve.
 
 ## Transitional Applications
 
-Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  This terminology is reasonable, we'll see if it sticks.  We recommend using htmx for the parts of the app it makes sense and kicking out to other technologies when needed: vue.js, alpine.js, etc. and so we can recommend a "transitional" approach to web development.
+Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  This terminology is reasonable, we'll see if it sticks.  We recommend using htmx for the parts of the app it makes sense and kicking out to other technologies when needed: [alpine.js](https://alpinejs.dev/), [hyperscript](https://hypersciprt.org), a small reactive framework, etc. and so we can recommend a "transitional" approach to web development.
 
 ## The Elephant In The Room: Complexity
 
