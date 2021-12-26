@@ -50,6 +50,7 @@ faster service.)*
 
 ## Essays
 
+* [A Response To Rich Harris](/essays/a-response-to-rich-harris)
 * [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
 * [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
