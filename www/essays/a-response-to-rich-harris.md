@@ -178,7 +178,7 @@ htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very t
 But this *does* mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
 say five years ago.  
 
-We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
+We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, c#, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
 Since you are using hypermedia & HTML for your server interactions, you don't feel that pressure to adopt javascript on
 the backend that a huge javascript front end produces.  You can still use javascript, of course, (perhaps in the form of alpine)
 but you use it in the manner it was originally intended: as a light, front end scripting language for enhancing your
