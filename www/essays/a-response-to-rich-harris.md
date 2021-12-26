@@ -139,9 +139,9 @@ rather than *abandoning* Hypermedia for RPC, what we needed then and what we nee
 This is exactly what htmx gives you.
 
 By returning to The Hypermedia Approach, you can build reasonably sophisticated web applications that address many of 
-Mr. Harris's concerns regarding MPAs at a fraction of the complexity required by most popular SPA frameworks.  And, without
-thinking about it very much, you get all [the benefits](https://en.wikipedia.org/wiki/Representational_state_transfer#Architectural_concepts) 
-that Roy Fielding outlined when adopting a truly REST-ful architecture.
+Mr. Harris's concerns regarding MPAs at a fraction of the complexity required by most popular SPA frameworks.  Further, without
+thinking about it very much, you will get all [the benefits](https://en.wikipedia.org/wiki/Representational_state_transfer#Architectural_concepts) 
+that Roy Fielding outlined about truly REST-ful architectures.
 
 Is The Hypermedia Architecture right for all web applications?  Obviously not.
 
@@ -153,7 +153,7 @@ Now we get to the most emotionally charged claim made in the talk: that "the shi
  we should accept that it will be the dominant programming language in web development going forward.  
 
 Mr. Harris believes that it will be [edge computing](https://en.wikipedia.org/wiki/Edge_computing) that will be the
-driver that finally eliminates the remaining scattered opposition to javascript.
+driver that finally eliminates the remaining, scattered opposition to javascript.
 
 We are not so sure about that.
 
@@ -175,14 +175,20 @@ Does this mean javascript will go away?
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
 htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
 
-But this *does* mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case say five years ago.  
+But this *does* mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
+say five years ago.  
 
 We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
+Since you are using hypermedia & HTML for your server interactions, you don't feel that pressure to adopt javascript on
+the backend that a huge javascript front end produces.  You can still use javascript, of course, (perhaps in the form of alpine)
+but you use it in the manner it was originally intended: as a light, front end scripting language for enhancing your
+application.  Or, if you are brave, perhaps you can try [hyperscript](https://hyperscript.org) for these needs.
 
-That's a world would prefer live in: many programming language options, each with their own strengths, technical cultures and thriving 
-communities, all able to participate in the web development world through the magic of more powerful hypermedia.  Diversity, after all, is our strength.
+This is a world we would prefer live in: many programming language options, each with their own strengths, technical cultures and thriving 
+communities, all able to participate in the web development world through the magic of more powerful hypermedia, rather than a 
+monolith of SPAs-talking-to-Node-in-JSON.  Diversity, after all, is our strength.
 
-So, in conclusion,
+In conclusion,
 
 <div style="text-align:center">
 
