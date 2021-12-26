@@ -170,7 +170,7 @@ unexpected happened: Python took off and, at the same time, javascript flat line
 
 </div>
 
-Does this mean javascript will go away?
+Does this mean javascript will "lose" to Python and go away?
 
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
 htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
