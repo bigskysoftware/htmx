@@ -103,7 +103,7 @@ Mr. Harris then discusses the concept of "transitional applications" which are a
 This terminology is reasonable, and we will see if the term sticks in the industry.  
 
 We often recommend using htmx for the parts of the app it makes sense to keep things simple, and then using other 
-technologies when needed: [alpine.js](https://alpinejs.dev/), [hyperscript](https://hypersciprt.org), a small reactive 
+technologies when needed: [alpine.js](https://alpinejs.dev/), [hyperscript](https://hyperscript.org), a small reactive 
 framework, etc.
 
 So we can agree with Mr. Harris here to an extent and recommend a "transitional" approach to web development, although
