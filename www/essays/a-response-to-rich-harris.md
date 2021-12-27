@@ -1,10 +1,10 @@
 ---
 layout: layout.njk
 tags: posts
-title: A Response To Rich Harris
+title: A Response To "Have Single-Page Apps Ruined the Web?"
 ---
 
-# A Response To Rich Harris
+# A Response To "Have Single-Page Apps Ruined the Web?"
 
 [Rich Harris](https://twitter.com/rich_harris) is a well-known web developer who works on [Svelte.js](https://svelte.dev/), a novel 
 Single-Page Application (SPA) framework.  
