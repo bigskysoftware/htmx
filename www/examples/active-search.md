@@ -211,7 +211,8 @@ Search Contacts
               var result = [];
               for (var i = 0; i < data.length; i++) {
                 var c = data[i];
-                if(c['FirstName'].indexOf(str) >= 0 || c['LastName'].indexOf(str) >= 0 || c['Email'].indexOf(str) >= 0) {
+                var s = str.toLowerCase()
+                if(c['FirstName'].toLowerCase().indexOf(s) >= 0 || c['LastName'].toLowerCase().indexOf(s) >= 0 || c['Email'].toLowerCase().indexOf(s) >= 0) {
                   result.push(c)
                 }
               }
