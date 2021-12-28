@@ -170,12 +170,20 @@ unexpected happened: Python took off and, at the same time, javascript flat line
 
 </div>
 
-Does this mean javascript will "lose" to Python and go away?
+This trend of javascript peaking in the mid-2010's can be observed [on Github](https://www.benfrederickson.com/ranking-programming-languages-by-github-users/) as well:
+
+<div style="text-align:center">
+
+![Javascript Devs](/img/language-trends-github.png)
+
+</div>
+
+Now, does this mean javascript will eventually "lose" to Python and go away?
 
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
-htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
+htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful for javascript.
 
-But this *does* mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
+But this *does* imply that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
 say five years ago.  
 
 We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, c#, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
