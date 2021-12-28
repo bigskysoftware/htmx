@@ -181,7 +181,7 @@ This trend of javascript peaking in the mid-2010's can be observed [on Github](h
 Now, does this mean javascript will eventually "lose" to Python and go away?
 
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
-htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful for javascript.
+htmx (or [hyperscript](https://hyperscript.org)), so we are very thankful for javascript.
 
 But this *does* imply that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
 say five years ago.  
