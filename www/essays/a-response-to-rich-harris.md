@@ -157,8 +157,8 @@ driver that finally eliminates the remaining, scattered opposition to javascript
 
 We are not so sure about that.
 
-To the contrary, we do not expect edge computing to figure in the majority of web applications for the foreseeable future.  
-Or, frankly, ever. CPU is cheap, network speeds are fast and increasing and microservices are a mess.  Don't @ us.
+To the contrary, we do not expect edge computing to figure in the majority of web applications for the foreseeable future.
+Or, to be frank, ever. CPU is cheap, network speeds are fast and increasing and microservices are a mess.
 
 And, contra what Mr. Harris says, today the [trend is not obviously in javascripts favor](https://insights.stackoverflow.com/trends?tags=java%2Cc%2Cc%2B%2B%2Cpython%2Cc%23%2Cvb.net%2Cjavascript%2Cassembly%2Cphp%2Cperl%2Cruby%2Cvb%2Cswift%2Cr%2Cobjective-c).  Five years ago, we, as founding members 
 of the javascript resistance, were despairing of any hope of stopping the Javascript juggernaut.  But then something 
