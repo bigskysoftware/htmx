@@ -209,9 +209,9 @@ Search Contacts
           return {
             findContactsMatching : function(str) {
               var result = [];
+              var s = str.toLowerCase();
               for (var i = 0; i < data.length; i++) {
                 var c = data[i];
-                var s = str.toLowerCase()
                 if(c['FirstName'].toLowerCase().indexOf(s) >= 0 || c['LastName'].toLowerCase().indexOf(s) >= 0 || c['Email'].toLowerCase().indexOf(s) >= 0) {
                   result.push(c)
                 }
