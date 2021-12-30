@@ -69,9 +69,7 @@ That said, [infinite scroll](/examples/infinite-scroll) can be achieved quite ea
 
 Nice transitions are, well, nice.  We think that designers tend to over-estimate their contribution to application usability, however.  Yes, the demo sizzles, but on the 20th click users often just want the UI to get on with it.
 
-That being said, htmx supports using [standard CSS transtions](https://htmx.org/examples/animations/) to make animations possible.  
-Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the
-80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
+That being said, htmx supports using [standard CSS transtions](https://htmx.org/examples/animations/) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
 
 ### "Multipage Apps Load Javascript Libraries Every Request"
 
@@ -79,12 +77,11 @@ Mr. Harris focuses heavily on "crappy Ad Tech" as a culprit for web usability is
 
 Now, a vanilla MPA would typically have said garbage cached after the first request, so the download cost, at least, is about the same as with SPAs.  But an MPA must *execute* the bundle of garbage again on each page, which does burn CPU and can lead to poor user experience.
 
-However, an MPA powered by htmx, we note, has exactly the same characteristics as an SPA: the ad garbage would be downloaded 
-and executed once on the first request, and, after that, all requests will be relatively light-weight replacements of DOM elements.
+However, an MPA powered by htmx, we note, has exactly the same characteristics as an SPA: the ad garbage would be downloaded and executed once on the first request, and, after that, all requests will be relatively light-weight replacements of DOM elements.
 
 ### "MPAs Have Network Latency Issues"
 
-This is a valid point: with an MPA-style application your UI interactions are gated by how fast your server can respond to requests, it's latency.  Part of that is network latency, which is hard to overcome without giving up one of the tremendously simplifying aspects of traditional web applications: a centralized data store.  However, networks are fast and are getting faster, and there are well-known techniques for optimizing *server* latency (i.e. how fast your server returns a response), developed over decades, for monitoring and optimizing this response time.  SQL tuning, Redis caching and so on, all well established and making sub-100ms responses a reasonable goal.  Many htmx users remark just how fast htmx-based applications feel, but we won't pretend that latency isn't an issue to be considered.
+This is a valid point: with an MPA-style application your UI interactions are gated by how fast your server can respond to requests, its latency.  Part of that is network latency, which is hard to overcome without giving up one of the tremendously simplifying aspects of traditional web applications: a centralized data store.  However, networks are fast and are getting faster, and there are well-known techniques for optimizing *server* latency (i.e. how fast your server returns a response), developed over decades, for monitoring and optimizing this response time.  SQL tuning, Redis caching and so on, all well established and making sub-100ms responses a reasonable goal.  Many htmx users remark just how fast htmx-based applications feel, but we won't pretend that latency isn't an issue to be considered.
 
 Of course the problem with latency issues is that they can make an app feel laggy.  But, like you, we have worked with plenty of laggy SPAs, so we must say the problem isn't neatly solved by simply adopting SPA frameworks.  On top of that, optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues as well as a significant increase in overall application complexity, a topic we will return to later.
 
