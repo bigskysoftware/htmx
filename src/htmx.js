@@ -703,15 +703,7 @@ return (function () {
                         try {
                             var newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo);
                             if (newElements) {
-                                if (typeof newElements.length !== 'undefined') {
-                                    // if handleSwap returns an array (like) of elements, we handle them
-                                    for (var j = 0; j < newElements.length; j++) {
-                                        var child = newElements[j];
-                                        if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
-                                            settleInfo.tasks.push(makeAjaxLoadTask(child));
-                                        }
-                                    }
-                                }
+                                handleExtensionSwapElements(newElements, settleInfo);
                                 return;
                             }
                         } catch (e) {
@@ -719,6 +711,18 @@ return (function () {
                         }
                     }
                     swapInnerHTML(target, fragment, settleInfo);
+            }
+        }
+
+        function handleExtensionSwapElements(newElements, settleInfo) {
+            if (typeof newElements.length !== 'undefined') {
+                // if handleSwap returns an array (like) of elements, we handle them
+                for (var j = 0; j < newElements.length; j++) {
+                    var child = newElements[j];
+                    if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
+                        settleInfo.tasks.push(makeAjaxLoadTask(child));
+                    }
+                }
             }
         }
 
@@ -1690,7 +1694,7 @@ return (function () {
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
                     // @ts-ignore
-                    swapInnerHTML(historyElement, fragment, settleInfo)
+                    swapHistoryHTML(path, historyElement, fragment, settleInfo);
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
                     triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
@@ -1709,12 +1713,9 @@ return (function () {
                 var fragment = makeFragment(cached.content);
                 var historyElement = getHistoryElement();
                 var settleInfo = makeSettleInfo(historyElement);
-                swapInnerHTML(historyElement, fragment, settleInfo)
-                settleImmediately(settleInfo.tasks);
+                swapHistoryHTML(path, historyElement, fragment, settleInfo);
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
-                currentPathForHistory = path;
-                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
                     window.location.reload(true);
@@ -1722,6 +1723,26 @@ return (function () {
                     loadHistoryFromServer(path);
                 }
             }
+        }
+
+        function swapHistoryHTML(path, historyElement, fragment, settleInfo) {
+            let extensionSwapped = false;
+            for (var ext of Object.values(extensions)) {
+                if (ext.handleHistorySwap) {
+                    const newElements = ext.handleHistorySwap(historyElement, fragment, settleInfo);
+                    if (newElements) {
+                        handleExtensionSwapElements(newElements, settleInfo);
+                        extensionSwapped = true;
+                        break;
+                    }
+                }
+            }
+            if (!extensionSwapped) {
+                swapInnerHTML(historyElement, fragment, settleInfo);
+            }
+            settleImmediately(settleInfo.tasks);
+            currentPathForHistory = path;
+            triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
         }
 
         function shouldPush(elt) {

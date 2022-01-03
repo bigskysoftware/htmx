@@ -97,6 +97,7 @@ Extensions can override the following default extension points to add or change 
     transformResponse : function(text, xhr, elt) {return text;},
     isInlineSwap : function(swapStyle) {return false;},
     handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
+    handleHistorySwap: function(target, fragment, settleInfo) {return false;},
     encodeParameters : function(xhr, parameters, elt) {return null;}
 }
 ```
