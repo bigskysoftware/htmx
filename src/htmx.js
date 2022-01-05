@@ -127,10 +127,10 @@ return (function () {
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
-                closestAttr = getAttributeValue(e, attributeName);
-                if (closestAttr) {
-                  var inheritAttr = getAttributeValue(e, 'hx-inherit');
-                  if (inheritAttr === 'false' || inheritAttr.includes(attributeName)) {
+                closestAttr = getAttributeValue(e, attributeName)
+                if (closestAttr && elt !== e) {
+                  var inheritAttr = getAttributeValue(e, "hx-inherit");
+                  if (inheritAttr && (inheritAttr === "false" || inheritAttr.includes(attributeName))) {
                       closestAttr = "unset";
                   }
                 }
