@@ -127,7 +127,14 @@ return (function () {
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
-                return closestAttr = getAttributeValue(e, attributeName);
+                closestAttr = getAttributeValue(e, attributeName);
+                if (closestAttr) {
+                  var inheritAttr = getAttributeValue(e, 'hx-inherit');
+                  if (inheritAttr === 'false' || inheritAttr.includes(attributeName)) {
+                      closestAttr = "unset";
+                  }
+                }
+                return closestAttr;
             });
             if (closestAttr !== "unset") {
                 return closestAttr;
