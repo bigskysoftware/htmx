@@ -511,6 +511,9 @@ be confirmed.  We could add an `unset` directive on it like so:
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
+Automatic inheritance can be further configured or disabled using [`hx-inherit`](/attributes/hx-inherit).
+
+
 ## <a name="boosting"></a>[Boosting](#boosting)
 
 Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This

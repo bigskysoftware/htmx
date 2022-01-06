@@ -31,6 +31,7 @@ title: </> htmx - Attributes
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
 | [`hx-indicator`](/attributes/hx-indicator) | the element to put the `htmx-request` class on during the AJAX request
+| [`hx-inherit`](/attributes/hx-inherit) | control and disable automatic attribute inheritance for child nodes
 | [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
 | [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
 | [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
