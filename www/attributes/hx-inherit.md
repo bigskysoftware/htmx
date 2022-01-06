@@ -19,11 +19,12 @@ htmx evaluates inheritance as follows:
   * get all elements that defines a `hx-<verb>` (`hx-get`, `hx-post`, `hx-patch`, `hx-put` or `hx-delete`)
   * for each htmx attribute, either find the htmx attribute on the element the `hx-<verb>` was defined on or traverse up all the parent nodes
   * the first element's value the corresponding htmx attribute has been found on is then used
+  * if the value is `"unset"`, the htmx attribute is considered `null`
 * when `hx-boost` is set
   * make all `<a>` tags a `hx-get` with the link defined in the `href` attribute - [details](/attributes/hx-boost) which links hx-boost handles
   * then, same htmx attribute lookup procedure as above
 * when `hx-inherit` is set on a parent node
-  * when a parent node has a matching htmx attribute during the automatic lookup outlined above
+  * when a parent node has an `hx-inherit` htmx attribute during the automatic lookup outlined above
   * `hx-inherit="false"` disable all attribute inheritance
   * `hx-inherit="hx-select hx-get hx-target"` disable inheritance for only one or multiple specified attributes
 
@@ -44,11 +45,11 @@ htmx evaluates inheritance as follows:
 ```
 
 ```html
-<div hx-target="#content">
-  <div hx-boost="true" hx-select="#content" hx-inherit="hx-target">
-    <!-- hx-select is automatically set to parent's value -->
-    <!-- hx-target is inherited, because the direct parent does
-    not specify hx-target, thus cannot disable inheritance -->
+<div hx-select="#content">
+  <div hx-boost="true" hx-target="#content" hx-inherit="hx-select">
+    <!-- hx-target is automatically inherited from parent's value -->
+    <!-- hx-select is not inherited, because the direct parent does
+    disables inheritance, despite not specifying hx-select itself -->
     <button hx-get="/test"></button>
   </div>
 </div>
@@ -57,6 +58,8 @@ htmx evaluates inheritance as follows:
 ### Notes
 
 * `hx-inherit="false"` or `hx-inherit="hx-boost"` does not disable `hx-boost`; instead use `hx-boost="unset"` to disable inheritance
-* `hx-inherit="false"` or `hx-inherit="<attribute"` only affects the inheritance outcome, if the element also has the htmx attribute 
-defined that is currently being looked up
+* `hx-inherit="false"` or `hx-inherit="<attribute"` affects the inheritance outcome regardless of whether or not the specifying element 
+has the htmx attribute defined that is currently being looked up
+* inheritance of `hx-target` cannot be disabled recursively. `hx-inherit="hx-target"` or `hx-inherit="false"` must be specified *on the
+same node* in order to disable inheritance
 * Find out more about [Attribute Inheritance](/docs/#inheritance)

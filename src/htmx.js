@@ -108,7 +108,8 @@ return (function () {
 
         function getAttributeInheritance(elt, closestMatch, attributeName) {
             var data = getInternalData(elt);
-            if (elt === closestMatch || attributeName === "hx-boost" || data.boosted) return
+            if (elt === closestMatch || attributeName === "hx-boost") return
+            if (getAttributeValue(closestMatch, "hx-boost") === "true" && data.boosted) return
             var inheritAttr = getAttributeValue(closestMatch, "hx-inherit");
             if (inheritAttr && (inheritAttr === "false" || inheritAttr.includes(attributeName))) {
                 return "unset";
