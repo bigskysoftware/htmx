@@ -90,7 +90,7 @@ you can then run the test suite by navigating to:
 at this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`
 
 * `/test/index.html` - the root test page from which all other tests are included
-* `/test/attributres` - attribute specific tests
+* `/test/attributes` - attribute specific tests
 * `/test/core` - core functionality tests
 * `/test/core/regressions.js` - regresssion tests
 * `/test/ext` - extension tests

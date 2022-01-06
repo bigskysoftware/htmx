@@ -79,17 +79,17 @@ return (function () {
         // Utilities
         //====================================================================
 
-		function parseInterval(str) {
-			if (str == undefined)  {
-				return undefined
-			}
-			if (str.slice(-2) == "ms") {
-				return parseFloat(str.slice(0,-2)) || undefined
-			}
-			if (str.slice(-1) == "s") {
-				return (parseFloat(str.slice(0,-1)) * 1000) || undefined
-			}
-			return parseFloat(str) || undefined
+        function parseInterval(str) {
+            if (str == undefined)  {
+                return undefined
+            }
+            if (str.slice(-2) == "ms") {
+                return parseFloat(str.slice(0,-2)) || undefined
+            }
+            if (str.slice(-1) == "s") {
+                return (parseFloat(str.slice(0,-1)) * 1000) || undefined
+            }
+            return parseFloat(str) || undefined
         }
 
         function getRawAttribute(elt, name) {
@@ -104,6 +104,15 @@ return (function () {
 
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
+        }
+
+        function getAttributeInheritance(elt, closestMatch, attributeName) {
+            var data = getInternalData(elt);
+            if (elt === closestMatch || attributeName === "hx-boost" || data.boosted) return
+            var inheritAttr = getAttributeValue(closestMatch, "hx-inherit");
+            if (inheritAttr && (inheritAttr === "false" || inheritAttr.includes(attributeName))) {
+                return "unset";
+            }
         }
 
         function parentElt(elt) {
@@ -127,14 +136,8 @@ return (function () {
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
-                closestAttr = getAttributeValue(e, attributeName)
-                if (closestAttr && elt !== e) {
-                  var inheritAttr = getAttributeValue(e, "hx-inherit");
-                  if (inheritAttr && (inheritAttr === "false" || inheritAttr.includes(attributeName))) {
-                      closestAttr = "unset";
-                  }
-                }
-                return closestAttr;
+                closestAttr = getAttributeValue(e, attributeName);
+                return closestAttr = getAttributeInheritance(elt, e, attributeName) || closestAttr;
             });
             if (closestAttr !== "unset") {
                 return closestAttr;
@@ -383,7 +386,7 @@ return (function () {
         }
 
         function querySelectorAllExt(elt, selector) {
-		    if (selector.indexOf("closest ") === 0) {
+            if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
@@ -452,7 +455,7 @@ return (function () {
 
         function getTarget(elt) {
             var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
-            if (explicitTarget) {
+            if (explicitTarget && getAttributeInheritance(elt, explicitTarget, "hx-target") !== "unset") {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
                     return explicitTarget;
@@ -2518,9 +2521,9 @@ return (function () {
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
-		
+        
             responseInfo.failed = isError; // Make failed property available to response events
-            responseInfo.successful = !isError; // Make successful property available to response events		
+            responseInfo.successful = !isError; // Make successful property available to response events        
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
