@@ -24,6 +24,7 @@ faster service.)*
 
 [r/htmx on reddit](https://www.reddit.com/r/htmx/)
 
+Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 <iframe src="https://github.com/sponsors/bigskysoftware/card" title="Sponsor bigskysoftware" height="225" width="600" style="border: 0;"></iframe>
 
@@ -56,6 +57,7 @@ faster service.)*
 * [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
+* [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
 
 ## Podcasts
 
