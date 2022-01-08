@@ -518,7 +518,7 @@ return (function () {
                 writesQueue[i]()
             }
             writesQueue.length = 0
-        
+            
             requestAnimationFrame(processLayoutQueues)
         }
 
@@ -1395,6 +1395,11 @@ return (function () {
                     if (maybeCloseSSESource(sseSourceElt)) {
                         sseEventSource.removeEventListener(sseEventName, sseListener);
                         return;
+                    }
+
+                    if (!bodyContains(elt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener)
+                        return
                     }
 
                     ///////////////////////////
