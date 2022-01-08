@@ -706,7 +706,9 @@ return (function () {
                     }
                     newElt = newElt.nextElementSibling;
                 }
-                cleanUpElement(target);
+                writeLayout(function() {
+                    cleanUpElement(target);
+                })
                 parentElt(target).removeChild(target);
             }
         }
@@ -732,10 +734,15 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
-                    cleanUpElement(firstChild.nextSibling)
+                    var nextSibling = firstChild.nextSibling
+                    writeLayout(function() {
+                        cleanUpElement(nextSibling)
+                    })
                     target.removeChild(firstChild.nextSibling);
                 }
-                cleanUpElement(firstChild)
+                writeLayout(function() {
+                    cleanUpElement(firstChild)
+                })
                 target.removeChild(firstChild);
             }
         }
@@ -1403,8 +1410,10 @@ return (function () {
                     var settleInfo = makeSettleInfo(elt);
 
                     selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
-                    settleImmediately(settleInfo.tasks)
-                    triggerEvent(elt, "htmx:sseMessage", event)
+                    writeLayout(function() {
+                        settleImmediately(settleInfo.tasks)
+                        triggerEvent(elt, "htmx:sseMessage", event)
+                    })
                 };
 
                 getInternalData(elt).sseListener = sseListener;
@@ -2748,7 +2757,9 @@ return (function () {
                         if (swapSpec.settleDelay > 0) {
                             setTimeout(doSettle, swapSpec.settleDelay)
                         } else {
-                            doSettle();
+                            writeLayout(function() {
+                                doSettle();
+                            })
                         }
                     } catch (e) {
                         triggerErrorEvent(elt, 'htmx:swapError', responseInfo);

@@ -69,6 +69,9 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
+            readLayout: readLayout,
+            writeLayout: writeLayout,
+            resizeSelect: resizeSelect,
             version: "1.6.1"
         };
 
@@ -442,6 +445,96 @@ return (function () {
         }
 
         //====================================================================
+        // Layout read/write queues & utilities
+        //====================================================================
+
+        /** @type HTMLSelectElement */
+        let hiddenSelect
+        /** @type HTMLOptionElement */
+        let hiddenSelectOption
+        /** @type Array<Function> */
+        let layoutReadsQueue = [], layoutWritesQueue = []
+        /** @type Array<HTMLSelectElement> */
+        const selectsToResize = []
+        /** @type HTMLSelectElement */
+        let selectResizing
+        
+        function readLayout(callback) {
+            layoutReadsQueue.push(callback)
+        }
+
+        function writeLayout(callback) {
+            layoutWritesQueue.push(callback)
+        }
+        
+        /** @param {HTMLSelectElement} select */
+        function resizeSelect(select) {
+            if (select.options.length > 1 && select.options[select.selectedIndex]) {
+                readLayout(function () {
+                    selectsToResize.push(select)
+                })
+            }
+        }
+
+        function processLayoutQueues() {
+            const readsQueue = layoutReadsQueue
+            layoutReadsQueue = []
+            for (let i = 0; i < readsQueue.length; i++) {
+                readsQueue[i]()
+            }
+            readsQueue.length = 0
+            if (selectResizing) {
+                const newWidth = hiddenSelect.offsetWidth
+                writeLayout(function () {
+                    selectResizing.style.setProperty("width", newWidth + "px")
+                    selectResizing = undefined
+                })
+            } else if (selectsToResize.length > 0) {
+                selectResizing = selectsToResize[0]
+                selectsToResize.splice(0, 1)
+                const option = selectResizing.options[selectResizing.selectedIndex]
+                const computedStyle = getComputedStyle(selectResizing)
+                const height = computedStyle.getPropertyValue("height")
+                const padding = computedStyle.getPropertyValue("padding")
+                const fontFamily = computedStyle.getPropertyValue("font-family")
+                const border = computedStyle.getPropertyValue("border")
+                const boxSizing = computedStyle.getPropertyValue("box-sizing")
+                const appearance = computedStyle.getPropertyValue("appearance")
+                const textContent = option.textContent.trim()
+                writeLayout(function () {
+                    hiddenSelectOption.textContent = textContent
+                    hiddenSelect.style.setProperty("height", height)
+                    hiddenSelect.style.setProperty("padding", padding)
+                    hiddenSelect.style.setProperty("fontFamily", fontFamily)
+                    hiddenSelect.style.setProperty("border", border)
+                    hiddenSelect.style.setProperty("boxSizing", boxSizing)
+                    hiddenSelect.style.setProperty("appearance", appearance)
+                })
+            }
+        
+            const writesQueue = layoutWritesQueue
+            layoutWritesQueue = []
+            for (let i = 0; i < writesQueue.length; i++) {
+                writesQueue[i]()
+            }
+            writesQueue.length = 0
+        
+            requestAnimationFrame(processLayoutQueues)
+        }
+
+        function initializeLayoutReadWrite() {
+            hiddenSelect = document.createElement("select")
+            hiddenSelect.id = "hiddenSelect"
+            hiddenSelect.style.position = "absolute"
+            hiddenSelect.style.left = "-100%"
+            hiddenSelect.style.top = "-100%"
+            hiddenSelectOption = hiddenSelect.appendChild(document.createElement("option"))
+            document.body.appendChild(hiddenSelect)
+
+            requestAnimationFrame(processLayoutQueues)
+        }
+
+        //====================================================================
         // Node processing
         //====================================================================
 
@@ -613,7 +706,9 @@ return (function () {
                     }
                     newElt = newElt.nextElementSibling;
                 }
-                cleanUpElement(target);
+                writeLayout(function() {
+                    cleanUpElement(target);
+                })
                 parentElt(target).removeChild(target);
             }
         }
@@ -639,10 +734,15 @@ return (function () {
             insertNodesBefore(target, firstChild, fragment, settleInfo);
             if (firstChild) {
                 while (firstChild.nextSibling) {
-                    cleanUpElement(firstChild.nextSibling)
+                    var nextSibling = firstChild.nextSibling
+                    writeLayout(function() {
+                        cleanUpElement(nextSibling)
+                    })
                     target.removeChild(firstChild.nextSibling);
                 }
-                cleanUpElement(firstChild)
+                writeLayout(function() {
+                    cleanUpElement(firstChild)
+                })
                 target.removeChild(firstChild);
             }
         }
@@ -1310,8 +1410,10 @@ return (function () {
                     var settleInfo = makeSettleInfo(elt);
 
                     selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
-                    settleImmediately(settleInfo.tasks)
-                    triggerEvent(elt, "htmx:sseMessage", event)
+                    writeLayout(function() {
+                        settleImmediately(settleInfo.tasks)
+                        triggerEvent(elt, "htmx:sseMessage", event)
+                    })
                 };
 
                 getInternalData(elt).sseListener = sseListener;
@@ -2655,7 +2757,9 @@ return (function () {
                         if (swapSpec.settleDelay > 0) {
                             setTimeout(doSettle, swapSpec.settleDelay)
                         } else {
-                            doSettle();
+                            writeLayout(function() {
+                                doSettle();
+                            })
                         }
                     } catch (e) {
                         triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
@@ -2776,6 +2880,7 @@ return (function () {
                     restoreHistory();
                 }
             };
+            initializeLayoutReadWrite()
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
             }, 0);
