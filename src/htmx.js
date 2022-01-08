@@ -69,6 +69,9 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
+            readLayout: readLayout,
+            writeLayout: writeLayout,
+            resizeSelect: resizeSelect,
             version: "1.6.1"
         };
 
@@ -439,6 +442,96 @@ return (function () {
                 eventArgs.target.removeEventListener(eventArgs.event, eventArgs.listener);
             })
             return isFunction(arg2) ? arg2 : arg3;
+        }
+
+        //====================================================================
+        // Layout read/write queues & utilities
+        //====================================================================
+
+        /** @type HTMLSelectElement */
+        let hiddenSelect
+        /** @type HTMLOptionElement */
+        let hiddenSelectOption
+        /** @type Array<Function> */
+        let layoutReadsQueue = [], layoutWritesQueue = []
+        /** @type Array<HTMLSelectElement> */
+        const selectsToResize = []
+        /** @type HTMLSelectElement */
+        let selectResizing
+        
+        function readLayout(callback) {
+            layoutReadsQueue.push(callback)
+        }
+
+        function writeLayout(callback) {
+            layoutWritesQueue.push(callback)
+        }
+        
+        /** @param {HTMLSelectElement} select */
+        function resizeSelect(select) {
+            if (select.options.length > 1 && select.options[select.selectedIndex]) {
+                readLayout(function () {
+                    selectsToResize.push(select)
+                })
+            }
+        }
+
+        function processLayoutQueues() {
+            const readsQueue = layoutReadsQueue
+            layoutReadsQueue = []
+            for (let i = 0; i < readsQueue.length; i++) {
+                readsQueue[i]()
+            }
+            readsQueue.length = 0
+            if (selectResizing) {
+                const newWidth = hiddenSelect.offsetWidth
+                writeLayout(function () {
+                    selectResizing.style.setProperty("width", newWidth + "px")
+                    selectResizing = undefined
+                })
+            } else if (selectsToResize.length > 0) {
+                selectResizing = selectsToResize[0]
+                selectsToResize.splice(0, 1)
+                const option = selectResizing.options[selectResizing.selectedIndex]
+                const computedStyle = getComputedStyle(selectResizing)
+                const height = computedStyle.getPropertyValue("height")
+                const padding = computedStyle.getPropertyValue("padding")
+                const fontFamily = computedStyle.getPropertyValue("font-family")
+                const border = computedStyle.getPropertyValue("border")
+                const boxSizing = computedStyle.getPropertyValue("box-sizing")
+                const appearance = computedStyle.getPropertyValue("appearance")
+                const textContent = option.textContent.trim()
+                writeLayout(function () {
+                    hiddenSelectOption.textContent = textContent
+                    hiddenSelect.style.setProperty("height", height)
+                    hiddenSelect.style.setProperty("padding", padding)
+                    hiddenSelect.style.setProperty("fontFamily", fontFamily)
+                    hiddenSelect.style.setProperty("border", border)
+                    hiddenSelect.style.setProperty("boxSizing", boxSizing)
+                    hiddenSelect.style.setProperty("appearance", appearance)
+                })
+            }
+        
+            const writesQueue = layoutWritesQueue
+            layoutWritesQueue = []
+            for (let i = 0; i < writesQueue.length; i++) {
+                writesQueue[i]()
+            }
+            writesQueue.length = 0
+        
+            requestAnimationFrame(processLayoutQueues)
+        }
+
+        function initializeLayoutReadWrite() {
+            hiddenSelect = document.createElement("select")
+            hiddenSelect.id = "hiddenSelect"
+            hiddenSelect.style.position = "absolute"
+            hiddenSelect.style.left = "-100%"
+            hiddenSelect.style.top = "-100%"
+            hiddenSelectOption = hiddenSelect.appendChild(document.createElement("option"))
+            document.body.appendChild(hiddenSelect)
+
+            requestAnimationFrame(processLayoutQueues)
         }
 
         //====================================================================
@@ -2776,6 +2869,7 @@ return (function () {
                     restoreHistory();
                 }
             };
+            initializeLayoutReadWrite()
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
             }, 0);
