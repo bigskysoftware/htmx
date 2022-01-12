@@ -2356,7 +2356,7 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
-            var swapStyle = getClosestAttributeValue(elt, "hx-swap");
+            var swapStyle = etc.swapOverride || getClosestAttributeValue(elt, "hx-swap");
             // Don't use hx-target in the hierarchy as a fallback if targetOverride was specified but the element wasn't found (i.e null instead of undefined)
             // Also don't fire targetError if hx-target is not set, but hx-swap is set to "none"
             if (etc.targetOverride === null || (target == null && swapStyle != "none")) {
