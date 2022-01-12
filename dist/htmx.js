@@ -2058,7 +2058,7 @@ return (function () {
                 "HX-Request" : "true",
                 "HX-Trigger" : getRawAttribute(elt, "id"),
                 "HX-Trigger-Name" : getRawAttribute(elt, "name"),
-                "HX-Target" : getAttributeValue(target, "id"),
+                "HX-Target" : target ? getAttributeValue(target, "id") : null,
                 "HX-Current-URL" : getDocument().location.href,
             }
             getValuesForElement(elt, "hx-headers", false, headers)
@@ -2175,7 +2175,7 @@ return (function () {
         }
 
         function makeSettleInfo(target) {
-            return {tasks: [], elts: [target]};
+            return {tasks: [], elts: target ? [target] : []};
         }
 
         function updateScrollState(content, swapSpec) {
@@ -2356,8 +2356,10 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
+            var swapStyle = getClosestAttributeValue(elt, "hx-swap");
             // Don't use hx-target in the hierarchy as a fallback if targetOverride was specified but the element wasn't found (i.e null instead of undefined)
-            if (etc.targetOverride === null || target == null) {
+            // Also don't fire targetError if hx-target is not set, but hx-swap is set to "none"
+            if (etc.targetOverride === null || (target == null && swapStyle != "none")) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
@@ -2645,7 +2647,7 @@ return (function () {
             if (isError) {
                 beforeSwapDetails.shouldSwap = true
             }
-            if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
+            if (target && !triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
@@ -2678,7 +2680,9 @@ return (function () {
 
                 var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
-                target.classList.add(htmx.config.swappingClass);
+                if (target) {
+                    target.classList.add(htmx.config.swappingClass);
+                }
                 var doSwap = function () {
                     try {
 
@@ -2713,7 +2717,9 @@ return (function () {
                             }
                         }
 
-                        target.classList.remove(htmx.config.swappingClass);
+                        if (target) {
+                            target.classList.remove(htmx.config.swappingClass);
+                        }
                         forEach(settleInfo.elts, function (elt) {
                             if (elt.classList) {
                                 elt.classList.add(htmx.config.settlingClass);
