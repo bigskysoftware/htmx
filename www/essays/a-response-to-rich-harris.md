@@ -61,7 +61,7 @@ preserve a particular piece of content between requests.
 
 ### "Back Button & Infinite Scroll Don't Work"
 
-In the presence of infinite scroll behavior (presumably implemented via javascript of some sort) the back button will not work properly with an MPA.  I would note that the presence of infinite scroll calls into question the term MPA, which would traditionally use paging instead of an infinte scroll.
+In the presence of infinite scroll behavior (presumably implemented via javascript of some sort) the back button will not work properly with an MPA.  I would note that the presence of infinite scroll calls into question the term MPA, which would traditionally use paging instead of an infinite scroll.
 
 That said, [infinite scroll](/examples/infinite-scroll) can be achieved quite easily using htmx, in a hypermedia-oriented and obvious manner.  When combined with the [`hx-push-url`](/attributes/hx-push-url) attribute, history and the back button works properly with very little effort by the developer, all with nice Copy-and-Pasteable URLs, sometimes referred to as "Deep Links" by people in the SPA community.
 
@@ -99,7 +99,7 @@ require far more sophisticated engineering work to resolve.
 Mr. Harris then discusses the concept of "transitional applications" which are a mix of both SPA and MPA technologies.  
 This terminology is reasonable, and we will see if the term sticks in the industry.  
 
-We often recommend using htmx for the parts of the app it makes sense to keep things simple, and then using other 
+We often recommend using htmx for the parts of the app where it makes sense to keep things simple, and then using other 
 technologies when needed: [alpine.js](https://alpinejs.dev/), [hyperscript](https://hyperscript.org), a small reactive 
 framework, etc.
 
@@ -190,7 +190,7 @@ the backend that a huge javascript front end produces.  You can still use javasc
 but you use it in the manner it was originally intended: as a light, front end scripting language for enhancing your
 application.  Or, if you are brave, perhaps you can try [hyperscript](https://hyperscript.org) for these needs.
 
-This is a world we would prefer live in: many programming language options, each with their own strengths, technical cultures and thriving 
+This is a world we would prefer to live in: many programming language options, each with their own strengths, technical cultures and thriving 
 communities, all able to participate in the web development world through the magic of more powerful hypermedia, rather than a 
 monolith of SPAs-talking-to-Node-in-JSON.  Diversity, after all, is our strength.
 

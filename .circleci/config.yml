@@ -1,0 +1,22 @@
+version: 2.1
+
+commands:
+
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
+jobs:
+  test:
+    docker:
+      - image: cimg/node:16.13.1-browsers
+    steps:
+      - browser-tools/install-browser-tools
+      - checkout
+      - run: |
+          node --version
+          java --version
+          google-chrome --version
+
+workflows:
+  tests-containers:
+    jobs:
+      - test

@@ -28,7 +28,7 @@ This method adds a class to the given element.
 
 ### <a name="ajax"></a> Method -  [`htmx.ajax()`](#ajax)
 
-Issues an htmx-style AJAX request
+Issues an htmx-style AJAX request. This method returns a Promise, so a callback can be executed after the content has been inserted into the DOM.
 
 ##### Parameters
 
@@ -60,6 +60,13 @@ or
 ```js
     // issue a GET to /example and put the response HTML into #myDiv
     htmx.ajax('GET', '/example', '#myDiv')
+    
+    // execute some code after the content has been inserted into the DOM
+    htmx.ajax('GET', '/example', '#myDiv').then(() => {
+      // this code will be executed after the 'htmx:afterOnLoad' event,
+      // and before the 'htmx:xhr:loadend' event
+      console.log('Content inserted successfully!');
+    }); 
 ```
 
 ### <a name="closest"></a> Method -  [`htmx.closest()`](#closest)
