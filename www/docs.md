@@ -859,7 +859,7 @@ If you set a logger at `htmx.logger`, every event will be logged.  This can be v
 ## <a name="debugging"></a> [Debugging](#debugging)
 
 Declarative and event driven programming with htmx (or any other declartive language) can be a wonderful and highly productive
-activity, but one disadvantage when compared with imperative approaches is that it can be tricker to debug.
+activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
  
 Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.  
 
