@@ -1,10 +1,10 @@
 ---
 layout: layout.njk
 tags: posts
-title: A Response To Rich Harris
+title: A Response To "Have Single-Page Apps Ruined the Web?"
 ---
 
-# A Response To Rich Harris
+# A Response To "Have Single-Page Apps Ruined the Web?"
 
 [Rich Harris](https://twitter.com/rich_harris) is a well-known web developer who works on [Svelte.js](https://svelte.dev/), a novel 
 Single-Page Application (SPA) framework.  
@@ -69,9 +69,7 @@ That said, [infinite scroll](/examples/infinite-scroll) can be achieved quite ea
 
 Nice transitions are, well, nice.  We think that designers tend to over-estimate their contribution to application usability, however.  Yes, the demo sizzles, but on the 20th click users often just want the UI to get on with it.
 
-That being said, htmx supports using [standard CSS transitions](https://htmx.org/examples/animations/) to make animations possible.  
-Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the
-80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
+That being said, htmx supports using [standard CSS transtions](https://htmx.org/examples/animations/) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
 
 ### "Multipage Apps Load Javascript Libraries Every Request"
 
@@ -79,12 +77,11 @@ Mr. Harris focuses heavily on "crappy Ad Tech" as a culprit for web usability is
 
 Now, a vanilla MPA would typically have said garbage cached after the first request, so the download cost, at least, is about the same as with SPAs.  But an MPA must *execute* the bundle of garbage again on each page, which does burn CPU and can lead to poor user experience.
 
-However, an MPA powered by htmx, we note, has exactly the same characteristics as an SPA: the ad garbage would be downloaded 
-and executed once on the first request, and, after that, all requests will be relatively light-weight replacements of DOM elements.
+However, an MPA powered by htmx, we note, has exactly the same characteristics as an SPA: the ad garbage would be downloaded and executed once on the first request, and, after that, all requests will be relatively light-weight replacements of DOM elements.
 
 ### "MPAs Have Network Latency Issues"
 
-This is a valid point: with an MPA-style application your UI interactions are gated by how fast your server can respond to requests, it's latency.  Part of that is network latency, which is hard to overcome without giving up one of the tremendously simplifying aspects of traditional web applications: a centralized data store.  However, networks are fast and are getting faster, and there are well-known techniques for optimizing *server* latency (i.e. how fast your server returns a response), developed over decades, for monitoring and optimizing this response time.  SQL tuning, Redis caching and so on, all well established and making sub-100ms responses a reasonable goal.  Many htmx users remark just how fast htmx-based applications feel, but we won't pretend that latency isn't an issue to be considered.
+This is a valid point: with an MPA-style application your UI interactions are gated by how fast your server can respond to requests, its latency.  Part of that is network latency, which is hard to overcome without giving up one of the tremendously simplifying aspects of traditional web applications: a centralized data store.  However, networks are fast and are getting faster, and there are well-known techniques for optimizing *server* latency (i.e. how fast your server returns a response), developed over decades, for monitoring and optimizing this response time.  SQL tuning, Redis caching and so on, all well established and making sub-100ms responses a reasonable goal.  Many htmx users remark just how fast htmx-based applications feel, but we won't pretend that latency isn't an issue to be considered.
 
 Of course the problem with latency issues is that they can make an app feel laggy.  But, like you, we have worked with plenty of laggy SPAs, so we must say the problem isn't neatly solved by simply adopting SPA frameworks.  On top of that, optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues as well as a significant increase in overall application complexity, a topic we will return to later.
 
@@ -157,8 +154,8 @@ driver that finally eliminates the remaining, scattered opposition to javascript
 
 We are not so sure about that.
 
-To the contrary, we do not expect edge computing to figure in the majority of web applications for the foreseeable future.  
-Or, frankly, ever. CPU is cheap, network speeds are fast and increasing and microservices are a mess.  Don't @ us.
+To the contrary, we do not expect edge computing to figure in the majority of web applications for the foreseeable future.
+Or, to be frank, ever. CPU is cheap, network speeds are fast and increasing and microservices are a mess.
 
 And, contra what Mr. Harris says, today the [trend is not obviously in javascripts favor](https://insights.stackoverflow.com/trends?tags=java%2Cc%2Cc%2B%2B%2Cpython%2Cc%23%2Cvb.net%2Cjavascript%2Cassembly%2Cphp%2Cperl%2Cruby%2Cvb%2Cswift%2Cr%2Cobjective-c).  Five years ago, we, as founding members 
 of the javascript resistance, were despairing of any hope of stopping the Javascript juggernaut.  But then something 
@@ -170,15 +167,24 @@ unexpected happened: Python took off and, at the same time, javascript flat line
 
 </div>
 
-Does this mean javascript will "lose" to Python and go away?
+This trend of javascript peaking in the mid-2010's can be observed [on Github](https://www.benfrederickson.com/ranking-programming-languages-by-github-users/) as well:
+
+<div style="text-align:center">
+
+![Javascript Devs](/img/language-trends-github.png)
+
+</div>
+
+Now, does this mean javascript will eventually "lose" to Python and go away?
 
 Of course not.  Javascript is a core technology of the web and will be with us forever.  Without it, we couldn't have built 
-htmx (or [hyperscript](https://hyperscript.org)) to replace it, so we are very thankful, in a funny sort of way, for javascript.
+htmx (or [hyperscript](https://hyperscript.org)) so we are very thankful for javascript.
 
-But this *does* mean that the future of the web does not *necessarily* belong to javascript, as appeared to be the case 
+But this *does* imply that the future of the web does not *necessarily* belong to *entirely* javascript, as appeared to be the case 
 say five years ago.  
 
-We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, c#, whatever.  Even javascript, if you like.  There's no accounting for taste, after all.
+We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, c#, whatever.  Even javascript, if you like.
+
 Since you are using hypermedia & HTML for your server interactions, you don't feel that pressure to adopt javascript on
 the backend that a huge javascript front end produces.  You can still use javascript, of course, (perhaps in the form of alpine)
 but you use it in the manner it was originally intended: as a light, front end scripting language for enhancing your

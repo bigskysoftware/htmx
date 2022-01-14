@@ -51,13 +51,13 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## Essays
 
-* [A Response To Rich Harris](/essays/a-response-to-rich-harris)
 * [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
 * [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
 * [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
+* [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
 
 ## Podcasts
 
@@ -66,7 +66,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 * [Software Breakthroughs for the 21s Century](https://www.youtube.com/watch?v=O4ZFIx1ckSg)
 * [Django Chat](https://djangochat.com/episodes/htmx-carson-gross)
 * [Talk Python](https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
-* [.NET Rocks!](https://podtail.com/en/podcast/-net-rocks/htmx-with-carson-gross/)
+* [.NET Rocks!](https://www.dotnetrocks.com/?show=1749)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
 
