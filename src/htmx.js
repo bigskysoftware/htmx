@@ -844,7 +844,7 @@ return (function () {
                             logError(e);
                         }
                     }
-                    swapInnerHTML(target, fragment, settleInfo);
+                    swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
             }
         }
 
