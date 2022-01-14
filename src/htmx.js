@@ -2644,7 +2644,9 @@ return (function () {
          * @param {import("./htmx").HtmxExtension} extension
          */
         function defineExtension(name, extension) {
-            extension.init(internalAPI)
+            if(extension.init) {
+                extension.init(internalAPI)
+            }
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 
