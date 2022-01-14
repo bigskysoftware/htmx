@@ -385,7 +385,7 @@ content of the page is examined for elements that match by the `id` attribute.  
 is found for an element in the new content, the attributes of the old content are copied
 onto the new element before the swap occurs.  The new content is then swapped in, but with the
 *old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
-(100ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
+(20ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
 the developer.
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
@@ -681,7 +681,7 @@ The order of operations in a htmx request are:
         * the `htmx-swapping` class is removed from the target
         * the `htmx-added` class is added to each new piece of content
         * the `htmx-settling` class is applied to the target
-        * A settle delay is done (default: 100ms)
+        * A settle delay is done (default: 20ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
         * the `htmx-added` class is removed from each new piece of content
@@ -1101,7 +1101,7 @@ listed below:
 |  `htmx.config.refreshOnHistoryMiss` | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request
 |  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
 |  `htmx.config.defaultSwapDelay` | defaults to 0
-|  `htmx.config.defaultSettleDelay` | defaults to 100
+|  `htmx.config.defaultSettleDelay` | defaults to 20
 |  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
 |  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
 |  `htmx.config.requestClass` | defaults to `htmx-request`
