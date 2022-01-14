@@ -769,6 +769,10 @@ return (function () {
         function swapAfterEnd(target, fragment, settleInfo) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
+        function swapDelete(target, fragment, settleInfo) {
+            cleanUpElement(target);
+            return parentElt(target).removeChild(target);
+        }
 
         function swapInnerHTML(target, fragment, settleInfo) {
             var firstChild = target.firstChild;
@@ -813,6 +817,9 @@ return (function () {
                     return;
                 case "afterend":
                     swapAfterEnd(target, fragment, settleInfo);
+                    return;
+                case "delete":
+                    swapDelete(target, fragment, settleInfo);
                     return;
                 default:
                     var extensions = getExtensions(elt);

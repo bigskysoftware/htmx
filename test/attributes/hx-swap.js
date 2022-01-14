@@ -270,5 +270,13 @@ describe("hx-swap attribute", function(){
         should.equal(byId("d1"), null);
         count.should.equal(0);
     });
+    it('swap delete works properly', function()
+    {
+        this.server.respondWith("GET", "/test", 'Oops, deleted!');
 
+        var div = make('<div id="d1" hx-swap="delete" hx-get="/test">Foo</div>')
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1"), null);
+    });
 })
