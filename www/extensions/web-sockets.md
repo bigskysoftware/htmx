@@ -21,7 +21,7 @@ of the event specified by [`hx-trigger`])
     <div id="chat_room">
       ...
     </div>
-    <form hx-ws="send">
+    <form ws-send>
         <input name="chat_message">
     </form>
   </div>

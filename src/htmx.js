@@ -53,6 +53,7 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
+                inlineScriptNonce:'',
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
@@ -769,6 +770,10 @@ return (function () {
         function swapAfterEnd(target, fragment, settleInfo) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
+        function swapDelete(target, fragment, settleInfo) {
+            cleanUpElement(target);
+            return parentElt(target).removeChild(target);
+        }
 
         function swapInnerHTML(target, fragment, settleInfo) {
             var firstChild = target.firstChild;
@@ -814,6 +819,9 @@ return (function () {
                 case "afterend":
                     swapAfterEnd(target, fragment, settleInfo);
                     return;
+                case "delete":
+                    swapDelete(target, fragment, settleInfo);
+                    return;
                 default:
                     var extensions = getExtensions(elt);
                     for (var i = 0; i < extensions.length; i++) {
@@ -836,7 +844,7 @@ return (function () {
                             logError(e);
                         }
                     }
-                    swapInnerHTML(target, fragment, settleInfo);
+                    swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
             }
         }
 
@@ -1350,6 +1358,9 @@ return (function () {
                 });
                 newScript.textContent = script.textContent;
                 newScript.async = false;
+                if (htmx.config.inlineScriptNonce) {
+                    newScript.nonce = htmx.config.inlineScriptNonce;
+                }
                 var parent = script.parentElement;
 
                 try {
