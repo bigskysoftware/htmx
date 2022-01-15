@@ -248,9 +248,13 @@ return (function () {
             return elemTop < window.innerHeight && elemBottom >= 0;
         }
 
-        function bodyContains(elt) {
-            return getDocument().body.contains(elt);
-        }
+	function bodyContains(elt) {
+	    if (elt.getRootNode() instanceof ShadowRoot) {
+		return getDocument().body.contains(elt.getRootNode().host);
+	    } else {
+		return getDocument().body.contains(elt);
+	    }
+	}
 
         function splitOnWhitespace(trigger) {
             return trigger.trim().split(/\s+/);
