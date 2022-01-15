@@ -133,9 +133,9 @@ describe("Core htmx Events", function() {
         }
     });
 
-    it("htmx:beforeOOBSwap is called before swap", function () {
+    it("htmx:oobBeforeSwap is called before swap", function () {
         var called = false;
-        var handler = htmx.on("htmx:beforeOOBSwap", function (evt) {
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
             called = true;
         });
         try {
@@ -149,13 +149,35 @@ describe("Core htmx Events", function() {
             byId("d1").innerHTML.should.equal("Baz");
             should.equal(called, true);
         } finally {
-            htmx.off("htmx:beforeOOBSwap", handler);
+            htmx.off("htmx:oobBeforeSwap", handler);
         }
     });
 
-    it("htmx:beforeOOBSwap is not called on an oob miss", function () {
+    it("htmx:oobBeforeSwap can abort a swap", function () {
         var called = false;
-        var handler = htmx.on("htmx:beforeOOBSwap", function (evt) {
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
+            called = true;
+            evt.preventDefault();
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='d1'>Baz</div>");
+            });
+            var oob = make('<div id="d1">Blip</div>');
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            byId("d1").innerHTML.should.equal("Blip");
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:oobBeforeSwap", handler);
+        }
+    });
+
+
+    it("htmx:oobBeforeSwap is not called on an oob miss", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
             called = true;
         });
         try {
@@ -167,13 +189,13 @@ describe("Core htmx Events", function() {
             this.server.respond();
             should.equal(called, false);
         } finally {
-            htmx.off("htmx:beforeOOBSwap", handler);
+            htmx.off("htmx:oobBeforeSwap", handler);
         }
     });
 
-    it("htmx:afterOOBSwap is called after swap", function () {
+    it("htmx:oobAfterSwap is called after swap", function () {
         var called = false;
-        var handler = htmx.on("htmx:afterOOBSwap", function (evt) {
+        var handler = htmx.on("htmx:oobAfterSwap", function (evt) {
             called = true;
         });
         try {
@@ -187,13 +209,13 @@ describe("Core htmx Events", function() {
             byId("d1").innerHTML.should.equal("Baz");
             should.equal(called, true);
         } finally {
-            htmx.off("htmx:afterOOBSwap", handler);
+            htmx.off("htmx:oobAfterSwap", handler);
         }
     });
 
-    it("htmx:afterOOBSwap is not called on an oob miss", function () {
+    it("htmx:oobAfterSwap is not called on an oob miss", function () {
         var called = false;
-        var handler = htmx.on("htmx:afterOOBSwap", function (evt) {
+        var handler = htmx.on("htmx:oobAfterSwap", function (evt) {
             called = true;
         });
         try {
@@ -205,7 +227,7 @@ describe("Core htmx Events", function() {
             this.server.respond();
             should.equal(called, false);
         } finally {
-            htmx.off("htmx:afterOOBSwap", handler);
+            htmx.off("htmx:oobAfterSwap", handler);
         }
     });
 
