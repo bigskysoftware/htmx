@@ -1958,17 +1958,18 @@ return (function () {
         /**
          *
          * @param {HTMLElement} elt
+         * @param {string} swapInfoOverride
          * @returns {import("./htmx").HtmxSwapSpecification}
          */
-        function getSwapSpecification(elt) {
-            var swapInfo = getClosestAttributeValue(elt, "hx-swap");
+        function getSwapSpecification(elt, swapInfoOverride) {
+            var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
-            }
+            };
             if (getInternalData(elt).boosted && !isAnchorLink(elt)) {
-              swapSpec["show"] = "top"
+                swapSpec["show"] = "top";
             }
             if (swapInfo) {
                 var split = splitOnWhitespace(swapInfo);
@@ -2192,6 +2193,7 @@ return (function () {
                             headers : context.headers,
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
+                            swapOverride: context.swap,
                             returnPromise: true
                         });
                 }
@@ -2316,7 +2318,7 @@ return (function () {
                     var queuedRequest = eltData.queuedRequests.shift();
                     queuedRequest();
                 }
-            }
+            };
             var promptQuestion = getClosestAttributeValue(elt, "hx-prompt");
             if (promptQuestion) {
                 var promptResponse = prompt(promptQuestion);
@@ -2333,7 +2335,7 @@ return (function () {
             if (confirmQuestion) {
                 if(!confirm(confirmQuestion)) {
                     maybeCall(resolve);
-                    endRequestLock()
+                    endRequestLock();
                     return promise;
                 }
             }
@@ -2391,7 +2393,7 @@ return (function () {
             errors = requestConfig.errors;
 
             if(errors && errors.length > 0){
-                triggerEvent(elt, 'htmx:validation:halted', requestConfig)
+                triggerEvent(elt, 'htmx:validation:halted', requestConfig);
                 maybeCall(resolve);
                 endRequestLock();
                 return promise;
@@ -2435,7 +2437,7 @@ return (function () {
                 }
             }
 
-            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
+            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, etc:etc, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
                 }
             };
@@ -2468,33 +2470,33 @@ return (function () {
                     triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
                     throw e;
                 }
-            }
+            };
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
-            }
+            };
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
-            }
+            };
             xhr.ontimeout = function() {
                 removeRequestIndicatorClasses(indicators);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:timeout', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
-            }
+            };
             if(!triggerEvent(elt, 'htmx:beforeRequest', responseInfo)){
                 maybeCall(resolve);
-                endRequestLock()
+                endRequestLock();
                 return promise
-            }
+            };
             var indicators = addRequestIndicatorClasses(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
@@ -2505,17 +2507,18 @@ return (function () {
                             loaded:event.loaded,
                             total:event.total
                         });
-                    })
+                    });
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
             return promise;
-        }
+        };
 
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
+            var etc = responseInfo.etc;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -2576,7 +2579,8 @@ return (function () {
                     saveHistory();
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapOverride = etc.swapOverride;
+                var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
