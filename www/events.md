@@ -220,6 +220,38 @@ This event is triggered when an element refers to a SSE event in its trigger, bu
 
 * `detail.elt` - the element with the bad SSE trigger
 
+### <a name="htmx:oobAfterSwap"></a> Event - [`htmx:oobAfterSwap`](#htmx:oobAfterSwap)
+
+This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to an [after swap event](/events#afterSwap)
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
+### <a name="htmx:oobBeforeSwap"></a> Event - [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap)
+
+This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to a [before swap event](/events#beforeSwap)
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.requestConfig` - the configuration of the AJAX request
+* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
+* `detail.target` - the target of the swap
+
+### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
+
+This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
+in the DOM to switch with.
+
+##### Details
+
+* `detail.content` - the element with the bad oob `id`
+
 ### <a name="htmx:onLoadError"></a> Event - [`htmx:onLoadError`](#htmx:onLoadError)
 
 This event is triggered when an error occurs during the `load` handling of an AJAX call
@@ -231,15 +263,6 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.target` - the target of the request
 * `detail.exception` - the exception that occurred
 * `detail.requestConfig` - the configuration of the AJAX request
-
-### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
-
-This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
-in the DOM to switch with.
-
-##### Details
-
-* `detail.content` - the element with the bad oob `id`
 
 ### <a name="htmx:prompt"></a> Event - [`htmx:prompt`](#htmx:prompt)
 
