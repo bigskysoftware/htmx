@@ -112,6 +112,8 @@ For added security, you can load the script using [Subresource Integrity (SRI)](
     <script src="https://unpkg.com/htmx.org@1.7.0" integrity="TODO: REGEN" crossorigin="anonymous"></script>
 ```
 
+If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
+
 ## <a name="ajax"></a> [AJAX](#ajax)
 
 The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
