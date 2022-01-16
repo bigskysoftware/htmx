@@ -85,7 +85,7 @@ Finally, here is what the row looks like when the data is being edited:
 Here we have a few things going on:  First off the row itself can respond to the `cancel` event, which will bring
 back the read-only version of the row.  This is used by the hyperscript above.  There is a cancel button that allows
 cancelling the current edit.  Finally, there is a save button that issues a `PUT` to update the contact.  Note that
-there is an [`ic-include`](attributes/ic-include) that includes all the inputs in the closest row.  Tables rows are
+there is an [`hx-include`](attributes/hx-include) that includes all the inputs in the closest row.  Tables rows are
 notoriously difficult to use with forms due to HTML constraints (you can't put a `form` directly inside a `tr`) so
 this makes things a bit nicer to deal with.
 
