@@ -117,7 +117,7 @@ This is, unfortunately, part of the culture of front end development right now: 
 "Simple" is disparaging and "sophisticated" is high praise.
 
 This complexity is overwhelming many developers and development teams today.  As Mr. Harris himself points out when discussing Instagram, even some of 
-the best front engineers in the world appear to be unable to keep it all under control.
+the best front-end engineers in the world appear to be unable to keep it all under control.
 
 So there is a cultural issue here.
 
