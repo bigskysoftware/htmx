@@ -2311,7 +2311,7 @@ return (function () {
             var filteredParameters = filterValues(allParameters, elt);
 
             if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
             // behavior of anchors w/ empty href is to use the current URL
