@@ -49,7 +49,7 @@ img {
     });
     
     onGet("/graph", function(request, params){
-      return "<img alt="Tokyo Climate" src='/img/tokyo.png'>";
+      return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
     });
     
     // templates
