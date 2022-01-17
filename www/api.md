@@ -213,10 +213,10 @@ or
 
 ```js
     // find all divs
-    var allDivs = htmx.find("div")
+    var allDivs = htmx.findAll("div")
 
     // find all paragraphs within a given div
-    var allParagraphsInMyDiv = htmx.find(htmx.find("#my-div"), "p")
+    var allParagraphsInMyDiv = htmx.findAll(htmx.find("#my-div"), "p")
 ```
 
 ### <a name="logAll"></a> Method -  [`htmx.logAll()`](#logAll)
