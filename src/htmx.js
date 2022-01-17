@@ -552,23 +552,42 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
+        function findAttributeTarget(elt, attrName) {
+            var val = findAttributeTargets(elt, attrName);
+            if (val) {
+                return val[0];
+            }
+        }
+
+        var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
+        function findAttributeTargets(elt, attrName) {
+            var match = getClosestMatch(elt, function(e){return getAttributeValue(e,attrName) !== null});
+            if (match) {
+                var targetStr = getAttributeValue(match, attrName);
+                if (targetStr === "this") {
+                    return [match];
+                } else {
+                    var result = querySelectorAllExt(elt, targetStr);
+                    if (result.length === 0) {
+                        logError('The selector "' + targetStr + '" on ' + attrName + " returned no matches!");
+                        return [DUMMY_ELT]
+                    } else {
+                        return result;
+                    }
+                }
+            }
+        }
 
         function getTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
+            var explicitTarget = findAttributeTarget(elt, 'hx-target');
             if (explicitTarget) {
-                var targetStr = getAttributeValue(explicitTarget, "hx-target");
-                if (targetStr === "this") {
-                    return explicitTarget;
-                } else {
-                    return querySelectorExt(elt, targetStr)
-                }
+                return explicitTarget;
+            }
+            var data = getInternalData(elt);
+            if (data.boosted) {
+                return getDocument().body;
             } else {
-                var data = getInternalData(elt);
-                if (data.boosted) {
-                    return getDocument().body;
-                } else {
-                    return elt;
-                }
+                return elt;
             }
         }
 
@@ -1672,10 +1691,8 @@ return (function () {
         }
 
         function addRequestIndicatorClasses(elt) {
-            var indicator = getClosestAttributeValue(elt, 'hx-indicator');
-            if (indicator) {
-                var indicators = querySelectorAllExt(elt, indicator);
-            } else {
+            var indicators = findAttributeTargets(elt, 'hx-indicator');
+            if (indicators == null) {
                 indicators = [elt];
             }
             forEach(indicators, function (ic) {
@@ -1809,19 +1826,16 @@ return (function () {
             }
 
             // include any explicit includes
-            var includes = getClosestAttributeValue(elt, "hx-include");
-            if (includes) {
-                var nodes = querySelectorAllExt(elt, includes);
-                forEach(nodes, function(node) {
-                    processInputValue(processed, values, errors, node, validate);
-                    // if a non-form is included, include any input values within it
-                    if (!matches(node, 'form')) {
-                        forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
-                            processInputValue(processed, values, errors, descendant, validate);
-                        })
-                    }
-                });
-            }
+            var includes = findAttributeTargets(elt, "hx-include");
+            forEach(includes, function(node) {
+                processInputValue(processed, values, errors, node, validate);
+                // if a non-form is included, include any input values within it
+                if (!matches(node, 'form')) {
+                    forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
+                        processInputValue(processed, values, errors, descendant, validate);
+                    })
+                }
+            });
 
             // form values take precedence, overriding the regular values
             values = mergeObjects(values, formValues);
