@@ -6,7 +6,7 @@ layout: demo_layout.njk
 
 This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is 
 accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
-values in `POST`'s to two different endpoints: `activate` and `deactivate`:
+values in `PUT`'s to two different endpoints: `activate` and `deactivate`:
 
 ```html
 <div hx-include="#checked-contacts" hx-target="#tbody">
