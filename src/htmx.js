@@ -1847,7 +1847,11 @@ return (function () {
             if (returnStr !== "") {
                 returnStr += "&";
             }
-            returnStr += encodeURIComponent(name) + "=" + encodeURIComponent(realValue);
+            if (String(realValue) === "[object Object]") {
+                realValue = JSON.stringify(realValue);
+            }
+            var s = encodeURIComponent(realValue);
+            returnStr += encodeURIComponent(name) + "=" + s;
             return returnStr;
         }
 
