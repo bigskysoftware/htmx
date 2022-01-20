@@ -118,5 +118,15 @@ describe("hx-swap-oob attribute", function () {
         byId("d2").innerHTML.should.equal(oobSwapContent);
         byId("d3").innerHTML.should.equal(oobSwapContent);
     })
+
+    it('oob swap delete works properly', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="delete" id="d1"></div>');
+
+        var div = make('<div id="d1" hx-get="/test">Foo</div>')
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1"), null);
+    });
 });
 

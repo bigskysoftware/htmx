@@ -74,4 +74,19 @@ describe("hx-indicator attribute", function(){
         this.server.respond();
         indicator.classList.contains("htmx-request").should.equal(false);
     });
+
+    it('allows this syntax in hx-indicator', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make('<div id="d1" hx-indicator="this"><button id="b1" hx-get="/test">Click Me!</button></div>')
+        var btn = byId("b1");
+        btn.click();
+        btn.classList.contains("htmx-request").should.equal(false);
+        div.classList.contains("htmx-request").should.equal(true);
+        this.server.respond();
+        btn.classList.contains("htmx-request").should.equal(false);
+        div.classList.contains("htmx-request").should.equal(false);
+    });
+
+
 })

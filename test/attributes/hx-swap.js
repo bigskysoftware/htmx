@@ -270,5 +270,32 @@ describe("hx-swap attribute", function(){
         should.equal(byId("d1"), null);
         count.should.equal(0);
     });
+    it('swap delete works properly', function()
+    {
+        this.server.respondWith("GET", "/test", 'Oops, deleted!');
+
+        var div = make('<div id="d1" hx-swap="delete" hx-get="/test">Foo</div>')
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1"), null);
+    });
+
+    it('in presence of bad swap spec, it uses the default swap strategy', function()
+    {
+        var initialSwapStyle = htmx.config.defaultSwapStyle;
+        htmx.config.defaultSwapStyle = "outerHTML";
+        try {
+            this.server.respondWith("GET", "/test", "Clicked!");
+
+            var div = make('<div><button id="b1" hx-swap="foo" hx-get="/test">Initial</button></div>')
+            var b1 = byId("b1");
+            b1.click();
+            this.server.respond();
+            div.innerHTML.should.equal('Clicked!');
+        } finally {
+            htmx.config.defaultSwapStyle = initialSwapStyle;
+        }
+    });
+
 
 })
