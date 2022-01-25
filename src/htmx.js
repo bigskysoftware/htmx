@@ -1063,7 +1063,7 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                     if (from_arg === "closest" || from_arg === "find") {
                                         tokens.shift();
                                         from_arg +=
@@ -2230,42 +2230,87 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
-            if (target == null) {
+            if (target == null || target == DUMMY_ELT) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
+
+            var syncElt = elt;
             var eltData = getInternalData(elt);
-            if (eltData.requestInFlight) {
-                var queueStrategy = 'last';
-                if (event) {
-                    var eventData = getInternalData(event);
-                    if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
-                        queueStrategy = eventData.triggerSpec.queue;
+            var syncStrategy = getClosestAttributeValue(elt, "hx-sync");
+            var queueStrategy = null;
+            var abortable = false;
+            if (syncStrategy) {
+                var syncStrings = syncStrategy.split(":");
+                var selector = syncStrings[0].trim();
+                if (selector === "this") {
+                    syncElt = getClosestMatch(elt, function (elt) {
+                        return getAttributeValue(elt, "hx-sync") != null;
+                    });
+                } else {
+                    syncElt = querySelectorExt(elt, selector);
+                }
+                // default to the drop strategy
+                syncStrategy = (syncStrings[1] || 'drop').trim();
+                eltData = getInternalData(syncElt);
+                if (syncStrategy === "drop" && eltData.xhr && eltData.abortable !== true) {
+                    return;
+                } else if (syncStrategy === "abort") {
+                    if (eltData.xhr) {
+                        return;
+                    } else {
+                        abortable = true;
                     }
+                } else if (syncStrategy === "replace") {
+                    triggerEvent(syncElt, 'htmx:abort'); // abort the current request and continue
+                } else if (syncStrategy.indexOf("queue") === 0) {
+                    var queueStrArray = syncStrategy.split(" ");
+                    queueStrategy = (queueStrArray[1] || "last").trim();
                 }
-                if (eltData.queuedRequests == null) {
-                    eltData.queuedRequests = [];
-                }
-                if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                } else if (queueStrategy === "all") {
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                } else if (queueStrategy === "last") {
-                    eltData.queuedRequests = []; // dump existing queue
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                }
-                return;
-            } else {
-                eltData.requestInFlight = true;
             }
+
+            if (eltData.xhr) {
+                if (eltData.abortable) {
+                    triggerEvent(syncElt, 'htmx:abort'); // abort the current request and continue
+                } else {
+                    if(queueStrategy == null){
+                        if (event) {
+                            var eventData = getInternalData(event);
+                            if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                                queueStrategy = eventData.triggerSpec.queue;
+                            }
+                        }
+                        if (queueStrategy == null) {
+                            queueStrategy = "last";
+                        }
+                    }
+                    if (eltData.queuedRequests == null) {
+                        eltData.queuedRequests = [];
+                    }
+                    if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    } else if (queueStrategy === "all") {
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    } else if (queueStrategy === "last") {
+                        eltData.queuedRequests = []; // dump existing queue
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    }
+                    return;
+                }
+            }
+
+            var xhr = new XMLHttpRequest();
+            eltData.xhr = xhr;
+            eltData.abortable = abortable;
             var endRequestLock = function(){
-                eltData.requestInFlight = false
+                eltData.xhr = null;
+                eltData.abortable = false;
                 if (eltData.queuedRequests != null &&
                     eltData.queuedRequests.length > 0) {
                     var queuedRequest = eltData.queuedRequests.shift();
@@ -2293,7 +2338,6 @@ return (function () {
                 }
             }
 
-            var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse);
             if (etc.headers) {
@@ -2764,6 +2808,13 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
+            body.addEventListener("htmx:abort", function (evt) {
+                var target = evt.target;
+                var internalData = getInternalData(target);
+                if (internalData && internalData.xhr) {
+                    internalData.xhr.abort();
+                }
+            });
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
