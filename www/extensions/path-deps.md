@@ -6,7 +6,7 @@ title: </> htmx - high power tools for html
 ## The `path-deps` Extension
 
 This extension supports expressing inter-element dependencies based on paths, inspired by the
-[intercooler.js dependencies mechanism.](http://intercoolerjs.org/docs.html#dependencies).  When this
+[intercooler.js dependencies mechanism](http://intercoolerjs.org/docs.html#dependencies).  When this
 extension is installed an element can express a dependency on another path by using the `path-deps` property
 and then setting `hx-trigger` to `path-deps`:
 

@@ -66,7 +66,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 * [Software Breakthroughs for the 21s Century](https://www.youtube.com/watch?v=O4ZFIx1ckSg)
 * [Django Chat](https://djangochat.com/episodes/htmx-carson-gross)
 * [Talk Python](https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
-* [.NET Rocks!](https://podtail.com/en/podcast/-net-rocks/htmx-with-carson-gross/)
+* [.NET Rocks!](https://www.dotnetrocks.com/?show=1749)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
 
