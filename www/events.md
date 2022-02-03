@@ -40,7 +40,7 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
-* `detail.succesful` - true if the response has a 20x status code or is marked `detail.isError = false` in the 
+* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the 
    `htmx:beforeSwap` event, else false
 * `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the 
    `htmx:beforeSwap` event, else false
@@ -175,7 +175,7 @@ for the content to restore, but the response is an error (e.g. `404`)
 
 ### <a name="htmx:historyCacheMissLoad"></a> Event - [`htmx:historyCacheMissLoad`](#htmx:historyCacheMissLoad)
 
-This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
+This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server
 for the content to restore
 
 ##### Details
