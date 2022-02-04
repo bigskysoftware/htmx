@@ -534,8 +534,7 @@ be confirmed.  We could add an `unset` directive on it like so:
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
-Automatic inheritance can be further configured or disabled using [`hx-disinherit`](/attributes/hx-disinherit).
-
+Automatic inheritance can be further modified using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
