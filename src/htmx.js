@@ -1119,7 +1119,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec}))) {
+                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec, target:elt}))) {
                         issueAjaxRequest(verb, path, elt);
                     }
                     processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), spec);
