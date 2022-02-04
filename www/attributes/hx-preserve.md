@@ -5,8 +5,10 @@ title: </> htmx - hx-preserve
 
 ## `hx-preserve`
 
-The `hx-preserve` attribute allows you to keep a section of content unchanged between HTML replacement.  When hx-preserve is set to `true`, an element is preserved (by id) even if the surrounding HTML is updated by htmx.  An element *must* have an `id` to be preserved 
-properly.
+The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.
+Elements with `hx-preserve` set are preserved by `id` when htmx updates any ancestor element.
+You *must* set an unchanging `id` on elements for `hx-preserve` to work.
+The response requires an element with the same `id`, but its type and other attributes are ignored.
 
 Here is an example of a youtube embed, which would be unaffected an htmx request:
 
