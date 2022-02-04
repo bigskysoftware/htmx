@@ -114,6 +114,35 @@ For added security, you can load the script using [Subresource Integrity (SRI)](
 
 If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
 
+### webpack
+
+If you are using webpack, you have to do the following steps:
+
+1. Install `htmx` via your favourite package manager (like npm or yarn)
+2. Add the import to your `index.js`
+   
+``` js   
+    import 'htmx.org';
+```
+
+If you want to use the global `htmx` variable (recommended), you have to inject it to the window scope.
+
+3. Create a custom JS file
+4. Import this file to your `index.js` (below the import from step 2) 
+
+``` js   
+    import 'path/to/my_custom.js';
+```
+
+5. Add the following line
+
+``` js   
+    window.htmx = require('htmx.org');
+```
+
+6. Rebuild your bundle
+
+
 ## <a name="ajax"></a> [AJAX](#ajax)
 
 The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
