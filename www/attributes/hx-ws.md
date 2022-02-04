@@ -3,7 +3,11 @@ layout: layout.njk
 title: </> htmx - hx-ws
 ---
 
-## *EXPERIMENTAL* `hx-ws` 
+## `hx-ws` *HAS BEEN MIGRATED TO AN EXTENSION*
+
+**If you are using htmx version 1.6.1 or greater, please visit the [WebSockets extension page](../extensions/web-sockets) to learn about the new implementation of Web Sockets as an extension.
+
+## This Reference Applies To Version 1.6 And Below
 
 The `hx-ws` allows you to work with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 directly from HTML.  The value of the attribute can be one or more of the following, separated by commas:

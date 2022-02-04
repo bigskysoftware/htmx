@@ -40,13 +40,13 @@ title: </> htmx - Attributes
 | [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
 | [`hx-request`](/attributes/hx-request) | configures various aspects of the request
 | [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
-| [`hx-sse`](/attributes/hx-sse) | establishes and listens to [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) sources for events
+| [`hx-sse`](/extensions/server-sent-events) | has meen moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
 | [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
 | [`hx-vals`](/attributes/hx-vals) | adds to the parameters that will be submitted with the request
-| [`hx-ws`](/attributes/hx-ws) | establishes a `WebSocket` or sends information to one
+| [`hx-ws`](/extensions/websockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
 </div>
 
@@ -89,9 +89,10 @@ title: </> htmx - Attributes
 
 | Header | Description |
 |-------|-------------|
-| `HX-Push` | pushes a new url into the history stack
+| [`HX-Push`](/headers/hx-push) | pushes a new url into the history stack
 | `HX-Redirect` | can be used to do a client-side redirect to a new location
 | `HX-Refresh` | if set to "true" the client side will do a a full refresh of the page
+| `HX-Retarget` | A CSS selector that updates the target of the content update to a different element on the page
 | [`HX-Trigger`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Settle`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Swap`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
@@ -118,7 +119,7 @@ title: </> htmx - Attributes
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
 | [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
-| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
+| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a successful remote retrieval 
 | [`htmx:historyRestore`](/events#htmx:historyRestore)  | triggered when htmx handles a history restoration action
 | [`htmx:beforeHistorySave`](/events#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
 | [`htmx:load`](/events#htmx:load)  | triggered when new content is added to the DOM

@@ -78,7 +78,7 @@ That's it!
     // templates
     function listContents() {
       return '<div class="htmx-indicator">Updating...</div>' + listItems.map(function(val) {
-        return "  <div><input type='hidden' name='item' value='" + val + "'/> Item " + val +"</div>";
+        return "  <div style='border:1px solid #DEDEDE; padding:12px; margin: 8px; width:200px' ><input type='hidden' name='item' value='" + val + "'/> Item " + val +"</div>";
       }).join("\n");
     }
 

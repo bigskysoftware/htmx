@@ -15,7 +15,7 @@
                 if (elt.getAttribute) {
                     maybeRemoveMe(elt);
                     if (elt.querySelectorAll) {
-                        var children = elt.querySelectorAll("[remove-me], [data-remove-me");
+                        var children = elt.querySelectorAll("[remove-me], [data-remove-me]");
                         for (var i = 0; i < children.length; i++) {
                             maybeRemoveMe(children[i]);
                         }

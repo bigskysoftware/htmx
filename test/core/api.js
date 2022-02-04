@@ -279,6 +279,15 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal("foo!");
     });
 
+    it('ajax api works with swapSpec', function()
+    {
+        this.server.respondWith("GET", "/test", "<p class='test'>foo!</p>");
+        var div = make("<div><div id='target'></div></div>");
+        htmx.ajax("GET", "/test", {target: "#target", swap:"outerHTML"});
+        this.server.respond();
+        div.innerHTML.should.equal('<p class="test">foo!</p>');
+    });
+
     it('ajax returns a promise', function(done)
     {
         // in IE we do not return a promise

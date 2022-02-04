@@ -1,0 +1,63 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/stylesheet.css">
+	<title>&lt;/&gt; htmx SSE Test Server</title>
+	<script src="/htmx/htmx.js"></script>
+	<script src="/htmx/ext/sse.js"></script>
+
+	<script src="https://unpkg.com/hyperscript.org@0.8.3"></script>
+	<script type="text/hyperscript">
+		on click(target) from <#navigation a/>
+			take .selected for target
+	</script>
+</head>
+
+<body>
+	<div id="header"></div>
+	<div id="navigation" hx-target="#page" hx-push-url="false">
+		<a href="index.html" class="selected" hx-boost="false">About</a>
+		<a href="" hx-get="sse-simple.html">Simple</a>
+		<a href="" hx-get="sse-multiple.html">Multiple</a>
+		<a href="" hx-get="sse-multichannel.html">Multi-Channel</a>
+		<a href="" hx-get="sse-triggers.html">Event Trigger</a>
+		<a href="" hx-get="sse-target.html">Event Target</a>
+		<a href="" hx-get="sse-settle.html">Settling</a>
+	</div>
+	<div id="page">
+		<h1>Server Sent Events (SSE) Extension Tests</h1>
+
+		<p>As of version 1.7, SSE support has been moved out of the core htmx library and into an extension.  This server runs a test suite for the htmx SSE extension.</p>
+		<p>This extension listens for real-time events that are pushed from the server and can swap them into your htmx webpage.</p>
+
+		<h3>Required Attributes</h3>
+		<table>
+		<tr>
+			<td class="bold nowrap">hx-ext</td>
+			<td>Make sure the SSE extension is initialized on every page or page fragment where you use SSE streams.</td>
+		</tr>
+		<tr>
+			<td class="bold nowrap">sse-connect</td>
+			<td>Connects to a SSE event stream</td>
+		</tr>
+		<tr>
+			<td class="bold nowrap">sse-swap</td>
+			<td>Specifies the messages that a particular DOM element will listen to.</td>
+		</tr>
+		</table>
+
+		<h3>Example Code</h3>
+
+<pre class="code">
+&lt;body hx-ext="sse"&gt;
+    &lt;div sse-connect="https://my.sse.server.com" sse-swap="message"&gt;&lt;/div&gt;
+&lt;/body&gt;
+</pre>
+		<h3>SSE Resources</h3>
+		<ul>
+			<li><a href="https://en.wikipedia.org/wiki/Server-sent_events">Wikipedia</a></li>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">MDN Web Docs</a></li>
+			<li><a href="https://caniuse.com/eventsource">Can I Use?</a></li>
+		</ul>
+	</div>
+</body>
+</html>
