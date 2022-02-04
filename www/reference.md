@@ -119,7 +119,7 @@ title: </> htmx - Attributes
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
 | [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
-| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
+| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a successful remote retrieval 
 | [`htmx:historyRestore`](/events#htmx:historyRestore)  | triggered when htmx handles a history restoration action
 | [`htmx:beforeHistorySave`](/events#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
 | [`htmx:load`](/events#htmx:load)  | triggered when new content is added to the DOM
