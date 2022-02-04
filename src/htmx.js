@@ -2546,7 +2546,13 @@ return (function () {
                 responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
-            var shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            /** @type {boolean} */
+            var shouldSaveHistory
+            if (pushedUrl == "false") {
+                shouldSaveHistory = false
+            } else {
+                shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            }
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
