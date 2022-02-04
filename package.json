@@ -25,7 +25,7 @@
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
-    "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
+    "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "www": "node scripts/www.js",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
