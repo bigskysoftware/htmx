@@ -22,7 +22,7 @@ describe("hx-disinherit attribute", function() {
     })
 
 
-    it('inheritance exclude single attribute', function () {
+    it('disinherit exclude single attribute', function () {
         var response_inner = '<div id="snowflake" class="">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
         this.server.respondWith("GET", "/test", response);
@@ -34,24 +34,31 @@ describe("hx-disinherit attribute", function() {
         btn.innerHTML.should.equal(response + '<span id="cta" class="">Click Me!</span>');
     });
 
-    it('inheritance exclude multiple attributes', function () {
+    it('disinherit exclude multiple attributes', function () {
         var response_inner = '<div id="snowflake">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
         this.server.respondWith("GET", "/test", response);
 
-        var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="hx-select hx-swap"><button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button></div>')
+        var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="hx-select hx-swap">' +
+            '  <button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button>' +
+            '</div>')
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
+        console.log(btn.innerHTML);
+        console.log(response);
         btn.innerHTML.should.equal('<span id="cta" class="">' + response + '</span>');
     });
 
-    it('inheritance exclude all attributes', function () {
+    it('disinherit exclude all attributes', function () {
         var response_inner = '<div id="snowflake">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
         this.server.respondWith("GET", "/test", response);
-
-        var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="false"><button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button></div>')
+        var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="*">' +
+            '  <button id="bx1" hx-get="/test">' +
+            '    <span id="cta">Click Me!</span>' +
+            '  </button>' +
+            '</div>')
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
@@ -63,7 +70,7 @@ describe("hx-disinherit attribute", function() {
         var response = '<div id="unique">' + response_inner + '</div>'
         this.server.respondWith("GET", "/test", response);
 
-        var btn = make('<button hx-select="#snowflake" hx-target="#container" hx-trigger="click" hx-get="/test" hx-swap="outerHTML" hx-disinherit="false"><div id="container"></div></button>')
+        var btn = make('<button hx-select="#snowflake" hx-target="#container" hx-trigger="click" hx-get="/test" hx-swap="outerHTML" hx-disinherit="*"><div id="container"></div></button>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal(response_inner);
@@ -75,7 +82,7 @@ describe("hx-disinherit attribute", function() {
         this.server.respondWith("GET", "/test", response);
         this.server.respondWith("GET", "/test2", 'unique-snowflake');
 
-        var div = make('<div hx-select="#snowflake" hx-target="#container" hx-get="/test" hx-swap="outerHTML" hx-trigger="keyup" hx-disinherit="false"><div id="container"><button id="bx1" hx-get="/test2" hx-trigger="click" hx-target="#target"><div id="target"></div></button></div></div>')
+        var div = make('<div hx-select="#snowflake" hx-target="#container" hx-get="/test" hx-swap="outerHTML" hx-trigger="keyup" hx-disinherit="*"><div id="container"><button id="bx1" hx-get="/test2" hx-trigger="click" hx-target="#target"><div id="target"></div></button></div></div>')
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
@@ -120,7 +127,7 @@ describe("hx-disinherit attribute", function() {
             var handler = htmx.on("htmx:beforeRequest", function (evt) {
                 request = evt;
             });
-            var div = make('<div hx-boost="true" hx-target="#test" hx-disinherit="false"><div id="test"></div><a id="a1" href="/test" hx-get="/test2">Click me</a></div>');
+            var div = make('<div hx-boost="true" hx-target="#test" hx-disinherit="*"><div id="test"></div><a id="a1" href="/test" hx-get="/test2">Click me</a></div>');
             var link = byId("a1");
             link.click();
             should.equal(request.detail.requestConfig.path, '/test2');

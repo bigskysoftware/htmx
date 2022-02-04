@@ -139,16 +139,6 @@ return (function () {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
 
-        function getAttributeInheritance(elt, closestMatch, attributeName) {
-            var data = getInternalData(elt);
-            if (elt === closestMatch || attributeName === "hx-boost") return
-            if (getAttributeValue(closestMatch, "hx-boost") === "true" && data.boosted) return
-            var inheritAttr = getAttributeValue(closestMatch, "hx-disinherit");
-            if (inheritAttr && (inheritAttr === "false" || inheritAttr.includes(attributeName))) {
-                return "unset";
-            }
-        }
-
         /**
          * @param {HTMLElement} elt
          * @returns {HTMLElement | null}
@@ -179,6 +169,16 @@ return (function () {
             }
         }
 
+        function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName){
+            var attributeValue = getAttributeValue(ancestor, attributeName);
+            var disinherit = getAttributeValue(ancestor, "hx-disinherit");
+            if (initialElement !== ancestor && disinherit && (disinherit === "*" || disinherit.split(" ").indexOf(attributeName) >= 0)) {
+                return "unset";
+            } else {
+                return attributeValue
+            }
+        }
+
         /**
          * @param {HTMLElement} elt
          * @param {string} attributeName
@@ -187,8 +187,7 @@ return (function () {
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
-                closestAttr = getAttributeValue(e, attributeName);
-                return closestAttr = getAttributeInheritance(elt, e, attributeName) || closestAttr;
+                return closestAttr = getAttributeValueWithDisinheritance(elt, e, attributeName);
             });
             if (closestAttr !== "unset") {
                 return closestAttr;
@@ -563,13 +562,6 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
-        function findAttributeTarget(elt, attrName) {
-            var val = findAttributeTargets(elt, attrName);
-            if (val) {
-                return val[0];
-            }
-        }
-
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var match = getClosestMatch(elt, function(e){return getAttributeValue(e,attrName) !== null});
@@ -589,12 +581,17 @@ return (function () {
             }
         }
 
+        function findThisElement(elt, attribute){
+            return getClosestMatch(elt, function (elt) {
+                return getAttributeValue(elt, attribute) != null;
+            })
+        }
+
         function getTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
-            if (explicitTarget) {
-                var targetStr = getAttributeValue(explicitTarget, "hx-target");
+            var targetStr = getClosestAttributeValue(elt, "hx-target");
+            if (targetStr) {
                 if (targetStr === "this") {
-                    return explicitTarget;
+                    return findThisElement(elt,'hx-target');
                 } else {
                     return querySelectorExt(elt, targetStr)
                 }
@@ -2273,9 +2270,7 @@ return (function () {
                 var syncStrings = syncStrategy.split(":");
                 var selector = syncStrings[0].trim();
                 if (selector === "this") {
-                    syncElt = getClosestMatch(elt, function (elt) {
-                        return getAttributeValue(elt, "hx-sync") != null;
-                    });
+                    syncElt = findThisElement(elt, 'hx-sync');
                 } else {
                     syncElt = querySelectorExt(elt, selector);
                 }
