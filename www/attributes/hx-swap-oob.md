@@ -37,3 +37,4 @@ If a selector is given, the elements matching that selector will be swapped.  If
 ### Notes
 
 * `hx-swap-oob` is not inherited
+* Out of band elements must be in the top level of the response, and not children of the top level elements.
