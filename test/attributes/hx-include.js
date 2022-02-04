@@ -210,4 +210,19 @@ describe("hx-include attribute", function() {
         btn.innerHTML.should.equal("Clicked!");
     })
 
+    it('The `this` modifier can be used in the hx-include selector', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            params['i2'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        make('<div id="i" hx-include="this"><input name="i1" value="test"/><input name="i2" value="test"/>'+
+            '<button id="btn" hx-post="/include"></button></div>');
+        var btn = byId('btn')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("Clicked!");
+    })
+
 });

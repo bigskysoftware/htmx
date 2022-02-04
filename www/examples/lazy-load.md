@@ -9,7 +9,7 @@ state that looks like this:
 
 ```html
 <div hx-get="/graph" hx-trigger="load">
-  <img class="htmx-indicator" width="150" src="/img/bars.svg"/>
+  <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>
 ```
 
@@ -49,13 +49,13 @@ img {
     });
     
     onGet("/graph", function(request, params){
-      return "<img  src='/img/tokyo.png'>";
+      return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
     });
     
     // templates
     function lazyTemplate(page) {
       return `<div hx-get="/graph" hx-trigger="load">
-  <img class="htmx-indicator" width="120" src="/img/bars.svg"/>
+  <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>`;
     }
 </script>

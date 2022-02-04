@@ -14,6 +14,8 @@ return (function () {
         'use strict';
 
         // Public API
+        //** @type {import("./htmx").HtmxApi} */
+        // TODO: list all methods in public API
         var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
@@ -51,24 +53,44 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
+                inlineScriptNonce:'',
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
-                wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
             },
             parseInterval:parseInterval,
             _:internalEval,
-            createEventSource: function(url){
-                return new EventSource(url, {withCredentials:true})
-            },
-            createWebSocket: function(url){
-                return new WebSocket(url, []);
-            },
-            version: "1.6.1"
+            version: "1.7.0"
         };
+
+        /** @type {import("./htmx").HtmxInternalApi} */
+        var internalAPI = {
+            bodyContains: bodyContains,
+            filterValues: filterValues,
+            hasAttribute: hasAttribute,
+            getAttributeValue: getAttributeValue,
+            getClosestMatch: getClosestMatch,
+            getExpressionVars: getExpressionVars,
+            getHeaders: getHeaders,
+            getInputValues: getInputValues,
+            getInternalData: getInternalData,
+            getSwapSpecification: getSwapSpecification,
+            getTriggerSpecs: getTriggerSpecs,
+            getTarget: getTarget,
+            makeFragment: makeFragment,
+            mergeObjects: mergeObjects,
+            makeSettleInfo: makeSettleInfo,
+            oobSwap: oobSwap,
+            selectAndSwap: selectAndSwap,
+            settleImmediately: settleImmediately,
+            shouldCancel: shouldCancel,
+            triggerEvent: triggerEvent,
+            triggerErrorEvent: triggerErrorEvent,
+            withExtensions: withExtensions,
+        }
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
@@ -92,6 +114,11 @@ return (function () {
             return parseFloat(str) || undefined
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {string} name
+         * @returns {(string | null)}
+         */
         function getRawAttribute(elt, name) {
             return elt.getAttribute && elt.getAttribute(name);
         }
@@ -102,6 +129,12 @@ return (function () {
                 elt.hasAttribute("data-" + qualifiedName));
         }
 
+        /**
+         *
+         * @param {HTMLElement} elt
+         * @param {string} qualifiedName
+         * @returns {(string | null)}
+         */
         function getAttributeValue(elt, qualifiedName) {
             return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, "data-" + qualifiedName);
         }
@@ -116,14 +149,26 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @returns {HTMLElement | null}
+         */
         function parentElt(elt) {
             return elt.parentElement;
         }
 
+        /**
+         * @returns {Document}
+         */
         function getDocument() {
             return document;
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {(e:HTMLElement) => boolean} condition
+         * @returns {HTMLElement | null}
+         */
         function getClosestMatch(elt, condition) {
             if (condition(elt)) {
                 return elt;
@@ -134,6 +179,11 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {string} attributeName
+         * @returns {string | null}
+         */
         function getClosestAttributeValue(elt, attributeName) {
             var closestAttr = null;
             getClosestMatch(elt, function (e) {
@@ -145,14 +195,22 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {string} selector
+         * @returns {boolean}
+         */
         function matches(elt, selector) {
+            // @ts-ignore: non-standard properties for browser compatability
             // noinspection JSUnresolvedVariable
-            var matchesFunction = elt.matches ||
-                elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector
-                || elt.webkitMatchesSelector || elt.oMatchesSelector;
+            var matchesFunction = elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector;
             return matchesFunction && matchesFunction.call(elt, selector);
         }
 
+        /**
+         * @param {string} str
+         * @returns {string}
+         */
         function getStartTag(str) {
             var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
             var match = tagMatcher.exec( str );
@@ -163,9 +221,17 @@ return (function () {
             }
         }
 
+        /**
+         *
+         * @param {string} resp
+         * @param {number} depth
+         * @returns {Element}
+         */
         function parseHTML(resp, depth) {
             var parser = new DOMParser();
             var responseDoc = parser.parseFromString(resp, "text/html");
+
+            /** @type {Element} */
             var responseNode = responseDoc.body;
             while (depth > 0) {
                 depth--;
@@ -179,9 +245,16 @@ return (function () {
             return responseNode;
         }
 
+        /**
+         *
+         * @param {string} resp
+         * @returns {Element}
+         */
         function makeFragment(resp) {
             if (htmx.config.useTemplateFragments) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
+                // @ts-ignore type mismatch between DocumentFragment and Element.
+                // TODO: Are these close enough for htmx to use interchangably?
                 return documentFragment.querySelector('template').content;
             } else {
                 var startTag = getStartTag(resp);
@@ -207,24 +280,45 @@ return (function () {
             }
         }
 
+        /**
+         * @param {Function} func
+         */
         function maybeCall(func){
             if(func) {
                 func();
             }
         }
 
+        /**
+         * @param {any} o
+         * @param {string} type
+         * @returns
+         */
         function isType(o, type) {
             return Object.prototype.toString.call(o) === "[object " + type + "]";
         }
 
+        /**
+         * @param {*} o
+         * @returns {o is Function}
+         */
         function isFunction(o) {
             return isType(o, "Function");
         }
 
+        /**
+         * @param {*} o
+         * @returns {o is Object}
+         */
         function isRawObject(o) {
             return isType(o, "Object");
         }
 
+        /**
+         * getInternalData retrieves "private" data stored by htmx within an element
+         * @param {HTMLElement} elt
+         * @returns {*}
+         */
         function getInternalData(elt) {
             var dataProp = 'htmx-internal-data';
             var data = elt[dataProp];
@@ -234,6 +328,11 @@ return (function () {
             return data;
         }
 
+        /**
+         * toArray converts an ArrayLike object into a real array.
+         * @param {ArrayLike} arr
+         * @returns {any[]}
+         */
         function toArray(arr) {
             var returnArr = [];
             if (arr) {
@@ -259,14 +358,25 @@ return (function () {
             return elemTop < window.innerHeight && elemBottom >= 0;
         }
 
-        function bodyContains(elt) {
-            return getDocument().body.contains(elt);
-        }
+	function bodyContains(elt) {
+	    if (elt.getRootNode() instanceof ShadowRoot) {
+		return getDocument().body.contains(elt.getRootNode().host);
+	    } else {
+		return getDocument().body.contains(elt);
+	    }
+	}
 
         function splitOnWhitespace(trigger) {
             return trigger.trim().split(/\s+/);
         }
 
+        /**
+         * mergeObjects takes all of the keys from
+         * obj2 and duplicates them into obj1
+         * @param {Object} obj1
+         * @param {Object} obj2
+         * @returns {Object}
+         */
         function mergeObjects(obj1, obj2) {
             for (var key in obj2) {
                 if (obj2.hasOwnProperty(key)) {
@@ -453,10 +563,35 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
+        function findAttributeTarget(elt, attrName) {
+            var val = findAttributeTargets(elt, attrName);
+            if (val) {
+                return val[0];
+            }
+        }
+
+        var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
+        function findAttributeTargets(elt, attrName) {
+            var match = getClosestMatch(elt, function(e){return getAttributeValue(e,attrName) !== null});
+            if (match) {
+                var targetStr = getAttributeValue(match, attrName);
+                if (targetStr === "this") {
+                    return [match];
+                } else {
+                    var result = querySelectorAllExt(elt, targetStr);
+                    if (result.length === 0) {
+                        logError('The selector "' + targetStr + '" on ' + attrName + " returned no matches!");
+                        return [DUMMY_ELT]
+                    } else {
+                        return result;
+                    }
+                }
+            }
+        }
 
         function getTarget(elt) {
             var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-target") !== null});
-            if (explicitTarget && getAttributeInheritance(elt, explicitTarget, "hx-target") !== "unset") {
+            if (explicitTarget) {
                 var targetStr = getAttributeValue(explicitTarget, "hx-target");
                 if (targetStr === "this") {
                     return explicitTarget;
@@ -511,6 +646,13 @@ return (function () {
             return swapStyle === "outerHTML";
         }
 
+        /**
+         *
+         * @param {string} oobValue
+         * @param {HTMLElement} oobElement
+         * @param {*} settleInfo
+         * @returns
+         */
         function oobSwap(oobValue, oobElement, settleInfo) {
             var selector = "#" + oobElement.id;
             var swapStyle = "outerHTML";
@@ -523,18 +665,35 @@ return (function () {
                 swapStyle = oobValue;
             }
 
-            var target = getDocument().querySelector(selector);
-            if (target) {
-                var fragment;
-                fragment = getDocument().createDocumentFragment();
-                fragment.appendChild(oobElement); // pulls the child out of the existing fragment
-                if (!isInlineSwap(swapStyle, target)) {
-                    fragment = oobElement; // if this is not an inline swap, we use the content of the node, not the node itself
-                }
-                swap(swapStyle, target, target, fragment, settleInfo);
+            var targets = getDocument().querySelectorAll(selector);
+            if (targets) {
+                forEach(
+                    targets,
+                    function (target) {
+                        var fragment;
+                        var oobElementClone = oobElement.cloneNode(true);
+                        fragment = getDocument().createDocumentFragment();
+                        fragment.appendChild(oobElementClone);
+                        if (!isInlineSwap(swapStyle, target)) {
+                            fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
+                        }
+
+                        var beforeSwapDetails = {shouldSwap: true, target: target, fragment:fragment };
+                        if (!triggerEvent(target, 'htmx:oobBeforeSwap', beforeSwapDetails)) return;
+
+                        target = beforeSwapDetails.target; // allow re-targeting
+                        if (beforeSwapDetails['shouldSwap']){
+                            swap(swapStyle, target, target, fragment, settleInfo);
+                        }
+                        forEach(settleInfo.elts, function (elt) {
+                            triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails);
+                        });
+                    }
+                );
+                oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
-                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement})
+                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement});
             }
             return oobValue;
         }
@@ -605,12 +764,9 @@ return (function () {
 
         function cleanUpElement(element) {
             var internalData = getInternalData(element);
-            if (internalData.webSocket) {
-                internalData.webSocket.close();
-            }
-            if (internalData.sseEventSource) {
-                internalData.sseEventSource.close();
-            }
+
+            triggerEvent(element, "htmx:beforeCleanupElement")
+
             if (internalData.listenerInfos) {
                 forEach(internalData.listenerInfos, function(info) {
                     if (element !== info.on) {
@@ -627,12 +783,14 @@ return (function () {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment, settleInfo);
             } else {
+                // @type {HTMLElement}
+                var newElt
                 var eltBeforeNewContent = target.previousSibling;
                 insertNodesBefore(parentElt(target), target, fragment, settleInfo);
                 if (eltBeforeNewContent == null) {
-                    var newElt = parentElt(target).firstChild;
+                    newElt = parentElt(target).firstChild;
                 } else {
-                    var newElt = eltBeforeNewContent.nextSibling;
+                    newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = [] // clear existing elements
@@ -661,6 +819,10 @@ return (function () {
 
         function swapAfterEnd(target, fragment, settleInfo) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
+        }
+        function swapDelete(target, fragment, settleInfo) {
+            cleanUpElement(target);
+            return parentElt(target).removeChild(target);
         }
 
         function swapInnerHTML(target, fragment, settleInfo) {
@@ -707,6 +869,9 @@ return (function () {
                 case "afterend":
                     swapAfterEnd(target, fragment, settleInfo);
                     return;
+                case "delete":
+                    swapDelete(target, fragment, settleInfo);
+                    return;
                 default:
                     var extensions = getExtensions(elt);
                     for (var i = 0; i < extensions.length; i++) {
@@ -729,7 +894,11 @@ return (function () {
                             logError(e);
                         }
                     }
-                    swapInnerHTML(target, fragment, settleInfo);
+                    if (swapStyle === "innerHTML") {
+                        swapInnerHTML(target, fragment, settleInfo);
+                    } else {
+                        swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
+                    }
             }
         }
 
@@ -876,6 +1045,11 @@ return (function () {
         }
 
         var INPUT_SELECTOR = 'input, textarea, select';
+
+        /**
+         * @param {HTMLElement} elt
+         * @returns {import("./htmx").HtmxTriggerSpecification[]}
+         */
         function getTriggerSpecs(elt) {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
@@ -896,8 +1070,6 @@ return (function () {
                                 every.eventFilter = eventFilter;
                             }
                             triggerSpecs.push(every);
-                        } else if (trigger.indexOf("sse:") === 0) {
-                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
@@ -918,7 +1090,7 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                     if (from_arg === "closest" || from_arg === "find") {
                                         tokens.shift();
                                         from_arg +=
@@ -974,7 +1146,7 @@ return (function () {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec}))) {
+                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec, target:elt}))) {
                         issueAjaxRequest(verb, path, elt);
                     }
                     processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), spec);
@@ -1010,6 +1182,12 @@ return (function () {
             }
         }
 
+        /**
+         *
+         * @param {Event} evt
+         * @param {HTMLElement} elt
+         * @returns
+         */
         function shouldCancel(evt, elt) {
             if (evt.type === "submit" || evt.type === "click") {
                 if (elt.tagName === "FORM") {
@@ -1165,215 +1343,6 @@ return (function () {
             }
         }
 
-        function processWebSocketInfo(elt, nodeData, info) {
-            var values = splitOnWhitespace(info);
-            for (var i = 0; i < values.length; i++) {
-                var value = values[i].split(/:(.+)/);
-                if (value[0] === "connect") {
-                    ensureWebSocket(elt, value[1], 0);
-                }
-                if (value[0] === "send") {
-                    processWebSocketSend(elt);
-                }
-            }
-        }
-
-        function ensureWebSocket(elt, wssSource, retryCount) {
-            if (!bodyContains(elt)) {
-                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
-            }
-
-            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
-                var base_part = location.hostname + (location.port ? ':'+location.port: '');
-                if (location.protocol == 'https:') {
-                    wssSource = "wss://" + base_part + wssSource;
-                } else if (location.protocol == 'http:') {
-                    wssSource = "ws://" + base_part + wssSource;
-                }
-            }
-            var socket = htmx.createWebSocket(wssSource);
-            socket.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
-                maybeCloseWebSocketSource(elt);
-            };
-
-            socket.onclose = function (e) {
-                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
-                    var delay = getWebSocketReconnectDelay(retryCount);
-                    setTimeout(function() {
-                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
-                    }, delay);
-                }
-            };
-            socket.onopen = function (e) {
-                retryCount = 0;
-            }
-
-            getInternalData(elt).webSocket = socket;
-            socket.addEventListener('message', function (event) {
-                if (maybeCloseWebSocketSource(elt)) {
-                    return;
-                }
-
-                var response = event.data;
-                withExtensions(elt, function(extension){
-                    response = extension.transformResponse(response, null, elt);
-                });
-
-                var settleInfo = makeSettleInfo(elt);
-                var fragment = makeFragment(response);
-                var children = toArray(fragment.children);
-                for (var i = 0; i < children.length; i++) {
-                    var child = children[i];
-                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
-                }
-
-                settleImmediately(settleInfo.tasks);
-            });
-        }
-
-        function maybeCloseWebSocketSource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).webSocket.close();
-                return true;
-            }
-        }
-
-        function processWebSocketSend(elt) {
-            var webSocketSourceElt = getClosestMatch(elt, function (parent) {
-                return getInternalData(parent).webSocket != null;
-            });
-            if (webSocketSourceElt) {
-                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
-                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
-                    var headers = getHeaders(elt, webSocketSourceElt);
-                    var results = getInputValues(elt, 'post');
-                    var errors = results.errors;
-                    var rawParameters = results.values;
-                    var expressionVars = getExpressionVars(elt);
-                    var allParameters = mergeObjects(rawParameters, expressionVars);
-                    var filteredParameters = filterValues(allParameters, elt);
-                    filteredParameters['HEADERS'] = headers;
-                    if (errors && errors.length > 0) {
-                        triggerEvent(elt, 'htmx:validation:halted', errors);
-                        return;
-                    }
-                    webSocket.send(JSON.stringify(filteredParameters));
-                    if(shouldCancel(evt, elt)){
-                        evt.preventDefault();
-                    }
-                });
-            } else {
-                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
-            }
-        }
-
-        function getWebSocketReconnectDelay(retryCount) {
-            var delay = htmx.config.wsReconnectDelay;
-            if (typeof delay === 'function') {
-                // @ts-ignore
-                return delay(retryCount);
-            }
-            if (delay === 'full-jitter') {
-                var exp = Math.min(retryCount, 6);
-                var maxDelay = 1000 * Math.pow(2, exp);
-                return maxDelay * Math.random();
-            }
-            logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
-        }
-
-        //====================================================================
-        // Server Sent Events
-        //====================================================================
-
-        function processSSEInfo(elt, nodeData, info) {
-            var values = splitOnWhitespace(info);
-            for (var i = 0; i < values.length; i++) {
-                var value = values[i].split(/:(.+)/);
-                if (value[0] === "connect") {
-                    processSSESource(elt, value[1]);
-                }
-
-                if ((value[0] === "swap")) {
-                    processSSESwap(elt, value[1])
-                }
-            }
-        }
-
-        function processSSESource(elt, sseSrc) {
-            var source = htmx.createEventSource(sseSrc);
-            source.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
-                maybeCloseSSESource(elt);
-            };
-            getInternalData(elt).sseEventSource = source;
-        }
-
-        function processSSESwap(elt, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, hasEventSource);
-            if (sseSourceElt) {
-                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function (event) {
-                    if (maybeCloseSSESource(sseSourceElt)) {
-                        sseEventSource.removeEventListener(sseEventName, sseListener);
-                        return;
-                    }
-
-                    ///////////////////////////
-                    // TODO: merge this code with AJAX and WebSockets code in the future.
-
-                    var response = event.data;
-                    withExtensions(elt, function(extension){
-                        response = extension.transformResponse(response, null, elt);
-                    });
-
-                    var swapSpec = getSwapSpecification(elt)
-                    var target = getTarget(elt)
-                    var settleInfo = makeSettleInfo(elt);
-
-                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
-                    settleImmediately(settleInfo.tasks)
-                    triggerEvent(elt, "htmx:sseMessage", event)
-                };
-
-                getInternalData(elt).sseListener = sseListener;
-                sseEventSource.addEventListener(sseEventName, sseListener);
-            } else {
-                triggerErrorEvent(elt, "htmx:noSSESourceError");
-            }
-        }
-
-        function processSSETrigger(elt, verb, path, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, hasEventSource);
-            if (sseSourceElt) {
-                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function () {
-                    if (!maybeCloseSSESource(sseSourceElt)) {
-                        if (bodyContains(elt)) {
-                            issueAjaxRequest(verb, path, elt);
-                        } else {
-                            sseEventSource.removeEventListener(sseEventName, sseListener);
-                        }
-                    }
-                };
-                getInternalData(elt).sseListener = sseListener;
-                sseEventSource.addEventListener(sseEventName, sseListener);
-            } else {
-                triggerErrorEvent(elt, "htmx:noSSESourceError");
-            }
-        }
-
-        function maybeCloseSSESource(elt) {
-            if (!bodyContains(elt)) {
-                getInternalData(elt).sseEventSource.close();
-                return true;
-            }
-        }
-
-        function hasEventSource(node) {
-            return getInternalData(node).sseEventSource != null;
-        }
-
         //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
@@ -1399,9 +1368,7 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.sseEvent) {
-                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
-                        } else if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "intersect") {
@@ -1438,13 +1405,16 @@ return (function () {
         }
 
         function evalScript(script) {
-            if (script.type === "text/javascript" || script.type === "") {
+            if (script.type === "text/javascript" || script.type === "module" || script.type === "") {
                 var newScript = getDocument().createElement("script");
                 forEach(script.attributes, function (attr) {
                     newScript.setAttribute(attr.name, attr.value);
                 });
                 newScript.textContent = script.textContent;
                 newScript.async = false;
+                if (htmx.config.inlineScriptNonce) {
+                    newScript.nonce = htmx.config.inlineScriptNonce;
+                }
                 var parent = script.parentElement;
 
                 try {
@@ -1473,8 +1443,7 @@ return (function () {
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-ext], [data-hx-ext]");
                 return results;
             } else {
                 return [];
@@ -1525,15 +1494,6 @@ return (function () {
                     initButtonTracking(elt);
                 }
 
-                var sseInfo = getAttributeValue(elt, 'hx-sse');
-                if (sseInfo) {
-                    processSSEInfo(elt, nodeData, sseInfo);
-                }
-
-                var wsInfo = getAttributeValue(elt, 'hx-ws');
-                if (wsInfo) {
-                    processWebSocketInfo(elt, nodeData, wsInfo);
-                }
                 triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
@@ -1571,6 +1531,15 @@ return (function () {
             return eventName === "htmx:afterProcessNode"
         }
 
+        /**
+         * `withExtensions` locates all active extensions for a provided element, then
+         * executes the provided function using each of the active extensions.  It should
+         * be called internally at every extendable execution point in htmx.
+         *
+         * @param {HTMLElement} elt
+         * @param {(extension:import("./htmx").HtmxExtension) => void} toDo
+         * @returns void
+         */
         function withExtensions(elt, toDo) {
             forEach(getExtensions(elt), function(extension){
                 try {
@@ -1728,6 +1697,8 @@ return (function () {
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
+
+                    // @ts-ignore: optional parameter in reload() function throws error
                     window.location.reload(true);
                 } else {
                     loadHistoryFromServer(path);
@@ -1747,10 +1718,8 @@ return (function () {
         }
 
         function addRequestIndicatorClasses(elt) {
-            var indicator = getClosestAttributeValue(elt, 'hx-indicator');
-            if (indicator) {
-                var indicators = querySelectorAllExt(elt, indicator);
-            } else {
+            var indicators = findAttributeTargets(elt, 'hx-indicator');
+            if (indicators == null) {
                 indicators = [elt];
             }
             forEach(indicators, function (ic) {
@@ -1853,6 +1822,10 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {string} verb
+         */
         function getInputValues(elt, verb) {
             var processed = [];
             var values = {};
@@ -1880,19 +1853,16 @@ return (function () {
             }
 
             // include any explicit includes
-            var includes = getClosestAttributeValue(elt, "hx-include");
-            if (includes) {
-                var nodes = querySelectorAllExt(elt, includes);
-                forEach(nodes, function(node) {
-                    processInputValue(processed, values, errors, node, validate);
-                    // if a non-form is included, include any input values within it
-                    if (!matches(node, 'form')) {
-                        forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
-                            processInputValue(processed, values, errors, descendant, validate);
-                        })
-                    }
-                });
-            }
+            var includes = findAttributeTargets(elt, "hx-include");
+            forEach(includes, function(node) {
+                processInputValue(processed, values, errors, node, validate);
+                // if a non-form is included, include any input values within it
+                if (!matches(node, 'form')) {
+                    forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
+                        processInputValue(processed, values, errors, descendant, validate);
+                    })
+                }
+            });
 
             // form values take precedence, overriding the regular values
             values = mergeObjects(values, formValues);
@@ -1904,7 +1874,11 @@ return (function () {
             if (returnStr !== "") {
                 returnStr += "&";
             }
-            returnStr += encodeURIComponent(name) + "=" + encodeURIComponent(realValue);
+            if (String(realValue) === "[object Object]") {
+                realValue = JSON.stringify(realValue);
+            }
+            var s = encodeURIComponent(realValue);
+            returnStr += encodeURIComponent(name) + "=" + s;
             return returnStr;
         }
 
@@ -1946,6 +1920,12 @@ return (function () {
         // Ajax
         //====================================================================
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {HTMLElement} target
+         * @param {string} prompt
+         * @returns {Object} // TODO: Define/Improve HtmxHeaderSpecification
+         */
         function getHeaders(elt, target, prompt) {
             var headers = {
                 "HX-Request" : "true",
@@ -1964,6 +1944,14 @@ return (function () {
             return headers;
         }
 
+        /**
+         * filterValues takes an object containing form input values
+         * and returns a new object that only contains keys that are
+         * specified by the closest "hx-params" attribute
+         * @param {Object} inputValues
+         * @param {HTMLElement} elt
+         * @returns {Object}
+         */
         function filterValues(inputValues, elt) {
             var paramsValue = getClosestAttributeValue(elt, "hx-params");
             if (paramsValue) {
@@ -1994,8 +1982,14 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        function getSwapSpecification(elt) {
-            var swapInfo = getClosestAttributeValue(elt, "hx-swap");
+        /**
+         *
+         * @param {HTMLElement} elt
+         * @param {string} swapInfoOverride
+         * @returns {import("./htmx").HtmxSwapSpecification}
+         */
+        function getSwapSpecification(elt, swapInfoOverride) {
+            var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2057,6 +2051,11 @@ return (function () {
             }
         }
 
+        /**
+         *
+         * @param {Element} target
+         * @returns {import("./htmx").HtmxSettleInfo}
+         */
         function makeSettleInfo(target) {
             return {tasks: [], elts: [target]};
         }
@@ -2098,6 +2097,13 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {string} attr
+         * @param {boolean=} evalAsDefault
+         * @param {Object=} values
+         * @returns {Object}
+         */
         function getValuesForElement(elt, attr, evalAsDefault, values) {
             if (values == null) {
                 values = {};
@@ -2145,14 +2151,28 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {*} expressionVars
+         * @returns
+         */
         function getHXVarsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vars", true, expressionVars);
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @param {*} expressionVars
+         * @returns
+         */
         function getHXValsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vals", false, expressionVars);
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @returns {Object}
+         */
         function getExpressionVars(elt) {
             return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt));
         }
@@ -2200,6 +2220,7 @@ return (function () {
                             headers : context.headers,
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
+                            swapOverride: context.swap,
                             returnPromise: true
                         });
                 }
@@ -2238,42 +2259,87 @@ return (function () {
                 return; // do not issue requests for elements removed from the DOM
             }
             var target = etc.targetOverride || getTarget(elt);
-            if (target == null) {
+            if (target == null || target == DUMMY_ELT) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
             }
+
+            var syncElt = elt;
             var eltData = getInternalData(elt);
-            if (eltData.requestInFlight) {
-                var queueStrategy = 'last';
-                if (event) {
-                    var eventData = getInternalData(event);
-                    if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
-                        queueStrategy = eventData.triggerSpec.queue;
+            var syncStrategy = getClosestAttributeValue(elt, "hx-sync");
+            var queueStrategy = null;
+            var abortable = false;
+            if (syncStrategy) {
+                var syncStrings = syncStrategy.split(":");
+                var selector = syncStrings[0].trim();
+                if (selector === "this") {
+                    syncElt = getClosestMatch(elt, function (elt) {
+                        return getAttributeValue(elt, "hx-sync") != null;
+                    });
+                } else {
+                    syncElt = querySelectorExt(elt, selector);
+                }
+                // default to the drop strategy
+                syncStrategy = (syncStrings[1] || 'drop').trim();
+                eltData = getInternalData(syncElt);
+                if (syncStrategy === "drop" && eltData.xhr && eltData.abortable !== true) {
+                    return;
+                } else if (syncStrategy === "abort") {
+                    if (eltData.xhr) {
+                        return;
+                    } else {
+                        abortable = true;
                     }
+                } else if (syncStrategy === "replace") {
+                    triggerEvent(syncElt, 'htmx:abort'); // abort the current request and continue
+                } else if (syncStrategy.indexOf("queue") === 0) {
+                    var queueStrArray = syncStrategy.split(" ");
+                    queueStrategy = (queueStrArray[1] || "last").trim();
                 }
-                if (eltData.queuedRequests == null) {
-                    eltData.queuedRequests = [];
-                }
-                if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                } else if (queueStrategy === "all") {
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                } else if (queueStrategy === "last") {
-                    eltData.queuedRequests = []; // dump existing queue
-                    eltData.queuedRequests.push(function () {
-                        issueAjaxRequest(verb, path, elt, event, etc)
-                    });
-                }
-                return;
-            } else {
-                eltData.requestInFlight = true;
             }
+
+            if (eltData.xhr) {
+                if (eltData.abortable) {
+                    triggerEvent(syncElt, 'htmx:abort'); // abort the current request and continue
+                } else {
+                    if(queueStrategy == null){
+                        if (event) {
+                            var eventData = getInternalData(event);
+                            if (eventData && eventData.triggerSpec && eventData.triggerSpec.queue) {
+                                queueStrategy = eventData.triggerSpec.queue;
+                            }
+                        }
+                        if (queueStrategy == null) {
+                            queueStrategy = "last";
+                        }
+                    }
+                    if (eltData.queuedRequests == null) {
+                        eltData.queuedRequests = [];
+                    }
+                    if (queueStrategy === "first" && eltData.queuedRequests.length === 0) {
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    } else if (queueStrategy === "all") {
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    } else if (queueStrategy === "last") {
+                        eltData.queuedRequests = []; // dump existing queue
+                        eltData.queuedRequests.push(function () {
+                            issueAjaxRequest(verb, path, elt, event, etc)
+                        });
+                    }
+                    return;
+                }
+            }
+
+            var xhr = new XMLHttpRequest();
+            eltData.xhr = xhr;
+            eltData.abortable = abortable;
             var endRequestLock = function(){
-                eltData.requestInFlight = false
+                eltData.xhr = null;
+                eltData.abortable = false;
                 if (eltData.queuedRequests != null &&
                     eltData.queuedRequests.length > 0) {
                     var queuedRequest = eltData.queuedRequests.shift();
@@ -2301,7 +2367,6 @@ return (function () {
                 }
             }
 
-            var xhr = new XMLHttpRequest();
 
             var headers = getHeaders(elt, target, promptResponse);
             if (etc.headers) {
@@ -2318,7 +2383,7 @@ return (function () {
             var filteredParameters = filterValues(allParameters, elt);
 
             if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
             // behavior of anchors w/ empty href is to use the current URL
@@ -2399,7 +2464,7 @@ return (function () {
                 }
             }
 
-            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
+            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, etc:etc, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
                 }
             };
@@ -2480,6 +2545,7 @@ return (function () {
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
+            var etc = responseInfo.etc;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -2507,7 +2573,13 @@ return (function () {
                 responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
-            var shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            /** @type {boolean} */
+            var shouldSaveHistory
+            if (pushedUrl == "false") {
+                shouldSaveHistory = false
+            } else {
+                shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            }
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
@@ -2522,9 +2594,9 @@ return (function () {
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
-        
+		
             responseInfo.failed = isError; // Make failed property available to response events
-            responseInfo.successful = !isError; // Make successful property available to response events        
+            responseInfo.successful = !isError; // Make successful property available to response events		
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2540,7 +2612,8 @@ return (function () {
                     saveHistory();
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapOverride = etc.swapOverride;
+                var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
@@ -2648,9 +2721,17 @@ return (function () {
         //====================================================================
         // Extensions API
         //====================================================================
+
+        /** @type {Object<string, import("./htmx").HtmxExtension>} */
         var extensions = {};
+
+        /**
+         * extensionBase defines the default functions for all extensions.
+         * @returns {import("./htmx").HtmxExtension}
+         */
         function extensionBase() {
             return {
+                init: function(api) {return null;},
                 onEvent : function(name, evt) {return true;},
                 transformResponse : function(text, xhr, elt) {return text;},
                 isInlineSwap : function(swapStyle) {return false;},
@@ -2659,15 +2740,37 @@ return (function () {
             }
         }
 
+        /**
+         * defineExtension initializes the extension and adds it to the htmx registry
+         *
+         * @param {string} name
+         * @param {import("./htmx").HtmxExtension} extension
+         */
         function defineExtension(name, extension) {
+            if(extension.init) {
+                extension.init(internalAPI)
+            }
             extensions[name] = mergeObjects(extensionBase(), extension);
         }
 
+        /**
+         * removeExtension removes an extension from the htmx registry
+         *
+         * @param {string} name
+         */
         function removeExtension(name) {
             delete extensions[name];
         }
 
-        function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+        /**
+         * getExtensions searches up the DOM tree to return all extensions that can be applied to a given element
+         *
+         * @param {HTMLElement} elt
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToReturn
+         * @param {import("./htmx").HtmxExtension[]=} extensionsToIgnore
+         */
+         function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+
             if (elt == undefined) {
                 return extensionsToReturn;
             }
@@ -2742,9 +2845,25 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
+            var restoredElts = getDocument().querySelectorAll(
+                "[hx-trigger='restored'],[data-hx-trigger='restored']"
+            );
+            body.addEventListener("htmx:abort", function (evt) {
+                var target = evt.target;
+                var internalData = getInternalData(target);
+                if (internalData && internalData.xhr) {
+                    internalData.xhr.abort();
+                }
+            });
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
+                    forEach(restoredElts, function(elt){
+                        triggerEvent(elt, 'htmx:restored', {
+                            'document': getDocument(),
+                            'triggerEvent': triggerEvent
+                        });
+                    });
                 }
             };
             setTimeout(function () {

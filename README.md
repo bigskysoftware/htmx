@@ -35,7 +35,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 
 ```html
   <!-- Load from unpkg -->
-  <script src="https://unpkg.com/htmx.org@1.6.1" ></script>
+  <script src="https://unpkg.com/htmx.org@1.7.0" ></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -74,20 +74,25 @@ keep the core htmx code tidy
 
 ### hacking guide
 
-to develop htmx locally, you will need to install the development dependencies:
+To develop htmx locally, you will need to install the development dependencies.
+Use node 15 and run:
 
-* `npm install`
+```
+npm install
+```
 
-and then run a web server in the root (easiest with python):
+Then, run a web server in the root.
+This is easiest with Python:
 
-* `python3 -m http.server
-`
+```
+python3 -m http.server
+```
 
-you can then run the test suite by navigating to:
+You can then run the test suite by navigating to:
 
 <http://0.0.0.0:8000/test/>
 
-at this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`
+At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
 
 * `/test/index.html` - the root test page from which all other tests are included
 * `/test/attributes` - attribute specific tests

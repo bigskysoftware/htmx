@@ -40,7 +40,7 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
-* `detail.succesful` - true if the response has a 20x status code or is marked `detail.isError = false` in the 
+* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the 
    `htmx:beforeSwap` event, else false
 * `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the 
    `htmx:beforeSwap` event, else false
@@ -175,7 +175,7 @@ for the content to restore, but the response is an error (e.g. `404`)
 
 ### <a name="htmx:historyCacheMissLoad"></a> Event - [`htmx:historyCacheMissLoad`](#htmx:historyCacheMissLoad)
 
-This event is triggered when a cache miss occurs and a response has been retrieved succesfully from the server
+This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server
 for the content to restore
 
 ##### Details
@@ -220,6 +220,38 @@ This event is triggered when an element refers to a SSE event in its trigger, bu
 
 * `detail.elt` - the element with the bad SSE trigger
 
+### <a name="htmx:oobAfterSwap"></a> Event - [`htmx:oobAfterSwap`](#htmx:oobAfterSwap)
+
+This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to an [after swap event](/events#afterSwap)
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
+### <a name="htmx:oobBeforeSwap"></a> Event - [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap)
+
+This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to a [before swap event](/events#beforeSwap)
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.requestConfig` - the configuration of the AJAX request
+* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
+* `detail.target` - the target of the swap
+
+### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
+
+This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
+in the DOM to switch with.
+
+##### Details
+
+* `detail.content` - the element with the bad oob `id`
+
 ### <a name="htmx:onLoadError"></a> Event - [`htmx:onLoadError`](#htmx:onLoadError)
 
 This event is triggered when an error occurs during the `load` handling of an AJAX call
@@ -231,15 +263,6 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.target` - the target of the request
 * `detail.exception` - the exception that occurred
 * `detail.requestConfig` - the configuration of the AJAX request
-
-### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
-
-This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
-in the DOM to switch with.
-
-##### Details
-
-* `detail.content` - the element with the bad oob `id`
 
 ### <a name="htmx:prompt"></a> Event - [`htmx:prompt`](#htmx:prompt)
 
@@ -270,6 +293,7 @@ This event is triggered when an HTTP error response occurs
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
+
 
 ### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
 

@@ -103,14 +103,37 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.1" integrity="sha384-tvG/2mnCFmGQzYC1Oh3qxQ7CkQ9kMzYjWZSNtrRZygHPDDqottzEJsqS4oUVodhW" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="TODO: REGEN" crossorigin="anonymous"></script>
 ```
+
+If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
+
+### <a name="webpack">[webpack](#webpack)
+
+If you are using webpack, you have to do the following steps:
+
+1. Install `htmx` via your favourite package manager (like npm or yarn)
+1. Add the import to your `index.js`
+  ``` js   
+  import 'htmx.org';
+  ```
+1. Optional but recommended: if you want to use the global `htmx` variable:
+    2. Create a custom JS file and import this file to your `index.js` below the import 
+       from step 2
+    ``` js   
+      import 'path/to/my_custom.js';
+    ```
+    3. Add the following line to it
+    ``` js   
+      window.htmx = require('htmx.org');
+    ```
+    6. Rebuild your bundle
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
@@ -385,7 +408,7 @@ content of the page is examined for elements that match by the `id` attribute.  
 is found for an element in the new content, the attributes of the old content are copied
 onto the new element before the swap occurs.  The new content is then swapped in, but with the
 *old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
-(100ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
+(20ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
 the developer.
 
 #### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
@@ -684,7 +707,7 @@ The order of operations in a htmx request are:
         * the `htmx-swapping` class is removed from the target
         * the `htmx-added` class is added to each new piece of content
         * the `htmx-settling` class is applied to the target
-        * A settle delay is done (default: 100ms)
+        * A settle delay is done (default: 20ms)
         * The DOM is settled
         * the `htmx-settling` class is removed from the target
         * the `htmx-added` class is removed from each new piece of content
@@ -753,6 +776,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 |-----------|-------------
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`alpine-morph`](/extensions/alpine-morph) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
@@ -862,7 +886,7 @@ If you set a logger at `htmx.logger`, every event will be logged.  This can be v
 ## <a name="debugging"></a> [Debugging](#debugging)
 
 Declarative and event driven programming with htmx (or any other declartive language) can be a wonderful and highly productive
-activity, but one disadvantage when compared with imperative approaches is that it can be tricker to debug.
+activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
  
 Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.  
 
@@ -1074,7 +1098,7 @@ content into your site without any sort of HTML escaping discipline.
 
 You should, of course, escape all 3rd party untrusted content that is injected into your site to prevent, among other issues, [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). Attributes starting with `hx-` and `data-hx`, as well as inline `<script>` tags should be filtered.
 
-It is important to understand that htmx does *not* require inline scripts or `eval()` for most of its features. You (or your security team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that intentionally disallows inline scripts and the use of `eval()`. This, however, will have *no effect* on htmx functionality, which will still be able to execute JavaScript code placed in htmx attributes and may be a security concern.
+It is important to understand that htmx does *not* require inline scripts or `eval()` for most of its features. You (or your security team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that intentionally disallows inline scripts and the use of `eval()`. This, however, will have *no effect* on htmx functionality, which will still be able to execute JavaScript code placed in htmx attributes and may be a security concern. With that said, if your site relies on inline scripts that you do wish to allow and have a CSP in place, you may need to define [htmx.config.inlineScriptNonce](#config)--however, HTMX will add this nonce to *all* inline script tags it encounters, meaning a nonce-based CSP will no longer be effective for HTMX-loaded content.
 
 To address this, if you don't want a particular part of the DOM to allow for htmx functionality, you can place the
 `hx-disable` or `data-hx-disable` attribute on the enclosing element of that area.  
@@ -1104,7 +1128,7 @@ listed below:
 |  `htmx.config.refreshOnHistoryMiss` | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request
 |  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
 |  `htmx.config.defaultSwapDelay` | defaults to 0
-|  `htmx.config.defaultSettleDelay` | defaults to 100
+|  `htmx.config.defaultSettleDelay` | defaults to 20
 |  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
 |  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
 |  `htmx.config.requestClass` | defaults to `htmx-request`
@@ -1112,6 +1136,7 @@ listed below:
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`
+|  `htmx.config.inlineScriptNonce` | default to '', no nonce will be added to inline scripts
 |  `htmx.config.useTemplateFragments` | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent

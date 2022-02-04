@@ -172,5 +172,17 @@ describe("hx-vals attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('hx-vals treats objects as JSON', function () {
+        this.server.respondWith("POST", "/vars", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("{\"i2\":\"test\"}");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make("<div hx-post='/vars' hx-vals='\"i1\":{\"i2\" : \"test\"}'></div>")
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
 
 });

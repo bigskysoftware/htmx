@@ -32,8 +32,9 @@ If the value is `true` or `outerHTML` (which are equivalent) the element will be
 
 If a swap value is given, that swap strategy will be used.
 
-If a selector is given, the elements matching that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
+If a selector is given, all elements matched by that that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
 ### Notes
 
 * `hx-swap-oob` is not inherited
+* Out of band elements must be in the top level of the response, and not children of the top level elements.
