@@ -267,16 +267,6 @@ This event is triggered when an HTTP error response occurs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:restored"></a> Event - [`htmx:restored`](#htmx:restored)
-
-This event is triggered when the window popstate is triggered
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
 

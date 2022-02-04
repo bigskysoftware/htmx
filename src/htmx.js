@@ -2702,12 +2702,18 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
+            var restoredElts = getDocument().querySelectorAll(
+                "[hx-trigger='restored'],[data-hx-trigger='restored']"
+            );
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
-                    forEach(getDocument().querySelectorAll("[hx-trigger='restored'],[data-hx-trigger='restored']"), function (elt) {
-                        triggerEvent(elt, 'restored')
-                    })
+                    forEach(restoredElts, function(elt){
+                        triggerEvent(elt, 'htmx:restored', {
+                            'document': getDocument(),
+                            'triggerEvent': triggerEvent
+                        });
+                    });
                 }
             };
             setTimeout(function () {
