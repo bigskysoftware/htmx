@@ -2818,6 +2818,9 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
+            var restoredElts = getDocument().querySelectorAll(
+                "[hx-trigger='restored'],[data-hx-trigger='restored']"
+            );
             body.addEventListener("htmx:abort", function (evt) {
                 var target = evt.target;
                 var internalData = getInternalData(target);
@@ -2828,6 +2831,12 @@ return (function () {
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
+                    forEach(restoredElts, function(elt){
+                        triggerEvent(elt, 'htmx:restored', {
+                            'document': getDocument(),
+                            'triggerEvent': triggerEvent
+                        });
+                    });
                 }
             };
             setTimeout(function () {
