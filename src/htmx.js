@@ -1958,10 +1958,11 @@ return (function () {
         /**
          *
          * @param {HTMLElement} elt
+         * @param {string} swapInfoOverride
          * @returns {import("./htmx").HtmxSwapSpecification}
          */
-        function getSwapSpecification(elt) {
-            var swapInfo = getClosestAttributeValue(elt, "hx-swap");
+        function getSwapSpecification(elt, swapInfoOverride) {
+            var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2192,6 +2193,7 @@ return (function () {
                             headers : context.headers,
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
+                            swapOverride: context.swap,
                             returnPromise: true
                         });
                 }
@@ -2435,7 +2437,7 @@ return (function () {
                 }
             }
 
-            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, pathInfo:{
+            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, etc:etc, pathInfo:{
                   path:path, finalPath:finalPathForGet, anchor:anchor
                 }
             };
@@ -2516,6 +2518,7 @@ return (function () {
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
+            var etc = responseInfo.etc;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -2576,7 +2579,8 @@ return (function () {
                     saveHistory();
                 }
 
-                var swapSpec = getSwapSpecification(elt);
+                var swapOverride = etc.swapOverride;
+                var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
                 var doSwap = function () {
