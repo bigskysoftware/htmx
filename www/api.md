@@ -51,22 +51,26 @@ or
     * `event` - an event that "triggered" the request
     * `handler` - a callback that will handle the response HTML
     * `target` - the target to swap the response into
+    * `swap` - how the response will be swapped in relative to the target
     * `values` - values to submit with the request
     * `headers` - headers to submit with the request
-
 
 ##### Example
 
 ```js
     // issue a GET to /example and put the response HTML into #myDiv
     htmx.ajax('GET', '/example', '#myDiv')
-    
+
+    // issue a GET to /example and replace #myDiv with the repsonse
+    htmx.ajax('GET', '/example', {target:'#myDiv', swap:'outerHTML'})
+
     // execute some code after the content has been inserted into the DOM
     htmx.ajax('GET', '/example', '#myDiv').then(() => {
       // this code will be executed after the 'htmx:afterOnLoad' event,
       // and before the 'htmx:xhr:loadend' event
       console.log('Content inserted successfully!');
-    }); 
+    });
+
 ```
 
 ### <a name="closest"></a> Method -  [`htmx.closest()`](#closest)
@@ -329,7 +333,7 @@ Caution: Accepts an int followed by either `s` or `ms`. All other values use `pa
 ```js
     // returns 3000
     var milliseconds = htmx.parseInterval("3s");
-    
+
     // returns 3 - Caution
     var milliseconds = htmx.parseInterval("3m");
 ```

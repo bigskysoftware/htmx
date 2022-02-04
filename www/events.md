@@ -294,6 +294,7 @@ This event is triggered when an HTTP error response occurs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+
 ### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
 
 This event is triggered when a network error prevents an HTTP request from occurring
