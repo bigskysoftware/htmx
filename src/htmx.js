@@ -911,7 +911,7 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                     if (from_arg === "closest" || from_arg === "find") {
                                         tokens.shift();
                                         from_arg +=
