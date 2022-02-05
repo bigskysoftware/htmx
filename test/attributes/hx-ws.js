@@ -32,7 +32,9 @@ describe("hx-ws attribute", function() {
         var socket = mockWebsocket();
         this.socket = socket;
         clearWorkArea();
-        htmx.createWebSocket = function(){ return socket };
+        htmx.createWebSocket = function(){
+            return socket
+        };
     });
     afterEach(function () {
         this.server.restore();

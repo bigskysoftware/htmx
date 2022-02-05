@@ -2,7 +2,6 @@
 WebSockets Extension
 ============================
 This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md for usage instructions.
-
 */
 
 (function(){
@@ -63,6 +62,23 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 	});
 
+	function splitOnWhitespace(trigger) {
+		return trigger.trim().split(/\s+/);
+	}
+
+	function getLegacyWebsocketURL(elt) {
+		var legacySSEValue = api.getAttributeValue(elt, "hx-ws");
+		if (legacySSEValue) {
+			var values = splitOnWhitespace(legacySSEValue);
+			for (var i = 0; i < values.length; i++) {
+				var value = values[i].split(/:(.+)/);
+				if (value[0] === "connect") {
+					return value[1];
+				}
+			}
+		}
+	}
+
 	/**
 	 * ensureWebSocket creates a new WebSocket on the designated element, using
 	 * the element's "ws-connect" attribute.  
@@ -81,8 +97,13 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		// Get the source straight from the element's value
 		var wssSource = api.getAttributeValue(elt, "ws-connect")
 
-		if (wssSource == "") {
-			return;
+		if (wssSource == null || wssSource === "") {
+			var legacySource = getLegacyWebsocketURL(elt);
+			if (legacySource == null) {
+				return;
+			} else {
+				wssSource = legacySource;
+			}
 		}
 
 		// Default value for retryCount
@@ -147,7 +168,11 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 		// Re-connect any ws-send commands as well.
 		forEach(queryAttributeOnThisOrChildren(elt, "ws-send"), function(child) {
-			processWebSocketSend(elt, child)
+			var legacyAttribute = api.getAttributeValue(child, "hx-ws");
+			if (legacyAttribute && legacyAttribute !== 'send') {
+				return;
+			}
+			processWebSocketSend(elt, child);
 		});
 
 		// Put the WebSocket into the HTML Element's custom data.
@@ -242,12 +267,12 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		var result = []
 
 		// If the parent element also contains the requested attribute, then add it to the results too.
-		if (api.hasAttribute(elt, attributeName)) {
+		if (api.hasAttribute(elt, attributeName) || api.hasAttribute(elt, "hx-ws")) {
 			result.push(elt);
 		}
 
 		// Search all child nodes that match the requested attribute
-		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "]").forEach(function(node) {
+		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "], [data-hx-ws], [hx-ws]").forEach(function(node) {
 			result.push(node)
 		})
 
