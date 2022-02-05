@@ -70,27 +70,65 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		return new EventSource(url, {withCredentials:true});
 	}
 
+	function splitOnWhitespace(trigger) {
+		return trigger.trim().split(/\s+/);
+	}
+
+	function getLegacySSEURL(elt) {
+		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
+		if (legacySSEValue) {
+			var values = splitOnWhitespace(legacySSEValue);
+			for (var i = 0; i < values.length; i++) {
+				var value = values[i].split(/:(.+)/);
+				if (value[0] === "connect") {
+					return value[1];
+				}
+			}
+		}
+	}
+
+	function getLegacySSESwaps(elt) {
+		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
+		var returnArr = [];
+		if (legacySSEValue) {
+			var values = splitOnWhitespace(legacySSEValue);
+			for (var i = 0; i < values.length; i++) {
+				var value = values[i].split(/:(.+)/);
+				if (value[0] === "swap") {
+					returnArr.push(value[1]);
+				}
+			}
+		}
+		return returnArr;
+	}
+
 	/**
 	 * createEventSourceOnElement creates a new EventSource connection on the provided element.
 	 * If a usable EventSource already exists, then it is returned.  If not, then a new EventSource
 	 * is created and stored in the element's internalData.
-	 * @param {HTMLElement} parent 
+	 * @param {HTMLElement} elt
 	 * @param {number} retryCount
 	 * @returns {EventSource | null}
 	 */
-	function createEventSourceOnElement(parent, retryCount) {
+	function createEventSourceOnElement(elt, retryCount) {
 
-		if (parent == null) {
-			return;
+		if (elt == null) {
+			return null;
 		}
 
-		var internalData = api.getInternalData(parent);
+		var internalData = api.getInternalData(elt);
 
 		// get URL from element's attribute
-		var sseURL = api.getAttributeValue(parent, "sse-connect");
+		var sseURL = api.getAttributeValue(elt, "sse-connect");
+
 
 		if (sseURL == undefined) {
-			return;
+			var legacyURL = getLegacySSEURL(elt)
+			if (legacyURL) {
+				sseURL = legacyURL;
+			} else {
+				return null;
+			}
 		}
 
 		// Connect to the EventSource
@@ -101,53 +139,61 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		source.onerror = function (err) {
 
 			// Log an error event
-			api.triggerErrorEvent(parent, "htmx:sseError", {error:err, source:source});
+			api.triggerErrorEvent(elt, "htmx:sseError", {error:err, source:source});
 
 			// If parent no longer exists in the document, then clean up this EventSource
-			if (maybeCloseSSESource(parent)) {
+			if (maybeCloseSSESource(elt)) {
 				return;
 			}
 
 			// Otherwise, try to reconnect the EventSource
-			if (source.readyState == EventSource.CLOSED) {
+			if (source.readyState === EventSource.CLOSED) {
 				retryCount = retryCount || 0;
 				var timeout = Math.random() * (2 ^ retryCount) * 500;
 				window.setTimeout(function() {
-					createEventSourceOnElement(parent, Math.min(7, retryCount+1));
+					createEventSourceOnElement(elt, Math.min(7, retryCount+1));
 				}, timeout);
 			}			
 		};
 		
 		// Add message handlers for every `sse-swap` attribute
-		queryAttributeOnThisOrChildren(parent, "sse-swap").forEach(function(child) {
+		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
 
-			var sseEventNames = api.getAttributeValue(child, "sse-swap").split(",");
+			var sseSwapAttr = api.getAttributeValue(child, "sse-swap");
+			if (sseSwapAttr) {
+				var sseEventNames = sseSwapAttr.split(",");
+			} else {
+				var sseEventNames = getLegacySSESwaps(child);
+			}
 
 			for (var i = 0 ; i < sseEventNames.length ; i++) {
 				var sseEventName = sseEventNames[i].trim();
 				var listener = function(event) {
 
 					// If the parent is missing then close SSE and remove listener
-					if (maybeCloseSSESource(parent)) {
+					if (maybeCloseSSESource(elt)) {
 						source.removeEventListener(sseEventName, listener);
 						return;
 					}
-					
+
 					// swap the response into the DOM and trigger a notification
 					swap(child, event.data);
-					api.triggerEvent(parent, "htmx:sseMessage", event);
+					api.triggerEvent(elt, "htmx:sseMessage", event);
 				};
-		
+
 				// Register the new listener
-				api.getInternalData(parent).sseEventListener = listener;
+				api.getInternalData(elt).sseEventListener = listener;
 				source.addEventListener(sseEventName, listener);
 			}
 		});
 
 		// Add message handlers for every `hx-trigger="sse:*"` attribute
-		queryAttributeOnThisOrChildren(parent, "hx-trigger").forEach(function(child) {
+		queryAttributeOnThisOrChildren(elt, "hx-trigger").forEach(function(child) {
 
 			var sseEventName = api.getAttributeValue(child, "hx-trigger");
+			if (sseEventName == null) {
+				return;
+			}
 
 			// Only process hx-triggers for events with the "sse:" prefix
 			if (sseEventName.slice(0, 4) != "sse:") {
@@ -157,7 +203,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			var listener = function(event) {
 
 				// If parent is missing, then close SSE and remove listener
-				if (maybeCloseSSESource(parent)) {
+				if (maybeCloseSSESource(elt)) {
 					source.removeEventListener(sseEventName, listener);
 					return;
 				}
@@ -168,7 +214,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			}
 
 			// Register the new listener
-			api.getInternalData(parent).sseEventListener = listener;
+			api.getInternalData(elt).sseEventListener = listener;
 			source.addEventListener(sseEventName.slice(4), listener);
 		});
 	}
@@ -182,7 +228,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 */
 	function maybeCloseSSESource(elt) {
 		if (!api.bodyContains(elt)) {
-			var source = api.getInternalData(elt, "sseEventSource");        
+			var source = api.getInternalData(elt).sseEventSource;
 			if (source != undefined) {
 				source.close();
 				// source = null
@@ -203,12 +249,12 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		var result = [];
 
 		// If the parent element also contains the requested attribute, then add it to the results too.
-		if (api.hasAttribute(elt, attributeName)) {
+		if (api.hasAttribute(elt, attributeName) || api.hasAttribute(elt, "hx-sse")) {
 			result.push(elt);
 		}
 
 		// Search all child nodes that match the requested attribute
-		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "]").forEach(function(node) {
+		elt.querySelectorAll("[" + attributeName + "], [data-" + attributeName + "], [hx-sse], [data-hx-sse]").forEach(function(node) {
 			result.push(node);
 		});
 

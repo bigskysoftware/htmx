@@ -4,6 +4,9 @@ describe("hx-sse attribute", function() {
         var listeners = {};
         var wasClosed = false;
         var mockEventSource = {
+            removeEventListener: function(name) {
+                delete listeners[name];
+            },
             addEventListener: function (message, l) {
                 listeners[message] = l;
             },
