@@ -564,15 +564,14 @@ return (function () {
         //====================================================================
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
-            var match = getClosestMatch(elt, function(e){return getAttributeValue(e,attrName) !== null});
-            if (match) {
-                var targetStr = getAttributeValue(match, attrName);
-                if (targetStr === "this") {
-                    return [match];
+            var attrTarget = getClosestAttributeValue(elt, attrName);
+            if (attrTarget) {
+                if (attrTarget === "this") {
+                    return [findThisElement(elt, attrName)];
                 } else {
-                    var result = querySelectorAllExt(elt, targetStr);
+                    var result = querySelectorAllExt(elt, attrTarget);
                     if (result.length === 0) {
-                        logError('The selector "' + targetStr + '" on ' + attrName + " returned no matches!");
+                        logError('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
                         return [DUMMY_ELT]
                     } else {
                         return result;
