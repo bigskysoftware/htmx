@@ -98,3 +98,8 @@ Locality of Behavior is a subjective software design principle that can help mak
 off against other design principles and be considered in terms of the limitations of the system a code unit is
 written in, but, as much as is it is practical, adherence to this principle will increase your software maintainability,
 quality and sustainability.
+
+
+<div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+~~~
+</div>
