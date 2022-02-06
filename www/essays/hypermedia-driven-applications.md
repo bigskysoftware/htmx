@@ -136,7 +136,8 @@ The HDA architecture is a synthesis of two preceding architectures: the original
 (relatively) newer Single-Page Application.  
 
 It attempts to capture the advantages of both: the simplicity and reliability
-of MPAs (due to the [REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST), in particular [HATEOAS](essays/hateoas/))
+of MPAs (due to the [REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST), in particular by
+ returning to [Hypermedia As The Engine Of Application State](/essays/hateoas/)).
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
 &lt;/&gt;
