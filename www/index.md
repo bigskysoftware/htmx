@@ -53,7 +53,7 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 
 Thank you to our corporate sponsors!
 
-<div class="row">
+<div class="row" style="text-align: center">
 <div class="col 2" style="padding: 0">
 
 [![CommSpace](/img/commspace.svg)](https://www.commspace.co.za/)
@@ -61,6 +61,8 @@ Thank you to our corporate sponsors!
 </div>
 
 <div class="col 2" style="padding: 0">
+
+<a href="https://bigsky.software"><img src="/img/bss.png" style="width:250px"></a>
 
 </div>
 
@@ -72,7 +74,7 @@ Thank you to our corporate sponsors!
 If you use htmx commercially & wish to support the 
 project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
 
-For htmx consulting or training [email us](mailto:htmx@bigsky.software)
+For htmx consulting, [email us](mailto:htmx@bigsky.software)
 
 ## haiku
 
