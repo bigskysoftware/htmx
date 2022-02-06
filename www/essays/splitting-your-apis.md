@@ -120,5 +120,5 @@ that model.
 Everything old is new again, but, this time, a little bit better.
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>

@@ -101,5 +101,5 @@ quality and sustainability.
 
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>

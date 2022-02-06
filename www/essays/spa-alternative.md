@@ -111,5 +111,5 @@ From the [htmx developer's starter kit](https://twitter.com/htmx_org/status/1306
 ![What if?](/img/what_if.png)
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>

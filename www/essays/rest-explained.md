@@ -249,5 +249,5 @@ above.
 Finally, I hope you can see how inappropriate REST is for describing most JSON APIs in use today.
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>

@@ -71,7 +71,7 @@ This example effectively demonstrates the essential characteristic of an HDA:
 * The front end of the feature is specified entirely in `hx-` declarative attributes, directly in HTML
 * The interaction with the server is done via HTTP and HTML: an HTTP request is sent, HTML is returned and inserted into the DOM
 
-## The Place of Scripting In An MDA
+## The Place of Scripting In An HDA
 
 [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7) is an optional
 constraint of the original REST-ful architecture of the web.
@@ -139,5 +139,5 @@ It attempts to capture the advantages of both: the simplicity and reliability
 of MPAs (due to the [REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST), in particular [HATEOAS](essays/hateoas/))
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>

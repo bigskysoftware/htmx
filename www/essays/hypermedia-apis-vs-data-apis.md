@@ -150,5 +150,5 @@ much less of a concern, and providing the end points you need for a good hyperme
 
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-~~~
+&lt;/&gt;
 </div>
