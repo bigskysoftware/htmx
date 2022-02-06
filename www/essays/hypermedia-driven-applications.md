@@ -122,7 +122,7 @@ Some libraries that allow developers to build HDAs:
 * <https://htmx.org>
 * <https://unpoly.com/>
 * <https://kasta-ua.github.io/twinspark-js/>
-* <https://turbo.dev>
+* <https://turbo.hotwired.dev>
 
 And some complementary, HDA-friendly scripting tools:
 
