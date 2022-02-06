@@ -107,4 +107,4 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
 * `hx-swap` is inherited and can be placed on a parent element
 * The default value of this attribute is `innerHTML`
 * The default swap delay is 0ms
-* The default settle delay is 100ms
+* The default settle delay is 20ms
