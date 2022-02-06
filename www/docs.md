@@ -21,6 +21,7 @@ title: </> htmx - Documentation
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
+  * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
   * [parameters](#parameters)
   * [confirming](#confirming)
@@ -362,6 +363,15 @@ with any of the following values:
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
+
+### <a name="synchronization"></a> [Synchronization](#synchronization)
+
+Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
+to supersede the request of another element, or to wait until the other elements request has finished.
+
+htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this:
+
+TODO - example from alejandros
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
