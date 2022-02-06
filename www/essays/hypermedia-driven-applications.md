@@ -123,7 +123,7 @@ Some libraries that allow developers to build HDAs:
 * <https://unpoly.com/>
 * <https://kasta-ua.github.io/twinspark-js/>
 * <https://turbo.dev>
-* <https://hyperview.org/> - (a mobile hypermedia!)
+* <https://hyperview.org/> (a mobile hypermedia!)
 
 And some complementary, HDA-friendly scripting tools:
 
@@ -133,12 +133,13 @@ And some complementary, HDA-friendly scripting tools:
 
 ## Conclusion
 
-The HDA architecture is a synthesis of two preceding architectures: the original Multi-Page Application (MPA) and the
-(relatively) newer Single-Page Application.  
+The HDA architecture is a synthesis of two preceding architectures: the original Multi-Page Application (MPA) architecture
+ and the (relatively) newer Single-Page Application architecture.  
 
-It attempts to capture the advantages of both: the simplicity and reliability
-of MPAs (due to the [REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST), in particular by
- returning to [Hypermedia As The Engine Of Application State](/essays/hateoas/)).
+It attempts to capture the advantages of both: the simplicity and reliability of MPAs, with a 
+[REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST) that uses 
+[Hypermedia As The Engine Of Application State](/essays/hateoas/)), while providing a better user experience, on par
+with SPAs in many cases.
 
 <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
 &lt;/&gt;
