@@ -21,16 +21,18 @@ the simplicity & flexibility of traditional Multi-Page Applications (MPAs) with 
 [Single-Page Applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs).
 
 The HDA architecture achieves this goal by extending the existing HTML infrastructure of the web to allow hypermedia
- developers to use more powerful hypermedia-driven interactions.
+ developers to create more powerful hypermedia-driven interactions.
  
 Two [constraints](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) characterize the HDA architecture: 
 
 * The application uses a **declarative, HTML-embedded syntax**, rather than imperative scripting, to achieve better front end interactivity
+
 * The application interacts with the server **in terms of hypermedia** (i.e. HTML) rather than a non-hypermedia format (e.g. JSON)
 
-The HDA architecture falls within the **original [REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) 
-architecture of the web** in a way that contrasts with the SPA architecture.  In particular, HDAs make **effective use
-of [HATEOAS](/essays/hateoas/)** in a way that SPAs typically do not.
+The HDA architecture stays within the **original [REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) 
+architecture of the web** in a way that contrasts with the SPA architecture.  
+
+In particular, HDAs make **effective use of [HATEOAS](/essays/hateoas/)** in a way that SPAs typically do not.
 
 ## An Example
 
@@ -64,11 +66,12 @@ Consider the htmx [Active Search](/examples/active-search) example:
 ```
 
 Here htmx is being used to achieve a UX pattern that would typically be associated with an SPA: as the user types,
-after a slight pause, results will populate the result table below.
+after a slight pause, search results will populate the result table below.
 
 This example effectively demonstrates the essential characteristic of an HDA:
 
 * The front end of the feature is specified entirely in `hx-` declarative attributes, directly in HTML
+
 * The interaction with the server is done via HTTP and HTML: an HTTP request is sent, HTML is returned and inserted into the DOM
 
 ## The Place of Scripting In An HDA
@@ -87,8 +90,8 @@ This addresses the concern regarding Code-On-Demand mentioned in Fielding's thes
 By embedding Code-On-Demand (scripts) directly in HTML, you increase visibility and satisfy the 
 [Locality of Behavior](/essays/locality-of-behaviour/) design principle.
 
-Three approaches to scripting that satisfy this constraint are [hyperscript](https://hyperscript.org), [AlpineJS](https://alpinejs.dev)
-and [VanillaJS](http://vanilla-js.com/) (when embedded directly on HTML elements).
+Three approaches to scripting that satisfy this third constraint are [hyperscript](https://hyperscript.org), 
+[AlpineJS](https://alpinejs.dev) and [VanillaJS](http://vanilla-js.com/) (when embedded directly on HTML elements).
 
 Here is an example of each demonstrating HDA-friendliness:
 
