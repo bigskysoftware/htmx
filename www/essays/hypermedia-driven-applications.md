@@ -94,7 +94,7 @@ Here is an example of each demonstrating HDA-friendliness:
 
 ```html
 <!-- hyperscript -->
-<button _="toggle .red-border">
+<button _="on click toggle .red-border">
   Toggle Class
 </button>
 
