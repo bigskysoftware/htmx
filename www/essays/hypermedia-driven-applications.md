@@ -16,7 +16,7 @@ title: </> htmx - high power tools for html
 
 ## The Hypermedia-Driven Application Architecture
 
-The **Hypermedia Driven Application (HDA)** architecture is an old/new approach to building web applications.  It combines
+The **Hypermedia Driven Application (HDA)** architecture is a new/old approach to building web applications.  It combines
 the simplicity & flexibility of traditional Multi-Page Applications (MPAs) with the better user experience of 
 [Single-Page Applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs).
 

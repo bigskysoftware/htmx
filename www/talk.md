@@ -32,6 +32,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 [HTMX + Flask: Modern Python Web Apps, Hold the JavaScript Course by Michael Kennedy](https://training.talkpython.fm/courses/htmx-flask-modern-python-web-apps-hold-the-javascript)
 
+
 <div class="row">
 <div class="1 col">
 
