@@ -26,7 +26,7 @@ The HDA architecture achieves this goal by extending the existing HTML infrastru
 Two [constraints](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) characterize the HDA architecture: 
 
 * The application uses a **declarative, HTML-embedded syntax**, rather than imperative scripting, to achieve better front end interactivity
-* The application interacts with the server **in terms of hypermedia** (i.e. HTML) rather than another format (e.g. JSON)
+* The application interacts with the server **in terms of hypermedia** (i.e. HTML) rather than a non-hypermedia format (e.g. JSON)
 
 The HDA architecture falls within the **original [REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) 
 architecture of the web** in a way that contrasts with the SPA architecture.  In particular, HDAs make **effective use
