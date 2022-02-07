@@ -60,6 +60,7 @@ return (function () {
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
+                scrollOnFocus: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2640,7 +2641,7 @@ return (function () {
                                     // @ts-ignore
                                     newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                 }
-                                newActiveElt.focus();
+                                newActiveElt.focus({preventScroll: ! htmx.config.scrollOnFocus});
                             }
                         }
 
