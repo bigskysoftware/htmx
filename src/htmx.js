@@ -688,10 +688,11 @@ return (function () {
         }
 
         function getTarget(elt) {
-            var targetStr = getClosestAttributeValue(elt, "hx-target");
-            if (targetStr) {
+            var explicitTarget = findThisElement(elt, "hx-target");
+            if (explicitTarget) {
+                var targetStr = getAttributeValue(explicitTarget, "hx-target")
                 if (targetStr === "this") {
-                    return elt;
+                    return explicitTarget
                 } else if (targetStr === "next-sibling") {
                     return elt.nextElementSibling
                 } else if (targetStr === "previous-sibling") {
@@ -710,7 +711,7 @@ return (function () {
         }
 
         function getErrorTarget(elt) {
-            var explicitTarget = getClosestMatch(elt, function(e){return getAttributeValue(e,"hx-error-target") !== null});
+            var explicitTarget = findThisElement(elt, "hx-error-target");
             if (explicitTarget) {
                 var targetStr = getAttributeValue(explicitTarget, "hx-error-target");
                 if (targetStr === "this") {
@@ -838,6 +839,9 @@ return (function () {
 
         function cleanUpElement(element) {
             var internalData = getInternalData(element);
+            if (internalData.sseEventSource) {
+                internalData.sseEventSource.close();
+            }
 
             triggerEvent(element, "htmx:beforeCleanupElement")
 
@@ -1161,6 +1165,8 @@ return (function () {
                                 every.eventFilter = eventFilter;
                             }
                             triggerSpecs.push(every);
+                        } else if (trigger.indexOf("sse:") === 0) {
+                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substring(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
@@ -1675,7 +1681,9 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.sseEvent) {
+                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
+                        } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "intersect") {
@@ -1750,7 +1758,7 @@ return (function () {
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-ext], [data-hx-ext]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ext], [data-hx-ext]");
                 return results;
             } else {
                 return [];
@@ -1799,6 +1807,11 @@ return (function () {
 
                 if (elt.tagName === "FORM") {
                     initButtonTracking(elt);
+                }
+
+                var sseInfo = getAttributeValue(elt, 'hx-sse');
+                if (sseInfo) {
+                    processSSEInfo(elt, nodeData, sseInfo);
                 }
 
                 triggerEvent(elt, "htmx:afterProcessNode");
@@ -2894,7 +2907,6 @@ return (function () {
                 
             var isError = xhr.status >= 400
             responseInfo.isError = isError
-            var etc = responseInfo.etc;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
