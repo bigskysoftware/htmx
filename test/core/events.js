@@ -133,6 +133,104 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:oobBeforeSwap is called before swap", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='d1'>Baz</div>");
+            });
+            var oob = make('<div id="d1">Blip</div>');
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            byId("d1").innerHTML.should.equal("Baz");
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:oobBeforeSwap", handler);
+        }
+    });
+
+    it("htmx:oobBeforeSwap can abort a swap", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
+            called = true;
+            evt.preventDefault();
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='d1'>Baz</div>");
+            });
+            var oob = make('<div id="d1">Blip</div>');
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            byId("d1").innerHTML.should.equal("Blip");
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:oobBeforeSwap", handler);
+        }
+    });
+
+
+    it("htmx:oobBeforeSwap is not called on an oob miss", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobBeforeSwap", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='test'>Baz</div>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, false);
+        } finally {
+            htmx.off("htmx:oobBeforeSwap", handler);
+        }
+    });
+
+    it("htmx:oobAfterSwap is called after swap", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobAfterSwap", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='d1'>Baz</div>");
+            });
+            var oob = make('<div id="d1">Blip</div>');
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            byId("d1").innerHTML.should.equal("Baz");
+            should.equal(called, true);
+        } finally {
+            htmx.off("htmx:oobAfterSwap", handler);
+        }
+    });
+
+    it("htmx:oobAfterSwap is not called on an oob miss", function () {
+        var called = false;
+        var handler = htmx.on("htmx:oobAfterSwap", function (evt) {
+            called = true;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button><div hx-swap-oob='true' id='test'>Baz</div>");
+            });
+            var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>");
+            div.click();
+            this.server.respond();
+            should.equal(called, false);
+        } finally {
+            htmx.off("htmx:oobAfterSwap", handler);
+        }
+    });
+
     it("htmx:afterSettle is called once when replacing outerHTML", function () {
         var called = 0;
         var handler = htmx.on("htmx:afterSettle", function (evt) {
@@ -255,7 +353,7 @@ describe("Core htmx Events", function() {
             done();
         }, 30);
     });
-    
+
     it("htmx:afterRequest is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("htmx:afterRequest", function (evt) {
@@ -272,7 +370,7 @@ describe("Core htmx Events", function() {
         } finally {
             htmx.off("htmx:afterRequest", handler);
         }
-    }); 
+    });
 
     it("htmx:afterOnLoad is called when replacing outerHTML", function () {
         var called = false;
@@ -463,7 +561,7 @@ describe("Core htmx Events", function() {
             htmx.off("htmx:afterRequest", handler);
         }
     });
-    
+
     it("htmx:afterRequest event contains 'successful' and 'failed' properties indicating failure after failed request", function () {
         var successful = true;
         var failed = false;
@@ -483,8 +581,7 @@ describe("Core htmx Events", function() {
         } finally {
             htmx.off("htmx:afterRequest", handler);
         }
-    });    
-    
+    });
+
 
 });
-

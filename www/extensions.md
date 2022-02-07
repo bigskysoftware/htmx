@@ -56,18 +56,24 @@ against `htmx` in each distribution
 
 | Extension | Description
 |-----------|-------------
+| [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
+| [`alpine-morph`](/extensions/alpine-morph) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
+| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+| [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
+| [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
+| [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
+| [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
 | [`method-override`](/extensions/method-override) | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
-| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
-| [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
-| [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
-| [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
-| [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
 | [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
+| [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
+| [`restored`](/extensions/restored) | allows you to trigger events when the back button has been pressed
+| [`server-sent-events`](/extensions/server-sent-events) | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
+| [`web-sockets`](/extensions/web-sockets) | bi-directional connection to WebSocket servers
 
 </div>
 

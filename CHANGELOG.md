@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.7.0] - ???
+
 ## [1.6.1] - 2021-11-22
 
 * A new `HX-Retarget` header allows you to change the default target of returned content

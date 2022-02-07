@@ -16,6 +16,7 @@ The possible values of this attribute are:
 * `afterbegin` - Insert the response before the first child of the target element
 * `beforeend` - Insert the response after the last child of the target element
 * `afterend` - Insert the response after the target element
+* `delete` - Deletes the target element regardless of the response
 * `none`- Does not append content from response (out of band items will still be processed).
 
 These options are based on standard DOM naming and the 
@@ -106,4 +107,4 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
 * `hx-swap` is inherited and can be placed on a parent element
 * The default value of this attribute is `innerHTML`
 * The default swap delay is 0ms
-* The default settle delay is 100ms
+* The default settle delay is 20ms

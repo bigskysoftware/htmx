@@ -10,13 +10,9 @@ Elements with `hx-preserve` set are preserved by `id` when htmx updates any ance
 You *must* set an unchanging `id` on elements for `hx-preserve` to work.
 The response requires an element with the same `id`, but its type and other attributes are ignored.
 
-Here is an example of a youtube embed, which would be unaffected an htmx request:
-
-```html
-<div>
-  <iframe hx-preserve='true' id='iframe1' width="1268" height="720" src="https://www.youtube.com/embed/Z1oB2EDu5XA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-```
+Note that some elements cannot unfortunately be preserved properly, such as iframes or certain types
+of videos.  In these cases we recommend the [morphdom extension](/extensions/morphdom-swap/), which does a more elaborate DOM
+reconciliation.
 
 ### Notes
 

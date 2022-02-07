@@ -62,6 +62,7 @@
 <script src="attributes/hx-headers.js"></script>
 <script src="attributes/hx-include.js"></script>
 <script src="attributes/hx-indicator.js"></script>
+<script src="attributes/hx-disinherit.js"></script>
 <script src="attributes/hx-params.js"></script>
 <script src="attributes/hx-patch.js"></script>
 <script src="attributes/hx-post.js"></script>
@@ -73,6 +74,7 @@
 <script src="attributes/hx-sse.js"></script>
 <script src="attributes/hx-swap-oob.js"></script>
 <script src="attributes/hx-swap.js"></script>
+<script src="attributes/hx-sync.js"></script>
 <script src="attributes/hx-target.js"></script>
 <script src="attributes/hx-trigger.js"></script>
 <script src="attributes/hx-vals.js"></script>
@@ -124,6 +126,9 @@
 <script src="../src/ext/event-header.js"></script>
 <script src="ext/event-header.js"></script>
 
+<script src="../src/ext/sse.js"></script>
+<script src="../src/ext/ws.js"></script>
+
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>
 
@@ -134,7 +139,7 @@
 </script>
 <em>Work Area</em>
 <hr/>
-<div id="work-area" hx-history-elt>
+<div id="work-area" hx-history-elt hx-ext="sse, ws">
 </div>
 </body>
 </html>

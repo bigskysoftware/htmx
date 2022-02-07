@@ -172,4 +172,17 @@ describe("Core htmx Regression Tests", function(){
         div1.innerHTML.should.equal("triggered");
     })
 
+    it("supports unset on hx-select", function(){
+        this.server.respondWith("GET", "/test", "Foo<span id='example'>Bar</span>");
+        htmx.logAll();
+        make('<form hx-select="#example">\n' +
+            '      <button id="b1" hx-select="unset" hx-get="/test">Initial</button>\n' +
+            '</form>')
+        var btn = byId("b1");
+        btn.click()
+        this.server.respond();
+
+        btn.innerText.should.equal("FooBar");
+    })
+
 })
