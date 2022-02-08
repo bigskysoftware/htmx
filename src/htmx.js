@@ -465,10 +465,16 @@ return (function () {
         
         function readLayout(callback) {
             layoutReadsQueue.push(callback)
+            if (document.hidden) {
+                processLayoutQueues()
+            }
         }
 
         function writeLayout(callback) {
             layoutWritesQueue.push(callback)
+            if (document.hidden) {
+                processLayoutQueues()
+            }
         }
         
         /** @param {HTMLSelectElement} select */
@@ -522,8 +528,11 @@ return (function () {
                 writesQueue[i]()
             }
             writesQueue.length = 0
-            
-            requestAnimationFrame(processLayoutQueues)
+        }
+
+        function processLayoutQueuesRecursive() {
+            processLayoutQueues()            
+            requestAnimationFrame(processLayoutQueuesRecursive)
         }
 
         function initializeLayoutReadWrite() {
@@ -535,7 +544,7 @@ return (function () {
             hiddenSelectOption = hiddenSelect.appendChild(document.createElement("option"))
             document.body.appendChild(hiddenSelect)
 
-            requestAnimationFrame(processLayoutQueues)
+            requestAnimationFrame(processLayoutQueuesRecursive)
         }
 
         //====================================================================

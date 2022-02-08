@@ -465,10 +465,16 @@ return (function () {
         
         function readLayout(callback) {
             layoutReadsQueue.push(callback)
+            if (document.hidden) {
+                processLayoutQueues()
+            }
         }
 
         function writeLayout(callback) {
             layoutWritesQueue.push(callback)
+            if (document.hidden) {
+                processLayoutQueues()
+            }
         }
         
         /** @param {HTMLSelectElement} select */
@@ -522,8 +528,11 @@ return (function () {
                 writesQueue[i]()
             }
             writesQueue.length = 0
-            
-            requestAnimationFrame(processLayoutQueues)
+        }
+
+        function processLayoutQueuesRecursive() {
+            processLayoutQueues()            
+            requestAnimationFrame(processLayoutQueuesRecursive)
         }
 
         function initializeLayoutReadWrite() {
@@ -535,7 +544,7 @@ return (function () {
             hiddenSelectOption = hiddenSelect.appendChild(document.createElement("option"))
             document.body.appendChild(hiddenSelect)
 
-            requestAnimationFrame(processLayoutQueues)
+            requestAnimationFrame(processLayoutQueuesRecursive)
         }
 
         //====================================================================
@@ -1000,7 +1009,7 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    let from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                     if (from_arg === "closest" || from_arg === "find") {
                                         tokens.shift();
                                         from_arg +=
@@ -1527,7 +1536,7 @@ return (function () {
         }
 
         function evalScript(script) {
-            if (script.type === "text/javascript" || script.type === "") {
+            if (script.type === "text/javascript" || script.type === "module" || script.type === "") {
                 var newScript = getDocument().createElement("script");
                 forEach(script.attributes, function (attr) {
                     newScript.setAttribute(attr.name, attr.value);
