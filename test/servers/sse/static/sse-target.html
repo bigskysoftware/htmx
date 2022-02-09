@@ -7,18 +7,18 @@
 </p>
 <h3>Example HTML</h3>
 <pre class="code">
-&lt;div hx-ext="sse" sse-connect="/users/sse.html" sse-target="#otherNode"&gt;&lt;/div&gt;
+&lt;div hx-ext="sse" hx-sse="connect:/users.html swap:message" hx-target="#otherNode"&gt;&lt;/div&gt;
 &lt;div id="otherNode"&gt;&lt;/div&gt;
 </pre>
 <h3>Test Cases</h3>
 <h3>Multiple Listeners using HX-Target to write to a single target node.</h3>
 
 <div>
-	<div hx-ext="sse" sse-connect="/posts.html" sse-swap="message" hx-target="#otherNode"></div>
-	<div hx-ext="sse" sse-connect="/comments.html" sse-swap="message" hx-target="#otherNode"></div>
-	<div hx-ext="sse" sse-connect="/albums.html" sse-swap="message" hx-target="#otherNode"></div>
-	<div hx-ext="sse" sse-connect="/todos.html" sse-swap="message" hx-target="#otherNode"></div>
-	<div hx-ext="sse" sse-connect="/users.html" sse-swap="message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" hx-sse="connect:/posts.html swap:message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" hx-sse="connect:/comments.html swap:message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" hx-sse="connect:/albums.html swap:message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" hx-sse="connect:/todos.html swap:message" hx-target="#otherNode"></div>
+	<div hx-ext="sse" hx-sse="connect:/users.html swap:message" hx-target="#otherNode"></div>
 </div>
 
 <div class="container" id="otherNode">Waiting for records from any of: Posts/Comments/Albums/ToDos/Users</div>

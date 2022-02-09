@@ -16,6 +16,7 @@ import (
 	"github.com/benpate/derp"
 	"github.com/benpate/htmlconv"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/browser"
 )
 
 type formatFunc func(interface{}) string
@@ -104,6 +105,9 @@ func main() {
 		content := fmt.Sprintf(template, nextPage, thisPage, random)
 		return ctx.HTML(200, content)
 	})
+
+	// On first run, open web browser in admin mode
+	browser.OpenURL("http://localhost/")
 
 	e.Logger.Fatal(e.Start(":80"))
 }
