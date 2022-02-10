@@ -767,6 +767,12 @@ return (function () {
 
         function cleanUpElement(element) {
             var internalData = getInternalData(element);
+            if (internalData.webSocket) {
+                internalData.webSocket.close();
+            }
+            if (internalData.sseEventSource) {
+                internalData.sseEventSource.close();
+            }
 
             triggerEvent(element, "htmx:beforeCleanupElement")
 
@@ -1073,6 +1079,8 @@ return (function () {
                                 every.eventFilter = eventFilter;
                             }
                             triggerSpecs.push(every);
+                        } else if (trigger.indexOf("sse:") === 0) {
+                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
@@ -1559,7 +1567,6 @@ return (function () {
             return getInternalData(node).sseEventSource != null;
         }
 
-        
         //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
