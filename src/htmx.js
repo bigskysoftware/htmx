@@ -569,6 +569,7 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
+        
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
