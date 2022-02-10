@@ -1,6 +1,6 @@
-# WebSocket - Test Server
+# Htmx Realtime Test Server
 
-This package implements a test-suite WebSocket server for testing htmx.
+This package implements a realtime server for testing WebSockets and Server Sent Events (SSE) in htmx.
 
 ## What It Does
 
