@@ -54,19 +54,21 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 Thank you to our corporate sponsors!
 
 <div class="row" style="text-align: center">
-<div class="col 2" style="padding: 0">
+<div class="col 2" style="padding: 16px">
 
-[![CommSpace](/img/commspace.svg)](https://www.commspace.co.za/)
-
-</div>
-
-<div class="col 2" style="padding: 0">
-
-<a href="https://bigsky.software"><img src="/img/bss.png" style="width:250px"></a>
+<a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:90%"></a>
 
 </div>
 
-<div class="col 2" style="padding: 0">
+<div class="col 2" style="padding: 16px">
+
+<a href="https://bigsky.software"><img src="/img/bss.png" style="width:90%"></a>
+
+</div>
+
+<div class="col 2" style="padding: 16px">
+
+<a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%"></a>
 
 </div>
 </div>

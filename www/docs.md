@@ -116,31 +116,26 @@ If you are migrating to htmx from intercooler.js, please see the [migration guid
 
 ### webpack
 
-If you are using webpack, you have to do the following steps:
+If you are using webpack to managed your javascript:
 
-1. Install `htmx` via your favourite package manager (like npm or yarn)
-2. Add the import to your `index.js`
-   
-``` js   
+* Install `htmx` via your favourite package manager (like npm or yarn)
+* Add the import to your `index.js`
+  ``` js   
     import 'htmx.org';
-```
+  ```
 
-If you want to use the global `htmx` variable (recommended), you have to inject it to the window scope.
+If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
 
-3. Create a custom JS file
-4. Import this file to your `index.js` (below the import from step 2) 
-
-``` js   
+* Create a custom JS file
+* Import this file to your `index.js` (below the import from step 2) 
+  ``` js   
     import 'path/to/my_custom.js';
-```
-
-5. Add the following line
-
-``` js   
+  ```
+* Then add this code to the file:
+  ``` js   
     window.htmx = require('htmx.org');
-```
-
-6. Rebuild your bundle
+  ```
+* Finally, rebuild your bundle
 
 
 ## <a name="ajax"></a> [AJAX](#ajax)
@@ -1155,7 +1150,13 @@ You can set them directly in javascript, or you can use a `meta` tag:
 
 ### Conclusion
 
-And that's it!  Have fun with htmx: you can accomplish [quite a bit](/examples) without a lot of code.
+And that's it!  
+
+Have fun with htmx!  You can accomplish [quite a bit](/examples) without writing a lot of code!
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*
 
 </div>
 </div>
