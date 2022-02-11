@@ -16,6 +16,7 @@ import (
 	"github.com/benpate/derp"
 	"github.com/benpate/htmlconv"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/browser"
 	"golang.org/x/net/websocket"
 )
 
@@ -40,7 +41,7 @@ func main() {
 	e := echo.New()
 
 	e.Static("/", "static")
-	e.Static("/htmx", "../../../src")
+	e.Static("/htmx", "../../src")
 
 	// Web Socket Handlers
 	e.GET("/echo", wsEcho)
@@ -109,6 +110,9 @@ func main() {
 		content := fmt.Sprintf(template, nextPage, thisPage, random)
 		return ctx.HTML(200, content)
 	})
+
+	// On first run, open web browser in admin mode
+	browser.OpenURL("http://localhost/")
 
 	e.Logger.Fatal(e.Start(":80"))
 }
