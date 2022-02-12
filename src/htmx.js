@@ -2024,9 +2024,7 @@ return (function () {
                             swapSpec["showTarget"] = selectorVal;
                         }
                         if (modifier.indexOf("focus-scroll:") === 0) {
-                            var focusScrollSpec = modifier.substr("focus-scroll:".length);
-                            var splitSpec = focusScrollSpec.split(":");
-                            var focusScrollVal = splitSpec.pop();
+                            var focusScrollVal = modifier.substr("focus-scroll:".length);
                             swapSpec["focusScroll"] = focusScrollVal == "true";
                         }
                     }
