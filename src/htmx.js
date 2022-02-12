@@ -60,7 +60,7 @@ return (function () {
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
-                scrollOnFocus: false,
+                defaultFocusScroll: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2023,6 +2023,12 @@ return (function () {
                             swapSpec["show"] = showVal;
                             swapSpec["showTarget"] = selectorVal;
                         }
+                        if (modifier.indexOf("focus-scroll:") === 0) {
+                            var showSpec = modifier.substr("focus-scroll:".length);
+                            var splitSpec = showSpec.split(":");
+                            var showVal = splitSpec.pop();
+                            swapSpec["focusScroll"] = showVal == "true";
+                        }
                     }
                 }
             }
@@ -2635,13 +2641,14 @@ return (function () {
                             !bodyContains(selectionInfo.elt) &&
                             selectionInfo.elt.id) {
                             var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                            var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll };
                             if (newActiveElt) {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
                                     newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                 }
-                                newActiveElt.focus({preventScroll: ! htmx.config.scrollOnFocus});
+                                newActiveElt.focus(focusOptions);
                             }
                         }
 
