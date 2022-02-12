@@ -16,6 +16,8 @@ import (
 	"github.com/benpate/derp"
 	"github.com/benpate/htmlconv"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/browser"
+	"golang.org/x/net/websocket"
 )
 
 type formatFunc func(interface{}) string
@@ -39,9 +41,13 @@ func main() {
 	e := echo.New()
 
 	e.Static("/", "static")
-	e.Static("/htmx", "../../../src")
+	e.Static("/htmx", "../../src")
 
-	// JSON Event Streams
+	// Web Socket Handlers
+	e.GET("/echo", wsEcho)
+	e.GET("/heartbeat", wsHeartbeat)
+
+	// SSE - JSON Event Streams
 	e.GET("/posts.json", handleStream(makeStream(data["posts"], jsonFormatFunc)))
 	e.GET("/comments.json", handleStream(makeStream(data["comments"], jsonFormatFunc)))
 	e.GET("/photos.json", handleStream(makeStream(data["comments"], jsonFormatFunc)))
@@ -49,7 +55,7 @@ func main() {
 	e.GET("/todos.json", handleStream(makeStream(data["todos"], jsonFormatFunc)))
 	e.GET("/users.json", handleStream(makeStream(data["users"], jsonFormatFunc)))
 
-	// HTML Event Streams (with HTMX extension tags)
+	// SSE - HTML Event Streams (with HTMX extension tags)
 	e.GET("/posts.html", handleStream(makeStream(data["posts"], postTemplate())))
 	e.GET("/comments.html", handleStream(makeStream(data["comments"], commentTemplate())))
 	e.GET("/photos.json", handleStream(makeStream(data["comments"], jsonFormatFunc)))
@@ -105,8 +111,71 @@ func main() {
 		return ctx.HTML(200, content)
 	})
 
+	// On first run, open web browser in admin mode
+	browser.OpenURL("http://localhost/")
+
 	e.Logger.Fatal(e.Start(":80"))
 }
+
+/*******************************************
+ * Web Socket Handlers
+ *******************************************/
+
+func wsHeartbeat(c echo.Context) error {
+
+	handler := websocket.Handler(func(ws *websocket.Conn) {
+
+		defer ws.Close()
+
+		for i := 0; ; i = i + 1 {
+
+			time.Sleep(1 * time.Second)
+
+			random := rand.Int()
+			message := `<div id="idMessage" hx-swap-oob="true">Message ` + strconv.Itoa(i) + `: ` + strconv.Itoa(random) + `</div>`
+
+			if err := websocket.Message.Send(ws, message); err != nil {
+				c.Logger().Error("send", err)
+				return
+			}
+		}
+	})
+
+	handler.ServeHTTP(c.Response(), c.Request())
+	return nil
+}
+
+func wsEcho(c echo.Context) error {
+
+	handler := websocket.Handler(func(ws *websocket.Conn) {
+
+		defer ws.Close()
+
+		for {
+
+			msg := ""
+
+			if err := websocket.Message.Receive(ws, &msg); err != nil {
+				c.Logger().Error("receive", err)
+				return
+			}
+
+			response := `<div id="idMessage" hx-swap-oob="true">` + msg + `</div>`
+
+			if err := websocket.Message.Send(ws, response); err != nil {
+				c.Logger().Error("send", err)
+				return
+			}
+		}
+	})
+
+	handler.ServeHTTP(c.Response(), c.Request())
+	return nil
+}
+
+/*******************************************
+ * SSE Handlers
+ *******************************************/
 
 func pageHandler(ctx echo.Context, page int) error {
 

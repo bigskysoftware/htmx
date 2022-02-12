@@ -3,9 +3,9 @@ layout: layout.njk
 title: </> htmx - hx-ws
 ---
 
-## `hx-ws` *HAS BEEN MIGRATED TO AN EXTENSION*
+## `hx-ws` *HAS BEEN DEPRECATED*
 
-**If you are using htmx version 1.6.1 or greater, please visit the [WebSockets extension page](../extensions/web-sockets) to learn about the new implementation of Web Sockets as an extension.
+**This tag will be removed in htmx version 2.0.  If you are using htmx version 1.7 or greater, please visit the [WebSockets extension page](../extensions/web-sockets) to learn about the new implementation of Web Sockets as an extension.
 
 ## This Reference Applies To Version 1.6 And Below
 
@@ -44,6 +44,11 @@ reconnecting is tried until successful.
 The default reconnection interval is implemented with the full-jitter exponential-backoff algorithm.
 Own implementations can be provided by setting `htmx.config.wsReconnectDelay` to a function with
 `retryCount` as its only parameter.
+
+
+### Test Web Sockets Server
+
+Htmx includes a WebSockets test server with many more examples of how to use Server Sent Events.  Download the htmx source code from github and navigate to /test/servers/ws to experiment.
 
 ### Notes
 
