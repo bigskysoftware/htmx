@@ -60,7 +60,6 @@ against `htmx` in each distribution
 | [`alpine-morph`](/extensions/alpine-morph) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
-| [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
 | [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
