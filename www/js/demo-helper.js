@@ -17,7 +17,7 @@ function interpolate(str) {
             }
             charArray.shift();
             evalStr += " })()";
-            console.log("Evaling", evalStr);
+            // console.log("Evaling", evalStr);
             returnStr += eval(evalStr);
         } else {
             returnStr += current;
@@ -30,10 +30,10 @@ function initMockRequests() {
     if(typeof MockRequests === "undefined" ||
         typeof htmx === "undefined" ||
         typeof _hyperscript === "undefined") {
-        console.log("Not defined yet");
+        // console.log("Not defined yet");
         setTimeout(initMockRequests, 20);
     } else {
-        console.log("defining");
+        // console.log("defining");
         htmx.findAll("template").forEach(function(elt){
             if(elt.getAttribute("url")){
                 MockRequests.setDynamicMockUrlResponse(elt.getAttribute("url"),
