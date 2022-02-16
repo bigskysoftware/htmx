@@ -147,3 +147,8 @@ can satisfy more client needs without modification.
 
 When designing a hypermedia API, you should use a different design mindset than you use for data APIs.  Churn is
 much less of a concern, and providing the end points you need for a good hypermedia experience should be your primary goal.
+
+
+<div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+&lt;/&gt;
+</div>

@@ -11,7 +11,7 @@ title: </> htmx - high power tools for html
 
 ## introduction
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),  [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
+htmx gives you access to  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),  [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
 directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
@@ -41,9 +41,10 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
   </button>
 ```
 
-The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
+The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes on
+this button tell htmx:
 
-> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
+> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the HTML response"
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
@@ -54,19 +55,21 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 Thank you to our corporate sponsors!
 
 <div class="row" style="text-align: center">
-<div class="col 2" style="padding: 0">
+<div class="col 2" style="padding: 16px">
 
-[![CommSpace](/img/commspace.svg)](https://www.commspace.co.za/)
-
-</div>
-
-<div class="col 2" style="padding: 0">
-
-<a href="https://bigsky.software"><img src="/img/bss.png" style="width:250px"></a>
+<a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:90%"></a>
 
 </div>
 
-<div class="col 2" style="padding: 0">
+<div class="col 2" style="padding: 16px">
+
+<a href="https://bigsky.software"><img src="/img/bss.png" style="width:90%"></a>
+
+</div>
+
+<div class="col 2" style="padding: 16px">
+
+<a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%"></a>
 
 </div>
 </div>
@@ -74,12 +77,10 @@ Thank you to our corporate sponsors!
 If you use htmx commercially & wish to support the 
 project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
 
-For htmx consulting, [email us](mailto:htmx@bigsky.software)
+[Consulting](mailto:htmx@bigsky.software) is available.
 
 ## haiku
 
 *javascript fatigue:<br/>
 longing for a hypertext<br/>
 already in hand*
-
-

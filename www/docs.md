@@ -117,24 +117,26 @@ If you are migrating to htmx from intercooler.js, please see the [migration guid
 
 ### <a name="webpack">[webpack](#webpack)
 
-If you are using webpack, please follow these steps:
+If you are using webpack to managed your javascript:
 
-1. Install `htmx` via your favourite package manager (like npm or yarn)
-1. Add the import to your `index.js`
+* Install `htmx` via your favourite package manager (like npm or yarn)
+* Add the import to your `index.js`
   ``` js   
-  import 'htmx.org';
+    import 'htmx.org';
   ```
-1. Optional but recommended: if you want to use the global `htmx` variable:
-    2. Create a custom JS file and import this file to your `index.js` below the import 
-       from step 2
-    ``` js   
-      import 'path/to/my_custom.js';
-    ```
-    3. Add the following line to it
-    ``` js   
-      window.htmx = require('htmx.org');
-    ```
-    6. Rebuild your bundle
+
+If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
+
+* Create a custom JS file
+* Import this file to your `index.js` (below the import from step 2) 
+  ``` js   
+    import 'path/to/my_custom.js';
+  ```
+* Then add this code to the file:
+  ``` js   
+    window.htmx = require('htmx.org');
+  ```
+* Finally, rebuild your bundle
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
@@ -1210,7 +1212,13 @@ You can set them directly in javascript, or you can use a `meta` tag:
 
 ### Conclusion
 
-And that's it!  Have fun with htmx: you can accomplish [quite a bit](/examples) without a lot of code.
+And that's it!  
+
+Have fun with htmx!  You can accomplish [quite a bit](/examples) without writing a lot of code!
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*
 
 </div>
 </div>

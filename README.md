@@ -97,7 +97,7 @@ At this point you can modify `/src/htmx.js` to add features, and then add tests 
 * `/test/index.html` - the root test page from which all other tests are included
 * `/test/attributes` - attribute specific tests
 * `/test/core` - core functionality tests
-* `/test/core/regressions.js` - regresssion tests
+* `/test/core/regressions.js` - regression tests
 * `/test/ext` - extension tests
 * `/test/manual` - manual tests that cannot be automated
 
