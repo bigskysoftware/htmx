@@ -19,7 +19,7 @@ Additionally, you can add mock responses by simply adding `template` tags with t
 Copy this to your demo site:
 
 ```html
-  <script src="https://htmx.org/js/demo-helper.js"></script>
+  <script src="https://htmx.org/js/demo.js"></script>
 ```
 
 ## Example
@@ -27,7 +27,7 @@ Copy this to your demo site:
 This is an example of the code in action:
 
 ```html
-<script src="https://htmx.org/js/demo-helper.js"></script>
+<script src="https://htmx.org/js/demo.js"></script>
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">Count Up</button> <output id="result"></output>
 <!-- respond to /foo -->

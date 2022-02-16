@@ -1,0 +1,17 @@
+<html>
+<head>
+    <script src="demo.js"></script>
+</head>
+<body>
+<!-- post to /foo -->
+<button hx-get="/foo?bar=10" hx-target="#result">Count Up</button> <output id="result"></output>
+<!-- respond to /foo -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo">
+    ${bar + 5}
+</template>
+
+</body>
+</html>
