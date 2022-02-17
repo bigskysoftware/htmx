@@ -1304,7 +1304,7 @@ listed below:
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
-|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overriden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
 
 </div>
 
