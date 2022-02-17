@@ -18,6 +18,14 @@ If you wish for `hx-vals` to *evaluate* the values given, you can prefix the val
   <div hx-get="/example" hx-vals='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Value from Javascript in the Request</div>
 ```
 
+When using evaluated code you can access the `event` object. This example includes the value of the last typed key within the input.
+
+```html
+  <div hx-get="/example" hx-trigger="keyup" hx-vals='js:{lastKey: event.key}'>
+    <input type="text" />
+  </div>
+```
+
 ### Security Considerations
 
 * By default, the value of `hx-vals` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON). 
