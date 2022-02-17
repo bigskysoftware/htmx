@@ -400,7 +400,15 @@ a form request is present or starts while the input request is in flight:
 </form>
 ```
 
-This resolve the synchronization between the two elements in a declarative way.
+This resolves the synchronization between the two elements in a declarative way.
+
+htmx also supports a programmatic way to cancel requests: you can send the `htmx:abort` event to an element to
+cancel any in-flight requests:
+
+```html
+<button id="request-button" hx-post="/example">Issue Request</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
+```
 
 More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
 
@@ -646,11 +654,22 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 
 ### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
-Htmx has experimental support for declarative use of both
+htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-These features are under active development, so please let us know if you are willing to experiment with them.
+<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
+
+**Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
+htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
+both SSE and web sockets will be done in the extensions.  
+
+Please visit the [SSE extension](../extensions/server-sent-events) and [WebSocket extension](../extensions/web-sockets) 
+pages to learn more about the new extensions.
+
+</div>
+
+
 
 #### <a name="websockets">[WebSockets](#websockets)
 
@@ -697,8 +716,7 @@ Here is an example:
 Depending on your implementation, this may be more efficient than the polling example above since the server would
 notify the div if there was new news to get, rather than the steady requests that a poll causes.
 
-Note: The `hx-sse` will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
-[SSE extension page](../extensions/server-sent-events) to learn about the new implementation of SSE as an extension.
+
 
 ## <a name="history"></a> [History Support](#history)
 
@@ -1238,6 +1256,7 @@ listed below:
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false
 
 </div>
 

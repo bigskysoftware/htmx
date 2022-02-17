@@ -102,6 +102,15 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
     Get Some Content
   </div>
 ```
+
+Finally, htmx attempts to preserve focus between requests.  This will cause the focused element to scroll into view
+which can be unwanted behavior in some cases.  To disable this, you can use `focus-scroll:false`:
+
+```html
+  <input hx-get="/validation" 
+       hx-swap="outerHTML focus-scroll:false"/>
+```
+
 ### Notes
 
 * `hx-swap` is inherited and can be placed on a parent element

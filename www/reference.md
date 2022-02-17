@@ -107,6 +107,7 @@ title: </> htmx - Attributes
 
 | Event | Description |
 |-------|-------------|
+| [`htmx:abort`](/events#htmx:abort) | send this event to an element to abort a request
 | [`htmx:afterOnLoad`](/events#htmx:afterOnLoad) | triggered after an AJAX request has completed processing a successful response
 | [`htmx:afterProcessNode`](/events#htmx:afterProcessNode) | triggered after htmx has initialized a node
 | [`htmx:afterRequest`](/events#htmx:afterRequest)  | triggered after an AJAX request has completed
