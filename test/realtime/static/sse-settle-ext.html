@@ -1,4 +1,10 @@
 <h1>Settling Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" hx-get="/sse-settle.html">Legacy Style</a>
+	<a role="tab" hx-get="/sse-settle-ext.html" aria-selected="true">New Style</a>
+</div>
+
 <h3>Description</h3>
 <p>
 	This page connects to a single different Server Sent Event (SSE) stream.  
@@ -10,6 +16,7 @@
 	&lt;div sse-swap="message" hx-swap="settle:100ms"&gt;Waiting for Comments...&lt;/div&gt;
 &lt;/div&gt;
 </pre>
+
 <h3>Test Cases</h3>
 <div hx-ext="sse" sse-connect="http://localhost/comments.html">
 	<div class="container" sse-swap="message" hx-swap="innerHTML settle:50ms">Waiting for Comments...</div>

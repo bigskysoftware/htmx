@@ -57,12 +57,19 @@ return (function () {
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
                 timeout:0,
+                wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
             },
             parseInterval:parseInterval,
             _:internalEval,
+            createEventSource: function(url){
+                return new EventSource(url, {withCredentials:true})
+            },
+            createWebSocket: function(url){
+                return new WebSocket(url, []);
+            },
             version: "1.7.0"
         };
 
@@ -562,6 +569,7 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
+        
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
@@ -760,6 +768,12 @@ return (function () {
 
         function cleanUpElement(element) {
             var internalData = getInternalData(element);
+            if (internalData.webSocket) {
+                internalData.webSocket.close();
+            }
+            if (internalData.sseEventSource) {
+                internalData.sseEventSource.close();
+            }
 
             triggerEvent(element, "htmx:beforeCleanupElement")
 
@@ -1058,6 +1072,8 @@ return (function () {
                                 every.eventFilter = eventFilter;
                             }
                             triggerSpecs.push(every);
+                        } else if (trigger.indexOf("sse:") === 0) {
+                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
@@ -1332,6 +1348,219 @@ return (function () {
         }
 
         //====================================================================
+        // Web Sockets
+        //====================================================================
+
+        function processWebSocketInfo(elt, nodeData, info) {
+            var values = splitOnWhitespace(info);
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i].split(/:(.+)/);
+                if (value[0] === "connect") {
+                    ensureWebSocket(elt, value[1], 0);
+                }
+                if (value[0] === "send") {
+                    processWebSocketSend(elt);
+                }
+            }
+        }
+
+        function ensureWebSocket(elt, wssSource, retryCount) {
+            if (!bodyContains(elt)) {
+                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
+            }
+
+            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
+                var base_part = location.hostname + (location.port ? ':'+location.port: '');
+                if (location.protocol == 'https:') {
+                    wssSource = "wss://" + base_part + wssSource;
+                } else if (location.protocol == 'http:') {
+                    wssSource = "ws://" + base_part + wssSource;
+                }
+            }
+            var socket = htmx.createWebSocket(wssSource);
+            socket.onerror = function (e) {
+                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
+                maybeCloseWebSocketSource(elt);
+            };
+
+            socket.onclose = function (e) {
+                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
+                    var delay = getWebSocketReconnectDelay(retryCount);
+                    setTimeout(function() {
+                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
+                    }, delay);
+                }
+            };
+            socket.onopen = function (e) {
+                retryCount = 0;
+            }
+
+            getInternalData(elt).webSocket = socket;
+            socket.addEventListener('message', function (event) {
+                if (maybeCloseWebSocketSource(elt)) {
+                    return;
+                }
+
+                var response = event.data;
+                withExtensions(elt, function(extension){
+                    response = extension.transformResponse(response, null, elt);
+                });
+
+                var settleInfo = makeSettleInfo(elt);
+                var fragment = makeFragment(response);
+                var children = toArray(fragment.children);
+                for (var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
+                }
+
+                settleImmediately(settleInfo.tasks);
+            });
+        }
+
+        function maybeCloseWebSocketSource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).webSocket.close();
+                return true;
+            }
+        }
+
+        function processWebSocketSend(elt) {
+            var webSocketSourceElt = getClosestMatch(elt, function (parent) {
+                return getInternalData(parent).webSocket != null;
+            });
+            if (webSocketSourceElt) {
+                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
+                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
+                    var headers = getHeaders(elt, webSocketSourceElt);
+                    var results = getInputValues(elt, 'post');
+                    var errors = results.errors;
+                    var rawParameters = results.values;
+                    var expressionVars = getExpressionVars(elt);
+                    var allParameters = mergeObjects(rawParameters, expressionVars);
+                    var filteredParameters = filterValues(allParameters, elt);
+                    filteredParameters['HEADERS'] = headers;
+                    if (errors && errors.length > 0) {
+                        triggerEvent(elt, 'htmx:validation:halted', errors);
+                        return;
+                    }
+                    webSocket.send(JSON.stringify(filteredParameters));
+                    if(shouldCancel(evt, elt)){
+                        evt.preventDefault();
+                    }
+                });
+            } else {
+                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
+            }
+        }
+
+        function getWebSocketReconnectDelay(retryCount) {
+            var delay = htmx.config.wsReconnectDelay;
+            if (typeof delay === 'function') {
+                // @ts-ignore
+                return delay(retryCount);
+            }
+            if (delay === 'full-jitter') {
+                var exp = Math.min(retryCount, 6);
+                var maxDelay = 1000 * Math.pow(2, exp);
+                return maxDelay * Math.random();
+            }
+            logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
+        }
+
+        //====================================================================
+        // Server Sent Events
+        //====================================================================
+
+        function processSSEInfo(elt, nodeData, info) {
+            var values = splitOnWhitespace(info);
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i].split(/:(.+)/);
+                if (value[0] === "connect") {
+                    processSSESource(elt, value[1]);
+                }
+
+                if ((value[0] === "swap")) {
+                    processSSESwap(elt, value[1])
+                }
+            }
+        }
+
+        function processSSESource(elt, sseSrc) {
+            var source = htmx.createEventSource(sseSrc);
+            source.onerror = function (e) {
+                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
+                maybeCloseSSESource(elt);
+            };
+            getInternalData(elt).sseEventSource = source;
+        }
+
+        function processSSESwap(elt, sseEventName) {
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                var sseListener = function (event) {
+                    if (maybeCloseSSESource(sseSourceElt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener);
+                        return;
+                    }
+
+                    ///////////////////////////
+                    // TODO: merge this code with AJAX and WebSockets code in the future.
+
+                    var response = event.data;
+                    withExtensions(elt, function(extension){
+                        response = extension.transformResponse(response, null, elt);
+                    });
+
+                    var swapSpec = getSwapSpecification(elt)
+                    var target = getTarget(elt)
+                    var settleInfo = makeSettleInfo(elt);
+
+                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    settleImmediately(settleInfo.tasks)
+                    triggerEvent(elt, "htmx:sseMessage", event)
+                };
+
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
+            }
+        }
+
+        function processSSETrigger(elt, verb, path, sseEventName) {
+            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            if (sseSourceElt) {
+                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                var sseListener = function () {
+                    if (!maybeCloseSSESource(sseSourceElt)) {
+                        if (bodyContains(elt)) {
+                            issueAjaxRequest(verb, path, elt);
+                        } else {
+                            sseEventSource.removeEventListener(sseEventName, sseListener);
+                        }
+                    }
+                };
+                getInternalData(elt).sseListener = sseListener;
+                sseEventSource.addEventListener(sseEventName, sseListener);
+            } else {
+                triggerErrorEvent(elt, "htmx:noSSESourceError");
+            }
+        }
+
+        function maybeCloseSSESource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).sseEventSource.close();
+                return true;
+            }
+        }
+
+        function hasEventSource(node) {
+            return getInternalData(node).sseEventSource != null;
+        }
+
+        //====================================================================
 
         function loadImmediately(elt, verb, path, nodeData, delay) {
             var load = function(){
@@ -1356,7 +1585,9 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.trigger === "revealed") {
+                        if (triggerSpec.sseEvent) {
+                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
+                        } else if (triggerSpec.trigger === "revealed") {
                             initScrollHandler();
                             maybeReveal(elt);
                         } else if (triggerSpec.trigger === "intersect") {
@@ -1431,7 +1662,8 @@ return (function () {
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = isBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-ext], [data-hx-ext]");
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
                 return results;
             } else {
                 return [];
@@ -1482,6 +1714,15 @@ return (function () {
                     initButtonTracking(elt);
                 }
 
+                var sseInfo = getAttributeValue(elt, 'hx-sse');
+                if (sseInfo) {
+                    processSSEInfo(elt, nodeData, sseInfo);
+                }
+
+                var wsInfo = getAttributeValue(elt, 'hx-ws');
+                if (wsInfo) {
+                    processWebSocketInfo(elt, nodeData, wsInfo);
+                }
                 triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
