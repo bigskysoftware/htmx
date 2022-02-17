@@ -910,15 +910,7 @@ return (function () {
         }
 
         function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
-            var title = findTitle(responseText);
-            if(title) {
-                var titleElt = find("title");
-                if(titleElt) {
-                    titleElt.innerHTML = title;
-                } else {
-                    window.document.title = title;
-                }
-            }
+            settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
@@ -1632,7 +1624,7 @@ return (function () {
             return clone.innerHTML;
         }
 
-        function saveHistory() {
+        function saveCurrentPageToHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
@@ -1678,7 +1670,7 @@ return (function () {
         }
 
         function restoreHistory(path) {
-            saveHistory();
+            saveCurrentPageToHistory();
             path = path || location.pathname+location.search;
             var cached = getCachedHistory(path);
             if (cached) {
@@ -2603,7 +2595,7 @@ return (function () {
 
                 // Save current page
                 if (shouldSaveHistory) {
-                    saveHistory();
+                    saveCurrentPageToHistory();
                 }
 
                 var swapOverride = etc.swapOverride;
@@ -2679,6 +2671,16 @@ return (function () {
                                 pushUrlIntoHistory(pathToPush);
                                 triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
                             }
+
+                            if(settleInfo.title) {
+                                var titleElt = find("title");
+                                if(titleElt) {
+                                    titleElt.innerHTML = settleInfo.title;
+                                } else {
+                                    window.document.title = settleInfo.title;
+                                }
+                            }
+
                             updateScrollState(settleInfo.elts, swapSpec);
 
                             if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
