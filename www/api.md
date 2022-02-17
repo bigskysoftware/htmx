@@ -19,11 +19,20 @@ This method adds a class to the given element.
 * `elt` - the element to add the class to
 * `class` - the class to add
 
+or
+
+* `elt` - the element to add the class to
+* `class` - the class to add
+* `delay` - delay (in milliseconds ) before class is added
+
 ##### Example
 
 ```js
   // add the class 'myClass' to the element with the id 'demo'
   htmx.addClass(htmx.find('#demo'), 'myClass');
+
+  // add the class 'myClass' to the element with the id 'demo' after 1 second
+  htmx.addClass(htmx.find('#demo'), 'myClass', 1000);
 ```
 
 ### <a name="ajax"></a> Method -  [`htmx.ajax()`](#ajax)
@@ -363,11 +372,19 @@ Removes an element from the DOM
 
 * `elt` - element to remove
 
+or 
+
+* `elt` - element to remove
+* `delay` - delay (in milliseconds ) before element is removed
+
 ##### Example
 
 ```js
   // removes my-div from the DOM
   htmx.remove(htmx.find("#my-div"));
+
+  // removes my-div from the DOM after a delay of 2 seconds
+  htmx.remove(htmx.find("#my-div"), 2000);
 ```
 
 ### <a name="removeClass"></a> Method -  [`htmx.removeClass()`](#removeClass)
@@ -379,11 +396,20 @@ Removes a class from the given element
 * `elt` - element to remove the class from
 * `class` - the class to remove
 
+or
+
+* `elt` - element to remove the class from
+* `class` - the class to remove
+* `delay` - delay (in milliseconds ) before class is removed
+
 ##### Example
 
 ```js
   // removes .myClass from my-div
   htmx.removeClass(htmx.find("#my-div"), "myClass");
+
+  // removes .myClass from my-div after 6 seconds
+  htmx.removeClass(htmx.find("#my-div"), "myClass", 6000);
 ```
 
 ### <a name="removeExtension"></a> Method -  [`htmx.removeExtension()`](#removeExtension)
