@@ -1034,6 +1034,54 @@ point in the `issueAjaxRequest()` and `handleAjaxResponse()` methods to see what
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
 
+### <a name="creating-demos">[Creating Demos](#creating-demos)
+
+Sometimes, in order to demonstrate a bug or clarify a usage, it is nice to be able to use a javascript snippet
+site like [jsfiddle](https://jsfiddle.net/).  To facilitate easy demo creation, htmx hosts a demo script
+site that will install:
+
+* htmx
+* hyperscript
+* a request mocking library
+
+Simply add the following script tag to your demo/fiddle/whatever:
+
+```html
+<script src="https://demo.htmx.org"></script>
+```
+
+This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
+The response for that url will be the innerHTML of the template, making it easy to construct mock responses. 
+
+You may embed simple expressions in the template with the `${}` syntax.
+
+Note that this should only be used for demos and is in no way guaranteed to work for long periods of time
+as it will always be grabbing the latest versions htmx and hyperscript!
+
+#### Demo Example
+
+Here is an example of the code in action:
+
+```html
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
+<!-- post to /foo -->
+<button hx-post="/foo" hx-target="#result">
+  Count Up
+</button> 
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo"> <!-- note the url attribute -->
+    ${globalInt++}
+</template>
+
+```
+
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
 Hyperscript is an experimental front end scripting language designed to be expressive and easily embeddable directly in HTML
