@@ -3,11 +3,11 @@ layout: layout.njk
 title: </> htmx - hx-sse
 ---
 
-## `hx-sse` *HAS BEEN DEPRECATED*
+## `hx-sse` 
 
-**This tag will be removed in htmx version 2.0.  If you are using htmx version 1.7 or greater, please visit the [SSE extension page](../extensions/server-sent-events) to learn about the new implementation of Server Sent Events as an extension.
+*Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
+[SSE extension page](../extensions/server-sent-events) to learn about the new implementation of SSE as an extension.*
 
-## This Reference Applies To Version 1.6 And Below
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 `EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by white space:

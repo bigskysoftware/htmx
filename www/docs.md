@@ -371,9 +371,38 @@ with any of the following values:
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
 to supersede the request of another element, or to wait until the other elements request has finished.
 
-htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this:
+htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this.
 
-TODO - example from alejandros
+Consider a race condition between a form submission and an individual input's validation request in this HTML:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change">
+    <button type="submit">Submit</button>
+</form>
+```
+
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to 
+`/validate` and `/store`. 
+
+Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if 
+a form request is present or starts while the input request is in flight:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change"
+        hx-sync="closest form:abort">
+    <button type="submit">Submit</button>
+</form>
+```
+
+This resolve the synchronization between the two elements in a declarative way.
+
+More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
@@ -668,6 +697,9 @@ Here is an example:
 Depending on your implementation, this may be more efficient than the polling example above since the server would
 notify the div if there was new news to get, rather than the steady requests that a poll causes.
 
+Note: The `hx-sse` will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
+[SSE extension page](../extensions/server-sent-events) to learn about the new implementation of SSE as an extension.
+
 ## <a name="history"></a> [History Support](#history)
 
 Htmx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
@@ -774,6 +806,11 @@ The order of operations in a htmx request are:
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
+
+## <a name="synchronization">[Synchronization](#synchronization)
+
+Sometimes you wish to coordinate the ajax requests being made by multiple elements in some manner.  To facilitate this,
+htmx offers the [`hx-sync`](/attributes/hx-sync)
 
 ## <a name="validation">[Validation](#validation)
 
