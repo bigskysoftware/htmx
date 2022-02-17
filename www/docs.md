@@ -116,7 +116,7 @@ If you are migrating to htmx from intercooler.js, please see the [migration guid
 
 ### webpack
 
-If you are using webpack to managed your javascript:
+If you are using webpack to manage your javascript:
 
 * Install `htmx` via your favourite package manager (like npm or yarn)
 * Add the import to your `index.js`
