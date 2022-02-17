@@ -52,7 +52,7 @@ function initMockRequests() {
     }
 }
 
-addScript("https://unpkg.com/htmx.org@1.6.1/dist/htmx.js");
-addScript("https://unpkg.com/hyperscript.org@0.9.4/dist/_hyperscript_w9y.min.js");
+addScript("https://unpkg.com/htmx.org");
+addScript("https://unpkg.com/hyperscript.org");
 addScript("https://unpkg.com/mock-requests@1.3.2/index.js");
 initMockRequests();

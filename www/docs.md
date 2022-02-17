@@ -939,6 +939,9 @@ The response for that url will be the innerHTML of the template, making it easy 
 
 You may embed simple expressions in the template with the `${}` syntax.
 
+Note that this should only be used for demos and is in no way guaranteed to work for long periods of time
+as it will always be grabbing the latest versions htmx and hyperscript!
+
 #### Demo Example
 
 Here is an example of the code in action:
