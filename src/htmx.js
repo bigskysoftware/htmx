@@ -2060,9 +2060,13 @@ return (function () {
             var values = {};
             var formValues = {};
             var errors = [];
+            var internalData = getInternalData(elt);
 
-            // only validate when form is directly submitted and novalidate is not set
+            // only validate when form is directly submitted and novalidate or formnovalidate are not set
             var validate = matches(elt, 'form') && elt.noValidate !== true;
+            if (internalData.lastButtonClicked) {
+                validate = validate && internalData.lastButtonClicked.formNoValidate !== true;
+            }
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
@@ -2073,7 +2077,6 @@ return (function () {
             processInputValue(processed, values, errors, elt, validate);
 
             // if a button or submit was clicked last, include its value
-            var internalData = getInternalData(elt);
             if (internalData.lastButtonClicked) {
                 var name = getRawAttribute(internalData.lastButtonClicked,"name");
                 if (name) {
