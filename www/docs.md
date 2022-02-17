@@ -944,16 +944,23 @@ You may embed simple expressions in the template with the `${}` syntax.
 Here is an example of the code in action:
 
 ```html
-<script src="https://htmx.org/js/demo.js"></script>
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
 <!-- post to /foo -->
-<button hx-post="/foo" hx-target="#result">Count Up</button> <output id="result"></output>
-<!-- respond to /foo -->
+<button hx-post="/foo" hx-target="#result">
+  Count Up
+</button> 
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
 <script>
     globalInt = 0;
 </script>
-<template url="/foo">
+<template url="/foo"> <!-- note the url attribute -->
     ${globalInt++}
 </template>
+
 ```
 
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
