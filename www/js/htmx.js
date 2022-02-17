@@ -61,6 +61,7 @@ return (function () {
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
+                defaultFocusScroll: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2060,9 +2061,13 @@ return (function () {
             var values = {};
             var formValues = {};
             var errors = [];
+            var internalData = getInternalData(elt);
 
-            // only validate when form is directly submitted and novalidate is not set
+            // only validate when form is directly submitted and novalidate or formnovalidate are not set
             var validate = matches(elt, 'form') && elt.noValidate !== true;
+            if (internalData.lastButtonClicked) {
+                validate = validate && internalData.lastButtonClicked.formNoValidate !== true;
+            }
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
@@ -2073,7 +2078,6 @@ return (function () {
             processInputValue(processed, values, errors, elt, validate);
 
             // if a button or submit was clicked last, include its value
-            var internalData = getInternalData(elt);
             if (internalData.lastButtonClicked) {
                 var name = getRawAttribute(internalData.lastButtonClicked,"name");
                 if (name) {
@@ -2254,6 +2258,10 @@ return (function () {
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
                             swapSpec["show"] = showVal;
                             swapSpec["showTarget"] = selectorVal;
+                        }
+                        if (modifier.indexOf("focus-scroll:") === 0) {
+                            var focusScrollVal = modifier.substr("focus-scroll:".length);
+                            swapSpec["focusScroll"] = focusScrollVal == "true";
                         }
                     }
                 }
@@ -2867,13 +2875,14 @@ return (function () {
                             !bodyContains(selectionInfo.elt) &&
                             selectionInfo.elt.id) {
                             var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                            var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll };
                             if (newActiveElt) {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
                                     newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                 }
-                                newActiveElt.focus();
+                                newActiveElt.focus(focusOptions);
                             }
                         }
 
