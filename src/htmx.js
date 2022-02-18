@@ -2792,6 +2792,15 @@ return (function () {
                 var pushedUrl = xhr.getResponseHeader("HX-Push");
             }
 
+            if (hasHeader(xhr, /HX-Boost-Redirect:/i)) {
+                saveCurrentPageToHistory();
+                var redirectTarget = xhr.getResponseHeader("HX-Boost-Redirect");
+                ajaxHelper('GET', redirectTarget).then(() =>{
+                    pushUrlIntoHistory(redirectTarget);
+                });
+                return;
+            }
+
             if (hasHeader(xhr, /HX-Redirect:/i)) {
                 window.location.href = xhr.getResponseHeader("HX-Redirect");
                 return;
