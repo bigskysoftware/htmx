@@ -44,7 +44,7 @@ function initMockRequests() {
                     {dynamicResponseModFn:
                             function(request, response, parameters) {
                                 console.log(request, response, parameters)
-                                return interpolate(elt.innerHTML, parameters);
+                                return interpolate(elt.innerHTML, { ...parameters, ...Object.fromEntries(new URLSearchParams(request)) });
                             },
                     usePathnameForAllQueries: true});
             }
