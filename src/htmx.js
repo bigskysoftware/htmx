@@ -952,6 +952,8 @@ return (function () {
                 return triggerSpecs;
             } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
+            } else if (matches(elt, 'input[type="button"]')){
+                return [{trigger: 'click'}];
             } else if (matches(elt, INPUT_SELECTOR)) {
                 return [{trigger: 'change'}];
             } else {
