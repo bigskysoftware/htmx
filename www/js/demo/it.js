@@ -6,7 +6,9 @@ function addScript(url) {
 
 function interpolate(str, params) {
     try {
-        return eval(`env => { with (env) { return \`${str}\` } }`)(params)
+        return eval(
+            `env => { with (env) { return \`${str.replace(/`/, '\\`'}\` } }`
+        )(params)
     } catch (e) {
         return e.message;
     }
