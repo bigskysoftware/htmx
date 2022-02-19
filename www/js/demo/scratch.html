@@ -4,13 +4,27 @@
 </head>
 <body>
 <!-- post to /foo -->
-<button hx-get="/foo?bar=10" hx-target="#result">Count Up</button> <output id="result"></output>
+<button hx-get="/foo" hx-target="#result">Count Up</button> <output id="result"></output>
 <!-- respond to /foo -->
 <script>
     globalInt = 0;
 </script>
+
+<button _="init log 'inited from hyperscript!'">
+    Init From Hyperscript
+</button>
+
+<div hx-get="/bar" hx-trigger="load">
+    Foo
+</div>
+
+
 <template url="/foo">
-    ${bar + 5}
+    ${hurr++}
+</template>
+
+<template url="/bar" delay="3000">
+    bar
 </template>
 
 </body>
