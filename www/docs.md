@@ -1051,7 +1051,9 @@ Simply add the following script tag to your demo/fiddle/whatever:
 ```
 
 This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
-The response for that url will be the innerHTML of the template, making it easy to construct mock responses. 
+The response for that url will be the innerHTML of the template, making it easy to construct mock responses. You can
+add a delay to the response with a `delay` attribute, which should be an integer indicating the number of milliseconds
+to delay
 
 You may embed simple expressions in the template with the `${}` syntax.
 
@@ -1076,7 +1078,7 @@ Here is an example of the code in action:
 <script>
     globalInt = 0;
 </script>
-<template url="/foo"> <!-- note the url attribute -->
+<template url="/foo" delay="500"> <!-- note the url and delay attributes -->
     ${globalInt++}
 </template>
 
