@@ -5,10 +5,6 @@
 <body>
 <!-- post to /foo -->
 <button hx-get="/foo" hx-target="#result">Count Up</button> <output id="result"></output>
-<!-- respond to /foo -->
-<script>
-    globalInt = 0;
-</script>
 
 <button _="init log 'inited from hyperscript!'">
     Init From Hyperscript
@@ -18,13 +14,8 @@
     Foo
 </div>
 
-
 <template url="/foo">
-    ${window.globalInt++}
-</template>
-
-<template url="/bar" delay="3000">
-    bar
+    ${bar + 5}
 </template>
 
 </body>

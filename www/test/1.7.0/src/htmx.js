@@ -1656,13 +1656,13 @@ return (function () {
             });
         }
 
-        function isBoosted() {
+        function hasChanceOfBeingBoosted() {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = isBoosted() ? ", a, form" : "";
+                var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [hx-data-ext]");
                 return results;
