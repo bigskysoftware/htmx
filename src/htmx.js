@@ -2794,9 +2794,16 @@ return (function () {
 
             if (hasHeader(xhr, /HX-Boost-Redirect:/i)) {
                 saveCurrentPageToHistory();
-                var redirectTarget = xhr.getResponseHeader("HX-Boost-Redirect");
-                ajaxHelper('GET', redirectTarget).then(() =>{
-                    pushUrlIntoHistory(redirectTarget);
+                var redirectPath = xhr.getResponseHeader("HX-Boost-Redirect");
+                var swapSpec;
+                if (redirectPath.indexOf("{") === 0) {
+                    swapSpec = parseJSON(redirectPath);
+                    // what's the best way to throw an error if the user didn't include this
+                    redirectPath = swapSpec['path'];
+                    delete swapSpec['path'];
+                }
+                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
+                    pushUrlIntoHistory(redirectPath);
                 });
                 return;
             }
