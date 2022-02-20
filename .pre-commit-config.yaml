@@ -1,0 +1,23 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-json
+    -   id: check-added-large-files
+    -   id: mixed-line-ending
+    # -   id: pretty-format-json
+    #     exclude: package-lock.json|package.json|jsconfig.json
+    #     args: [--autofix]
+    -   id: sort-simple-yaml
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.31.1
+    hooks:
+    -   id: markdownlint
+        args:
+          [
+            "--config",
+            ".markdownlint.jsonc",
+          ]
