@@ -66,3 +66,7 @@ apart or aggressive refactoring.  We must always bear in mind [Chesterton's Fenc
 If an application is functioning well (or even reasonably) then we should assume that the complexity budget was well
 (or reasonably) managed.  And we must also bear in mind that, with unfortunate frequency, attempts at addressing complexity
 in existing, large applications often fail or, sadly, make things worse.
+
+<div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+&lt;/&gt;
+</div>

@@ -56,9 +56,11 @@ return (function () {
                 inlineScriptNonce:'',
                 withCredentials:false,
                 timeout:0,
+                wsReconnectDelay: 'full-jitter',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
+                defaultFocusScroll: false,
             },
             eventSources: [],
             parseInterval:parseInterval,
@@ -663,6 +665,7 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
+        
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
@@ -839,6 +842,9 @@ return (function () {
 
         function cleanUpElement(element) {
             var internalData = getInternalData(element);
+            if (internalData.webSocket) {
+                internalData.webSocket.close();
+            }
             if (internalData.sseEventSource) {
                 internalData.sseEventSource.close();
             }
@@ -1002,15 +1008,7 @@ return (function () {
         }
 
         function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
-            var title = findTitle(responseText);
-            if(title) {
-                var titleElt = find("title");
-                if(titleElt) {
-                    titleElt.innerHTML = title;
-                } else {
-                    window.document.title = title;
-                }
-            }
+            settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(fragment, settleInfo);
@@ -1228,6 +1226,8 @@ return (function () {
                 return triggerSpecs;
             } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
+            } else if (matches(elt, 'input[type="button"]')){
+                return [{trigger: 'click'}];
             } else if (matches(elt, INPUT_SELECTOR)) {
                 return [{trigger: 'change'}];
             } else {
@@ -1607,7 +1607,7 @@ return (function () {
                         response = extension.transformResponse(response, null, elt);
                     });
 
-                    var swapSpec = getSwapSpecification(elt, false, true)
+                    var swapSpec = getSwapSpecification(elt, false, true, null)
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
@@ -1654,6 +1654,127 @@ return (function () {
 
         function hasEventSource(node) {
             return getInternalData(node).sseEventSource != null;
+        }
+
+        //====================================================================
+        // Web Sockets
+        //====================================================================
+
+        function processWebSocketInfo(elt, nodeData, info) {
+            var values = splitOnWhitespace(info);
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i].split(/:(.+)/);
+                if (value[0] === "connect") {
+                    ensureWebSocket(elt, value[1], 0);
+                }
+                if (value[0] === "send") {
+                    processWebSocketSend(elt);
+                }
+            }
+        }
+
+        function ensureWebSocket(elt, wssSource, retryCount) {
+            if (!bodyContains(elt)) {
+                return;  // stop ensuring websocket connection when socket bearing element ceases to exist
+            }
+
+            if (wssSource.indexOf("/") == 0) {  // complete absolute paths only
+                var base_part = location.hostname + (location.port ? ':'+location.port: '');
+                if (location.protocol == 'https:') {
+                    wssSource = "wss://" + base_part + wssSource;
+                } else if (location.protocol == 'http:') {
+                    wssSource = "ws://" + base_part + wssSource;
+                }
+            }
+            var socket = htmx.createWebSocket(wssSource);
+            socket.onerror = function (e) {
+                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
+                maybeCloseWebSocketSource(elt);
+            };
+
+            socket.onclose = function (e) {
+                if ([1006, 1012, 1013].indexOf(e.code) >= 0) {  // Abnormal Closure/Service Restart/Try Again Later
+                    var delay = getWebSocketReconnectDelay(retryCount);
+                    setTimeout(function() {
+                        ensureWebSocket(elt, wssSource, retryCount+1);  // creates a websocket with a new timeout
+                    }, delay);
+                }
+            };
+            socket.onopen = function (e) {
+                retryCount = 0;
+            }
+
+            getInternalData(elt).webSocket = socket;
+            socket.addEventListener('message', function (event) {
+                if (maybeCloseWebSocketSource(elt)) {
+                    return;
+                }
+
+                var response = event.data;
+                withExtensions(elt, function(extension){
+                    response = extension.transformResponse(response, null, elt);
+                });
+
+                var settleInfo = makeSettleInfo(elt);
+                var fragment = makeFragment(response);
+                var children = toArray(fragment.children);
+                for (var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    oobSwap(getAttributeValue(child, "hx-swap-oob") || "true", child, settleInfo);
+                }
+
+                settleImmediately(settleInfo.tasks);
+            });
+        }
+
+        function maybeCloseWebSocketSource(elt) {
+            if (!bodyContains(elt)) {
+                getInternalData(elt).webSocket.close();
+                return true;
+            }
+        }
+
+        function processWebSocketSend(elt) {
+            var webSocketSourceElt = getClosestMatch(elt, function (parent) {
+                return getInternalData(parent).webSocket != null;
+            });
+            if (webSocketSourceElt) {
+                elt.addEventListener(getTriggerSpecs(elt)[0].trigger, function (evt) {
+                    var webSocket = getInternalData(webSocketSourceElt).webSocket;
+                    var headers = getHeaders(elt, webSocketSourceElt);
+                    var results = getInputValues(elt, 'post');
+                    var errors = results.errors;
+                    var rawParameters = results.values;
+                    var expressionVars = getExpressionVars(elt);
+                    var allParameters = mergeObjects(rawParameters, expressionVars);
+                    var filteredParameters = filterValues(allParameters, elt);
+                    filteredParameters['HEADERS'] = headers;
+                    if (errors && errors.length > 0) {
+                        triggerEvent(elt, 'htmx:validation:halted', errors);
+                        return;
+                    }
+                    webSocket.send(JSON.stringify(filteredParameters));
+                    if(shouldCancel(evt, elt)){
+                        evt.preventDefault();
+                    }
+                });
+            } else {
+                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
+            }
+        }
+
+        function getWebSocketReconnectDelay(retryCount) {
+            var delay = htmx.config.wsReconnectDelay;
+            if (typeof delay === 'function') {
+                // @ts-ignore
+                return delay(retryCount);
+            }
+            if (delay === 'full-jitter') {
+                var exp = Math.min(retryCount, 6);
+                var maxDelay = 1000 * Math.pow(2, exp);
+                return maxDelay * Math.random();
+            }
+            logError('htmx.config.wsReconnectDelay must either be a function or the string "full-jitter"');
         }
 
         //====================================================================
@@ -1751,14 +1872,15 @@ return (function () {
             });
         }
 
-        function isBoosted() {
+        function hasChanceOfBeingBoosted() {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = isBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ext], [data-hx-ext]");
+                var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
                 return results;
             } else {
                 return [];
@@ -1814,6 +1936,10 @@ return (function () {
                     processSSEInfo(elt, nodeData, sseInfo);
                 }
 
+                var wsInfo = getAttributeValue(elt, 'hx-ws');
+                if (wsInfo) {
+                    processWebSocketInfo(elt, nodeData, wsInfo);
+                }
                 triggerEvent(elt, "htmx:afterProcessNode");
             }
         }
@@ -1956,7 +2082,7 @@ return (function () {
             return clone.innerHTML;
         }
 
-        function saveHistory() {
+        function saveCurrentPageToHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
@@ -2002,7 +2128,7 @@ return (function () {
         }
 
         function restoreHistory(path) {
-            saveHistory();
+            saveCurrentPageToHistory();
             path = path || location.pathname+location.search;
             var cached = getCachedHistory(path);
             if (cached) {
@@ -2173,9 +2299,13 @@ return (function () {
             var values = {};
             var formValues = {};
             var errors = [];
+            var internalData = getInternalData(elt);
 
-            // only validate when form is directly submitted and novalidate is not set
+            // only validate when form is directly submitted and novalidate or formnovalidate are not set
             var validate = matches(elt, 'form') && elt.noValidate !== true;
+            if (internalData.lastButtonClicked) {
+                validate = validate && internalData.lastButtonClicked.formNoValidate !== true;
+            }
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
@@ -2186,7 +2316,6 @@ return (function () {
             processInputValue(processed, values, errors, elt, validate);
 
             // if a button or submit was clicked last, include its value
-            var internalData = getInternalData(elt);
             if (internalData.lastButtonClicked) {
                 var name = getRawAttribute(internalData.lastButtonClicked,"name");
                 if (name) {
@@ -2379,6 +2508,10 @@ return (function () {
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
                             swapSpec["show"] = showVal;
                             swapSpec["showTarget"] = selectorVal;
+                        }
+                        if (modifier.indexOf("focus-scroll:") === 0) {
+                            var focusScrollVal = modifier.substr("focus-scroll:".length);
+                            swapSpec["focusScroll"] = focusScrollVal == "true";
                         }
                     }
                 }
@@ -2980,7 +3113,7 @@ return (function () {
 
                 // Save current page
                 if (shouldSaveHistory) {
-                    saveHistory();
+                    saveCurrentPageToHistory();
                 }
 
                 var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
@@ -3012,13 +3145,14 @@ return (function () {
                             !bodyContains(selectionInfo.elt) &&
                             selectionInfo.elt.id) {
                             var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                            var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll };
                             if (newActiveElt) {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
                                     newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
                                 }
-                                newActiveElt.focus();
+                                newActiveElt.focus(focusOptions);
                             }
                         }
 
@@ -3059,6 +3193,16 @@ return (function () {
                                 pushUrlIntoHistory(pathToPush);
                                 triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
                             }
+
+                            if(settleInfo.title) {
+                                var titleElt = find("title");
+                                if(titleElt) {
+                                    titleElt.innerHTML = settleInfo.title;
+                                } else {
+                                    window.document.title = settleInfo.title;
+                                }
+                            }
+
                             updateScrollState(settleInfo.elts, swapSpec);
 
                             if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {

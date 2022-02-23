@@ -3,18 +3,17 @@ layout: layout.njk
 title: </> htmx - hx-sse
 ---
 
-## `hx-sse` *HAS BEEN MIGRATED TO AN EXTENSION*
+## `hx-sse` 
 
-**If you are using htmx version 1.6.1 or greater, please visit the [SSE extension page](../extensions/server-sent-events) to learn about the new implementation of Server Sent Events as an extension.
+*Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
+[SSE extension page](../extensions/server-sent-events) to learn about the new implementation of SSE as an extension.*
 
-## This Reference Applies To Version 1.6 And Below
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 `EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by white space:
 
 * `connect:<url>` - A URL to establish an `EventSource` against
 * `swap:<eventName>` - Swap SSE message content into a DOM node on matching event names
-
 
 ### Swap Message Content
 
@@ -86,6 +85,10 @@ data: <div>Content to swap into your HTML page.</div>
 ```html
 <div hx-sse="connect:/server-url swap:message"></div>
 ```
+
+### Test SSE Server
+
+Htmx includes an SSE test server with many more examples of how to use Server Sent Events.  Download the htmx source code from github and navigate to /test/servers/sse to experiment.
 
 ### Notes
 

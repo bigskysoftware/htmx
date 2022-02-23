@@ -44,9 +44,11 @@ title: </> htmx - Attributes
 | [`hx-sse`](/extensions/server-sent-events) | has meen moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
 | [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
+| [`hx-sync`](/attributes/hx-sync) | controls requests made by different elements are synchronized with one another
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
-| [`hx-vals`](/attributes/hx-vals) | adds to the parameters that will be submitted with the request
+| [`hx-vals`](/attributes/hx-vals) | adds JSON-formatted values to the parameters that will be submitted with the request
+| [`hx-vars`](/attributes/hx-vals) | adds calculated values to the parameters that will be submitted with the request
 | [`hx-ws`](/extensions/websockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
 </div>
@@ -106,6 +108,7 @@ title: </> htmx - Attributes
 
 | Event | Description |
 |-------|-------------|
+| [`htmx:abort`](/events#htmx:abort) | send this event to an element to abort a request
 | [`htmx:afterOnLoad`](/events#htmx:afterOnLoad) | triggered after an AJAX request has completed processing a successful response
 | [`htmx:afterProcessNode`](/events#htmx:afterProcessNode) | triggered after htmx has initialized a node
 | [`htmx:afterRequest`](/events#htmx:afterRequest)  | triggered after an AJAX request has completed

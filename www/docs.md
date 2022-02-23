@@ -110,31 +110,33 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="TODO: REGEN" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
 ```
 
 If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
 
 ### <a name="webpack">[webpack](#webpack)
 
-If you are using webpack, please follow these steps:
+If you are using webpack to manage your javascript:
 
-1. Install `htmx` via your favourite package manager (like npm or yarn)
-1. Add the import to your `index.js`
+* Install `htmx` via your favourite package manager (like npm or yarn)
+* Add the import to your `index.js`
   ``` js   
-  import 'htmx.org';
+    import 'htmx.org';
   ```
-1. Optional but recommended: if you want to use the global `htmx` variable:
-    2. Create a custom JS file and import this file to your `index.js` below the import 
-       from step 2
-    ``` js   
-      import 'path/to/my_custom.js';
-    ```
-    3. Add the following line to it
-    ``` js   
-      window.htmx = require('htmx.org');
-    ```
-    6. Rebuild your bundle
+
+If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
+
+* Create a custom JS file
+* Import this file to your `index.js` (below the import from step 2) 
+  ``` js   
+    import 'path/to/my_custom.js';
+  ```
+* Then add this code to the file:
+  ``` js   
+    window.htmx = require('htmx.org');
+  ```
+* Finally, rebuild your bundle
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
@@ -369,9 +371,46 @@ with any of the following values:
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
 to supersede the request of another element, or to wait until the other elements request has finished.
 
-htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this:
+htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this.
 
-TODO - example from alejandros
+Consider a race condition between a form submission and an individual input's validation request in this HTML:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change">
+    <button type="submit">Submit</button>
+</form>
+```
+
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to 
+`/validate` and `/store`. 
+
+Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if 
+a form request is present or starts while the input request is in flight:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change"
+        hx-sync="closest form:abort">
+    <button type="submit">Submit</button>
+</form>
+```
+
+This resolves the synchronization between the two elements in a declarative way.
+
+htmx also supports a programmatic way to cancel requests: you can send the `htmx:abort` event to an element to
+cancel any in-flight requests:
+
+```html
+<button id="request-button" hx-post="/example">Issue Request</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
+```
+
+More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
 
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
@@ -615,11 +654,22 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 
 ### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
-Htmx has experimental support for declarative use of both
+htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-These features are under active development, so please let us know if you are willing to experiment with them.
+<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
+
+**Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
+htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
+both SSE and web sockets will be done in the extensions.  
+
+Please visit the [SSE extension](../extensions/server-sent-events) and [WebSocket extension](../extensions/web-sockets) 
+pages to learn more about the new extensions.
+
+</div>
+
+
 
 #### <a name="websockets">[WebSockets](#websockets)
 
@@ -665,6 +715,8 @@ Here is an example:
 
 Depending on your implementation, this may be more efficient than the polling example above since the server would
 notify the div if there was new news to get, rather than the steady requests that a poll causes.
+
+
 
 ## <a name="history"></a> [History Support](#history)
 
@@ -772,6 +824,11 @@ The order of operations in a htmx request are:
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
+
+## <a name="synchronization">[Synchronization](#synchronization)
+
+Sometimes you wish to coordinate the ajax requests being made by multiple elements in some manner.  To facilitate this,
+htmx offers the [`hx-sync`](/attributes/hx-sync)
 
 ## <a name="validation">[Validation](#validation)
 
@@ -976,6 +1033,56 @@ about 2500 lines of javascript, so not an insurmountable amount of code.  You wo
 point in the `issueAjaxRequest()` and `handleAjaxResponse()` methods to see what's going on.
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
+
+### <a name="creating-demos">[Creating Demos](#creating-demos)
+
+Sometimes, in order to demonstrate a bug or clarify a usage, it is nice to be able to use a javascript snippet
+site like [jsfiddle](https://jsfiddle.net/).  To facilitate easy demo creation, htmx hosts a demo script
+site that will install:
+
+* htmx
+* hyperscript
+* a request mocking library
+
+Simply add the following script tag to your demo/fiddle/whatever:
+
+```html
+<script src="https://demo.htmx.org"></script>
+```
+
+This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
+The response for that url will be the innerHTML of the template, making it easy to construct mock responses. You can
+add a delay to the response with a `delay` attribute, which should be an integer indicating the number of milliseconds
+to delay
+
+You may embed simple expressions in the template with the `${}` syntax.
+
+Note that this should only be used for demos and is in no way guaranteed to work for long periods of time
+as it will always be grabbing the latest versions htmx and hyperscript!
+
+#### Demo Example
+
+Here is an example of the code in action:
+
+```html
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
+<!-- post to /foo -->
+<button hx-post="/foo" hx-target="#result">
+  Count Up
+</button> 
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo" delay="500"> <!-- note the url and delay attributes -->
+    ${globalInt++}
+</template>
+
+```
 
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
@@ -1199,6 +1306,7 @@ listed below:
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overriden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
 
 </div>
 
@@ -1210,7 +1318,13 @@ You can set them directly in javascript, or you can use a `meta` tag:
 
 ### Conclusion
 
-And that's it!  Have fun with htmx: you can accomplish [quite a bit](/examples) without a lot of code.
+And that's it!  
+
+Have fun with htmx!  You can accomplish [quite a bit](/examples) without writing a lot of code!
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*
 
 </div>
 </div>
