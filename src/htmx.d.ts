@@ -7,8 +7,9 @@
  *
  * @param elt the element to add the class to
  * @param clazz the class to add
+ * @param delay the delay (in milliseconds before class is added)
  */
-export function addClass(elt: Element, clazz: string): void;
+export function addClass(elt: Element, clazz: string, delay?: number): void;
 
 /**
  * Issues an htmx-style AJAX request
@@ -219,8 +220,9 @@ export function process(element: Element): void;
  * https://htmx.org/api/#remove
  *
  * @param elt element to remove
+ * @param delay the delay (in milliseconds before element is removed)
  */
-export function remove(elt: Element): void;
+export function remove(elt: Element, delay?: number): void;
 
 /**
  * Removes a class from the given element
@@ -229,8 +231,9 @@ export function remove(elt: Element): void;
  *
  * @param elt element to remove the class from
  * @param clazz the class to remove
+ * @param delay the delay (in milliseconds before class is removed)
  */
-export function removeClass(elt: Element, clazz: string): void;
+export function removeClass(elt: Element, clazz: string, delay?: number): void;
 
 /**
  * Removes the given extension from htmx

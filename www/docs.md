@@ -21,6 +21,7 @@ title: </> htmx - Documentation
   * [targets](#targets)
   * [indicators](#indicators)
   * [swapping](#swapping)
+  * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
   * [parameters](#parameters)
   * [confirming](#confirming)
@@ -103,18 +104,18 @@ It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded o
 [unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
 ```
 
 For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
 ``` html
-    <script src="https://unpkg.com/htmx.org@1.6.1" integrity="sha384-tvG/2mnCFmGQzYC1Oh3qxQ7CkQ9kMzYjWZSNtrRZygHPDDqottzEJsqS4oUVodhW" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
 ```
 
 If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
 
-### webpack
+### <a name="webpack">[webpack](#webpack)
 
 If you are using webpack to manage your javascript:
 
@@ -136,7 +137,6 @@ If you want to use the global `htmx` variable (recommended), you need to inject 
     window.htmx = require('htmx.org');
   ```
 * Finally, rebuild your bundle
-
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
@@ -366,6 +366,52 @@ with any of the following values:
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
 
+### <a name="synchronization"></a> [Synchronization](#synchronization)
+
+Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
+to supersede the request of another element, or to wait until the other elements request has finished.
+
+htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this.
+
+Consider a race condition between a form submission and an individual input's validation request in this HTML:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change">
+    <button type="submit">Submit</button>
+</form>
+```
+
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to 
+`/validate` and `/store`. 
+
+Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if 
+a form request is present or starts while the input request is in flight:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change"
+        hx-sync="closest form:abort">
+    <button type="submit">Submit</button>
+</form>
+```
+
+This resolves the synchronization between the two elements in a declarative way.
+
+htmx also supports a programmatic way to cancel requests: you can send the `htmx:abort` event to an element to
+cancel any in-flight requests:
+
+```html
+<button id="request-button" hx-post="/example">Issue Request</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
+```
+
+More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
+
 #### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
 htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without 
@@ -537,6 +583,8 @@ be confirmed.  We could add an `unset` directive on it like so:
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
+Automatic inheritance can be further modified using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+
 ## <a name="boosting"></a>[Boosting](#boosting)
 
 Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/attributes/hx-boost) attribute.  This
@@ -552,16 +600,76 @@ Here is an example:
 
 The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
 
-This functionality is somewhat similar to [Turbolinks](https://github.com/turbolinks/turbolinks) and allows you to use
-htmx for [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
+## <a name="progressive_enhancement"></a>[Progressive Enhancement](#progressive_enhancement)
+
+A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
+to work, they simply don't use ajax requests.  This is known as 
+[Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
+a wider audience to use your sites functionality.
+
+Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.  
+
+Consider the [active search](/examples/active-search) example.  As it is written, it will not degrade gracefully:
+someone who does not have javascript enabled will not be able to use this feature. This is done for simplicities sake, 
+to keep the example as brief as possible.  
+ 
+However, you could wrap the htmx-enhanced input in a form element:
+
+```html
+<form action="/search" method="POST">
+    <input class="form-control" type="search" 
+           name="search" placeholder="Begin Typing To Search Users..." 
+           hx-post="/search" 
+           hx-trigger="keyup changed delay:500ms, search" 
+           hx-target="#search-results" 
+           hx-indicator=".htmx-indicator">
+</form>
+```
+
+With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
+clients would be able to hit the enter key and still search.  Even better, you could add a "Search" button as well.
+You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
+on it.
+
+You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a 
+regular request, to determine exactly what to render to the client.
+
+Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
+
+As you can see, this requires more thought and more work.  It also rules some functionality entirely out of bounds.
+These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
+
+[Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
+closely related to progressive enhancement.  Using progressive enhancement techniques such as `hx-boost` will make your 
+htmx application more accessible to a wide array of users.  
+
+htmx-based applications are very similar to normal, non-AJAX driven web applications because htmx is HTML-oriented.
+
+As such, the normal HTML accessibility recommendations apply.  For example:
+
+* Use semantic HTML as much as possible (i.e. the right tags for the right things)
+* Ensure focus state is clearly visible
+* Associate text labels with all form fields
+* Maximize the readability of your application with appropriate fonts, contrast, etc.
 
 ### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
-Htmx has experimental support for declarative use of both
+htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-These features are under active development, so please let us know if you are willing to experiment with them.
+<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
+
+**Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
+htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
+both SSE and web sockets will be done in the extensions.  
+
+Please visit the [SSE extension](../extensions/server-sent-events) and [WebSocket extension](../extensions/web-sockets) 
+pages to learn more about the new extensions.
+
+</div>
+
+
 
 #### <a name="websockets">[WebSockets](#websockets)
 
@@ -607,6 +715,8 @@ Here is an example:
 
 Depending on your implementation, this may be more efficient than the polling example above since the server would
 notify the div if there was new news to get, rather than the steady requests that a poll causes.
+
+
 
 ## <a name="history"></a> [History Support](#history)
 
@@ -715,6 +825,11 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
+## <a name="synchronization">[Synchronization](#synchronization)
+
+Sometimes you wish to coordinate the ajax requests being made by multiple elements in some manner.  To facilitate this,
+htmx offers the [`hx-sync`](/attributes/hx-sync)
+
 ## <a name="validation">[Validation](#validation)
 
 Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
@@ -776,6 +891,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 |-----------|-------------
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`alpine-morph`](/extensions/alpine-morph) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
@@ -917,6 +1033,56 @@ about 2500 lines of javascript, so not an insurmountable amount of code.  You wo
 point in the `issueAjaxRequest()` and `handleAjaxResponse()` methods to see what's going on.
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
+
+### <a name="creating-demos">[Creating Demos](#creating-demos)
+
+Sometimes, in order to demonstrate a bug or clarify a usage, it is nice to be able to use a javascript snippet
+site like [jsfiddle](https://jsfiddle.net/).  To facilitate easy demo creation, htmx hosts a demo script
+site that will install:
+
+* htmx
+* hyperscript
+* a request mocking library
+
+Simply add the following script tag to your demo/fiddle/whatever:
+
+```html
+<script src="https://demo.htmx.org"></script>
+```
+
+This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
+The response for that url will be the innerHTML of the template, making it easy to construct mock responses. You can
+add a delay to the response with a `delay` attribute, which should be an integer indicating the number of milliseconds
+to delay
+
+You may embed simple expressions in the template with the `${}` syntax.
+
+Note that this should only be used for demos and is in no way guaranteed to work for long periods of time
+as it will always be grabbing the latest versions htmx and hyperscript!
+
+#### Demo Example
+
+Here is an example of the code in action:
+
+```html
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
+<!-- post to /foo -->
+<button hx-post="/foo" hx-target="#result">
+  Count Up
+</button> 
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo" delay="500"> <!-- note the url and delay attributes -->
+    ${globalInt++}
+</template>
+
+```
 
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
@@ -1097,7 +1263,7 @@ content into your site without any sort of HTML escaping discipline.
 
 You should, of course, escape all 3rd party untrusted content that is injected into your site to prevent, among other issues, [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). Attributes starting with `hx-` and `data-hx`, as well as inline `<script>` tags should be filtered.
 
-It is important to understand that htmx does *not* require inline scripts or `eval()` for most of its features. You (or your security team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that intentionally disallows inline scripts and the use of `eval()`. This, however, will have *no effect* on htmx functionality, which will still be able to execute JavaScript code placed in htmx attributes and may be a security concern.
+It is important to understand that htmx does *not* require inline scripts or `eval()` for most of its features. You (or your security team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that intentionally disallows inline scripts and the use of `eval()`. This, however, will have *no effect* on htmx functionality, which will still be able to execute JavaScript code placed in htmx attributes and may be a security concern. With that said, if your site relies on inline scripts that you do wish to allow and have a CSP in place, you may need to define [htmx.config.inlineScriptNonce](#config)--however, HTMX will add this nonce to *all* inline script tags it encounters, meaning a nonce-based CSP will no longer be effective for HTMX-loaded content.
 
 To address this, if you don't want a particular part of the DOM to allow for htmx functionality, you can place the
 `hx-disable` or `data-hx-disable` attribute on the enclosing element of that area.  
@@ -1135,10 +1301,12 @@ listed below:
 |  `htmx.config.settlingClass` | defaults to `htmx-settling`
 |  `htmx.config.swappingClass` | defaults to `htmx-swapping`
 |  `htmx.config.allowEval` | defaults to `true`
+|  `htmx.config.inlineScriptNonce` | default to '', no nonce will be added to inline scripts
 |  `htmx.config.useTemplateFragments` | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overriden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
 
 </div>
 
