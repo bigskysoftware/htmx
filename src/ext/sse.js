@@ -49,6 +49,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 			// Try to create EventSources when elements are processed
 			case "htmx:afterProcessNode":
+				console.log(evt.target)
 				createEventSourceOnElement(evt.target);
 			}
 		}
@@ -58,7 +59,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	// HELPER FUNCTIONS
 	///////////////////////////////////////////////
 
-
 	/**
 	 * createEventSource is the default method for creating new EventSource objects.
 	 * it is hoisted into htmx.config.createEventSource to be overridden by the user, if needed.
@@ -66,25 +66,21 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 * @param {string} url 
 	 * @returns EventSource
 	 */
+
 	 function createEventSource(url) {
 		return new EventSource(url, {withCredentials:true});
 	}
 
+	/**
+	 * splitOnWhitespace splits a string into an array of strings, using
+	 * any one or more whitespace characters as delimiters
+	 * 
+	 * @param {string} trigger 
+	 * @returns {string[]}
+	 */
+
 	function splitOnWhitespace(trigger) {
 		return trigger.trim().split(/\s+/);
-	}
-
-	function getLegacySSEURL(elt) {
-		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
-		if (legacySSEValue) {
-			var values = splitOnWhitespace(legacySSEValue);
-			for (var i = 0; i < values.length; i++) {
-				var value = values[i].split(/:(.+)/);
-				if (value[0] === "connect") {
-					return value[1];
-				}
-			}
-		}
 	}
 
 	function getLegacySSESwaps(elt) {
@@ -110,6 +106,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 * @param {number} retryCount
 	 * @returns {EventSource | null}
 	 */
+
 	function createEventSourceOnElement(elt, retryCount) {
 
 		if (elt == null) {
@@ -121,14 +118,8 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		// get URL from element's attribute
 		var sseURL = api.getAttributeValue(elt, "sse-connect");
 
-
 		if (sseURL == undefined) {
-			var legacyURL = getLegacySSEURL(elt)
-			if (legacyURL) {
-				sseURL = legacyURL;
-			} else {
-				return null;
-			}
+			return null;
 		}
 
 		// Connect to the EventSource
