@@ -20,10 +20,15 @@ Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morp
 
 <body>
   <div hx-target="this" hx-ext="alpine-morph" hx-swap="morph">
-      <div x-data="{ count: 0, replaced: false, message: 'Change me, then press the button!' }">
+      <div x-data="{ count: 0, replaced: false, 
+                     message: 'Change me, then press the button!' }">
           <input type="text" x-model="message">
           <div x-text="count"></div>
-          <button x-bind:style="replaced && {'backgroundColor': '#fecaca'}" x-on:click="replaced = true; count++" hx-get="/swap">Morph</button>
+          <button x-bind:style="replaced && {'backgroundColor': '#fecaca'}" 
+                  x-on:click="replaced = true; count++" 
+                  hx-get="/swap">
+            Morph
+          </button>
       </div>
   </div>
 </body>
