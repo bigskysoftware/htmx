@@ -65,10 +65,10 @@ return (function () {
             },
             parseInterval:parseInterval,
             _:internalEval,
-            createEventSource: function(url){
+            createEventSource: function(/** @type {string} */ url){
                 return new EventSource(url, {withCredentials:true})
             },
-            createWebSocket: function(url){
+            createWebSocket: function(/** @type {string} */ url){
                 return new WebSocket(url, []);
             },
             version: "1.7.0"
