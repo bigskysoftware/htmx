@@ -49,7 +49,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 			// Try to create EventSources when elements are processed
 			case "htmx:afterProcessNode":
-				console.log(evt.target)
 				createEventSourceOnElement(evt.target);
 			}
 		}
@@ -83,21 +82,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		return trigger.trim().split(/\s+/);
 	}
 
-	function getLegacySSESwaps(elt) {
-		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
-		var returnArr = [];
-		if (legacySSEValue) {
-			var values = splitOnWhitespace(legacySSEValue);
-			for (var i = 0; i < values.length; i++) {
-				var value = values[i].split(/:(.+)/);
-				if (value[0] === "swap") {
-					returnArr.push(value[1]);
-				}
-			}
-		}
-		return returnArr;
-	}
-
 	/**
 	 * createEventSourceOnElement creates a new EventSource connection on the provided element.
 	 * If a usable EventSource already exists, then it is returned.  If not, then a new EventSource
@@ -123,11 +107,18 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		}
 
 		// Connect to the EventSource
-		var source = htmx.createEventSource(sseURL);
+		try {
+			/** @type {EventSource} */
+			var source = htmx.createEventSource(sseURL);
+		} catch (e) {
+			api.triggerErrorEvent(elt, "htmx:sseError", {message: "Could not create Event Source. Check for valid URL", err:e})
+			return
+		}
+
 		internalData.sseEventSource = source;
 
 		// Create event handlers
-		source.onerror = function (err) {
+		source.onerror = function (/** @type {Error} */ err) {
 
 			// Log an error event
 			api.triggerErrorEvent(elt, "htmx:sseError", {error:err, source:source});
@@ -151,11 +142,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
 
 			var sseSwapAttr = api.getAttributeValue(child, "sse-swap");
-			if (sseSwapAttr) {
-				var sseEventNames = sseSwapAttr.split(",");
-			} else {
-				var sseEventNames = getLegacySSESwaps(child);
-			}
+			var sseEventNames = sseSwapAttr.split(",");
 
 			for (var i = 0 ; i < sseEventNames.length ; i++) {
 				var sseEventName = sseEventNames[i].trim();
