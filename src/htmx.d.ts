@@ -331,9 +331,49 @@ export interface HtmxConfig {
  * https://htmx.org/extensions/#defining
  */
 export interface HtmxExtension {
+    init?: (api: HtmxExtensionApi) => void;
     onEvent?: (name: string, evt: CustomEvent) => any;
     transformResponse?: (text: any, xhr: XMLHttpRequest, elt: any) => any;
     isInlineSwap?: (swapStyle: any) => any;
     handleSwap?: (swapStyle: any, target: any, fragment: any, settleInfo: any) => any;
     encodeParameters?: (xhr: XMLHttpRequest, parameters: any, elt: any) => any;
+}
+
+export interface HtmxInternalApi {
+    bodyContains: (elt: HTMLElement) => boolean
+    filterValues: (inputValues: Object, elt: HTMLElement) => Object
+    hasAttribute: (elt: HTMLElement, qualifiedName: string) => boolean
+    getAttributeValue: (elt: HTMLElement, qualifiedName: string) => string | null
+    getClosestMatch: (elt: HTMLElement, condition: (HTMLElement) => boolean) => (HTMLElement | null)
+    getExpressionVars: (elt: HTMLElement) => Object
+    getHeaders: (elt: HTMLElement, target: HTMLElement, prompt: string) => Object
+    getInputValues: (elt: HTMLElement, verb: string) => Object
+    getInternalData: (elt: HTMLElement) => Object
+    getSwapSpecification: (elt: HTMLElement, swapInfoOverride: string) => HtmxSwapSpecification
+    getTarget: (elt: HTMLElement) => object
+    getTriggerSpecs: (elt: HTMLElement) => {trigger:string}[]
+    makeFragment: (resp: string) => Element
+    makeSettleInfo: (target: Element) => Object
+    mergeObjects: (obj1: Object, obj2: Object) => Object
+    oobSwap: (oobValue: string, oobElement:HTMLElement, settleInfo:*) => string
+    selectAndSwap: (swapStyle: any, target: any, elt: any, responseText: any, settleInfo: any) => void // TODO: improve parameter definitions
+    settleImmediately: (tasks: any) => void // TODO: improve parameter definitions
+    shouldCancel: (evt: Event, elt: HTMLElement) => boolean
+    triggerEvent: (element: HTMLElement, eventName: string, detail: any) => void
+    triggerErrorEvent: (element: HTMLElement, eventName: string, detail: any) => void
+    withExtensions: (element: HTMLElement, toDo:(ext:HtmxExtension) => void) => void
+}
+
+export interface HtmxSwapSpecification {
+    swapStyle: string
+    swapDelay: number
+    settleDelay: number
+    show?: string
+    showTarget?: string
+    scroll?: string
+    scrollTarget?: string
+}
+
+export interface HtmxTriggerSpecification {
+    // TODO: complete this specification
 }
