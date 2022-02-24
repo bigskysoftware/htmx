@@ -1,0 +1,20 @@
+<h1>Error Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" hx-get="/sse-error.html">Legacy Style</a>
+	<a role="tab" hx-get="/sse-error-ext.html" aria-selected="true">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>
+	This page error demonstrates behavior when htmx cannot connect to a server.
+	You'll need to open your browser's dev tools to see the error logs being reported to the console
+</p>
+
+<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-ext="sse" sse-connect="http://localhost/this-url-should-not-exist.html" sse-swap="message"&gt;&lt;/div&gt;
+</pre>
+<div script="on htmx:sseError log event">
+	<div hx-ext="sse" sse-connect="http://localhost/this-url-should-not-exist.html" sse-swap="message"></div>
+</div>
