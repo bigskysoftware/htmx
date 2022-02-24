@@ -619,10 +619,15 @@ return (function () {
             readsQueue.length = 0
             if (selectResizing) {
                 const newWidth = hiddenSelect.offsetWidth
-                writeLayout(function () {
+                if (document.hidden) {
                     selectResizing.style.setProperty("width", newWidth + "px")
                     selectResizing = undefined
-                })
+                } else {
+                    writeLayout(function () {
+                        selectResizing.style.setProperty("width", newWidth + "px")
+                        selectResizing = undefined
+                    })
+                }
             } else if (selectsToResize.length > 0) {
                 selectResizing = selectsToResize[0]
                 selectsToResize.splice(0, 1)
@@ -635,7 +640,7 @@ return (function () {
                 const boxSizing = computedStyle.getPropertyValue("box-sizing")
                 const appearance = computedStyle.getPropertyValue("appearance")
                 const textContent = option.textContent.trim()
-                writeLayout(function () {
+                if (document.hidden) {
                     hiddenSelectOption.textContent = textContent
                     hiddenSelect.style.setProperty("height", height)
                     hiddenSelect.style.setProperty("padding", padding)
@@ -643,7 +648,17 @@ return (function () {
                     hiddenSelect.style.setProperty("border", border)
                     hiddenSelect.style.setProperty("boxSizing", boxSizing)
                     hiddenSelect.style.setProperty("appearance", appearance)
-                })
+                } else {
+                    writeLayout(function () {
+                        hiddenSelectOption.textContent = textContent
+                        hiddenSelect.style.setProperty("height", height)
+                        hiddenSelect.style.setProperty("padding", padding)
+                        hiddenSelect.style.setProperty("fontFamily", fontFamily)
+                        hiddenSelect.style.setProperty("border", border)
+                        hiddenSelect.style.setProperty("boxSizing", boxSizing)
+                        hiddenSelect.style.setProperty("appearance", appearance)
+                    })
+                }
             }
         
             const writesQueue = layoutWritesQueue
