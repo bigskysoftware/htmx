@@ -6,7 +6,7 @@ title: </> htmx - hx-ws
 ## `hx-ws`
 
 *Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
-[WebSockets extension page](../extensions/web-sockets) to learn about the new implementation of Web Sockets as an extension.*
+[WebSockets extension page](/extensions/web-sockets) to learn about the new implementation of Web Sockets as an extension.*
 
 The `hx-ws` allows you to work with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 directly from HTML.  The value of the attribute can be one or more of the following, separated by commas:
