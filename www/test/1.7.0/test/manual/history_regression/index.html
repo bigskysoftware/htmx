@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <title>History - Index</title>
+    <script>
+        htmx.on("htmx:beforeHistorySave", function(evt){
+            console.log("Saving history : ", evt.detail);
+            console.log("History Cache Before:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+            setTimeout(function () {
+                console.log("History Cache After:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+            }, 10);
+        })
+    </script>
+</head>
+<body style="padding:20px;font-family: sans-serif" hx-boost="true">
+<a href="test">Test</a>
+</body>
+</html>

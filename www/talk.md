@@ -5,26 +5,37 @@ title: </> htmx - high power tools for html
 
 ## htmx Talk
 
-[htmx discord server](/discord)
+[htmx Discord Server](/discord)
+
+[Github Discussions](https://github.com/bigskysoftware/htmx/discussions)
 
 ## Feature Requests & Bug Reports
 
-[https://github.com/bigskysoftware/htmx/issues](https://github.com/bigskysoftware/htmx/issues)
+[Github Issues](https://github.com/bigskysoftware/htmx/issues)
 
 ## Social
 
 [@htmx_org on Twitter](https://twitter.com/htmx_org)
 
-[#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx) Please send  us the URL via Discord after creating the question.
+[#htmx on Stack Overflow](https://stackoverflow.com/questions/tagged/htmx)
+
+(NB: *Please post the StackOverflow question URL to the [Discord](https://htmx.org/discord) after creating the question for 
+faster service.)*
 
 [r/htmx on reddit](https://www.reddit.com/r/htmx/)
 
+Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 <iframe src="https://github.com/sponsors/bigskysoftware/card" title="Sponsor bigskysoftware" height="225" width="600" style="border: 0;"></iframe>
+
+## Github Stars
+
+<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX3oybDFUTnBMSTZBaXNhcjFwZmN5UVRnZEFSR3JFdTRPckV2Rw==#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date" frameBorder="0"></iframe>
 
 ## Training
 
 [HTMX + Flask: Modern Python Web Apps, Hold the JavaScript Course by Michael Kennedy](https://training.talkpython.fm/courses/htmx-flask-modern-python-web-apps-hold-the-javascript)
+
 
 <div class="row">
 <div class="1 col">
@@ -45,11 +56,14 @@ title: </> htmx - high power tools for html
 
 ## Essays
 
+* [Hypermedia-Driven Appplications (HDAs)](/essays/hypermedia-driven-applications)
+* [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
-* [Splitting Your Data & APIs: Going Further](/essays/splitting-your-apis)
+* [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
 * [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
+* [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
 
 ## Podcasts
 
@@ -57,7 +71,8 @@ title: </> htmx - high power tools for html
 * [JS Party - Less JavaScript more htmx](https://changelog.com/jsparty/171)
 * [Software Breakthroughs for the 21s Century](https://www.youtube.com/watch?v=O4ZFIx1ckSg)
 * [Django Chat](https://djangochat.com/episodes/htmx-carson-gross)
-* [Talk Python](#https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
+* [Talk Python](https://talkpython.fm/episodes/show/321/htmx-clean-dynamic-html-pages)
+* [.NET Rocks!](https://www.dotnetrocks.com/?show=1749)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
 

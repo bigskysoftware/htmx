@@ -1,21 +1,81 @@
 # Changelog
 
+## [1.7.0] - 2022-02-2
 
-## [1.6.0] - 2021-?-??
+* The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
+  element using various strategies (e.g. replace)
+  * You can also now abort an element making a request by sending it the `htmx:abort` event
+* [Server Sent Events](/extensions/server-sent-events) and [Web Sockets](/extensions/web-sockets) are now available as 
+  extensions, in addition to the normal core support.  In htmx 2.0, the current `hx-sse` and `hx-ws` attributes will be
+  moved entirely out to these new extensions.  By moving these features to extensions we will be able to add functionality 
+  to both of them without compromising the core file size of htmx.  You are encouraged to move over to the new 
+  extensions, but `hx-sse` and `hx-ws` will continue to work indefinitely in htmx 1.x.
+* You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occuring.
+* Many new extensions, with a big thanks to all the contributors!
+    * A new [`alpine-morph`](/extensions/alpine-morph) allows you to use Alpine's swapping engine, which preserves Alpine
+    * A [restored](/extensions/restored) extension was added that will trigger a `restore` event on all elements in the DOM
+      on history restoration.
+    * A [loading-states](/extensions/loading-states) extension was added that allows you to easily manage loading states
+      while a request is in flight, including disabling elements, and adding and removing CSS classes. 
+* The `this` symbol now resolves properly for the [`hx-include`](/attributes/hx-include) and [`hx-indicator`](/attributes/hx-indicator)
+  attributes
+* When an object is included via the [`hx-vals`](/attributes/hx-vals) attribute, it will be converted to JSON (rather 
+  than rendering as the string `[Object object]"`)
+* You can now pass a swap style in to the `htmx.ajax()` function call.
+* Poll events now contain a `target` attribute, allowing you to filter a poll on the element that is polling.
+* Two new Out Of Band-related events were added: `htmx:oobBeforeSwap` & `htmx:oobAfterSwap`
+
+## [1.6.1] - 2021-11-22
+
+* A new `HX-Retarget` header allows you to change the default target of returned content
+* The `htmx:beforeSwap` event now includes another configurable property: `detail.isError` which can
+  be used to indicate if a given response should be treated as an error or not
+* The `htmx:afterRequest` event has two new detail properties: `success` and `failed`, allowing you to write 
+  trigger filters in htmx or hyperscript:
+  ```applescript
+    on htmx:afterRequest[failed]
+      set #myCheckbox's checked to true
+  ```
+* Fixed the `from:` option in [`hx-trigger`](/attributes/hx-trigger) to support `closest <CSS selector>` 
+  and `find <CSS selector>` forms
+* Don't boost anchor tags with an explicit `target` set
+* Don't cancel all events on boosted elements, only the events that naturally trigger them (click for anchors, submit
+  for forms)
+* Persist revealed state in the DOM so that on history navigation, revealed elements are not re-requested
+* Process all [`hx-ext`](/attributes/hx-ext) attributes, even if no other htmx attribute is on the element
+* Snapshot the current URL on load so that history support works properly after a page refresh occurs
+* Many, many documentation updates (thank you to all the contributors!)
+
+
+## [1.6.0] - 2021-10-01
+
+* Completely reworked `<script>` tag support that now supports the `<script src="...'/>` form
+* You can now use the value `unset` to clear a property that would normally be inherited (e.g. hx-confirm)
+* The `htmx-added` class is added to new content before a swap and removed after the settle phase, which allows you
+  more flexibility in writing CSS transitions for added content (rather than relying on the target, as with `htmx-settling`)
+* The `htmx:beforeSwap` event has been updated to allow you to [configure swapping](https://htmx.org/docs/#modifying_swapping_behavior_with_events)
+  behavior
+* Improved `<title>` extraction support
+* You can listen to events on the `window` object using the `from:` modifier in `hx-trigger`
+* The `root` option of the `intersect` event was fixed
+* Boosted forms respect the `enctype` declaration
+* The `HX-Boosted` header will be sent on requests from boosted elements
+* Promises are not returned from the main ajax function unless it is an api call (i.e. `htmx.ajax`)
 
 ## [1.5.0] - 2021-7-12
 
 * Support tracking of button clicked during a form submission
-* Conditional polling via the [hx-trigger](/attributes/hx-trigger) attribute
-* `document` is now a valid pseudo-selector on the [hx-trigger](/attributes/hx-trigger) `from:` argument, allowing you
+* Conditional polling via the [hx-trigger](https://htmx.org/attributes/hx-trigger) attribute
+* `document` is now a valid pseudo-selector on the [hx-trigger](https://htmx.org/attributes/hx-trigger) `from:` argument, allowing you
   to listen for events on the document.
-* Added the [hx-request](/attributes/hx-request) attribute, allowing you to configure the following aspects of the request
+* Added the [hx-request](https://htmx.org/attributes/hx-request) attribute, allowing you to configure the following aspects of the request
     * `timeout` - the timeout of the request
     * `credentials` - if the request will send credentials
     * `noHeaders` - strips all headers from the request
 * Along with the above attribute, you can configure the default values for each of these via the corresponding `htmx.config`
   properties (e.g. `htmx.config.timeout`)
-* Both the `scroll` and `show` options on [hx-swap](/attributes/hx-swap) now support extended syntax for selecting the
+* Both the `scroll` and `show` options on [hx-swap](https://htmx.org/attributes/hx-swap) now support extended syntax for selecting the
   element to scroll or to show, including the pseudo-selectors `window:top` and `window:bottom`.
 
 ## [1.4.1] - 2021-6-1
@@ -24,13 +84,13 @@
 
 ## [1.4.0] - 2021-5-25
 
-* Added the `queue` option to the [hx-trigger](/attributes/hx-trigger) attribute, allowing you to specify how events
+* Added the `queue` option to the [hx-trigger](https://htmx.org/attributes/hx-trigger) attribute, allowing you to specify how events
   should be queued when they are received with a request in flight
 * The `htmx.config.useTemplateFragments` option was added, allowing you to use HTML template tags for parsing content
   from the server.  This allows you to use Out of Band content when returning things like table rows, but it is not
   IE11 compatible.
 * The `defaultSettleDelay` was dropped to 20ms from 100ms
-* Introduced a new synthetic event, [intersect](/docs#pecial-events) that allows you to trigger when an item is scrolled into view
+* Introduced a new synthetic event, [intersect](https://htmx.org/docs#pecial-events) that allows you to trigger when an item is scrolled into view
   as specified by the `IntersectionObserver` API
 * Fixed timing issue that caused exceptions in the `reveal` logic when scrolling at incredible speeds - <https://github.com/bigskysoftware/htmx/issues/463>
 * Fixed bug causing SVG titles to be incorrectly used as page title - <https://github.com/bigskysoftware/htmx/issues/459>
@@ -46,7 +106,7 @@
   
 ## [1.3.3] - 2021-4-5
 
-* Added the [`hx-disabled`](/docs#security) attribute to allow htmx to be turned off for parts of the DOM
+* Added the [`hx-disabled`](https://htmx.org/docs#security) attribute to allow htmx to be turned off for parts of the DOM
 * SSE now uses a full-jitter exponential backoff algorithm on reconnection, using the `htmx.config.wsReconnectDelay`
   setting
 

@@ -38,6 +38,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/adamchainz/django-htmx>
 - <https://github.com/idlesign/django-siteajax>
+- <https://github.com/guettli/django-htmx-fun/>
+- <https://htmx-django.com/>
 
 ### FastAPI
 
