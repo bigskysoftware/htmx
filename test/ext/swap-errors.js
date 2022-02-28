@@ -10,7 +10,7 @@ describe("swap-errors extension", function () {
 
   it("should should swap  HTTP Error", function () {
     this.server.respondWith("GET", "/test", function (xhr) {
-      xhr.respond(400, { "HX-SWAP-ERRORS": 1 }, "SWAPPED");
+      xhr.respond(400, { "HX-Swap-Errors": 1 }, "SWAPPED");
     });
     var btn = make(
       '<button hx-get="/test" hx-ext="swap-errors">Click Me!</button>'
