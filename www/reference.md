@@ -42,8 +42,8 @@ title: </> htmx - Attributes
 | [`hx-request`](/attributes/hx-request) | configures various aspects of the request
 | [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
 | [`hx-sse`](/extensions/server-sent-events) | has meen moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
-| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
+| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target 
 | [`hx-sync`](/attributes/hx-sync) | controls requests made by different elements are synchronized with one another
 | [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
