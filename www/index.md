@@ -56,7 +56,7 @@ Thank you to our corporate sponsors!
 
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
-<a href="https://https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="width:30%"></a>
+<a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="width:30%"></a>
 </div>
 </div>
 <div class="row" style="text-align: center">
