@@ -56,8 +56,13 @@ Thank you to our corporate sponsors!
 
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
+<a href="https://https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="width:30%"></a>
+</div>
+</div>
+<div class="row" style="text-align: center">
+<div class="col 2" style="padding: 16px">
 
-<a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:90%"></a>
+<a href="https://www.commspace.co.za/"><img class="shift-up-img" src="/img/commspace.svg" style="width:100%"></a>
 
 </div>
 
@@ -69,7 +74,7 @@ Thank you to our corporate sponsors!
 
 <div class="col 2" style="padding: 16px">
 
-<a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%"></a>
+<a href="https://craftcms.com"><img class="shift-up-img" src="/img/logo-craft-cms.svg" style="width:90%"></a>
 
 </div>
 </div>
