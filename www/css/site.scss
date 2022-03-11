@@ -385,6 +385,11 @@ h1,h2,h3,h4{
         top: 2vh;
     }
 
+    .shift-up-img {
+        position:relative;
+        top:-120px
+    }
+
 }
 
 @media(max-width:45rem) {
