@@ -2773,7 +2773,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
+            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null && !headers["Content-Type"]) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 

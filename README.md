@@ -8,6 +8,7 @@
 - Fix target and source elements sent to `selectAndSwap` during the **SSE** swapping process that were inverted in the original code, now allowing to properly use `hx-target` for example to specify which element to swap with SSE
 - [SSE swap listeners](https://htmx.org/attributes/hx-sse/) are now removed from the event sources when the associated element gets removed from the page
 - Values passed along a `DELETE` request are encoded as URL parameters _(as for a `GET` request)_ instead of being sent as form data 
+- The [`Content-Type`](https://developer.mozilla.org/fr/docs/Web/HTTP/Headers/Content-Type) header is no longer overridden to `application/x-www-form-urlencoded` when using [`htmx.ajax()`](https://htmx.org/api/#ajax) method _(HTMX would by default override it for any non-GET request on an element that doesn't define the `hx-encoding` attribute, but one might want to define this header in their AJAX request using the `context.headers` property)_
 ## Changes
 - The htmx-indicator is not hidden on request's response if the response has a `HX-Redirect` header set (just a personal visual preference)
 - If the target specified to [`htmx.ajax()`](https://htmx.org/api/#ajax) (and so the `targetOverride` passed to `issueAjaxRequest()`) can't be found, an error is thrown (instead of the HTMX default implementation that crawls the hierarchy to find the first `hx-target` specified on a parent element as a fallback)
