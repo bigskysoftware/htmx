@@ -2352,6 +2352,20 @@ return (function () {
             }
         }
 
+        /**
+         * valuesContainAnyFile returns true if any of the values is a File input value
+         * @param {Object} inputValues
+         * @returns {boolean}
+         */
+        function valuesContainAnyFile(inputValues) {
+            for (var name in inputValues) {
+                if (inputValues[name] instanceof File) {
+                    return true
+                }
+            }
+            return false
+        }
+
         function isAnchorLink(elt) {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
@@ -2433,7 +2447,8 @@ return (function () {
                 return encodedParameters;
             } else {
                 if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
-                    (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data")) {
+                    (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data") ||
+                    valuesContainAnyFile(filteredParameters)) {
                     return makeFormData(filteredParameters);
                 } else {
                     return urlEncode(filteredParameters);
@@ -2773,7 +2788,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null && !headers["Content-Type"]) {
+            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null && !headers["Content-Type"] && !valuesContainAnyFile(filteredParameters)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
