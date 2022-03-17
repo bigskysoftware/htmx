@@ -129,10 +129,11 @@ describe("loading states extension", function() {
         this.server.respondWith("GET", "/test", "Clicked!");
         var btn = make('<div data-loading-states><button hx-get="/test" hx-ext="loading-states" >Click Me!</button></div>');
         var element = make('<div data-loading-class="test">');
-        btn.click();
+        btn.getElementsByTagName("button")[0].click();
         element.should.not.have.class("test");
         this.server.respond();
         element.should.not.have.class("test");
+        btn.getElementsByTagName("button")[0].innerHTML.should.equal("Clicked!");
     });
 
 });
