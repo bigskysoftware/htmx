@@ -37,6 +37,7 @@
     "@11ty/eleventy": "^0.10.0",
     "@11ty/eleventy-plugin-rss": "^1.1.2",
     "chai": "^4.3.6",
+    "chai-dom": "^1.11.0",
     "eleventy-plugin-sass": "^1.2.0",
     "fs-extra": "^9.1.0",
     "mocha": "^7.2.0",
