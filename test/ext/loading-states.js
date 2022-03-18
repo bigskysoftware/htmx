@@ -1,10 +1,12 @@
 describe("loading states extension", function() {
     beforeEach(function () {
         this.server = makeServer();
+        this.clock = sinon.useFakeTimers();
         clearWorkArea();
     });
     afterEach(function () {
         this.server.restore();
+        this.clock.restore();
         clearWorkArea();
     });
 
@@ -95,6 +97,8 @@ describe("loading states extension", function() {
         var element = make('<div data-loading-class-remove="test" data-loading-delay="1s" class="test">');
         btn.click();
         element.should.have.class("test");
+        this.clock.tick(1000);
+        element.should.not.have.class("test");
         this.server.respond();
         element.should.have.class("test");
         btn.innerHTML.should.equal("Clicked!");
