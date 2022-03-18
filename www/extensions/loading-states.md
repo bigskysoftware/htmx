@@ -62,7 +62,7 @@ Add the following class to your stylesheet to make sure elements are hidden by d
 
 - `data-loading-aria-busy`
 
-  Add `aria-busy="true"` attribute to the element for the duration of the request
+  Add [`aria-busy="true"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-busy) attribute to the element for the duration of the request
 
   ```html
   <button data-loading-aria-busy>Submit</button>
