@@ -77,6 +77,7 @@ return (function () {
         /** @type {import("./htmx").HtmxInternalApi} */
         var internalAPI = {
             bodyContains: bodyContains,
+            canAccessLocalStorage: canAccessLocalStorage,
             filterValues: filterValues,
             hasAttribute: hasAttribute,
             getAttributeValue: getAttributeValue,
@@ -399,6 +400,17 @@ return (function () {
             } catch(error) {
                 logError(error);
                 return null;
+            }
+        }
+
+        function canAccessLocalStorage() {
+            var test = 'htmx:localStorageTest';
+            try {
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch(e) {
+                return false;
             }
         }
 
