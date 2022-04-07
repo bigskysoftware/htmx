@@ -24,7 +24,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Node.js
 
 - <https://github.com/rajasegar/todomvc-htmx>
-- <https://github.com/TomekKosakowski/express-ejs-htmx-playground>
 - <https://github.com/rajasegar/htmx-twitter-clone>
 - <https://github.com/rajasegar/htmx-trello>
 
@@ -39,7 +38,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/adamchainz/django-htmx>
 - <https://github.com/idlesign/django-siteajax>
 - <https://github.com/guettli/django-htmx-fun/>
-- <https://htmx-django.com/>
 
 ### FastAPI
 
