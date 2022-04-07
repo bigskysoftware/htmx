@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: </> htmx - HX-Trigger Response Headers
+title: </> htmx - HX-Push Response Headers
 ---
 
 ## `HX-Push` Response Header
