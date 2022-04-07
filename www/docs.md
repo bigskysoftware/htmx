@@ -136,7 +136,7 @@ Avoid using unpkg.com or other JavaScript CDN’s in production, for [many good 
 To use htmx from unpkg.com, use this `<script>` tag:
 
 ``` html
-<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous" defer></script>
+<script src="https://unpkg.com/htmx.org@1.7.1" integrity="sha384-TODO-REGENERATE" crossorigin="anonymous" defer></script>
 ```
 
 ### <a name="webpack">[webpack](#webpack)
