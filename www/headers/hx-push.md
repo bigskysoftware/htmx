@@ -5,12 +5,14 @@ title: </> htmx - HX-Trigger Response Headers
 
 ## `HX-Push` Response Header
 
-The `hx-push-url` attribute allows you to "push" a new entry into the browser location bar, which creates
-a new history entry, allowing back-button and general history navigation.  The possible values of this
-attribute are `true`, `false` or a custom string.
+The `HX-Push` header allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
+This creates a new history entry, allowing navigation with the browser’s back and forward buttons.
+This is similar to the [`hx-push-url` attribute](/attributes/hx-push-url).
 
-This response headers allows you to "push" a new entry into the browser location bar, similar to how the [`hx-push-url` attribute](/attributes/hx-push-url) works in htmx markup.  This creates a new history entry, allowing back-button and general history navigation.
+If present, this header overrides any behavior defined with attributes.
 
-If present, this header value overrides the default behavior defined in htmx markup.  For example: The possible values of this attribute are `true`, `false` or a custom string.
+The possible values for this header are:
 
-Possible values for this header are 1) any valid URL to be pushed into the location bar, or 2) the string `false`, which prevents the browser's history from being updated.
+1. A URL to be pushed into the location bar.
+   This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).
+2. `false`, which prevents the browser’s history from being updated.
