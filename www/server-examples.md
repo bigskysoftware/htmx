@@ -82,6 +82,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/whamtet/ctmx>
 - <https://github.com/jcpsantiago/htmx-clj-dashboard>
+- <https://github.com/prestancedesign/babashka-htmx-todoapp>
 
 ## Ruby
 
