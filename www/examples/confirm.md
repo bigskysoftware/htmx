@@ -9,7 +9,7 @@ htmx supports the [`hx-confirm`](/attributes/hx-confirm) attribute to provide a 
 In this example we will see how to use [sweetalert2](https://sweetalert2.github.io) to implement a custom confirmation dialog.
 
 ```html
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 <button hx-trigger='confirmed'
         hx-get="/confirmed"
         _="on click
@@ -31,7 +31,7 @@ A VanillaJS implementation is left as an exercise for the reader.  :)
 
 {% include demo_ui.html.liquid %}
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
 <script>
 
