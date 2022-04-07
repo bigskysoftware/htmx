@@ -49,7 +49,7 @@ title: </> htmx - Attributes
 | [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
 | [`hx-vals`](/attributes/hx-vals) | adds JSON-formatted values to the parameters that will be submitted with the request
 | [`hx-vars`](/attributes/hx-vals) | adds calculated values to the parameters that will be submitted with the request
-| [`hx-ws`](/extensions/websockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
+| [`hx-ws`](/extensions/web-sockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
 </div>
 
