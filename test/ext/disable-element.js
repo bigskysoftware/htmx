@@ -15,7 +15,7 @@ describe("disable-element extension", function() {
         this.server.respondWith("GET", "/test", function (xhr) {
             xhr.respond(200, {})
         });
-        var btn = make('<button hx-get="/test" hx-ext="disable-element" hx-disable-element="this">Click Me!</button>')
+        var btn = make('<button hx-get="/test" hx-ext="disable-element" hx-disable-element="self">Click Me!</button>')
         btn.disabled.should.equal(false);
 
         // WHEN clicking

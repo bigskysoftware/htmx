@@ -5,7 +5,7 @@ htmx.defineExtension('disable-element', {
     onEvent: function (name, evt) {
         let elt = evt.detail.elt;
         let target = elt.getAttribute("hx-disable-element");
-        let targetElement = (target == "this") ? elt : document.querySelector(target);
+        let targetElement = (target == "self") ? elt : document.querySelector(target);
 
         if (name === "htmx:beforeRequest" && targetElement) {
             targetElement.disabled = true;
