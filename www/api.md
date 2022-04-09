@@ -472,7 +472,7 @@ Triggers a given event on an element
 
 ```js
   // triggers the myEvent event on #tab2 with the answer 42
-  htmx.trigger(htmx.find("#tab2"), "myEvent", {answer:42});
+  htmx.trigger("#tab2", "myEvent", {answer:42});
 ```
 
 ### <a name="values"></a> Method -  [`htmx.values()`](#values)

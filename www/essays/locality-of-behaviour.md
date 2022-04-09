@@ -8,7 +8,9 @@ title: </> htmx - high power tools for html
 > "The primary feature for easy maintenance is locality: Locality is that characteristic of source code that enables a 
 > programmer to understand that source by looking at only a small portion of it." -- [Richard Gabriel](https://www.dreamsongs.com/Files/PatternsOfSoftware.pdf)
 
-### The LoB Principle:
+### The LoB Principle
+
+Locality of Behavior is the principle that: 
 
 > The behaviour of a unit of code should be as obvious as possible by looking only at that unit of code
 
@@ -94,7 +96,7 @@ are:
   
 #### Conclusion
 
-Locality of Behavior is a subjective software design principle that can help make a code base more humane and maintainable.  It must be traded
+LoB is a subjective software design principle that can help make a code base more humane and maintainable.  It must be traded
 off against other design principles and be considered in terms of the limitations of the system a code unit is
 written in, but, as much as is it is practical, adherence to this principle will increase your software maintainability,
 quality and sustainability.
