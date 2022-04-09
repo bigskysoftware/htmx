@@ -76,6 +76,7 @@ return (function () {
             readLayout: readLayout,
             writeLayout: writeLayout,
             resizeSelect: resizeSelect,
+            globalParams: {},
             version: "1.7.0"
         };
 
@@ -2780,7 +2781,7 @@ return (function () {
             }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
-            var rawParameters = results.values;
+            var rawParameters = mergeObjects(htmx.globalParams, results.values);
             if (etc.values) {
                 rawParameters = mergeObjects(rawParameters, etc.values);
             }
