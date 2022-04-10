@@ -2781,7 +2781,7 @@ return (function () {
             }
             var results = getInputValues(elt, verb);
             var errors = results.errors;
-            var rawParameters = mergeObjects(htmx.globalParams, results.values);
+            var rawParameters = mergeObjects(results.values, htmx.globalParams);
             if (etc.values) {
                 rawParameters = mergeObjects(rawParameters, etc.values);
             }
