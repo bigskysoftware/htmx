@@ -209,8 +209,8 @@ describe("Core htmx AJAX headers", function () {
     })
 
 
-    it("should change body content on HX-Boost-Redirect", function () {
-        this.server.respondWith("GET", "/test", [200, {"HX-Boost-Redirect": '{"path":"/test2", "target":"#testdiv"}'}, ""]);
+    it("should change body content on HX-Location", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Location": '{"path":"/test2", "target":"#testdiv"}'}, ""]);
         this.server.respondWith("GET", "/test2", [200, {}, "<div>Yay! Welcome</div>"]);
         var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>');
         div.click();

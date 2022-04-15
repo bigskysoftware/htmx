@@ -2792,9 +2792,9 @@ return (function () {
                 var pushedUrl = xhr.getResponseHeader("HX-Push");
             }
 
-            if (hasHeader(xhr, /HX-Boost-Redirect:/i)) {
+            if (hasHeader(xhr, /HX-Location:/i)) {
                 saveCurrentPageToHistory();
-                var redirectPath = xhr.getResponseHeader("HX-Boost-Redirect");
+                var redirectPath = xhr.getResponseHeader("HX-Location");
                 var swapSpec;
                 if (redirectPath.indexOf("{") === 0) {
                     swapSpec = parseJSON(redirectPath);

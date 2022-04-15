@@ -1,9 +1,9 @@
 ---
 layout: layout.njk
-title: </> htmx - HX-Boost-Redirect Response Headers
+title: </> htmx - HX-Location Response Headers
 ---
 
-## `HX-Boost-Redirect` Response Header
+## `HX-Location` Response Header
 
 
 This response header can be used to trigger a client side redirection without reloading the whole page. Instead of changing the page's location it will act like following a [`hx-boost` link](/attributes/hx-boost), creating a new history entry, issuing an ajax request to the value of the header and pushing the path into history.
@@ -11,7 +11,7 @@ This response header can be used to trigger a client side redirection without re
 A sample response would be:
 
 ```
-HX-Boost-Redirect: /test
+HX-Location: /test
 ```
 
 Which would push the client to test as if the user had clicked on `<a href="/test" hx-boost="true">`
@@ -20,7 +20,7 @@ Which would push the client to test as if the user had clicked on `<a href="/tes
 If you want to redirect to a specific target on the page rather than the default of document.body, you can pass more details along with the event, by using JSON for the value of the header:
 
 ```
-HX-Boost-Redirect: {"path":"/test2", "target":"#testdiv"}
+HX-Location: {"path":"/test2", "target":"#testdiv"}
 ```
 Path is required and is url to load the response from. The rest of the data mirrors the [`ajax` api](/api#ajax) context, which is:
 
