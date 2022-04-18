@@ -136,6 +136,10 @@ body {
 	padding:8px!important;
 }
 
+.container.elastic {
+	height:auto!important;
+}
+
 /***************************
  * TAB STYLES
  ***************************/
