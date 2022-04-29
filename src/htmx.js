@@ -697,6 +697,10 @@ return (function () {
             if (attrTarget) {
                 if (attrTarget === "this") {
                     return [findThisElement(elt, attrName)];
+                } else if (attrTarget === "next-sibling") {
+                    return [elt.nextElementSibling]
+                } else if (attrTarget === "previous-sibling") {
+                    return [elt.previousElementSibling]
                 } else {
                     var result = querySelectorAllExt(elt, attrTarget);
                     if (result.length === 0) {
