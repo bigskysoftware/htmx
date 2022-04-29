@@ -85,6 +85,8 @@ and the user hasn't typed anything new for 1 second:
 
 The response from the `/search` url will be appended to the `div` with the id `search-results`.
 
+### Non-standard Events
+
 There are some additional non-standard events that htmx supports:
 
 * `load` - triggered on load (useful for lazy-loading something)
