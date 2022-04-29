@@ -85,7 +85,7 @@ and the user hasn't typed anything new for 1 second:
 
 The response from the `/search` url will be appended to the `div` with the id `search-results`.
 
-There are two special events that are non-standard that htmx supports:
+There are some additional non-standard events that htmx supports:
 
 * `load` - triggered on load (useful for lazy-loading something)
 * `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading). If you are using `overflow` in css like `overflow-y: scroll` you should use `intersect once` instead of `revealed`.
