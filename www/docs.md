@@ -23,7 +23,7 @@ title: </> htmx - Documentation
   * [swapping](#swapping)
   * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
-  * [Out of Band Swaps](#oob_swaps)
+  * [out of band swaps](#oob_swaps)
   * [parameters](#parameters)
   * [confirming](#confirming)
 * [inheritance](#inheritance)
