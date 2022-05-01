@@ -13,13 +13,13 @@ title: </> htmx - Documentation
 * [installing](#installing)
 * [ajax](#ajax)
   * [triggers](#triggers)
-    * [trigger filters](#trigger-filters)
     * [trigger modifiers](#trigger-modifiers)
+    * [trigger filters](#trigger-filters)
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
-  * [targets](#targets)
   * [indicators](#indicators)
+  * [targets](#targets)
   * [swapping](#swapping)
   * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
@@ -436,7 +436,7 @@ cancel any in-flight requests:
 
 More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
 
-#### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
+### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
 htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without 
 javascript.  Consider this HTML content:
@@ -472,7 +472,7 @@ So, in summary, all you need to do to use CSS transitions for an element is keep
 
 You can see the [Animation Examples](/examples/animations) for more details and live demonstrations.
 
-##### Details
+#### Details
 
 To understand how CSS transitions actually work in htmx, you must understand the underlying swap & settle model that htmx uses.
 
@@ -484,7 +484,7 @@ onto the new element before the swap occurs.  The new content is then swapped in
 (20ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
 the developer.
 
-#### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
+### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [hx-swap-oob](/attributes/hx-swap-oob) attribute in the *response* html:
@@ -607,7 +607,8 @@ be confirmed.  We could add an `unset` directive on it like so:
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
-Automatic inheritance can be further modified using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+Automatic inheritance can be further 
+ d using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
@@ -624,7 +625,7 @@ Here is an example:
 
 The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
 
-## <a name="progressive_enhancement"></a>[Progressive Enhancement](#progressive_enhancement)
+### <a name="progressive_enhancement"></a>[Progressive Enhancement](#progressive_enhancement)
 
 A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
 to work, they simply don't use ajax requests.  This is known as 
@@ -676,7 +677,7 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 * Associate text labels with all form fields
 * Maximize the readability of your application with appropriate fonts, contrast, etc.
 
-### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
+## <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
 htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
@@ -693,9 +694,7 @@ pages to learn more about the new extensions.
 
 </div>
 
-
-
-#### <a name="websockets">[WebSockets](#websockets)
+### <a name="websockets">[WebSockets](#websockets)
 
 If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
 
@@ -715,7 +714,7 @@ socket on `submit`.
 
 More details can be found on the [hx-ws attribute page](/attributes/hx-ws)
 
-#### <a name="sse"></a> [Server Sent Events](#sse)
+### <a name="sse"></a> [Server Sent Events](#sse)
 
 [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
 a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
@@ -739,8 +738,6 @@ Here is an example:
 
 Depending on your implementation, this may be more efficient than the polling example above since the server would
 notify the div if there was new news to get, rather than the steady requests that a poll causes.
-
-
 
 ## <a name="history"></a> [History Support](#history)
 
@@ -849,11 +846,6 @@ The order of operations in a htmx request are:
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
 
-## <a name="synchronization">[Synchronization](#synchronization)
-
-Sometimes you wish to coordinate the ajax requests being made by multiple elements in some manner.  To facilitate this,
-htmx offers the [`hx-sync`](/attributes/hx-sync)
-
 ## <a name="validation">[Validation](#validation)
 
 Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
@@ -947,7 +939,7 @@ The `htmx:load` event is fired every time an element is loaded into the DOM by h
 
 Some common uses for htmx events are:
 
-## <a name="init_3rd_party_with_events">[Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
+### <a name="init_3rd_party_with_events">[Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
 
 Using the `htmx:load` event to initialize content is so common that htmx provides a helper function:
 
@@ -958,7 +950,7 @@ Using the `htmx:load` event to initialize content is so common that htmx provide
 ```
 This does the same thing as the first example, but is a little cleaner.
 
-## <a name="config_request_with_events">[Configure a Request With Events](#config_request_with_events)
+### <a name="config_request_with_events">[Configure a Request With Events](#config_request_with_events)
 
 You can handle the [`htmx:configRequest`](/events/#htmx:configRequest) event in order to modify an AJAX request before it is issued:
 
@@ -971,7 +963,7 @@ document.body.addEventListener('htmx:configRequest', function(evt) {
 
 Here we add a parameter and header to the request before it is sent.
 
-## <a name="modifying_swapping_behavior_with_events">[Modifying Swapping Behavior With Events](#modifying_swapping_behavior_with_events)
+### <a name="modifying_swapping_behavior_with_events">[Modifying Swapping Behavior With Events](#modifying_swapping_behavior_with_events)
 
 You can handle the [`htmx:beforeSwap`](/events/#htmx:beforeSwap) event in order to modify the swap behavior of htmx:
 
@@ -1000,7 +992,7 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
 Here we handle a few [400-level error response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses) 
 that would normally not do a swap in htmx.
 
-## <a name="event_naming">[Event Naming](#event_naming)
+### <a name="event_naming">[Event Naming](#event_naming)
 
 Note that all events are fired with two different names
 
@@ -1010,7 +1002,7 @@ Note that all events are fired with two different names
 So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
 with other libraries.  [Alpine.js](https://github.com/alpinejs/alpine/), for example, requires kebab case.
 
-### Logging
+### <a name="logging"></a> [Logging](#logging)
 
 If you set a logger at `htmx.logger`, every event will be logged.  This can be very useful for troubleshooting:
 
@@ -1145,11 +1137,11 @@ on a DOM element, using the `on` syntax:
 
 This will log `Settled!` to the console when the `htmx:afterSettle` event is triggered.
 
-#### intercooler.js features & hyperscript implementations
+### intercooler.js features & hyperscript implementations
 
 Below are some examples of intercooler features and the hyperscript equivalent.
 
-##### `ic-remove-after`
+#### `ic-remove-after`
 
 Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
 for removing an element after a given amount of time.
@@ -1162,7 +1154,7 @@ In hyperscript you can implement this, as well as fade effect, like so:
 </div>
 ```
 
-##### `ic-post-errors-to`
+#### `ic-post-errors-to`
 
 Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
 for posting errors that occured during requests and responses.
@@ -1175,7 +1167,7 @@ In hyperscript similar functionality is implemented like so:
 </body>
 ```
 
-##### `ic-switch-class`
+#### `ic-switch-class`
 
 Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
 let you switch a class between siblings.
@@ -1340,11 +1332,11 @@ You can set them directly in javascript, or you can use a `meta` tag:
     <meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
 ```
 
-### Conclusion
+## Conclusion
 
 And that's it!  
 
-Have fun with htmx!  You can accomplish [quite a bit](/examples) without writing a lot of code!
+Have fun with htmx! You can accomplish [quite a bit](/examples) without writing a lot of code!
 
 *javascript fatigue:<br/>
 longing for a hypertext<br/>
