@@ -259,7 +259,9 @@ will be evaluated.  If the expression evaluates to `true` the event will trigger
 Here is an example that triggers only on a Control-Click of the element
 
 ```html
-<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">
+    Control Click Me
+</div>
 ```
 
 Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
@@ -282,8 +284,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with the [`hx-trigger`](/attributes/hx-trigger/) attribute:
 
 ```html
-<div hx-get="/news" hx-trigger="every 2s">
-</div>
+<div hx-get="/news" hx-trigger="every 2s"></div>
 ```
 
 This tells htmx
@@ -440,8 +441,12 @@ htmx also supports a programmatic way to cancel requests: you can send the `htmx
 cancel any in-flight requests:
 
 ```html
-<button id="request-button" hx-post="/example">Issue Request</button>
-<button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
+<button id="request-button" hx-post="/example">
+    Issue Request
+</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">
+    Cancel Request
+</button>
 ```
 
 More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
@@ -653,7 +658,7 @@ However, you could wrap the htmx-enhanced input in a form element:
 ```html
 <form action="/search" method="POST">
     <input class="form-control" type="search" 
-        name="search" placeholder="Begin Typing To Search Users..." 
+        name="search" placeholder="Begin typing to search users..." 
         hx-post="/search" 
         hx-trigger="keyup changed delay:500ms, search" 
         hx-target="#search-results" 
