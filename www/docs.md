@@ -128,7 +128,7 @@ npm install htmx.org
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
 For example, you might bundle htmx with some extensions and project-specific code.
 
-## Via unpkg.com
+### Via unpkg.com
 
 For prototyping or testing, you can use the npm package via the unpkg.com CDN.
 Avoid using unpkg.com or other JavaScript CDN’s in production, for [many good reasons](https://blog.wesleyac.com/posts/why-not-javascript-cdn) such as performance and robustness.
