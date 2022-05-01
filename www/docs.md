@@ -146,21 +146,26 @@ If you are using webpack to manage your javascript:
 
 * Install `htmx` via your favourite package manager (like npm or yarn)
 * Add the import to your `index.js`
-  ```js   
-  import 'htmx.org';
-  ```
+
+```js   
+import 'htmx.org';
+```
 
 If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
 
 * Create a custom JS file
 * Import this file to your `index.js` (below the import from step 2) 
-  ```js   
-  import 'path/to/my_custom.js';
-  ```
+  
+```js   
+import 'path/to/my_custom.js';
+```
+ 
 * Then add this code to the file:
-  ```js   
-  window.htmx = require('htmx.org');
-  ```
+
+```js   
+window.htmx = require('htmx.org');
+```
+ 
 * Finally, rebuild your bundle
 
 ## <a name="ajax"></a> [AJAX](#ajax)
