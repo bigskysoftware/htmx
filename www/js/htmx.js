@@ -1190,7 +1190,10 @@ return (function () {
         }
 
         /**
-         *
+         * shouldCancel inspects an event an an HTMLElement to deterimine if the event should be 
+		 * canceled, as in, should `preventDefault()` be called on this.  It returns TRUE for 
+		 * form submissions and clicks on hyperlinks, and returns FALSE for all other events
+		 * 
          * @param {Event} evt
          * @param {HTMLElement} elt
          * @returns
