@@ -201,7 +201,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				return;
 			}
 			webSocket.send(JSON.stringify(filteredParameters));
-			if(api.shouldCancel(child)){
+			if(api.shouldCancel(evt, child)){
 				evt.preventDefault();
 			}
 		});
