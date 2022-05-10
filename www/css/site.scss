@@ -13,7 +13,7 @@ body {
 }
 
 table {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .info-table table tbody tr td:first-of-type {
@@ -54,6 +54,10 @@ table {
 
 .active a {
     font-weight: bold;
+}
+
+code {
+    font-size: 0.9em;
 }
 
 .dark-hero {
@@ -102,8 +106,7 @@ blockquote {
 }
 
 table {
-    margin: 16px;
-    width: 90%;
+    width: 100%;
 }
 
 .hero {
@@ -256,13 +259,13 @@ a[href]:hover, .btn:hover {
 }
 
 td {
-    padding: 1em;
+    padding: 0.2em 0.2em 0.2em 0;
     text-align: left;
     border-bottom: 1px solid #eee;
 }
 
 th {
-    padding: 1em;
+    padding: 0.2em 0.2em 0.2em 0;
     text-align: left;
     border-bottom: 2px solid #eee;
 }
@@ -279,6 +282,8 @@ th {
 
 pre {
     overflow: auto;
+    font-size: 0.9em;
+    background-color: #272822;
 }
 
 table.delete-row-example .htmx-swapping {
