@@ -77,6 +77,7 @@ return (function () {
         /** @type {import("./htmx").HtmxInternalApi} */
         var internalAPI = {
             bodyContains: bodyContains,
+            canAccessLocalStorage: canAccessLocalStorage,
             filterValues: filterValues,
             hasAttribute: hasAttribute,
             getAttributeValue: getAttributeValue,
@@ -399,6 +400,17 @@ return (function () {
             } catch(error) {
                 logError(error);
                 return null;
+            }
+        }
+
+        function canAccessLocalStorage() {
+            var test = 'htmx:localStorageTest';
+            try {
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch(e) {
+                return false;
             }
         }
 
@@ -1827,6 +1839,10 @@ return (function () {
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
+            if (!canAccessLocalStorage()) {
+                return;
+            }
+
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
@@ -1850,6 +1866,10 @@ return (function () {
         }
 
         function getCachedHistory(url) {
+            if (!canAccessLocalStorage()) {
+                return null;
+            }
+
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
