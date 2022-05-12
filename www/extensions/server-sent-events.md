@@ -108,9 +108,9 @@ Previous versions of htmx used a built-in tag `hx-sse` to implement Server Sent 
 
 | Old Attribute                  | New Attribute            | Comments         |
 |--------------------------------|--------------------------|------------------|
-| `hx-sse=""`                    | `hs-ext="sse"`           | Use the `hx-ext="sse"` attribute to install the SSE extension into any HTML element. |
+| `hx-sse=""`                    | `hx-ext="sse"`           | Use the `hx-ext="sse"` attribute to install the SSE extension into any HTML element. |
 | `hx-sse="connect:<url>"`       | `sse-connect="<url>"`    | Add a new attribute `sse-connect` to the tag that specifies the URL of the Event Stream.  This attribute must be in the same tag as the `hx-ext` attribute. |
-| `hs-sse="swap:<EventName>"`    | `sse-swap="<EventName>"` | Add a new attribute `sse-swap` to any elements that will be swapped in via the SSE extension.  This attribute must be placed **on** or **inside of** the tag containing the `hx-ext` attribute. |
+| `hx-sse="swap:<EventName>"`    | `sse-swap="<EventName>"` | Add a new attribute `sse-swap` to any elements that will be swapped in via the SSE extension.  This attribute must be placed **on** or **inside of** the tag containing the `hx-ext` attribute. |
 | `hx-trigger="sse:<EventName>"` | NO CHANGE                | any `hx-trigger` attributes do not need to change.  The extension will identify these attributes and add listeners for any events prefixed with `sse:` |
 
 ### Additional SSE Resources
