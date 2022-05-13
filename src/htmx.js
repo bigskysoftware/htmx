@@ -1652,7 +1652,9 @@ return (function () {
                             observer.observe(elt);
                             addEventListener(elt, verb, path, nodeData, triggerSpec);
                         } else if (triggerSpec.trigger === "load") {
-                            loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
+                            if (!maybeFilterEvent(triggerSpec, makeEvent("load", {elt:elt}))) {
+                                loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
+                            }
                         } else if (triggerSpec.pollInterval) {
                             nodeData.polling = true;
                             processPolling(elt, verb, path, triggerSpec);

@@ -714,5 +714,24 @@ describe("hx-trigger attribute", function(){
         div.innerText.should.equal("Requests: 1");
     });
 
+    it('load event works w/ positive filters', function()
+    {
+        this.server.respondWith("GET", "/test", "Loaded!");
+        var div = make('<div hx-get="/test" hx-trigger="load[true]">Load Me!</div>');
+        div.innerHTML.should.equal("Load Me!");
+        this.server.respond();
+        div.innerHTML.should.equal("Loaded!");
+    });
+
+    it('load event works w/ negative filters', function()
+    {
+        this.server.respondWith("GET", "/test", "Loaded!");
+        var div = make('<div hx-get="/test" hx-trigger="load[false]">Load Me!</div>');
+        div.innerHTML.should.equal("Load Me!");
+        this.server.respond();
+        div.innerHTML.should.equal("Load Me!");
+    });
+
+
 
 })
