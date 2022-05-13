@@ -27,6 +27,18 @@ Here is an example of some boosted links:
   <a href="/page2">Go To Page 2</a>
 </div>
 ```
+These links will issue an ajax `GET` request to the respective URLs and replace the body's inner content with it.
+
+Here is an example of a boosted form:
+
+```html
+<form hx-boost="true" action="/example" method="post">
+    <input name="email" type="email" placeholder="Enter email...">
+    <button>Submit</button>
+</form>
+```
+This form will issue an ajax `POST` to the given URL and replace the body's inner content with it.
+
 
 ### Notes
 
