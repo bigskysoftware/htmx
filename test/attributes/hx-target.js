@@ -91,5 +91,44 @@ describe("hx-target attribute", function(){
         div1.innerHTML.should.equal("Clicked!");
     });
 
+    it('targets a `next` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div>' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-target="next div" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("");
+    });
+
+    it('targets a `previous` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div>' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-target="previous div" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("Clicked!");
+    });
 
 })

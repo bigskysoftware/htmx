@@ -523,12 +523,36 @@ return (function () {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
+            } else if (selector.indexOf("next ") === 0) {
+                return [scanForwardQuery(elt, selector.substr(5))];
+            } else if (selector.indexOf("previous ") === 0) {
+                return [scanBackwardsQuery(elt, selector.substr(9))];
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
                 return [window];
             } else {
                 return getDocument().querySelectorAll(selector);
+            }
+        }
+
+        var scanForwardQuery = function(start, match) {
+            var results = getDocument().querySelectorAll(match);
+            for (var i = 0; i < results.length; i++) {
+                var elt = results[i];
+                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
+                    return elt;
+                }
+            }
+        }
+
+        var scanBackwardsQuery = function(start, match) {
+            var results = getDocument().querySelectorAll(match);
+            for (var i = results.length - 1; i >= 0; i--) {
+                var elt = results[i];
+                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
+                    return elt;
+                }
             }
         }
 
@@ -1111,7 +1135,7 @@ return (function () {
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
                                     var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                    if (from_arg === "closest" || from_arg === "find") {
+                                    if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
                                         tokens.shift();
                                         from_arg +=
                                             " " +
