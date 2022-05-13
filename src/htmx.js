@@ -120,6 +120,9 @@ return (function () {
             if (str.slice(-1) == "s") {
                 return (parseFloat(str.slice(0,-1)) * 1000) || undefined
             }
+            if (str.slice(-1) == "m") {
+                return (parseFloat(str.slice(0,-1)) * 1000 * 60) || undefined
+            }
             return parseFloat(str) || undefined
         }
 
