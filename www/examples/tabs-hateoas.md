@@ -9,7 +9,7 @@ This example shows how easy it is to implement tabs using htmx.  Following the p
 ### Example Code (Main Page)
 The main page simply includes the following HTML to load the initial tab into the DOM.
 ```html
-<div id="tabs" hx-get="/tab1" hx-trigger="load after:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
+<div id="tabs" hx-get="/tab1" hx-trigger="load delay:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
 ```
 
 ### Example Code (Each Tab)
@@ -34,7 +34,7 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 {% include demo_ui.html.liquid %}
 
-<div id="tabs" hx-get="/tab1" hx-trigger="load after:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
+<div id="tabs" hx-get="/tab1" hx-trigger="load delay:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
 
 
 <script>
