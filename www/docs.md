@@ -937,7 +937,7 @@ If you want to register for a given htmx event you can use
 
 ```js
 document.body.addEventListener('htmx:load', function(evt) {
-    myJavascriptLib.init(evt.details.elt);
+    myJavascriptLib.init(evt.detail.elt);
 });
 ```
  
@@ -945,7 +945,7 @@ or, if you would prefer, you can use the following htmx helper:
 
 ```javascript
 htmx.on("htmx:load", function(evt) {
-    myJavascriptLib.init(evt.details.elt);
+    myJavascriptLib.init(evt.detail.elt);
 });
 ```
 
