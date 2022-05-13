@@ -2291,6 +2291,11 @@ return (function () {
             return swapSpec;
         }
 
+        function usesFormData(elt) {
+            return getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
+                (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data");
+        }
+
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
             withExtensions(elt, function (extension) {
@@ -2301,8 +2306,7 @@ return (function () {
             if (encodedParameters != null) {
                 return encodedParameters;
             } else {
-                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
-                    (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data")) {
+                if (usesFormData(elt)) {
                     return makeFormData(filteredParameters);
                 } else {
                     return urlEncode(filteredParameters);
@@ -2639,7 +2643,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
+            if (verb !== 'get' && !usesFormData(elt)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
@@ -2647,6 +2651,7 @@ return (function () {
             if (path == null || path === "") {
                 path = getDocument().location.href;
             }
+
 
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
