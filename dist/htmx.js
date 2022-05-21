@@ -2385,10 +2385,10 @@ return (function () {
          */
         function getSwapSpecification(elt, isError, isSse, swapOverride) {
             var swapInfo;
-            if (typeof swapOverride === "string") {
-                swapInfo = swapOverride
-            } else if (isError) {
+            if (isError) {
                 swapInfo = getClosestAttributeValue(elt, "hx-error-swap");
+            } else if (typeof swapOverride === "string") {
+                swapInfo = swapOverride
             } else if (isSse) {
                 swapInfo = getClosestAttributeValue(elt, "hx-sse-swap");
             }
