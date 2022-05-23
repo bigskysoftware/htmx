@@ -53,7 +53,7 @@ us to use a bit of CSS to flash a color helping the user see what happened:
   }
 ```
 
-You can see a working examle of this code below.
+You can see a working example of this code below.
 
 <style scoped="">
   .htmx-settling tr.deactivate td {
