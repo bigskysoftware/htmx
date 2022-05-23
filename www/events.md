@@ -348,6 +348,17 @@ element id without a preceding `#`)
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the bad CSS selector
 
+### <a name="htmx:timeout"></a> Event - [`htmx:timeout`](#htmx:timeout)
+
+This event is triggered when a request timeout occurs
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
 ### <a name="htmx:validation:validate"></a> Event - [htmx:validation:validate](#htmx:validation:validate)
 
 This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method
