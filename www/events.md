@@ -350,7 +350,9 @@ element id without a preceding `#`)
 
 ### <a name="htmx:timeout"></a> Event - [`htmx:timeout`](#htmx:timeout)
 
-This event is triggered when a request timeout occurs
+This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.  
+
+Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](/attributes/hx-request)
 
 ##### Details
 
