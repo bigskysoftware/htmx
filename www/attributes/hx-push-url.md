@@ -12,7 +12,7 @@ htmx snapshots the current DOM and saves it into its history cache, and restores
 The possible values of this attribute are:
 
 1. `true`, which pushes the fetched URL into history.
-2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-push).
+2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-boost).
 3. A URL to be pushed into the location bar.
    This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).
 
