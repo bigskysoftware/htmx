@@ -22,7 +22,7 @@ The purpose of this guide is to provide common practices for "Hotwire Equivalent
 addEventListener("submit", (event) => {
     event.target.querySelectorAll("button").forEach(node => { node.disabled = true })
 })
-addEventListener("htmx:after-on-load", (event) => {
+addEventListener("htmx:afterOnLoad", (event) => {
     event.target.querySelectorAll("button").forEach(node => { node.disabled = false })
 })
 ```
@@ -40,7 +40,7 @@ addEventListener("htmx:after-on-load", (event) => {
   * `htmx:config-request` is the same as `htmx:configRequest` See: [Event Naming](https://htmx.org/docs/#event_naming)
 
 ```javascript
-document.body.addEventListener('htmx:config-request', (event) => {
+document.body.addEventListener('htmx:configRequest', (event) => {
     event.detail.headers['Authorization'] = `Bearer ${token}`
 })
 ```
