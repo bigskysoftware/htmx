@@ -872,7 +872,7 @@ Htmx fires events around validation that can be used to hook in custom validatio
    custom validation logic
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
-  in the `event.details.errors` object
+  in the `event.detail.errors` object
 
 ### Validation Example
 
