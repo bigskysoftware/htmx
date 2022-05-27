@@ -111,7 +111,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous" defer></script>
+<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -124,7 +124,7 @@ Download `htmx.min.js` [from unpkg.com](https://unpkg.com/browse/htmx.org/dist/)
 and include it where necessary with a `<script>` tag:
 
 ```html
-<script src="/path/to/htmx.min.js" defer></script>
+<script src="/path/to/htmx.min.js"></script>
 ```
 
 You can also add extensions this way, by downloading them from the `ext/` directory.
@@ -1078,7 +1078,7 @@ site that will install:
 Simply add the following script tag to your demo/fiddle/whatever:
 
 ```html
-<script src="https://demo.htmx.org" defer></script>
+<script src="https://demo.htmx.org"></script>
 ```
 
 This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
@@ -1097,7 +1097,7 @@ Here is an example of the code in action:
 
 ```html
 <!-- load demo environment -->
-<script src="https://demo.htmx.org" defer></script>
+<script src="https://demo.htmx.org"></script>
 
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">
