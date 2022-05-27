@@ -17,7 +17,7 @@ Using an extension involves two steps:
 Here is an example
 
 ```html
-  <script src="/path/to/ext/debug.js" defer></script>
+  <script src="/path/to/ext/debug.js"></script>
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
