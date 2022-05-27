@@ -186,7 +186,7 @@ say five years ago.
 We are fond of talking about the HOWL stack: Hypermedia On Whatever you'd Like.  The idea is that, by returning to a (more powerful) Hypermedia Architecture, you can use whatever backend language you'd like: python, lisp, haskell, go, java, c#, whatever.  Even javascript, if you like.
 
 Since you are using hypermedia & HTML for your server interactions, you don't feel that pressure to adopt javascript on
-the backend that a huge javascript front end produces.  You can still use javascript, of course, (perhaps in the form of alpine)
+the backend that a huge javascript front end produces.  You can still use javascript, of course, (perhaps in the form of [alpine.js](https://alpinejs.dev/))
 but you use it in the manner it was originally intended: as a light, front end scripting language for enhancing your
 application.  Or, if you are brave, perhaps you can try [hyperscript](https://hyperscript.org) for these needs.
 
