@@ -5,9 +5,9 @@ title: </> htmx - high power tools for html
 
 ## The `server-sent-events` Extension
 
-The `Server Sent Events` connects to an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.  It manages the connetions to your web server, listens for server events, and then swaps their contents into your htmx webpage in real-time.  
+The `Server Sent Events` connects to an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.  It manages the connections to your web server, listens for server events, and then swaps their contents into your htmx webpage in real-time.
 
-SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through proxy servers and firewalls.  Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE server once the connection has been established.  If you need bi-directional communication, then you should consider using [WebSockets](web-sockets) instead.
+SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through proxy servers and firewalls.  Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE server once the connection has been established.  If you need bi-directional communication, then you should consider using [WebSockets](/extensions/web-sockets) instead.
 
 This extension replaces the experimental `hx-sse` attribute built into previous versions of htmx.  For help migrating from older versions, see the migration guide at the bottom of this page.
 
@@ -15,7 +15,7 @@ Use the following attributes to configure how SSE connections behave:
 
 * `sse-connect="<url>"` - The URL of the SSE server.
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
-* `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](../attributes/hx-trigger) attribute.
+* `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](/attributes/hx-trigger) attribute.
 
 ### Usage
 
@@ -70,7 +70,7 @@ You can also listen to multiple events (named or unnamed) from a single EventSou
 Multiple events in the same element
 <div hx-ext="sse" sse-connect="/server-url" sse-swap="event1,event2"></div>
 
-Multiple events in different elements (from the same source).  
+Multiple events in different elements (from the same source).
 <div hx-ext="sse" sse-connect="/server-url">
     <div sse-swap="event1"></div>
     <div sse-swap="event2"></div>
