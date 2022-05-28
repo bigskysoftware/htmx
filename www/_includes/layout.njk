@@ -72,7 +72,7 @@
 </div>
 </div>
 
-<div class="c content">
+<div class="c content {{ customClasses | default("") }}">
     {{ content | safe }}
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>

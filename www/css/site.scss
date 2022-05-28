@@ -252,6 +252,10 @@ a[href]:hover, .btn:hover {
     margin: auto;
 }
 
+.c.wide-content {
+    max-width: 50em;
+}
+
 .btn.primary {
     color: white;
     background: $midBlue;

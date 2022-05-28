@@ -1,6 +1,7 @@
 ---
 layout: layout.njk
 title: </> htmx - Documentation
+customClasses: wide-content
 ---
 <div class="row">
 <div class="2 col nav">
