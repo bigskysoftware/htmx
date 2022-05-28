@@ -393,3 +393,27 @@ h1,h2,h3,h4{
 }
 
 
+
+#search {
+  transition: all 0.3s ease-out;
+  width: 3em;
+  padding: 6px 8px;
+  border: 1px solid #eee;
+  background-color: inherit;
+  border-radius: 10px;
+  margin-right: 6px;
+  position: relative;
+  vertical-align: top;
+}
+
+
+#search:hover, #search:not(:placeholder-shown) {
+  border: 1px solid rgb(204, 204, 204);
+  background-color: white;
+}
+
+
+#search:focus, #search:not(:placeholder-shown) {
+  width: 150px;
+  border-radius: 4px;
+}
