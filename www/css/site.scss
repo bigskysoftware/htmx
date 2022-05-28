@@ -4,15 +4,16 @@ $lightBlue: #3d72d7;
 body {
     overflow-x:hidden;
     margin: 0px;
+    padding-bottom: 5em;
     line-height: 1.4em;
-    font-size: 18px;
+    font-size: 16px;
     color: #333;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
 table {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .info-table table tbody tr td:first-of-type {
@@ -55,8 +56,8 @@ table {
     font-weight: bold;
 }
 
-code {
-    font-weight: bold;
+body .content code {
+    font-size: 0.9em;
 }
 
 .dark-hero {
@@ -95,31 +96,17 @@ code {
 }
 
 p {
-    margin: 16px;
-}
-
-pre[class*="language-"] {
-    font-size: 16px;
-    margin-top: 24px !important;
-    margin-bottom: 24px !important;
-}
-
-@media(min-width:45rem) {
-    pre[class*="language-"] {
-        margin-left: 48px !important;
-        margin-right: 48px !important;
-    }
+    margin: 0.5em 0;
 }
 
 blockquote {
     border-left: 4px solid whitesmoke;
-    margin-left: 32px;
-    margin-right: 32px;
+    margin: 1em;
+    padding-left: 0.5em;
 }
 
 table {
-    margin: 16px;
-    width: 90%;
+    width: 100%;
 }
 
 .hero {
@@ -182,14 +169,10 @@ h4 {
         font-size: 2.5em;
     }
     pre[class*="language-"]  {
-        // margin-left: calc(50% - 50vw) !important;
-        // margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
         border-radius: 0 !important;
     }
     .info-table  {
-        margin-left: calc(50% - 50vw) !important;
-        margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
     }
     .no-mobile {
@@ -260,9 +243,13 @@ a[href]:hover, .btn:hover {
 }
 
 .c {
-    width: calc(100% - 2em);
-    max-width: 55em;
+    padding: 0 .5em;
+    max-width: 40em;
     margin: auto;
+}
+
+.c.wide-content {
+    max-width: 50em;
 }
 
 .btn.primary {
@@ -272,13 +259,13 @@ a[href]:hover, .btn:hover {
 }
 
 td {
-    padding: 1em;
+    padding: 0.2em 0.2em 0.2em 0;
     text-align: left;
     border-bottom: 1px solid #eee;
 }
 
 th {
-    padding: 1em;
+    padding: 0.2em 0.2em 0.2em 0;
     text-align: left;
     border-bottom: 2px solid #eee;
 }
@@ -295,6 +282,8 @@ th {
 
 pre {
     overflow: auto;
+    font-size: 0.9em;
+    background-color: #272822;
 }
 
 table.delete-row-example .htmx-swapping {
@@ -320,11 +309,12 @@ table.delete-row-example .htmx-swapping {
 
 h1,h2,h3,h4{
     margin-bottom: .65em;
+    font-weight: 600;
 }
 
 // UL in content
 :not(.nav) ul{
-    padding-left: 2em;
+    padding-left: 1em;
 }
 
 .nav ul{
@@ -403,3 +393,35 @@ h1,h2,h3,h4{
 }
 
 
+.logo-wrapper {
+  white-space: nowrap;
+}
+
+table td:first-child code {
+  display: block;
+}
+
+
+#search {
+  transition: all 0.3s ease-out;
+  width: 3em;
+  padding: 6px 8px;
+  border: 1px solid #eee;
+  background-color: inherit;
+  border-radius: 10px;
+  margin-right: 6px;
+  position: relative;
+  vertical-align: top;
+}
+
+
+#search:hover, #search:not(:placeholder-shown) {
+  border: 1px solid rgb(204, 204, 204);
+  background-color: white;
+}
+
+
+#search:focus, #search:not(:placeholder-shown) {
+  width: 150px;
+  border-radius: 4px;
+}
