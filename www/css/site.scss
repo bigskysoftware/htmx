@@ -56,7 +56,7 @@ table {
     font-weight: bold;
 }
 
-code {
+body .content code {
     font-size: 0.9em;
 }
 
@@ -395,6 +395,10 @@ h1,h2,h3,h4{
 
 .logo-wrapper {
   white-space: nowrap;
+}
+
+table code {
+  display: block;
 }
 
 
