@@ -169,15 +169,8 @@ h4 {
         font-size: 2.5em;
     }
     pre[class*="language-"]  {
-        // margin-left: calc(50% - 50vw) !important;
-        // margin-right: calc(50% - 50vw) !important;
         overflow-x: scroll !important;
         border-radius: 0 !important;
-    }
-    .info-table  {
-        margin-left: calc(50% - 50vw) !important;
-        margin-right: calc(50% - 50vw) !important;
-        overflow-x: scroll !important;
     }
     .no-mobile {
         display: none !important;
