@@ -240,7 +240,7 @@ a[href]:hover, .btn:hover {
 }
 
 .c {
-    width: calc(100% - 2em);
+    padding: 0 .5em;
     max-width: 40em;
     margin: auto;
 }
@@ -394,7 +394,7 @@ h1,h2,h3,h4{
   white-space: nowrap;
 }
 
-table code {
+table td:first-child code {
   display: block;
 }
 
