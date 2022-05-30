@@ -35,7 +35,7 @@
                 </svg>
             </div>
             {% if page.url.indexOf("/examples/") == 0 %}
-            <div id="nav" class="navigation nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
+            <div id="nav" class="navigation"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
             {% else %}
             <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
