@@ -425,3 +425,47 @@ table td:first-child code {
   width: 150px;
   border-radius: 4px;
 }
+
+.note {
+  border: 1px solid whitesmoke;
+  background-color: #d0dbee;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #eee;
+    background-color: #202945;
+  }
+  .top-nav {
+    box-shadow: none;
+  }
+  .dark-hero {
+    border-bottom: 0;
+  }
+  footer {
+    background-color: #273254;
+  }
+  a {
+    color: #508dde;
+  }
+  td, th {
+  border-color: #364266;
+  }
+  th {
+    color: #ccc
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: #ccc;
+  }
+  .top-nav {
+    border-bottom: 1px solid #222;
+    background-image: linear-gradient(#444,#202945);
+    box-shadow: 0 4px 15px 0 #333;
+  }
+  .note {
+    color: #333;
+  }
+}
+
