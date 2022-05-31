@@ -95,6 +95,7 @@ title: </> htmx - Attributes
 |-------|-------------|
 | [`HX-Push`](/headers/hx-push) | pushes a new url into the history stack
 | `HX-Redirect` | can be used to do a client-side redirect to a new location
+| [`HX-Location`](/headers/hx-location) | Allows you to do a client-side redirect that does not do a full page reload
 | `HX-Refresh` | if set to "true" the client side will do a a full refresh of the page
 | `HX-Retarget` | A CSS selector that updates the target of the content update to a different element on the page
 | [`HX-Trigger`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info

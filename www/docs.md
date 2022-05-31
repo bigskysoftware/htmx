@@ -831,6 +831,7 @@ htmx supports some htmx-specific response headers:
 
 * `HX-Push` - pushes a new URL into the browser’s address bar
 * `HX-Redirect` - triggers a client-side redirect to a new location
+* `HX-Location` - triggers a client-side redirect to a new location that acts as a swap
 * `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
 * `HX-Trigger` - triggers client side events
 * `HX-Trigger-After-Swap` - triggers client side events after the swap step

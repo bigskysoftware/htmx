@@ -209,4 +209,13 @@ describe("Core htmx AJAX headers", function () {
     })
 
 
+    it("should change body content on HX-Location", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Location": '{"path":"/test2", "target":"#testdiv"}'}, ""]);
+        this.server.respondWith("GET", "/test2", [200, {}, "<div>Yay! Welcome</div>"]);
+        var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>');
+        div.click();
+        this.server.respond();
+        this.server.respond();
+        div.innerHTML.should.equal('<div>Yay! Welcome</div>');
+    })
 });

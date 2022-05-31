@@ -2866,6 +2866,22 @@ return (function () {
                 var pushedUrl = xhr.getResponseHeader("HX-Push");
             }
 
+            if (hasHeader(xhr, /HX-Location:/i)) {
+                saveCurrentPageToHistory();
+                var redirectPath = xhr.getResponseHeader("HX-Location");
+                var swapSpec;
+                if (redirectPath.indexOf("{") === 0) {
+                    swapSpec = parseJSON(redirectPath);
+                    // what's the best way to throw an error if the user didn't include this
+                    redirectPath = swapSpec['path'];
+                    delete swapSpec['path'];
+                }
+                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
+                    pushUrlIntoHistory(redirectPath);
+                });
+                return;
+            }
+
             if (hasHeader(xhr, /HX-Redirect:/i)) {
                 window.location.href = xhr.getResponseHeader("HX-Redirect");
                 return;
