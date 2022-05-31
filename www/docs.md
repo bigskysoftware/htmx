@@ -521,6 +521,9 @@ Note that out of band elements must be in the top level of the response, and not
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](/attributes/hx-select)
 attribute, which takes a CSS selector and selects the matching elements from the response.
 
+You can also pick out pieces of content for an out-of-band swap by using the [hx-select-oob](/attributes/hx-select-oob)
+attribute, which takes a list of element IDs to pick out and swap.
+
 #### Preserving Content During A Swap
 
 If there is content that you wish to be preserved across swaps (e.g. a video player that you wish to remain playing

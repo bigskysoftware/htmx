@@ -18,38 +18,39 @@ title: </> htmx - Attributes
 
 <div class="info-table">
 
-| Attribute | Description |
-|-----------|-------------|
-| [`hx-boost`](/attributes/hx-boost) | progressively enhances anchors and forms to use AJAX requests
-| [`hx-confirm`](/attributes/hx-confirm) | shows a confim() dialog before issuing a request
-| [`hx-delete`](/attributes/hx-delete) | issues a `DELETE` to the specified URL
-| [`hx-disable`](/attributes/hx-disable) | disables htmx processing for the given node and any children nodes
-| [`hx-disinherit`](/attributes/hx-disinherit) | control and disable automatic attribute inheritance for child nodes
-| [`hx-encoding`](/attributes/hx-encoding) | changes the request encoding type
-| [`hx-ext`](/attributes/hx-ext) | extensions to use for this element
-| [`hx-get`](/attributes/hx-get) | issues a `GET` to the specified URL
-| [`hx-headers`](/attributes/hx-headers) | adds to the headers that will be submitted with the request
+| Attribute                                      | Description |
+|------------------------------------------------|-------------|
+| [`hx-boost`](/attributes/hx-boost)             | progressively enhances anchors and forms to use AJAX requests
+| [`hx-confirm`](/attributes/hx-confirm)         | shows a confim() dialog before issuing a request
+| [`hx-delete`](/attributes/hx-delete)           | issues a `DELETE` to the specified URL
+| [`hx-disable`](/attributes/hx-disable)         | disables htmx processing for the given node and any children nodes
+| [`hx-disinherit`](/attributes/hx-disinherit)   | control and disable automatic attribute inheritance for child nodes
+| [`hx-encoding`](/attributes/hx-encoding)       | changes the request encoding type
+| [`hx-ext`](/attributes/hx-ext)                 | extensions to use for this element
+| [`hx-get`](/attributes/hx-get)                 | issues a `GET` to the specified URL
+| [`hx-headers`](/attributes/hx-headers)         | adds to the headers that will be submitted with the request
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
-| [`hx-include`](/attributes/hx-include) | includes additional data in AJAX requests
-| [`hx-indicator`](/attributes/hx-indicator) | the element to put the `htmx-request` class on during the AJAX request
-| [`hx-params`](/attributes/hx-params) | filters the parameters that will be submitted with a request
-| [`hx-patch`](/attributes/hx-patch) | issues a `PATCH` to the specified URL
-| [`hx-post`](/attributes/hx-post) | issues a `POST` to the specified URL
-| [`hx-preserve`](/attributes/hx-preserve) | preserves an element between requests
-| [`hx-prompt`](/attributes/hx-prompt) | shows a prompt before submitting a request
-| [`hx-push-url`](/attributes/hx-push-url) | pushes the URL into the location bar, creating a new history entry
-| [`hx-put`](/attributes/hx-put) | issues a `PUT` to the specified URL
-| [`hx-request`](/attributes/hx-request) | configures various aspects of the request
-| [`hx-select`](/attributes/hx-select) | selects a subset of the server response to process
-| [`hx-sse`](/extensions/server-sent-events) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
-| [`hx-swap`](/attributes/hx-swap) | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
-| [`hx-swap-oob`](/attributes/hx-swap-oob) | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target
-| [`hx-sync`](/attributes/hx-sync) | controls requests made by different elements are synchronized with one another
-| [`hx-target`](/attributes/hx-target) | specifies the target element to be swapped
-| [`hx-trigger`](/attributes/hx-trigger) | specifies the event that triggers the request
-| [`hx-vals`](/attributes/hx-vals) | adds JSON-formatted values to the parameters that will be submitted with the request
-| [`hx-vars`](/attributes/hx-vars) | adds calculated values to the parameters that will be submitted with the request (deprecated)
-| [`hx-ws`](/extensions/web-sockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
+| [`hx-include`](/attributes/hx-include)         | includes additional data in AJAX requests
+| [`hx-indicator`](/attributes/hx-indicator)     | the element to put the `htmx-request` class on during the AJAX request
+| [`hx-params`](/attributes/hx-params)           | filters the parameters that will be submitted with a request
+| [`hx-patch`](/attributes/hx-patch)             | issues a `PATCH` to the specified URL
+| [`hx-post`](/attributes/hx-post)               | issues a `POST` to the specified URL
+| [`hx-preserve`](/attributes/hx-preserve)       | preserves an element between requests
+| [`hx-prompt`](/attributes/hx-prompt)           | shows a prompt before submitting a request
+| [`hx-push-url`](/attributes/hx-push-url)       | pushes the URL into the location bar, creating a new history entry
+| [`hx-put`](/attributes/hx-put)                 | issues a `PUT` to the specified URL
+| [`hx-request`](/attributes/hx-request)         | configures various aspects of the request
+| [`hx-select`](/attributes/hx-select)           | selects a subset of the server response to process
+| [`hx-select-oob`](/attributes/hx-select-oob)   | selects one or more elements from a server response to swap in via an out of band swap
+| [`hx-sse`](/extensions/server-sent-events)     | has been moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
+| [`hx-swap`](/attributes/hx-swap)               | controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')
+| [`hx-swap-oob`](/attributes/hx-swap-oob)       | marks content in a response as being "Out of Band", i.e. swapped somewhere other than the target
+| [`hx-sync`](/attributes/hx-sync)               | controls requests made by different elements are synchronized with one another
+| [`hx-target`](/attributes/hx-target)           | specifies the target element to be swapped
+| [`hx-trigger`](/attributes/hx-trigger)         | specifies the event that triggers the request
+| [`hx-vals`](/attributes/hx-vals)               | adds JSON-formatted values to the parameters that will be submitted with the request
+| [`hx-vars`](/attributes/hx-vars)               | adds calculated values to the parameters that will be submitted with the request (deprecated)
+| [`hx-ws`](/extensions/web-sockets)             | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
 </div>
 

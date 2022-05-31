@@ -741,7 +741,23 @@ return (function () {
             return oobValue;
         }
 
-        function handleOutOfBandSwaps(fragment, settleInfo) {
+        function handleOutOfBandSwaps(elt, fragment, settleInfo) {
+            var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
+            if (oobSelects) {
+                var oobSelectValues = oobSelects.split(",");
+                for (let i = 0; i < oobSelectValues.length; i++) {
+                    var oobSelectValue = oobSelectValues[i].split(":", 2);
+                    var id = oobSelectValue[0];
+                    if (id.indexOf("#") === 0) {
+                        id = id.substring(1);
+                    }
+                    var oobValue = oobSelectValue[1] || "true";
+                    var oobElement = fragment.querySelector("#" + id);
+                    if (oobElement) {
+                        oobSwap(oobValue, oobElement, settleInfo);
+                    }
+                }
+            }
             forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
                 var oobValue = getAttributeValue(oobElement, "hx-swap-oob");
                 if (oobValue != null) {
@@ -966,7 +982,7 @@ return (function () {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
-                handleOutOfBandSwaps(fragment, settleInfo);
+                handleOutOfBandSwaps(elt, fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment);
                 handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
