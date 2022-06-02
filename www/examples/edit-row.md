@@ -142,7 +142,7 @@ this makes things a bit nicer to deal with.
     });
 
     onPut(/\/contact\/\d+/, function(request, params){
-      var id = parseInt("/contact/0/edit".split("/")[2]); // get the contact
+      var id = parseInt(request.url.split("/")[2]); // get the contact
       contact = contacts[id]
       contact.name = params['name'];
       contact.email = params['email'];
