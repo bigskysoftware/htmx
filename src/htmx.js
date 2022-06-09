@@ -19,6 +19,7 @@ return (function () {
         var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
+	    cleanUpElement: cleanUpElement,
             on: addEventListenerImpl,
             off: removeEventListenerImpl,
             trigger : triggerEvent,
@@ -785,6 +786,7 @@ return (function () {
                     }
                 });
             }
+	    delete element['htmx-internal-data']
             if (element.children) { // IE
                 forEach(element.children, function(child) { cleanUpElement(child) });
             }
