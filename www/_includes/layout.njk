@@ -35,7 +35,7 @@
                 </svg>
             </div>
             {% if page.url.indexOf("/examples/") == 0 %}
-            <div id="nav" class="navigation nav"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
+            <div id="nav" class="navigation"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
             {% else %}
             <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
@@ -75,6 +75,45 @@
 <div class="c content {{ customClasses | default("") }}">
     {{ content | safe }}
 </div>
+
+<footer>
+    <div class="c content {{ customClasses | default("") }}">
+      <div class="row">
+        <div class="6 col footer-haiku">
+          <h2>haiku</h2>
+          <p><em>
+            javascript fatigue:<br>
+            longing for a hypertext<br>
+            already in hand
+          </em></p>
+        </div>
+        <div class="6 col footer-menu">
+          <div>
+              <a href="/docs/">docs</a>
+          </div>
+          <div>
+              <a href="/reference/">reference</a>
+          </div>
+          <div>
+              <a href="/examples/">examples</a>
+          </div>
+          <div>
+              <a href="/talk/">talk</a>
+          </div>
+          <div>
+              <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsor</a>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="text-align: center;">
+        <div class="col">
+            <img src="/img/bss_bars.png" style="max-width: 30px; margin-top: 3em;">
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
 <script type="text/javascript"> docsearch({
     apiKey: '47070108e6ce8dfee6beee94b83bee7d',

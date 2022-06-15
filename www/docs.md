@@ -1354,9 +1354,5 @@ And that's it!
 
 Have fun with htmx! You can accomplish [quite a bit](/examples) without writing a lot of code!
 
-*javascript fatigue:<br/>
-longing for a hypertext<br/>
-already in hand*
-
 </div>
 </div>

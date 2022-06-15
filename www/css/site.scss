@@ -4,7 +4,6 @@ $lightBlue: #3d72d7;
 body {
     overflow-x:hidden;
     margin: 0px;
-    padding-bottom: 5em;
     line-height: 1.4em;
     font-size: 16px;
     color: #333;
@@ -243,7 +242,7 @@ a[href]:hover, .btn:hover {
 }
 
 .c {
-    padding: 0 .5em;
+    padding: 0 .7em;
     max-width: 40em;
     margin: auto;
 }
@@ -352,7 +351,7 @@ h1,h2,h3,h4{
     }
 
     // Content
-    .content .col:not(.nav) {
+    .content .col:not(:nth-child(1)):not(.nav) {
         padding-left: calc(1em + 1.5vw);
     }
     .content .nav > p,
@@ -424,4 +423,27 @@ table td:first-child code {
 #search:focus, #search:not(:placeholder-shown) {
   width: 150px;
   border-radius: 4px;
+}
+
+footer {
+  margin-top: 2em;
+  padding-top: 2em;
+  padding-bottom: 5em;
+  background-color: #f6f6f6;
+}
+
+footer .footer-menu {
+  text-align: right;
+}
+
+@media(max-width:45rem) {
+  footer .footer-haiku {
+    margin-bottom: 3em;
+  }
+
+  footer .footer-menu {
+    padding-top: 3em;
+    border-top: 1px solid #eee;
+    text-align: left;
+  }
 }

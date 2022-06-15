@@ -1,4 +1,5 @@
 .idea
+*.iml
 /node_modules
 _site
 test/scratch.html
