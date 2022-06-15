@@ -30,7 +30,7 @@ Use the following attributes to configure how SSE connections behave:
 
 To connect to an SSE server, use the `hx-ext="sse"` attribute to install the extension on that HTML element, then add `sse-connect="<url>"` to the element to make the connection.
 
-When designing your server application, remember that SSE works just like any HTTP request.  Although you cannot send any messages to the server after you have established a connection, you can send parameters to the server along with your request.  So, instead of making an SSE connection to your server at `https://my-server/chat-updates` you can also connect to `https://my-server/chat-updates?frends=true&format=detailed`.  This allows your server to customize its responses to what your client needs.
+When designing your server application, remember that SSE works just like any HTTP request.  Although you cannot send any messages to the server after you have established a connection, you can send parameters to the server along with your request.  So, instead of making an SSE connection to your server at `https://my-server/chat-updates` you can also connect to `https://my-server/chat-updates?friends=true&format=detailed`.  This allows your server to customize its responses to what your client needs.
 
 ### Receiving Named Events
 
@@ -51,7 +51,7 @@ Notice that the name `EventName` from the server's message must match the value 
 
 ### Receiving Unnamed Events
 
-SSE messages can also be send without any event name.  In this case, the browser uses the default name `message` in its place.  The same rules specified above still apply.  If your server sends an unnamed message, then you must listen for it by including `sse-swap="message"`.  There is no option for using a catch-all name.  Here's how this looks:
+SSE messages can also be sent without any event name.  In this case, the browser uses the default name `message` in its place.  The same rules specified above still apply.  If your server sends an unnamed message, then you must listen for it by including `sse-swap="message"`.  There is no option for using a catch-all name.  Here's how this looks:
 
 ```text
 data: <div>Content to swap into your HTML page.</div>
