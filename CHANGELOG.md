@@ -4,7 +4,24 @@
 
 * The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
   the current URL in history (to complement `hx-push-url`)
-* 
+* Bug fix - if htmx is included in a page more than once, we do not process elements multiple times
+* Bug fix - When localStorage is not available we do not attempt to save history in it
+* [Bug fix](https://github.com/bigskysoftware/htmx/issues/908) - `hx-boost` respects the `enctype` attribute
+* `m` is now a valid timing modifier (e.g. `hx-trigger="every 2m"`)
+* `next` and `previous` are now valid extended query selector modifiers, e.g. `hx-target="next div"` will target the
+  next div from the current element
+* Bug fix - `hx-boost` will boost anchor tags with a `_self` target
+* The `load` event now properly supports event filters
+* The websocket extension has had many improvements: (A huge thank you to Denis Palasheviskii, our newest committer on the project!)
+  * Implement proper `hx-trigger` support
+  * Expose trigger handling API to extensions
+  * Implement safe message sending with sending queue
+  * Fix `ws-send` attributes connecting in new elements
+  * Fix OOB swapping of multiple elements in response
+* The `HX-Location` response header now implements client-side redirects entirely within htmx
+* The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
+* The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
+  bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
 
 
 ## [1.7.0] - 2022-02-2

@@ -92,16 +92,17 @@ title: </> htmx - Attributes
 
 <div class="info-table">
 
-| Header | Description |
-|-------|-------------|
-| [`HX-Push`](/headers/hx-push) | pushes a new url into the history stack
-| `HX-Redirect` | can be used to do a client-side redirect to a new location
-| [`HX-Location`](/headers/hx-location) | Allows you to do a client-side redirect that does not do a full page reload
-| `HX-Refresh` | if set to "true" the client side will do a a full refresh of the page
-| `HX-Retarget` | A CSS selector that updates the target of the content update to a different element on the page
-| [`HX-Trigger`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
+| Header                                           | Description |
+|--------------------------------------------------|-------------|
+| [`HX-Push-Url`](/headers/hx-push-url)            | pushes a new url into the history stack
+| [`HX-Replace-Url`](/headers/hx-replace-url)      | replaces the current URL in the location bar
+| `HX-Redirect`                                    | can be used to do a client-side redirect to a new location
+| [`HX-Location`](/headers/hx-location)            | Allows you to do a client-side redirect that does not do a full page reload
+| `HX-Refresh`                                     | if set to "true" the client side will do a a full refresh of the page
+| `HX-Retarget`                                    | A CSS selector that updates the target of the content update to a different element on the page
+| [`HX-Trigger`](/headers/hx-trigger)              | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Settle`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
-| [`HX-Trigger-After-Swap`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
+| [`HX-Trigger-After-Swap`](/headers/hx-trigger)   | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 
 </div>
 
