@@ -12,7 +12,7 @@ htmx snapshots the current DOM and saves it into its history cache, and restores
 The possible values of this attribute are:
 
 1. `true`, which pushes the fetched URL into history.
-2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-push).
+2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-boost).
 3. A URL to be pushed into the location bar.
    This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).
 
@@ -39,5 +39,5 @@ This will push the URL `/account/home' into the location history.
 ### Notes
 
 * `hx-push-url` is inherited and can be placed on a parent element
-* The [`HX-Push` response header](/headers/hx-push) has similar behavior and can override this attribute.
+* The [`HX-Push-Url` response header](/headers/hx-push) has similar behavior and can override this attribute.
 * The [`hx-history-elt` attribute](/attributes/hx-history-elt) allows changing which element is saved in the history cache.

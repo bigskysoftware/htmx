@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0] - 2022-02-2
+
+* The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
+  the current URL in history (to complement `hx-push-url`)
+* 
+
+
 ## [1.7.0] - 2022-02-2
 
 * The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single

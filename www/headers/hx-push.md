@@ -5,14 +5,4 @@ title: </> htmx - HX-Push Response Headers
 
 ## `HX-Push` Response Header
 
-The `HX-Push` header allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
-This creates a new history entry, allowing navigation with the browser’s back and forward buttons.
-This is similar to the [`hx-push-url` attribute](/attributes/hx-push-url).
-
-If present, this header overrides any behavior defined with attributes.
-
-The possible values for this header are:
-
-1. A URL to be pushed into the location bar.
-   This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).
-2. `false`, which prevents the browser’s history from being updated.
+The `HX-Push` header has been replaced by the [`HX-Push-Url`](/headers/hx-push-url)

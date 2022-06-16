@@ -71,7 +71,7 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
-            version: "1.7.1"
+            version: "1.8.0"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1948,6 +1948,11 @@ return (function () {
             currentPathForHistory = path;
         }
 
+        function replaceUrlInHistory(path) {
+            if(htmx.config.historyEnabled)  history.replaceState({htmx:true}, "", path);
+            currentPathForHistory = path;
+        }
+
         function settleImmediately(tasks) {
             forEach(tasks, function (task) {
                 task.call();
@@ -2005,15 +2010,20 @@ return (function () {
             }
         }
 
-        function shouldPush(elt) {
+        function shouldPushUrl(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
             return (pushUrl && pushUrl !== "false") ||
                 (getInternalData(elt).boosted && getInternalData(elt).pushURL);
         }
 
-        function getPushUrl(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
+        function shouldReplaceUrl(elt) {
+            var pushUrl = getClosestAttributeValue(elt, "hx-replace-url");
+            return (pushUrl && pushUrl !== "false");
+        }
+
+        function getPushOrReplaceUrl(elt, type) {
+            var urlValue = getClosestAttributeValue(elt, "hx-" + type + "-url");
+            return (urlValue === "true" || urlValue === "false") ? null : urlValue;
         }
 
         function addRequestIndicatorClasses(elt) {
@@ -2865,6 +2875,13 @@ return (function () {
             if (hasHeader(xhr,/HX-Push:/i)) {
                 var pushedUrl = xhr.getResponseHeader("HX-Push");
             }
+            if (hasHeader(xhr,/HX-Push-Url:/i)) {
+                var pushedUrl = xhr.getResponseHeader("HX-Push-Url");
+            }
+            if (hasHeader(xhr,/HX-Replace-Url:/i)) {
+                var replacementUrl = xhr.getResponseHeader("HX-Replace-Url");
+            }
+
 
             if (hasHeader(xhr, /HX-Location:/i)) {
                 saveCurrentPageToHistory();
@@ -2899,11 +2916,12 @@ return (function () {
             }
 
             /** @type {boolean} */
-            var shouldSaveHistory
-            if (pushedUrl == "false") {
-                shouldSaveHistory = false
-            } else {
-                shouldSaveHistory = shouldPush(elt) || pushedUrl;
+            var historySaveType;
+            if ((pushedUrl && pushedUrl !== "false") || shouldPushUrl(elt)) {
+                historySaveType = "push";
+            }
+            if ((replacementUrl && replacementUrl !== "false") || shouldReplaceUrl(elt)) {
+                historySaveType = "replace";
             }
 
             // by default htmx only swaps on 200 return codes and does not swap
@@ -2933,7 +2951,7 @@ return (function () {
                 });
 
                 // Save current page
-                if (shouldSaveHistory) {
+                if (historySaveType) {
                     saveCurrentPageToHistory();
                 }
 
@@ -3006,10 +3024,16 @@ return (function () {
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
                             // push URL and save new page
-                            if (shouldSaveHistory) {
-                                var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
-                                pushUrlIntoHistory(pathToPush);
-                                triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
+                            if (historySaveType) {
+                                var pathToPush = pushedUrl || getPushOrReplaceUrl(elt, "push") ||  getPushOrReplaceUrl(elt, "replace")
+                                                           || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
+                                if (historySaveType === "push") {
+                                    pushUrlIntoHistory(pathToPush);
+                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
+                                } else {
+                                    replaceUrlInHistory(pathToPush);
+                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: pathToPush});
+                                }
                             }
 
                             if(settleInfo.title) {

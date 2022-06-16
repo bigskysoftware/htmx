@@ -39,6 +39,7 @@ title: </> htmx - Attributes
 | [`hx-prompt`](/attributes/hx-prompt)           | shows a prompt before submitting a request
 | [`hx-push-url`](/attributes/hx-push-url)       | pushes the URL into the location bar, creating a new history entry
 | [`hx-put`](/attributes/hx-put)                 | issues a `PUT` to the specified URL
+| [`hx-replace-url`](/attributes/hx-replace-url) | replace the URL in the location bar
 | [`hx-request`](/attributes/hx-request)         | configures various aspects of the request
 | [`hx-select`](/attributes/hx-select)           | selects a subset of the server response to process
 | [`hx-select-oob`](/attributes/hx-select-oob)   | selects one or more elements from a server response to swap in via an out of band swap
