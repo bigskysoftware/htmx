@@ -143,6 +143,7 @@ title: </> htmx - Attributes
 | [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
 | [`htmx:swapError`](/events#htmx:swapError)  | triggered when an error occurs during the swap phase
 | [`htmx:targetError`](/events#htmx:targetError)  | triggered when an invalid target is specified
+| [`htmx:timeout`](/events#htmx:timeout)  | triggered when a request timeout occurs
 | [`htmx:validation:validate`](/events#htmx:validation:validate)  | triggered before an element is validated
 | [`htmx:validation:failed`](/events#htmx:validation:failed)  | triggered when an element fails validation
 | [`htmx:validation:halted`](/events#htmx:validation:halted)  | triggered when a request is halted due to validation errors

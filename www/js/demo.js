@@ -67,8 +67,11 @@ function params(request) {
 function init(path, response) {
     onGet(path, response);
     let content = response(null, {});
-    document.getElementById("demo-canvas").innerHTML = content;
-    pushActivityChip("Initial State", "init", demoInitialStateTemplate(content));
+    let canvas = document.getElementById("demo-canvas");
+    if (canvas) {
+        canvas.innerHTML = content;
+        pushActivityChip("Initial State", "init", demoInitialStateTemplate(content));
+    }
 }
 
 function onGet(path, response) {

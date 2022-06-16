@@ -1,6 +1,7 @@
 ---
 layout: layout.njk
 title: </> htmx - Documentation
+customClasses: wide-content
 ---
 <div class="row">
 <div class="2 col nav">
@@ -100,27 +101,38 @@ It's worth mentioning that, if you prefer, you can use the `data-` prefix when u
 
 ## <a name="installing"></a> [Installing](#installing)
 
-Htmx is a dependency-free javascript library.
-Three different ways to add it to your project are described below.
+Htmx is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>`
+tag to your document head.  No need for complicated build steps or systems.
 
 If you are migrating to htmx from intercooler.js, please see the [migration guide](/migration-guide).
 
-### Download a copy
+### Via A CDN (e.g. unpkg.com)
 
-The simplest, recommended way to install htmx is to copy it into your project.
-
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/browse/htmx.org/dist/) and add it to the appropriate directory in your project.
-Then, include it where necessary with a `<script>` tag:
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag 
+and get going:
 
 ```html
-<script src="/path/to/htmx.min.js" defer></script>
+<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
+```
+
+While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
+
+### Download a copy
+
+The next easiest way to install htmx is to simply copy it into your project.
+
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/browse/htmx.org/dist/) and add it to the appropriate directory in your project
+and include it where necessary with a `<script>` tag:
+
+```html
+<script src="/path/to/htmx.min.js"></script>
 ```
 
 You can also add extensions this way, by downloading them from the `ext/` directory.
 
-### With npm
+### npm
 
-For more advanced configuration, you can install htmx with [npm](https://www.npmjs.com/):
+For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
 npm install htmx.org
@@ -128,17 +140,6 @@ npm install htmx.org
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
 For example, you might bundle htmx with some extensions and project-specific code.
-
-### Via unpkg.com
-
-For prototyping or testing, you can use the npm package via the unpkg.com CDN.
-Avoid using unpkg.com or other JavaScript CDN’s in production, for [many good reasons](https://blog.wesleyac.com/posts/why-not-javascript-cdn) such as performance and robustness.
-
-To use htmx from unpkg.com, use this `<script>` tag:
-
-```html
-<script src="https://unpkg.com/htmx.org@1.8.0" integrity="TODO" crossorigin="anonymous" defer></script>
-```
 
 ### <a name="webpack">[Webpack](#webpack)
 
@@ -876,7 +877,7 @@ Htmx fires events around validation that can be used to hook in custom validatio
    custom validation logic
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
-  in the `event.details.errors` object
+  in the `event.detail.errors` object
 
 ### Validation Example
 
@@ -1082,7 +1083,7 @@ site that will install:
 Simply add the following script tag to your demo/fiddle/whatever:
 
 ```html
-<script src="https://demo.htmx.org" defer></script>
+<script src="https://demo.htmx.org"></script>
 ```
 
 This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
@@ -1101,7 +1102,7 @@ Here is an example of the code in action:
 
 ```html
 <!-- load demo environment -->
-<script src="https://demo.htmx.org" defer></script>
+<script src="https://demo.htmx.org"></script>
 
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">
