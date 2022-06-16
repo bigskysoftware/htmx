@@ -61,11 +61,12 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/derkoe/quarkus-htmx-todos>
 
-## ColdFusion (CFML - JVM Language)
+## ColdFusion (CFML - a JVM Language)
 
 ### CFWheels Framework
 
 - <https://github.com/bpamiri/cfwheels-todomvc-htmx>
+- <https://www.forgebox.io/view/cfwheels-htmx-plugin>
 
 ## C#
 
