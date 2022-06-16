@@ -18,10 +18,11 @@ of the event specified by [`hx-trigger`])
 
 ```html
   <div hx-ext="ws" ws-connect="/chatroom">
+    <div id="notifications"></div>
     <div id="chat_room">
       ...
     </div>
-    <form ws-send>
+    <form id="form" ws-send>
         <input name="chat_message">
     </form>
   </div>
@@ -31,6 +32,24 @@ of the event specified by [`hx-trigger`])
 
 The example above establishes a WebSocket to the `/chatroom` end point.  Content that is sent down from the websocket will
 be parsed as HTML and swapped in by the `id` property, using the same logic as [Out of Band Swaps](/attributes/hx-swap-oob).
+
+As such, if you want to change the swapping method (e.g., append content at the end of an element or delegate swapping to an extension),
+you need to specify that in the message body, sent by the server.
+
+```html
+<!-- will be interpreted as hx-swap-oob="true" by default -->
+<form id="form">
+    ...
+</form>
+<!-- will be appended to #notifications div -->
+<div id="notifications" hx-swap-oob="beforeend">
+    New message received
+</div>
+<!-- will be swapped using an extension -->
+<div id="chat_room" hx-swap-oob="morphdom">
+    ....
+</div>
+```
 
 ### Sending Messages to a WebSocket
 
@@ -54,6 +73,7 @@ htmx.config.wsReconnectDelay = function(retryCount) {
 }
 ```
 
+The extension also implements a simple queuing mechanism that keeps messages in memory when the socket is not in `OPEN` state and sends them once the connection is restored.
 ### Testing with the Demo Server
 
 Htmx includes a demo WebSockets server written in Go that will help you to see WebSockets in action, and begin bootstrapping your own WebSockets code.  It is located in the /test/servers/ws folder of the htmx distribution.  Look at /test/servers/ws/README.md for instructions on running and using the test server.
