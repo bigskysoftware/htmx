@@ -1949,7 +1949,7 @@ return (function () {
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
-            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
+            var historyCache = parseJSON(sessionStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
                     historyCache.splice(i, 1);
@@ -1962,7 +1962,7 @@ return (function () {
             }
             while(historyCache.length > 0){
                 try {
-                    localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
+                    sessionStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
                     break;
                 } catch (e) {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
@@ -1972,7 +1972,7 @@ return (function () {
         }
 
         function getCachedHistory(url) {
-            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
+            var historyCache = parseJSON(sessionStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
                     return historyCache[i];
