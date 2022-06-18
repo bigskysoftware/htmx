@@ -39,3 +39,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Sortable](/examples/sortable) | Demonstrates how to use htmx with the Sortable.js plugin to implement drag-and-drop reordering
 | [Updating Other Content](/examples/update-other-content) | Demonstrates how to update content beyond just the target elements
 | [Confirm](/examples/confirm) | Demonstrates how to implement a custom confirmation dialog with htmx
+
+## Migrating from Hotwire / Turbo ?
+
+For common practices see the [Hotwire / Turbo to htmx Migration Guide](/migration-guide-hotwire-turbo).

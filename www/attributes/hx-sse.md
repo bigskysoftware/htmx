@@ -3,10 +3,10 @@ layout: layout.njk
 title: </> htmx - hx-sse
 ---
 
-## `hx-sse` 
+## `hx-sse`
 
-*Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the 
-[SSE extension page](../extensions/server-sent-events) to learn about the new implementation of SSE as an extension.*
+*Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the
+[SSE extension page](/extensions/server-sent-events) to learn about the new implementation of SSE as an extension.*
 
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
