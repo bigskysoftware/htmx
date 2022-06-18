@@ -40,9 +40,6 @@ return (function () {
             logAll : logAll,
             logger : null,
             config : {
-                historyEnabled:true,
-                historyCacheSize:10,
-                refreshOnHistoryMiss:false,
                 defaultSwapStyle:'innerHTML',
                 defaultSwapDelay:0,
                 defaultSettleDelay:20,
@@ -1941,66 +1938,9 @@ return (function () {
         //====================================================================
         // History Support
         //====================================================================
-        var currentPathForHistory = location.pathname+location.search;
-
-        function getHistoryElement() {
-            var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
-            return historyElt || getDocument().body;
-        }
-
-        function saveToHistoryCache(url, content, title, scroll) {
-            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
-            for (var i = 0; i < historyCache.length; i++) {
-                if (historyCache[i].url === url) {
-                    historyCache.splice(i, 1);
-                    break;
-                }
-            }
-            historyCache.push({url:url, content: content, title:title, scroll:scroll})
-            while (historyCache.length > htmx.config.historyCacheSize) {
-                historyCache.shift();
-            }
-            while(historyCache.length > 0){
-                try {
-                    localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
-                    break;
-                } catch (e) {
-                    triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
-                    historyCache.shift(); // shrink the cache and retry
-                }
-            }
-        }
-
-        function getCachedHistory(url) {
-            var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
-            for (var i = 0; i < historyCache.length; i++) {
-                if (historyCache[i].url === url) {
-                    return historyCache[i];
-                }
-            }
-            return null;
-        }
-
-        function cleanInnerHtmlForHistory(elt) {
-            var className = htmx.config.requestClass;
-            var clone = elt.cloneNode(true);
-            forEach(findAll(clone, "." + className), function(child){
-                removeClassFromElement(child, className);
-            });
-            return clone.innerHTML;
-        }
-
-        function saveCurrentPageToHistory() {
-            var elt = getHistoryElement();
-            var path = currentPathForHistory || location.pathname+location.search;
-            triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
-        }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
-            currentPathForHistory = path;
+            history.pushState({htmx:true}, "", path);
         }
 
         function settleImmediately(tasks) {
@@ -2009,56 +1949,6 @@ return (function () {
             });
         }
 
-        function loadHistoryFromServer(path) {
-            var request = new XMLHttpRequest();
-            var details = {path: path, xhr:request};
-            triggerEvent(getDocument().body, "htmx:historyCacheMiss", details);
-            request.open('GET', path, true);
-            request.setRequestHeader("HX-History-Restore-Request", "true");
-            request.onload = function () {
-                if (this.status >= 200 && this.status < 400) {
-                    triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
-                    var fragment = makeFragment(this.response);
-                    // @ts-ignore
-                    fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
-                    var historyElement = getHistoryElement();
-                    var settleInfo = makeSettleInfo(historyElement);
-                    // @ts-ignore
-                    swapInnerHTML(historyElement, fragment, settleInfo)
-                    settleImmediately(settleInfo.tasks);
-                    currentPathForHistory = path;
-                    triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
-                } else {
-                    triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
-                }
-            };
-            request.send();
-        }
-
-        function restoreHistory(path) {
-            saveCurrentPageToHistory();
-            path = path || location.pathname+location.search;
-            var cached = getCachedHistory(path);
-            if (cached) {
-                var fragment = makeFragment(cached.content);
-                var historyElement = getHistoryElement();
-                var settleInfo = makeSettleInfo(historyElement);
-                swapInnerHTML(historyElement, fragment, settleInfo)
-                settleImmediately(settleInfo.tasks);
-                document.title = cached.title;
-                window.scrollTo(0, cached.scroll);
-                currentPathForHistory = path;
-                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
-            } else {
-                if (htmx.config.refreshOnHistoryMiss) {
-
-                    // @ts-ignore: optional parameter in reload() function throws error
-                    window.location.reload(true);
-                } else {
-                    loadHistoryFromServer(path);
-                }
-            }
-        }
 
         function shouldPush(elt) {
             var pushUrl = getAttributeValue(elt, "hx-push-url");
@@ -3034,11 +2924,6 @@ return (function () {
                     serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
 
-                // Save current page
-                if (shouldSaveHistory) {
-                    saveCurrentPageToHistory();
-                }
-
                 var swapSpec = getSwapSpecification(elt, isError, false, responseInfo.swapOverride);
 
                 if (target) {
@@ -3288,9 +3173,6 @@ return (function () {
             insertIndicatorStyles();
             var body = getDocument().body;
             processNode(body);
-            var restoredElts = getDocument().querySelectorAll(
-                "[hx-trigger='restored'],[data-hx-trigger='restored']"
-            );
             body.addEventListener("htmx:abort", function (evt) {
                 var target = evt.target;
                 var internalData = getInternalData(target);
@@ -3298,16 +3180,13 @@ return (function () {
                     internalData.xhr.abort();
                 }
             });
+            var lastState = history.state
             window.onpopstate = function (event) {
-                if (event.state && event.state.htmx) {
-                    restoreHistory();
-                    forEach(restoredElts, function(elt){
-                        triggerEvent(elt, 'htmx:restored', {
-                            'document': getDocument(),
-                            'triggerEvent': triggerEvent
-                        });
-                    });
+                if ((event.state && event.state.htmx) ||
+                    (!event.state && lastState && lastState.htmx)) {
+                    window.location.reload()
                 }
+                lastState = event.state
             };
             initializeLayoutReadWrite()
             setTimeout(function () {
