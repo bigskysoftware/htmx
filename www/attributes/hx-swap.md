@@ -102,9 +102,28 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
     Get Some Content
   </div>
 ```
+
+#### <a name="focus-scroll"></a>Focus scroll
+
+htmx preserves focus between requests for inputs that have a defined id attribute. By default htmx prevents auto-scrolling to focused inputs between requests which can be unwanted behavior on longer requests when the user has already scrolled away. To enable focus scroll you can use `focus-scroll:true`.
+
+```html
+  <input id="name" hx-get="/validation" 
+       hx-swap="outerHTML focus-scroll:true"/>
+```
+
+Alternatively, if you want the page to automatically scroll to the focused element after each request you can change the htmx global configuration value `htxm.config.defaultFocusScroll` to true. Then disable it for specific requests using `focus-scroll:false`.
+
+```html
+  <input id="name" hx-get="/validation" 
+       hx-swap="outerHTML focus-scroll:false"/>
+```
+
 ### Notes
 
 * `hx-swap` is inherited and can be placed on a parent element
 * The default value of this attribute is `innerHTML`
+* Due to DOM limitations, it’s not possible to use the `outerHTML` method on the `<body>` element.
+  htmx will change `outerHTML` on `<body>` to use `innerHTML`.
 * The default swap delay is 0ms
 * The default settle delay is 20ms

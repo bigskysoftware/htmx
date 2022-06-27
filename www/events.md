@@ -8,6 +8,17 @@ title: </> htmx - Events
 Htmx provides an extensive events system that can be used to modify and enhance behavior.  Events
 are listed below.
 
+### <a name="htmx:abort"></a> Event - [`htmx:abort`](#htmx:abort)
+
+This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.  
+
+If you send an `htmx:abort` event to an element making a request, it will abort the request:
+
+```html
+<button id="request-button" hx-post="/example">Issue Request</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
+```
+
 ### <a name="htmx:afterOnLoad"></a> Event - [`htmx:afterOnLoad`](#htmx:afterOnLoad)
 
 This event is triggered after an AJAX `onload` has finished.  Note that this does not mean that the content
@@ -336,6 +347,19 @@ element id without a preceding `#`)
 
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the bad CSS selector
+
+### <a name="htmx:timeout"></a> Event - [`htmx:timeout`](#htmx:timeout)
+
+This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.  
+
+Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](/attributes/hx-request)
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
 
 ### <a name="htmx:validation:validate"></a> Event - [htmx:validation:validate](#htmx:validation:validate)
 

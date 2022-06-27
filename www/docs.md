@@ -1,6 +1,7 @@
 ---
 layout: layout.njk
 title: </> htmx - Documentation
+customClasses: wide-content
 ---
 <div class="row">
 <div class="2 col nav">
@@ -13,16 +14,17 @@ title: </> htmx - Documentation
 * [installing](#installing)
 * [ajax](#ajax)
   * [triggers](#triggers)
-    * [trigger filters](#trigger-filters)
     * [trigger modifiers](#trigger-modifiers)
+    * [trigger filters](#trigger-filters)
     * [special events](#special-events)
     * [polling](#polling)
     * [load polling](#load_polling)
-  * [targets](#targets)
   * [indicators](#indicators)
+  * [targets](#targets)
   * [swapping](#swapping)
   * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
+  * [out of band swaps](#oob_swaps)
   * [parameters](#parameters)
   * [confirming](#confirming)
 * [inheritance](#inheritance)
@@ -52,8 +54,8 @@ javascript.
 
 To understand htmx, first lets take a look at an anchor tag:
 
-``` html
-  <a href="/blog">Blog</a>
+```html
+<a href="/blog">Blog</a>
 ```
 
 This anchor tag tells a browser:
@@ -63,13 +65,14 @@ This anchor tag tells a browser:
 
 With that in mind, consider the following bit of HTML:
 
-``` html
-  <button hx-post="/clicked"
-       hx-trigger="click"
-       hx-target="#parent-div"
-       hx-swap="outerHTML">
+```html
+<button hx-post="/clicked"
+    hx-trigger="click"
+    hx-target="#parent-div"
+    hx-swap="outerHTML"
+>
     Click Me!
-  </button>
+</button>
 ```
 
 This tells htmx:
@@ -92,49 +95,79 @@ without even needing to really understand that concept.
 
 It's worth mentioning that, if you prefer, you can use the `data-` prefix when using htmx:
 
-``` html
-  <a data-hx-post="/click">Click Me!</a>
+```html
+<a data-hx-post="/click">Click Me!</a>
 ```
 
 ## <a name="installing"></a> [Installing](#installing)
 
-Htmx is a dependency-free javascript library.
+Htmx is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>`
+tag to your document head.  No need for complicated build steps or systems.
 
-It can be used via [NPM](https://www.npmjs.com/) as "`htmx.org`" or downloaded or included from
-[unpkg](https://unpkg.com/browse/htmx.org/) or your other favorite NPM-based CDN:
+If you are migrating to htmx from intercooler.js, please see the [migration guide](/migration-guide).
 
-``` html
-    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+### Via A CDN (e.g. unpkg.com)
+
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag 
+and get going:
+
+```html
+<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
 ```
 
-For added security, you can load the script using [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
+While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
-``` html
-    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="TODO: REGEN" crossorigin="anonymous"></script>
+### Download a copy
+
+The next easiest way to install htmx is to simply copy it into your project.
+
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/browse/htmx.org/dist/) and add it to the appropriate directory in your project
+and include it where necessary with a `<script>` tag:
+
+```html
+<script src="/path/to/htmx.min.js"></script>
 ```
 
-If you are migrating to htmx from intercooler.js, please see the [migration guide here](/migration-guide).
+You can also add extensions this way, by downloading them from the `ext/` directory.
 
-### <a name="webpack">[webpack](#webpack)
+### npm
 
-If you are using webpack, please follow these steps:
+For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
-1. Install `htmx` via your favourite package manager (like npm or yarn)
-1. Add the import to your `index.js`
-  ``` js   
-  import 'htmx.org';
-  ```
-1. Optional but recommended: if you want to use the global `htmx` variable:
-    2. Create a custom JS file and import this file to your `index.js` below the import 
-       from step 2
-    ``` js   
-      import 'path/to/my_custom.js';
-    ```
-    3. Add the following line to it
-    ``` js   
-      window.htmx = require('htmx.org');
-    ```
-    6. Rebuild your bundle
+```sh
+npm install htmx.org
+```
+
+After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
+For example, you might bundle htmx with some extensions and project-specific code.
+
+### <a name="webpack">[Webpack](#webpack)
+
+If you are using webpack to manage your javascript:
+
+* Install `htmx` via your favourite package manager (like npm or yarn)
+* Add the import to your `index.js`
+
+```js   
+import 'htmx.org';
+```
+
+If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
+
+* Create a custom JS file
+* Import this file to your `index.js` (below the import from step 2) 
+  
+```js   
+import 'path/to/my_custom.js';
+```
+ 
+* Then add this code to the file:
+
+```js   
+window.htmx = require('htmx.org');
+```
+ 
+* Finally, rebuild your bundle
 
 ## <a name="ajax"></a> [AJAX](#ajax)
 
@@ -153,9 +186,9 @@ Each of these attributes takes a URL to issue an AJAX request to.  The element w
 type to the given URL when the element is [triggered](#triggers):
 
 ```html
-  <div hx-put="/messages">
+<div hx-put="/messages">
     Put To Messages
-  </div>
+</div>
 ```
 
 This tells the browser:
@@ -176,9 +209,9 @@ attribute to specify which event will cause the request.
 Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 
 ```html
-   <div hx-post="/mouse_entered" hx-trigger="mouseenter">
-      [Here Mouse, Mouse!]
-   </div>
+<div hx-post="/mouse_entered" hx-trigger="mouseenter">
+    [Here Mouse, Mouse!]
+</div>
 ```
 
 #### <a name="trigger-modifiers"></a> [Trigger Modifiers](#trigger-modifiers)
@@ -187,9 +220,9 @@ A trigger can also have a few additional modifiers that change its behavior.  Fo
  happen once, you can use the `once` modifier for the trigger:
 
 ```html
-   <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
-     [Here Mouse, Mouse!]
-   </div>
+<div hx-post="/mouse_entered" hx-trigger="mouseenter once">
+    [Here Mouse, Mouse!]
+</div>
 ```
 
 Other modifiers you can use for triggers are:
@@ -205,12 +238,13 @@ so the request will trigger at the end of the time period.
 You can use these attributes to implement many common UX patterns, such as [Active Search](/examples/active-search):
 
 ```html
-   <input type="text" name="q"
-          hx-get="/trigger_delay"
-          hx-trigger="keyup changed delay:500ms"
-          hx-target="#search-results"
-          placeholder="Search..."/>
-    <div id="search-results"></div>
+<input type="text" name="q"
+    hx-get="/trigger_delay"
+    hx-trigger="keyup changed delay:500ms"
+    hx-target="#search-results"
+    placeholder="Search..."
+>
+<div id="search-results"></div>
 ```
 
 This input will issue a request 500 milliseconds after a key up event if the input has been changed and inserts the results
@@ -226,7 +260,9 @@ will be evaluated.  If the expression evaluates to `true` the event will trigger
 Here is an example that triggers only on a Control-Click of the element
 
 ```html
-<div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
+<div hx-get="/clicked" hx-trigger="click[ctrlKey]">
+    Control Click Me
+</div>
 ```
 
 Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
@@ -249,8 +285,7 @@ If you want an element to poll the given URL rather than wait for an event, you 
 with the [`hx-trigger`](/attributes/hx-trigger/) attribute:
 
 ```html
-  <div hx-get="/news" hx-trigger="every 2s">
-  </div>
+<div hx-get="/news" hx-trigger="every 2s"></div>
 ```
 
 This tells htmx
@@ -267,9 +302,9 @@ a `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
 <div hx-get="/messages"
-     hx-trigger="load delay:1s"
-     hx-swap="outerHTML">
-
+    hx-trigger="load delay:1s"
+    hx-swap="outerHTML"
+>
 </div>
 ```
 
@@ -292,10 +327,10 @@ another element, if specified).  The `htmx-request` class will cause a child ele
 on it to transition to an opacity of 1, showing the indicator.
 
 ```html
-  <button hx-get="/click">
-      Click Me!
-     <img class="htmx-indicator" src="/spinner.gif"/>
-  </button>
+<button hx-get="/click">
+    Click Me!
+    <img class="htmx-indicator" src="/spinner.gif">
+</button>
 ```
 
 Here we have a button.  When it is clicked the `htmx-request` class will be added to it, which will reveal the spinner
@@ -305,27 +340,27 @@ While the `htmx-indicator` class uses opacity to hide and show the progress indi
 you can create your own CSS transition like so:
 
 ```css
-    .htmx-indicator{
-        display:none;
-    }
-    .htmx-request .my-indicator{
-        display:inline;
-    }
-    .htmx-request.my-indicator{
-        display:inline;
-    }
+.htmx-indicator{
+    display:none;
+}
+.htmx-request .my-indicator{
+    display:inline;
+}
+.htmx-request.my-indicator{
+    display:inline;
+}
 ```
 
 If you want the `htmx-request` class added to a different element, you can use the [hx-indicator](/attributes/hx-indicator)
 attribute with a CSS selector to do so:
 
 ```html
-  <div>
-      <button hx-get="/click" hx-indicator="#indicator">
+<div>
+    <button hx-get="/click" hx-indicator="#indicator">
         Click Me!
-      </button>
-      <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>
-  </div>
+    </button>
+    <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>
+</div>
 ```
 
 Here we call out the indicator explicitly by id.  Note that we could have placed the class on the parent `div` as well
@@ -337,12 +372,13 @@ If you want the response to be loaded into a different element other than the on
 use the  [hx-target](/attributes/hx-target) attribute, which takes a CSS selector.  Looking back at our Live Search example:
 
 ```html
-   <input type="text" name="q"
-          hx-get="/trigger_delay"
-          hx-trigger="keyup delay:500ms changed"
-          hx-target="#search-results"
-          placeholder="Search..."/>
-    <div id="search-results"></div>
+<input type="text" name="q"
+    hx-get="/trigger_delay"
+    hx-trigger="keyup delay:500ms changed"
+    hx-target="#search-results"
+    placeholder="Search..."
+>
+<div id="search-results"></div>
 ```
 
 You can see that the results from the search are going to be loaded into `div#search-results`, rather than into the
@@ -362,30 +398,73 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
-| `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](##response-headers) will still be processed)
+| `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
 to supersede the request of another element, or to wait until the other elements request has finished.
 
-htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this:
+htmx offers a [`hx-sync`](/attributes/hx-sync) attribute to help you accomplish this.
 
-TODO - example from alejandros
+Consider a race condition between a form submission and an individual input's validation request in this HTML:
 
-#### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change"
+    >
+    <button type="submit">Submit</button>
+</form>
+```
+
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to 
+`/validate` and `/store`. 
+
+Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if 
+a form request is present or starts while the input request is in flight:
+
+```html
+<form hx-post="/store">
+    <input id="title" name="title" type="text" 
+        hx-post="/validate" 
+        hx-trigger="change"
+        hx-sync="closest form:abort"
+    >
+    <button type="submit">Submit</button>
+</form>
+```
+
+This resolves the synchronization between the two elements in a declarative way.
+
+htmx also supports a programmatic way to cancel requests: you can send the `htmx:abort` event to an element to
+cancel any in-flight requests:
+
+```html
+<button id="request-button" hx-post="/example">
+    Issue Request
+</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">
+    Cancel Request
+</button>
+```
+
+More examples and details can be found on the [`hx-sync` attribute page.](/attributes/hx-sync)
+
+### <a name="css_transitions"></a>[CSS Transitions](#css_transitions)
 
 htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without 
 javascript.  Consider this HTML content:
 
 ```html
-  <div id="div1">Original Content</div>
+<div id="div1">Original Content</div>
 ```
 
 Imagine this content is replaced by htmx via an ajax request with this new content:
 
 ```html
-  <div id="div1" class="red">New Content</div>
+<div id="div1" class="red">New Content</div>
 ```
 
 Note two things: 
@@ -397,8 +476,8 @@ Given this situation, we can write a CSS transition from the old state to the ne
 
 ```css
 .red {
-  color: red;
-  transition: all ease-in 1s ;
+    color: red;
+    transition: all ease-in 1s ;
 }
 ```
 
@@ -409,7 +488,7 @@ So, in summary, all you need to do to use CSS transitions for an element is keep
 
 You can see the [Animation Examples](/examples/animations) for more details and live demonstrations.
 
-##### Details
+#### Details
 
 To understand how CSS transitions actually work in htmx, you must understand the underlying swap & settle model that htmx uses.
 
@@ -421,14 +500,14 @@ onto the new element before the swap occurs.  The new content is then swapped in
 (20ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
 the developer.
 
-#### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
+### <a name="oob_swaps"></a>[Out of Band Swaps](#oob_swaps)
 
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [hx-swap-oob](/attributes/hx-swap-oob) attribute in the *response* html:
 
 ```html
-  <div id="message" hx-swap-oob="true">Swap me directly!</div>
-  Additional Content
+<div id="message" hx-swap-oob="true">Swap me directly!</div>
+Additional Content
 ```
 
 In this response, `div#message` would be swapped directly into the matching DOM element, while the additional content
@@ -442,6 +521,9 @@ Note that out of band elements must be in the top level of the response, and not
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](/attributes/hx-select)
 attribute, which takes a CSS selector and selects the matching elements from the response.
+
+You can also pick out pieces of content for an out-of-band swap by using the [hx-select-oob](/attributes/hx-select-oob)
+attribute, which takes a list of element IDs to pick out and swap.
 
 #### Preserving Content During A Swap
 
@@ -489,7 +571,7 @@ attribute, which allows you to confirm an action using a simple javascript dialo
 
 ```html
 <button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
-  Delete My Account
+    Delete My Account
 </button>
 ```
 
@@ -503,10 +585,10 @@ allows you to "hoist" attributes up the DOM to avoid code duplication.  Consider
 
 ```html
 <button hx-delete="/account" hx-confirm="Are you sure?">
-  Delete My Account
+    Delete My Account
 </button>
 <button hx-put="/account" hx-confirm="Are you sure?">
-  Update My Account
+    Update My Account
 </button>
 ```
 
@@ -515,10 +597,10 @@ Here we have a duplicate `hx-confirm` attribute.  We can hoist this attribute to
 ```html
 <div hx-confirm="Are you sure?">
     <button hx-delete="/account">
-      Delete My Account
+        Delete My Account
     </button>
     <button hx-put="/account">
-      Update My Account
+        Update My Account
     </button>
 </div>
 ```
@@ -531,20 +613,21 @@ be confirmed.  We could add an `unset` directive on it like so:
 ```html
 <div hx-confirm="Are you sure?">
     <button hx-delete="/account">
-      Delete My Account
+        Delete My Account
     </button>
     <button hx-put="/account">
-      Update My Account
+        Update My Account
     </button>
     <button hx-confirm="unset" hx-get="/">
-      Cancel
+        Cancel
     </button>
 </div>
 ```
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
-Automatic inheritance can be further modified using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+Automatic inheritance can be further 
+ d using [`hx-disinherit`](/attributes/hx-disinherit) attribute.
 
 ## <a name="boosting"></a>[Boosting](#boosting)
 
@@ -561,7 +644,7 @@ Here is an example:
 
 The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
 
-## <a name="progressive_enhancement"></a>[Progressive Enhancement](#progressive_enhancement)
+### <a name="progressive_enhancement"></a>[Progressive Enhancement](#progressive_enhancement)
 
 A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
 to work, they simply don't use ajax requests.  This is known as 
@@ -579,11 +662,12 @@ However, you could wrap the htmx-enhanced input in a form element:
 ```html
 <form action="/search" method="POST">
     <input class="form-control" type="search" 
-           name="search" placeholder="Begin Typing To Search Users..." 
-           hx-post="/search" 
-           hx-trigger="keyup changed delay:500ms, search" 
-           hx-target="#search-results" 
-           hx-indicator=".htmx-indicator">
+        name="search" placeholder="Begin typing to search users..." 
+        hx-post="/search" 
+        hx-trigger="keyup changed delay:500ms, search" 
+        hx-target="#search-results" 
+        hx-indicator=".htmx-indicator"
+    >
 </form>
 ```
 
@@ -613,38 +697,45 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 * Associate text labels with all form fields
 * Maximize the readability of your application with appropriate fonts, contrast, etc.
 
-### <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
+## <a name="websockets-and-sse"></a> [Web Sockets & SSE](#websockets-and-sse)
 
-Htmx has experimental support for declarative use of both
+htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-These features are under active development, so please let us know if you are willing to experiment with them.
+<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
 
-#### <a name="websockets">[WebSockets](#websockets)
+**Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
+htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
+both SSE and web sockets will be done in the extensions.  
+
+Please visit the [SSE extension](../extensions/server-sent-events) and [WebSocket extension](../extensions/web-sockets) 
+pages to learn more about the new extensions.
+
+</div>
+
+### <a name="websockets">[WebSockets](#websockets)
 
 If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](/attributes/hx-ws) attribute:
 
 ```html
-  <div hx-ws="connect:wss:/chatroom">
+<div hx-ws="connect:wss:/chatroom">
     <div id="chat_room">
-      ...
+        ...
     </div>
     <form hx-ws="send:submit">
         <input name="chat_message">
     </form>
-  </div>
+</div>
 ```
 
-The `connect` declaration established the connection, and the `send` declaration tells the form to submit values to the
-socket on `submit`.
+The `connect` declaration established the connection, and the `send` declaration tells the form to submit values to the socket on `submit`.
 
 More details can be found on the [hx-ws attribute page](/attributes/hx-ws)
 
-#### <a name="sse"></a> [Server Sent Events](#sse)
+### <a name="sse"></a> [Server Sent Events](#sse)
 
-[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are
-a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
+[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
 server and the browser than websockets.
 
 If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
@@ -658,9 +749,9 @@ a `connect <url>` declaration that specifies the URL from which Server Sent Even
 Here is an example:
 
 ```html
-    <body hx-sse="connect:/news_updates">
-        <div hx-trigger="sse:new_news" hx-get="/news"></div>
-    </body>
+<body hx-sse="connect:/news_updates">
+    <div hx-trigger="sse:new_news" hx-get="/news"></div>
+</body>
 ```
 
 Depending on your implementation, this may be more efficient than the polling example above since the server would
@@ -674,7 +765,7 @@ If you want a given element to push its request URL into the browser navigation 
 to the browser's history, include the [hx-push-url](/attributes/hx-push-url) attribute:
 
 ```html
-    <a hx-get="/blog" hx-push-url="true">Blog</a>
+<a hx-get="/blog" hx-push-url="true">Blog</a>
 ```
 
 When a user clicks on this link, htmx will snapshot the current DOM and store it before it makes a request to /blog.
@@ -735,12 +826,13 @@ htmx includes a number of useful headers in requests:
 | `HX-Target` | will be set to the id of the target element
 | `HX-Prompt` | will be set to the value entered by the user when prompted via [hx-prompt](/attributes/hx-prompt)
 
-### <a name="response-header"></a> [Response Headers](#response-headers)
+### <a name="response-headers"></a> [Response Headers](#response-headers)
 
 htmx supports some htmx-specific response headers:
 
 * `HX-Push` - pushes a new URL into the browser’s address bar
 * `HX-Redirect` - triggers a client-side redirect to a new location
+* `HX-Location` - triggers a client-side redirect to a new location that acts as a swap
 * `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
 * `HX-Trigger` - triggers client side events
 * `HX-Trigger-After-Swap` - triggers client side events after the swap step
@@ -785,7 +877,7 @@ Htmx fires events around validation that can be used to hook in custom validatio
    custom validation logic
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
-  in the `event.details.errors` object
+  in the `event.detail.errors` object
 
 ### Validation Example
 
@@ -794,12 +886,13 @@ Here is an example of an input that uses the `htmx:validation:validate` event to
 
 ```html
 <form hx-post="/test">
-  <input _="on htmx:validation:validate
-               if my.value != 'foo'
-                  call me.setCustomValidity('Please enter the value foo')
-               else
-                  call me.setCustomValidity('')"
-         name="example">
+    <input _="on htmx:validation:validate
+                if my.value != 'foo'
+                    call me.setCustomValidity('Please enter the value foo')
+                else
+                    call me.setCustomValidity('')"
+        name="example"
+    >
 </form>
 ```
 
@@ -819,8 +912,8 @@ defined in javascript](/extensions#defining) and then used via the [`hx-ext`](/a
 
 ```html
 <div hx-ext="debug">
-  <button hx-post="/example">This button used the debug extension</button>
-  <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
+    <button hx-post="/example">This button used the debug extension</button>
+    <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
 </div>
 ```
 
@@ -848,17 +941,17 @@ Htmx has an extensive [events mechanism](https://htmx.org/reference/#events), wh
 If you want to register for a given htmx event you can use
 
 ```js
-   document.body.addEventListener('htmx:load', function(evt) {
-      myJavascriptLib.init(evt.details.elt);
-   });
+document.body.addEventListener('htmx:load', function(evt) {
+    myJavascriptLib.init(evt.detail.elt);
+});
 ```
  
 or, if you would prefer, you can use the following htmx helper:
 
 ```javascript
-  htmx.on("htmx:load", function(evt) {
-        myJavascriptLib.init(evt.details.elt);
-  });
+htmx.on("htmx:load", function(evt) {
+    myJavascriptLib.init(evt.detail.elt);
+});
 ```
 
 The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent 
@@ -866,18 +959,18 @@ The `htmx:load` event is fired every time an element is loaded into the DOM by h
 
 Some common uses for htmx events are:
 
-## <a name="init_3rd_party_with_events">[Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
+### <a name="init_3rd_party_with_events">[Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
 
 Using the `htmx:load` event to initialize content is so common that htmx provides a helper function:
 
 ```javascript
-  htmx.onLoad(function(target) {
-        myJavascriptLib.init(target);
-  });
+htmx.onLoad(function(target) {
+    myJavascriptLib.init(target);
+});
 ```
 This does the same thing as the first example, but is a little cleaner.
 
-## <a name="config_request_with_events">[Configure a Request With Events](#config_request_with_events)
+### <a name="config_request_with_events">[Configure a Request With Events](#config_request_with_events)
 
 You can handle the [`htmx:configRequest`](/events/#htmx:configRequest) event in order to modify an AJAX request before it is issued:
 
@@ -890,7 +983,7 @@ document.body.addEventListener('htmx:configRequest', function(evt) {
 
 Here we add a parameter and header to the request before it is sent.
 
-## <a name="modifying_swapping_behavior_with_events">[Modifying Swapping Behavior With Events](#modifying_swapping_behavior_with_events)
+### <a name="modifying_swapping_behavior_with_events">[Modifying Swapping Behavior With Events](#modifying_swapping_behavior_with_events)
 
 You can handle the [`htmx:beforeSwap`](/events/#htmx:beforeSwap) event in order to modify the swap behavior of htmx:
 
@@ -919,7 +1012,7 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
 Here we handle a few [400-level error response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses) 
 that would normally not do a swap in htmx.
 
-## <a name="event_naming">[Event Naming](#event_naming)
+### <a name="event_naming">[Event Naming](#event_naming)
 
 Note that all events are fired with two different names
 
@@ -929,16 +1022,16 @@ Note that all events are fired with two different names
 So, for example, you can listen for `htmx:afterSwap` or for `htmx:after-swap`.  This facilitates interoperability
 with other libraries.  [Alpine.js](https://github.com/alpinejs/alpine/), for example, requires kebab case.
 
-### Logging
+### <a name="logging"></a> [Logging](#logging)
 
 If you set a logger at `htmx.logger`, every event will be logged.  This can be very useful for troubleshooting:
 
 ```javascript
-    htmx.logger = function(elt, event, data) {
-        if(console) {
-            console.log(event, elt, data);
-        }
+htmx.logger = function(elt, event, data) {
+    if(console) {
+        console.log(event, elt, data);
     }
+}
 ```
 
 ## <a name="debugging"></a> [Debugging](#debugging)
@@ -954,7 +1047,7 @@ The first debugging tool you can use is the `htmx.logAll()` method.  This will l
 will allow you to see exactly what the library is doing.  
 
 ```javascript
-  htmx.logAll();
+htmx.logAll();
 ```
 
 Of course, that won't tell you why htmx *isn't* doing something.  You might also not know *what* events a DOM
@@ -963,7 +1056,7 @@ element is firing to use as a trigger.  To address this, you can use the
 browser console:
 
 ```javascript
-  monitorEvents(htmx.find("#theElement"));
+monitorEvents(htmx.find("#theElement"));
 ```
 
 This will spit out all events that are occuring on the element with the id `theElement` to the console, and allow you
@@ -976,6 +1069,56 @@ about 2500 lines of javascript, so not an insurmountable amount of code.  You wo
 point in the `issueAjaxRequest()` and `handleAjaxResponse()` methods to see what's going on.
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
+
+### <a name="creating-demos">[Creating Demos](#creating-demos)
+
+Sometimes, in order to demonstrate a bug or clarify a usage, it is nice to be able to use a javascript snippet
+site like [jsfiddle](https://jsfiddle.net/).  To facilitate easy demo creation, htmx hosts a demo script
+site that will install:
+
+* htmx
+* hyperscript
+* a request mocking library
+
+Simply add the following script tag to your demo/fiddle/whatever:
+
+```html
+<script src="https://demo.htmx.org"></script>
+```
+
+This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
+The response for that url will be the innerHTML of the template, making it easy to construct mock responses. You can
+add a delay to the response with a `delay` attribute, which should be an integer indicating the number of milliseconds
+to delay
+
+You may embed simple expressions in the template with the `${}` syntax.
+
+Note that this should only be used for demos and is in no way guaranteed to work for long periods of time
+as it will always be grabbing the latest versions htmx and hyperscript!
+
+#### Demo Example
+
+Here is an example of the code in action:
+
+```html
+<!-- load demo environment -->
+<script src="https://demo.htmx.org"></script>
+
+<!-- post to /foo -->
+<button hx-post="/foo" hx-target="#result">
+    Count Up
+</button> 
+<output id="result"></output>
+
+<!-- respond to /foo with some dynamic content in a template tag -->
+<script>
+    globalInt = 0;
+</script>
+<template url="/foo" delay="500"> <!-- note the url and delay attributes -->
+    ${globalInt++}
+</template>
+
+```
 
 ## <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
@@ -1008,17 +1151,17 @@ on a DOM element, using the `on` syntax:
 
 ```html
 <div _="on htmx:afterSettle log 'Settled!'">
- ...
+    ...
 </div>
 ```
 
 This will log `Settled!` to the console when the `htmx:afterSettle` event is triggered.
 
-#### intercooler.js features & hyperscript implementations
+### intercooler.js features & hyperscript implementations
 
 Below are some examples of intercooler features and the hyperscript equivalent.
 
-##### `ic-remove-after`
+#### `ic-remove-after`
 
 Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
 for removing an element after a given amount of time.
@@ -1027,11 +1170,11 @@ In hyperscript you can implement this, as well as fade effect, like so:
 
 ```html
 <div _="on load wait 5s then transition opacity to 0 then remove me">
-  Here is a temporary message!
+    Here is a temporary message!
 </div>
 ```
 
-##### `ic-post-errors-to`
+#### `ic-post-errors-to`
 
 Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
 for posting errors that occured during requests and responses.
@@ -1040,11 +1183,11 @@ In hyperscript similar functionality is implemented like so:
 
 ```html
 <body _="on htmx:error(errorInfo) fetch /errors {method:'POST', body:{errorInfo:errorInfo} as JSON} ">
-  ...
+    ...
 </body>
 ```
 
-##### `ic-switch-class`
+#### `ic-switch-class`
 
 Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
 let you switch a class between siblings.
@@ -1069,10 +1212,10 @@ A good example of this is the [SortableJS demo](/examples/sortable/):
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
-  <div class="htmx-indicator">Updating...</div>
-  <div><input type='hidden' name='item' value='1'/>Item 1</div>
-  <div><input type='hidden' name='item' value='2'/>Item 2</div>
-  <div><input type='hidden' name='item' value='2'/>Item 3</div>
+    <div class="htmx-indicator">Updating...</div>
+    <div><input type='hidden' name='item' value='1'/>Item 1</div>
+    <div><input type='hidden' name='item' value='2'/>Item 2</div>
+    <div><input type='hidden' name='item' value='2'/>Item 3</div>
 </form>
 ```
 
@@ -1084,11 +1227,11 @@ In jquery you might do this like so:
 $(document).ready(function() {
     var sortables = document.body.querySelectorAll(".sortable");
     for (var i = 0; i < sortables.length; i++) {
-      var sortable = sortables[i];
-      new Sortable(sortable, {
-          animation: 150,
-          ghostClass: 'blue-background-class'
-      });
+        var sortable = sortables[i];
+        new Sortable(sortable, {
+            animation: 150,
+            ghostClass: 'blue-background-class'
+        });
     }
 });
 ```
@@ -1100,11 +1243,11 @@ rather than the entire document:
 htmx.onLoad(function(content) {
     var sortables = content.querySelectorAll(".sortable");
     for (var i = 0; i < sortables.length; i++) {
-      var sortable = sortables[i];
-      new Sortable(sortable, {
-          animation: 150,
-          ghostClass: 'blue-background-class'
-      });
+        var sortable = sortables[i];
+        new Sortable(sortable, {
+            animation: 150,
+            ghostClass: 'blue-background-class'
+        });
     }
 })
 ```
@@ -1117,9 +1260,9 @@ is initialized with the `htmx.process()` function.
 For example, if you were to fetch some data and put it into a div using the `fetch` API, and that HTML had 
 htmx attributes in it, you would need to add a call to `htmx.process()` like this:
 
-```ecmascript 6
-  let myDiv = document.getElementById('my-div')
-  fetch('http://example.com/movies.json')
+```js
+let myDiv = document.getElementById('my-div')
+fetch('http://example.com/movies.json')
     .then(response => response.text())
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
 ```
@@ -1130,19 +1273,19 @@ if they contain htmx attributes, will need a call to `htmx.process()` after they
 example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
 
 ```html
-  <div x-data="{show_new: false}"
-       x-init="$watch('show_new', value => {
-         if (show_new) {
-           htmx.process(document.querySelector('#new_content'))
-         }
-      })">
+<div x-data="{show_new: false}"
+    x-init="$watch('show_new', value => {
+        if (show_new) {
+            htmx.process(document.querySelector('#new_content'))
+        }
+    })">
     <button @click = "show_new = !show_new">Toggle New Content</button>
     <template x-if="show_new">
-      <div id="new_content">
-        <a hx-get="/server/newstuff" href="#">New Clickable</a>
-      </div>
+        <div id="new_content">
+            <a hx-get="/server/newstuff" href="#">New Clickable</a>
+        </div>
     </template>
-  </div>
+</div>
 ```
 
 ## <a name="security"></a>[Security](#security)
@@ -1164,9 +1307,9 @@ To address this, if you don't want a particular part of the DOM to allow for htm
 This will prevent htmx from executing within that area in the DOM:
 
 ```html
-  <div hx-disable>
+<div hx-disable>
     <%= user_content %>
-  </div>
+</div>
 ```
 
 This approach allows you to enjoy the benefits of [Locality of Behavior](https://htmx.org/essays/locality-of-behaviour/) 
@@ -1199,18 +1342,25 @@ listed below:
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overriden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
 
 </div>
 
 You can set them directly in javascript, or you can use a `meta` tag:
 
 ```html
-    <meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
+<meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
 ```
 
-### Conclusion
+## Conclusion
 
-And that's it!  Have fun with htmx: you can accomplish [quite a bit](/examples) without a lot of code.
+And that's it!  
+
+Have fun with htmx! You can accomplish [quite a bit](/examples) without writing a lot of code!
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*
 
 </div>
 </div>

@@ -16,7 +16,8 @@ the `click` trigger.
 
 For forms the request will be converted into a `GET` or `POST`, based on the method in the `method` attribute
 and will be triggered by a `submit`.  Again, the target will be the `body` of the page, and the `innerHTML`
-swap will be used.
+swap will be used. The url will _not_ be pushed, however, and no history entry will be created. (You can use the 
+[hx-push-url](/attributes/hx-push-url) attribute if you want the url to be pushed.)
 
 Here is an example of some boosted links:
 
@@ -26,9 +27,22 @@ Here is an example of some boosted links:
   <a href="/page2">Go To Page 2</a>
 </div>
 ```
+These links will issue an ajax `GET` request to the respective URLs and replace the body's inner content with it.
+
+Here is an example of a boosted form:
+
+```html
+<form hx-boost="true" action="/example" method="post">
+    <input name="email" type="email" placeholder="Enter email...">
+    <button>Submit</button>
+</form>
+```
+This form will issue an ajax `POST` to the given URL and replace the body's inner content with it.
+
 
 ### Notes
 
 * `hx-boost` is inherited and can be placed on a parent element
 * Only links that are to the same domain and that are not local anchors will be boosted
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
+* Selectively disable boost on child elements with `hx-boost="false"`

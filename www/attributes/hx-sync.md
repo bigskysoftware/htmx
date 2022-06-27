@@ -33,8 +33,7 @@ This example resolves a race condition between a form's submit request and an in
     <input id="title" name="title" type="text" 
         hx-post="/validate" 
         hx-trigger="change"
-        hx-sync="closest form:abort"
-    >
+        hx-sync="closest form:abort">
     <button type="submit">Submit</button>
 </form>
 ```

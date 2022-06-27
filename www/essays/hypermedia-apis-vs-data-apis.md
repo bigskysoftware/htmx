@@ -59,7 +59,7 @@ Next, we want to be able to create contacts.  This would be done via a POST to t
 
 ```text
   GET /contacts -> render the form & contacts table
-  POST /contacts -> create the new contant, redirect to GET /contacts
+  POST /contacts -> create the new contact, redirect to GET /contacts
 ```
 
 with HTML that looks something like this:
@@ -84,7 +84,7 @@ Now we get to the part where htmx is needed: polling the server for updates to t
  
 ```text
   GET /contacts -> render the form & contacts table
-  POST /contacts -> create the new contant, redirect to GET /contacts
+  POST /contacts -> create the new contact, redirect to GET /contacts
   GET /contacts/table -> render the contacts table
 ```
  
@@ -147,3 +147,8 @@ can satisfy more client needs without modification.
 
 When designing a hypermedia API, you should use a different design mindset than you use for data APIs.  Churn is
 much less of a concern, and providing the end points you need for a good hypermedia experience should be your primary goal.
+
+
+<div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+&lt;/&gt;
+</div>

@@ -17,7 +17,7 @@ Using an extension involves two steps:
 Here is an example
 
 ```html
-  <script src="https://unpkg.com/htmx.org@0.0.8/dist/ext/debug.js"></script>
+  <script src="/path/to/ext/debug.js" defer></script>
   <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
 ```
 
@@ -61,6 +61,7 @@ against `htmx` in each distribution
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
+| [`disable-element`](/extensions/disable-element) | an extension for disabling an element during an htmx request
 | [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
 | [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
 | [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`

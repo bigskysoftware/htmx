@@ -1,6 +1,54 @@
 # Changelog
 
-## [1.7.0] - ???
+## [1.8.0] - 2022-02-2
+
+* The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
+  the current URL in history (to complement `hx-push-url`)
+* Bug fix - if htmx is included in a page more than once, we do not process elements multiple times
+* Bug fix - When localStorage is not available we do not attempt to save history in it
+* [Bug fix](https://github.com/bigskysoftware/htmx/issues/908) - `hx-boost` respects the `enctype` attribute
+* `m` is now a valid timing modifier (e.g. `hx-trigger="every 2m"`)
+* `next` and `previous` are now valid extended query selector modifiers, e.g. `hx-target="next div"` will target the
+  next div from the current element
+* Bug fix - `hx-boost` will boost anchor tags with a `_self` target
+* The `load` event now properly supports event filters
+* The websocket extension has had many improvements: (A huge thank you to Denis Palasheviskii, our newest committer on the project!)
+  * Implement proper `hx-trigger` support
+  * Expose trigger handling API to extensions
+  * Implement safe message sending with sending queue
+  * Fix `ws-send` attributes connecting in new elements
+  * Fix OOB swapping of multiple elements in response
+* The `HX-Location` response header now implements client-side redirects entirely within htmx
+* The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
+* The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
+  bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
+
+
+## [1.7.0] - 2022-02-2
+
+* The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
+  element using various strategies (e.g. replace)
+  * You can also now abort an element making a request by sending it the `htmx:abort` event
+* [Server Sent Events](/extensions/server-sent-events) and [Web Sockets](/extensions/web-sockets) are now available as 
+  extensions, in addition to the normal core support.  In htmx 2.0, the current `hx-sse` and `hx-ws` attributes will be
+  moved entirely out to these new extensions.  By moving these features to extensions we will be able to add functionality 
+  to both of them without compromising the core file size of htmx.  You are encouraged to move over to the new 
+  extensions, but `hx-sse` and `hx-ws` will continue to work indefinitely in htmx 1.x.
+* You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occuring.
+* Many new extensions, with a big thanks to all the contributors!
+    * A new [`alpine-morph`](/extensions/alpine-morph) allows you to use Alpine's swapping engine, which preserves Alpine
+    * A [restored](/extensions/restored) extension was added that will trigger a `restore` event on all elements in the DOM
+      on history restoration.
+    * A [loading-states](/extensions/loading-states) extension was added that allows you to easily manage loading states
+      while a request is in flight, including disabling elements, and adding and removing CSS classes. 
+* The `this` symbol now resolves properly for the [`hx-include`](/attributes/hx-include) and [`hx-indicator`](/attributes/hx-indicator)
+  attributes
+* When an object is included via the [`hx-vals`](/attributes/hx-vals) attribute, it will be converted to JSON (rather 
+  than rendering as the string `[Object object]"`)
+* You can now pass a swap style in to the `htmx.ajax()` function call.
+* Poll events now contain a `target` attribute, allowing you to filter a poll on the element that is polling.
+* Two new Out Of Band-related events were added: `htmx:oobBeforeSwap` & `htmx:oobAfterSwap`
 
 ## [1.6.1] - 2021-11-22
 

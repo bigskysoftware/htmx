@@ -1,0 +1,83 @@
+<html>
+<head>
+    <script src="../../src/htmx.js"></script>
+    <script src="../../src/ext/preload.js"></script>
+
+    <style>
+        div.container {
+            border:solid 1px black;
+            margin-bottom:25px;
+            padding:25px;
+        }
+    </style>
+</head>
+
+<body hx-ext="preload">
+
+    <div class="container" preload="preload:init" preload-images="true">
+        <h4>Triggered by: preload:init</h4>
+        <a href="preload-fragment.html?init=xhr1">Trigger on load (xhr)</a><br>
+        <a href="preload-fragment.html?init=xhr2">Trigger on load (xhr)</a><br>
+        <button hx-get="preload-fragment.html?init=hx-get">Trigger on load (hx-get)</a><br>
+    </div>
+
+    <div class="container">
+        <h4>Defaults</h4>
+        <a href="preload-fragment.html?default=link" preload>Trigger mousedown immediately</a><br>
+        <button hx-get="preload-fragment.html?default=button" preload>Trigger mousedown immediately</button><br>
+    </div>
+
+    <div class="container" preload="mouseover">2.html
+        <h4>Inherited</h4>
+        <a href="preload-fragment.html?inherited=link">Trigger mouseover (after 100ms)</a><br>
+        <button hx-get="preload-fragment.html?inherited=button">Trigger mousedown (after 100ms)</button><br>
+    </div>
+
+    <div class="container">
+        <h4>Mouse Over</h4>
+        <button hx-get="preload-fragment.html?on=mouseover1" preload="mouseover">Trigger on mouseover</button><br>
+        <button hx-get="preload-fragment.html?on=mouseover2" preload="mouseover">Trigger on mouseover</button><br>
+        <button hx-get="preload-fragment.html?on=mouseover3" preload="mouseover">Trigger mouseover</button><br>
+        <a href="preload-fragment.html?on=mouseover4" preload="mouseover">Trigger on mouseover</a><br>
+        <a href="preload-fragment.html?on=mouseover5" preload="mouseover">Trigger on mouseover</a><br>
+        <a href="preload-fragment.html?on=mouseover6" preload="mouseover">Trigger mouseover</a><br>
+
+        <h4>Mouse Down</h4>
+        <button hx-get="preload-fragment.html?on=mousedown1" preload="mousedown">Trigger on mousedown</button><br>
+        <button hx-get="preload-fragment.html?on=mousedown2" preload="mousedown">Trigger on mousedown</button><br>
+        <button hx-get="preload-fragment.html?on=mousedown3" preload="mousedown">Trigger mousedown</button><br>
+        <a href="preload-fragment.html?on=mousedown4" preload="mousedown">Trigger on mousedown</a><br>
+        <a href="preload-fragment.html?on=mousedown5" preload="mousedown">Trigger on mousedown</a><br>
+        <a href="preload-fragment.html?on=mousedown6" preload="mousedown">Trigger mousedown</a><br>
+
+    </div>
+
+    <div class="container" hx-get="preload-fragment.html?complex=mousedown" preload="mousedown">
+        <h4>Mouse Down</h4>
+        <div>This is a complex object</div>
+        <div>With many sub-objects</div>
+        <div>Preload should only be canceled</div>
+        <div>If we leave the whole parent</div>
+        <div>Triggers on:mouseover after 1s</div>
+    </div>
+
+    <div class="container" hx-get="preload-fragment.html?complex=mouseover" preload="mouseover">
+        <h4>Mouse Over</h4>
+        <div>This is a complex object</div>
+        <div>With many sub-objects</div>
+        <div>Preload should only be canceled</div>
+        <div>If we leave the whole parent</div>
+        <div>Triggers on:mouseover after 1s</div>
+    </div>
+
+    <div class="container" hx-get="preload-fragment.html?complex=default" preload>
+        <h4>Default (Mouse Down)</h4>
+        <div>This is a complex object</div>
+        <div>With many sub-objects</div>
+        <div>Preload should only be canceled</div>
+        <div>If we leave the whole parent</div>
+        <div>Triggers on:mouseover after 1s</div>
+    </div>
+
+</body>
+</html>
