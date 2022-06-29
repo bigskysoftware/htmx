@@ -12,7 +12,7 @@
   next div from the current element
 * Bug fix - `hx-boost` will boost anchor tags with a `_self` target
 * The `load` event now properly supports event filters
-* The websocket extension has had many improvements: (A huge thank you to Denis Palasheviskii, our newest committer on the project!)
+* The websocket extension has had many improvements: (A huge thank you to Denis Palashevskii, our newest committer on the project!)
   * Implement proper `hx-trigger` support
   * Expose trigger handling API to extensions
   * Implement safe message sending with sending queue
