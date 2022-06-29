@@ -179,6 +179,14 @@ describe("Core htmx AJAX headers", function () {
         div2.innerHTML.should.equal("Result");
     })
 
+    it("should handle HX-Reswap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Reswap": "innerHTML"}, "Result"]);
+
+        var div1 = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>');
+        div1.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Result");
+    })
 
     it("should handle simple string HX-Trigger-After-Swap response header properly w/ outerHTML swap", function () {
         this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Swap": "foo"}, ""]);
