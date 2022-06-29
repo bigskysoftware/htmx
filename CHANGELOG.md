@@ -2,6 +2,8 @@
 
 ## [1.8.0] - 2022-02-2
 
+* Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
+  detection API support is good enough that we feel comfortable making this the default now. 
 * The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
   the current URL in history (to complement `hx-push-url`)
 * Bug fix - if htmx is included in a page more than once, we do not process elements multiple times
@@ -19,6 +21,7 @@
   * Fix `ws-send` attributes connecting in new elements
   * Fix OOB swapping of multiple elements in response
 * The `HX-Location` response header now implements client-side redirects entirely within htmx
+* The `HX-Reswap` response header allows you to change the swap behavior of htmx
 * The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
 * The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
