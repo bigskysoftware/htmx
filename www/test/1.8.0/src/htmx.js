@@ -1228,12 +1228,10 @@ return (function () {
                 if (elt.tagName === "A") {
                     verb = "get";
                     path = getRawAttribute(elt, 'href');
-                    nodeData.pushURL = true;
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
                     if (verb === "get") {
-                        nodeData.pushURL = true;
                     }
                     path = getRawAttribute(elt, 'action');
                 }
@@ -2012,13 +2010,12 @@ return (function () {
 
         function shouldPushUrl(elt) {
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl && pushUrl !== "false") ||
-                (getInternalData(elt).boosted && getInternalData(elt).pushURL);
+            return (pushUrl && pushUrl !== "false") || (getInternalData(elt).boosted);
         }
 
         function shouldReplaceUrl(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-replace-url");
-            return (pushUrl && pushUrl !== "false");
+            var replaceUrl = getClosestAttributeValue(elt, "hx-replace-url");
+            return (replaceUrl && replaceUrl !== "false");
         }
 
         function getPushOrReplaceUrl(elt, type) {
@@ -2956,6 +2953,9 @@ return (function () {
                 }
 
                 var swapOverride = etc.swapOverride;
+                if (hasHeader(xhr,/HX-Reswap:/i)) {
+                    swapOverride = xhr.getResponseHeader("HX-Reswap");
+                }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
