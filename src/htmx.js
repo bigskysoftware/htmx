@@ -2953,6 +2953,9 @@ return (function () {
                 }
 
                 var swapOverride = etc.swapOverride;
+                if (hasHeader(xhr,/HX-Reswap:/i)) {
+                    swapOverride = xhr.getResponseHeader("HX-Reswap");
+                }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
