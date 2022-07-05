@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.8.0] - 2022-02-2
+## [1.8.0] - Pending
 
 * Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
   detection API support is good enough that we feel comfortable making this the default now. 
@@ -27,7 +27,7 @@
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
 
 
-## [1.7.0] - 2022-02-2
+## [1.7.0] - 2022-02-22
 
 * The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
   element using various strategies (e.g. replace)
