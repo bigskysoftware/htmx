@@ -1369,7 +1369,7 @@ return (function () {
 
         var windowIsScrolling = false // used by initScrollHandler
         var scrollHandler = null;
-        function initScrollHandler(handler) {
+        function initScrollHandler() {
             if (!scrollHandler) {
                 scrollHandler = function() {
                     windowIsScrolling = true
@@ -1379,22 +1379,22 @@ return (function () {
                     if (windowIsScrolling) {
                         windowIsScrolling = false;
                         forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
-                            maybeReveal(elt, handler);
+                            maybeReveal(elt);
                         })
                     }
                 }, 200);
             }
         }
 
-        function maybeReveal(elt, handler) {
+        function maybeReveal(elt) {
             if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
                 elt.setAttribute('data-hx-revealed', 'true');
                 var nodeData = getInternalData(elt);
                 if (nodeData.initialized) {
-                    handler(elt);
+                    triggerEvent(elt, 'revealed');
                 } else {
                     // if the node isn't initialized, wait for it before triggering the request
-                    elt.addEventListener("htmx:afterProcessNode", function(evt) { handler(elt) }, {once: true});
+                    elt.addEventListener("htmx:afterProcessNode", function(evt) { triggerEvent(elt, 'revealed') }, {once: true});
                 }
             }
         }
@@ -1650,8 +1650,9 @@ return (function () {
             if (triggerSpec.sseEvent) {
                 processSSETrigger(elt, handler, triggerSpec.sseEvent);
             } else if (triggerSpec.trigger === "revealed") {
-                initScrollHandler(handler);
-                maybeReveal(elt, handler);
+                initScrollHandler();
+                addEventListener(elt, handler, nodeData, triggerSpec);
+                maybeReveal(elt);
             } else if (triggerSpec.trigger === "intersect") {
                 var observerOptions = {};
                 if (triggerSpec.root) {

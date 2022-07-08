@@ -732,6 +732,21 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("Load Me!");
     });
 
+    it('reveal event works on two elements', function()
+    {
+        this.server.respondWith("GET", "/test1", "test 1");
+        this.server.respondWith("GET", "/test2", "test 2");
+        var div = make('<div hx-get="/test1" hx-trigger="revealed"></div>');
+        var div2 = make('<div hx-get="/test2" hx-trigger="revealed"></div>');
+        div.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        htmx.trigger(div, 'revealed')
+        htmx.trigger(div2, 'revealed')
+        this.server.respondAll();
+        div.innerHTML.should.equal("test 1");
+        div2.innerHTML.should.equal("test 2");
+    });
+
 
 
 })
