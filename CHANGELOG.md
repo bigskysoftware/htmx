@@ -4,6 +4,7 @@
 
 * Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
   detection API support is good enough that we feel comfortable making this the default now. 
+  * If you do not want this behavior you can add `hx-push-url='false'` to your boosted forms
 * The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
   the current URL in history (to complement `hx-push-url`)
 * Bug fix - if htmx is included in a page more than once, we do not process elements multiple times
