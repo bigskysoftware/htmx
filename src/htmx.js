@@ -2885,6 +2885,7 @@ return (function () {
             //===========================================
             // Next resolve via DOM values
             //===========================================
+            var requestPath =  responseInfo.pathInfo.finalRequestPath;
             var responsePath =  responseInfo.pathInfo.responsePath;
 
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
@@ -2902,7 +2903,7 @@ return (function () {
                 path = replaceUrl;
             } else if (elementIsBoosted) {
                 saveType = "push";
-                path = responsePath;
+                path = responsePath || requestPath; // if there is no response path, go with the original request path
             }
 
             if (path) {
