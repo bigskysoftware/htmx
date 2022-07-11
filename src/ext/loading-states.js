@@ -78,7 +78,7 @@
 					loadingStateEltsByType[type] = getLoadingStateElts(
 						container,
 						type,
-						evt.detail.pathInfo.path
+						evt.detail.pathInfo.requestPath
 					)
 				})
 
