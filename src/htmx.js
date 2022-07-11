@@ -2009,21 +2009,6 @@ return (function () {
             }
         }
 
-        function shouldPushUrl(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl && pushUrl !== "false") || (getInternalData(elt).boosted);
-        }
-
-        function shouldReplaceUrl(elt) {
-            var replaceUrl = getClosestAttributeValue(elt, "hx-replace-url");
-            return (replaceUrl && replaceUrl !== "false");
-        }
-
-        function getPushOrReplaceUrl(elt, type) {
-            var urlValue = getClosestAttributeValue(elt, "hx-" + type + "-url");
-            return (urlValue === "true" || urlValue === "false") ? null : urlValue;
-        }
-
         function addRequestIndicatorClasses(elt) {
             var indicators = findAttributeTargets(elt, 'hx-indicator');
             if (indicators == null) {
@@ -2507,7 +2492,7 @@ return (function () {
             }
         }
 
-        function getResponseURL(xhr) {
+        function getPathFromResponse(xhr) {
             // NB: IE11 does not support this stuff
             if (xhr.responseURL && typeof(URL) !== "undefined") {
                 try {
@@ -2746,8 +2731,9 @@ return (function () {
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
+            var finalPathForGet = null;
             if (verb === 'get') {
-                var finalPathForGet = pathNoAnchor;
+                finalPathForGet = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
                     if (finalPathForGet.indexOf("?") < 0) {
@@ -2781,14 +2767,19 @@ return (function () {
                 }
             }
 
-            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, etc:etc, pathInfo:{
-                  path:path, finalPath:finalPathForGet, anchor:anchor
+            var responseInfo = {
+                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc,
+                pathInfo: {
+                    requestPath: path,
+                    finalRequestPath: path || finalPathForGet,
+                    anchor: anchor
                 }
             };
 
             xhr.onload = function () {
                 try {
                     var hierarchy = hierarchyForElt(elt);
+                    responseInfo.pathInfo.responsePath = getPathFromResponse(xhr);
                     responseHandler(elt, responseInfo);
                     removeRequestIndicatorClasses(indicators);
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
@@ -2859,6 +2850,87 @@ return (function () {
             return promise;
         }
 
+        function determineHistoryUpdates(elt, responseInfo) {
+
+            var xhr = responseInfo.xhr;
+
+            //===========================================
+            // First consult response headers
+            //===========================================
+            var pathFromHeaders = null;
+            var typeFromHeaders = null;
+            if (hasHeader(xhr,/HX-Push:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Push");
+                typeFromHeaders = "push";
+            } else if (hasHeader(xhr,/HX-Push-Url:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Push-Url");
+                typeFromHeaders = "push";
+            } else if (hasHeader(xhr,/HX-Replace-Url:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Replace-Url");
+                typeFromHeaders = "replace";
+            }
+
+            // if there was a response header, that has priority
+            if (pathFromHeaders) {
+                if (pathFromHeaders === "false") {
+                    return {}
+                } else {
+                    return {
+                        type: typeFromHeaders,
+                        path : pathFromHeaders
+                    }
+                }
+            }
+
+            //===========================================
+            // Next resolve via DOM values
+            //===========================================
+            var responsePath =  responseInfo.pathInfo.responsePath;
+
+            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            var replaceUrl = getClosestAttributeValue(elt, "hx-replace-url");
+            var elementIsBoosted = getInternalData(elt).boosted;
+
+            var saveType = null;
+            var path = null;
+
+            if (pushUrl) {
+                saveType = "push";
+                path = pushUrl;
+            } else if (replaceUrl) {
+                saveType = "replace";
+                path = replaceUrl;
+            } else if (elementIsBoosted) {
+                saveType = "push";
+                path = responsePath;
+            }
+
+            if (path) {
+                // false indicates no push, return empty object
+                if (path === "false") {
+                    return {};
+                }
+
+                // true indicates we want to follow wherever the server ended up sending us
+                if (path === "true") {
+                    path = responsePath;
+                }
+
+                // restore any anchor associated with the request
+                if (responseInfo.pathInfo.anchor &&
+                    path.indexOf("#") === -1) {
+                    path = path + "#" + responseInfo.pathInfo.anchor;
+                }
+
+                return {
+                    type:saveType,
+                    path: path
+                }
+            } else {
+                return {};
+            }
+        }
+
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
@@ -2869,17 +2941,6 @@ return (function () {
             if (hasHeader(xhr, /HX-Trigger:/i)) {
                 handleTrigger(xhr, "HX-Trigger", elt);
             }
-
-            if (hasHeader(xhr,/HX-Push:/i)) {
-                var pushedUrl = xhr.getResponseHeader("HX-Push");
-            }
-            if (hasHeader(xhr,/HX-Push-Url:/i)) {
-                var pushedUrl = xhr.getResponseHeader("HX-Push-Url");
-            }
-            if (hasHeader(xhr,/HX-Replace-Url:/i)) {
-                var replacementUrl = xhr.getResponseHeader("HX-Replace-Url");
-            }
-
 
             if (hasHeader(xhr, /HX-Location:/i)) {
                 saveCurrentPageToHistory();
@@ -2898,7 +2959,7 @@ return (function () {
             }
 
             if (hasHeader(xhr, /HX-Redirect:/i)) {
-                window.location.href = xhr.getResponseHeader("HX-Redirect");
+                location.href = xhr.getResponseHeader("HX-Redirect");
                 return;
             }
 
@@ -2913,14 +2974,7 @@ return (function () {
                 responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
-            /** @type {boolean} */
-            var historySaveType;
-            if ((pushedUrl && pushedUrl !== "false") || shouldPushUrl(elt)) {
-                historySaveType = "push";
-            }
-            if ((replacementUrl && replacementUrl !== "false") || shouldReplaceUrl(elt)) {
-                historySaveType = "replace";
-            }
+            var historyUpdate = determineHistoryUpdates(elt, responseInfo);
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
@@ -2949,7 +3003,7 @@ return (function () {
                 });
 
                 // Save current page
-                if (historySaveType) {
+                if (historyUpdate) {
                     saveCurrentPageToHistory();
                 }
 
@@ -3002,9 +3056,6 @@ return (function () {
                             }
                             triggerEvent(elt, 'htmx:afterSwap', responseInfo);
                         });
-                        if (responseInfo.pathInfo.anchor) {
-                            location.hash = responseInfo.pathInfo.anchor;
-                        }
 
                         if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                             var finalElt = elt;
@@ -3024,16 +3075,21 @@ return (function () {
                                 }
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
-                            // push URL and save new page
-                            if (historySaveType) {
-                                var pathToPush = pushedUrl || getPushOrReplaceUrl(elt, "push") ||  getPushOrReplaceUrl(elt, "replace")
-                                                           || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
-                                if (historySaveType === "push") {
-                                    pushUrlIntoHistory(pathToPush);
-                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
+
+                            // if we need to save history, do so
+                            if (historyUpdate.type) {
+                                if (historyUpdate.type === "push") {
+                                    pushUrlIntoHistory(historyUpdate.path);
+                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
                                 } else {
-                                    replaceUrlInHistory(pathToPush);
-                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: pathToPush});
+                                    replaceUrlInHistory(historyUpdate.path);
+                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                                }
+                            }
+                            if (responseInfo.pathInfo.anchor) {
+                                var anchorTarget = find("#" + responseInfo.pathInfo.anchor);
+                                if(anchorTarget) {
+                                    anchorTarget.scrollIntoView({block:'start', behavior: "auto"});
                                 }
                             }
 
