@@ -2771,7 +2771,7 @@ return (function () {
                 xhr: xhr, target: target, requestConfig: requestConfig, etc: etc,
                 pathInfo: {
                     requestPath: path,
-                    finalRequestPath: path || finalPathForGet,
+                    finalRequestPath: finalPathForGet || path,
                     anchor: anchor
                 }
             };
@@ -2914,7 +2914,7 @@ return (function () {
 
                 // true indicates we want to follow wherever the server ended up sending us
                 if (path === "true") {
-                    path = responsePath;
+                    path = responsePath || requestPath; // if there is no response path, go with the original request path
                 }
 
                 // restore any anchor associated with the request
