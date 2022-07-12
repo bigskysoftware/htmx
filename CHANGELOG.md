@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.8.0] - 2022-12-7
+
+* **NOTE**: This release involved some changes to toughy code (e.g. history support) so please test thoroughly and let
+  us know if you see any issues
+* Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
+  detection API support is good enough that we feel comfortable making this the default now. 
+  * If you do not want this behavior you can add `hx-push-url='false'` to your boosted forms
+* The [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute was introduced, allowing you to replace
+  the current URL in history (to complement `hx-push-url`)
+* Bug fix - if htmx is included in a page more than once, we do not process elements multiple times
+* Bug fix - When localStorage is not available we do not attempt to save history in it
+* [Bug fix](https://github.com/bigskysoftware/htmx/issues/908) - `hx-boost` respects the `enctype` attribute
+* `m` is now a valid timing modifier (e.g. `hx-trigger="every 2m"`)
+* `next` and `previous` are now valid extended query selector modifiers, e.g. `hx-target="next div"` will target the
+  next div from the current element
+* Bug fix - `hx-boost` will boost anchor tags with a `_self` target
+* The `load` event now properly supports event filters
+* The websocket extension has had many improvements: (A huge thank you to Denis Palashevskii, our newest committer on the project!)
+  * Implement proper `hx-trigger` support
+  * Expose trigger handling API to extensions
+  * Implement safe message sending with sending queue
+  * Fix `ws-send` attributes connecting in new elements
+  * Fix OOB swapping of multiple elements in response
+* The `HX-Location` response header now implements client-side redirects entirely within htmx
+* The `HX-Reswap` response header allows you to change the swap behavior of htmx
+* The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
+* The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
+  bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
+* htmx now properly handles anchors in both boosted links, as well as in `hx-get`, etc. attributes
+
 ## [1.7.0] - 2022-02-2
 
 * The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
