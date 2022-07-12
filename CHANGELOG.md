@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.8.0] - 2022-12-7
+## [1.8.0] - 2022-7-12
 
 * **NOTE**: This release involved some changes to toughy code (e.g. history support) so please test thoroughly and let
   us know if you see any issues
