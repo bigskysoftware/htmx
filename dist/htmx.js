@@ -3003,8 +3003,8 @@ return (function () {
                     serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
 
-                // Save current page
-                if (historyUpdate) {
+                // Save current page if there will be a history update
+                if (historyUpdate.type) {
                     saveCurrentPageToHistory();
                 }
 
