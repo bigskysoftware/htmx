@@ -1,7 +1,9 @@
 # Changelog
 
-## [1.8.0] - 2022-02-2
+## [1.8.0] - 2022-12-7
 
+* **NOTE**: This release involved some changes to toughy code (e.g. history support) so please test thoroughly and let
+  us know if you see any issues
 * Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
   detection API support is good enough that we feel comfortable making this the default now. 
   * If you do not want this behavior you can add `hx-push-url='false'` to your boosted forms
@@ -26,7 +28,7 @@
 * The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
 * The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
-
+* htmx now properly handles anchors in both boosted links, as well as in `hx-get`, etc. attributes
 
 ## [1.7.0] - 2022-02-2
 
