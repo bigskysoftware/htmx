@@ -364,14 +364,15 @@ on their RESTful JSON API's swagger documentation.
 [The situation is hopeless, but not serious.](https://wwnorton.com/books/9780393310214)
 
 Regardless, there is an opportunity here to explain REST and, in particular, the uniform interface to a new generation of web
-developers who may have never heard of those concepts in their original context, and who assume REST === JSON APIs.  [People
-sense something is wrong](https://htmx.org/essays/a-response-to-rich-harris/), and maybe REST, real, actual REST, not 
-WORC, could be a part of [the answer to that](/essays/spa-alternative).
+developers who may have never heard of those concepts in their original context, and who assume REST === JSON APIs.  
+
+[People sense something is wrong](https://htmx.org/essays/a-response-to-rich-harris/), and maybe REST, real, actual REST, 
+not WORC, could be a part of [the answer to that](/essays/spa-alternative).
 
 At the very least, the ideas behind REST are interesting and worth knowing just as general software engineering knowledge.
 
 There is a larger meta-point here too: even a relatively smart group of people (early web developers), with the benefit 
 of the internet, and with a pretty clear (if at times academic) specification for the term REST, were unable to keep the
-meaning consistent with its original meaning.
+meaning consistent with its original meaning over period of two decades.
 
 If we can get this so obviously wrong, [what else could we be wrong about](https://htmx.org/essays/spa-alternative/)?
