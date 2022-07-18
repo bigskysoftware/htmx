@@ -50,7 +50,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## Essays
 
-* [How Did REST Come To Mean The Opposite of REST?](/essays/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
+* [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
 * [Hypermedia-Driven Applications (HDAs)](/essays/hypermedia-driven-applications)
 * [HATEOAS](/essays/hateoas)
 * [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
