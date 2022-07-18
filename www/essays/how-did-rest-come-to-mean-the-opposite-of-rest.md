@@ -152,13 +152,13 @@ goes on to say:
 > choices that are present in the received representations or implied by the user’s manipulation of those representations.
 
 So, in a RESTful system, you should be able to enter the system through a single URL and, from that point on, all navigation
-and actions take do within the system should be entirely provided through self-describing hypermedia: through links and 
+and actions taken within the system should be entirely provided through self-describing hypermedia: through links and 
 forms in HTML, for example.  Beyond the entry point, in a proper RESTful system, the API client shouldn't need any 
 additional information about your API.
 
-This is the core source of incredible flexibility of RESTful systems:  since all responses are self describing and
+This is the source of the incredible flexibility of RESTful systems:  since all responses are self describing and
 encode all the currently available actions available there is no need to worry about, for example, versioning your API!  
-In fact, you don't even need to document it!  All end points are provided through self-contained hypermedia controls.  
+In fact, you don't even need to document it!
 
 If things change, the hypermedia responses change, and that's it.
 
