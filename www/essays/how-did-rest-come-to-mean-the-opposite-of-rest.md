@@ -262,7 +262,8 @@ With this change, the web development world threw off the shackles of the
 Since the REST approach wasn't as tied to XML as SOAP/XML-RPC was, and since it didn't impose as much formality on 
 end point, REST was the natural place for JSON to take over.  And it did so, rapidly.  
 
-During this crucial change, something became increasingly clear: most JSON APIs were stopping at Level 2 of the RMM.  
+During this crucial change, something became increasingly clear: most JSON APIs were stopping at Level 2 of the RMM.
+
 Some pushed through to Level 3 by incorporating hypermedia controls in their responses, but nearly all these APIs still
 needed to publish documentation, indicating that the "Glory of REST" was not being achieved.
 
