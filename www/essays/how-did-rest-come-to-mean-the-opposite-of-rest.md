@@ -217,7 +217,7 @@ if REST, rather than SOAP, should be the preferred mechanism for accessing what 
 The web was proving to be extremely flexible and growing gang busters, so maybe the same network architecture, REST, that
 was working so well for browsers & humans would work well for APIs.
 
-It sounded plausible, especially when XML was the format for APIs: XML sure _looks_ an awful lot like HTML, doesn't it?  
+It sounded plausible, especially when XML was the format for APIs: XML sure _looks_ an awful lot like HTML, doesn't it? 
 You can imagine an XML API satisfying all of the RESTful constraints, up to and including the uniform interface.  
 
 So people began exploring this route as well.
