@@ -186,9 +186,9 @@ the resource it is working with that must be derived from some other source beyo
 
 This API is, in spirit, nearly the opposite of REST.  
 
-Let's call this style of API pseduoREST.
+Let's call this style of API pseudoREST.
 
-## How REST came to mean pseduoREST
+## How REST came to mean pseudoREST
 
 Now, how on earth did we get to a spot where APIs that are _obviously_ not RESTful are called RESTful by 99.9% of the
 industry?
