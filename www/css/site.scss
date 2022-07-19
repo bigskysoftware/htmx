@@ -57,6 +57,9 @@ table {
 
 body .content code {
     font-size: 0.9em;
+}
+
+body .content code:not(code[class*="language-"]) {
     background: #3465a426;
     border-radius: 2px;
     padding: 2px 5px;
