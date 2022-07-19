@@ -322,7 +322,7 @@ or 2 of the RMM.  But there was always the possibility that we would break throu
 Then Single Page Applications (SPAs) hit.
 
 When SPAs hit, web development became disconnected entirely from the original underlying RESTful architecture.  The *entire
-networking model* of the application moved over to the JSON RPC style.  Additionally, due to the complexity of these 
+networking architecture* of SPA applications moved over to the JSON RPC style.  Additionally, due to the complexity of these 
 applications, developers specialized into front end and back end.  
 
 The front end developers were obviously _not_ doing anything RESTful: they were working with JavaScript, building DOM
