@@ -282,7 +282,7 @@ That's the one sentence version of how we got here.
 ### The REST Wars
 
 Despite the JSON API world never consistently achieving truly RESTful APIs, there were plenty of fights over whether
-or not the pseudo-REST APIs being created were "RESTful": arguments over URL layouts, over which HTTP verb was
+or not the pseudoREST APIs being created were "RESTful": arguments over URL layouts, over which HTTP verb was
 appropriate for a given action, flame wars about media types, and so forth.  
 
 I was young at the time, and the whole thing struck me as opaque, puritanical and alienating, so I pretty much gave up
@@ -382,7 +382,7 @@ Regardless, there is an opportunity here to explain REST and, in particular, the
 developers who may have never heard of those concepts in their original context, and who assume REST === JSON APIs.  
 
 [People sense something is wrong](https://htmx.org/essays/a-response-to-rich-harris/), and maybe REST, real, actual REST, 
-not pseudREST, could be a part of [the answer to that](/essays/spa-alternative).
+not pseudoREST, could be a part of [the answer to that](/essays/spa-alternative).
 
 At the very least, the ideas behind REST are interesting and worth knowing just as general software engineering knowledge.
 
