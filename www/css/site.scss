@@ -59,7 +59,7 @@ body .content code {
     font-size: 0.9em;
 }
 
-body .content code:not(code[class*="language-"]) {
+code:not(code[class*="language-"]) {
     background: #3465a426;
     border-radius: 2px;
     padding: 2px 5px;
@@ -395,7 +395,7 @@ h1,h2,h3,h4{
             display:block;
         }
     }
-}
+}table td:first-child code
 
 
 .logo-wrapper {
@@ -404,6 +404,7 @@ h1,h2,h3,h4{
 
 table td:first-child code {
   display: block;
+  background: none;
 }
 
 
