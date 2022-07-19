@@ -260,7 +260,7 @@ With this change, the web development world threw off the shackles of the
 [J2EE mindset](https://en.wikipedia.org/wiki/Jakarta_EE) conclusively, relegating SOAP/XML-RPC to an enterprise-only affair.
 
 Since the REST approach wasn't as tied to XML as SOAP/XML-RPC was, and since it didn't impose as much formality on 
-end point, REST was the natural place for JSON to take over.  And it did so, rapidly.  
+end points, REST was the natural place for JSON to take over.  And it did so, rapidly.  
 
 During this crucial change, something became increasingly clear: most JSON APIs were stopping at Level 2 of the RMM.
 
