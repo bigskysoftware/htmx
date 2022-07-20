@@ -23,6 +23,7 @@ describe("hx-push-url attribute", function() {
         this.server.respond();
         getWorkArea().textContent.should.equal("second")
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
+        console.log(cache);
         cache[cache.length - 1].url.should.equal("/test");
     });
 

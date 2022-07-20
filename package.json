@@ -34,7 +34,7 @@
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^0.10.0",
+    "@11ty/eleventy": "^0.12.1",
     "@11ty/eleventy-plugin-rss": "^1.1.2",
     "chai": "^4.3.6",
     "chai-dom": "^1.11.0",

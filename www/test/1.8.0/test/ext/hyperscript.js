@@ -34,7 +34,7 @@ describe("hyperscript integration", function() {
         htmx.trigger(btn, "htmx:load");
         btn.click();
         this.server.respond();
-        div.innerHTML.should.equal("Response Status Error Code 404 from /test");
+        div.innerHTML.startsWith("Response Status Error Code 404 from");
     });
 
     it('hyperscript in non-htmx annotated nodes is evaluated', function () {
