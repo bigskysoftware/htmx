@@ -6,8 +6,8 @@ title: </> htmx - Attributes
 
 ## Contents
 
-* [Htmx Attributes (Essential)](#attributes-essential)
 * [Htmx Attributes](#attributes)
+* [Htmx Additional Attributes](#attributes-additional)
 * [Htmx CSS Classes](#classes)
 * [Htmx Request Headers](#request_headers)
 * [Htmx Response Headers](#response_headers)
@@ -15,7 +15,7 @@ title: </> htmx - Attributes
 * [Htmx Extensions](/extensions#reference)
 * [Javascript API](#api)
 
-## <a name="attributes-essential"></a> [Attribute Reference (Essential)](#attributes-essential)
+## <a name="attributes"></a> [Attribute Reference](#attributes)
 
 The most significant attributes to use htmx.
 
@@ -37,7 +37,7 @@ The most significant attributes to use htmx.
 
 </div>
 
-## <a name="attributes"></a> [Attribute Reference](#attributes)
+## <a name="attributes-additional"></a> [Additional Attribute Reference](#attributes-additional)
 
 All other attributes available.
 
