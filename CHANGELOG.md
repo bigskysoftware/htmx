@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [1.8.0] - 2022-12-7
 
 * **NOTE**: This release involved some changes to toughy code (e.g. history support) so please test thoroughly and let
@@ -30,7 +31,7 @@
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
 * htmx now properly handles anchors in both boosted links, as well as in `hx-get`, etc. attributes
 
-## [1.7.0] - 2022-02-2
+## [1.7.0] - 2022-02-22
 
 * The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
   element using various strategies (e.g. replace)
