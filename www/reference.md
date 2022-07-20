@@ -61,9 +61,9 @@ title: </> htmx - Attributes
 
 | Class | Description |
 |-----------|-------------|
+| `htmx-added` | Applied to a new piece of content before it is swapped, removed after it is settled.
 | `htmx-indicator` | A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present
 | `htmx-request` | Applied to either the element or the element specified with [`hx-indicator`](/attributes/hx-indicator) while a request is ongoing
-| `htmx-added` | Applied to a new piece of content before it is swapped, removed after it is settled.
 | `htmx-settling` | Applied to a target after content is swapped, removed after it is settled. The duration can be modified via [`hx-swap`](/attributes/hx-swap).
 | `htmx-swapping` | Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via [`hx-swap`](/attributes/hx-swap).
 
@@ -94,13 +94,13 @@ title: </> htmx - Attributes
 
 | Header                                           | Description |
 |--------------------------------------------------|-------------|
-| [`HX-Push-Url`](/headers/hx-push-url)            | pushes a new url into the history stack
-| [`HX-Replace-Url`](/headers/hx-replace-url)      | replaces the current URL in the location bar
-| `HX-Redirect`                                    | can be used to do a client-side redirect to a new location
 | [`HX-Location`](/headers/hx-location)            | Allows you to do a client-side redirect that does not do a full page reload
+| [`HX-Push-Url`](/headers/hx-push-url)            | pushes a new url into the history stack
+| `HX-Redirect`                                    | can be used to do a client-side redirect to a new location
 | `HX-Refresh`                                     | if set to "true" the client side will do a a full refresh of the page
-| `HX-Retarget`                                    | A CSS selector that updates the target of the content update to a different element on the page
+| [`HX-Replace-Url`](/headers/hx-replace-url)      | replaces the current URL in the location bar
 | `HX-Reswap`                                      | Allows you to specify how the response will be swapped. See [hx-swap](/attributes/hx-swap) for possible values 
+| `HX-Retarget`                                    | A CSS selector that updates the target of the content update to a different element on the page
 | [`HX-Trigger`](/headers/hx-trigger)              | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Settle`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Swap`](/headers/hx-trigger)   | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
