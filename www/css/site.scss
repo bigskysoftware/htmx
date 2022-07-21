@@ -59,6 +59,12 @@ body .content code {
     font-size: 0.9em;
 }
 
+code:not(code[class*="language-"]) {
+    background: #3465a424;
+    border-radius: 2px;
+    padding: 2px 5px;
+}
+
 .dark-hero {
     background: url(/img/topo.svg), linear-gradient(#1f1f1f, #2d2d2d) ;
     height: 240px;
@@ -399,6 +405,7 @@ h1,h2,h3,h4{
 
 table td:first-child code {
   display: block;
+  background: none;
 }
 
 
