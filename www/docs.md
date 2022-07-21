@@ -112,7 +112,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -522,6 +522,9 @@ Note that out of band elements must be in the top level of the response, and not
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](/attributes/hx-select)
 attribute, which takes a CSS selector and selects the matching elements from the response.
 
+You can also pick out pieces of content for an out-of-band swap by using the [hx-select-oob](/attributes/hx-select-oob)
+attribute, which takes a list of element IDs to pick out and swap.
+
 #### Preserving Content During A Swap
 
 If there is content that you wish to be preserved across swaps (e.g. a video player that you wish to remain playing
@@ -829,6 +832,7 @@ htmx supports some htmx-specific response headers:
 
 * `HX-Push` - pushes a new URL into the browser’s address bar
 * `HX-Redirect` - triggers a client-side redirect to a new location
+* `HX-Location` - triggers a client-side redirect to a new location that acts as a swap
 * `HX-Refresh` - if set to "true" the client side will do a full refresh of the page
 * `HX-Trigger` - triggers client side events
 * `HX-Trigger-After-Swap` - triggers client side events after the swap step

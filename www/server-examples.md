@@ -10,7 +10,7 @@ most server-side frameworks are already pretty well set up to integrate with htm
 rendering HTML long before JSON became popular.
 
 Different frameworks and platforms may offer alternative systems for installing htmx - for example, in the Java / JVM
-ecosystem, [WebJars](https://www.webjars.org) allows the use of npm packages with popular Java build tools such as 
+ecosystem, [WebJars](https://www.webjars.org) allows the use of npm packages with popular Java build tools such as
 Maven and Gradle.
 
 These examples may make it a bit easier to get started using htmx with your platform of choice.
@@ -61,11 +61,13 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/derkoe/quarkus-htmx-todos>
 
-## ColdFusion (CFML - JVM Language)
+## ColdFusion (CFML - a JVM Language)
 
 ### CFWheels Framework
 
 - <https://github.com/bpamiri/cfwheels-todomvc-htmx>
+- <https://www.forgebox.io/view/cfwheels-htmx-plugin>
+- <https://github.com/chapmandu/cfwheels-htmx-crud>
 
 ## C#
 
