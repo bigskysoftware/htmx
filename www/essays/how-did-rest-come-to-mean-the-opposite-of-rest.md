@@ -6,6 +6,9 @@ author: Carson Gross <carson@bigsky.software>
 date: 2022-07-18
 ---
 
+# {{ title }}
+#### {{ date | date: "%d %B %Y" }}
+
 <style>
   pre {
         margin: 32px !important;
@@ -15,8 +18,6 @@ date: 2022-07-18
 ##  Tapping The Sign
 
 <img src="/img/tap-the-sign.png" alt="You are wrong" style="width: 80%;margin-left:10%; margin-top: 16px;margin-bottom: 16px">
-
-## How Did REST Come To Mean The Opposite of REST?
 
 > I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today’s example is the
 > SocialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an 
