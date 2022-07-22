@@ -921,25 +921,41 @@ return (function () {
         }
 
         function cleanUpElement(element) {
-            var internalData = getInternalData(element);
-            if (internalData.webSocket) {
-                internalData.webSocket.close();
-            }
-            if (internalData.sseEventSource) {
-                internalData.sseEventSource.close();
-            }
+            cleanUpThrottle([element])
+        }
 
-            triggerEvent(element, "htmx:beforeCleanupElement")
+        function cleanUpThrottle(candidates) {
+            var start = Date.now()
+            while (candidates.length > 0) {
+                var target = candidates[0]
+                var internalData = getInternalData(target);
+                if (internalData.webSocket) {
+                    internalData.webSocket.close();
+                }
+                if (internalData.sseEventSource) {
+                    internalData.sseEventSource.close();
+                }
+    
+                if (internalData.listenerInfos) {
+                    forEach(internalData.listenerInfos, function(info) {
+                        if (target !== info.on) {
+                            info.on.removeEventListener(info.trigger, info.listener);
+                        }
+                    });
+                }
+                if (target.children) { // IE
+                    forEach(target.children, function(child) {
+                        candidates.push(child)
+                    });
+                }
+                candidates.splice(0, 1)
 
-            if (internalData.listenerInfos) {
-                forEach(internalData.listenerInfos, function(info) {
-                    if (element !== info.on) {
-                        info.on.removeEventListener(info.trigger, info.listener);
-                    }
-                });
-            }
-            if (element.children) { // IE
-                forEach(element.children, function(child) { cleanUpElement(child) });
+                if (Date.now() - start > 4) {
+                    requestAnimationFrame(function() {
+                        cleanUpThrottle(candidates)
+                    })
+                    return
+                }
             }
         }
 
