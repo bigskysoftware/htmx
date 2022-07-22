@@ -1660,6 +1660,9 @@ return (function () {
         }
 
         function processSSESwap(elt, sseEventName) {
+            if (!bodyContains(elt)) {
+                return
+            }
             var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
@@ -1701,6 +1704,9 @@ return (function () {
         }
 
         function processSSETrigger(elt, handler, sseEventName) {
+            if (!bodyContains(elt)) {
+                return
+            }
             var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
