@@ -25,10 +25,15 @@ table {
 }
 
 .logo {
+    color: inherit;
+    text-decoration: none;
+
     font-size: 28px;
     font-weight: bold;
-    &:hover{
-        cursor: pointer;
+
+    & b {
+        font-weight: inherit;
+        color: $midBlue;
     }
 }
 
