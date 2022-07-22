@@ -69,6 +69,7 @@
 					'data-loading-class',
 					'data-loading-class-remove',
 					'data-loading-disable',
+					'data-loading-aria-busy',
 				]
 
 				let loadingStateEltsByType = {}
@@ -77,7 +78,7 @@
 					loadingStateEltsByType[type] = getLoadingStateElts(
 						container,
 						type,
-						evt.detail.pathInfo.path
+						evt.detail.pathInfo.requestPath
 					)
 				})
 
@@ -149,6 +150,19 @@
 								targetElt,
 								() => (targetElt.disabled = true),
 								() => (targetElt.disabled = false)
+							)
+						})
+					}
+				)
+
+				loadingStateEltsByType['data-loading-aria-busy'].forEach(
+					(sourceElt) => {
+						getLoadingTarget(sourceElt).forEach((targetElt) => {
+							queueLoadingState(
+								sourceElt,
+								targetElt,
+								() => (targetElt.setAttribute("aria-busy", "true")),
+								() => (targetElt.removeAttribute("aria-busy"))
 							)
 						})
 					}

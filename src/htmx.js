@@ -7,7 +7,7 @@
         define([], factory);
     } else {
         // Browser globals
-        root.htmx = factory();
+        root.htmx = root.htmx || factory();
     }
 }(typeof self !== 'undefined' ? self : this, function () {
 return (function () {
@@ -71,12 +71,14 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
-            version: "1.7.0"
+            version: "1.8.0"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
         var internalAPI = {
+            addTriggerHandler: addTriggerHandler,
             bodyContains: bodyContains,
+            canAccessLocalStorage: canAccessLocalStorage,
             filterValues: filterValues,
             hasAttribute: hasAttribute,
             getAttributeValue: getAttributeValue,
@@ -118,6 +120,9 @@ return (function () {
             }
             if (str.slice(-1) == "s") {
                 return (parseFloat(str.slice(0,-1)) * 1000) || undefined
+            }
+            if (str.slice(-1) == "m") {
+                return (parseFloat(str.slice(0,-1)) * 1000 * 60) || undefined
             }
             return parseFloat(str) || undefined
         }
@@ -168,13 +173,11 @@ return (function () {
          * @returns {HTMLElement | null}
          */
         function getClosestMatch(elt, condition) {
-            if (condition(elt)) {
-                return elt;
-            } else if (parentElt(elt)) {
-                return getClosestMatch(parentElt(elt), condition);
-            } else {
-                return null;
+            while (elt && !condition(elt)) {
+                elt = parentElt(elt);
             }
+
+            return elt ? elt : null;
         }
 
         function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName){
@@ -402,6 +405,17 @@ return (function () {
             }
         }
 
+        function canAccessLocalStorage() {
+            var test = 'htmx:localStorageTest';
+            try {
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch(e) {
+                return false;
+            }
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -508,12 +522,36 @@ return (function () {
                 return [closest(elt, selector.substr(8))];
             } else if (selector.indexOf("find ") === 0) {
                 return [find(elt, selector.substr(5))];
+            } else if (selector.indexOf("next ") === 0) {
+                return [scanForwardQuery(elt, selector.substr(5))];
+            } else if (selector.indexOf("previous ") === 0) {
+                return [scanBackwardsQuery(elt, selector.substr(9))];
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
                 return [window];
             } else {
                 return getDocument().querySelectorAll(selector);
+            }
+        }
+
+        var scanForwardQuery = function(start, match) {
+            var results = getDocument().querySelectorAll(match);
+            for (var i = 0; i < results.length; i++) {
+                var elt = results[i];
+                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
+                    return elt;
+                }
+            }
+        }
+
+        var scanBackwardsQuery = function(start, match) {
+            var results = getDocument().querySelectorAll(match);
+            for (var i = results.length - 1; i >= 0; i--) {
+                var elt = results[i];
+                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
+                    return elt;
+                }
             }
         }
 
@@ -570,7 +608,7 @@ return (function () {
         //====================================================================
         // Node processing
         //====================================================================
-        
+
         var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
@@ -703,7 +741,23 @@ return (function () {
             return oobValue;
         }
 
-        function handleOutOfBandSwaps(fragment, settleInfo) {
+        function handleOutOfBandSwaps(elt, fragment, settleInfo) {
+            var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
+            if (oobSelects) {
+                var oobSelectValues = oobSelects.split(",");
+                for (let i = 0; i < oobSelectValues.length; i++) {
+                    var oobSelectValue = oobSelectValues[i].split(":", 2);
+                    var id = oobSelectValue[0];
+                    if (id.indexOf("#") === 0) {
+                        id = id.substring(1);
+                    }
+                    var oobValue = oobSelectValue[1] || "true";
+                    var oobElement = fragment.querySelector("#" + id);
+                    if (oobElement) {
+                        oobSwap(oobValue, oobElement, settleInfo);
+                    }
+                }
+            }
             forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
                 var oobValue = getAttributeValue(oobElement, "hx-swap-oob");
                 if (oobValue != null) {
@@ -928,7 +982,7 @@ return (function () {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
-                handleOutOfBandSwaps(fragment, settleInfo);
+                handleOutOfBandSwaps(elt, fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment);
                 handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
@@ -1096,7 +1150,7 @@ return (function () {
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
                                     var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                    if (from_arg === "closest" || from_arg === "find") {
+                                    if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
                                         tokens.shift();
                                         from_arg +=
                                             " " +
@@ -1149,14 +1203,14 @@ return (function () {
             getInternalData(elt).cancelled = true;
         }
 
-        function processPolling(elt, verb, path, spec) {
+        function processPolling(elt, handler, spec) {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
                     if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec, target:elt}))) {
-                        issueAjaxRequest(verb, path, elt);
+                        handler(elt);
                     }
-                    processPolling(elt, verb, getAttributeValue(elt, "hx-" + verb), spec);
+                    processPolling(elt, handler, spec);
                 }
             }, spec.pollInterval);
         }
@@ -1168,23 +1222,23 @@ return (function () {
         }
 
         function boostElement(elt, nodeData, triggerSpecs) {
-            if ((elt.tagName === "A" && isLocalLink(elt) && elt.target === "") || elt.tagName === "FORM") {
+            if ((elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
                 var verb, path;
                 if (elt.tagName === "A") {
                     verb = "get";
                     path = getRawAttribute(elt, 'href');
-                    nodeData.pushURL = true;
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
                     if (verb === "get") {
-                        nodeData.pushURL = true;
                     }
                     path = getRawAttribute(elt, 'action');
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
-                    addEventListener(elt, verb, path, nodeData, triggerSpec, true);
+                    addEventListener(elt, function(evt) {
+                        issueAjaxRequest(verb, path, elt, evt)
+                    }, nodeData, triggerSpec, true);
                 });
             }
         }
@@ -1228,7 +1282,7 @@ return (function () {
             return false;
         }
 
-        function addEventListener(elt, verb, path, nodeData, triggerSpec, explicitCancel) {
+        function addEventListener(elt, handler, nodeData, triggerSpec, explicitCancel) {
             var eltsToListenOn;
             if (triggerSpec.from) {
                 eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
@@ -1289,17 +1343,15 @@ return (function () {
 
                         if (triggerSpec.throttle) {
                             if (!elementData.throttle) {
-                                issueAjaxRequest(verb, path, elt, evt);
+                                handler(elt, evt);
                                 elementData.throttle = setTimeout(function () {
                                     elementData.throttle = null;
                                 }, triggerSpec.throttle);
                             }
                         } else if (triggerSpec.delay) {
-                            elementData.delayed = setTimeout(function () {
-                                issueAjaxRequest(verb, path, elt, evt);
-                            }, triggerSpec.delay);
+                            elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
                         } else {
-                            issueAjaxRequest(verb, path, elt, evt);
+                            handler(elt, evt);
                         }
                     }
                 };
@@ -1339,13 +1391,10 @@ return (function () {
                 elt.setAttribute('data-hx-revealed', 'true');
                 var nodeData = getInternalData(elt);
                 if (nodeData.initialized) {
-                    issueAjaxRequest(nodeData.verb, nodeData.path, elt);
+                    triggerEvent(elt, 'revealed');
                 } else {
                     // if the node isn't initialized, wait for it before triggering the request
-                    elt.addEventListener("htmx:afterProcessNode",
-                        function () {
-                            issueAjaxRequest(nodeData.verb, nodeData.path, elt);
-                        }, {once: true});
+                    elt.addEventListener("htmx:afterProcessNode", function(evt) { triggerEvent(elt, 'revealed') }, {once: true});
                 }
             }
         }
@@ -1532,14 +1581,14 @@ return (function () {
             }
         }
 
-        function processSSETrigger(elt, verb, path, sseEventName) {
+        function processSSETrigger(elt, handler, sseEventName) {
             var sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function () {
                     if (!maybeCloseSSESource(sseSourceElt)) {
                         if (bodyContains(elt)) {
-                            issueAjaxRequest(verb, path, elt);
+                            handler(elt);
                         } else {
                             sseEventSource.removeEventListener(sseEventName, sseListener);
                         }
@@ -1565,11 +1614,11 @@ return (function () {
 
         //====================================================================
 
-        function loadImmediately(elt, verb, path, nodeData, delay) {
+        function loadImmediately(elt, handler, nodeData, delay) {
             var load = function(){
                 if (!nodeData.loaded) {
                     nodeData.loaded = true;
-                    issueAjaxRequest(verb, path, elt);
+                    handler(elt);
                 }
             }
             if (delay) {
@@ -1588,42 +1637,51 @@ return (function () {
                     nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
-                        if (triggerSpec.sseEvent) {
-                            processSSETrigger(elt, verb, path, triggerSpec.sseEvent);
-                        } else if (triggerSpec.trigger === "revealed") {
-                            initScrollHandler();
-                            maybeReveal(elt);
-                        } else if (triggerSpec.trigger === "intersect") {
-                            var observerOptions = {};
-                            if (triggerSpec.root) {
-                                observerOptions.root = querySelectorExt(elt, triggerSpec.root)
-                            }
-                            if (triggerSpec.threshold) {
-                                observerOptions.threshold = parseFloat(triggerSpec.threshold);
-                            }
-                            var observer = new IntersectionObserver(function (entries) {
-                                for (var i = 0; i < entries.length; i++) {
-                                    var entry = entries[i];
-                                    if (entry.isIntersecting) {
-                                        triggerEvent(elt, "intersect");
-                                        break;
-                                    }
-                                }
-                            }, observerOptions);
-                            observer.observe(elt);
-                            addEventListener(elt, verb, path, nodeData, triggerSpec);
-                        } else if (triggerSpec.trigger === "load") {
-                            loadImmediately(elt, verb, path, nodeData, triggerSpec.delay);
-                        } else if (triggerSpec.pollInterval) {
-                            nodeData.polling = true;
-                            processPolling(elt, verb, path, triggerSpec);
-                        } else {
-                            addEventListener(elt, verb, path, nodeData, triggerSpec);
-                        }
+                        addTriggerHandler(elt, triggerSpec, nodeData, function (elt, evt) {
+                            issueAjaxRequest(verb, path, elt, evt)
+                        })
                     });
                 }
             });
             return explicitAction;
+        }
+
+        function addTriggerHandler(elt, triggerSpec, nodeData, handler) {
+            if (triggerSpec.sseEvent) {
+                processSSETrigger(elt, handler, triggerSpec.sseEvent);
+            } else if (triggerSpec.trigger === "revealed") {
+                initScrollHandler();
+                addEventListener(elt, handler, nodeData, triggerSpec);
+                maybeReveal(elt);
+            } else if (triggerSpec.trigger === "intersect") {
+                var observerOptions = {};
+                if (triggerSpec.root) {
+                    observerOptions.root = querySelectorExt(elt, triggerSpec.root)
+                }
+                if (triggerSpec.threshold) {
+                    observerOptions.threshold = parseFloat(triggerSpec.threshold);
+                }
+                var observer = new IntersectionObserver(function (entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        var entry = entries[i];
+                        if (entry.isIntersecting) {
+                            triggerEvent(elt, "intersect");
+                            break;
+                        }
+                    }
+                }, observerOptions);
+                observer.observe(elt);
+                addEventListener(elt, handler, nodeData, triggerSpec);
+            } else if (triggerSpec.trigger === "load") {
+                if (!maybeFilterEvent(triggerSpec, makeEvent("load", {elt:elt}))) {
+                                loadImmediately(elt, handler, nodeData, triggerSpec.delay);
+                            }
+            } else if (triggerSpec.pollInterval) {
+                nodeData.polling = true;
+                processPolling(elt, handler, triggerSpec);
+            } else {
+                addEventListener(elt, handler, nodeData, triggerSpec);
+            }
         }
 
         function evalScript(script) {
@@ -1827,6 +1885,10 @@ return (function () {
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
+            if (!canAccessLocalStorage()) {
+                return;
+            }
+
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
@@ -1850,6 +1912,10 @@ return (function () {
         }
 
         function getCachedHistory(url) {
+            if (!canAccessLocalStorage()) {
+                return null;
+            }
+
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
@@ -1878,6 +1944,11 @@ return (function () {
 
         function pushUrlIntoHistory(path) {
             if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
+            currentPathForHistory = path;
+        }
+
+        function replaceUrlInHistory(path) {
+            if(htmx.config.historyEnabled)  history.replaceState({htmx:true}, "", path);
             currentPathForHistory = path;
         }
 
@@ -1936,17 +2007,6 @@ return (function () {
                     loadHistoryFromServer(path);
                 }
             }
-        }
-
-        function shouldPush(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl && pushUrl !== "false") ||
-                (getInternalData(elt).boosted && getInternalData(elt).pushURL);
-        }
-
-        function getPushUrl(elt) {
-            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
-            return (pushUrl === "true" || pushUrl === "false") ? null : pushUrl;
         }
 
         function addRequestIndicatorClasses(elt) {
@@ -2271,6 +2331,11 @@ return (function () {
             return swapSpec;
         }
 
+        function usesFormData(elt) {
+            return getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
+                (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data");
+        }
+
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
             withExtensions(elt, function (extension) {
@@ -2281,8 +2346,7 @@ return (function () {
             if (encodedParameters != null) {
                 return encodedParameters;
             } else {
-                if (getClosestAttributeValue(elt, "hx-encoding") === "multipart/form-data" ||
-                    (matches(elt, "form") && getRawAttribute(elt, 'enctype') === "multipart/form-data")) {
+                if (usesFormData(elt)) {
                     return makeFormData(filteredParameters);
                 } else {
                     return urlEncode(filteredParameters);
@@ -2428,7 +2492,7 @@ return (function () {
             }
         }
 
-        function getResponseURL(xhr) {
+        function getPathFromResponse(xhr) {
             // NB: IE11 does not support this stuff
             if (xhr.responseURL && typeof(URL) !== "undefined") {
                 try {
@@ -2619,7 +2683,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && getClosestAttributeValue(elt, "hx-encoding") == null) {
+            if (verb !== 'get' && !usesFormData(elt)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
@@ -2627,6 +2691,7 @@ return (function () {
             if (path == null || path === "") {
                 path = getDocument().location.href;
             }
+
 
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
@@ -2666,8 +2731,9 @@ return (function () {
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
+            var finalPathForGet = null;
             if (verb === 'get') {
-                var finalPathForGet = pathNoAnchor;
+                finalPathForGet = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
                     if (finalPathForGet.indexOf("?") < 0) {
@@ -2701,14 +2767,19 @@ return (function () {
                 }
             }
 
-            var responseInfo = {xhr: xhr, target: target, requestConfig: requestConfig, etc:etc, pathInfo:{
-                  path:path, finalPath:finalPathForGet, anchor:anchor
+            var responseInfo = {
+                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc,
+                pathInfo: {
+                    requestPath: path,
+                    finalRequestPath: finalPathForGet || path,
+                    anchor: anchor
                 }
             };
 
             xhr.onload = function () {
                 try {
                     var hierarchy = hierarchyForElt(elt);
+                    responseInfo.pathInfo.responsePath = getPathFromResponse(xhr);
                     responseHandler(elt, responseInfo);
                     removeRequestIndicatorClasses(indicators);
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
@@ -2779,6 +2850,88 @@ return (function () {
             return promise;
         }
 
+        function determineHistoryUpdates(elt, responseInfo) {
+
+            var xhr = responseInfo.xhr;
+
+            //===========================================
+            // First consult response headers
+            //===========================================
+            var pathFromHeaders = null;
+            var typeFromHeaders = null;
+            if (hasHeader(xhr,/HX-Push:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Push");
+                typeFromHeaders = "push";
+            } else if (hasHeader(xhr,/HX-Push-Url:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Push-Url");
+                typeFromHeaders = "push";
+            } else if (hasHeader(xhr,/HX-Replace-Url:/i)) {
+                pathFromHeaders = xhr.getResponseHeader("HX-Replace-Url");
+                typeFromHeaders = "replace";
+            }
+
+            // if there was a response header, that has priority
+            if (pathFromHeaders) {
+                if (pathFromHeaders === "false") {
+                    return {}
+                } else {
+                    return {
+                        type: typeFromHeaders,
+                        path : pathFromHeaders
+                    }
+                }
+            }
+
+            //===========================================
+            // Next resolve via DOM values
+            //===========================================
+            var requestPath =  responseInfo.pathInfo.finalRequestPath;
+            var responsePath =  responseInfo.pathInfo.responsePath;
+
+            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            var replaceUrl = getClosestAttributeValue(elt, "hx-replace-url");
+            var elementIsBoosted = getInternalData(elt).boosted;
+
+            var saveType = null;
+            var path = null;
+
+            if (pushUrl) {
+                saveType = "push";
+                path = pushUrl;
+            } else if (replaceUrl) {
+                saveType = "replace";
+                path = replaceUrl;
+            } else if (elementIsBoosted) {
+                saveType = "push";
+                path = responsePath || requestPath; // if there is no response path, go with the original request path
+            }
+
+            if (path) {
+                // false indicates no push, return empty object
+                if (path === "false") {
+                    return {};
+                }
+
+                // true indicates we want to follow wherever the server ended up sending us
+                if (path === "true") {
+                    path = responsePath || requestPath; // if there is no response path, go with the original request path
+                }
+
+                // restore any anchor associated with the request
+                if (responseInfo.pathInfo.anchor &&
+                    path.indexOf("#") === -1) {
+                    path = path + "#" + responseInfo.pathInfo.anchor;
+                }
+
+                return {
+                    type:saveType,
+                    path: path
+                }
+            } else {
+                return {};
+            }
+        }
+
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
@@ -2790,12 +2943,24 @@ return (function () {
                 handleTrigger(xhr, "HX-Trigger", elt);
             }
 
-            if (hasHeader(xhr,/HX-Push:/i)) {
-                var pushedUrl = xhr.getResponseHeader("HX-Push");
+            if (hasHeader(xhr, /HX-Location:/i)) {
+                saveCurrentPageToHistory();
+                var redirectPath = xhr.getResponseHeader("HX-Location");
+                var swapSpec;
+                if (redirectPath.indexOf("{") === 0) {
+                    swapSpec = parseJSON(redirectPath);
+                    // what's the best way to throw an error if the user didn't include this
+                    redirectPath = swapSpec['path'];
+                    delete swapSpec['path'];
+                }
+                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
+                    pushUrlIntoHistory(redirectPath);
+                });
+                return;
             }
 
             if (hasHeader(xhr, /HX-Redirect:/i)) {
-                window.location.href = xhr.getResponseHeader("HX-Redirect");
+                location.href = xhr.getResponseHeader("HX-Redirect");
                 return;
             }
 
@@ -2810,13 +2975,7 @@ return (function () {
                 responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
-            /** @type {boolean} */
-            var shouldSaveHistory
-            if (pushedUrl == "false") {
-                shouldSaveHistory = false
-            } else {
-                shouldSaveHistory = shouldPush(elt) || pushedUrl;
-            }
+            var historyUpdate = determineHistoryUpdates(elt, responseInfo);
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
@@ -2831,9 +2990,9 @@ return (function () {
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
-		
+
             responseInfo.failed = isError; // Make failed property available to response events
-            responseInfo.successful = !isError; // Make successful property available to response events		
+            responseInfo.successful = !isError; // Make successful property available to response events
 
             if (beforeSwapDetails.shouldSwap) {
                 if (xhr.status === 286) {
@@ -2844,12 +3003,15 @@ return (function () {
                     serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
 
-                // Save current page
-                if (shouldSaveHistory) {
+                // Save current page if there will be a history update
+                if (historyUpdate.type) {
                     saveCurrentPageToHistory();
                 }
 
                 var swapOverride = etc.swapOverride;
+                if (hasHeader(xhr,/HX-Reswap:/i)) {
+                    swapOverride = xhr.getResponseHeader("HX-Reswap");
+                }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
@@ -2895,9 +3057,6 @@ return (function () {
                             }
                             triggerEvent(elt, 'htmx:afterSwap', responseInfo);
                         });
-                        if (responseInfo.pathInfo.anchor) {
-                            location.hash = responseInfo.pathInfo.anchor;
-                        }
 
                         if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                             var finalElt = elt;
@@ -2917,11 +3076,22 @@ return (function () {
                                 }
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
-                            // push URL and save new page
-                            if (shouldSaveHistory) {
-                                var pathToPush = pushedUrl || getPushUrl(elt) || getResponseURL(xhr) || responseInfo.pathInfo.finalPath || responseInfo.pathInfo.path;
-                                pushUrlIntoHistory(pathToPush);
-                                triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: pathToPush});
+
+                            // if we need to save history, do so
+                            if (historyUpdate.type) {
+                                if (historyUpdate.type === "push") {
+                                    pushUrlIntoHistory(historyUpdate.path);
+                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
+                                } else {
+                                    replaceUrlInHistory(historyUpdate.path);
+                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                                }
+                            }
+                            if (responseInfo.pathInfo.anchor) {
+                                var anchorTarget = find("#" + responseInfo.pathInfo.anchor);
+                                if(anchorTarget) {
+                                    anchorTarget.scrollIntoView({block:'start', behavior: "auto"});
+                                }
                             }
 
                             if(settleInfo.title) {
@@ -3123,3 +3293,4 @@ return (function () {
     }
 )()
 }));
+

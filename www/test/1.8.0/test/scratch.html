@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <style>
+        div {
+            transition: all 1000ms ease-in;
+        }
+
+        .indicator {
+            opacity: 0;
+        }
+
+        .hx-show-indicator .indicator {
+            opacity: 100%;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../src/htmx.js"></script>
+<script src="util/util.js"></script>
+<script src="util/scratch_server.js"></script>
+
+<script>
+
+    // this.server.respondWith("GET", "/test2", "Clicked!");
+    //
+    // make('<div hx-get="/test">dd</div>')
+
+//    htmx.logAll();
+
+    // var i = 1;
+    // this.server.respondWith("GET", "/test", function(xhr){
+    //     xhr.respond(201, {}, "" + i++);
+    // });
+    //
+    // make('<div hx-get="/test" hx-trigger="load, every 5s">Init</div>');
+
+    let xhr;
+
+    htmx.on('htmx:beforeSend', function(evt) {
+        xhr = evt.detail.xhr;
+    });
+
+
+</script>
+
+
+<h2>Server Options</h2>
+<button onclick="server.respond()">Server Respond</button>
+<br/>
+Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond()">
+<br/>
+<br/>
+<em>Work Area</em>
+<hr/>
+
+<div id="work-area" hx-history-elt>
+    <a id="a1" hx-boost="true" href="#" target="">Asdf</a>
+</div>
+
+<script>
+    this.server.respondWith("GET", "/preserve", 'foo');
+</script>
+
+<div hx-post="/preserve" hx-trigger="every 1s">
+    <iframe hx-preserve='true' id='iframe1' width="300" height="200" src="https://www.youtube.com/embed/Z1oB2EDu5XA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+</body>
+</html>

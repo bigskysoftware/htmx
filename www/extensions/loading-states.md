@@ -60,6 +60,14 @@ Add the following class to your stylesheet to make sure elements are hidden by d
   <button data-loading-disable>Submit</button>
   ```
 
+- `data-loading-aria-busy`
+
+  Add [`aria-busy="true"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-busy) attribute to the element for the duration of the request
+
+  ```html
+  <button data-loading-aria-busy>Submit</button>
+  ```
+
 - `data-loading-delay`
 
   Some actions may update quickly and showing a loading state in these cases may be more of a distraction. This attribute ensures that the loading state changes are applied only after 200ms if the request is not finished. The default delay can be modified through the attribute value and expressed in milliseconds:
