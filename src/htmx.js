@@ -19,6 +19,7 @@ return (function () {
         var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
+            reinit: reinitNode,
             on: addEventListenerImpl,
             off: removeEventListenerImpl,
             trigger : triggerEvent,
@@ -1792,6 +1793,17 @@ return (function () {
             elt = resolveTarget(elt);
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
+        }
+
+        function reinitNode(elt) {
+            elt = resolveTarget(elt);
+            var nodeData = getInternalData(elt);
+            nodeData.initialized = false;
+            forEach(findElementsToProcess(elt), function(child) {
+                var childData = getInternalData(child);
+                childData.initialized = false;
+            });
+            initNode(elt);
         }
 
         //====================================================================
