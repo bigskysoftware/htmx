@@ -1288,6 +1288,26 @@ example uses Alpine's `$watch` function to look for a change of value that would
 </div>
 ```
 
+If elements are _modified_ rather than added to the DOM at runtime (which can happen when morphing responses
+with an extension such as [`morphdom-swap`](/extensions/morphdom-swap), or through JS that modifies attributes)
+and the node has already been initialised by htmx you need to call `htmx.reinit()` once the changes are complete.
+
+The following example shows how Alpine may alter a property that htmx has already initialised in a similar way to above:
+
+```html
+<div x-data="{selectedId:null}"
+     x-init="$watch('selectedId', value => {
+        htmx.reinit(document.querySelector('#loadbtn'));
+    })">
+    <select x-model.number="selectedId">
+        <option selected disabled>Choose an item</option>
+        <option value="1">Item 1</option>
+        <option value="2">Item 2</option>
+    </select>
+    <button :hx-get="'/server/item/' + selectedId" id="loadbtn">Load item</button>
+</div>
+```
+
 ## <a name="security"></a>[Security](#security)
 
 htmx allows you to define logic directly in your DOM.  This has a number of advantages, the
@@ -1357,6 +1377,10 @@ You can set them directly in javascript, or you can use a `meta` tag:
 And that's it!  
 
 Have fun with htmx! You can accomplish [quite a bit](/examples) without writing a lot of code!
+
+*javascript fatigue:<br/>
+longing for a hypertext<br/>
+already in hand*
 
 </div>
 </div>
