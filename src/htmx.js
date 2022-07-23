@@ -822,7 +822,7 @@ return (function () {
             }
         }
 
-        function cleanUpElement(element) {
+        function cleanUpElement(element, withInitialized) {
             var internalData = getInternalData(element);
             if (internalData.webSocket) {
                 internalData.webSocket.close();
@@ -833,6 +833,9 @@ return (function () {
 
             triggerEvent(element, "htmx:beforeCleanupElement")
 
+            if (withInitialized)
+                internalData.initialized = false;
+
             if (internalData.listenerInfos) {
                 forEach(internalData.listenerInfos, function(info) {
                     if (element !== info.on) {
@@ -841,7 +844,7 @@ return (function () {
                 });
             }
             if (element.children) { // IE
-                forEach(element.children, function(child) { cleanUpElement(child) });
+                forEach(element.children, function(child) { cleanUpElement(child, withInitialized) });
             }
         }
 
@@ -1797,13 +1800,8 @@ return (function () {
 
         function reinitNode(elt) {
             elt = resolveTarget(elt);
-            var nodeData = getInternalData(elt);
-            nodeData.initialized = false;
-            forEach(findElementsToProcess(elt), function(child) {
-                var childData = getInternalData(child);
-                childData.initialized = false;
-            });
-            initNode(elt);
+            cleanUpElement(elt, true);
+            processNode(elt);
         }
 
         //====================================================================
