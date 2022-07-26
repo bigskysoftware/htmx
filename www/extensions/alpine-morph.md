@@ -36,6 +36,8 @@ Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morp
 
 In the above example, all the Alpine x-data states (count, replaced, and message) are preserved even the entire Alpine component is swapped.
 
+NOTE: `/swap` response from the example above should return actual element that is being replaced (this is `<div hx-target="this"...` element).
+
 #### Source
 
 <https://unpkg.com/htmx.org/dist/ext/alpine-morph.js>
