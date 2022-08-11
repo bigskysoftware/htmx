@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 tags: ['posts',  'announcements']
 title: kutty, er, htmx 0.0.3 has been released!
 date: 2020-05-17

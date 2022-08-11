@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 tags: posts
 title: </> htmx - high power tools for html
 ---

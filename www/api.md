@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 title: </> htmx - Javascript API
 ---
 

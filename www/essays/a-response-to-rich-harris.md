@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 tags: posts
 title: A Response To "Have Single-Page Apps Ruined the Web?"
 ---

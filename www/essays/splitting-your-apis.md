@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 tags: posts
 title: Splitting Your Data and Application APIs - Going Further
 ---

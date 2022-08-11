@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: page.njk
 tags: posts
 title: How Did REST Come To Mean The Opposite of REST?
 author: Carson Gross <carson@bigsky.software>

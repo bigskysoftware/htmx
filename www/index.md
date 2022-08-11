@@ -1,11 +1,16 @@
 ---
-layout: layout.njk
+layout: page.njk
 title: </> htmx - high power tools for html
 ---
 
-<div class="dark-hero full-width" classes="add appear">
-  <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">htm<a>x</a></span></span>
-  <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+<div class="dark-hero full-width">
+  <div class="logo-container" classes="add appear">
+    <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">htm<a>x</a></span></span>
+    <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+  </div>
+  <div class="dark-hero__action" classes="add appear">
+    <a class="btn btn--small" href="/docs/">Get Started</a>
+  </div>
 </div>
 
 ## introduction
@@ -13,12 +18,12 @@ title: </> htmx - high power tools for html
 htmx gives you access to [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions), [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse)
 directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
-[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
+[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext.
 
 htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](https://htmx.org/extensions) &
-IE11 compatible
+IE11 compatible.
 
 ## motivation
 
@@ -27,7 +32,16 @@ IE11 compatible
 - Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
 - Why should you only be able to replace the **entire** screen?
 
-By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
+By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext).
+
+htmx grants your multi page application common ui patterns without the baggage of a framework and without major changes to
+you existing server side app.
+
+## bring your own backend
+
+htmx is backend agnostic. Use is with flask, express, rails, even cfwheels if you are feeling truly oldschool.
+
+At the end of the day, it's only hypertext.
 
 ## quick start
 
@@ -43,8 +57,6 @@ this button tell htmx:
 > "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the HTML response"
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
-
-Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
 ## sponsors
 
