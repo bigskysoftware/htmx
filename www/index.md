@@ -8,36 +8,33 @@ title: </> htmx - high power tools for html
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
-
 ## introduction
 
-htmx gives you access to  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),  [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+htmx gives you access to [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions), [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse)
+directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
+[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://htmx.org/extensions) & 
+[extendable](https://htmx.org/extensions) &
 IE11 compatible
 
 ## motivation
 
-* Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
-* Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
-* Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
-* Why should you only be able to replace the **entire** screen?
+- Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
+- Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
+- Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
+- Why should you only be able to replace the **entire** screen?
 
 By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.8.0"></script>
-  <!-- have a button POST a click via AJAX -->
-  <button hx-post="/clicked" hx-swap="outerHTML">
-    Click Me
-  </button>
+<script src="https://unpkg.com/htmx.org@1.8.0"></script>
+<!-- have a button POST a click via AJAX -->
+<button hx-post="/clicked" hx-swap="outerHTML">Click Me</button>
 ```
 
 The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes on
@@ -78,7 +75,7 @@ Thank you to our corporate sponsors!
 </div>
 </div>
 
-If you use htmx commercially & wish to support the 
+If you use htmx commercially & wish to support the
 project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
 
 [Consulting](mailto:htmx@bigsky.software) is also available.

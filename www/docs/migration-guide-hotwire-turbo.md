@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: docs.njk
 title: </> Hotwire / Turbo ➡️ htmx Migration Guide
 ---
 

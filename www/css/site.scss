@@ -322,19 +322,26 @@ h1,h2,h3,h4{
     font-weight: 600;
     line-height: 1em;
 }
-
-// UL in content
-:not(.nav) ul{
+:not(.nav) ul {
     padding-left: 1em;
 }
 
-.nav ul{
+#contents > ul {
+    padding-left: 0
+}
+.sidenav {
     padding-left: 0;
-    li ul {
-        padding-left:12px;
+    & > li {
+        margin-bottom: 4px;
+    }
+
+    .sidenav__section-title {
+        font-weight: bold;
+    }
+    .sidenav__list {
+        border-left: 1px solid red;
     }
 }
-
 
 @media(min-width:45em) {
 
@@ -378,6 +385,9 @@ h1,h2,h3,h4{
     .content .nav #contents > ul {
         max-height: calc(100vh - 5rem);
         overflow-y: scroll;
+    }
+    .content .nav #contents  a.active {
+        opacity: .6;
     }
 
     .content .nav > p

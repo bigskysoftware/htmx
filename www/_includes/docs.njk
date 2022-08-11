@@ -1,0 +1,146 @@
+{% extends "page.njk" %}
+
+{% block body %}
+  <div class="c content wide-content {{ customClasses | default("") }}">
+    <div class="row">
+      <div class="2 col nav">
+        <!-- contents -->
+        <div id="contents">
+          <ul class="sidenav">
+            <li>
+              <div class="sidenav__section-title">Getting Started</div>
+              <ul>
+                <li>
+                  <a href="/docs/">introduction</a>
+                </li>
+                <li>
+                  <a href="/docs/installing/">installing</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="sidenav__section-title">Examples</div>
+              <ul>
+                <li>
+                  <a href="/docs/server-examples/">server examples</a>
+                </li>
+                <li>
+                  <a href="/docs/ui-examples/">ui examples</a>
+                </li>
+                <li>
+                  <a href="/docs/migration-guide-hotwire-turbo/">migrating from hotwire/turbo</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="sidenav__section-title">The Essentials</div>
+              <ul>
+                <li>
+                  <a href="/docs/essentials/#ajax">ajax</a>
+                  <ul>
+                    <li>
+                      <a href="/docs/essentials/#triggers">triggers</a>
+                      <ul>
+                        <li>
+                          <a href="/docs/essentials/#trigger-modifiers">trigger modifiers</a>
+                        </li>
+                        <li>
+                          <a href="/docs/essentials/#trigger-filters">trigger filters</a>
+                        </li>
+                        <li>
+                          <a href="/docs/essentials/#special-events">special events</a>
+                        </li>
+                        <li>
+                          <a href="/docs/essentials/#polling">polling</a>
+                        </li>
+                        <li>
+                          <a href="/docs/essentials/#load_polling">load polling</a>
+                        </li>
+                      </ul>
+                    </li>
+
+                    <li>
+                      <a href="/docs/essentials/#indicators">indicators</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#targets">targets</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#swapping">swapping</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#synchronization">synchronization</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#css_transitions">css transitions</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#oob_swaps">out of band swaps</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#parameters">parameters</a>
+                    </li>
+                    <li>
+                      <a href="/docs/essentials/#confirming">confirming</a>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a href="/docs/essentials/#inheritance">inheritance</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#boosting">boosting</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#websockets-and-sse">websockets & SSE</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#history">history</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#requests">requests & responses</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#validation">validation</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#animations">animations</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#extensions">extensions</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#events">events & logging</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#debugging">debugging</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#hyperscript">hyperscript</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#3rd-party">3rd party integration</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#security">security</a>
+                </li>
+                <li>
+                  <a href="/docs/essentials/#config">configuring</a>
+                </li>
+              </ul>
+            </li>
+
+          </ul>
+
+        </div>
+        <!-- /contents -->
+
+      </div>
+      <div class="10 col">
+        {{ content | safe }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

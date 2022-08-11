@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: docs.njk
 title: </> htmx - Server-Side Examples
 ---
 
