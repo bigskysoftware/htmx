@@ -1221,23 +1221,29 @@ return (function () {
                 getRawAttribute(elt,'href').indexOf("#") !== 0;
         }
 
+        function shouldBoost(elt) {
+          return (elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM";
+        }
+
         function boostElement(elt, nodeData, triggerSpecs) {
-            if ((elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM") {
+            if (shouldBoost(elt)) {
                 nodeData.boosted = true;
-                var verb, path;
-                if (elt.tagName === "A") {
-                    verb = "get";
-                    path = getRawAttribute(elt, 'href');
-                } else {
-                    var rawAttribute = getRawAttribute(elt, "method");
-                    verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
-                    if (verb === "get") {
-                    }
-                    path = getRawAttribute(elt, 'action');
-                }
                 triggerSpecs.forEach(function(triggerSpec) {
                     addEventListener(elt, function(evt) {
-                        issueAjaxRequest(verb, path, elt, evt)
+                        // Revalidate that element should be boosted
+                        if (shouldBoost(evt)) {
+                          // Use latest path/verb (rather than when the element was boosted) 
+                          var verb, path;
+                          if (elt.tagName === "A") {
+                              verb = "get";
+                              path = getRawAttribute(elt, 'href');
+                          } else {
+                              var rawAttribute = getRawAttribute(elt, "method");
+                              verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
+                              path = getRawAttribute(elt, 'action');
+                          }
+                          issueAjaxRequest(verb, path, elt, evt)
+                        }
                     }, nodeData, triggerSpec, true);
                 });
             }
