@@ -50,15 +50,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## Essays
 
-* [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
-* [Hypermedia-Driven Applications (HDAs)](/essays/hypermedia-driven-applications)
-* [HATEOAS](/essays/hateoas)
-* [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
-* [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
-* [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
-* [Complexity Budget](/essays/complexity-budget)
-* [SPA Alternative](/essays/spa-alternative)
-* [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
+[See the essays page &rarr;](/essays)
 
 ## Podcasts
 
