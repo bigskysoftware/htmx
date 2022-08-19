@@ -110,6 +110,8 @@ return (function () {
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
 
+        var tabIsClosing = false;
+
         //====================================================================
         // Utilities
         //====================================================================
@@ -1669,6 +1671,11 @@ return (function () {
         function processSSESource(elt, sseSrc) {
             var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
+                if (tabIsClosing) {
+                    // Ignore error fired when the browser tab is closed, and the SSE source along with it
+                    return
+                }
+
                 triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
                 maybeCloseSSESource(elt);
             };
@@ -3363,6 +3370,9 @@ return (function () {
                 }
                 lastState = event.state
             };
+            window.addEventListener("beforeunload", function () {
+                tabIsClosing = true
+            })
             initializeLayoutReadWrite()
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
