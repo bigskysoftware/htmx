@@ -184,5 +184,72 @@ describe("hx-vals attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('basic hx-vals can be unset', function () {
+        this.server.respondWith("POST", "/vars", function (xhr) {
+            var params = getParameters(xhr);
+            params.should.be.empty;
+            xhr.respond(200, {}, "Clicked!")
+        });
+        make(
+            "<div hx-vals='\"i1\":\"test\"'>\
+                <div id='d1' hx-post='/vars' hx-vals='unset'></div>\
+            </div>"
+        );
+        var div = byId("d1");
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('basic hx-vals with braces can be unset', function () {
+        this.server.respondWith("POST", "/vars", function (xhr) {
+            var params = getParameters(xhr);
+            params.should.be.empty;
+            xhr.respond(200, {}, "Clicked!")
+        });
+        make(
+            "<div hx-vals='{\"i1\":\"test\"}'>\
+                <div id='d1' hx-post='/vars' hx-vals='unset'></div>\
+            </div>"
+        );
+        var div = byId("d1");
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('multiple hx-vals can be unset', function () {
+        this.server.respondWith("POST", "/vars", function (xhr) {
+            var params = getParameters(xhr);
+            params.should.be.empty;
+            xhr.respond(200, {}, "Clicked!")
+        });
+        make(
+            "<div hx-vals='\"v1\":\"test\", \"v2\":42'>\
+                <div id='d1' hx-post='/vars' hx-vals='unset'></div>\
+            </div>"
+        );
+        var div = byId("d1");
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('unsetting hx-vals maintains input values', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make(
+            "<div hx-target='this' hx-vals='\"i1\":\"best\"'>\
+                <input hx-post='/include' hx-vals='unset' hx-trigger='click' id='i1' name='i1' value='test'/>\
+            </div>"
+        )
+        var input = byId("i1")
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
 
 });
