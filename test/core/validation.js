@@ -170,5 +170,29 @@ describe("Core htmx client side validation tests", function(){
     });
 
 
+    it('hx-validate can prevent a single input from submitting', function()
+    {
+        this.server.respondWith("POST", "/test", "Clicked!");
+        var div = make("<div id='d1'>No Request</div>")
+        var form = make('<form><input type="text" hx-target="#d1" hx-post="/test" hx-trigger="click" id="i1" name="i1" pattern="[0-9]+" hx-validate="true"/></form>');
+        var input = byId("i1");
+
+        div.textContent.should.equal("No Request");
+
+        input.value = "abc";
+        input.click();
+        this.server.respond();
+        div.textContent.should.equal("No Request");
+
+        input.value = "1bc";
+        input.click();
+        this.server.respond();
+        div.textContent.should.equal("No Request");
+
+        input.value = "123";
+        input.click();
+        this.server.respond();
+        div.textContent.should.equal("Clicked!");
+    });
 
 })

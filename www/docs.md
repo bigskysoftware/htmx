@@ -868,7 +868,7 @@ You can use the `htmx-swapping` and `htmx-settling` classes to create
 ## <a name="validation">[Validation](#validation)
 
 Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
-and will not issue a request if a validatable input is invalid.  This is true for both AJAX requests as well as
+and will not issue a request for a form if a validatable input is invalid.  This is true for both AJAX requests as well as
 WebSocket sends.
 
 Htmx fires events around validation that can be used to hook in custom validation and error handling:
@@ -878,6 +878,9 @@ Htmx fires events around validation that can be used to hook in custom validatio
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
   in the `event.detail.errors` object
+
+Non-form elements do not validate before they make requests by default, but you can enable validation by setting 
+the [`hx-validate`](/attributes/hx-validate) attribute to "true".
 
 ### Validation Example
 

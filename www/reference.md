@@ -50,6 +50,7 @@ title: </> htmx - Attributes
 | [`hx-target`](/attributes/hx-target)           | specifies the target element to be swapped
 | [`hx-trigger`](/attributes/hx-trigger)         | specifies the event that triggers the request
 | [`hx-vals`](/attributes/hx-vals)               | adds JSON-formatted values to the parameters that will be submitted with the request
+| [`hx-validate`](/attributes/hx-validate)       | allows you to enable HTML5-style validation for requests by non-form elements
 | [`hx-vars`](/attributes/hx-vars)               | adds calculated values to the parameters that will be submitted with the request (deprecated)
 | [`hx-ws`](/extensions/web-sockets)             | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
