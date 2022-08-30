@@ -83,11 +83,9 @@ hypermedia-oriented libraries.
 Here are some known implementations of the fragment concept:
 
 * Python
-  * [Django Render Block Extension](https://pypi.org/project/django-render-block/) - render fragments (blocks) of templates in both
-    other templates as well as in controllers
+  * [Django Render Block Extension](https://pypi.org/project/django-render-block/)
 * Java
-  * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax) - 
-    Supports fragments but does _not_ appear to support rendering them directly in controllers
+  * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax)
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.
