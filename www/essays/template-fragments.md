@@ -14,10 +14,10 @@ view for partial updates without creating a large number of individual files.
 By keeping all the HTML in a single file, it is also easier to reason about how a feature works.  This follows the
 [Locality of Behavior](/essays/locality-of-behaviour/) design principle.
 
-## Example Template Fragment
+## Motivation
 
-Let's look at an example implementation of template fragments, in an obscure templating language for java called
-[chill templates](https://github.com/bigskysoftware/chill/tree/master/chill-script).
+Let's look at how template fragments, in an obscure templating language for java called
+[chill templates](https://github.com/bigskysoftware/chill/tree/master/chill-script), can help us build an HDA.
 
 Here is a simple chill template, `/contacts/detail.html` that displays a contact:
 
@@ -39,10 +39,11 @@ Here is a simple chill template, `/contacts/detail.html` that displays a contact
 ```
 
 In the template we have an archiving feature where, depending on the archive state of the contact, we either display an "Archive"
-or an "Unarchive" button, powered by htmx.
+or an "Unarchive" button, both powered by htmx and issuing HTTP requests to different end points.
 
 When we click whichever of the two buttons is being shown, we want to replace the content in the `div` that surrounds 
-the button with an updated button.  This will effectively flip the back and forth between "Archive" and "Unarchive".  
+the button with an updated button.  (Note the `hx-target="this"` on the div, so we are targeting that div's innerHTML for
+replacement.)  This will effectively flip the back and forth between "Archive" and "Unarchive".  
 
 Now, unfortunately, if we wanted to render only the buttons and not the rest of this template, this would typically involve
 splitting the buttons out to their own template file and including it in this template, like so:
