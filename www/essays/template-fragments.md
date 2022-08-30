@@ -54,7 +54,7 @@ you can now render either the entire template:
   ChillTemplates.render("/contacts/detail.html", "contact", c);
 ```
 
-Or only the fragment of the template
+Or only the `archive-ui` fragment of the template
 
 ```java
   Contact c = getContact();
