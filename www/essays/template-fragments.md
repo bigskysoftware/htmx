@@ -70,12 +70,14 @@ splitting the buttons out to their own template file and including it in this te
 #end
 ```
 
-Now we have two templates.  This reduces the visibility of the archiving feature: it is less obvious what is going on 
-when you are looking just at the `detail.html` template.  When pushed to extremes, decomposing templates like this can 
-lead to quite a few small template fragments which, in total, become difficult to reason about.
+Now we have two templates.  We can now render the `archive-ui.html` template separately, but this split reduces the 
+visibility of the archiving feature: it is less obvious what is going on when you are looking just at the `detail.html` 
+template.  
+
+When pushed to extremes, decomposing templates like this can lead to quite a few small template fragments which, in
+total, become difficult to reason about.
 
 ### Template Fragments To The Rescue
-
 
 To address this issue, chill templates has a `#fragment` directive.  This directive allows you to specify a block of 
 content within a template and render _just that bit of content_:
