@@ -80,8 +80,7 @@ Fragments (and the ability to render them directly in controllers) appear to be 
 libraries and provide an excellent opportunity for improving the developer experience when working with htmx and other
 hypermedia-oriented libraries.
 
-Here are some known implementations of the fragment concept.  Please let me know if you know of others so I can add
-them to this list.
+Here are some known implementations of the fragment concept:
 
 * Python
   * [Django Render Block Extension](https://pypi.org/project/django-render-block/) - render fragments (blocks) of templates in both
@@ -90,3 +89,5 @@ them to this list.
   * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax) - 
     Supports fragments but does _not_ appear to support rendering them directly in controllers
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
+
+Please [let me know](/discord) if you know of others, so I can add them to this list.
