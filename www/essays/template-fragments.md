@@ -21,17 +21,16 @@ Let's look at an example implementation of template fragments, in an obscure tem
 
 Here is a simple chill template, `/contacts/detail.html` that displays a contact:
 
+##### /contacts/detail.html
 ```html
 <html>
     <body>
         <div hx-target="this">
-            #fragment archive-ui
-                #if contact.archived
-                <button hx-patch="/contacts/${contact.id}/unarchive">Unarchive</button>
-                #else
-                <button hx-delete="/contacts/${contact.id}">Archive</button>
-                #end
-            #end
+          #if contact.archived
+          <button hx-patch="/contacts/${contact.id}/unarchive">Unarchive</button>
+          #else
+          <button hx-delete="/contacts/${contact.id}">Archive</button>
+          #end
         </div>
         <h3>Contact</h3>
         <p>${contact.email}</p>
@@ -40,35 +39,82 @@ Here is a simple chill template, `/contacts/detail.html` that displays a contact
 ```
 
 In the template we have an archiving feature where, depending on the archive state of the contact, we either display an "Archive"
-or an "Unarchive" button.
+or an "Unarchive" button, powered by htmx.
 
-When we click whichever of the two buttons is being show, we want to replace the content in the `div` that surrounds the button
-with an updated button, effectively flipping back and forth.  
+When we click whichever of the two buttons is being shown, we want to replace the content in the `div` that surrounds 
+the button with an updated button.  This will effectively flip the back and forth between "Archive" and "Unarchive".  
 
-Without template fragments, this would involve splitting the buttons out to their own template file.  This, in turn, reduces 
-the visibility of the feature.  
+Now, unfortunately, if we wanted to render only the buttons and not the rest of this template, this would typically involve
+splitting the buttons out to their own template file and including it in this template, like so:
 
-Chill templates, however, has a `#fragment` directive which allows you to specify a block of content within a template.  
+##### /contacts/detail.html
+```html
+<html>
+    <body>
+        <div hx-target="this">
+          #include archive-ui.html
+        </div>
+        <h3>Contact</h3>
+        <p>${contact.email}</p>
+    </body>
+</html>
+```
 
-### Using The Template Fragment
+##### /contacts/archive-ui.html
+```html
+#if contact.archived
+<button hx-patch="/contacts/${contact.id}/unarchive">Unarchive</button>
+#else
+<button hx-delete="/contacts/${contact.id}">Archive</button>
+#end
+```
 
-With this fragment defined, you can now render either the entire template:
+Now we have two templates.  This reduces the visibility of the archiving feature: it is less obvious what is going on 
+when you are looking just at the `detail.html` template.  When pushed to extremes, decomposing templates like this can 
+lead to quite a few small template fragments which, in total, become difficult to reason about.
+
+### Template Fragments To The Rescue
+
+
+To address this issue, chill templates has a `#fragment` directive.  This directive allows you to specify a block of 
+content within a template and render _just that bit of content_:
+
+##### /contacts/detail.html Using a Fragment
+```html
+<html>
+    <body>
+        <div hx-target="this">
+          #fragment archive-ui
+            #if contact.archived
+            <button hx-patch="/contacts/${contact.id}/unarchive">Unarchive</button>
+            #else
+            <button hx-delete="/contacts/${contact.id}">Archive</button>
+            #end
+          #end
+        </div>
+        <h3>Contact</h3>
+        <p>${contact.email}</p>
+    </body>
+</html>
+```
+
+With this fragment defined in our template, we can now render either the entire template:
 
 ```java
   Contact c = getContact();
   ChillTemplates.render("/contacts/detail.html", "contact", c);
 ```
 
-Or we can render only the `archive-ui` fragment of the template
+Or we can render only the `archive-ui` _fragment_ of the template
 
 ```java
   Contact c = getContact();
   ChillTemplates.render("/contacts/detail.html#archive-ui", "contact", c);
 ```
 
-The first option would be used when we want to render the entire page, when we show the detail page for the contact.
+We would use the first option when we want to render the entire detail page for the contact.
 
-The second option would be used when we handle the archive/unarchive actions and wish only to rerender the buttons.
+We would use the second option when we handled the archive/unarchive actions and wished only to rerender the buttons.
 
 Note that, with fragments, we are able to keep our UI together in a single file and see exactly what is going on with 
 the feature, without bouncing around between different template files.  This provides a cleaner and more obvious
