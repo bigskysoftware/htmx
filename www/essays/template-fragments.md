@@ -7,9 +7,10 @@ title: Template Fragments
 # Template Fragments
 
 Template fragments are a relatively rare Server Side Rendering (SSR) template library feature that allow you to render a
-_fragment_ or partial bit of the content of a template, rather than the entire template.  This feature is very handy in 
+_fragment_ or partial bit of the content within a template, rather than the entire template.  This feature is very handy in 
 [Hypermedia Driven Applications](/essays/hypermedia-driven-applications) because it allows you to decompose a particular
-view for partial updates without creating a large number of individual files.  
+view for partial updates _internally_ without pulling fragments of the template out to separate files for rendering,
+creating a large number of individual template files.  
 
 By keeping all the HTML in a single file, it is also easier to reason about how a feature works.  This follows the
 [Locality of Behavior](/essays/locality-of-behaviour/) design principle.
