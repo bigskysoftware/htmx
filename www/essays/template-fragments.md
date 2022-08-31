@@ -76,7 +76,7 @@ visibility of the archiving feature: it is less obvious what is going on when yo
 template.  
 
 When pushed to extremes, decomposing templates like this can lead to quite a few small template fragments which, in
-total, become difficult to reason about.
+total, become difficult to manage and to reason about.
 
 ### Template Fragments To The Rescue
 
