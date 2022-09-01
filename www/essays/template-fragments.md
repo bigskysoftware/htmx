@@ -132,12 +132,18 @@ hypermedia-oriented libraries.
 
 Here are some known implementations of the fragment concept:
 
+* ASP.NET Core
+  * [ASP.NET Core MVC Partial Views (Razor markup)](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/partial)
+* Go
+  * [Standard Library (use block actions)](https://pkg.go.dev/text/template) [[demo]](https://gist.github.com/benpate/f92b77ea9b3a8503541eb4b9eb515d8a)
+* Java
+  * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax)
+  * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
+* PHP
+  * [Latte](https://latte.nette.org/en/template-inheritance#toc-blocks) - Use the 3rd parameter to only render 1 block from the template -  `$Latte_Engine->render('path/to/template.latte', [ 'foo' => 'bar' ], 'content');`
 * Python
   * [Django Render Block Extension](https://pypi.org/project/django-render-block/)
   * [jinja_partials package](https://github.com/mikeckennedy/jinja_partials) ([discussion](https://github.com/mikeckennedy/jinja_partials/issues/1) on motivation)
   * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
-* Java
-  * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax)
-  * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.
