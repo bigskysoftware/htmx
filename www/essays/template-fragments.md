@@ -134,6 +134,8 @@ Here are some known implementations of the fragment concept:
 
 * Python
   * [Django Render Block Extension](https://pypi.org/project/django-render-block/)
+  * [jinja_partials package](https://github.com/mikeckennedy/jinja_partials) ([discussion](https://github.com/mikeckennedy/jinja_partials/issues/1) on motivation)
+  * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
 * Java
   * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax)
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
