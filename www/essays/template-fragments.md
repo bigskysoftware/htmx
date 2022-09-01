@@ -131,7 +131,8 @@ libraries and provide an excellent opportunity for improving the developer exper
 hypermedia-oriented libraries.
 
 Here are some known implementations of the fragment concept:
-
+* Go
+  * [Standard Library (use block actions)](https://pkg.go.dev/text/template) [[demo]](https://gist.github.com/benpate/f92b77ea9b3a8503541eb4b9eb515d8a)
 * Python
   * [Django Render Block Extension](https://pypi.org/project/django-render-block/)
 * Java
