@@ -137,5 +137,7 @@ Here are some known implementations of the fragment concept:
 * Java
   * [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax)
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
+* ASP.NET Core
+  * [ASP.NET Core MVC Partial Views (Razor markup)](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/partial)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.
