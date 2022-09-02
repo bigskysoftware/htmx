@@ -134,6 +134,64 @@ Here are some known implementations of the fragment concept:
 
 * ASP.NET Core
   * [ASP.NET Core MVC Partial Views (Razor markup)](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/partial)
+
+##### /Views/Contacts/Index.cshtml using Partial Views:
+```razor
+<h2>Contacts</h2>
+<div class="w-80">
+  <div class="mt-6 flow-root">
+    <ul class="-my-5 divide-y divide-gray-200"
+        role="list">
+      @foreach (var contact in Model)
+      {
+        @(await Html.PartialAsync("_ContactDetails", contact))
+      }
+    </ul>
+  </div>
+</div>
+```
+
+##### /Views/Contacts/_ContactDetails.cshtml Partial Views:
+```razor
+<li class="py-4">
+  <div class="flex items-center space-x-4">
+    <div class="bg-gray-200 rounded-full flex items-center justify-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-turquoise-200 focus:ring-white w-8 h-8 text-turquoise-600 font-semibold">
+      C
+    </div>
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm text-gray-500">@Model.Name</p>
+    </div>
+    <div>
+       @await Html.PartialAsync("_ArchiveUI", Model)
+    </div>
+  </div>
+</li>
+```
+
+##### /Views/Contacts/_ArchiveUI.cshtml Partial Views:
+```razor
+@if (Model.Archived)
+{
+  <button class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50"
+          hx-patch="/contacts/@Model.Id/unarchive"
+          hx-swap="outerHTML">
+    Unarchive
+  </button>
+}
+else
+{
+  <button class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50"
+          hx-delete="/contacts/@Model.Id"
+          hx-swap="outerHTML">
+    Archive
+  </button>
+}
+```
+
+[See](https://github.com/AlexZeitler/HtmxAspNetCorePartialViewsSample) full sample on GitHub.
+
+
+
 * Go
   * [Standard Library (use block actions)](https://pkg.go.dev/text/template) [[demo]](https://gist.github.com/benpate/f92b77ea9b3a8503541eb4b9eb515d8a)
 * Java
