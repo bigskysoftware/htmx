@@ -536,6 +536,8 @@ attribute on the elements you wish to be preserved.
 By default, an element that causes a request will include its value if it has one.  If the element is a form it
 will include the values of all inputs within it.
 
+The `name` attribute of the input is used as the parameter name in the request that htmx does. 
+ 
 Additionally, if the element causes a non-`GET` request, the values of all the inputs of the nearest enclosing form
 will be included.
 
