@@ -10,8 +10,7 @@ Elements with `hx-preserve` set are preserved by `id` when htmx updates any ance
 You *must* set an unchanging `id` on elements for `hx-preserve` to work.
 The response requires an element with the same `id`, but its type and other attributes are ignored.
 
-Note that some elements cannot unfortunately be preserved properly, such as iframes or certain types
-of videos.  In these cases we recommend the [morphdom extension](/extensions/morphdom-swap/), which does a more elaborate DOM
+Note that some elements cannot unfortunately be preserved properly, such as `<input type="text">` (focus and caret position are lost), iframes or certain types of videos. To tackle some of these cases we recommend the [morphdom extension](/extensions/morphdom-swap/), which does a more elaborate DOM
 reconciliation.
 
 ### Notes
