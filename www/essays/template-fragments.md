@@ -144,5 +144,6 @@ Here are some known implementations of the fragment concept:
   * [jinja2-fragments package](https://github.com/sponsfreixes/jinja2-fragments)
   * [jinja_partials package](https://github.com/mikeckennedy/jinja_partials) ([discussion](https://github.com/mikeckennedy/jinja_partials/issues/1) on motivation)
   * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
+  * [htmlgenerator](https://github.com/basxsoftwareassociation/htmlgenerator)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.
