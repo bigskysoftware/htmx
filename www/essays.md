@@ -14,7 +14,7 @@ title: </> htmx - Essays
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
 * [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
-* [Template Fragments](essays/template-fragments/)
+* [Template Fragments](/essays/template-fragments/)
 
 
 ### Older [intercooler.js](https://intercoolerjs.org) Essays
