@@ -2684,7 +2684,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && !usesFormData(elt)) {
+            if (!headers['Content-Type'] && verb !== 'get' && !usesFormData(elt)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
@@ -3294,4 +3294,3 @@ return (function () {
     }
 )()
 }));
-
