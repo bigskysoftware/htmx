@@ -694,9 +694,10 @@ return (function () {
          * @param {string} oobValue
          * @param {HTMLElement} oobElement
          * @param {*} settleInfo
+         * @param {XMLHttpRequest} xhr
          * @returns
          */
-        function oobSwap(oobValue, oobElement, settleInfo) {
+        function oobSwap(oobValue, oobElement, settleInfo, xhr) {
             var selector = "#" + oobElement.id;
             var swapStyle = "outerHTML";
             if (oobValue === "true") {
@@ -721,7 +722,7 @@ return (function () {
                             fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
                         }
 
-                        var beforeSwapDetails = {shouldSwap: true, target: target, fragment:fragment };
+                        var beforeSwapDetails = {shouldSwap: true, target: target, fragment:fragment, xhr: xhr };
                         if (!triggerEvent(target, 'htmx:oobBeforeSwap', beforeSwapDetails)) return;
 
                         target = beforeSwapDetails.target; // allow re-targeting
@@ -741,7 +742,7 @@ return (function () {
             return oobValue;
         }
 
-        function handleOutOfBandSwaps(elt, fragment, settleInfo) {
+        function handleOutOfBandSwaps(elt, fragment, settleInfo, xhr) {
             var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
             if (oobSelects) {
                 var oobSelectValues = oobSelects.split(",");
@@ -754,7 +755,7 @@ return (function () {
                     var oobValue = oobSelectValue[1] || "true";
                     var oobElement = fragment.querySelector("#" + id);
                     if (oobElement) {
-                        oobSwap(oobValue, oobElement, settleInfo);
+                        oobSwap(oobValue, oobElement, settleInfo, xhr);
                     }
                 }
             }
@@ -978,11 +979,11 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, xhr) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
-                handleOutOfBandSwaps(elt, fragment, settleInfo);
+                handleOutOfBandSwaps(elt, fragment, settleInfo, xhr);
                 fragment = maybeSelectFromResponse(elt, fragment);
                 handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
@@ -3033,7 +3034,7 @@ return (function () {
                         }
 
                         var settleInfo = makeSettleInfo(target);
-                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, xhr);
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&
@@ -3126,9 +3127,9 @@ return (function () {
                 };
 
                 if (swapSpec.swapDelay > 0) {
-                    setTimeout(doSwap, swapSpec.swapDelay)
+                    setTimeout(doSwap(xhr), swapSpec.swapDelay)
                 } else {
-                    doSwap();
+                    doSwap(xhr);
                 }
             }
             if (isError) {
