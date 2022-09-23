@@ -762,7 +762,7 @@ return (function () {
             forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
                 var oobValue = getAttributeValue(oobElement, "hx-swap-oob");
                 if (oobValue != null) {
-                    oobSwap(oobValue, oobElement, settleInfo);
+                    oobSwap(oobValue, oobElement, settleInfo, xhr);
                 }
             });
         }
