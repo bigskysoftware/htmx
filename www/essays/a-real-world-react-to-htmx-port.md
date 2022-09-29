@@ -1,6 +1,5 @@
 ---
 layout: layout.njk
-tags: posts
 title: A Real World React -> htmx Port
 ---
 
