@@ -51,7 +51,7 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 
 ## sponsors
 
-Thank you to our corporate sponsors!
+Thank you to our corporate <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>!
 
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
