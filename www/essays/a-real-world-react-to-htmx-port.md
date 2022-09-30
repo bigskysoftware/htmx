@@ -29,7 +29,7 @@ Until now.
 
 You can (should!) watch the entire presentation here:
 
-<iframe width="1265" height="720" src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+<iframe width="615" height="350" src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
 title="Rick Astley - Never Gonna Give You Up (Official Music Video)" frameborder="0" 
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
@@ -37,21 +37,21 @@ but if you just want the executive summary:
 
 ## Executive Summary
 
-* The effort took about 2 months (with a 21K LOC code base, mostly JavaScript)
-* No reduction in User Experience (UX)
-* They reduced the code base size by 67% (21,500 LOC to 7200 LOC)
-* They _increased_ python code by 140% (500 LOC to 1200 LOC), a good thing if you prefer python to JS
-* They reduced their total JS dependencies by 96% (255 to 9)
-* They reduced their web build time by 88% (40 seconds to 5)
-* First load time-to-interactive was reduced by 50-60% (from 2 to 6 seconds to 1 to 2 seconds)
-* Much larger data sets were possible when using htmx, because react simply couldn't handle the data
-* Web application memory usage was reduced by 46% (75MB to 45MB)
+* The effort took about **2 months** (with a 21K LOC code base, mostly JavaScript)
+* **No reduction** in the application's user experience (UX)
+* They reduced the **code base size** by **67%** (21,500 LOC to 7200 LOC)
+* They _increased_ **python code** by **140%** (500 LOC to 1200 LOC), a good thing if you prefer python to JS
+* They reduced their total **JS dependencies** by **96%** (255 to 9)
+* They reduced their **web build time** by **88%** (40 seconds to 5)
+* **First load time-to-interactive** was reduced by **50-60%** (from 2 to 6 seconds to 1 to 2 seconds)
+* **Much larger data sets were possible** when using htmx, because react simply couldn't handle the data
+* Web application **memory usage** was reduced by **46%** (75MB to 45MB)
 
 ## Analysis
 
 These are eye-popping numbers, and they reflect the fact that the Contexte application is extremely amenable to 
 hypermedia: it is a content-focused application that shows lots of text and images.  We would not expect every 
-web application to see these sorts of numbers, although we _would_ expect many applications to see dramatic improvements
+web application to see these sorts of numbers.  However, we _would_ expect many applications to see dramatic improvements
 by adopting the hypermedia/htmx approach, at least for part of their system.
 
 ### Dev Team Makeup
@@ -83,5 +83,7 @@ Q: Do you have any insights for other people considering htmx?
 
 
 ## Slides
+
+The slides for the presentation can be found here (be sure to check the excellent speakers notes!)
 
 <https://docs.google.com/presentation/d/1jW7vTiHFzA71m2EoCywjNXch-RPQJuAkTiLpleYFQjI/edit?usp=sharing>
