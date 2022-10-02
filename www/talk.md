@@ -36,10 +36,6 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 [HTMX + Flask: Modern Python Web Apps, Hold the JavaScript Course by Michael Kennedy](https://training.talkpython.fm/courses/htmx-flask-modern-python-web-apps-hold-the-javascript)
 
-
-<div class="row">
-<div class="1 col">
-
 ## Atom Feed (Announcements & Essays)
 
 [feed.xml](/feed.xml)
@@ -51,19 +47,10 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
   <li><a href="{{ post.url  }}">{{ post.date | date: "%Y-%m-%d"}} - {{ post.data.title }} </a>🔥🔥</li>
 {%- endfor -%}
 </ul>
-</div>
-<div class="1 col">
 
 ## Essays
 
-* [Hypermedia-Driven Appplications (HDAs)](/essays/hypermedia-driven-applications)
-* [HATEOAS](/essays/hateoas)
-* [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
-* [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
-* [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
-* [Complexity Budget](/essays/complexity-budget)
-* [SPA Alternative](/essays/spa-alternative)
-* [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
+[See the essays page &rarr;](/essays)
 
 ## Podcasts
 
@@ -75,8 +62,3 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 * [.NET Rocks!](https://www.dotnetrocks.com/?show=1749)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
-
-</div>
-</div>
-
-

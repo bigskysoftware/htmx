@@ -41,7 +41,7 @@ that will show the spinner:
 ```
 
 If you would prefer a different effect for showing the spinner you could define and use your own indicator
-CSS.  Here is an example that uses `display` rather than opacity:
+CSS.  Here is an example that uses `display` rather than opacity (Note that we use `my-indicator` instead of `htmx-indicator`):
 
 ```css
     .my-indicator{
@@ -83,3 +83,7 @@ This simulates what a spinner might look like in that situation:
 * `hx-indicator` is inherited and can be placed on a parent element
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
+* If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable `includeIndicatorStyles`. See [Configuring htmx](https://htmx.org/docs/#config). The easiest way is to add this the `<head>` of your HTML:
+```
+<meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+```

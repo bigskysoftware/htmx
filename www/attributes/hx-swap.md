@@ -112,7 +112,7 @@ htmx preserves focus between requests for inputs that have a defined id attribut
        hx-swap="outerHTML focus-scroll:true"/>
 ```
 
-Alternatively, if you want the page to automatically scroll to the focused element after each request you can change the htmx global configuration value `htxm.config.defaultFocusScroll` to true. Then disable it for specific requests using `focus-scroll:false`.
+Alternatively, if you want the page to automatically scroll to the focused element after each request you can change the htmx global configuration value `htmx.config.defaultFocusScroll` to true. Then disable it for specific requests using `focus-scroll:false`.
 
 ```html
   <input id="name" hx-get="/validation" 

@@ -318,4 +318,22 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('can re-init with new attributes', function () {
+        this.server.respondWith("PATCH", "/test", "patch");
+        this.server.respondWith("DELETE", "/test", "delete");
+
+        var div = make('<div hx-patch="/test">click me</div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("patch");
+
+        div.removeAttribute("hx-patch");
+        div.setAttribute("hx-delete", "/test");
+        htmx.process(div);
+
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("delete");
+    })
+
 })

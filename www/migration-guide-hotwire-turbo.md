@@ -26,7 +26,7 @@ addEventListener("htmx:afterOnLoad", (event) => {
     event.target.querySelectorAll("button").forEach(node => { node.disabled = false })
 })
 ```
-* Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Cookbook](/cookbook)
+* Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Cookbook](https://hyperscript.org/cookbook/)
   
   
 

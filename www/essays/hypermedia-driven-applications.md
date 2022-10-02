@@ -117,11 +117,13 @@ Here is an example of each of these approaches:
 </button>
 ```
 
-Note that in these examples the hypermedia (HTML) is given primacy of place.   It is not an after-thought being produced 
-by a client-side templating engine.  The scripting examples here *augment* the existing hypermedia but do not *supersede*
-it or subvert the fundamental REST-ful architecture of the HDA.  All communication with the server is still managed via
-HTTP requests with hypermedia (HTML) responses; scripting is used only to enhance the front-end experience of the
-application.
+In an HDA, hypermedia (HTML) is the primary medium for building the application, which means that:
+
+* All communication with the server is still managed via HTTP requests with hypermedia (HTML) responses
+* Scripting is used mainly to enhance the *front-end experience* of the application
+
+Scripting augments the existing hypermedia (HTML) but do not *supersede* it or subvert the fundamental REST-ful
+architecture of the HDA.
 
 ## HDA-style libraries
 

@@ -23,7 +23,7 @@ Here is an example that selects a subset of the response content:
 </div>
 ```
 
-This button will issue a `GET` to `/info` and then select the element with the id `info-detail`,
+This button will issue a `GET` to `/info` and then select the element with the id `info-details`,
 which will replace the entire button in the DOM, and, in addition, pick out an element with the id `alert` 
 in the response and swap it in for div in the DOM with the same ID.
 
