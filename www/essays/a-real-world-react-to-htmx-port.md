@@ -27,13 +27,16 @@ Until now.
 
 ## Video
 
-You can (should!) watch the entire presentation here:
+[//]: # (You can &#40;should!&#41; watch the entire presentation here:)
 
-<iframe width="615" height="350" src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
-title="Rick Astley - Never Gonna Give You Up (Official Music Video)" frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[//]: # ()
+[//]: # (<iframe width="615" height="350" src="https://www.youtube.com/embed/dQw4w9WgXcQ" )
 
-but if you just want the executive summary:
+[//]: # (title="Rick Astley - Never Gonna Give You Up &#40;Official Music Video&#41;" frameborder="0" )
+
+[//]: # (allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>)
+
+The video of this talk is not publically available yet, but if you just want the executive summary:
 
 ## Executive Summary
 
