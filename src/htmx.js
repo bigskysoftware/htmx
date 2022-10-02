@@ -2462,6 +2462,9 @@ return (function () {
             if (attributeValue) {
                 var str = attributeValue.trim();
                 var evaluateValue = evalAsDefault;
+                if (str === "unset") {
+                    return null;
+                }
                 if (str.indexOf("javascript:") === 0) {
                     str = str.substr(11);
                     evaluateValue = true;
@@ -3337,4 +3340,3 @@ return (function () {
     }
 )()
 }));
-
