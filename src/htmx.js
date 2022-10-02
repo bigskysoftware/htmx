@@ -821,7 +821,26 @@ return (function () {
             }
         }
 
-        function cleanUpElement(element) {
+        function stringHash(string, hash) {
+            for (var i = 0; i < string.length; i++) {
+                var char = string.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash;
+        }
+
+        function attributeHash(elt) {
+            var hash = 0;
+            for (let i = 0; i < elt.attributes.length; i++) {
+                const attribute = elt.attributes[i];
+                hash = stringHash(attribute.name, hash);
+                hash = stringHash(attribute.value, hash);
+            }
+            return hash;
+        }
+
+        function deInitNode(element) {
             var internalData = getInternalData(element);
             if (internalData.webSocket) {
                 internalData.webSocket.close();
@@ -829,16 +848,18 @@ return (function () {
             if (internalData.sseEventSource) {
                 internalData.sseEventSource.close();
             }
-
-            triggerEvent(element, "htmx:beforeCleanupElement")
-
             if (internalData.listenerInfos) {
-                forEach(internalData.listenerInfos, function(info) {
-                    if (element !== info.on) {
+                forEach(internalData.listenerInfos, function (info) {
+                    if (info.on) {
                         info.on.removeEventListener(info.trigger, info.listener);
                     }
                 });
             }
+        }
+
+        function cleanUpElement(element) {
+            triggerEvent(element, "htmx:beforeCleanupElement")
+            deInitNode(element);
             if (element.children) { // IE
                 forEach(element.children, function(child) { cleanUpElement(child) });
             }
@@ -1390,7 +1411,7 @@ return (function () {
             if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
                 elt.setAttribute('data-hx-revealed', 'true');
                 var nodeData = getInternalData(elt);
-                if (nodeData.initialized) {
+                if (nodeData.initHash === attributeHash(elt)) {
                     triggerEvent(elt, 'revealed');
                 } else {
                     // if the node isn't initialized, wait for it before triggering the request
@@ -1756,8 +1777,13 @@ return (function () {
                 return;
             }
             var nodeData = getInternalData(elt);
-            if (!nodeData.initialized) {
-                nodeData.initialized = true;
+            if (nodeData.initHash !== attributeHash(elt)) {
+
+                nodeData.initHash = attributeHash(elt);
+
+                // clean up any previously processed info
+                deInitNode(elt);
+
                 triggerEvent(elt, "htmx:beforeProcessNode")
 
                 if (elt.value) {
