@@ -2052,6 +2052,8 @@ return (function () {
                 indicators = [elt];
             }
             forEach(indicators, function (ic) {
+                var internalData = getInternalData(ic);
+                internalData.requestCount = (internalData.requestCount || 0) + 1;
                 ic.classList["add"].call(ic.classList, htmx.config.requestClass);
             });
             return indicators;
@@ -2059,7 +2061,11 @@ return (function () {
 
         function removeRequestIndicatorClasses(indicators) {
             forEach(indicators, function (ic) {
-                ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
+                var internalData = getInternalData(ic);
+                internalData.requestCount = (internalData.requestCount || 0) - 1;
+                if (internalData.requestCount === 0) {
+                    ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
+                }
             });
         }
 

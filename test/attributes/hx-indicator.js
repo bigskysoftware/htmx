@@ -88,5 +88,37 @@ describe("hx-indicator attribute", function(){
         div.classList.contains("htmx-request").should.equal(false);
     });
 
+    it('multiple requests with same indicator are handled properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var b1 = make('<button hx-get="/test" hx-indicator=".a1">Click Me!</button>')
+        var b2 = make('<button hx-get="/test" hx-indicator=".a1">Click Me!</button>')
+        var a1 = make('<a class="a1"></a>')
+
+        b1.click();
+        b1.classList.contains("htmx-request").should.equal(false);
+        b2.classList.contains("htmx-request").should.equal(false);
+        a1.classList.contains("htmx-request").should.equal(true);
+
+        b2.click();
+        b1.classList.contains("htmx-request").should.equal(false);
+        b2.classList.contains("htmx-request").should.equal(false);
+        a1.classList.contains("htmx-request").should.equal(true);
+
+        // hack to make sinon process only one response
+        this.server.processRequest(this.server.queue.shift());
+
+        b1.classList.contains("htmx-request").should.equal(false);
+        b2.classList.contains("htmx-request").should.equal(false);
+        a1.classList.contains("htmx-request").should.equal(true);
+
+        this.server.respond();
+
+        b1.classList.contains("htmx-request").should.equal(false);
+        b2.classList.contains("htmx-request").should.equal(false);
+        a1.classList.contains("htmx-request").should.equal(false);
+
+    });
+
 
 })
