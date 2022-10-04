@@ -401,13 +401,13 @@ with any of the following values:
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
-#### <a name="morphing"></a> [Merge Swaps](#morphing)
+#### <a name="morphing"></a> [Morph Swaps](#morphing)
 
 In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
 attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job 
-preserving things like focus, video state, etc.
+preserving things like focus, video state, etc. by preserving nodes in-place during the swap operation.
 
-The following options are available for merge swaps:
+The following extensions are available for morph-style swaps:
 
 * [Morphdom Swap](/extensions/morphdom-swap/) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
   the original DOM morphing library.
