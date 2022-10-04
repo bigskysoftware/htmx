@@ -401,6 +401,21 @@ with any of the following values:
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
+#### <a name="merging"></a> [Merge Swaps](#merging)
+
+In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
+attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job 
+preserving things like focus, video state, etc.
+
+The following options are available for merge swaps:
+
+* [Morphdom Swap](/extensions/morphdom-swap/) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
+  the original DOM morphing library.
+* [Alpine-morph](/extensions/alpine-morph/) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
+  well with alpine.js
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph) - A newer morphing algorithm developed by the creators of htmx,
+  which will be available out-of-the-box in htmx 2.0
+
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
