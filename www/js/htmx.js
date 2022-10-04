@@ -745,7 +745,7 @@ return (function () {
             var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
             if (oobSelects) {
                 var oobSelectValues = oobSelects.split(",");
-                for (let i = 0; i < oobSelectValues.length; i++) {
+                for (var i = 0; i < oobSelectValues.length; i++) {
                     var oobSelectValue = oobSelectValues[i].split(":", 2);
                     var id = oobSelectValue[0];
                     if (id.indexOf("#") === 0) {
