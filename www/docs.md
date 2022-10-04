@@ -401,7 +401,7 @@ with any of the following values:
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
-#### <a name="merging"></a> [Merge Swaps](#merging)
+#### <a name="morphing"></a> [Merge Swaps](#morphing)
 
 In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
 attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job 
