@@ -821,11 +821,12 @@ return (function () {
             }
         }
 
+        // based on https://gist.github.com/hyamamoto/fd435505d29ebfa3d9716fd2be8d42f0,
+        // derived from Java's string hashcode implementation
         function stringHash(string, hash) {
-            for (var i = 0; i < string.length; i++) {
-                var char = string.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
+            var char = 0;
+            while (char < string.length){
+                hash = (hash << 5) - hash + string.charCodeAt(char++) | 0; // bitwise or ensures we have a 32-bit int
             }
             return hash;
         }
