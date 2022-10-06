@@ -413,8 +413,8 @@ The following extensions are available for morph-style swaps:
   the original DOM morphing library.
 * [Alpine-morph](/extensions/alpine-morph/) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
   well with alpine.js
-* [Idiomorph](https://github.com/bigskysoftware/idiomorph) - A newer morphing algorithm developed by the creators of htmx,
-  which will be available out-of-the-box in htmx 2.0
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators 
+ of htmx.  Idiomorph will be available out of the box in htmx 2.0.
 
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
