@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.8.1] - 2022-10-7
+## [1.8.1] - 2022-10-11
 
 * We now keep a count of outstanding requests for an indicator, so more than one overlapping request can share the same
   indicator without issues
