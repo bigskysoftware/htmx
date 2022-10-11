@@ -16,7 +16,7 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~12k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](https://htmx.org/extensions) & 
 IE11 compatible
@@ -33,7 +33,7 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+  <script src="https://unpkg.com/htmx.org@1.8.1"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
