@@ -9,7 +9,7 @@
 * [Idiomorph](https://github.com/bigskysoftware/idiomorph) is now available for all your morph-swapping needs
 * The `unset` directive now works properly for `hx-vals` and `hx-vars`
 * The title of the page is now properly set on a history cache miss
-* The new (`hx-validate`)[/attributes/hx-validate] attribute will force elements to validate before a request, even if
+* The new [`hx-validate`](/attributes/hx-validate) attribute will force elements to validate before a request, even if
   they are not within a form being submitted
 * Many smaller bug and docs fixes
 
