@@ -1414,7 +1414,7 @@ return (function () {
             if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
                 elt.setAttribute('data-hx-revealed', 'true');
                 var nodeData = getInternalData(elt);
-                if (nodeData.initHash) {
+                if (nodeData.initHash === attributeHash(elt)) {
                     triggerEvent(elt, 'revealed');
                 } else {
                     // if the node isn't initialized, wait for it before triggering the request
@@ -1925,7 +1925,9 @@ return (function () {
                     break;
                 }
             }
-            historyCache.push({url:url, content: content, title:title, scroll:scroll})
+            var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
+            triggerErrorEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
@@ -2001,7 +2003,7 @@ return (function () {
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
-		    var title = findTitle(this.response);
+                    var title = findTitle(this.response);
                     if (title) {
                         var titleElt = find("title");
                         if (titleElt) {
@@ -2014,7 +2016,7 @@ return (function () {
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
-                    triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
+                    triggerEvent(getDocument().body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
                 } else {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
@@ -2035,7 +2037,7 @@ return (function () {
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
-                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
+                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
 
