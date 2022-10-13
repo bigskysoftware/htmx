@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.2] - 2022-10-12
+
+* Fix regression in `revealed` logic
+
 ## [1.8.1] - 2022-10-11
 
 * We now keep a count of outstanding requests for an indicator, so more than one overlapping request can share the same
