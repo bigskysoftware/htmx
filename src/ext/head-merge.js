@@ -8,12 +8,12 @@
     var api = null;
 
     function log() {
-        console.log(arguments);
+        //console.log(arguments);
     }
 
     function mergeHead(newContent) {
         const htmlDoc = document.createElement("html");
-        if (newContent.indexOf('<head') > -1) {
+        if (newContent && newContent.indexOf('<head') > -1) {
             // remove svgs to avoid conflicts
             var contentWithSvgsRemoved = newContent.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
             // extract head tag
@@ -21,10 +21,6 @@
 
             // if the  head tag exists...
             if (headTag) {
-
-                if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", {headTag: headTag}) === false) {
-                    return;
-                }
 
                 var added = []
                 var removed = []
@@ -106,7 +102,9 @@
 
             htmx.on('htmx:afterSwap', function(evt){
                 var serverResponse = evt.detail.xhr.response;
-                mergeHead(serverResponse);
+                if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)) {
+                    mergeHead(serverResponse);
+                }
             })
 
             htmx.on('htmx:historyRestore', function(evt){
