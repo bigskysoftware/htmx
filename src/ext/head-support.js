@@ -1,5 +1,5 @@
 //==========================================================
-// head-merge.html.js
+// head-support.js
 //
 // An extension to htmx 1.0 to add head tag merging.
 //==========================================================
@@ -12,8 +12,9 @@
     }
 
     function mergeHead(newContent) {
-        const htmlDoc = document.createElement("html");
+
         if (newContent && newContent.indexOf('<head') > -1) {
+            const htmlDoc = document.createElement("html");
             // remove svgs to avoid conflicts
             var contentWithSvgsRemoved = newContent.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
             // extract head tag
@@ -95,7 +96,7 @@
         }
     }
 
-    htmx.defineExtension("head-merge.html", {
+    htmx.defineExtension("head-support", {
         init: function(apiRef) {
             // store a reference to the internal API.
             api = apiRef;
@@ -108,10 +109,12 @@
             })
 
             htmx.on('htmx:historyRestore', function(evt){
-                if (evt.detail.cacheMiss) {
-                    mergeHead(evt.detail.serverResponse);
-                } else {
-                    mergeHead(evt.detail.item.head);
+                if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)) {
+                    if (evt.detail.cacheMiss) {
+                        mergeHead(evt.detail.serverResponse);
+                    } else {
+                        mergeHead(evt.detail.item.head);
+                    }
                 }
             })
 
