@@ -7,7 +7,7 @@ title: A Real World React -> htmx Port
 ## Moving From React to htmx
 
 It is all well and good talking about [REST & HATEOAS](/essays/hateoas) in theory or describing the
-[Hypermedia-Driven Application](/essays/hypermedia-driven-applications) architecture, but at the end of the day, what 
+[Hypermedia-Driven Application](/essays/hypermedia-driven-applications) architecture, but, at the end of the day, what 
 matters in software is practical: Does it work?  Does it improve things?
 
 We can say for sure that htmx _works_, since we use it in our own software.  But it is hard to say that it would be
@@ -48,15 +48,19 @@ You can (should!) watch the entire presentation here:
 
 These are eye-popping numbers, and they reflect the fact that the Contexte application is extremely amenable to 
 hypermedia: it is a content-focused application that shows lots of text and images.  We would not expect every 
-web application to see these sorts of numbers.  However, we _would_ expect many applications to see dramatic improvements
-by adopting the hypermedia/htmx approach, at least for part of their system.
+web application to see these sorts of numbers.  
+
+However, we _would_ expect _many_ applications to see dramatic improvements by adopting the hypermedia/htmx approach, at
+least for part of their system.
 
 ### Dev Team Makeup
 
 One easy-to-overlook aspect of the port is the effect it had on the team's structure.  When Contexte was using react,
-there was a hard split between back end and front end, with two developers being entirely back end, one developer being
-entirely front end, and one developer being "full stack".  "Full stack" here means they are comfortable with doing work
-on both the front end and back end, and, thus are able to develop features entirely independently across the whole "web stack".
+there was a hard split between back-end and front-end, with two developers being entirely back-end, one developer being
+entirely front-end, and one developer being "full stack".  
+
+("Full stack" here means they are comfortable doing work on both the front-end and back-end, and, thus are able to 
+develop features entirely independently across the whole "stack".)
 
 After the port to htmx, *the entire team* became "full stack" developers.  This means that each team member is more 
 effective and able to contribute more value.  It also makes development more fun, since developers can own an entire
