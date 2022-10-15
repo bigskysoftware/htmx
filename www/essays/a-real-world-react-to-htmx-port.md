@@ -30,7 +30,7 @@ Until now.
 
 You can (should!) watch the entire presentation here:
 
-<iframe width="1265" height="720" src="https://www.youtube.com/embed/3GObi93tjZI" title="DjangoCon 2022 | From React to htmx on a real-world SaaS product: we did it, and it's awesome!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="618" height="352" src="https://www.youtube.com/embed/3GObi93tjZI" title="DjangoCon 2022 | From React to htmx on a real-world SaaS product: we did it, and it's awesome!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Executive Summary
 
