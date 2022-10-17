@@ -1977,7 +1977,7 @@ return (function () {
         // conventionally by the browser
         function initialHistoryState() {
             if (htmx.config.historyEnabled) {
-                history.replaceState({htmx:true}, getDocument().title, window.location.pathname);
+                history.replaceState({htmx:true}, getDocument().title, window.location.href);
             }
         }
 
