@@ -423,7 +423,7 @@ return (function () {
                     path = pathUrl.pathname + pathUrl.search;
                 }
             }
-            return path.replace(/\/$/, "");
+            return path;
         }
 
         //==========================================================================================
@@ -3346,7 +3346,7 @@ return (function () {
         function mergeMetaConfig() {
             var metaConfig = getMetaConfig();
             if (metaConfig) {
-                htmx.config = mergeObjects(htmx.config , metaConfig)
+                htmx.config = mergeObjects(htmx.config , metaConfig);
             }
         }
 
