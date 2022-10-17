@@ -416,6 +416,16 @@ return (function () {
             }
         }
 
+        function normalisePath(path) {
+            if (path.match(/^(http:\/\/|https:\/\/)/)) {
+                var pathUrl = new URL(path);
+                if (pathUrl) {
+                    path = pathUrl.pathname + pathUrl.search;
+                }
+            }
+            return path.replace(/\/$/, "");
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -1251,7 +1261,7 @@ return (function () {
                 var verb, path;
                 if (elt.tagName === "A") {
                     verb = "get";
-                    path = getRawAttribute(elt, 'href');
+                    path = elt.href; // DOM property gives the fully resolved href of relative links!
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
@@ -1963,22 +1973,39 @@ return (function () {
             return clone.innerHTML;
         }
 
+        // Ensure we always have a history entry for pages loaded / restored
+        // conventionally by the browser
+        function initialHistoryState() {
+            if (htmx.config.historyEnabled) {
+                history.replaceState({htmx:true}, getDocument().title, window.location.pathname);
+            }
+        }
+
         function saveCurrentPageToHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
             triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+            saveToHistoryCache(normalisePath(path), cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
         }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
-            currentPathForHistory = path;
+            if(htmx.config.historyEnabled) {
+                // Run at the end of the event stack
+                setTimeout(function() {
+                    history.pushState({htmx:true},"", path);
+                    currentPathForHistory = path;
+                }, 0);
+            }
         }
 
         function replaceUrlInHistory(path) {
-            if(htmx.config.historyEnabled)  history.replaceState({htmx:true}, "", path);
-            currentPathForHistory = path;
+            if(htmx.config.historyEnabled) {
+                // Run at the end of the event stack
+                setTimeout(function() {
+                    history.replaceState({htmx: true}, getDocument().title, path);
+                    currentPathForHistory = path;
+                }, 0);
+            }
         }
 
         function settleImmediately(tasks) {
@@ -2025,6 +2052,7 @@ return (function () {
         function restoreHistory(path) {
             saveCurrentPageToHistory();
             path = path || location.pathname+location.search;
+            path = normalisePath(path); // normalise
             var cached = getCachedHistory(path);
             if (cached) {
                 var fragment = makeFragment(cached.content);
@@ -2895,6 +2923,20 @@ return (function () {
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
             xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+
+            //===========================================
+            // Create a new history entry for the request
+            //===========================================
+            var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
+            var elementIsBoosted = getInternalData(elt).boosted;
+            if (pushUrl || elementIsBoosted || finalPathForGet) {
+                // cache the current page in localStorage
+                saveCurrentPageToHistory();
+                // The response may change (replace) the final URL
+                // that is actually displayed in the browser
+                pushUrlIntoHistory(finalPathForGet || path);
+            }
+
             return promise;
         }
 
@@ -3001,9 +3043,10 @@ return (function () {
                     redirectPath = swapSpec['path'];
                     delete swapSpec['path'];
                 }
-                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
-                    pushUrlIntoHistory(redirectPath);
-                });
+
+                // Push into history immediately, we can't wait for the response
+                pushUrlIntoHistory(redirectPath);
+                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{});
                 return;
             }
 
@@ -3052,7 +3095,7 @@ return (function () {
                 });
 
                 // Save current page if there will be a history update
-                if (historyUpdate.type) {
+                if (historyUpdate.type && historyUpdate.type !== "push") {
                     saveCurrentPageToHistory();
                 }
 
@@ -3128,7 +3171,9 @@ return (function () {
                             // if we need to save history, do so
                             if (historyUpdate.type) {
                                 if (historyUpdate.type === "push") {
-                                    pushUrlIntoHistory(historyUpdate.path);
+                                    if (window.location.href !== historyUpdate.path && window.location.pathname !== historyUpdate.path) {
+                                        replaceUrlInHistory(historyUpdate.path); // if we pushed early, this should be a replace
+                                    }
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
                                 } else {
                                     replaceUrlInHistory(historyUpdate.path);
@@ -3307,6 +3352,7 @@ return (function () {
 
         // initialize the document
         ready(function () {
+            initialHistoryState();
             mergeMetaConfig();
             insertIndicatorStyles();
             var body = getDocument().body;
