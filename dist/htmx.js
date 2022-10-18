@@ -741,8 +741,8 @@ return (function () {
                 } else {
                     var result = querySelectorAllExt(elt, attrTarget);
                     if (result.length === 0) {
-                        logError('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
-                        return [DUMMY_ELT]
+                        logWarning('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
+                        return []
                     } else {
                         return result;
                     }
@@ -2027,6 +2027,14 @@ return (function () {
                 console.error(...data);
             } else if (console.log) {
                 console.log("ERROR: ", ...data);
+            }
+        }
+
+        function logWarning(...data) {
+            if(console.warn) {
+                console.warn(...data);
+            } else if (console.log) {
+                console.log("WARNING: ", ...data);
             }
         }
 
