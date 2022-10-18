@@ -74,7 +74,7 @@ against `htmx` in each distribution
 | [`restored`](/extensions/restored)                           | allows you to trigger events when the back button has been pressed
 | [`server-sent-events`](/extensions/server-sent-events)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
 | [`web-sockets`](/extensions/web-sockets)                     | bi-directional connection to WebSocket servers
-| [`head-support`](/extensions/web-sockets)                    | support for merging the `head` tag from responses into the existing documents `head`
+| [`head-support`](/extensions/head-support)                   | support for merging the `head` tag from responses into the existing documents `head`
 
 </div>
 
