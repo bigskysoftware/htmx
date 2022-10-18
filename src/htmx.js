@@ -71,7 +71,7 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
-            version: "1.8.2"
+            version: "1.8.3"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */

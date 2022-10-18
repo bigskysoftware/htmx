@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.8.3] - 2022-10-12
+
 ## [1.8.2] - 2022-10-12
 
 * Fix regression in `revealed` logic
