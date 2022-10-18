@@ -28,12 +28,14 @@ install the extension using the `hx-ext` attribute:
    ...
 ```
 
-With this installed, all responses that htmx recieves that contain a `head` tag in them will be processed and _merged_
-into the current head tag.  That is:
+With this installed, all responses that htmx receives that contain a `head` tag in them (even if they are not complete
+HTML documents with a root `<html>` element) will be processed and _merged_ into the current head tag.  
 
-* Elements that exist in the current head will be left along
-* Elements that do not exist in the current head will be added
-* Elements that exist in the current head, but not in the new head will be removed
+The merge algoorithm is as follows:
+
+* Elements that exist in the current head as exact textual matches will be left in place
+* Elements that do not exist in the current head will be added at the end of the head tag
+* Elements that exist in the current head, but not in the new head will be removed from the head
 
 #### Example
 
@@ -86,7 +88,7 @@ extension also gives you two declarative mechanisms for doing so:
 
 * If an element in the `head` tag has an `hx-preserve="true"` attribute & value on it, it will not be removed from the head tag:
   ```html
-     <!-- This element will not be removed even if it is not in new head content recieved from the server-->
+     <!-- This element will not be removed even if it is not in new head content received from the server-->
      <link rel="stylesheet" href="/css/site1.css" hx-preserve="true">
    ```
 * If a new `head` element _in the content of a response_ has the `hx-swap-oob="beforeend"` attribute & value, the content of the new
