@@ -56,6 +56,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Spring Boot
 
 - <https://github.com/wiverson/htmx-demo>
+- <https://github.com/wimdeblauwe/blog-example-code/tree/master/todomvc-htmx>
 
 ### Quarkus
 
