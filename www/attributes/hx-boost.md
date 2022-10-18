@@ -45,4 +45,5 @@ This form will issue an ajax `POST` to the given URL and replace the body's inne
 * `hx-boost` is inherited and can be placed on a parent element
 * Only links that are to the same domain and that are not local anchors will be boosted
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
+* To find out if the request results from a boosted anchor or form, look for [`HX-Boosted`](/reference/#request_headers) in the request header
 * Selectively disable boost on child elements with `hx-boost="false"`

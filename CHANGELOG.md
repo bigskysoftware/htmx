@@ -1,8 +1,25 @@
 # Changelog
 
+## [1.8.2] - 2022-10-12
+
+* Fix regression in `revealed` logic
+
+## [1.8.1] - 2022-10-11
+
+* We now keep a count of outstanding requests for an indicator, so more than one overlapping request can share the same
+  indicator without issues
+* We now track the attribute state of an element and re-initialize it if `htmx.process()` is called on the element and
+  the attributes have changed
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph) is now available for all your morph-swapping needs
+* The `unset` directive now works properly for `hx-vals` and `hx-vars`
+* The title of the page is now properly set on a history cache miss
+* The new [`hx-validate`](/attributes/hx-validate) attribute will force elements to validate before a request, even if
+  they are not within a form being submitted
+* Many smaller bug and docs fixes
+
 ## [1.8.0] - 2022-7-12
 
-* **NOTE**: This release involved some changes to toughy code (e.g. history support) so please test thoroughly and let
+* **NOTE**: This release involved some changes to touchy code (e.g. history support) so please test thoroughly and let
   us know if you see any issues
 * Boosted forms now will automatically push URLs into history as with links.  The [response URL](https://caniuse.com/mdn-api_xmlhttprequest_responseurl) 
   detection API support is good enough that we feel comfortable making this the default now. 
@@ -30,7 +47,7 @@
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
 * htmx now properly handles anchors in both boosted links, as well as in `hx-get`, etc. attributes
 
-## [1.7.0] - 2022-02-2
+## [1.7.0] - 2022-02-22
 
 * The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
   element using various strategies (e.g. replace)

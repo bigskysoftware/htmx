@@ -23,18 +23,21 @@ the simplicity & flexibility of traditional Multi-Page Applications (MPAs) with 
 The HDA architecture achieves this goal by extending the existing HTML infrastructure of the web to allow hypermedia
  developers to create more powerful hypermedia-driven interactions.
  
-Two [constraints](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) characterize the HDA architecture: 
+Following the REST notion of architectural [constraints](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm),
+two such constraints characterize the HDA architecture: 
 
-* The application uses a **declarative, HTML-embedded syntax**, rather than imperative scripting, to achieve better front end interactivity
+* An HDA uses *declarative, HTML-embedded syntax* rather than imperative scripting to achieve better front-end interactivity
 
-* The application interacts with the server **in terms of hypermedia** (i.e. HTML) rather than a non-hypermedia format (e.g. JSON)
+* An HDA interacts with the server **in terms of hypermedia** (i.e. HTML) rather than a non-hypermedia format (e.g. JSON)
 
-The HDA architecture stays within the **original [REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) 
-architecture of the web** in a way that contrasts with the SPA architecture.  
+By adopting these two constraints, the HDA architecture stays within the original 
+[REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) architecture of the web in a way that the SPA architecture
+does not.  
 
-In particular, HDAs make **effective use of [HATEOAS](/essays/hateoas/)** in a way that SPAs typically do not.
+In particular, HDAs continue to use [Hypermedia As The Engine of Application State (HATEOAS)](/essays/hateoas/), whereas
+most SPAs abandon HATEOAS in favor of a client-side model and data (rather than hypermedia) APIs.
 
-## An Example
+## An Example SPA fragment
 
 Consider the htmx [Active Search](/examples/active-search) example:
 
@@ -65,16 +68,18 @@ Consider the htmx [Active Search](/examples/active-search) example:
 </table>
 ```
 
-Here htmx is being used to achieve a UX pattern that would typically be associated with an SPA: as the user types,
-after a slight pause, search results will populate the result table below.
+This is a UX pattern that would typically be associated with an SPA: as the user types, after a slight pause, search 
+results will populate the result table below.  However, in this case, it is being achieved entirely within HTML,
+in a manner consonant with HTML.
 
 This example effectively demonstrates the essential characteristic of an HDA:
 
-* The front end of the feature is specified entirely in `hx-` declarative attributes, directly in HTML
+* The front end of the feature is specified entirely in  declarative htmx attributes, directly in HTML
 
-* The interaction with the server is done via HTTP and HTML: an HTTP request is sent, HTML is returned and inserted into the DOM
+* The interaction with the server is done via HTTP and HTML: an HTTP `POST` request is sent to the server, HTML is 
+  returned by the server and htmx inserts this HTML into the DOM
 
-## The Place of Scripting In An HDA
+## Scripting In An HDA
 
 [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7) is an optional
 constraint of the original REST-ful architecture of the web.
@@ -83,17 +88,17 @@ Similarly, the HDA architecture has a final, optional constraint:
 
 * Code-On-Demand (i.e. scripting) should, as much as is practical, be done *directly in* the primary hypermedia
 
-This addresses the concern regarding Code-On-Demand mentioned in Fielding's thesis:
+This addresses the concern regarding Code-On-Demand that Roy Fielding mentions in his thesis:
 
->  However, it also reduces visibility, and thus is only an optional constraint within REST.
+>  However, (Code-On-Demand) also reduces visibility, and thus is only an optional constraint within REST.
 
-By embedding Code-On-Demand (scripts) directly in HTML, you increase visibility and satisfy the 
-[Locality of Behavior](/essays/locality-of-behaviour/) design principle.
+By embedding Code-On-Demand (scripts) directly in HTML, visibility is enhanced, satisfying the 
+[Locality of Behavior](/essays/locality-of-behaviour/) software design principle.
 
 Three approaches to scripting that satisfy this third constraint are [hyperscript](https://hyperscript.org), 
 [AlpineJS](https://alpinejs.dev) and [VanillaJS](http://vanilla-js.com/) (when embedded directly on HTML elements).
 
-Here is an example of each demonstrating HDA-friendliness:
+Here is an example of each of these approaches:
 
 ```html
 <!-- hyperscript -->
@@ -112,15 +117,17 @@ Here is an example of each demonstrating HDA-friendliness:
 </button>
 ```
 
-Note that the hypermedia (HTML) is given primacy of place here: it is not an after-thought being produced by a client-side
-templating engine.
+In an HDA, hypermedia (HTML) is the primary medium for building the application, which means that:
 
-The scripts *augment* the existing hypermedia but do not *supersede* it or subvert the fundamental REST-ful architecture
- of the system.
+* All communication with the server is still managed via HTTP requests with hypermedia (HTML) responses
+* Scripting is used mainly to enhance the *front-end experience* of the application
+
+Scripting augments the existing hypermedia (HTML) but do not *supersede* it or subvert the fundamental REST-ful
+architecture of the HDA.
 
 ## HDA-style libraries
 
-Some libraries that allow developers to build HDAs:
+The following libraries allow developers to create HDAs:
 
 * <https://htmx.org>
 * <https://unpoly.com/>
@@ -128,7 +135,7 @@ Some libraries that allow developers to build HDAs:
 * <https://hotwire.dev>
 * <https://hyperview.org/> (a mobile hypermedia!)
 
-And some complementary, HDA-friendly scripting tools:
+The following scripting libraries, when used appropriately, complement the HDA approach:
 
 * <https://hyperscript.org>
 * <https://alpinejs.dev/>

@@ -39,6 +39,7 @@ customClasses: wide-content
 * [debugging](#debugging)
 * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
+* [caching](#caching)
 * [security](#security)
 * [configuring](#config)
 
@@ -112,7 +113,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.8.2" integrity="sha384-+8ISc/waZcRdXCLxVgbsLzay31nCdyZXQxnsUy++HJzJliTzxKWr0m1cIEMyUzQu" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -400,6 +401,21 @@ with any of the following values:
 | `afterend` | appends the content after the target in the targets parent element
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
+#### <a name="morphing"></a> [Morph Swaps](#morphing)
+
+In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
+attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job 
+preserving things like focus, video state, etc. by preserving nodes in-place during the swap operation.
+
+The following extensions are available for morph-style swaps:
+
+* [Morphdom Swap](/extensions/morphdom-swap/) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
+  the original DOM morphing library.
+* [Alpine-morph](/extensions/alpine-morph/) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
+  well with alpine.js
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators 
+ of htmx.  Idiomorph will be available out of the box in htmx 2.0.
+
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
@@ -536,6 +552,8 @@ attribute on the elements you wish to be preserved.
 By default, an element that causes a request will include its value if it has one.  If the element is a form it
 will include the values of all inputs within it.
 
+As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends. 
+ 
 Additionally, if the element causes a non-`GET` request, the values of all the inputs of the nearest enclosing form
 will be included.
 
@@ -868,7 +886,7 @@ You can use the `htmx-swapping` and `htmx-settling` classes to create
 ## <a name="validation">[Validation](#validation)
 
 Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
-and will not issue a request if a validatable input is invalid.  This is true for both AJAX requests as well as
+and will not issue a request for a form if a validatable input is invalid.  This is true for both AJAX requests as well as
 WebSocket sends.
 
 Htmx fires events around validation that can be used to hook in custom validation and error handling:
@@ -878,6 +896,9 @@ Htmx fires events around validation that can be used to hook in custom validatio
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
   in the `event.detail.errors` object
+
+Non-form elements do not validate before they make requests by default, but you can enable validation by setting 
+the [`hx-validate`](/attributes/hx-validate) attribute to "true".
 
 ### Validation Example
 
@@ -1287,6 +1308,29 @@ example uses Alpine's `$watch` function to look for a change of value that would
     </template>
 </div>
 ```
+
+## <a name="caching"></a>[Caching](#caching)
+
+htmx works with standard [HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
+mechanisms out of the box.
+
+If your server adds the 
+[`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified) 
+HTTP response header to the response for a given URL, the browser will automatically add the 
+[`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since) 
+request HTTP header to the next requests to the same URL. Be mindful that if 
+your server can render different content for the same URL depending on some other
+headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
+response HTTP header. For example, if your server renders the full HTML when the 
+`HX-Request` header is missing or `false`, and it renders a fragment of that HTML
+when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be
+keyed based on a composite of the response URL and the `HX-Request` request header — 
+rather than being based just on the response URL.
+
+htmx also works with [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
+as expected.  Be mindful that if your server can render different content for the same 
+URL (for example, depending on the value of the `HX-Request` header), the server needs 
+to generate a different `ETag` for each content.
 
 ## <a name="security"></a>[Security](#security)
 

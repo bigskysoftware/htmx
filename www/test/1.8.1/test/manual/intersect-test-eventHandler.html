@@ -1,0 +1,172 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Test Scroll Event Handler</title>
+	<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+	<script src="../util/util.js"></script>
+	<script src="../../src/htmx.js"></script>
+
+	<script>
+		server = makeServer();
+		server.autoRespond = true;
+		server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+	</script>
+
+	<style>
+		.panel {
+			height:200px;
+			background-color:#eee;
+			margin-bottom:20px;
+			padding:20px;
+		}
+		.container {
+			height:200px;
+			padding:20px;
+			border:1px solid black;
+			overflow:auto;
+		}
+	</style>
+
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<h1>Scrolling Event Handler Tests</h1>
+<p>You should be able to scroll this page at any speed and see HTML fragments loaded into the DIVs "remotely" without any hiccups.</p>
+
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+
+<h1>Root</h1>
+
+<div class="container" id="wrapper">
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect root:#wrapper"></div>
+</div>
+
+<h1>Threshold .5</h1>
+
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:.5"></div>
+
+<h1>Threshold 1</h1>
+
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect threshold:1"></div>
+
+<h1>Regular</h1>
+
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+<div class="panel" hx-get="/more_content" hx-trigger="intersect"></div>
+
+</body>
+</html>

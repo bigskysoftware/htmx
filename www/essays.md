@@ -5,6 +5,7 @@ title: </> htmx - Essays
 
 ## Essays
 
+* [A Real World React to htmx Port](/essays/a-real-world-react-to-htmx-port/)
 * [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
 * [Hypermedia-Driven Applications (HDAs)](/essays/hypermedia-driven-applications)
 * [HATEOAS](/essays/hateoas)
@@ -14,6 +15,7 @@ title: </> htmx - Essays
 * [Complexity Budget](/essays/complexity-budget)
 * [SPA Alternative](/essays/spa-alternative)
 * [A Response To "Have SPA's Ruined The Web"](/essays/a-response-to-rich-harris)
+* [Template Fragments](/essays/template-fragments/)
 
 
 ### Older [intercooler.js](https://intercoolerjs.org) Essays
