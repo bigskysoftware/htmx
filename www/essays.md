@@ -5,6 +5,7 @@ title: </> htmx - Essays
 
 ## Essays
 
+* [A Real World React to htmx Port](/essays/a-real-world-react-to-htmx-port/)
 * [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
 * [Hypermedia-Driven Applications (HDAs)](/essays/hypermedia-driven-applications)
 * [HATEOAS](/essays/hateoas)
@@ -64,4 +65,5 @@ title: </> htmx - Essays
 <img src="/img/memes/uarealldoingitwrong.png">
 <img src="/img/memes/feelbad.png">
 <img src="/img/memes/drakememes.png">
+<img src="/img/memes/fullstack.jpg">
 </div>
