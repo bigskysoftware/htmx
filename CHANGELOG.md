@@ -13,7 +13,7 @@
 * [Idiomorph](https://github.com/bigskysoftware/idiomorph) is now available for all your morph-swapping needs
 * The `unset` directive now works properly for `hx-vals` and `hx-vars`
 * The title of the page is now properly set on a history cache miss
-* The new [`hx-validate`](/attributes/hx-validate) attribute will force elements to validate before a request, even if
+* The new [`hx-validate`](https://htmx.org/attributes/hx-validate) attribute will force elements to validate before a request, even if
   they are not within a form being submitted
 * Many smaller bug and docs fixes
 
@@ -42,14 +42,14 @@
   * Fix OOB swapping of multiple elements in response
 * The `HX-Location` response header now implements client-side redirects entirely within htmx
 * The `HX-Reswap` response header allows you to change the swap behavior of htmx
-* The new [`hx-select-oob`](/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
-* The new [`hx-replace-url`](/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
+* The new [`hx-select-oob`](https://htmx.org/attributes/hx-select-oob) attribute selects one or more elements from a server response to swap in via an out of band swap
+* The new [`hx-replace-url`](https://htmx.org/attributes/hx-replace-url) attribute can be used to replace the current URL in the location 
   bar (very similar to `hx-push-url` but no new history entry is created).  The corresponding `HX-Replace-Url` response header can be used as well.
 * htmx now properly handles anchors in both boosted links, as well as in `hx-get`, etc. attributes
 
 ## [1.7.0] - 2022-02-22
 
-* The new [`hx-sync`](/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
+* The new [`hx-sync`](https://htmx.org/attributes/hx-sync) attribute allows you to synchronize multiple element requests on a single
   element using various strategies (e.g. replace)
   * You can also now abort an element making a request by sending it the `htmx:abort` event
 * [Server Sent Events](/extensions/server-sent-events) and [Web Sockets](/extensions/web-sockets) are now available as 
@@ -57,7 +57,7 @@
   moved entirely out to these new extensions.  By moving these features to extensions we will be able to add functionality 
   to both of them without compromising the core file size of htmx.  You are encouraged to move over to the new 
   extensions, but `hx-sse` and `hx-ws` will continue to work indefinitely in htmx 1.x.
-* You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](/attributes/hx-disinherit) attribute.
+* You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](https://htmx.org/attributes/hx-disinherit) attribute.
 * The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occuring.
 * Many new extensions, with a big thanks to all the contributors!
     * A new [`alpine-morph`](/extensions/alpine-morph) allows you to use Alpine's swapping engine, which preserves Alpine
@@ -65,9 +65,9 @@
       on history restoration.
     * A [loading-states](/extensions/loading-states) extension was added that allows you to easily manage loading states
       while a request is in flight, including disabling elements, and adding and removing CSS classes. 
-* The `this` symbol now resolves properly for the [`hx-include`](/attributes/hx-include) and [`hx-indicator`](/attributes/hx-indicator)
+* The `this` symbol now resolves properly for the [`hx-include`](https://htmx.org/attributes/hx-include) and [`hx-indicator`](https://htmx.org/attributes/hx-indicator)
   attributes
-* When an object is included via the [`hx-vals`](/attributes/hx-vals) attribute, it will be converted to JSON (rather 
+* When an object is included via the [`hx-vals`](https://htmx.org/attributes/hx-vals) attribute, it will be converted to JSON (rather 
   than rendering as the string `[Object object]"`)
 * You can now pass a swap style in to the `htmx.ajax()` function call.
 * Poll events now contain a `target` attribute, allowing you to filter a poll on the element that is polling.
@@ -84,13 +84,13 @@
     on htmx:afterRequest[failed]
       set #myCheckbox's checked to true
   ```
-* Fixed the `from:` option in [`hx-trigger`](/attributes/hx-trigger) to support `closest <CSS selector>` 
+* Fixed the `from:` option in [`hx-trigger`](https://htmx.org/attributes/hx-trigger) to support `closest <CSS selector>` 
   and `find <CSS selector>` forms
 * Don't boost anchor tags with an explicit `target` set
 * Don't cancel all events on boosted elements, only the events that naturally trigger them (click for anchors, submit
   for forms)
 * Persist revealed state in the DOM so that on history navigation, revealed elements are not re-requested
-* Process all [`hx-ext`](/attributes/hx-ext) attributes, even if no other htmx attribute is on the element
+* Process all [`hx-ext`](https://htmx.org/attributes/hx-ext) attributes, even if no other htmx attribute is on the element
 * Snapshot the current URL on load so that history support works properly after a page refresh occurs
 * Many, many documentation updates (thank you to all the contributors!)
 
