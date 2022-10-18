@@ -31,7 +31,7 @@ install the extension using the `hx-ext` attribute:
 With this installed, all responses that htmx receives that contain a `head` tag in them (even if they are not complete
 HTML documents with a root `<html>` element) will be processed and _merged_ into the current head tag.  
 
-The merge algoorithm is as follows:
+The merge algorithm is as follows:
 
 * Elements that exist in the current head as exact textual matches will be left in place
 * Elements that do not exist in the current head will be added at the end of the head tag
