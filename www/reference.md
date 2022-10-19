@@ -6,18 +6,18 @@ title: </> htmx - Attributes
 
 ## Contents
 
-* [Htmx Attributes](#attributes)
-* [Htmx Additional Attributes](#attributes-additional)
-* [Htmx CSS Classes](#classes)
-* [Htmx Request Headers](#request_headers)
-* [Htmx Response Headers](#response_headers)
-* [Htmx Events](#events)
-* [Htmx Extensions](/extensions#reference)
+* [htmx Core Attributes](#attributes)
+* [htmx Additional Attributes](#attributes-additional)
+* [htmx CSS Classes](#classes)
+* [htmx Request Headers](#request_headers)
+* [htmx Response Headers](#response_headers)
+* [htmx Events](#events)
+* [htmx Extensions](/extensions#reference)
 * [Javascript API](#api)
 
-## <a name="attributes"></a> [Attribute Reference](#attributes)
+## <a name="attributes"></a> [Core Attribute Reference](#attributes)
 
-The most significant attributes to use htmx.
+The following are the most common attributes when using htmx.
 
 <div class="info-table">
 
@@ -39,7 +39,7 @@ The most significant attributes to use htmx.
 
 ## <a name="attributes-additional"></a> [Additional Attribute Reference](#attributes-additional)
 
-All other attributes available.
+The table below lists all other attributes available in htmx.
 
 <div class="info-table">
 

@@ -65,4 +65,5 @@ title: </> htmx - Essays
 <img src="/img/memes/uarealldoingitwrong.png">
 <img src="/img/memes/feelbad.png">
 <img src="/img/memes/drakememes.png">
+<img src="/img/memes/fullstack.jpg">
 </div>
