@@ -1993,7 +1993,6 @@ return (function () {
                 // Run at the end of the event stack
                 setTimeout(function() {
                     history.pushState({htmx:true},"", path);
-                    currentPathForHistory = path;
                 }, 0);
             }
         }
@@ -2050,7 +2049,6 @@ return (function () {
         }
 
         function restoreHistory(path) {
-            saveCurrentPageToHistory();
             path = path || location.pathname+location.search;
             path = normalisePath(path); // normalise
             var cached = getCachedHistory(path);
@@ -2929,12 +2927,26 @@ return (function () {
             //===========================================
             var pushUrl = getClosestAttributeValue(elt, "hx-push-url");
             var elementIsBoosted = getInternalData(elt).boosted;
+
             if (pushUrl || elementIsBoosted || finalPathForGet) {
-                // cache the current page in localStorage
-                saveCurrentPageToHistory();
-                // The response may change (replace) the final URL
-                // that is actually displayed in the browser
-                pushUrlIntoHistory(finalPathForGet || path);
+
+                // If hx-push-url is explicitly defined (and not "true" or "false"),
+                // we already know what the final URL should be.
+                // For boosted elements the final URL will be the same as the request path.
+                if (elementIsBoosted || pushUrl === "true" || pushUrl === "false" ) {
+                    // Fallback to path
+                    pushUrl = path;
+                }
+
+                if (pushUrl === null) {
+                    // Otherwise use the current url to create a new history
+                    // entry *without* changing the location url.
+                    // The response will change (replaceState) the final URL
+                    pushUrl = currentPathForHistory;
+                }
+
+                // Create a history entry
+                pushUrlIntoHistory(pushUrl);
             }
 
             return promise;
@@ -3095,7 +3107,7 @@ return (function () {
                 });
 
                 // Save current page if there will be a history update
-                if (historyUpdate.type && historyUpdate.type !== "push") {
+                if (historyUpdate.type) {
                     saveCurrentPageToHistory();
                 }
 
@@ -3171,9 +3183,9 @@ return (function () {
                             // if we need to save history, do so
                             if (historyUpdate.type) {
                                 if (historyUpdate.type === "push") {
-                                    if (window.location.href !== historyUpdate.path && window.location.pathname !== historyUpdate.path) {
-                                        replaceUrlInHistory(historyUpdate.path); // if we pushed early, this should be a replace
-                                    }
+                                    // we pushed early to create a history entry, so do a replace to update the final URL,
+                                    // in case the response has changed it
+                                    replaceUrlInHistory(historyUpdate.path);
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
                                 } else {
                                     replaceUrlInHistory(historyUpdate.path);
@@ -3369,6 +3381,7 @@ return (function () {
             });
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
+                    saveCurrentPageToHistory();
                     restoreHistory();
                     forEach(restoredElts, function(elt){
                         triggerEvent(elt, 'htmx:restored', {
