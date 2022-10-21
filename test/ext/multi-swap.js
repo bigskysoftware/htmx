@@ -48,6 +48,5 @@ describe("multi-swap extension", function() {
             '    E ' +
             '</div>'
         );
-        // "<div>Foo    <div id="a">New A</div> A    <div id="b">Old B<b>New B</b></div> B    <div id="c">Old C</div>New C C    New D<div id="d">Old D</div> D     E </div>"
     });
 });
