@@ -952,6 +952,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+| [`multi-swap`](/extensions/multi-swap) | allows to swap multiple elements with different swap methods
 
 See the [extensions page](/extensions#included) for a complete list.
 
