@@ -39,7 +39,6 @@ describe("multi-swap extension", function() {
         var btn = make('<button hx-get="/test" hx-ext="multi-swap" hx-swap="multi:#a:outerHTML,#b:beforeend,#c:afterend,#d:beforebegin,#e:delete">Click Me!</button>');
         btn.click();
         this.server.respond();
-        console.log(['JREEE', content.outerHTML]);
         should.equal(content.outerHTML,
             '<div>Foo ' +
             '   <div id="a">New A</div> A ' +
