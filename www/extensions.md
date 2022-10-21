@@ -48,7 +48,14 @@ If you need to disable an extension somewhere within the DOM tree, you can use t
 ## <a name="included"></a> [Included Extensions](#included)
 
 htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
-against `htmx` in each distribution
+against `htmx` in each distribution.
+
+### <a name="installing"></a> [Installing Extensions](#installing)
+
+You can find the source for the bundled extensions at https://unpkg.com/browse/htmx.org/dist/ext/.  You will need
+to include the javascript file for the extension and then install it using the [hx-ext](/attributes/hx-ext) attributes.
+
+See the individual extension documentation for more details.
 
 ### <a name='reference'></a> [Included Extensions List](#reference)
 
