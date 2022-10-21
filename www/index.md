@@ -55,25 +55,34 @@ Thank you to our corporate <a href="https://github.com/sponsors/bigskysoftware?o
 
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
-<a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="width:30%"></a>
+<a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
 </div>
 </div>
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
 
-<a href="https://www.commspace.co.za/"><img class="shift-up-img" src="/img/commspace.svg" style="width:100%"></a>
+<a href="https://www.commspace.co.za/"><img class="shift-up-img" src="/img/commspace.svg" style="width:100%;max-width:200px"></a>
 
+</div>
+
+<div class="col 2" style="padding: 0">
 </div>
 
 <div class="col 2" style="padding: 16px">
 
-<a href="https://bigsky.software"><img src="/img/bss.png" style="width:90%"></a>
+<a href="https://craftcms.com"><img class="shift-up-img" src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
 
+</div>
+</div><div class="row" style="text-align: center">
+<div class="col 2" style="padding: 16px">
+<a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome"><img class="shift-up-img" src="/img/butter-cms.svg" style="width:100%;max-width:200px"></a>
+</div>
+
+<div class="col 2" style="padding: 0;">
 </div>
 
 <div class="col 2" style="padding: 16px">
-
-<a href="https://craftcms.com"><img class="shift-up-img" src="/img/logo-craft-cms.svg" style="width:90%"></a>
+<a href="https://bigsky.software"><img class="shift-up-img" src="/img/bss.png" style="width:100%;max-width:200px"></a>
 
 </div>
 </div>
