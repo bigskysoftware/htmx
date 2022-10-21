@@ -423,6 +423,10 @@ return (function () {
                     path = pathUrl.pathname + pathUrl.search;
                 }
             }
+            // remove trailing slash, unless index page
+            if (!path.match('^/$')) {
+                path = path.replace(/\/+$/, '');
+            }
             return path;
         }
 
@@ -2013,11 +2017,8 @@ return (function () {
 
         function replaceUrlInHistory(path) {
             if(htmx.config.historyEnabled) {
-                // Run at the end of the event stack
-                setTimeout(function() {
-                    history.replaceState({htmx: true}, getDocument().title, path);
-                    currentPathForHistory = path;
-                }, 0);
+                history.replaceState({htmx: true}, getDocument().title, path);
+                currentPathForHistory = path;
             }
         }
 
