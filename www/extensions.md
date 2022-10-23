@@ -75,6 +75,7 @@ See the individual extension documentation for more details.
 | [`loading-states`](/extensions/loading-states) | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
 | [`method-override`](/extensions/method-override) | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`multi-swap`](/extensions/multi-swap) | allows to swap multiple elements with different swap methods
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
