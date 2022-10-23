@@ -10,17 +10,17 @@ title: When To Use Hypermedia?
 > efficient for large-grain hypermedia data transfer, optimizing for the common case of the Web, but resulting in an
 > interface that is not optimal for other forms of architectural interaction.
 
--Roy Fielding, https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
+_-Roy Fielding, <https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5>_
 
-We are obviously big fans of hypermedia and feel that it addresses, at least in part, many of the problems that the web 
+We are obviously big fans of hypermedia and think that it can address, at least in part, many of the problems that the web 
 development world is facing today:
 
-* It is typically less complex than an SPA approach would be for a given problem
-* It allows your application API to be much more aggressively changed and optimized
-* It takes pressure off adopting a particular back-end technology
+* Hypermedia is typically less complex than an SPA approach would be for a given problem
+* Hypermedia allows your application API to be much more aggressively changed and optimized
+* Hypermedia takes pressure off adopting a particular back-end technology
 
 With [htmx](/) and the additional UX possibilities that it gives you, many modern web applications can be built 
-using the hypermedia paradigm.
+using HTML and the hypermedia paradigm.
 
 With that being said, as with all technical choices, there are tradeoffs associated with hypermedia.  In this article
 outlines when we think hypermedia *is* likely to be a good fit, and when it *is not* likely to be a good fit.
@@ -36,15 +36,16 @@ In his talk, [Have SPAs Ruined The Web](https://www.youtube.com/watch?v=860d8usG
 have responded to Mr. Harris' talk [in more detail here](/essays/a-response-to-rich-harris/), but suffice to say we agree
 with him that a pragmatic "Transitional" approach to web development is best: use the right tool for the job.
 
-Where we would likely disagree with Mr. Harris is just where "the line" is between what can be achieved with hypermedia,
+Where we would likely disagree with Mr. Harris is just where "the line" is between what can be achieved with hypermedia
 and the point at which it is better to reach for a more involved client-side library.  We feel that, with htmx, hypermedia
-can go much, much further and, for many applications, address many or all of their UX needs.
+can go much, much further than many web developers believe is possible.  And that, for many applications, it can 
+address many or all of their UX needs.
 
 ## Hypermedia: A Good Fit If...
 
 So, when *is* hypermedia a good choice for an application and/or feature?
 
-### If Your UI is mostly text and images
+### If Your UI is mostly text & images
 
 In [The Mother Of All htmx Demos](/essays/a-real-world-react-to-htmx-port/), David Buillot of Contexte shows how replacing
 react with htmx lead to a 67% reduction in the total codebase, along with numerous other eye-popping results.  
@@ -66,7 +67,7 @@ forms and saving the forms into a database, hypermedia can work very well.
 And, with htmx, it can also be [very smooth](https://htmx.org/examples/click-to-edit/), and not just constrained
 to a simple [detail view](https://htmx.org/examples/edit-row/) approach.
 
-### If Your UI is "nested", with updates mostly taking place within well defined sub-blocks
+### If Your UI is "nested", with updates mostly taking place within well-defined blocks
 
 One area where hypermedia can start to go a little wobbly is when you have UI dependencies that span structural
 areas.  A good example of this, and one that often comes up when criticizing the hypermedia approach, is the issue
@@ -77,7 +78,7 @@ by the hypermedia request.
 "Ah ha!", exclaims the SPA partisan, "See, even GitHub can't get this right!"
 
 Well, yes, but there are [a few techniques for making this work](https://htmx.org/examples/update-other-content/), and,
-if you watch their talk, Contexte managed it, using events.
+if you watch their talk, Contexte handled this situation easily, using events.
 
 But, let us grant that this is an area where the hypermedia approach can get into trouble.  To avoid this problem, one
 strategy is to colocate and next the dependent elements for a given resource within an area in the application.  
@@ -98,10 +99,15 @@ Where each sub-section has its own dedicated hypermedia end-points:
 * `/contacts/<id>/emails` for the email section
 * `/contacts/<id>/phonenumbers` for the phone numbers section
 
-The crux here is that the email count and phone count are co-located with their collections, which allows you to target just that
-particular area for update when a modification is made to the respective collections.  Each area effectively forms a 
-server-side component, independent of the other areas on the screen.  They are all nested within a broader contact detail
-user interface.
+The crux here is that the email count and phone count are co-located with their collections, which allows you to 
+[target](/attributes/hx-target) just that particular area for update when a modification is made to the respective 
+collections.  All the data dependencies are co-located within a single area that can be updated via a single, simple
+and obvious target, and that don't interfere with one another.
+
+Each area effectively forms a sort of server-side component, independent of the other areas on the screen, and they are
+all nested within a broader contact detail user interface.
+
+#### UI Driven Hypermedia APIs
 
 Note that our hypermedia API (that is, our end-points) in this case is _driven by the UI_, we have a particular layout 
 that we want to achieve and we adapt our API to that.  If the UI changed, we would have no qualms with completely changing
