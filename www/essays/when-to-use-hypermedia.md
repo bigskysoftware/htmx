@@ -15,8 +15,9 @@ _-Roy Fielding, <https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_s
 We are obviously fans of hypermedia and think that it can address, at least in part, many of the problems that the web 
 development world is facing today:
 
-* Hypermedia is often significantly less complex than an SPA approach would be for many problems
-* Hypermedia allows your application API to be much more aggressively refactored and optimized
+* Hypermedia is often [significantly less complex](/essays/a-real-world-React-to-htmx-port/) than an SPA approach would 
+  be for many problems
+* Hypermedia allows your application API to be [much more aggressively refactored and optimized](/essays/hateoas)
 * Hypermedia takes pressure off adopting a particular server technology, since you do not have an extensive JavaScript
   front-end code base
 
