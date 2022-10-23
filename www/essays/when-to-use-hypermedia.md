@@ -44,7 +44,7 @@ address many or all of their UX needs.
 
 ## Hypermedia: A Good Fit If...
 
-### _If your UI is mostly text & images_
+### _...If your UI is mostly text & images_
 
 In [The Mother Of All htmx Demos](/essays/a-real-world-React-to-htmx-port/), David Buillot of Contexte shows how replacing
 React with htmx lead to a 67% reduction in the total codebase, along with numerous other eye-popping results.  
@@ -57,7 +57,7 @@ of text and images for reading.  It has a sophisticated filtering mechanism and 
 application is displaying and categorizing articles.  This is exactly the sort of thing that hypermedia was designed to
 do, and that is why htmx and hypermedia worked so well for this application.
 
-### _If your UI is CRUD-y_
+### _...If your UI is CRUD-y_
 
 Another area where hypermedia has a long track-record of success is [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)-y
 web applications, in the [Ruby on Rails](https://rubyonrails.org/) style.  If your main application mechanic is showing
@@ -66,7 +66,7 @@ forms and saving the forms into a database, hypermedia can work very well.
 And, with htmx, it can also be [very smooth](https://htmx.org/examples/click-to-edit/), and not just constrained
 to a simple [detail view](https://htmx.org/examples/edit-row/) approach.
 
-### _If your UI is "nested", with updates mostly taking place within well-defined blocks_
+### _...If your UI is "nested", with updates mostly taking place within well-defined blocks_
 
 One area where hypermedia can start to go a little wobbly is when you have UI dependencies that span structural
 areas.  A good example of this, and one that often comes up when criticizing the hypermedia approach, is the issue
@@ -74,7 +74,7 @@ count number shown in the ["Issues" tab](https://github.com/bigskysoftware/htmx/
 an issue on Github, for a long time, the tab count did not update properly, because the tab itself wasn't replaced
 by the hypermedia request.
 
-"Ah ha!", exclaims the SPA partisan, "See, even GitHub can't get this right!"
+"Ah ha!", exclaims the SPA enthusiast, "See, even GitHub can't get this right!"
 
 Well, yes, but there are [a few techniques for making this work](https://htmx.org/examples/update-other-content/), and,
 if you watch their talk, Contexte handled this situation easily, using events.
@@ -118,7 +118,7 @@ Of course, there may be UI requirements that do not allow for grouping of depend
 the techniques [mentioned above](https://htmx.org/examples/update-other-content/) aren't satisfactory, then it may be 
 time to consider an alternative approach.
 
-### _If you need "deep links" & good first-render performance_
+### _...If you need "deep links" & good first-render performance_
 
 A final area where hypermedia outperforms other options is when you need "deep links", that is, links into your
 application that go beyond the landing page, or when you need excellent first-render performance.  
@@ -128,7 +128,7 @@ using this approach is hard to beat for "traditional" web features such as these
 
 ## Hypermedia: Not A Good Fit If...
 
-### _If your UI has many, dynamic interdependencies_
+### _...If your UI has many, dynamic interdependencies_
 
 As we discussed above in the section on "nested" UIs, one area where hypermedia can have trouble is when there are 
 many UI dependencies spread across your UI and you can't afford to "update the whole UI".  This is what Roy Fielding was
@@ -144,7 +144,7 @@ would be a poor fit for the hypermedia approach.
 acceptable alternative to more general spreadsheet-like behavior, and does play well with hypermedia, by isolating the 
 edits within a bounded area.)
 
-### If you require offline functionality
+### _...If you require offline functionality_
 
 The hypermedia distributed architecture leans heavily on the server side for rendering representations of resources.  
 When a server is down or unreachable, the architecture will obviously have trouble.  It is possible to use Service Workers
@@ -154,7 +154,7 @@ application is offline and show an offline message, as many thick-client applica
 But if your application requires full functionality in an offline environment, then the hypermedia approach is not
 going to be acceptable.
 
-### _If your UI state is updated extremely frequently_
+### _...If your UI state is updated extremely frequently_
 
 Another situation where hypermedia is not going to be a good approach is if your UI state is updated frequently.  A good
 example is an online game that needs to capture mouse movements.  Putting a hypermedia network request in-between a mouse
@@ -170,7 +170,7 @@ architecture, than vice-versa.  Isolated client-side components can communicate 
 via events, in the manner demonstrated in the [drag-and-drop Sortable.js + htmx](https://htmx.org/examples/sortable/) 
 example.
 
-### _If your team is not on board_
+### _...If your team is not on board_
 
 A final reason to not choose hypermedia isn't technical, but rather sociological: currently, hypermedia simply isn't
 in favor in web development.  Many companies have adopted React as their standard library for building web applications.  
