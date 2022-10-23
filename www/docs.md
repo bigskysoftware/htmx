@@ -952,6 +952,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+| [`multi-swap`](/extensions/multi-swap) | allows to swap multiple elements with different swap methods
 
 See the [extensions page](/extensions#included) for a complete list.
 
@@ -1386,7 +1387,7 @@ listed below:
 |  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
 |  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
 |  `htmx.config.timeout` | defaults to 0 in milliseconds
-|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overriden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
+|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
 
 </div>
 
