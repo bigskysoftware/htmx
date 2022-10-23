@@ -196,8 +196,8 @@ would be quite amenable to a hypermedia approach.
 
 Two famous examples of web applications that would _not_ be amenable to a hypermedia approach are 
 [Google Sheets](https://www.google.com/sheets/about/) and [Google Maps](https://maps.google.com).  Google Sheets can have
-a large amount of state in and inter-dependencies between cells, making it untenable to issue a server request on every
-update.  Google Maps, on the other hand, responds rapidly to mouse movements and can't afford a server round trip for
+a large amount of state within and interdependencies between cells, making it untenable to issue a server request on every
+cell update.  Google Maps, on the other hand, responds rapidly to mouse movements and simply  can't afford a server round trip for
 every one.  Both of these apps require a much more sophisticated client-side setup than hypermedia can provide.
 
 Of course, the vast majority of web applications are nowhere near the scale and complexity of these examples. And almost 
