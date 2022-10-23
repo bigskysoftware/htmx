@@ -29,6 +29,11 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			if (htmx.config.wsReconnectDelay == undefined) {
 				htmx.config.wsReconnectDelay = "full-jitter";
 			}
+
+			// Default setting for binary data handler
+			if (htmx.config.wsOnBinary == undefined) {
+				htmx.config.wsOnBinary = () => false;
+			}
 		},
 
 		/**
@@ -127,6 +132,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		// Create a new WebSocket and event handlers
 		/** @type {WebSocket} */
 		var socket = htmx.createWebSocket(wssSource);
+		socket.binaryType = "arraybuffer";
 
 		var messageQueue = [];
 
@@ -152,6 +158,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 		socket.addEventListener('message', function (event) {
 			if (maybeCloseWebSocketSource(elt)) {
+				return;
+			}
+
+			if (event.data instanceof ArrayBuffer && htmx.config.wsOnBinaryData(new Uint8Array(event.data))) {
 				return;
 			}
 

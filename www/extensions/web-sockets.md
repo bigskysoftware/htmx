@@ -74,6 +74,19 @@ htmx.config.wsReconnectDelay = function(retryCount) {
 ```
 
 The extension also implements a simple queuing mechanism that keeps messages in memory when the socket is not in `OPEN` state and sends them once the connection is restored.
+
+
+### Handling binary data message
+
+To handle binary data, you can specify a custom handler with `htmx.config.wsOnBinary`. This function takes a UInt8Array, and returns true if the data was handled, or false otherwise.
+
+```javascript
+htmx.config.wsOnBinaryData = function(buf) {
+    // handle the data
+    return true
+}
+```
+
 ### Testing with the Demo Server
 
 Htmx includes a demo WebSockets server written in Go that will help you to see WebSockets in action, and begin bootstrapping your own WebSockets code.  It is located in the /test/servers/ws folder of the htmx distribution.  Look at /test/servers/ws/README.md for instructions on running and using the test server.
