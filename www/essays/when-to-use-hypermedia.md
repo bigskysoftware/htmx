@@ -185,11 +185,16 @@ considering hypermedia and htmx.
 
 But, at a high level and to close with some easy-to-remember applications:
 
-We think that applications like Twitter or GMail could be built very effectively using hypermedia, but that 
-applications like Google Sheets or Google Maps could not.
+We think that applications like Twitter or GMail could be built very effectively using hypermedia due to their
+focus on text-and-images, but that applications like Google Sheets or Google Maps could not due to their arbitrary
+data dependencies and UI paradigms.
 
-Of course, the vast majority of web applications are nowhere near the scale of these four, and even within the latter
-two there are areas where a hypermedia approach might be better: simpler, faster and cleaner.  
+Of course, the vast majority of web applications are nowhere near the scale of these examples, and almost every web
+application has parts where the hypermedia approach could be better: simpler, faster and cleaner.
 
-Having hypermedia as a tool in your tool-chest will improve your ability to address engineering problems, even if you 
-don't reach for it as your favorite hammer.
+Having hypermedia as a tool in your tool-chest will improve your ability to address engineering problems as a web
+developer, even if you don't reach for it as your favorite hammer, like we do.  There is a 
+good [theoretical basis](https://htmx.org/essays/a-real-world-react-to-htmx-port/) for the approach, as well as 
+[practical benefits for many applications](https://htmx.org/essays/a-real-world-react-to-htmx-port/).
+
+Not the least being: this is how the web is supposed to work!
