@@ -90,7 +90,7 @@ Consider a contact application whose detail screen for displaying and editing a 
 
 The UI could be laid out in the following manner:
 
-![Nested Example](/www/img/nesting-example.png)
+![Nested Example](/img/nesting-example.png)
 
 Where each sub-section has its own dedicated hypermedia end-points:
 
