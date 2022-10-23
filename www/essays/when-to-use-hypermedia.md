@@ -1,3 +1,8 @@
+---
+layout: layout.njk
+title: When To Use Hypermedia?
+---
+
 # When Should you Use Hypermedia?
 
 > The trade-off, though, is that a uniform interface degrades efficiency, since information is transferred in a 
