@@ -22,27 +22,28 @@ development world is facing today:
 * Hypermedia takes pressure off adopting a particular server technology, since you do not have an extensive JavaScript
   front-end code base
 
-With [htmx](/) and the additional UX possibilities that it gives you, we believe many modern web applications can be built 
+With [htmx](/) and the additional UX possibilities that it gives you, we believe that many modern web applications can be built 
 using HTML and the hypermedia paradigm.
 
 With that being said, as with all technical choices, there are tradeoffs associated with hypermedia.  In this article
-outlines when we think hypermedia *is* likely to be a good fit, and when it *is not* likely to be a good fit.
+we will give you some ways to think about if hypermedia will be a good fit for an application or feature you are building.
 
 ## Transitional Applications & Hypermedia
 
 Before we get into the details of when hypermedia is a good choice, we'd like to clarify that adopting hypermedia is not
 an [either/or](https://en.wikipedia.org/wiki/Either/Or) decision when building a web application.  Even the most Single-y
-of Single Page Applications utilizes hypermedia after all, as a bootstrap mechanism, to start the application.
+of Single Page Applications utilizes hypermedia after all: as a bootstrap mechanism, to start the application.
 
 In his talk, [Have SPAs Ruined The Web](https://www.youtube.com/watch?v=860d8usGC0o), Rich Harris gives us the term
-"Transitional" Applications, that is applications that mix both hypermedia and non-hypermedia (SPA) concepts.  We
-have responded to Mr. Harris' talk [in more detail here](/essays/a-response-to-rich-harris/), but suffice to say we agree
-with him that a pragmatic "Transitional" approach to web development is best: use the right tool for the job.
+"Transitional" Applications, that is applications that _mix_ both hypermedia and non-hypermedia (SPA) concepts.  We
+have responded to Mr. Harris' talk [in more detail here](/essays/a-response-to-rich-harris/), but suffice to say we 
+violently agree with him that a pragmatic "Transitional" approach to web development is best: you should use the
+right tool for the particular job you are working on.
 
-Where we would likely disagree with Mr. Harris is just where "the line" is between features that can be implemented
-in hypermedia and features that require a more sophisticated client-side approach.  We feel that, with htmx, hypermedia
-can go much, much further than many web developers today believe is possible.  And, further, that, for many applications,
-it can address many or all of their UX needs.
+Where we would likely disagree with Mr. Harris is where "the line" is between features that can be implemented
+effectively in hypermedia and features that require a more sophisticated client-side approach.  We feel that, with htmx,
+hypermedia can go much, much further than many web developers today believe is possible.  And, further, that, for many
+applications, it can address many or all of their UX needs.
 
 ## Hypermedia: A Good Fit If...
 
