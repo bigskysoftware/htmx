@@ -149,8 +149,8 @@ isolating edits within a bounded area.)
 
 ### _...If you require offline functionality_
 
-The hypermedia distributed architecture leans heavily on the server side for rendering representations of resources.  
-When a server is down or unreachable, the architecture will obviously have trouble.  It is possible to use Service Workers
+The hypermedia distributed architecture leans heavily on the server side for rendering representations of resources. When
+a server is down or unreachable, the architecture will obviously have trouble.  It is possible to use Service Workers
 to handle offline requests (although this is a complex option), and it is also easy to detect when a hypermedia 
 application is offline and show an offline message, as many thick-client application do.
 
@@ -178,7 +178,7 @@ in the [drag-and-drop Sortable.js + htmx](https://htmx.org/examples/sortable/) e
 A final reason to not choose hypermedia isn't technical, but rather sociological: currently, hypermedia simply isn't
 in favor in web development.  Many companies have adopted React as their standard library for building web applications.  
 Many developers and consultants have bet their careers on it.  Many hiring managers have never heard of hypermedia, let
-alone htmx, but put React on every job they post out of habit.  It is certainly much easier to hire for r
+alone htmx, but put React on every job they post out of habit.  It is certainly much easier to hire for!
 
 While this is frustrating, it is a real phenomenon and should be borne in mind with humility.  Although Contexte
 was able to rewrite their application quickly and every effectively in htmx, not all teams are as small, agile and
