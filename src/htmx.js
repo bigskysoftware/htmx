@@ -3062,7 +3062,7 @@ return (function () {
 
             if (hasHeader(xhr, /HX-Location:/i)) {
                 var redirectPath = xhr.getResponseHeader("HX-Location");
-                var swapSpec;
+                var swapSpec = {};
                 if (redirectPath.indexOf("{") === 0) {
                     swapSpec = parseJSON(redirectPath);
                     // what's the best way to throw an error if the user didn't include this
@@ -3070,8 +3070,13 @@ return (function () {
                     delete swapSpec['path'];
                 }
 
+                // we need to ensure elt is passed to the redirect request
+                if (!swapSpec.hasOwnProperty("source")) {
+                    swapSpec.source = elt;
+                }
+
                 // Trigger a client-side redirect to a new location that acts like a swap
-                issueAjaxRequest('GET', redirectPath, elt, null, {});
+                ajaxHelper('GET', redirectPath, swapSpec);
                 return;
             }
 
