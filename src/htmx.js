@@ -3061,7 +3061,6 @@ return (function () {
             }
 
             if (hasHeader(xhr, /HX-Location:/i)) {
-                saveCurrentPageToHistory();
                 var redirectPath = xhr.getResponseHeader("HX-Location");
                 var swapSpec;
                 if (redirectPath.indexOf("{") === 0) {
@@ -3071,9 +3070,8 @@ return (function () {
                     delete swapSpec['path'];
                 }
 
-                // Push into history immediately, we can't wait for the response
-                pushUrlIntoHistory(redirectPath);
-                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{});
+                // Trigger a client-side redirect to a new location that acts like a swap
+                issueAjaxRequest('GET', redirectPath, elt, null, {});
                 return;
             }
 
