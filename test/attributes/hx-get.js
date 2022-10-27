@@ -73,4 +73,14 @@ describe("hx-get attribute", function() {
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
     });
+
+    it('GET on page with namespaces (ie inkscape\'s svg) works', function () {
+        var svg_response = '<?xml version="1.0" ?><svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"><g inkscape:groupmode="layer"></g></svg>';
+        this.server.respondWith("GET", "/test", svg_response);
+
+        var div = make('<div hx-get="/test"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal(svg_response);
+    });
 });
