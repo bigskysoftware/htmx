@@ -11,7 +11,7 @@
         //console.log(arguments);
     }
 
-    function mergeHead(newContent) {
+    function mergeHead(newContent, defaultMergeStrategy) {
 
         if (newContent && newContent.indexOf('<head') > -1) {
             const htmlDoc = document.createElement("html");
@@ -25,65 +25,69 @@
 
                 var added = []
                 var removed = []
-                var kept = []
-
+                var preserved = []
+                var nodesToAppend = []
 
                 htmlDoc.innerHTML = headTag;
                 var newHeadTag = htmlDoc.querySelector("head");
-
-                //
-                var appendOnly = false;
-                if (api.getAttributeValue(newHeadTag, "hx-swap-oob") === "beforeend") {
-                    appendOnly = true;
+                if (newHeadTag == null) {
+                    return;
+                } else {
+                    // put all new head elements into a Map, by their outerHTML
+                    var srcToNewHeadNodes = new Map();
+                    for (const newHeadChild of newHeadTag.children) {
+                        srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild);
+                    }
                 }
 
-                // put all new head elements into a Map, by their outerHTML
-                var srcToNewHeadNodes = new Map();
-                var newHeadChildren = newHeadTag.children;
-                for (let i = 0; i < newHeadChildren.length; i++) {
-                    const newHeadChild = newHeadChildren[i];
-                    srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild);
-                }
 
-                // iterate the existing head elements
-                var currentHead = document.querySelector("head");
-                var currentHeadChildren = currentHead.children;
-                for (let i = 0; i < currentHeadChildren.length; i++) {
-                    const currentHeadChild = currentHeadChildren[i];
+
+                // determine merge strategy
+                var mergeStrategy = api.getAttributeValue(newHeadTag, "hx-head") || defaultMergeStrategy;
+
+                // get the current head
+                var currentHead = document.head;
+                for (const currentHeadElt of currentHead.children) {
 
                     // If the current head element is in the map
-                    if (srcToNewHeadNodes.has(currentHeadChild.outerHTML)) {
-
-                        // Remove it from the map, we aren't going to insert it and
-                        // the current element can stay
-                        log(currentHeadChild, " found in current head content, removing from Map");
-                        srcToNewHeadNodes.delete(currentHeadChild.outerHTML);
-                        kept.push(currentHeadChild);
+                    var inNewContent = srcToNewHeadNodes.has(currentHeadElt.outerHTML);
+                    var isReAppended = currentHeadElt.getAttribute("hx-head") === "re-eval";
+                    var isPreserved = api.getAttributeValue(currentHeadElt, "hx-preserve") === "true";
+                    if (inNewContent || isPreserved) {
+                        if (isReAppended) {
+                            // remove the current version and let the new version replace it and re-execute
+                            removed.push(currentHeadElt);
+                        } else {
+                            // this element already exists and should not be re-appended, so remove it from
+                            // the new content map, preserving it in the DOM
+                            srcToNewHeadNodes.delete(currentHeadElt.outerHTML);
+                            preserved.push(currentHeadElt);
+                        }
                     } else {
-                        // If the current head element is NOT in the map, remove it
-                        if (appendOnly === false &&
-                            api.getAttributeValue(currentHeadChild, "hx-preserve") !== "true" &&
-                            api.triggerEvent(document.body, "htmx:removingHeadElement", {headElement: currentHeadChild}) !== false) {
-                            log(currentHeadChild, " not found in new content, removing from head tag");
-                            removed.push(currentHeadChild);
+                        if (mergeStrategy === "append") {
+                            // we are appending and this existing element is not new content
+                            // so if and only if it is marked for re-append do we do anything
+                            if (isReAppended) {
+                                removed.push(currentHeadElt);
+                                nodesToAppend.push(currentHeadElt);
+                            }
+                        } else {
+                            // if this is a merge, we remove this content since it is not in the new head
+                            if (api.triggerEvent(document.body, "htmx:removingHeadElement", {headElement: currentHeadElt}) !== false) {
+                                removed.push(currentHeadElt);
+                            }
                         }
                     }
                 }
 
-                // remove all removed elements
-                for (let i = 0; i < removed.length; i++) {
-                    const removedElement = removed[i];
-                    currentHead.removeChild(removedElement);
-                }
+                // Push the tremaining new head elements in the Map into the
+                // nodes to append to the head tag
+                nodesToAppend.push(...srcToNewHeadNodes.values());
+                log("to append: ", nodesToAppend);
 
-                // The remaining elements in the Map are in the new content but
-                // not in the old content, so add them (using a contextual fragment
-                // so that script tags will evaluate)
-                var remainder = srcToNewHeadNodes.keys();
-                log("remainder: ", remainder);
-                for (const remainderNodeSource of remainder) {
-                    log("adding: ", remainderNodeSource);
-                    var newElt = document.createRange().createContextualFragment(remainderNodeSource);
+                for (const newNode of nodesToAppend) {
+                    log("adding: ", newNode);
+                    var newElt = document.createRange().createContextualFragment(newNode.outerHTML);
                     log(newElt);
                     if (api.triggerEvent(document.body, "htmx:addingHeadElement", {headElement: newElt}) !== false) {
                         currentHead.appendChild(newElt);
@@ -91,7 +95,15 @@
                     }
                 }
 
-                api.triggerEvent(document.body, "htmx:afterHeadMerge", {added: added, kept: kept, removed: removed});
+                // remove all removed elements, after we have appended the new elements to avoid
+                // additional network requests for things like style sheets
+                for (const removedElement of removed) {
+                    if (api.triggerEvent(document.body, "htmx:removingHeadElement", {headElement: removedElement}) !== false) {
+                        currentHead.removeChild(removedElement);
+                    }
+                }
+
+                api.triggerEvent(document.body, "htmx:afterHeadMerge", {added: added, kept: preserved, removed: removed});
             }
         }
     }
@@ -104,16 +116,16 @@
             htmx.on('htmx:afterSwap', function(evt){
                 var serverResponse = evt.detail.xhr.response;
                 if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)) {
-                    mergeHead(serverResponse);
+                    mergeHead(serverResponse, evt.detail.boosted ? "merge" : "append");
                 }
             })
 
             htmx.on('htmx:historyRestore', function(evt){
                 if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)) {
                     if (evt.detail.cacheMiss) {
-                        mergeHead(evt.detail.serverResponse);
+                        mergeHead(evt.detail.serverResponse, "merge");
                     } else {
-                        mergeHead(evt.detail.item.head);
+                        mergeHead(evt.detail.item.head, "merge");
                     }
                 }
             })

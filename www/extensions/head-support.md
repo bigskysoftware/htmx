@@ -29,13 +29,31 @@ install the extension using the `hx-ext` attribute:
 ```
 
 With this installed, all responses that htmx receives that contain a `head` tag in them (even if they are not complete
-HTML documents with a root `<html>` element) will be processed and _merged_ into the current head tag.  
+HTML documents with a root `<html>` element) will be processed.
 
-The merge algorithm is as follows:
+How the head tag is handled depends on the type of htmx request.
+
+If the htmx request is from a boosted element, then the following merge algorithm is used:
 
 * Elements that exist in the current head as exact textual matches will be left in place
 * Elements that do not exist in the current head will be added at the end of the head tag
 * Elements that exist in the current head, but not in the new head will be removed from the head
+
+If the htmx request is from a non-boosted element, then all content will be _appended_ to the existing head element.
+
+If you wish to override this behavior in either case, you can place the `hx-head` attribute on the new `<head>` tag,
+with either of the following two values:
+
+* `merge` - follow the merging algorithm outlined above
+* `append` - append the elements to the existing head
+
+#### Controlling Merge Behavior
+
+Beyond this, you may also control merging behavior of individual elements with the following attributes:
+
+* If you place `hx-head="re-eval"` on a head element, it will be re-added (removed and appended) to the head tag on every
+  request, even if it already exists.  This can be useful to execute a script on every htmx request, for example.
+* If you place `hx-preserve="true"` on an element, it will never be removed from the head
 
 #### Example
 
@@ -80,25 +98,6 @@ The final head element will look like this:
     <script src="/js/script3.js"></script>
 </head>
 ```
-
-### Controlling Merge Behavior
-
-Sometimes you may want to preserve an element in the head tag.  You can do so using events, discussed below, but this
-extension also gives you two declarative mechanisms for doing so:
-
-* If an element in the `head` tag has an `hx-preserve="true"` attribute & value on it, it will not be removed from the head tag:
-  ```html
-     <!-- This element will not be removed even if it is not in new head content received from the server-->
-     <link rel="stylesheet" href="/css/site1.css" hx-preserve="true">
-   ```
-* If a new `head` element _in the content of a response_ has the `hx-swap-oob="beforeend"` attribute & value, the content of the new
-  head element will be added to the existing head tag, but no content will be removed from the existing head tag.
-  ```html
-     <!-- This content will be appended to the head tag, leaving current content in place -->
-     <head hx-swap-oob="beforeend">
-       <link rel="stylesheet" href="/css/site1.css">
-     </head>
-   ```
 
 ### Events
 
