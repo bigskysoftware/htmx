@@ -1003,7 +1003,10 @@ return (function () {
         }
 
         function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
-            settleInfo.title = findTitle(responseText);
+            var shouldSwapTitle = getClosestAttributeValue(elt, 'hx-swap-title');
+            if (shouldSwapTitle !== "no") {
+                settleInfo.title = findTitle(responseText);
+            }
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);

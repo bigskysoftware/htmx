@@ -845,6 +845,18 @@ describe("Core htmx AJAX Tests", function(){
         window.document.title.should.equal("</> htmx rocks!");
     });
 
+    it('hx-swap-title value of "no" prevents title update', function () {
+        var originalTitle = window.document.title
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "<title class=''>htmx rocks!</title>Clicked!");
+        });
+        var btn = make('<button hx-get="/test" hx-swap-title="no">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Clicked!");
+        window.document.title.should.equal(originalTitle);
+    });
+
     it('by default 400 content is not swapped', function()
     {
         this.server.respondWith("GET", "/test", function (xhr) {
