@@ -8,20 +8,24 @@ describe("Core htmx API test", function(){
         clearWorkArea();
     });
 
-    it('onLoad is called... onLoad', function(){
+    it('onLoad is called... onLoad', function(done){
         // also tests on/off
         this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test'></div>")
         var helper = htmx.onLoad(function (elt) {
             elt.setAttribute("foo", "bar");
         });
-        try {
-            var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML'></div>");
-            div.click();
-            this.server.respond();
-            byId("d1").getAttribute("foo").should.equal("bar");
-        } finally {
-            htmx.off("htmx:load", helper);
-        }
+        var server = this.server;
+        setTimeout(function() {
+            try {
+                var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML'></div>");
+                div.click();
+                server.respond();
+                byId("d1").getAttribute("foo").should.equal("bar");
+                done();
+            } finally {
+                htmx.off("htmx:load", helper);
+            }
+        }, 10)
     });
 
     it('triggers properly', function () {
