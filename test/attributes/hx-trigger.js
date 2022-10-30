@@ -750,7 +750,7 @@ describe("hx-trigger attribute", function(){
     it('reveal event works when triggered by window', function()
     {
         this.server.respondWith("GET", "/test1", "test 1");
-        var div = make('<div hx-get="/test1" hx-trigger="revealed" style="position: absolute; top: 1px; left: 1px; border: 3px solid red">foo</div>');
+        var div = make('<div hx-get="/test1" hx-trigger="revealed" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>');
         div.innerHTML.should.equal("foo");
         this.server.respondAll();
         div.innerHTML.should.equal("test 1");
