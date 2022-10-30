@@ -157,6 +157,44 @@ than a single value.
 * `detail.target` - the target of the request
 * `detail.verb` - the HTTP verb in use
 
+### <a name="htmx:confirm"></a> Event - [`htmx:confirm`](#htmx:confirm)
+
+This event is triggered immediate after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
+the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail` 
+object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a 
+later point.  Combining these two features allows you to creat an asynchronous confirmation dialog.  
+
+Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
+
+```javascript
+document.body.addEventListener('htmx:confirm', function(evt) {
+    evt.preventDefault();
+    swal({
+      title: "Are you sure?",
+      text: "Are you sure you are sure?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((confirmed) => {
+      if (confirmed) {
+        evt.detail.issueRequest();
+      }
+   });
+});
+```
+
+##### Details
+
+{target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest}
+
+* `detail.elt` - the element in question
+* `detail.etc` - additional request information (mostly unused)
+* `detail.issueRequest` - a no argument function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!)
+* `detail.path` - the path of the request
+* `detail.target` - the target of the request
+* `detail.triggeringEvent` - the orignial event that triggered this request
+* `detail.verb` - the verb of the request (e.g. `GET`)
+
 ### <a name="htmx:historyCacheError"></a> Event - [`htmx:historyCacheError`](#htmx:historyCacheError)
 
 This event is triggered when an attempt to save the cache to `localStorage` fails

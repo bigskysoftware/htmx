@@ -2593,7 +2593,7 @@ return (function () {
             return arr;
         }
 
-        function issueAjaxRequest(verb, path, elt, event, etc) {
+        function issueAjaxRequest(verb, path, elt, event, etc, confirmed) {
             var resolve = null;
             var reject = null;
             etc = etc != null ? etc : {};
@@ -2615,6 +2615,17 @@ return (function () {
             if (target == null || target == DUMMY_ELT) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
+            }
+
+            // allow event-based confirmation w/ a callback
+            if (!confirmed) {
+                var issueRequest = function() {
+                    return issueAjaxRequest(verb, path, elt, event, etc, true);
+                }
+                var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest};
+                if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
+                    return;
+                }
             }
 
             var syncElt = elt;

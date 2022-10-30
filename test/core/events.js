@@ -584,4 +584,28 @@ describe("Core htmx Events", function() {
     });
 
 
+    it("htmx:confirm can cancel request", function () {
+        var allow = false;
+        var handler = htmx.on("htmx:confirm", function (evt) {
+            evt.preventDefault();
+            if (allow) {
+                evt.detail.issueRequest();
+            }
+        });
+
+        try {
+            this.server.respondWith("GET", "/test", "updated");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            div.innerHTML.should.equal("");
+            allow = true;
+            div.click();
+            this.server.respond();
+            div.innerHTML.should.equal("updated");
+        } finally {
+            htmx.off("htmx:load", handler);
+        }
+    });
+
 });
