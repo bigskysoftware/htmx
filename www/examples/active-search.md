@@ -17,7 +17,7 @@ We start with a search input and an empty table:
 </h3>
 <input class="form-control" type="search" 
        name="search" placeholder="Begin Typing To Search Users..." 
-       hx-get="/search" 
+       hx-post="/search" 
        hx-trigger="keyup changed delay:500ms, search" 
        hx-target="#search-results" 
        hx-indicator=".htmx-indicator">
