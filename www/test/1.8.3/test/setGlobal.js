@@ -1,0 +1,1 @@
+window.globalWasCalled = true;

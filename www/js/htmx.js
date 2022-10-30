@@ -71,7 +71,7 @@ return (function () {
             createWebSocket: function(url){
                 return new WebSocket(url, []);
             },
-            version: "1.8.2"
+            version: "1.8.3"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1414,7 +1414,7 @@ return (function () {
             if (!hasAttribute(elt,'data-hx-revealed') && isScrolledIntoView(elt)) {
                 elt.setAttribute('data-hx-revealed', 'true');
                 var nodeData = getInternalData(elt);
-                if (nodeData.initHash) {
+                if (nodeData.initHash === attributeHash(elt)) {
                     triggerEvent(elt, 'revealed');
                 } else {
                     // if the node isn't initialized, wait for it before triggering the request
@@ -1925,7 +1925,9 @@ return (function () {
                     break;
                 }
             }
-            historyCache.push({url:url, content: content, title:title, scroll:scroll})
+            var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
+            triggerErrorEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
@@ -2001,7 +2003,7 @@ return (function () {
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
                     var historyElement = getHistoryElement();
                     var settleInfo = makeSettleInfo(historyElement);
-		    var title = findTitle(this.response);
+                    var title = findTitle(this.response);
                     if (title) {
                         var titleElt = find("title");
                         if (titleElt) {
@@ -2014,7 +2016,7 @@ return (function () {
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
-                    triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
+                    triggerEvent(getDocument().body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
                 } else {
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
@@ -2035,7 +2037,7 @@ return (function () {
                 document.title = cached.title;
                 window.scrollTo(0, cached.scroll);
                 currentPathForHistory = path;
-                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path});
+                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
 
@@ -2591,7 +2593,7 @@ return (function () {
             return arr;
         }
 
-        function issueAjaxRequest(verb, path, elt, event, etc) {
+        function issueAjaxRequest(verb, path, elt, event, etc, confirmed) {
             var resolve = null;
             var reject = null;
             etc = etc != null ? etc : {};
@@ -2613,6 +2615,17 @@ return (function () {
             if (target == null || target == DUMMY_ELT) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
                 return;
+            }
+
+            // allow event-based confirmation w/ a callback
+            if (!confirmed) {
+                var issueRequest = function() {
+                    return issueAjaxRequest(verb, path, elt, event, etc, true);
+                }
+                var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest};
+                if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
+                    return;
+                }
             }
 
             var syncElt = elt;
@@ -2743,7 +2756,9 @@ return (function () {
 
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
+            var eltIsBoosted = getInternalData(elt).boosted;
             var requestConfig = {
+                boosted: eltIsBoosted,
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
                 headers:headers,
@@ -2816,7 +2831,7 @@ return (function () {
             }
 
             var responseInfo = {
-                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc,
+                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
                 pathInfo: {
                     requestPath: path,
                     finalRequestPath: finalPathForGet || path,
@@ -3180,7 +3195,7 @@ return (function () {
                 }
             }
             if (isError) {
-                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.path}, responseInfo));
+                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.requestPath}, responseInfo));
             }
         }
 
