@@ -19,10 +19,14 @@ markup where the dialog will be loaded:
 	class="btn btn-primary">Open Modal</button>
 
 <div id="modals-here"
-class="modal modal-blur fade"
-style="display: none"
-aria-hidden="false"
-tabindex="-1"></div>
+    class="modal modal-blur fade"
+    style="display: none"
+    aria-hidden="false"
+    tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 ```
 
 This button uses a `GET` request to `/modal` when this button is clicked.  The
@@ -50,7 +54,11 @@ The server responds with a slightly modified version of Bootstrap's standard mod
 class="modal modal-blur fade"
 style="display: none"
 aria-hidden="false"
-tabindex="-1"></div>
+tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 
 {{ demoenv() }}
 
@@ -84,9 +92,9 @@ tabindex="-1"></div>
         <div class="modal-body">
             <p>Modal body text goes here.</p>
         </div>
-    </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
     </div>
 </div>`
 });
