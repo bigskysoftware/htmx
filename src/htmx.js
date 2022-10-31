@@ -416,6 +416,20 @@ return (function () {
             }
         }
 
+        function normalizePath(path) {
+            if (path.match(/^(http:\/\/|https:\/\/)/)) {
+                var url = new URL(path);
+                if (url) {
+                    path = url.pathname + url.search;
+                }
+            }
+            // remove trailing slash, unless index page
+            if (!path.match('^/$')) {
+                path = path.replace(/\/+$/, '');
+            }
+            return path;
+        }
+
         //==========================================================================================
         // public API
         //==========================================================================================
@@ -1251,7 +1265,7 @@ return (function () {
                 var verb, path;
                 if (elt.tagName === "A") {
                     verb = "get";
-                    path = getRawAttribute(elt, 'href');
+                    path = elt.href; // DOM property gives the fully resolved href of a relative link
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
@@ -1918,6 +1932,8 @@ return (function () {
                 return;
             }
 
+            url = normalizePath(url);
+
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
                 if (historyCache[i].url === url) {
@@ -1944,6 +1960,8 @@ return (function () {
             if (!canAccessLocalStorage()) {
                 return null;
             }
+
+            url = normalizePath(url);
 
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
             for (var i = 0; i < historyCache.length; i++) {
