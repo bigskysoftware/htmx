@@ -1975,7 +1975,7 @@ return (function () {
             var shouldSave = true;
             var localHistoryElt = getDocument().querySelector('[hx-history],[data-hx-history]');
             if (localHistoryElt) {
-                var shouldSaveValue = getAttributeValue(localHistoryElt,'[hx-history]') || getAttributeValue(localHistoryElt,'[data-hx-history]');
+                var shouldSaveValue = getAttributeValue(localHistoryElt,'hx-history');
                 shouldSave = (shouldSaveValue === 'true');
             }
             if (shouldSave) {
