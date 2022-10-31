@@ -28,10 +28,7 @@ tabindex="-1"></div>
 This button uses a `GET` request to `/modal` when this button is clicked.  The
 contents of this file will be added to the DOM underneath the `#modals-here` DIV.
 
-We're replacing Bootstrap's javascript widgets with a small bit of Hyperscript to provide
-smooth animations when the dialog opens and closes.
-
-Finally, the server responds with a slightly modified version of Bootstrap's standard modal
+The server responds with a slightly modified version of Bootstrap's standard modal
 
 ```html
 <div class="modal-dialog modal-dialog-centered">
@@ -80,17 +77,17 @@ tabindex="-1"></div>
 		
 	onGet("/modal", function(request, params){
 	  return `<div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+    <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
+            <h5 class="modal-title">Modal title</h5>
         </div>
         <div class="modal-body">
-          <p>Modal body text goes here.</p>
+            <p>Modal body text goes here.</p>
         </div>
-      </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
-    </div>`
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>`
 });
 </script>
