@@ -169,7 +169,7 @@
 				)
 			}
 
-			if (name === 'htmx:afterOnLoad') {
+			if (name === 'htmx:beforeOnLoad') {
 				while (loadingStatesUndoQueue.length > 0) {
 					loadingStatesUndoQueue.shift()()
 				}
