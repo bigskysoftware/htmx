@@ -21,6 +21,8 @@ Let's focus on the final row (or the last element of your content):
 This last element contains a listener which, when scrolled into view, will trigger a request. The result is then appended after it.
 The last element of the results will itself contain the listener to load the *next* page of results, and so on.
 
+> `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading). If you are using `overflow` in css like `overflow-y: scroll` you should use `intersect once` instead of `revealed`.
+
 {% include demo_ui.html.liquid %}
 
 <script>

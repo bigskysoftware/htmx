@@ -1,7 +1,7 @@
 {
-  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/v2-preview/web-types.json",
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
   "name": "htmx",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
   "contributions": {
@@ -248,8 +248,35 @@
           "doc-url": "https://htmx.org/attributes/hx-ws"
         }
       ]
+    },
+    "css": {
+      "classes": [
+        {
+          "name": "htmx-added",
+          "description": "Applied to a new piece of content before it is swapped, removed after it is settled.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-indicator",
+          "description": "A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-request",
+          "description": "Applied to either the element or the element specified with `hx-indicator` while a request is ongoing.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-settling",
+          "description": "Applied to a target after content is swapped, removed after it is settled. The duration can be modified via `hx-swap`.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-swapping",
+          "description": "Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via `hx-swap`.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        }
+      ]
     }
   }
 }
-
-| [`hx-ws`](/extensions/websockets) | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)

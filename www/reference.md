@@ -6,18 +6,18 @@ title: </> htmx - Attributes
 
 ## Contents
 
-* [Htmx Attributes](#attributes)
-* [Htmx Additional Attributes](#attributes-additional)
-* [Htmx CSS Classes](#classes)
-* [Htmx Request Headers](#request_headers)
-* [Htmx Response Headers](#response_headers)
-* [Htmx Events](#events)
-* [Htmx Extensions](/extensions#reference)
+* [htmx Core Attributes](#attributes)
+* [htmx Additional Attributes](#attributes-additional)
+* [htmx CSS Classes](#classes)
+* [htmx Request Headers](#request_headers)
+* [htmx Response Headers](#response_headers)
+* [htmx Events](#events)
+* [htmx Extensions](/extensions#reference)
 * [Javascript API](#api)
 
-## <a name="attributes"></a> [Attribute Reference](#attributes)
+## <a name="attributes"></a> [Core Attribute Reference](#attributes)
 
-The most significant attributes to use htmx.
+The following are the most common attributes when using htmx.
 
 <div class="info-table">
 
@@ -39,7 +39,7 @@ The most significant attributes to use htmx.
 
 ## <a name="attributes-additional"></a> [Additional Attribute Reference](#attributes-additional)
 
-All other attributes available.
+The table below lists all other attributes available in htmx.
 
 <div class="info-table">
 
@@ -63,8 +63,8 @@ All other attributes available.
 | [`hx-replace-url`](/attributes/hx-replace-url) | replace the URL in the browser location bar
 | [`hx-request`](/attributes/hx-request)         | configures various aspects of the request
 | [`hx-sse`](/extensions/server-sent-events)     | has been moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
-| [`hx-sync`](/attributes/hx-sync)               | control how requests made be different elements are synchronized
-| [`hx-vars`](/attributes/hx-vars)               | adds values dynamically to the parameters to submit with the request (deprecated, please use `hx-vals`)
+| [`hx-sync`](/attributes/hx-sync)               | control how requests made by different elements are synchronized
+| [`hx-vars`](/attributes/hx-vars)               | adds values dynamically to the parameters to submit with the request (deprecated, please use [`hx-vals`](/attributes/hx-vals))
 | [`hx-ws`](/extensions/web-sockets)             | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
 

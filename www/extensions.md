@@ -48,7 +48,14 @@ If you need to disable an extension somewhere within the DOM tree, you can use t
 ## <a name="included"></a> [Included Extensions](#included)
 
 htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
-against `htmx` in each distribution
+against `htmx` in each distribution.
+
+### <a name="installing"></a> [Installing Extensions](#installing)
+
+You can find the source for the bundled extensions at https://unpkg.com/browse/htmx.org/dist/ext/.  You will need
+to include the javascript file for the extension and then install it using the [hx-ext](/attributes/hx-ext) attributes.
+
+See the individual extension documentation for more details.
 
 ### <a name='reference'></a> [Included Extensions List](#reference)
 
@@ -68,6 +75,7 @@ against `htmx` in each distribution
 | [`loading-states`](/extensions/loading-states) | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
 | [`method-override`](/extensions/method-override) | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
 | [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`multi-swap`](/extensions/multi-swap) | allows to swap multiple elements with different swap methods
 | [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
 | [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
