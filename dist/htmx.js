@@ -715,6 +715,7 @@ return (function () {
         function initializeLayoutReadWrite() {
             hiddenSelect = document.createElement("select")
             hiddenSelect.id = "hiddenSelect"
+            hiddenSelect.setAttribute("tabIndex", "-1")
             hiddenSelect.style.position = "absolute"
             hiddenSelect.style.left = "-100%"
             hiddenSelect.style.top = "-100%"
