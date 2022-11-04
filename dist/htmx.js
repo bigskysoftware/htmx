@@ -1927,7 +1927,7 @@ return (function () {
                 }
             }
             var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
-            triggerErrorEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            triggerEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
