@@ -1972,13 +1972,8 @@ return (function () {
             // so we can prevent privileged data entering the cache.
             // The page will still be reachable as a history entry, but htmx will fetch it
             // live from the server onpopstate rather than look in the localStorage cache
-            var shouldSave = true;
-            var localHistoryElt = getDocument().querySelector('[hx-history],[data-hx-history]');
-            if (localHistoryElt) {
-                var shouldSaveValue = getAttributeValue(localHistoryElt,'hx-history');
-                shouldSave = (shouldSaveValue === 'true');
-            }
-            if (shouldSave) {
+            var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
+            if (!disableHistoryCache) {
                 triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
                 saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
             }
