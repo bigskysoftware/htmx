@@ -3016,7 +3016,7 @@ return (function () {
                     redirectPath = swapSpec['path'];
                     delete swapSpec['path'];
                 }
-                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
+                ajaxHelper('GET', redirectPath, swapSpec).then(function(){
                     pushUrlIntoHistory(redirectPath);
                 });
                 return;
