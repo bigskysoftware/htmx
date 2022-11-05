@@ -4,25 +4,27 @@ layout: demo_layout.njk
         
 ## A Customized Confirmation UI
 
-htmx supports the [`hx-confirm`](/attributes/hx-confirm) attribute to provide a simple mechanism for confirming a user action.  This uses the default `confirm()` function in javascript which, while trusty, may not be consistent with your applications UX.
+htmx supports the [`hx-confirm`](/attributes/hx-confirm) attribute to provide a simple mechanism for confirming a user
+action.  This uses the default `confirm()` function in javascript which, while trusty, may not be consistent with your 
+applications UX.
 
-In this example we will see how to use [sweetalert2](https://sweetalert2.github.io) to implement a custom confirmation dialog.
+In this example we will see how to use [sweetalert2](https://sweetalert2.github.io) and the [`htmx:confirm`](/events#htmx:confirm)
+event to implement a custom confirmation dialog.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<button hx-trigger='confirmed'
-        hx-get="/confirmed"
-        _="on click
+<button hx-get="/confirmed"
+        _="on htmx:confirm(issueRequest)
+             halt the event
              call Swal.fire({title: 'Confirm', text:'Do you want to continue?'})
-             if result.isConfirmed trigger confirmed">
+             if result.isConfirmed issueRequest()">
   Click Me
 </button>
 ```
 
-The technique here is to make the button issue a request on the `confirmed` event, rather than a click.
-
-We then add some hyperscript to invoke Sweet Alert 2 on a click, asking for confirmation.  If the user confirms
-the dialog, we trigger the `confirmed` event, which then triggers the htmx request.
+We add some hyperscript to invoke Sweet Alert 2 on a click, asking for confirmation.  If the user confirms
+the dialog, we trigger the request by invoking the `issueRequest()` function, which was destructured from the event
+detail object.
 
 Note that we are taking advantage of the fact that hyperscript is [async-transparent](https://hyperscript.org/docs/#async)
 and automatically resolves the Promise returned by `Swal.fire()`.

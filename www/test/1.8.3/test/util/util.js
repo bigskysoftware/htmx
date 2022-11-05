@@ -10,8 +10,9 @@ function make(htmlStr) {
         var fragment = range.createContextualFragment(htmlStr);
         var wa = getWorkArea();
         var child = null;
-        while(fragment.children.length > 0) {
-            child = fragment.children[0];
+        var children = fragment.children || fragment.childNodes; // IE
+        while(children.length > 0) {
+            child = children[0];
             wa.appendChild(child);
             htmx.process(child);
         }

@@ -368,13 +368,14 @@ return (function () {
             return elemTop < window.innerHeight && elemBottom >= 0;
         }
 
-	function bodyContains(elt) {
-	    if (elt.getRootNode() instanceof ShadowRoot) {
-		return getDocument().body.contains(elt.getRootNode().host);
-	    } else {
-		return getDocument().body.contains(elt);
-	    }
-	}
+        function bodyContains(elt) {
+            // IE Fix
+            if (elt.getRootNode && elt.getRootNode() instanceof ShadowRoot) {
+                return getDocument().body.contains(elt.getRootNode().host);
+            } else {
+                return getDocument().body.contains(elt);
+            }
+        }
 
         function splitOnWhitespace(trigger) {
             return trigger.trim().split(/\s+/);
@@ -1926,7 +1927,7 @@ return (function () {
                 }
             }
             var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
-            triggerErrorEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            triggerEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
@@ -3016,7 +3017,7 @@ return (function () {
                     redirectPath = swapSpec['path'];
                     delete swapSpec['path'];
                 }
-                ajaxHelper('GET', redirectPath, swapSpec).then(() =>{
+                ajaxHelper('GET', redirectPath, swapSpec).then(function(){
                     pushUrlIntoHistory(redirectPath);
                 });
                 return;
