@@ -63,7 +63,7 @@ The table below lists all other attributes available in htmx.
 | [`hx-replace-url`](/attributes/hx-replace-url) | replace the URL in the browser location bar
 | [`hx-request`](/attributes/hx-request)         | configures various aspects of the request
 | [`hx-sse`](/extensions/server-sent-events)     | has been moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
-| [`hx-sync`](/attributes/hx-sync)               | control how requests made be different elements are synchronized
+| [`hx-sync`](/attributes/hx-sync)               | control how requests made by different elements are synchronized
 | [`hx-vars`](/attributes/hx-vars)               | adds values dynamically to the parameters to submit with the request (deprecated, please use [`hx-vals`](/attributes/hx-vals))
 | [`hx-ws`](/extensions/web-sockets)             | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 

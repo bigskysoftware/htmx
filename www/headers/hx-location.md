@@ -10,7 +10,7 @@ This response header can be used to trigger a client side redirection without re
 
 A sample response would be:
 
-```
+```html
 HX-Location: /test
 ```
 
@@ -19,7 +19,7 @@ Which would push the client to test as if the user had clicked on `<a href="/tes
 
 If you want to redirect to a specific target on the page rather than the default of document.body, you can pass more details along with the event, by using JSON for the value of the header:
 
-```
+```html
 HX-Location: {"path":"/test2", "target":"#testdiv"}
 ```
 Path is required and is url to load the response from. The rest of the data mirrors the [`ajax` api](/api#ajax) context, which is:
