@@ -166,7 +166,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 * @property {(message: string, sendElt: Element) => void} send
 	 * @property {(event: string, handler: Function) => void} addEventListener
 	 * @property {() => void} handleQueuedMessages
-	 * @property {() => void} connect
+	 * @property {() => void} init
 	 * @property {() => void} close
 	 */
 	/**
@@ -232,15 +232,19 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				}
 			},
 
-			connect: function () {
-				// Create a new WebSocket and event handlers
-				/** @type {WebSocket} */
-				var socket = socketFunc();
-
+			init: function () {
 				if (this.socket && this.socket.readyState === this.socket.OPEN) {
 					// Close discarded socket
 					this.socket.close()
 				}
+
+				if (api.bodyContains(socketElt)) {
+					return;
+				}
+
+				// Create a new WebSocket and event handlers
+				/** @type {WebSocket} */
+				var socket = socketFunc();
 
 				this.socket = socket;
 
@@ -256,7 +260,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 						var delay = getWebSocketReconnectDelay(wrapper.retryCount);
 						setTimeout(function () {
 							wrapper.retryCount += 1;
-							wrapper.connect();
+							wrapper.init();
 						}, delay);
 					}
 					api.triggerEvent(socketElt, "htmx:wsClose", { event: e, socketWrapper: wrapper })
@@ -280,7 +284,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			}
 		}
 
-		wrapper.connect();
+		wrapper.init();
 
 		return wrapper;
 	}
@@ -320,6 +324,10 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		var triggerSpecs = api.getTriggerSpecs(sendElt);
 		triggerSpecs.forEach(function (ts) {
 			api.addTriggerHandler(sendElt, ts, nodeData, function (elt, evt) {
+				if (maybeCloseWebSocketSource(socketElt)) {
+					return;
+				}
+
 				/** @type {WebSocketWrapper} */
 				var socketWrapper = api.getInternalData(socketElt).webSocket;
 				var headers = api.getHeaders(sendElt, socketElt);
