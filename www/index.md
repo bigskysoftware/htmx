@@ -92,4 +92,4 @@ project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftwa
 
 [Consulting](mailto:htmx@bigsky.software) is also available.
 
-<div style="text-align: center">ʕ •ᴥ•ʔ made in montana</div>
+<div style="text-align: center;font-style: italic">ʕ •ᴥ•ʔ made in montana</div>
