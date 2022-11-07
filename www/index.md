@@ -91,3 +91,5 @@ If you use htmx commercially & wish to support the
 project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
 
 [Consulting](mailto:htmx@bigsky.software) is also available.
+
+<div style="text-align: center">ʕ •ᴥ•ʔ made in montana</div>
