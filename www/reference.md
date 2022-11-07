@@ -64,6 +64,7 @@ The table below lists all other attributes available in htmx.
 | [`hx-request`](/attributes/hx-request)         | configures various aspects of the request
 | [`hx-sse`](/extensions/server-sent-events)     | has been moved to an extension.  [Documentation for older versions](/attributes/hx-sse)
 | [`hx-sync`](/attributes/hx-sync)               | control how requests made by different elements are synchronized
+| [`hx-validate`](/attributes/hx-validate)       | force elements to validate themselves before a request
 | [`hx-vars`](/attributes/hx-vars)               | adds values dynamically to the parameters to submit with the request (deprecated, please use [`hx-vals`](/attributes/hx-vals))
 | [`hx-ws`](/extensions/web-sockets)             | has been moved to an extension.  [Documentation for older versions](/attributes/hx-ws)
 
