@@ -14,7 +14,7 @@ directly from HTML.  The value of the attribute can be one or more of the follow
 * `connect:<url>` or `connect:<prefix>:<url>` - A URL to establish an `WebSocket` connection against.
 * Prefixes `ws` or `wss` can optionally be specified. If not specified, HTMX defaults to add the location's scheme-type, host and port to have browsers send cookies via websockets.
 * `send` - Sends a message to the nearest websocket based on the trigger value for the element (either the natural event
-of the event specified by [`hx-trigger`])
+or the event specified by [`hx-trigger`])
 
 Here is an example:
 
