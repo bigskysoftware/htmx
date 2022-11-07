@@ -159,7 +159,7 @@ than a single value.
 
 ### <a name="htmx:confirm"></a> Event - [`htmx:confirm`](#htmx:confirm)
 
-This event is triggered immediate after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
+This event is triggered immediately after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
 the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail` 
 object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a 
 later point.  Combining these two features allows you to creat an asynchronous confirmation dialog.  
