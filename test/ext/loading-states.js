@@ -1,4 +1,4 @@
-describe("loading states extension", function() {
+describe("loading states extension", function () {
     beforeEach(function () {
         this.server = makeServer();
         this.clock = sinon.useFakeTimers();
@@ -140,4 +140,28 @@ describe("loading states extension", function() {
         btn.getElementsByTagName("button")[0].innerHTML.should.equal("Clicked!");
     });
 
+    it('history restore should not have loading states in content', function () {
+        // this test is based on test from test/attributes/hx-push-url.js:65
+        this.server.respondWith("GET", "/test1", '<button id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0" data-loading-disable>test1</button>');
+        this.server.respondWith("GET", "/test2", '<button id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" data-loading-disable>test2</button>');
+
+        make('<div hx-ext="loading-states"><button id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0" data-loading-disable>init</button></div>');
+
+        byId("d1").click();
+        byId("d1").disabled.should.be.true;
+        this.server.respond();
+        byId("d2").disabled.should.be.false;
+        var workArea = getWorkArea();
+        workArea.textContent.should.equal("test1");
+
+        byId("d2").click();
+        byId("d2").disabled.should.be.true;
+        this.server.respond();
+        workArea.textContent.should.equal("test2")
+
+        htmx._('restoreHistory')("/test1")
+
+        var el = byId("d2");
+        el.disabled.should.be.false;
+    })
 });
