@@ -164,6 +164,7 @@ the AJAX request.  If you call `preventDefault()` on the event, it will not issu
 object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
 later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
 
+
 Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
 
 ```javascript
