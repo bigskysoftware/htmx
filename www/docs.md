@@ -807,6 +807,10 @@ attribute to specify a different one.
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
 
+### Disable History Snapshot
+
+History snapshotting can be disabled for a URL by setting the [hx-history](/attributes/hx-history) attribute to `false` on any element in the current document, or any html fragment loaded into the current document by htmx. This can be used to prevent sensitive data entering the localStorage cache, which can be important for shared-use / public computers. History navigation will work as expected, but on restoration the URL will be requested from the server instead of the history cache.
+
 ## <a name="requests">[Requests &amp; Responses](#requests)
 
 Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML
