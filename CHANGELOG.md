@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.4] - 2022-11-05
+
+* Fix the _exact same_ regression in `revealed` logic as in 1.8.2 
+
+## [1.8.3] - 2022-11-04
+
+* A new [`htmx:confirm` event](/events#htmx:confirm) was added that allows for asynchronous confirmation dialogs to 
+  be integrated into htmx requests
+* The new [head-support](/extensions/head-support) extension allows for more elaborate head tag merging than standard htmx
+  supports.  This functionality may be integrated into htmx 2.0, depending on feedback.
+* The new [multi-swap](/extensions/multi-swap) provides more elaborate swapping of multiple elements on a screen using
+  a custom swap strategy
+* Many doc fixes (thank you to everyone who contributed!)
+
 ## [1.8.2] - 2022-10-12
 
 * Fix regression in `revealed` logic

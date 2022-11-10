@@ -10,7 +10,7 @@ are listed below.
 
 ### <a name="htmx:abort"></a> Event - [`htmx:abort`](#htmx:abort)
 
-This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.  
+This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.
 
 If you send an `htmx:abort` event to an element making a request, it will abort the request:
 
@@ -51,10 +51,10 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
-* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the 
-   `htmx:beforeSwap` event, else false
-* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the 
-   `htmx:beforeSwap` event, else false
+* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the
+  `htmx:beforeSwap` event, else false
+* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the
+  `htmx:beforeSwap` event, else false
 
 ### <a name="htmx:afterSettle"></a> Event - [`htmx:afterSettle`](#htmx:afterSettle)
 
@@ -69,7 +69,7 @@ This event is triggered after the DOM has [settled](/docs#settling).
 
 ### <a name="htmx:afterSwap"></a> Event - [`htmx:afterSwap`](#htmx:afterSwap)
 
-This event is triggered after new content has been  [swapped into the DOM](/docs#swapping).
+This event is triggered after new content has been [swapped into the DOM](/docs#swapping).
 
 ##### Details
 
@@ -157,6 +157,45 @@ than a single value.
 * `detail.target` - the target of the request
 * `detail.verb` - the HTTP verb in use
 
+### <a name="htmx:confirm"></a> Event - [`htmx:confirm`](#htmx:confirm)
+
+This event is triggered immediate after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
+the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail`
+object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
+later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
+
+
+Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
+
+```javascript
+document.body.addEventListener('htmx:confirm', function(evt) {
+    evt.preventDefault();
+    swal({
+      title: "Are you sure?",
+      text: "Are you sure you are sure?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((confirmed) => {
+      if (confirmed) {
+        evt.detail.issueRequest();
+      }
+   });
+});
+```
+
+##### Details
+
+{target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest}
+
+* `detail.elt` - the element in question
+* `detail.etc` - additional request information (mostly unused)
+* `detail.issueRequest` - a no argument function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!)
+* `detail.path` - the path of the request
+* `detail.target` - the target of the request
+* `detail.triggeringEvent` - the original event that triggered this request
+* `detail.verb` - the verb of the request (e.g. `GET`)
+
 ### <a name="htmx:historyCacheError"></a> Event - [`htmx:historyCacheError`](#htmx:historyCacheError)
 
 This event is triggered when an attempt to save the cache to `localStorage` fails
@@ -213,7 +252,7 @@ This event is triggered when htmx handles a history restoration action
 
 ##### Details
 
-* `detail.config` - the config that will be passed to the `EventSource` contstructor
+* `detail.config` - the config that will be passed to the `EventSource` constructor
 
 ### <a name="htmx:load"></a> Event - [`htmx:load`](#htmx:load)
 
@@ -225,7 +264,7 @@ This event is triggered when a new node is loaded into the DOM by htmx.
 
 ### <a name="htmx:noSSESourceError"></a> Event - [`htmx:noSSESourceError`](#htmx:noSSESourceError)
 
-This event is triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
+This event is triggered when an element refers to an SSE event in its trigger, but no parent SSE source has been defined
 
 ##### Details
 
@@ -288,11 +327,11 @@ attribute.  If this event is cancelled, the AJAX request will not occur.
 
 ### <a name="htmx:pushedIntoHistory"></a> Event - [`htmx:pushedIntoHistory`](#htmx:pushedIntoHistory)
 
-This event is triggered after an url has been pushed into history.
+This event is triggered after a URL has been pushed into history.
 
 ##### Details
 
-* `detail.path` - the path and query of the url that has been pushed into history
+* `detail.path` - the path and query of the URL that has been pushed into history
 
 ### <a name="htmx:responseError"></a> Event - [`htmx:responseError`](#htmx:responseError)
 
@@ -304,7 +343,6 @@ This event is triggered when an HTTP error response occurs
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
-
 
 ### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
 
@@ -319,7 +357,7 @@ This event is triggered when a network error prevents an HTTP request from occur
 
 ### <a name="htmx:sseError"></a> Event - [`htmx:sseError`](#htmx:sseError)
 
-This event is triggered when an error occurs with a SSE source
+This event is triggered when an error occurs with an SSE source
 
 ##### Details
 
@@ -341,7 +379,7 @@ This event is triggered when an error occurs during the swap phase
 ### <a name="htmx:targetError"></a> Event - [`htmx:targetError`](#htmx:targetError)
 
 This event is triggered when a bad selector is used for a [`hx-target`](/attributes/hx-target) attribute (e.g. an
-element id without a preceding `#`)
+element ID without a preceding `#`)
 
 ##### Details
 
@@ -350,7 +388,7 @@ element id without a preceding `#`)
 
 ### <a name="htmx:timeout"></a> Event - [`htmx:timeout`](#htmx:timeout)
 
-This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.  
+This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.
 
 Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](/attributes/hx-request)
 

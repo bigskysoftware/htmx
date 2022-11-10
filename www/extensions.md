@@ -61,27 +61,29 @@ See the individual extension documentation for more details.
 
 <div class="info-table">
 
-| Extension | Description
-|-----------|-------------
-| [`ajax-header`](/extensions/ajax-header) | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
-| [`alpine-morph`](/extensions/alpine-morph) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
-| [`class-tools`](/extensions/class-tools) | an extension for manipulating timed addition and removal of classes on HTML elements
+| Extension                                                    | Description
+|--------------------------------------------------------------|-------------
+| [`ajax-header`](/extensions/ajax-header)                     | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
+| [`alpine-morph`](/extensions/alpine-morph)                   | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
+| [`class-tools`](/extensions/class-tools)                     | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`client-side-templates`](/extensions/client-side-templates) | support for client side template processing of JSON responses
-| [`debug`](/extensions/debug) | an extension for debugging of a particular element using htmx
-| [`disable-element`](/extensions/disable-element) | an extension for disabling an element during an htmx request
-| [`event-header`](/extensions/event-header) | includes a JSON serialized version of the triggering event, if any
-| [`include-vals`](/extensions/include-vals) | allows you to include additional values in a request
-| [`json-enc`](/extensions/json-enc) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-| [`loading-states`](/extensions/loading-states) | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
-| [`method-override`](/extensions/method-override) | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
-| [`morphdom-swap`](/extensions/morphdom-swap) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
-| [`multi-swap`](/extensions/multi-swap) | allows to swap multiple elements with different swap methods
-| [`path-deps`](/extensions/path-deps) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
-| [`preload`](/extensions/preload) | preloads selected `href` and `hx-get` targets based on rules you control.
-| [`remove-me`](/extensions/remove-me) | allows you to remove an element after a given amount of time
-| [`restored`](/extensions/restored) | allows you to trigger events when the back button has been pressed
-| [`server-sent-events`](/extensions/server-sent-events) | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
-| [`web-sockets`](/extensions/web-sockets) | bi-directional connection to WebSocket servers
+| [`debug`](/extensions/debug)                                 | an extension for debugging of a particular element using htmx
+| [`disable-element`](/extensions/disable-element)             | an extension for disabling an element during an htmx request
+| [`event-header`](/extensions/event-header)                   | includes a JSON serialized version of the triggering event, if any
+| [`include-vals`](/extensions/include-vals)                   | allows you to include additional values in a request
+| [`json-enc`](/extensions/json-enc)                           | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
+| [`idiomoroph`](https://github.com/bigskysoftware/idiomorph)  | an extension for using the idimorph morphing algorightm as a swapping mechanism
+| [`loading-states`](/extensions/loading-states)               | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
+| [`method-override`](/extensions/method-override)             | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
+| [`morphdom-swap`](/extensions/morphdom-swap)                 | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
+| [`multi-swap`](/extensions/multi-swap)                       | allows to swap multiple elements with different swap methods
+| [`path-deps`](/extensions/path-deps)                         | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`preload`](/extensions/preload)                             | preloads selected `href` and `hx-get` targets based on rules you control.
+| [`remove-me`](/extensions/remove-me)                         | allows you to remove an element after a given amount of time
+| [`restored`](/extensions/restored)                           | allows you to trigger events when the back button has been pressed
+| [`server-sent-events`](/extensions/server-sent-events)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
+| [`web-sockets`](/extensions/web-sockets)                     | bi-directional connection to WebSocket servers
+| [`head-support`](/extensions/head-support)                   | support for merging the `head` tag from responses into the existing documents `head`
 
 </div>
 
