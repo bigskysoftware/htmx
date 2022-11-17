@@ -210,7 +210,7 @@ JavaScript and XML.  Note well the XML here.  AJAX, as everyone now knows, allow
 to the server in the background and process the response directly in JavaScript, opening up a whole new world of
 programming for the web.  
 
-The question was: what should those requests look like.  They were obviously going to be XML.  Look, it's right there
+The question was: what should those requests look like?  They were obviously going to be XML.  Look, it's right there
 in the name.  And this new SOAP/XML-RPC standard was out, maybe that was the right thing?
 
 ### Maybe REST can work for Web Services?
