@@ -35,12 +35,12 @@ directly to support a web application, as well as to general purpose JavaScript 
 
 ## <a name="prime_directive"></a>[The Prime Directive](#prime_directive)
 
-The prime directive of an HDA is to use Hypermedia As The Engine of Application State.  A hypermedia-friendly scripting approach
-will not violate this directive.  At a practical level, this means that scripting should avoid making non-hypermedia
-exchanges over the network with a backing store.  (Recall, REST is a _network architecture_.)
+The prime directive of an HDA is to use [Hypermedia As The Engine of Application State](https://htmx.org/essays/hateoas/).  
+A hypermedia-friendly scripting approach will not violate this directive.  At a practical level, this means that scripting 
+should avoid making non-hypermedia exchanges over the network with a backing store.  (Recall, REST is a _network architecture_.)
 
 This means that, in general, scripting should avoid the use of `fetch()` and `XMLHttpRequest` _unless_ the responses
-from the server are done in terms of a hypermedia of some sort, rather than a data API.
+from the server use a hypermedia of some sort (e.g. HTML), rather than a data API format (e.g. plain JSON).
 
 This also means that, in general, complicated state stored in JavaScript (rather than in the DOM) should be avoided.  
 However, this statement needs to be qualified: sophisticated state may be stored client-side in JavaScript
