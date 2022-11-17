@@ -62,7 +62,8 @@ editor to the surrounding DOM, rather than requiring a JavaScript API call to ge
 
 The idea is to, yes, use scripting to improve the hypermedia experience by providing features and functionality that are
 not part of the standard hypermedia (HTML) tool set, but do so in a way that plays well with HTML, rather than flipping
-the script and making HTML a UI-language of a larger JavaScript application.
+the script and making HTML a mere UI description language within a larger JavaScript application, as many SPA frameworks
+do.
 
 ## State
 
