@@ -128,4 +128,4 @@ provide to integrate with the DOM and to trigger events, then that is a good rou
 approach.  
 
 But, if not, and if there are no good alternatives, then use the JavaScript library as it is designed, and then simply
-try to limit the conceptual exposer of that library to the rest of the application.
+try to limit the conceptual exposure of that library to the rest of the application.
