@@ -127,5 +127,8 @@ In cases like this, we advise pragmatism: if it is easy enough to wrap the JavaS
 provide to integrate with the DOM and to trigger events, then that is a good route to go to adapt them to a Hypermedia-Driven
 approach.  
 
-But, if not, and if there are no good alternatives, then use the JavaScript library as it is designed, and then simply
-try to limit the conceptual exposure of that library to the rest of the application.
+But, if not, and if there are no good alternatives, then use the JavaScript library as it is designed.
+
+Yes, try to isolate the non-hypermedia friendly library from the rest of the application, but, in general, do not
+spend too much of your [complexity budget](https://hyperscript.org/docs/#debugging) on conceptual purity:
+sufficient unto the day is the evil thereof.
