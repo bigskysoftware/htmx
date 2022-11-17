@@ -38,7 +38,7 @@ directly to support a web application, as well as to general purpose JavaScript 
 
 The prime directive of an HDA is to use [Hypermedia As The Engine of Application State](https://htmx.org/essays/hateoas/).  
 A hypermedia-friendly scripting approach will not violate this directive.  At a practical level, this means that scripting 
-should avoid making non-hypermedia exchanges over the network with a backing store.  (Recall, REST is a _network architecture_.)
+should avoid making non-hypermedia exchanges over the network with a server.  (Recall, REST is a _network architecture_.)
 
 This means that, in general, scripting should avoid the use of `fetch()` and `XMLHttpRequest` _unless_ the responses
 from the server use a hypermedia of some sort (e.g. HTML), rather than a data API format (e.g. plain JSON).
