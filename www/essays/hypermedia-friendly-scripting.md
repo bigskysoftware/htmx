@@ -13,16 +13,13 @@ title: </> htmx - high power tools for html
 >
 > \-\-[Roy Fielding - Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
 
-## Scripting & The Web
+## <a name="scripting_and_the_web"></a>[Scripting & The Web](#scripting_and_the_web)
 
 In [Hypermedia-Driven Applications](https://htmx.org/essays/hypermedia-driven-applications/) we discuss how to build
 web applications in such a manner that they are _hypermedia_-driven, in contrast with the popular SPA approach, in which
 they are _JavaScript_ and, at the network-level, [RPC-driven](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/).
 
-In the HDA article we mentioned scripting briefly, advocating for _inline scripting_ as enabled by libraries such as
-[Alpine.js](https://alpinejs.dev/) and [hyperscript](https://hyperscript.org).
-
-We also said this:
+In the HDA article we mention scripting briefly:
 
 > In an HDA, hypermedia (HTML) is the primary medium for building the application, which means that:
 >
@@ -33,9 +30,10 @@ We also said this:
 > architecture of the HDA.
 
 In this article we would like to expand on this last comment and describe what scripting that does not "supersede" or
-"subvert" a REST-ful, Hypermedia-Driven Application looks like.
+"subvert" a REST-ful, Hypermedia-Driven Application looks like.  These rules of thumb apply to scripting written
+directly to support a web application, as well as to general purpose JavaScript libraries.
 
-## The Prime Directive
+## <a name="prime_directive"></a>[The Prime Directive](#prime_directive)
 
 The prime directive of an HDA is to use Hypermedia As The Engine of Application State.  A hypermedia-friendly scripting approach
 will not violate this directive.  At a practical level, this means that scripting should avoid making non-hypermedia
@@ -65,7 +63,7 @@ not part of the standard hypermedia (HTML) tool set, but do so in a way that pla
 the script and making HTML a mere UI description language within a larger JavaScript application, as many SPA frameworks
 do.
 
-## State
+## <a name="state"></a>[State](#state)
 
 Note that using Hypermedia As The Engine Of Application State does not mean that you cannot have _any_ client-side state.
 Obviously, the rich-text editor example cited above may have a significant amount of client-side state, for example.  But
@@ -78,7 +76,7 @@ state.  At some level it is a very simplified "feature", akin to the rich text e
 Again, the crucial aspect to consider here is that hiding or showing an element in this manner does not communicate with
 the server and alter system state outside the normal hypermedia flow.
 
-## Events
+## <a name="events"></a>[Events](#events)
 
 An excellent way for a JavaScript library to enable hypermedia-friendly scripting is for it to have 
 [a rich custom event model](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
@@ -105,7 +103,7 @@ The `end` event is triggered by Sortable.js when a drag-and-drop completes.  htm
 [`hx-trigger`](/attributes/hx-trigger) attribute and then issues an HTTP request, exchanging hypermedia with the backing
 server.  This turns this Sortable.js drag-and-drop powered widget into a new, powerful hypermedia control.
 
-## Islands
+## <a name="islands"></a>[Islands](#islands)
 
 A recent trend in web development is the notion of ["islands"](https://www.patterns.dev/posts/islands-architecture/):
 
@@ -122,18 +120,55 @@ above.
 Deniz Akşimşek has made the observation that it is typically easier to embed non-hypermedia islands within a 
 Hypermedia-Driven Application, rather than vice-versa.
 
-## Pragmatism
+## <a name="inline"></a>[Inline Scripts](#inline)
 
-Of course, there are JavaScript libraries that violate HATEOAS and that do not trigger events, making them difficult
-fits for a Hypermedia Driven Application.  Nonetheless, they may provide crucial functionality that is difficult to
-find elsewhere.  
+Inline scripts are more controversial concept, and, as such, we do not consider it a hard constraint on hypermedia-friendly 
+scripting.  The idea with inline scripting is to place scripting directly in the hypermedia.  In HTML, this means
+embedding scripts in attributes on elements.
 
-In cases like this, we advise pragmatism: if it is easy enough to wrap the JavaScript API that they
-provide to integrate with the DOM and to trigger events, then that is a good route to go to adapt it to a Hypermedia-Driven
-approach.  
+This approach to scripting, while idiosyncratic, has been adopted by some HTML scripting libraries, notably
+[Alpine.js](https://alpinejs.dev/) and [hyperscript](https://hyperscript.org).  
 
-But, if not, and if there are no good alternatives, then use the JavaScript library as it is designed.
+Here is some example hyperscript, showing an inline script:
 
-Yes, try to isolate the non-hypermedia friendly library from the rest of the application, but, in general, do not
-spend too much of your [complexity budget](https://hyperscript.org/docs/#debugging) on conceptual purity:
+```html
+<button _="on click toggle .visible on the next <section/>">
+    Show Next Section
+</button>
+<section>
+    ....
+</section>
+```
+
+An advantage of this approach is that, conceptually, the hypermedia itself is emphasized over the scripting of the 
+hypermedia.  Contrast this with [JSX Components](https://reactjs.org/docs/components-and-props.html), where the
+scripting language is the core concept, with hypermedia/HTML embedded within it.
+
+Inline scripts also have the advantage of [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
+and advantage they share with JSX.
+
+Of course, with inline scripts, there should be a soft limit to the amount of scripting done directly within the 
+hypermedia: you don't want to overwhelm the hypermedia with scripting, so that it becomes difficult to understand "the shape"
+of the hypermedia document.  Using techniques like invoking library functions or using 
+[hyperscript behaviors](https://hyperscript.org/features/behavior/) allow you to still continue to use inline scripting
+while pulling significant abstractions out to a separate file or location.
+
+Again, inline scripting isn't going to be as important as other concepts discussed in this post, but it is worth 
+considering as a hypermedia-friendly alternative to a more traditional scripting/hypermedia split.
+
+## <a name="pragmatism"></a>[Pragmatism](#pragmatism)
+
+Of course, here in the real world, there are many useful JavaScript libraries that violate HATEOAS and that do not trigger 
+events.  This often makes them difficult fits for a Hypermedia Driven Application.  Nonetheless, they may provide crucial
+functionality that is difficult to find elsewhere.  
+
+In cases like this, we advise pragmatism: if it is easy enough to wrap the JavaScript API that a library provides, you
+may be able to integrate it with the DOM and trigger your own custom events.  In this case, a simple wrapper may be a
+good route to go to adapt it to a Hypermedia-Driven approach.  And, who knows?!  Maybe the upstream author would consider
+your changes to help make their library more hypermedia friendly!
+
+But, if not, and if there are no good alternatives, then just use the JavaScript library as it is designed.
+
+Yes, try to isolate a non-hypermedia friendly library from the rest of the application, but, in general, do not
+spend too much of your [complexity budget](https://hyperscript.org/docs/#debugging) on maintaining conceptual purity:
 sufficient unto the day is the evil thereof.
