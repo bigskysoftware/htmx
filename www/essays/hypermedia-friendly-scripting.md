@@ -32,24 +32,28 @@ We also said this:
 > Scripting augments the existing hypermedia (HTML) but does not supersede it or subvert the fundamental REST-ful 
 > architecture of the HDA.
 
-In this article we would like to expand a bit on this last bit and discuss what scripting that does not "supersede" or
-"subvert" a REST-ful application looks like.
+In this article we would like to expand on this last comment and describe what scripting that does not "supersede" or
+"subvert" a REST-ful, Hypermedia-Driven Application looks like.
 
 ## The Prime Directive
 
-The prime directive of an HDA is to use Hypermedia As The Engine of Application State.  A compatible scripting approach
+The prime directive of an HDA is to use Hypermedia As The Engine of Application State.  A hypermedia-friendly scripting approach
 will not violate this directive.  At a practical level, this means that scripting should avoid making non-hypermedia
 exchanges over the network with a backing store.  (Recall, REST is a _network architecture_.)
 
 This means that, in general, scripting should avoid the use of `fetch()` and `XMLHttpRequest` _unless_ the responses
-from the server involve a hypermedia of some sort.
+from the server are done in terms of a hypermedia of some sort, rather than a data API.
 
 This also means that, in general, complicated state stored in JavaScript (rather than in the DOM) should be avoided.  
 However, this statement needs to be qualified: sophisticated state may be stored client-side in JavaScript
-so long as it is directly supporting a more sophisticated front-end experience (e.g. widget) than pure HTML allows.  Reiterating
-what Roy Fielding says:
+so long as it is directly supporting a more sophisticated front-end experience (e.g. widget) than pure HTML allows.  
+
+Reiterating what Roy Fielding says regarding the purpose of scripting in REST:
 
 > Allowing features to be downloaded after deployment improves system extensibility.
+
+So scripting is allowed in a REST-ful system in order to allow the creation of additional features not directly implemented
+within the underlying hypermedia, making the hypermedia (e.g. HTML) more extensible.
 
 A good example of this sort of feature is a rich-text editor: this may have an extremely sophisticated JavaScript model 
 for the document being edited.  However, this model should be _encapsulated_ in the DOM.  The rich text editor should
