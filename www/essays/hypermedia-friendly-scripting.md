@@ -17,7 +17,7 @@ title: </> htmx - high power tools for html
 
 In [Hypermedia-Driven Applications](https://htmx.org/essays/hypermedia-driven-applications/) we discuss how to build
 web applications in such a manner that they are _hypermedia_-driven, in contrast with the popular SPA approach, in which
-they are _JavaScript_ and, at the network-level, [RPC-driven(https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)].
+they are _JavaScript_ and, at the network-level, [RPC-driven](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/).
 
 In the HDA article we mentioned scripting briefly, advocating for _inline scripting_ as enabled by libraries such as
 [Alpine.js](https://alpinejs.dev/) and [hyperscript](https://hyperscript.org).
