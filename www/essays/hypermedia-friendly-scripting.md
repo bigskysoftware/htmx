@@ -124,7 +124,7 @@ fits for a Hypermedia Driven Application.  Nonetheless, they may provide crucial
 find elsewhere.  
 
 In cases like this, we advise pragmatism: if it is easy enough to wrap the JavaScript API that they
-provide to integrate with the DOM and to trigger events, then that is a good route to go to adapt them to a Hypermedia-Driven
+provide to integrate with the DOM and to trigger events, then that is a good route to go to adapt it to a Hypermedia-Driven
 approach.  
 
 But, if not, and if there are no good alternatives, then use the JavaScript library as it is designed.
