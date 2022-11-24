@@ -36,11 +36,11 @@ directly to support a web application, as well as to general purpose JavaScript 
 
 The basic rules for hypermedia-friendly scripting are:
 
-1. [Respect HATEOAS](#prime_directive)
-2. [Client-side only state is OK](#state)
-3. [Use events to communicate between components](#events)
-4. [Use islands to isolate non-hypermedia components from the rest of your application](#islands)
-5. [Optionally, consider inline scripting](#inline)
+* [Respect HATEOAS](#prime_directive)
+* [Client-side only state is OK](#state)
+* [Use events to communicate between components](#events)
+* [Use islands to isolate non-hypermedia components from the rest of your application](#islands)
+* [Optionally, consider inline scripting](#inline)
 
 Each of these rules will be elaborated on below.
 
