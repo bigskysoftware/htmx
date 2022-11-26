@@ -2142,7 +2142,7 @@ return (function () {
                 // and the new value could be arrays, so we have to handle all four cases :/
                 if (name != null && value != null) {
                     var current = values[name];
-                    if(current) {
+                    if (current !== undefined) {
                         if (Array.isArray(current)) {
                             if (Array.isArray(value)) {
                                 values[name] = current.concat(value);
