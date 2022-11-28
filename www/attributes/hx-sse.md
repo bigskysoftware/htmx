@@ -76,7 +76,7 @@ data: <div>Content to swap into your HTML page.</div>
 
 ### Data Only Events
 
-Alternatively, servers can proved **data only events** that do not have a name.  In this case, Javascript (and HTMX) use the name "message" like this:
+Alternatively, servers can provide **data only events** that do not have a name.  In this case, Javascript (and HTMX) use the name "message" like this:
 
 ```text
 data: <div>Content to swap into your HTML page.</div>
