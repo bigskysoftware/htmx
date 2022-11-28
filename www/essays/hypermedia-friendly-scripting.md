@@ -9,7 +9,7 @@ title: </> htmx - high power tools for html
 >The final addition to our constraint set for REST comes from the code-on-demand style of Section 3.5.3 (Figure 5-8). 
 > REST allows client functionality to be extended by downloading and executing code in the form of applets or scripts. 
 > This simplifies clients by reducing the number of features required to be pre-implemented. Allowing features to be 
-> downloaded after deployment improves system extensibility. It also, however, reduces visibility and thus is only an
+> downloaded after deployment improves system extensibility. However, it also reduces visibility, and thus is only an
 > optional constraint within REST.
 >
 > \-\-[Roy Fielding - Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
