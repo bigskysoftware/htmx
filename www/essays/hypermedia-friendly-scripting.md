@@ -158,9 +158,11 @@ Here is some example hyperscript, showing an inline script:
 ```
 This button, as it says, toggles the `.visible` class on the `section` element when it is clicked.
 
-An advantage of this inline approach is that, conceptually, the hypermedia itself is emphasized over the scripting of the 
-hypermedia.  Contrast this with [JSX Components](https://reactjs.org/docs/components-and-props.html), where the
-scripting language is the core concept, with hypermedia/HTML embedded within it.
+A primary advantage of this inline approach to hypermedia scripting is that, conceptually, the hypermedia itself is 
+emphasized, rather than the scripting of the hypermedia.
+
+Contrast this code with [JSX Components](https://reactjs.org/docs/components-and-props.html), where the
+scripting language (JavaScript) is the core concept, with hypermedia/HTML embedded within it:
 
 ```js
 class Button extends React.Component {
@@ -176,8 +178,12 @@ class Button extends React.Component {
 }
 ```
 
-Inline scripts also have the advantage of [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
-an advantage they share with JSX.
+Here, you can see that the JavaScript is the primary technology in use, with the hypermedia/HTML being used as a UI
+description mechanism.  The fact that the HTML is a hypermedia is almost immaterial in this case.
+
+The inline scripting and the JSX approach do share an advantage in common: both satisfy the [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
+design principle.  They both _localize_ behavior to the elements or components in question, which makes it easier to see
+what these elements and components do.
 
 Of course, with inline scripts, there should be a soft limit to the amount of scripting done directly within the 
 hypermedia.  You don't want to overwhelm your hypermedia with scripting, so that it becomes difficult to understand "the shape"
