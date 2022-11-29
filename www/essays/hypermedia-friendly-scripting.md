@@ -181,7 +181,7 @@ class Button extends React.Component {
 Here, you can see that the JavaScript is the primary technology in use, with the hypermedia/HTML being used as a UI
 description mechanism.  The fact that the HTML is a hypermedia is almost immaterial in this case.
 
-The inline scripting and the JSX approach do share an advantage in common: both satisfy the [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
+That being said, the inline scripting and the JSX approach do share an advantage in common: both satisfy the [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
 design principle.  They both _localize_ behavior to the elements or components in question, which makes it easier to see
 what these elements and components do.
 
