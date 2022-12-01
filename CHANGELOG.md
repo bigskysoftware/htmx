@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.8.5] - ???
+
 ## [1.8.4] - 2022-11-05
 
 * Fix the _exact same_ regression in `revealed` logic as in 1.8.2 
