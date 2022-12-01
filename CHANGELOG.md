@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.4] - 2022-11-05
+
+* Fix the _exact same_ regression in `revealed` logic as in 1.8.2 
+
 ## [1.8.3] - 2022-11-04
 
 * A new [`htmx:confirm` event](/events#htmx:confirm) was added that allows for asynchronous confirmation dialogs to 

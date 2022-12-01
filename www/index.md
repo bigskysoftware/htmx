@@ -33,7 +33,7 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.8.3"></script>
+  <script src="https://unpkg.com/htmx.org@1.8.4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -51,7 +51,7 @@ Read the [docs introduction](/docs#introduction) for a more in-depth... introduc
 
 ## sponsors
 
-Thank you to our corporate <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>!
+A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>, including:
 
 <div class="row" style="text-align: center">
 <div class="col 2" style="padding: 16px">
@@ -87,7 +87,4 @@ Thank you to our corporate <a href="https://github.com/sponsors/bigskysoftware?o
 </div>
 </div>
 
-If you use htmx commercially & wish to support the 
-project you can sponsor us via [Github](https://github.com/sponsors/bigskysoftware)
-
-[Consulting](mailto:htmx@bigsky.software) is also available.
+<div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>

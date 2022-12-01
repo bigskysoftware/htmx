@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <title>History - Regression 2 Page 1</title>
+    <script>
+        htmx.on("htmx:beforeHistorySave", function(evt){
+            console.log("Saving history : ", evt.detail);
+            console.log("History Cache Before:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+            setTimeout(function () {
+                console.log("History Cache After:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+            }, 10);
+        })
+    </script>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+
+<h1>Page 2, Issues An HTMX Request For Page 3</h1>
+
+<button hx-target="body" hx-get="page3.html" hx-push-url="true" hx-trigger="click delay:2s">Load Page 3</button>
+</body>
+
+</html>

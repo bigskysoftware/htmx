@@ -5,6 +5,7 @@ title: </> htmx - Essays
 
 ## Essays
 
+* [Hypermedia Friendly Scripting](/essays/hypermedia-friendly-scripting/)
 * [When To Use Hypermedia?](/essays/when-to-use-hypermedia/)
 * [A Real World React to htmx Port](/essays/a-real-world-react-to-htmx-port/)
 * [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)

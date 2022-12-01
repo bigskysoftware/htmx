@@ -13,8 +13,8 @@
     <script src="/js/preload.js"></script>
     <script src="/js/_hyperscript.js"></script>
     <script>
-        htmx.onLoad(function(){
-            Prism.highlightAll();
+        htmx.onLoad(function(content){
+            Prism.highlightAllUnder(content);
         })
     </script>
 
