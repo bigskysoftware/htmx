@@ -197,17 +197,18 @@ If the event is cancelled, no message will be sent.
 #### Socket wrapper
 
 You may notice that all events expose `detail.socketWrapper` property. This wrapper holds the socket
-object itself and the message queue. It also encapsulates reconnection algorithm. It also has a few methods:
+object itself and the message queue. It also encapsulates reconnection algorithm. It exposes a few members:
 
-- `send(message, fromElt)` - sends a message. If the socket is not open, the message will be persisted in the queue
-  instead.
-- `sendImmediately(message, fromElt)` - attempts to send a message regardless of socket state, bypassing the queue
+- `send(message, fromElt)` - sends a message safely. If the socket is not open, the message will be persisted in the queue
+  instead and sent when the socket is ready.
+- `sendImmediately(message, fromElt)` - attempts to send a message regardless of socket state, bypassing the queue. May fail
+- `queue` - an array of messages, awaiting in the queue.
 
 This wrapper can be used in your event handlers to access the socket object, to monitor and manipulate the queue (e.g.,
-you can reset the queue when reconnecting), but also, you can send additional messages using the same mechanisms as the
-extension itself. The `fromElt` parameter allows you to specify an element that will be the source
-of `htmx:wsBeforeSend` and `htmx:wsAfterSend` events
-when sending your messages, but in most cases you should keep it undefined to prevent infinite loops.
+you can reset the queue when reconnecting), and to send additional messages (e.g., if you want to send data in batches). 
+The `fromElt` parameter is optional and allows to specify an element that will be the source
+of `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when sending your messages, 
+but in most cases you should keep it undefined to avoid event handlers recursion.
 
 ### Testing with the Demo Server
 

@@ -130,7 +130,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			var response = event.data;
 			if (!api.triggerEvent(socketElt, "htmx:wsBeforeMessage", {
 				message: response,
-				socketWrapper: socketWrapper
+				socketWrapper: socketWrapper.publicInterface
 			})) {
 				return;
 			}
@@ -150,7 +150,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 			}
 
 			api.settleImmediately(settleInfo.tasks);
-			api.triggerEvent(socketElt, "htmx:wsAfterMessage", { message: response, socketWrapper: socketWrapper })
+			api.triggerEvent(socketElt, "htmx:wsAfterMessage", { message: response, socketWrapper: socketWrapper.publicInterface })
 		});
 
 		// Put the WebSocket into the HTML Element's custom data.
@@ -177,6 +177,11 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 */
 	function createWebsocketWrapper(socketElt, socketFunc) {
 		var wrapper = {
+			publicInterface: {
+				send: this.send,
+				sendImmediately: this.sendImmediately,
+				queue: this.queue
+			},
 			socket: null,
 			messageQueue: [],
 			retryCount: 0,
@@ -202,12 +207,12 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				}
 				if (sendElt && api.triggerEvent(sendElt, 'htmx:wsBeforeSend', {
 					message: message,
-					socketWrapper: this
+					socketWrapper: this.publicInterface
 				})) {
 					this.socket.send(message);
 					sendElt && api.triggerEvent(sendElt, 'htmx:wsAfterSend', {
 						message: message,
-						socketWrapper: this
+						socketWrapper: this.publicInterface
 					})
 				}
 			},
@@ -246,7 +251,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 				socket.onopen = function (e) {
 					wrapper.retryCount = 0;
-					api.triggerEvent(socketElt, "htmx:wsOpen", { event: e, socketWrapper: wrapper });
+					api.triggerEvent(socketElt, "htmx:wsOpen", { event: e, socketWrapper: wrapper.publicInterface });
 					console.log("wsopen")
 					wrapper.handleQueuedMessages();
 				}
@@ -264,7 +269,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 					// Notify client code that connection has been closed. Client code can inspect `event` field
 					// to determine whether closure has been valid or abnormal
-					api.triggerEvent(socketElt, "htmx:wsClose", { event: e, socketWrapper: wrapper })
+					api.triggerEvent(socketElt, "htmx:wsClose", { event: e, socketWrapper: wrapper.publicInterface })
 				};
 
 				socket.onerror = function (e) {
@@ -347,7 +352,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 					triggeringEvent: evt,
 					messageBody: undefined,
-					socketWrapper: socketWrapper
+					socketWrapper: socketWrapper.publicInterface
 				};
 
 				if (!api.triggerEvent(elt, 'htmx:wsConfigSend', sendConfig)) {
