@@ -143,6 +143,8 @@ If the event is cancelled, no further processing will occur.
 This event is triggered when a message has been completely processed by htmx and all changes have been
 settled, similar to `htmx:afterOnLoad`.
 
+Cancelling this event has no effect.
+
 * `detail.elt` - the element that holds the socket (the one with `ws-connect` attribute)
 * `detail.message` - raw message content
 * `detail.socketWrapper` - the wrapper around socket object
@@ -186,7 +188,7 @@ If the event is cancelled, the message will be discarded from the queue and not 
 
 This event is triggered just after sending a message. This includes messages from the queue.
 
-If the event is cancelled, no message will be sent.
+Cancelling the event has no effect.
 
 ##### Details
 
@@ -204,11 +206,10 @@ object itself and the message queue. It also encapsulates reconnection algorithm
 - `sendImmediately(message, fromElt)` - attempts to send a message regardless of socket state, bypassing the queue. May fail
 - `queue` - an array of messages, awaiting in the queue.
 
-This wrapper can be used in your event handlers to access the socket object, to monitor and manipulate the queue (e.g.,
-you can reset the queue when reconnecting), and to send additional messages (e.g., if you want to send data in batches). 
-The `fromElt` parameter is optional and allows to specify an element that will be the source
-of `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when sending your messages, 
-but in most cases you should keep it undefined to avoid event handlers recursion.
+This wrapper can be used in your event handlers to monitor and manipulate the queue (e.g., you can reset the queue when 
+reconnecting), and to send additional messages (e.g., if you want to send data in batches). 
+The `fromElt` parameter is optional and, when specified, will trigger corresponding websocket events from
+specified element, namely `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when sending your messages. 
 
 ### Testing with the Demo Server
 
