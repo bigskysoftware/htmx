@@ -34,6 +34,16 @@ Use the following attributes to configure how WebSockets behave:
 </div>
 ```
 
+### Configuration
+
+WebSockets extension support two configuration options:
+
+- `createWebSocket` - a factory function that can be used to create a custom WebSocket instances. Must be a function,
+  returning `WebSocket` object
+- `wsBinaryType` - a string value, that defines
+  socket's [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType) property. Default value
+  is `blob`
+
 ### Receiving Messages from a WebSocket
 
 The example above establishes a WebSocket to the `/chatroom` end point. Content that is sent down from the websocket
@@ -84,7 +94,7 @@ time (in milliseconds) to wait before trying again.
 // example reconnect delay that you shouldn't use because
 // it's not as good as the algorithm that's already in place
 htmx.config.wsReconnectDelay = function (retryCount) {
-	return retryCount * 1000 // return value in milliseconds
+    return retryCount * 1000 // return value in milliseconds
 }
 ```
 
@@ -166,7 +176,8 @@ If the event is cancelled, no further processing will occur and no messages will
 * `detail.errors` - validation errors. Will prevent sending and
   trigger [`htmx:validation:halted`](/events#htmx:validation:halted) event if not empty
 * `detail.triggeringEvent` - the event that triggered sending
-* `detail.messageBody` - raw message body that will be sent to the socket. Undefined, can be set to value of any type, supported by WebSockets. If set, will override
+* `detail.messageBody` - raw message body that will be sent to the socket. Undefined, can be set to value of any type,
+  supported by WebSockets. If set, will override
   default JSON serialization. Useful, if you want to use some other format, like XML or MessagePack
 * `detail.elt` - the element that dispatched the sending (the one with `ws-send` attribute)
 * `detail.socketWrapper` - the wrapper around socket object
@@ -201,15 +212,17 @@ Cancelling the event has no effect.
 You may notice that all events expose `detail.socketWrapper` property. This wrapper holds the socket
 object itself and the message queue. It also encapsulates reconnection algorithm. It exposes a few members:
 
-- `send(message, fromElt)` - sends a message safely. If the socket is not open, the message will be persisted in the queue
+- `send(message, fromElt)` - sends a message safely. If the socket is not open, the message will be persisted in the
+  queue
   instead and sent when the socket is ready.
-- `sendImmediately(message, fromElt)` - attempts to send a message regardless of socket state, bypassing the queue. May fail
+- `sendImmediately(message, fromElt)` - attempts to send a message regardless of socket state, bypassing the queue. May
+  fail
 - `queue` - an array of messages, awaiting in the queue.
 
-This wrapper can be used in your event handlers to monitor and manipulate the queue (e.g., you can reset the queue when 
-reconnecting), and to send additional messages (e.g., if you want to send data in batches). 
+This wrapper can be used in your event handlers to monitor and manipulate the queue (e.g., you can reset the queue when
+reconnecting), and to send additional messages (e.g., if you want to send data in batches).
 The `fromElt` parameter is optional and, when specified, will trigger corresponding websocket events from
-specified element, namely `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when sending your messages. 
+specified element, namely `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when sending your messages.
 
 ### Testing with the Demo Server
 

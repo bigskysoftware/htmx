@@ -252,7 +252,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				socket.onopen = function (e) {
 					wrapper.retryCount = 0;
 					api.triggerEvent(socketElt, "htmx:wsOpen", { event: e, socketWrapper: wrapper.publicInterface });
-					console.log("wsopen")
 					wrapper.handleQueuedMessages();
 				}
 
@@ -427,7 +426,9 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 * @returns WebSocket
 	 */
 	function createWebSocket(url) {
-		return new WebSocket(url, []);
+		var sock = new WebSocket(url, []);
+		sock.binaryType = htmx.config.wsBinaryType;
+		return sock;
 	}
 
 	/**
