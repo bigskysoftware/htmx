@@ -33,6 +33,7 @@
 <script src="../node_modules/mocha/mocha.js"></script>
 <script src="../node_modules/mocha-webdriver-runner/dist/mocha-webdriver-client.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="../src/htmx.js"></script>
 <script class="mocha-init">
     mocha.setup('bdd');
@@ -137,6 +138,9 @@
 <script src="../src/ext/multi-swap.js"></script>
 <script src="ext/multi-swap.js"></script>
 
+<script src="../src/ext/ws.js"></script>
+<script src="ext/ws.js"></script>
+
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>
 
@@ -147,7 +151,7 @@
 </script>
 <em>Work Area</em>
 <hr/>
-<div id="work-area" hx-history-elt hx-ext="sse, ws">
+<div id="work-area" hx-history-elt hx-ext="sse">
 </div>
 </body>
 </html>

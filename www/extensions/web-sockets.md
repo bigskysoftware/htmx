@@ -164,14 +164,15 @@ If the event is cancelled, no further processing will occur and no messages will
 * `detail.errors` - validation errors. Will prevent sending and
   trigger [`htmx:validation:halted`](/events#htmx:validation:halted) event if not empty
 * `detail.triggeringEvent` - the event that triggered sending
-* `detail.messageBody` - raw message body that will be sent to the socket. Undefined by default. If set, will override
-  default JSON serialization. Useful, if you want some other format, like XML or MessagePack
+* `detail.messageBody` - raw message body that will be sent to the socket. Undefined, can be set to value of any type, supported by WebSockets. If set, will override
+  default JSON serialization. Useful, if you want to use some other format, like XML or MessagePack
 * `detail.elt` - the element that dispatched the sending (the one with `ws-send` attribute)
 * `detail.socketWrapper` - the wrapper around socket object
 
 #### <a name="htmx:wsBeforeSend"></a> Event - [`htmx:wsBeforeSend`](#htmx:wsBeforeSend)
 
 This event is triggered just before sending a message. This includes messages from the queue.
+Message can not be modified at this point.
 
 If the event is cancelled, the message will be discarded from the queue and not sent.
 

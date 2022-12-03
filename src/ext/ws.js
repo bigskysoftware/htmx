@@ -238,10 +238,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 					this.socket.close()
 				}
 
-				if (api.bodyContains(socketElt)) {
-					return;
-				}
-
 				// Create a new WebSocket and event handlers
 				/** @type {WebSocket} */
 				var socket = socketFunc();
@@ -251,18 +247,23 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				socket.onopen = function (e) {
 					wrapper.retryCount = 0;
 					api.triggerEvent(socketElt, "htmx:wsOpen", { event: e, socketWrapper: wrapper });
+					console.log("wsopen")
 					wrapper.handleQueuedMessages();
 				}
 
 				socket.onclose = function (e) {
+					// If socket should not be connected, stop further attempts to establish connection
 					// If Abnormal Closure/Service Restart/Try Again Later, then set a timer to reconnect after a pause.
-					if ([1006, 1012, 1013].indexOf(e.code) >= 0) {
+					if (!maybeCloseWebSocketSource(socketElt) && [1006, 1012, 1013].indexOf(e.code) >= 0) {
 						var delay = getWebSocketReconnectDelay(wrapper.retryCount);
 						setTimeout(function () {
 							wrapper.retryCount += 1;
 							wrapper.init();
 						}, delay);
 					}
+
+					// Notify client code that connection has been closed. Client code can inspect `event` field
+					// to determine whether closure has been valid or abnormal
 					api.triggerEvent(socketElt, "htmx:wsClose", { event: e, socketWrapper: wrapper })
 				};
 
@@ -407,7 +408,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 */
 	function maybeCloseWebSocketSource(elt) {
 		if (!api.bodyContains(elt)) {
-			api.getInternalData(elt).webSocket.socket.close();
+			api.getInternalData(elt).webSocket.close();
 			return true;
 		}
 		return false;
