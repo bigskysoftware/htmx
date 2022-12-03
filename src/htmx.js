@@ -1987,9 +1987,19 @@ return (function () {
         function saveCurrentPageToHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
-            triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+
+            // Allow history snapshot feature to be disabled where hx-history="false"
+            // is present *anywhere* in the current document we're about to save,
+            // so we can prevent privileged data entering the cache.
+            // The page will still be reachable as a history entry, but htmx will fetch it
+            // live from the server onpopstate rather than look in the localStorage cache
+            var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
+            if (!disableHistoryCache) {
+                triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
+                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+            }
+
+            if (htmx.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
         }
 
         function pushUrlIntoHistory(path) {
