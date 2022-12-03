@@ -58,6 +58,7 @@ return (function () {
                 withCredentials:false,
                 timeout:0,
                 wsReconnectDelay: 'full-jitter',
+                wsBinaryType: 'blob',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
@@ -69,7 +70,9 @@ return (function () {
                 return new EventSource(url, {withCredentials:true})
             },
             createWebSocket: function(url){
-                return new WebSocket(url, []);
+                var sock = new WebSocket(url, []);
+                sock.binaryType = htmx.config.wsBinaryType;
+                return sock;
             },
             version: "1.8.5"
         };
