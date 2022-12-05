@@ -7,7 +7,7 @@ htmx.defineExtension('client-side-templates', {
             var templateId = mustacheTemplate.getAttribute('mustache-template');
             var template = htmx.find("#" + templateId);
             if (template) {
-                return Mustache.render(template.innerHTML, data);
+                return Mustache.render(template.innerHTML, {"data": data});
             } else {
                 throw "Unknown mustache template: " + templateId;
             }
@@ -17,7 +17,7 @@ htmx.defineExtension('client-side-templates', {
         if (handlebarsTemplate) {
             var data = JSON.parse(text);
             var templateName = handlebarsTemplate.getAttribute('handlebars-template');
-            return Handlebars.partials[templateName](data);
+            return Handlebars.partials[templateName]({"data": data});
         }
 
         var nunjucksTemplate = htmx.closest(elt, "[nunjucks-template]");
@@ -26,9 +26,9 @@ htmx.defineExtension('client-side-templates', {
             var templateName = nunjucksTemplate.getAttribute('nunjucks-template');
             var template = htmx.find('#' + templateName);
             if (template) {
-                return nunjucks.renderString(template.innerHTML, data);
+                return nunjucks.renderString(template.innerHTML, {"data": data});
             } else {
-                return nunjucks.render(templateName, data);
+                return nunjucks.render(templateName, {"data": data});
             }
           }
 
