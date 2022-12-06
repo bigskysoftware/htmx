@@ -52,6 +52,7 @@ The table below lists all other attributes available in htmx.
 | [`hx-encoding`](/attributes/hx-encoding)       | changes the request encoding type
 | [`hx-ext`](/attributes/hx-ext)                 | extensions to use for this element
 | [`hx-headers`](/attributes/hx-headers)         | adds to the headers that will be submitted with the request
+| [`hx-history`](/attributes/hx-history)         | prevent sensitive data being saved to the history cache
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include)         | include additional data in requests
 | [`hx-indicator`](/attributes/hx-indicator)     | the element to put the `htmx-request` class on during the request
