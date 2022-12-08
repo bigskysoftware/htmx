@@ -324,7 +324,7 @@ export interface HtmxConfig {
     refreshOnHistoryMiss?: boolean;
     timeout?: number;
     disableSelector?: "[hx-disable], [data-hx-disable]" | string;
-    scrollBehavior?: "smooth";
+    scrollBehavior?: "auto";
 }
 
 /**

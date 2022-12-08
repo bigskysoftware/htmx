@@ -61,7 +61,7 @@ return (function () {
                 wsBinaryType: 'blob',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
-                scrollBehavior: 'smooth',
+                scrollBehavior: 'auto',
                 defaultFocusScroll: false,
             },
             parseInterval:parseInterval,
