@@ -1128,6 +1128,16 @@ return (function () {
 
         var INPUT_SELECTOR = 'input, textarea, select';
 
+        function filter_newline(tokens) {
+            if (tokens[0] == "\n") {
+                for (var i = 0; i < tokens.length() - 1; i++) {
+                    if ((tokens[i].equals(" ") && tokens[i + 1].equals(" ")) || (tokens[i].equals("\n") && tokens[i + 1].equals(" "))) {
+                        tokens[i].remove;
+                    }
+                }
+            }
+        }
+
         /**
          * @param {HTMLElement} elt
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
@@ -1137,6 +1147,7 @@ return (function () {
             var triggerSpecs = [];
             if (explicitTrigger) {
                 var tokens = tokenizeString(explicitTrigger);
+                filter_newline(tokens);
                 do {
                     consumeUntil(tokens, NOT_WHITESPACE);
                     var initialLength = tokens.length;
