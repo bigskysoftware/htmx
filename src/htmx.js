@@ -1781,6 +1781,12 @@ return (function () {
                 if (matches(evt.target, "button, input[type='submit']")) {
                     var internalData = getInternalData(form);
                     internalData.lastButtonClicked = evt.target;
+                } else { // in case clicked element is nested within a button
+                    var elt = closest(evt.target, "button");
+                    if (elt !== null) {
+                        var internalData = getInternalData(form);
+                        internalData.lastButtonClicked = elt;
+                    }
                 }
             };
 
