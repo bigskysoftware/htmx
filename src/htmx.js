@@ -1777,18 +1777,18 @@ return (function () {
         }
 
         function initButtonTracking(form){
-            var maybeSetLastButtonClicked = function(evt){
-                if (matches(evt.target, "button, input[type='submit']")) {
+        var maybeSetLastButtonClicked = function(evt){
+            if (matches(evt.target, "button, input[type='submit']")) {
+                var internalData = getInternalData(form);
+                internalData.lastButtonClicked = evt.target;
+            } else { // in case clicked element is nested within a button
+                var elt = closest(evt.target, "button");
+                if (elt !== null) {
                     var internalData = getInternalData(form);
-                    internalData.lastButtonClicked = evt.target;
-                } else { // in case clicked element is nested within a button
-                    var elt = closest(evt.target, "button");
-                    if (elt !== null) {
-                        var internalData = getInternalData(form);
-                        internalData.lastButtonClicked = elt;
-                    }
+                    internalData.lastButtonClicked = elt;
                 }
-            };
+            }
+        };
 
             // need to handle both click and focus in:
             //   focusin - in case someone tabs in to a button and hits the space bar
@@ -3344,11 +3344,57 @@ return (function () {
             }
         }
 
+        //convert kebab-case syntax to camel-case
+        function convertSyntax(key_val) { 
+            var j = 0;
+            for (; j < key_val.length; j++) {
+                if (key_val[j] == '-') {
+                    key_val = key_val.substring(0, j) + key_val[j + 1].toUpperCase() + key_val.substring(j + 2);
+                }
+            }
+            // convert strings to corresponding data types
+            if (!isNaN(key_val)) {
+               key_val = parseInt(key_val);
+            } else if (key_val === "false") {
+               key_val = false;
+            } else if (key_val === "true") {
+               key_val = true;
+            }
+            return key_val;
+        }
+        
+        function parseData(jString) {
+            // convert string: "history-enabled=false, default-settle-delay=0" to  
+            // javascript object: “{historyEnabled = false, defaultSettleDelay = 0}”
+            const object = {};
+            var key, val = "";
+            var sub = jString.split(' ');
+            var len = sub.length;
+            var i;
+            for (i = 0; i < len - 1; i++) {
+                var curr = sub[i];
+                key = curr.substring(0, curr.indexOf("="));
+                key = convertSyntax(key);
+                val = curr.substring(curr.indexOf("=") + 1, curr.indexOf(","));
+                val = convertSyntax(val);
+                object[key] = val;
+                key = "";
+                val = "";
+            }
+            var curr = sub[len - 1];
+            key = curr.substring(0, curr.indexOf("="));
+            key = convertSyntax(key);
+            val = curr.substring(curr.indexOf("=") + 1, curr.length);
+            val = convertSyntax(val);
+            object[key] = val;
+            return object;
+        }
+
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
             if (element) {
                 // @ts-ignore
-                return parseJSON(element.content);
+                return parseData(element.content);
             } else {
                 return null;
             }
