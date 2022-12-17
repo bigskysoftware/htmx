@@ -115,6 +115,26 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:configRequest on form gives access to submit event", function () {
+        var submitterId;
+        var handler = htmx.on("htmx:configRequest", function (evt) {
+            evt.detail.headers['X-Submitter-Id'] = evt.detail.triggeringEvent.submitter.id;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                submitterId = xhr.requestHeaders['X-Submitter-Id']
+                xhr.respond(200, {}, "");
+            });
+            make('<div hx-target="this" hx-boost="true"><form action="/test" method="post"><button type="submit" id="b1">Submit</button><button type="submit" id="b2">Submit</button></form></div>');
+            var btn = byId('b1');
+            btn.click();
+            this.server.respond();
+            should.equal(submitterId, "b1")
+        } finally {
+            htmx.off("htmx:configRequest", handler);
+        }
+    });
+
     it("htmx:afterSwap is called when replacing outerHTML", function () {
         var called = false;
         var handler = htmx.on("htmx:afterSwap", function (evt) {

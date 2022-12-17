@@ -1278,7 +1278,7 @@ return (function () {
                     path = getRawAttribute(elt, 'action');
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
-                    addEventListener(elt, function(evt) {
+                    addEventListener(elt, function(elt, evt) {
                         issueAjaxRequest(verb, path, elt, evt)
                     }, nodeData, triggerSpec, true);
                 });
