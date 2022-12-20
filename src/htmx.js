@@ -2120,8 +2120,14 @@ return (function () {
                 return false;
             }
             // ignore "submitter" types (see jQuery src/serialize.js)
-            if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
-                return false;
+            if (elt.type === "button" || elt.type === "submit") {
+              // If is an input button (i.e. <input type="submit" name="..." value="..." />)
+              // then include the name & value if they exist.
+              // We know this input button already has a name from above logic.
+              if (elt.tagName !== "INPUT" || !elt.value) return false;
+            }
+            if (elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
+                  return false;
             }
             if (elt.type === "checkbox" || elt.type === "radio" ) {
                 return elt.checked;
