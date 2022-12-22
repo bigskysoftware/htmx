@@ -1791,18 +1791,26 @@ return (function () {
         }
 
         function initNode(elt) {
+            var nodeData = getInternalData(elt);
+
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
+                if (nodeData.initHash) {
+                  triggerEvent(elt, "htmx:beforeProcessNode")
+                  nodeData.initHash = null;
+                  deInitNode(elt);
+                  triggerEvent(elt, "htmx:afterProcessNode");
+                }
                 return;
             }
-            var nodeData = getInternalData(elt);
+
             if (nodeData.initHash !== attributeHash(elt)) {
+                triggerEvent(elt, "htmx:beforeProcessNode")
 
                 nodeData.initHash = attributeHash(elt);
 
                 // clean up any previously processed info
                 deInitNode(elt);
 
-                triggerEvent(elt, "htmx:beforeProcessNode")
 
                 if (elt.value) {
                     nodeData.lastValue = elt.value;
