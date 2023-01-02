@@ -14,13 +14,13 @@
   "files": [
     "LICENSE",
     "README.md",
-    "src/htmx.d.ts",
+    "dist/htmx.d.ts",
     "dist/*.js",
     "dist/ext/*.js",
     "dist/*.js.gz"
   ],
   "main": "dist/htmx.min.js",
-  "types": "src/htmx.d.ts",
+  "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
