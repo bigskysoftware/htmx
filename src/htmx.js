@@ -546,7 +546,13 @@ return (function () {
             } else if (selector === 'window') {
                 return [window];
             } else {
-                return getDocument().querySelectorAll(selector);
+                let n = elt
+                let elts = null
+                while (true) {
+                    elts = n.querySelectorAll(selector)
+                    if (elts.length > 0 || n === window.top.document) return elts
+                    n = n.getRootNode()
+                }
             }
         }
 
@@ -1763,8 +1769,17 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
-                return results;
+                    " [data-hx-ws], [hx-ext], [hx-data-ext]");
+                if(elt.shadowRoot){
+                    var shadowRoot = elt.shadowRoot;
+                    var shadowResults = shadowRoot.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                        " [data-hx-ws], [hx-ext], [hx-data-ext]");
+                    var newResult =  [...results,...shadowResults];
+                    return newResult;
+                }
+                else{
+                    return results;
+                }
             } else {
                 return [];
             }
@@ -3385,3 +3400,16 @@ return (function () {
     }
 )()
 }));
+function supportsDeclarativeShadowDOM() {
+    return HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot');
+}
+(function attachShadowRoots(root) {
+    root.querySelectorAll("template[shadowroot]").forEach(template => {
+        const mode = template.getAttribute("shadowroot");
+        const shadowRoot = template.parentNode.attachShadow({ mode });
+        shadowRoot.appendChild(template.content);
+        template.remove();
+        htmx.process(shadowRoot);
+        attachShadowRoots(shadowRoot);
+    });
+})(document);
