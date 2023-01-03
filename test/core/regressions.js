@@ -65,7 +65,7 @@ describe("Core htmx Regression Tests", function(){
         this.server.respond();
         div.innerText.should.contain("Foo")
     });
-    
+
     it ('id with dot in value doesnt cause an error', function(){
         this.server.respondWith("GET", "/test", "Foo <div id='ViewModel.Test'></div>");
         var div = make('<div hx-get="/test">Get It</div>');
@@ -183,6 +183,26 @@ describe("Core htmx Regression Tests", function(){
         this.server.respond();
 
         btn.innerText.should.equal("FooBar");
+    })
+
+
+    it("can trigger swaps from fields that don't support setSelectionRange", function(){
+        const template = '<form method="get" action="/test" hx-boost="true">\n' +
+            '<input value="test@test.com" type="email" id="id_email" />\n' +
+            '<input type="submit" id="id_button" />\n' +
+              '</form>';
+
+        const response = '<form>\n' +
+              '<input value="supertest@test.com" type="email" id="id_email" />\n' +
+              '<input type="submit" id="id_button" />\n' +
+              '</form>';
+        this.server.respondWith("GET", "/test", response);
+        make(template);
+        var input = byId("id_email");
+        input.focus();
+        input.dispatchEvent(new KeyboardEvent('keypress', {"key": "Enter"}));
+        this.server.respond();
+        input.value.should.equal("supertest@test.com");
     })
 
 })
