@@ -187,22 +187,25 @@ describe("Core htmx Regression Tests", function(){
 
 
     it("can trigger swaps from fields that don't support setSelectionRange", function(){
-        const template = '<form method="get" action="/test" hx-boost="true">\n' +
-            '<input value="test@test.com" type="email" id="id_email" />\n' +
-            '<input type="submit" id="id_button" />\n' +
+        const template = '<form id="formtest"> \n' +
+              '<input hx-get="/test" hx-target="#formtest" hx-trigger="click" type="text" id="id_email" value="test@test.com" />\n' +
               '</form>';
 
-        const response = '<form>\n' +
-              '<input value="supertest@test.com" type="email" id="id_email" />\n' +
-              '<input type="submit" id="id_button" />\n' +
+        const response = '<form id="formtest">\n' +
+              '<input hx-get="/test" hx-target="#formtest" hx-trigger="click" type="email" id="id_email" value="supertest@test.com" />\n' +
               '</form>';
         this.server.respondWith("GET", "/test", response);
         make(template);
         var input = byId("id_email");
+        // HTMX only attempts to restore the selection on inputs that have a current selection and are active.
+        // additionally we can't set the selection on email inputs (that's the whole bug) so start as a text input where you can set selection
+        // and replace with an email
         input.focus();
-        input.dispatchEvent(new KeyboardEvent('keypress', {"key": "Enter"}));
+        input.selectionStart = 3;
+        input.selectionEnd = 3;
+        input.click();
         this.server.respond();
+        var input = byId("id_email");
         input.value.should.equal("supertest@test.com");
-    })
-
-})
+    });
+});
