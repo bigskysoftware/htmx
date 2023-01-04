@@ -854,11 +854,13 @@ return (function () {
 
         function attributeHash(elt) {
             var hash = 0;
-            for (var i = 0; i < elt.attributes.length; i++) {
-                var attribute = elt.attributes[i];
-                if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
-                    hash = stringHash(attribute.name, hash);
-                    hash = stringHash(attribute.value, hash);
+            if(elt.attributes){
+                for (var i = 0; i < elt.attributes.length; i++) {
+                    var attribute = elt.attributes[i];
+                    if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
+                        hash = stringHash(attribute.name, hash);
+                        hash = stringHash(attribute.value, hash);
+                    }
                 }
             }
             return hash;
