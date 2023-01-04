@@ -65,7 +65,7 @@ describe("Core htmx Regression Tests", function(){
         this.server.respond();
         div.innerText.should.contain("Foo")
     });
-    
+
     it ('id with dot in value doesnt cause an error', function(){
         this.server.respondWith("GET", "/test", "Foo <div id='ViewModel.Test'></div>");
         var div = make('<div hx-get="/test">Get It</div>');
@@ -185,4 +185,27 @@ describe("Core htmx Regression Tests", function(){
         btn.innerText.should.equal("FooBar");
     })
 
-})
+
+    it("can trigger swaps from fields that don't support setSelectionRange", function(){
+        const template = '<form id="formtest"> \n' +
+              '<input hx-get="/test" hx-target="#formtest" hx-trigger="click" type="text" id="id_email" value="test@test.com" />\n' +
+              '</form>';
+
+        const response = '<form id="formtest">\n' +
+              '<input hx-get="/test" hx-target="#formtest" hx-trigger="click" type="email" id="id_email" value="supertest@test.com" />\n' +
+              '</form>';
+        this.server.respondWith("GET", "/test", response);
+        make(template);
+        var input = byId("id_email");
+        // HTMX only attempts to restore the selection on inputs that have a current selection and are active.
+        // additionally we can't set the selection on email inputs (that's the whole bug) so start as a text input where you can set selection
+        // and replace with an email
+        input.focus();
+        input.selectionStart = 3;
+        input.selectionEnd = 3;
+        input.click();
+        this.server.respond();
+        var input = byId("id_email");
+        input.value.should.equal("supertest@test.com");
+    });
+});

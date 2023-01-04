@@ -3142,7 +3142,11 @@ return (function () {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
-                                    newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                    try {
+                                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                    } catch (e) {
+                                        // the setSelectionRange method is present on fields that don't support it, so just let this fail
+                                    }
                                 }
                                 newActiveElt.focus(focusOptions);
                             }
