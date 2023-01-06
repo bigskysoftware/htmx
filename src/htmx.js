@@ -533,6 +533,7 @@ return (function () {
                     }
                 }
                 while (elt = elt && parentElt(elt));
+                return null;
             }
         }
 
