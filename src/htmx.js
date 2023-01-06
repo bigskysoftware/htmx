@@ -526,6 +526,7 @@ return (function () {
             if (elt.closest) {
                 return elt.closest(selector);
             } else {
+                // TODO remove when IE goes away
                 do{
                     if (elt == null || matches(elt, selector)){
                         return elt;
@@ -1778,9 +1779,10 @@ return (function () {
 
         function initButtonTracking(form){
             var maybeSetLastButtonClicked = function(evt){
-                if (matches(evt.target, "button, input[type='submit']")) {
+                var elt = closest(evt.target, "button, input[type='submit']");
+                if (elt !== null) {
                     var internalData = getInternalData(form);
-                    internalData.lastButtonClicked = evt.target;
+                    internalData.lastButtonClicked = elt;
                 }
             };
 

@@ -169,5 +169,13 @@ describe("Core htmx Parameter Handling", function() {
         should.equal(vals['s1'], undefined);
     })
 
+    it('form includes button name and value if button has nested elements when clicked', function () {
+        var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><button type="submit" id="btn1" name="do" value="rey"><div id="div1"><span id="span1"></span></div></button></form>');
+        var nestedElt = byId('span1');
+        nestedElt.click();
+        var vals = htmx._('getInputValues')(form).values;
+        vals['do'].should.equal('rey');
+    })
+
 });
 
