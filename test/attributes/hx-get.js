@@ -73,4 +73,57 @@ describe("hx-get attribute", function() {
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
     });
+
+    it('does not include a cache-busting parameter when not enabled', function () {
+
+        this.server.respondWith("GET", /\/test.*/, function (xhr) {
+            should.not.exist(getParameters(xhr)["org.htmx.cache-buster"]);
+            xhr.respond(200, {}, "Clicked!");
+        });
+
+        try {
+            htmx.config.getCacheBusterParam = false;
+            var btn = make('<button hx-get="/test">Click Me!</button>')
+            btn.click();
+            this.server.respond();
+            btn.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.getCacheBusterParam = false;
+        }
+    });
+
+    it('includes a cache-busting parameter when enabled w/ value "true" if no id on target', function () {
+
+        this.server.respondWith("GET", /\/test.*/, function (xhr) {
+            getParameters(xhr)["org.htmx.cache-buster"].should.equal("true");
+            xhr.respond(200, {}, "Clicked!");
+        });
+
+        try {
+            htmx.config.getCacheBusterParam = true;
+            var btn = make('<button hx-get="/test">Click Me!</button>')
+            btn.click();
+            this.server.respond();
+            btn.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.getCacheBusterParam = false;
+        }
+    });
+
+    it('includes a cache-busting parameter when enabled w/ the id of the target if there is one', function () {
+        this.server.respondWith("GET", /\/test.*/, function (xhr) {
+            getParameters(xhr)["org.htmx.cache-buster"].should.equal("foo");
+            xhr.respond(200, {}, "Clicked!");
+        });
+
+        try {
+            htmx.config.getCacheBusterParam = true;
+            var btn = make('<button hx-get="/test" id="foo">Click Me!</button>')
+            btn.click();
+            this.server.respond();
+            btn.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.getCacheBusterParam = false;
+        }
+    });
 });

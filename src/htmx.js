@@ -63,6 +63,7 @@ return (function () {
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
                 defaultFocusScroll: false,
+                getCacheBusterParam: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2012,7 +2013,16 @@ return (function () {
         }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
+            // remove the cache buster parameter, if any
+            if (htmx.config.getCacheBusterParam) {
+                path = path.replace(/org\.htmx\.cache-buster=[^&]*&?/, '')
+                if (path.endsWith('&') || path.endsWith("?")) {
+                    path = path.slice(0, -1);
+                }
+            }
+            if(htmx.config.historyEnabled) {
+                history.pushState({htmx:true}, "", path);
+            }
             currentPathForHistory = path;
         }
 
@@ -2784,6 +2794,10 @@ return (function () {
 
             if (verb !== 'get' && !usesFormData(elt)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+
+            if (htmx.config.getCacheBusterParam && verb === 'get') {
+                filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, "id") || "true";
             }
 
             // behavior of anchors w/ empty href is to use the current URL
