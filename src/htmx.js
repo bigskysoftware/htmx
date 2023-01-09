@@ -2217,9 +2217,13 @@ return (function () {
             var errors = [];
             var internalData = getInternalData(elt);
 
+            if(elt.form && elt.form.hasAttribute("hx-validate") && !elt.form.reportValidity()){
+                return {errors:['form validation error'], values:values};
+            }
             // only validate when form is directly submitted and novalidate or formnovalidate are not set
             // or if the element has an explicit hx-validate="true" on it
-            var validate = (matches(elt, 'form') && elt.noValidate !== true) || getAttributeValue(elt, "hx-validate") === "true";
+            var validate = (matches(elt, 'form') && elt.noValidate !== true) || elt.hasAttribute ("hx-validate");
+            
             if (internalData.lastButtonClicked) {
                 validate = validate && internalData.lastButtonClicked.formNoValidate !== true;
             }
