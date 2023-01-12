@@ -866,6 +866,7 @@ return (function () {
             return hash;
         }
 
+
         function deInitNode(element) {
             var internalData = getInternalData(element);
             if (internalData.webSocket) {
@@ -2217,7 +2218,7 @@ return (function () {
             var errors = [];
             var internalData = getInternalData(elt);
 
-            if(elt.form && elt.form.hasAttribute("hx-validate") && !elt.form.reportValidity()){
+            if(elt.form &&  elt.hasAttribute("hx-validate") && elt.form.hasAttribute("hx-validate") && !elt.form.reportValidity()){
                 return {errors:['form validation error'], values:values};
             }
             // only validate when form is directly submitted and novalidate or formnovalidate are not set
