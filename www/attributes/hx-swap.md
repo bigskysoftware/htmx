@@ -64,7 +64,7 @@ of which take the values `top` and `bottom`:
   <!-- this fixed-height div will scroll to the bottom of the div after content is appended -->
   <div style="height:200px; overflow: scroll" 
        hx-get="/example" 
-       hx-swap="beforeEnd scroll:bottom">
+       hx-swap="beforeend scroll:bottom">
      Get Some HTML & Append It & Scroll To Bottom
   </div>
 ```

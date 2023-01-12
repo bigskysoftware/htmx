@@ -77,7 +77,7 @@ If you wish to put a template into another file, you can use a directive such as
     <p id="content">Start</p>
     
     <template id="foo">
-      <p>{{userID}} and {{id}} and {{title}} and {{completed}}</p>
+      <p> {% raw %}{{userID}}{% endraw %} and {% raw %}{{id}}{% endraw %} and {% raw %}{{title}}{% endraw %} and {% raw %}{{completed}}{% endraw %}</p>
     </template>
   </div>
 </body>
