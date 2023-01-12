@@ -38,8 +38,9 @@ title: </> htmx - Essays
     text-align: center;
   }
   .memes img {
+     min-height: 200px;
      max-width: 100%;
-     margin: 16px;
+     margin: 32px;
    }
 </style>
 <div class="memes">
