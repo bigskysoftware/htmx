@@ -10,7 +10,7 @@ describe("hx-target attribute", function(){
 
     it('targets an adjacent element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-target="#d1" hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         btn.click();
@@ -20,7 +20,7 @@ describe("hx-target attribute", function(){
 
     it('targets a parent element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div1 = make('<div id="d1"><button id="b1" hx-target="#d1" hx-get="/test">Click Me!</button></div>')
         var btn = byId("b1")
         btn.click();
@@ -30,7 +30,7 @@ describe("hx-target attribute", function(){
 
     it('targets a `this` element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div1 = make('<div hx-target="this"><button id="b1" hx-get="/test">Click Me!</button></div>')
         var btn = byId("b1")
         btn.click();
@@ -40,7 +40,7 @@ describe("hx-target attribute", function(){
 
     it('targets a `closest` element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div1 = make('<div><p><i><button id="b1" hx-target="closest div" hx-get="/test">Click Me!</button></i></p></div>')
         var btn = byId("b1")
         btn.click();
@@ -50,7 +50,7 @@ describe("hx-target attribute", function(){
     
     it('targets a `find` element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div1 = make('<div hx-target="find span" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
         div1.click();
         this.server.respond();
@@ -62,7 +62,7 @@ describe("hx-target attribute", function(){
 
     it('targets an inner element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-target="#d1" hx-get="/test">Click Me!<div id="d1"></div></button>')
         var div1 = byId("d1")
         btn.click();
@@ -73,7 +73,7 @@ describe("hx-target attribute", function(){
 
     it('handles bad target gracefully', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-target="bad" hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
@@ -83,7 +83,7 @@ describe("hx-target attribute", function(){
 
     it('targets an adjacent element properly w/ data-* prefix', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button data-hx-target="#d1" data-hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         btn.click();
@@ -93,7 +93,7 @@ describe("hx-target attribute", function(){
 
     it('targets a `next` element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         make('<div>' +
             '  <div id="d3"></div>' +
             '  <button id="b1" hx-target="next div" hx-get="/test">Click Me!</button>' +
@@ -113,7 +113,7 @@ describe("hx-target attribute", function(){
 
     it('targets a `previous` element properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         make('<div>' +
             '  <div id="d3"></div>' +
             '  <button id="b1" hx-target="previous div" hx-get="/test">Click Me!</button>' +

@@ -11,7 +11,7 @@
 <script>
     server = makeServer();
     server.autoRespond = true;
-    server.respondWith("GET", "/demo", "Clicked...");
+    server.respondWith("GET", "/demo?htmx-request=1", "Clicked...");
     htmx.config.scrollBehavior = 'auto';
 </script>
 <h1>Scrolling Start/End Tests</h1>

@@ -9,7 +9,7 @@ describe("event-header extension", function() {
     });
 
     it('Sends the Triggering-Event header', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, xhr.requestHeaders['Triggering-Event'])
         });
         var btn = make('<button hx-get="/test" hx-ext="event-header">Click Me!</button>')

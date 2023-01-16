@@ -9,7 +9,7 @@ describe("debug extension", function() {
     });
 
     it('works on basic request', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="debug">Click Me!</button>')
         btn.click();
         this.server.respond();

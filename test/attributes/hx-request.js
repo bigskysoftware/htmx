@@ -10,7 +10,7 @@ describe("hx-request attribute", function() {
 
     it('basic hx-request timeout works', function (done) {
         var timedOut = false;
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div = make("<div hx-post='/vars' hx-request='\"timeout\":1'></div>")
         htmx.on(div, 'htmx:timeout', function(){
             timedOut = true;

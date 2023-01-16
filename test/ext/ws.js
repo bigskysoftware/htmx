@@ -36,7 +36,7 @@ describe("web-sockets extension", function () {
     })
 
     it('is closed after removal by swap', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
         this.tickMock();
@@ -52,7 +52,7 @@ describe("web-sockets extension", function () {
     })
 
     it('is closed after removal by js when message is received', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
         this.tickMock();

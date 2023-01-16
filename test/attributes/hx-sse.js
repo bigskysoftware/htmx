@@ -42,8 +42,8 @@ describe("hx-sse attribute", function() {
 
     it('handles basic sse triggering', function () {
 
-        this.server.respondWith("GET", "/d1", "div1 updated");
-        this.server.respondWith("GET", "/d2", "div2 updated");
+        this.server.respondWith("GET", "/d1?htmx-request=1", "div1 updated");
+        this.server.respondWith("GET", "/d2?htmx-request=1", "div2 updated");
 
         var div = make('<div hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
@@ -63,7 +63,7 @@ describe("hx-sse attribute", function() {
 
     it('does not trigger events that arent named', function () {
 
-        this.server.respondWith("GET", "/d1", "div1 updated");
+        this.server.respondWith("GET", "/d1?htmx-request=1", "div1 updated");
 
         var div = make('<div hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
@@ -84,7 +84,7 @@ describe("hx-sse attribute", function() {
 
     it('does not trigger events not on decendents', function () {
 
-        this.server.respondWith("GET", "/d1", "div1 updated");
+        this.server.respondWith("GET", "/d1?htmx-request=1", "div1 updated");
 
         var div = make('<div hx-sse="connect:/foo"></div>' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>');
@@ -103,7 +103,7 @@ describe("hx-sse attribute", function() {
     })
 
     it('is closed after removal', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-sse="connect:/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '</div>');

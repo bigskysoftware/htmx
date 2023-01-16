@@ -10,7 +10,7 @@ describe("hx-trigger attribute", function(){
 
     it('non-default value works', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var form = make('<form hx-get="/test" hx-trigger="click">Click Me!</form>');
         form.click();
@@ -22,7 +22,7 @@ describe("hx-trigger attribute", function(){
     it('changed modifier works', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -46,7 +46,7 @@ describe("hx-trigger attribute", function(){
     it('once modifier works', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -70,7 +70,7 @@ describe("hx-trigger attribute", function(){
     it('once modifier works with multiple triggers', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -97,7 +97,7 @@ describe("hx-trigger attribute", function(){
     it('polling works', function(complete)
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             if (requests > 5) {
                 complete();
@@ -115,7 +115,7 @@ describe("hx-trigger attribute", function(){
 
     it('non-default value works w/ data-* prefix', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var form = make('<form data-hx-get="/test" data-hx-trigger="click">Click Me!</form>');
         form.click();
         form.innerHTML.should.equal("Click Me!");
@@ -126,7 +126,7 @@ describe("hx-trigger attribute", function(){
     it('works with multiple events', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -182,7 +182,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('filters properly with false filter spec', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var form = make('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>');
         form.click();
         form.innerHTML.should.equal("Not Called");
@@ -193,7 +193,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('filters properly with true filter spec', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var form = make('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>');
         form.click();
         form.innerHTML.should.equal("Not Called");
@@ -205,7 +205,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('filters properly compound filter spec', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[foo&&bar]">Not Called</div>');
         var event = htmx._("makeEvent")('evt');
         event.foo = true;
@@ -219,7 +219,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('can refer to target element in condition', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[target.classList.contains(\'doIt\')]">Not Called</div>');
         var event = htmx._("makeEvent")('evt');
         div.dispatchEvent(event);
@@ -232,7 +232,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('can refer to target element in condition w/ equality', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[target.id==\'foo\']">Not Called</div>');
         var event = htmx._("makeEvent")('evt');
         div.dispatchEvent(event);
@@ -245,7 +245,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('negative condition', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[!target.classList.contains(\'disabled\')]">Not Called</div>');
         div.classList.add("disabled");
         var event = htmx._("makeEvent")('evt');
@@ -263,7 +263,7 @@ describe("hx-trigger attribute", function(){
             return evt.bar;
         }
         try {
-            this.server.respondWith("GET", "/test", "Called!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
             var div = make('<div hx-get="/test" hx-trigger="evt[globalFun(event)]">Not Called</div>');
             var event = htmx._("makeEvent")('evt');
             event.bar = false;
@@ -284,7 +284,7 @@ describe("hx-trigger attribute", function(){
             bar:false
         }
         try {
-            this.server.respondWith("GET", "/test", "Called!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
             var div = make('<div hx-get="/test" hx-trigger="evt[foo.bar]">Not Called</div>');
             var event = htmx._("makeEvent")('evt');
             div.dispatchEvent(event);
@@ -301,7 +301,7 @@ describe("hx-trigger attribute", function(){
 
     it('global variable filter works', function(){
         try {
-            this.server.respondWith("GET", "/test", "Called!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
             var div = make('<div hx-get="/test" hx-trigger="evt[foo]">Not Called</div>');
             var event = htmx._("makeEvent")('evt');
             div.dispatchEvent(event);
@@ -317,7 +317,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('can filter polling', function(complete){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         window.foo = false;
         var div = make('<div hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>');
         var div2 = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>');
@@ -332,7 +332,7 @@ describe("hx-trigger attribute", function(){
     })
 
     it('bad condition issues error', function(){
-        this.server.respondWith("GET", "/test", "Called!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[a.b]">Not Called</div>');
         var errorEvent = null;
         var handler = htmx.on("htmx:eventFilter:error", function (event) {
@@ -352,7 +352,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -370,7 +370,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works with body selector', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -384,7 +384,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works with document selector', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -398,7 +398,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works with window selector', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -412,7 +412,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works with closest clause', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -427,7 +427,7 @@ describe("hx-trigger attribute", function(){
     it('from clause works with find clause', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -442,11 +442,11 @@ describe("hx-trigger attribute", function(){
     it('event listeners on other elements are removed when an element is swapped out', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/test2", "Clicked");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked");
 
         var div1 = make('<div hx-get="/test2">' +
             '<div id="d2" hx-trigger="click from:body" hx-get="/test">Requests: 0</div>' +
@@ -475,7 +475,7 @@ describe("hx-trigger attribute", function(){
     it('multiple triggers with from clauses mixed in work', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -493,7 +493,7 @@ describe("hx-trigger attribute", function(){
     it('event listeners can filter on target', function()
     {
         var requests = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
@@ -528,8 +528,8 @@ describe("hx-trigger attribute", function(){
 
     it('consume prevents event propogation', function()
     {
-        this.server.respondWith("GET", "/foo", "foo");
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/foo?htmx-request=1", "foo");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click' hx-get='/foo'>" +
             "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
             "</div>");
@@ -546,11 +546,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        server.respondWith("GET", "/test", function (xhr) {
+        server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        server.respondWith("GET", "/bar", "bar");
+        server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click throttle:10ms' hx-get='/test'></div>");
 
         div.click();
@@ -585,11 +585,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click delay:10ms' hx-get='/test'></div>");
 
         div.click();
@@ -621,11 +621,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click' hx-get='/test'></div>");
 
         div.click();
@@ -645,11 +645,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click queue:all' hx-get='/test'></div>");
 
         div.click();
@@ -670,11 +670,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click queue:first' hx-get='/test'></div>");
 
         div.click();
@@ -694,11 +694,11 @@ describe("hx-trigger attribute", function(){
     {
         var requests = 0;
         var server = this.server;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        this.server.respondWith("GET", "/bar", "bar");
+        this.server.respondWith("GET", "/bar?htmx-request=1", "bar");
         var div = make("<div hx-trigger='click queue:none' hx-get='/test'></div>");
 
         div.click();
@@ -716,7 +716,7 @@ describe("hx-trigger attribute", function(){
 
     it('load event works w/ positive filters', function()
     {
-        this.server.respondWith("GET", "/test", "Loaded!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Loaded!");
         var div = make('<div hx-get="/test" hx-trigger="load[true]">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
@@ -725,7 +725,7 @@ describe("hx-trigger attribute", function(){
 
     it('load event works w/ negative filters', function()
     {
-        this.server.respondWith("GET", "/test", "Loaded!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Loaded!");
         var div = make('<div hx-get="/test" hx-trigger="load[false]">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
@@ -734,8 +734,8 @@ describe("hx-trigger attribute", function(){
 
     it('reveal event works on two elements', function()
     {
-        this.server.respondWith("GET", "/test1", "test 1");
-        this.server.respondWith("GET", "/test2", "test 2");
+        this.server.respondWith("GET", "/test1?htmx-request=1", "test 1");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "test 2");
         var div = make('<div hx-get="/test1" hx-trigger="revealed"></div>');
         var div2 = make('<div hx-get="/test2" hx-trigger="revealed"></div>');
         div.innerHTML.should.equal("");
@@ -749,7 +749,7 @@ describe("hx-trigger attribute", function(){
 
     it('reveal event works when triggered by window', function()
     {
-        this.server.respondWith("GET", "/test1", "test 1");
+        this.server.respondWith("GET", "/test1?htmx-request=1", "test 1");
         var div = make('<div hx-get="/test1" hx-trigger="revealed" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>');
         div.innerHTML.should.equal("foo");
         this.server.respondAll();

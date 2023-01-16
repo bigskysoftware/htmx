@@ -9,7 +9,7 @@ describe("multi-swap extension", function() {
     });
 
     it('swap only one element with default innerHTML', function () {
-        this.server.respondWith("GET", "/test", '<html><body><div class="dummy"><div id="a">New A</div></div></html>');
+        this.server.respondWith("GET", "/test?htmx-request=1", '<html><body><div class="dummy"><div id="a">New A</div></div></html>');
         var content = make('<div>Foo <div id="a">Old A</div></div>');
         var btn = make('<button hx-get="/test" hx-ext="multi-swap" hx-swap="multi:#a">Click Me!</button>');
         btn.click();
@@ -18,7 +18,7 @@ describe("multi-swap extension", function() {
     });
 
     it('swap multiple elements with outerHTML, beforeend, afterend, beforebegin and delete methods', function () {
-        this.server.respondWith("GET", "/test",
+        this.server.respondWith("GET", "/test?htmx-request=1",
             '<html><body><div class="abc">' +
             '<div id="a">New A</div> foo ' +
             '<div id="b"><b>New B</b></div> bar ' +

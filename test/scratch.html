@@ -25,14 +25,14 @@
 
 <script>
 
-    // this.server.respondWith("GET", "/test2", "Clicked!");
+    // this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
     //
     // make('<div hx-get="/test">dd</div>')
 
 //    htmx.logAll();
 
     // var i = 1;
-    // this.server.respondWith("GET", "/test", function(xhr){
+    // this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
     //     xhr.respond(201, {}, "" + i++);
     // });
     //
@@ -62,7 +62,7 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 </div>
 
 <script>
-    this.server.respondWith("GET", "/preserve", 'foo');
+    this.server.respondWith("GET", "/preserve?htmx-request=1", 'foo');
 </script>
 
 <div hx-post="/preserve" hx-trigger="every 1s">

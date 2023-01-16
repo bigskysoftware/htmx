@@ -10,7 +10,7 @@ describe("Core htmx API test", function(){
 
     it('onLoad is called... onLoad', function(done){
         // also tests on/off
-        this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test'></div>")
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' hx-get='/test'></div>")
         var helper = htmx.onLoad(function (elt) {
             elt.setAttribute("foo", "bar");
         });
@@ -267,7 +267,7 @@ describe("Core htmx API test", function(){
 
     it('ajax api works', function()
     {
-        this.server.respondWith("GET", "/test", "foo!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "foo!");
         var div = make("<div></div>");
         htmx.ajax("GET", "/test", div)
         this.server.respond();
@@ -276,7 +276,7 @@ describe("Core htmx API test", function(){
 
     it('ajax api works by ID', function()
     {
-        this.server.respondWith("GET", "/test", "foo!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "foo!");
         var div = make("<div id='d1'></div>");
         htmx.ajax("GET", "/test", "#d1")
         this.server.respond();
@@ -285,7 +285,7 @@ describe("Core htmx API test", function(){
 
     it('ajax api works with swapSpec', function()
     {
-        this.server.respondWith("GET", "/test", "<p class='test'>foo!</p>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<p class='test'>foo!</p>");
         var div = make("<div><div id='target'></div></div>");
         htmx.ajax("GET", "/test", {target: "#target", swap:"outerHTML"});
         this.server.respond();
@@ -296,7 +296,7 @@ describe("Core htmx API test", function(){
     {
         // in IE we do not return a promise
         if (typeof Promise !== "undefined") {
-            this.server.respondWith("GET", "/test", "foo!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "foo!");
             var div = make("<div id='d1'></div>");
             var promise = htmx.ajax("GET", "/test", "#d1");
             this.server.respond();

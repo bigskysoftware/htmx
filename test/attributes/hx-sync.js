@@ -11,7 +11,7 @@ describe("hx-sync attribute", function(){
     it('can use drop strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this:drop"><button id="b1" hx-get="/test">Initial</button>' +
@@ -29,7 +29,7 @@ describe("hx-sync attribute", function(){
     it('defaults to the drop strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this"><button id="b1" hx-get="/test">Initial</button>' +
@@ -47,7 +47,7 @@ describe("hx-sync attribute", function(){
     it('can use replace strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this:replace"><button id="b1" hx-get="/test">Initial</button>' +
@@ -65,7 +65,7 @@ describe("hx-sync attribute", function(){
     it('can use queue all strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this:queue all"><button id="b1" hx-get="/test">Initial</button>' +
@@ -99,7 +99,7 @@ describe("hx-sync attribute", function(){
     it('can use queue last strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this:queue last"><button id="b1" hx-get="/test">Initial</button>' +
@@ -133,7 +133,7 @@ describe("hx-sync attribute", function(){
     it('can use queue first strategy', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this:queue first"><button id="b1" hx-get="/test">Initial</button>' +
@@ -167,7 +167,7 @@ describe("hx-sync attribute", function(){
     it('can use abort strategy to end existing abortable request', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this"><button hx-sync="closest div:abort" id="b1" hx-get="/test">Initial</button>' +
@@ -185,7 +185,7 @@ describe("hx-sync attribute", function(){
     it('can use abort strategy to drop abortable request when one is in flight', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div hx-sync="this"><button hx-sync="closest div:abort" id="b1" hx-get="/test">Initial</button>' +
@@ -203,7 +203,7 @@ describe("hx-sync attribute", function(){
     it('can abort a request programmatically', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "Click " + count++);
         });
         make('<div><button id="b1" hx-get="/test">Initial</button>' +

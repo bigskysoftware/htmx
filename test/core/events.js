@@ -14,8 +14,8 @@ describe("Core htmx Events", function() {
             called = true;
         });
         try {
-            this.server.respondWith("GET", "/test", "");
-            this.server.respondWith("GET", "/test", "<div></div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -614,7 +614,7 @@ describe("Core htmx Events", function() {
         });
 
         try {
-            this.server.respondWith("GET", "/test", "updated");
+            this.server.respondWith("GET", "/test?htmx-request=1", "updated");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();

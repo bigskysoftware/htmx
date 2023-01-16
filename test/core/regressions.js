@@ -19,7 +19,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('Handles https://github.com/bigskysoftware/htmx/issues/4 properly', function() {
-        this.server.respondWith("GET", "/index2a.php",
+        this.server.respondWith("GET", "/index2a.php?htmx-request=1",
             "<div id='message' hx-swap-oob='true'>I came from message oob swap I should be second</div>" +
             "<div id='message2' hx-swap-oob='true'>I came from a message2 oob swap I should be third  but I am in the wrong spot</div>" +
             "I'm page2 content (non-swap) I should be first")
@@ -51,7 +51,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('name=id doesnt cause an error', function(){
-        this.server.respondWith("GET", "/test", "Foo<form><input name=\"id\"/></form>")
+        this.server.respondWith("GET", "/test?htmx-request=1", "Foo<form><input name=\"id\"/></form>")
         var div = make('<div hx-get="/test">Get It</div>')
         div.click();
         this.server.respond();
@@ -59,7 +59,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('empty id doesnt cause an error', function(){
-        this.server.respondWith("GET", "/test", "Foo\n<div id=''></div>")
+        this.server.respondWith("GET", "/test?htmx-request=1", "Foo\n<div id=''></div>")
         var div = make('<div hx-get="/test">Get It</div>')
         div.click();
         this.server.respond();
@@ -67,7 +67,7 @@ describe("Core htmx Regression Tests", function(){
     });
     
     it ('id with dot in value doesnt cause an error', function(){
-        this.server.respondWith("GET", "/test", "Foo <div id='ViewModel.Test'></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Foo <div id='ViewModel.Test'></div>");
         var div = make('<div hx-get="/test">Get It</div>');
         div.click();
         this.server.respond();
@@ -75,7 +75,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('@ symbol in attributes does not break requests', function(){
-        this.server.respondWith("GET", "/test", "<div id='d1' @foo='bar'>Foo</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' @foo='bar'>Foo</div>");
         var div = make('<div hx-get="/test">Get It</div>');
         div.click();
         this.server.respond();
@@ -83,7 +83,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('@ symbol in attributes does not break attribute settling requests', function(){
-        this.server.respondWith("GET", "/test", "<div id='d1' @foo='bar'>Foo</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' @foo='bar'>Foo</div>");
         var div = make('<div hx-get="/test"><div id="d1">Foo</div></div>');
         div.click();
         this.server.respond();
@@ -91,7 +91,7 @@ describe("Core htmx Regression Tests", function(){
     });
 
     it ('selected element with ID does not cause NPE when it disappears', function(){
-        this.server.respondWith("GET", "/test", "<div id='d1'>Replaced</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1'>Replaced</div>");
         var input = make('<input hx-trigger="click" hx-get="/test" id="i1" hx-swap="outerHTML">');
         input.focus();
         input.click();
@@ -112,7 +112,7 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it('two elements can listen for the same event on another element', function() {
-        this.server.respondWith("GET", "/test", "triggered");
+        this.server.respondWith("GET", "/test?htmx-request=1", "triggered");
 
         make('<div id="d1" hx-trigger="click from:body" hx-get="/test"></div>' +
             '        <div id="d2" hx-trigger="click from:body" hx-get="/test"></div>');
@@ -152,7 +152,7 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it('supports image maps', function() {
-        this.server.respondWith("GET", "/test", "triggered");
+        this.server.respondWith("GET", "/test?htmx-request=1", "triggered");
 
         make('<div>' +
             '    <div id="d1"></div>' +
@@ -173,7 +173,7 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it("supports unset on hx-select", function(){
-        this.server.respondWith("GET", "/test", "Foo<span id='example'>Bar</span>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Foo<span id='example'>Bar</span>");
         htmx.logAll();
         make('<form hx-select="#example">\n' +
             '      <button id="b1" hx-select="unset" hx-get="/test">Initial</button>\n' +

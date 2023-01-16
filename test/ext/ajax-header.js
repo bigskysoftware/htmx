@@ -9,7 +9,7 @@ describe("ajax-header extension", function() {
     });
 
     it('Sends the X-Requested-With header', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, xhr.requestHeaders['X-Requested-With'])
         });
         var btn = make('<button hx-get="/test" hx-ext="ajax-header">Click Me!</button>')

@@ -11,7 +11,7 @@ describe("loading states extension", function () {
     });
 
     it('works on basic setup', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<div data-loading>');
         btn.click();
@@ -22,7 +22,7 @@ describe("loading states extension", function () {
     });
 
     it('works with custom display', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<div data-loading="flex">');
         btn.click();
@@ -33,7 +33,7 @@ describe("loading states extension", function () {
     });
 
     it('works with classes', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<div data-loading-class="test">');
         btn.click();
@@ -44,7 +44,7 @@ describe("loading states extension", function () {
     });
 
     it('works with classes removal', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<div data-loading-class-remove="test" class="test">');
         btn.click();
@@ -55,7 +55,7 @@ describe("loading states extension", function () {
     });
 
     it('works with disabling', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<button data-loading-disable>');
         btn.click();
@@ -66,7 +66,7 @@ describe("loading states extension", function () {
     });
 
     it('works with aria-busy', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<button data-loading-aria-busy>');
         btn.click();
@@ -77,7 +77,7 @@ describe("loading states extension", function () {
     });
 
     it('works with multiple directives', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<button data-loading-aria-busy data-loading-class="loading" data-loading-class-remove="not-loading" class="not-loading">');
         btn.click();
@@ -92,7 +92,7 @@ describe("loading states extension", function () {
     });
 
     it('works with delay', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
         var element = make('<div data-loading-class-remove="test" data-loading-delay="1s" class="test">');
         btn.click();
@@ -105,7 +105,7 @@ describe("loading states extension", function () {
     });
 
     it('works with custom targets', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states" data-loading-target="#loader" data-loading-class="test">Click Me!</button>');
         var element = make('<div id="loader">');
         btn.click();
@@ -116,7 +116,7 @@ describe("loading states extension", function () {
     });
 
     it('works with path filters', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button hx-get="/test" hx-ext="loading-states" >Click Me!</button>');
         var matchingRequestElement = make('<div data-loading-class="test" data-loading-path="/test">');
         var nonMatchingPathElement = make('<div data-loading-class="test" data-loading-path="/test1">');
@@ -130,7 +130,7 @@ describe("loading states extension", function () {
     });
 
     it('works with scopes', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<div data-loading-states><button hx-get="/test" hx-ext="loading-states" >Click Me!</button></div>');
         var element = make('<div data-loading-class="test">');
         btn.getElementsByTagName("button")[0].click();
@@ -142,8 +142,8 @@ describe("loading states extension", function () {
 
     it('history restore should not have loading states in content', function () {
         // this test is based on test from test/attributes/hx-push-url.js:65
-        this.server.respondWith("GET", "/test1", '<button id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0" data-loading-disable>test1</button>');
-        this.server.respondWith("GET", "/test2", '<button id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" data-loading-disable>test2</button>');
+        this.server.respondWith("GET", "/test1?htmx-request=1", '<button id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0" data-loading-disable>test1</button>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", '<button id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" data-loading-disable>test2</button>');
 
         make('<div hx-ext="loading-states"><button id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0" data-loading-disable>init</button></div>');
 

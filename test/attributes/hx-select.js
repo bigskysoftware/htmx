@@ -11,7 +11,7 @@ describe("BOOTSTRAP - htmx AJAX Tests", function(){
     it('properly handles a partial of HTML', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1'>foo</div><div id='d2'>bar</div>");
         var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
@@ -21,7 +21,7 @@ describe("BOOTSTRAP - htmx AJAX Tests", function(){
     it('properly handles a full HTML document', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
         var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
@@ -31,7 +31,7 @@ describe("BOOTSTRAP - htmx AJAX Tests", function(){
     it('properly handles a full HTML document  w/ data-* prefix', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
         var div = make('<div hx-get="/test" data-hx-select="#d1"></div>');
         div.click();
         this.server.respond();

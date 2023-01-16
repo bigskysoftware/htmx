@@ -9,7 +9,7 @@
 	<script>
 		server = makeServer();
 		server.autoRespond = true;
-		server.respondWith("GET", "/more_content", "Here is more content for this page, loaded 'remotely'.");
+		server.respondWith("GET", "/more_content?htmx-request=1", "Here is more content for this page, loaded 'remotely'.");
 	</script>
 
 	<style>

@@ -47,7 +47,7 @@
         }
 
         it("DOM processing should be fast", function(){
-            this.server.respondWith("GET", "/test", "Clicked!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
             // create an entry with a large content string (256k) and see how fast we can write and read it
             // to local storage as a single entry

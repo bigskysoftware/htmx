@@ -12,7 +12,7 @@ describe("hx-disinherit attribute", function() {
     it('basic inheritance sanity-check', function () {
         var response_inner = '<div id="snowflake" class="">Hello world</div>'
         var response = '<div id="unique" class="">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
 
         var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="outerHTML"><button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button></div>')
         var btn = byId("bx1");
@@ -25,7 +25,7 @@ describe("hx-disinherit attribute", function() {
     it('disinherit exclude single attribute', function () {
         var response_inner = '<div id="snowflake" class="">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
 
         var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="hx-select"><button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button></div>')
         var btn = byId("bx1");
@@ -37,7 +37,7 @@ describe("hx-disinherit attribute", function() {
     it('disinherit exclude multiple attributes', function () {
         var response_inner = '<div id="snowflake">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
 
         var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="hx-select hx-swap">' +
             '  <button id="bx1" hx-get="/test"><span id="cta">Click Me!</span></button>' +
@@ -53,7 +53,7 @@ describe("hx-disinherit attribute", function() {
     it('disinherit exclude all attributes', function () {
         var response_inner = '<div id="snowflake">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
         var div = make('<div hx-select="#snowflake" hx-target="#cta" hx-swap="beforebegin" hx-disinherit="*">' +
             '  <button id="bx1" hx-get="/test">' +
             '    <span id="cta">Click Me!</span>' +
@@ -68,7 +68,7 @@ describe("hx-disinherit attribute", function() {
     it('same-element inheritance disable', function () {
         var response_inner = '<div id="snowflake" class="">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
 
         var btn = make('<button hx-select="#snowflake" hx-target="#container" hx-trigger="click" hx-get="/test" hx-swap="outerHTML" hx-disinherit="*"><div id="container"></div></button>')
         btn.click();
@@ -79,8 +79,8 @@ describe("hx-disinherit attribute", function() {
     it('same-element inheritance disable with child nodes', function () {
         var response_inner = '<div id="snowflake" class="">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
-        this.server.respondWith("GET", "/test", response);
-        this.server.respondWith("GET", "/test2", 'unique-snowflake');
+        this.server.respondWith("GET", "/test?htmx-request=1", response);
+        this.server.respondWith("GET", "/test2?htmx-request=1", 'unique-snowflake');
 
         var div = make('<div hx-select="#snowflake" hx-target="#container" hx-get="/test" hx-swap="outerHTML" hx-trigger="keyup" hx-disinherit="*"><div id="container"><button id="bx1" hx-get="/test2" hx-trigger="click" hx-target="#target"><div id="target"></div></button></div></div>')
         var btn = byId("bx1");

@@ -11,10 +11,10 @@
 <script>
     server = makeServer();
     server.autoRespond = true;
-    server.respondWith("GET", "/prompt", function(xhr){
+    server.respondWith("GET", "/prompt?htmx-request=1", function(xhr){
         xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["HX-Prompt"]);
     })
-    server.respondWith("GET", "/confirm", function(xhr){
+    server.respondWith("GET", "/confirm?htmx-request=1", function(xhr){
         xhr.respond(200, {}, "Confirmed")
     })
 </script>

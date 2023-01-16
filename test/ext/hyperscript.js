@@ -9,7 +9,7 @@ describe("hyperscript integration", function() {
     });
 
     it('can trigger with a custom event', function () {
-        this.server.respondWith("GET", "/test", "Custom Event Sent!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Custom Event Sent!");
         var btn = make('<button _="on click send customEvent" hx-trigger="customEvent" hx-get="/test">Click Me!</button>')
         htmx.trigger(btn, "htmx:load"); // have to manually trigger the load event for non-AJAX dynamic content
         btn.click();
@@ -18,7 +18,7 @@ describe("hyperscript integration", function() {
     });
 
     it('can handle htmx driven events', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var btn = make('<button _="on htmx:afterSettle add .afterSettle" hx-get="/test">Click Me!</button>')
         htmx.trigger(btn, "htmx:load");
         btn.classList.contains("afterSettle").should.equal(false);
@@ -28,7 +28,7 @@ describe("hyperscript integration", function() {
     });
 
     it('can handle htmx error events', function () {
-        this.server.respondWith("GET", "/test", [404, {}, "Bad request"]);
+        this.server.respondWith("GET", "/test?htmx-request=1", [404, {}, "Bad request"]);
         var div = make('<div id="d1"></div>')
         var btn = make('<button _="on htmx:error(errorInfo) put errorInfo.error into #d1.innerHTML" hx-get="/test">Click Me!</button>')
         htmx.trigger(btn, "htmx:load");
@@ -38,7 +38,7 @@ describe("hyperscript integration", function() {
     });
 
     it('hyperscript in non-htmx annotated nodes is evaluated', function () {
-        this.server.respondWith("GET", "/test", "<div><div><div id='d1' _='on click put \"Clicked...\" into my.innerHTML'></div></div></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div><div><div id='d1' _='on click put \"Clicked...\" into my.innerHTML'></div></div></div>");
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
@@ -48,7 +48,7 @@ describe("hyperscript integration", function() {
     });
 
     it('hyperscript removal example works', function (done) {
-        this.server.respondWith("GET", "/test", "<div id='d1' _='on load wait 20ms then remove me'>To Remove</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' _='on load wait 20ms then remove me'>To Remove</div>");
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();

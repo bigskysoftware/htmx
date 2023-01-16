@@ -10,8 +10,8 @@ describe("hx-swap attribute", function(){
 
     it('swap innerHTML properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
-        this.server.respondWith("GET", "/test2", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", '<a hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
 
         var div = make('<div hx-get="/test"></div>')
         div.click();
@@ -25,8 +25,8 @@ describe("hx-swap attribute", function(){
 
     it('swap outerHTML properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
-        this.server.respondWith("GET", "/test2", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", '<a id="a1" hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
 
         var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
         div.click();
@@ -41,11 +41,11 @@ describe("hx-swap attribute", function(){
     it('swap beforebegin properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
-        this.server.respondWith("GET", "/test2", "*");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforebegin">*</div>')
         var parent = div.parentElement;
@@ -71,7 +71,7 @@ describe("hx-swap attribute", function(){
     it('swap afterbegin properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -94,7 +94,7 @@ describe("hx-swap attribute", function(){
     it('swap afterbegin properly with no initial content', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -117,11 +117,11 @@ describe("hx-swap attribute", function(){
     it('swap afterend properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
-        this.server.respondWith("GET", "/test2", "*");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterend">*</div>')
         var parent = div.parentElement;
@@ -147,7 +147,7 @@ describe("hx-swap attribute", function(){
     it('handles beforeend properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -170,7 +170,7 @@ describe("hx-swap attribute", function(){
     it('handles beforeend properly with no initial content', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -207,7 +207,7 @@ describe("hx-swap attribute", function(){
     })
 
     it('works with a swap delay', function(done) {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div = make("<div hx-get='/test' hx-swap='innerHTML swap:10ms'></div>");
         div.click();
         this.server.respond();
@@ -219,7 +219,7 @@ describe("hx-swap attribute", function(){
     });
 
     it('works with a settle delay', function(done) {
-        this.server.respondWith("GET", "/test", "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>");
         var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>");
         div.click();
         this.server.respond();
@@ -232,8 +232,8 @@ describe("hx-swap attribute", function(){
 
     it('swap outerHTML properly  w/ data-* prefix', function()
     {
-        this.server.respondWith("GET", "/test", '<a id="a1" data-hx-get="/test2">Click Me</a>');
-        this.server.respondWith("GET", "/test2", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", '<a id="a1" data-hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
 
         var div = make('<div id="d1" data-hx-get="/test" data-hx-swap="outerHTML"></div>')
         div.click();
@@ -247,7 +247,7 @@ describe("hx-swap attribute", function(){
 
     it('swap none works properly', function()
     {
-        this.server.respondWith("GET", "/test", 'Ooops, swapped');
+        this.server.respondWith("GET", "/test?htmx-request=1", 'Ooops, swapped');
 
         var div = make('<div hx-swap="none" hx-get="/test">Foo</div>')
         div.click();
@@ -258,7 +258,7 @@ describe("hx-swap attribute", function(){
 
     it('swap outerHTML does not trigger htmx:afterSwap on original element', function()
     {
-        this.server.respondWith("GET", "/test", 'Clicked!');
+        this.server.respondWith("GET", "/test?htmx-request=1", 'Clicked!');
         var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
         div.addEventListener("htmx:afterSwap", function(){
             count++;
@@ -272,7 +272,7 @@ describe("hx-swap attribute", function(){
     });
     it('swap delete works properly', function()
     {
-        this.server.respondWith("GET", "/test", 'Oops, deleted!');
+        this.server.respondWith("GET", "/test?htmx-request=1", 'Oops, deleted!');
 
         var div = make('<div id="d1" hx-swap="delete" hx-get="/test">Foo</div>')
         div.click();
@@ -285,7 +285,7 @@ describe("hx-swap attribute", function(){
         var initialSwapStyle = htmx.config.defaultSwapStyle;
         htmx.config.defaultSwapStyle = "outerHTML";
         try {
-            this.server.respondWith("GET", "/test", "Clicked!");
+            this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
             var div = make('<div><button id="b1" hx-swap="foo" hx-get="/test">Initial</button></div>')
             var b1 = byId("b1");

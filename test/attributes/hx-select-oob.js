@@ -10,7 +10,7 @@ describe("hx-select-oob attribute", function () {
 
     it('basic hx-select-oob works', function()
     {
-        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1'>foo</div><div id='d2'>bar</div>");
         var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="#d2"></div>');
         make('<div id="d2"></div>');
         div.click();
@@ -22,7 +22,7 @@ describe("hx-select-oob attribute", function () {
 
     it('basic hx-select-oob ignores bad selector', function()
     {
-        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1'>foo</div><div id='d2'>bar</div>");
         var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="#bad"></div>');
         make('<div id="d2"></div>');
         div.click();

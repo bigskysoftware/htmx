@@ -10,7 +10,7 @@ describe("security options", function() {
     });
 
     it("can disable a single elt", function(){
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button hx-disable hx-get="/test">Initial</button>')
         btn.click();
@@ -19,7 +19,7 @@ describe("security options", function() {
     })
 
     it("can disable a parent  elt", function(){
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var div = make('<div hx-disable><button id="b1" hx-get="/test">Initial</button></div>')
         var btn = byId("b1");

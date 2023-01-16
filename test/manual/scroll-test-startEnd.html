@@ -11,7 +11,7 @@
 <script>
     server = makeServer();
     server.autoRespond = true;
-    server.respondWith("GET", "/more_divs", "<div>More Content</div>");
+    server.respondWith("GET", "/more_divs?htmx-request=1", "<div>More Content</div>");
 </script>
 <h1>Scrolling Start/End Tests</h1>
 

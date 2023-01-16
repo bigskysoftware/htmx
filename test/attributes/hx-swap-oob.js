@@ -9,7 +9,7 @@ describe("hx-swap-oob attribute", function () {
     });
 
     it('handles basic response properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped0</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' hx-swap-oob='true'>Swapped0</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
@@ -19,7 +19,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('handles more than one oob swap properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped1</div><div id='d2' hx-swap-oob='true'>Swapped2</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' hx-swap-oob='true'>Swapped1</div><div id='d2' hx-swap-oob='true'>Swapped2</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         make('<div id="d2"></div>');
@@ -31,7 +31,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('handles no id match properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped2</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' hx-swap-oob='true'>Swapped2</div>");
         var div = make('<div hx-get="/test">click me</div>');
         div.click();
         this.server.respond();
@@ -39,7 +39,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('handles basic response properly w/ data-* prefix', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' data-hx-swap-oob='true'>Swapped3</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' data-hx-swap-oob='true'>Swapped3</div>");
         var div = make('<div data-hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
@@ -49,7 +49,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('handles outerHTML response properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' foo='bar' hx-swap-oob='outerHTML'>Swapped4</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' foo='bar' hx-swap-oob='outerHTML'>Swapped4</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
@@ -60,7 +60,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('handles innerHTML response properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped5</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped5</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
@@ -71,7 +71,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('oob swaps can be nested in content', function () {
-        this.server.respondWith("GET", "/test", "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"></div>');
         div.click();
@@ -82,7 +82,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('oob swaps can use selectors to match up', function () {
-        this.server.respondWith("GET", "/test", "<div>Clicked<div hx-swap-oob='innerHTML:[oob-foo]'>Swapped7</div></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div>Clicked<div hx-swap-oob='innerHTML:[oob-foo]'>Swapped7</div></div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1" oob-foo="bar"></div>');
         div.click();
@@ -93,7 +93,7 @@ describe("hx-swap-oob attribute", function () {
     })
 
     it('swaps into all targets that match the selector (innerHTML)', function () {
-        this.server.respondWith("GET", "/test", "<div>Clicked</div><div class='target' hx-swap-oob='innerHTML:.target'>Swapped8</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div>Clicked</div><div class='target' hx-swap-oob='innerHTML:.target'>Swapped8</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1">No swap</div>');
         make('<div id="d2" class="target">Not swapped</div>');
@@ -107,7 +107,7 @@ describe("hx-swap-oob attribute", function () {
 
     it('swaps into all targets that match the selector (outerHTML)', function () {
         var oobSwapContent = '<div class="new-target" hx-swap-oob="outerHTML:.target">Swapped9</div>';
-        this.server.respondWith("GET", "/test", "<div>Clicked</div>" + oobSwapContent);
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div>Clicked</div>" + oobSwapContent);
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="d1"><div>No swap</div></div>');
         make('<div id="d2"><div class="target">Not swapped</div></div>');
@@ -121,7 +121,7 @@ describe("hx-swap-oob attribute", function () {
 
     it('oob swap delete works properly', function()
     {
-        this.server.respondWith("GET", "/test", '<div hx-swap-oob="delete" id="d1"></div>');
+        this.server.respondWith("GET", "/test?htmx-request=1", '<div hx-swap-oob="delete" id="d1"></div>');
 
         var div = make('<div id="d1" hx-get="/test">Foo</div>')
         div.click();

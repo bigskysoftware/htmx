@@ -31,7 +31,7 @@ describe("default extensions behavior", function() {
     });
 
     it('handleSwap: afterSwap and afterSettle triggered if extension defined on parent', function () {
-        this.server.respondWith("GET", "/test", '<button>Clicked!</button>');
+        this.server.respondWith("GET", "/test?htmx-request=1", '<button>Clicked!</button>');
         var div = make('<div hx-ext="ext-testswap"><button hx-get="/test" hx-swap="testswap">Click Me!</button></div>');
         var btn = div.firstChild;
         btn.click()
@@ -41,8 +41,8 @@ describe("default extensions behavior", function() {
     });
 
     it('handleSwap: new content is handled by htmx', function() {
-        this.server.respondWith("GET", "/test", '<button id="test-ext-testswap">Clicked!<span hx-get="/test-inner" hx-trigger="load"></span></button>');
-        this.server.respondWith("GET", "/test-inner", 'Loaded!');
+        this.server.respondWith("GET", "/test?htmx-request=1", '<button id="test-ext-testswap">Clicked!<span hx-get="/test-inner" hx-trigger="load"></span></button>');
+        this.server.respondWith("GET", "/test-inner?htmx-request=1", 'Loaded!');
         make('<div hx-ext="ext-testswap"><button hx-get="/test" hx-swap="testswap">Click Me!</button></div>').querySelector('button').click();
 
         this.server.respond(); // call /test via button trigger=click

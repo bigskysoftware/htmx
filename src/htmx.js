@@ -2028,7 +2028,13 @@ return (function () {
             var request = new XMLHttpRequest();
             var details = {path: path, xhr:request};
             triggerEvent(getDocument().body, "htmx:historyCacheMiss", details);
-            request.open('GET', path, true);
+            var finalPathForGet = path;
+            if (finalPathForGet.includes("?")) {
+                finalPathForGet.replace(/\?/, "?htmx-request=1&")
+            } else {
+                finalPathForGet += "?htmx-request=1"
+            }
+            request.open('GET', finalPathForGet, true);
             request.setRequestHeader("HX-History-Restore-Request", "true");
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
@@ -2832,17 +2838,15 @@ return (function () {
             var finalPathForGet = null;
             if (verb === 'get') {
                 finalPathForGet = pathNoAnchor;
-                var values = Object.keys(filteredParameters).length !== 0;
-                if (values) {
-                    if (finalPathForGet.indexOf("?") < 0) {
-                        finalPathForGet += "?";
-                    } else {
-                        finalPathForGet += "&";
-                    }
-                    finalPathForGet += urlEncode(filteredParameters);
-                    if (anchor) {
-                        finalPathForGet += "#" + anchor;
-                    }
+                filteredParameters["htmx-request"] = 1;
+                if (finalPathForGet.indexOf("?") < 0) {
+                    finalPathForGet += "?";
+                } else {
+                    finalPathForGet += "&";
+                }
+                finalPathForGet += urlEncode(filteredParameters);
+                if (anchor) {
+                    finalPathForGet += "#" + anchor;
                 }
                 xhr.open('GET', finalPathForGet, true);
             } else {
@@ -3020,6 +3024,8 @@ return (function () {
                     path.indexOf("#") === -1) {
                     path = path + "#" + responseInfo.pathInfo.anchor;
                 }
+
+                path = path.replace(/[?&]?htmx-request=1&?/i, "")
 
                 return {
                     type:saveType,

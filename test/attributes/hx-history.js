@@ -14,9 +14,9 @@ describe("hx-history attribute", function() {
     });
 
     it("history cache should not contain embargoed content", function () {
-        this.server.respondWith("GET", "/test1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0" hx-history="true">test1</div>');
-        this.server.respondWith("GET", "/test2", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" hx-history="false">test2</div>');
-        this.server.respondWith("GET", "/test3", '<div id="d4" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" hx-history="true">test3</div>');
+        this.server.respondWith("GET", "/test1?htmx-request=1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0" hx-history="true">test1</div>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" hx-history="false">test2</div>');
+        this.server.respondWith("GET", "/test3?htmx-request=1", '<div id="d4" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0" hx-history="true">test3</div>');
 
         make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>');
 

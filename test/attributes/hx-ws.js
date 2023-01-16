@@ -59,7 +59,7 @@ describe("hx-ws attribute", function() {
     })
 
     it('is closed after removal', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ws="connect:wss:/foo"></div>');
         div.click();
         this.server.respond();

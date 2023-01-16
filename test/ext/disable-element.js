@@ -12,7 +12,7 @@ describe("disable-element extension", function() {
         // GIVEN:
         // - A button triggering an htmx request with disable-element extension
         // - The button is enabled
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {})
         });
         var btn = make('<button hx-get="/test" hx-ext="disable-element" hx-disable-element="self">Click Me!</button>')
@@ -36,7 +36,7 @@ describe("disable-element extension", function() {
         // - A button triggering an htmx request with disable-element extension
         // - Another button that needs to be disabled during the htmx request
         // - Both buttons are enabled
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {})
         });
         var btn = make('<button hx-get="/test" hx-ext="disable-element" hx-disable-element="#should-be-disabled">Click Me!</button>')

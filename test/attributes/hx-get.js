@@ -9,7 +9,7 @@ describe("hx-get attribute", function() {
     });
 
     it('issues a GET request on click and swaps content', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
@@ -18,7 +18,7 @@ describe("hx-get attribute", function() {
     });
 
     it('GET does not include surrounding data by default', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             should.equal(getParameters(xhr)["i1"], undefined);
             xhr.respond(200, {}, "Clicked!");
         });
@@ -66,7 +66,7 @@ describe("hx-get attribute", function() {
 
 
     it('issues a GET request on click and swaps content w/ data-* prefix', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button data-hx-get="/test">Click Me!</button>')
         btn.click();

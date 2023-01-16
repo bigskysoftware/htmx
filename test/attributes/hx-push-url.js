@@ -14,7 +14,7 @@ describe("hx-push-url attribute", function() {
     });
 
     it("navigation should push an element into the cache when true", function () {
-        this.server.respondWith("GET", "/test", "second");
+        this.server.respondWith("GET", "/test?htmx-request=1", "second");
         getWorkArea().innerHTML.should.be.equal("");
         var div = make('<div hx-push-url="true" hx-get="/test">first</div>');
         div.click();
@@ -28,7 +28,7 @@ describe("hx-push-url attribute", function() {
     });
 
     it("navigation should push an element into the cache when string", function () {
-        this.server.respondWith("GET", "/test", "second");
+        this.server.respondWith("GET", "/test?htmx-request=1", "second");
         getWorkArea().innerHTML.should.be.equal("");
         var div = make('<div hx-push-url="/abc123" hx-get="/test">first</div>');
         div.click();
@@ -42,8 +42,8 @@ describe("hx-push-url attribute", function() {
     });
 
     it("restore should return old value", function () {
-        this.server.respondWith("GET", "/test1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
-        this.server.respondWith("GET", "/test2", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
+        this.server.respondWith("GET", "/test1?htmx-request=1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
 
         make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>');
 
@@ -64,8 +64,8 @@ describe("hx-push-url attribute", function() {
     });
 
     it("history restore should not have htmx support classes in content", function () {
-        this.server.respondWith("GET", "/test1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
-        this.server.respondWith("GET", "/test2", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
+        this.server.respondWith("GET", "/test1?htmx-request=1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
 
         make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>');
 
@@ -99,8 +99,8 @@ describe("hx-push-url attribute", function() {
     });
 
     it("cache miss should issue another GET", function () {
-        this.server.respondWith("GET", "/test1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
-        this.server.respondWith("GET", "/test2", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
+        this.server.respondWith("GET", "/test1?htmx-request=1", '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>');
 
         make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>');
 
@@ -123,7 +123,7 @@ describe("hx-push-url attribute", function() {
     });
 
     it("navigation should push an element into the cache  w/ data-* prefix", function () {
-        this.server.respondWith("GET", "/test", "second");
+        this.server.respondWith("GET", "/test?htmx-request=1", "second");
         getWorkArea().innerHTML.should.be.equal("");
         var div = make('<div data-hx-push-url="true" data-hx-get="/test">first</div>');
         div.click();

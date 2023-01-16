@@ -17,7 +17,7 @@ describe("bad extension", function() {
     });
 
     it('does not blow up rendering', function () {
-        this.server.respondWith("GET", "/test", "clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "clicked!");
         var div = make('<div hx-get="/test" hx-ext="bad-extension">Click Me!</div>')
         div.click();
         this.server.respond();

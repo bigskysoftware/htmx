@@ -11,7 +11,7 @@ describe("Core htmx AJAX Tests", function(){
     // bootstrap test
     it('issues a GET request on click and swaps content', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
@@ -21,8 +21,8 @@ describe("Core htmx AJAX Tests", function(){
 
     it('processes inner content properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
-        this.server.respondWith("GET", "/test2", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", '<a hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
 
         var div = make('<div hx-get="/test"></div>')
         div.click();
@@ -36,8 +36,8 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles swap outerHTML properly', function()
     {
-        this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
-        this.server.respondWith("GET", "/test2", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", '<a id="a1" hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2?htmx-request=1", "Clicked!");
 
         var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
         div.click();
@@ -52,11 +52,11 @@ describe("Core htmx AJAX Tests", function(){
     it('handles beforebegin properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
-        this.server.respondWith("GET", "/test2", "*");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "*");
 
         var div = make('<div hx-get="/test" hx-swap="beforebegin">*</div>')
         var parent = div.parentElement;
@@ -82,7 +82,7 @@ describe("Core htmx AJAX Tests", function(){
     it('handles afterbegin properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -105,7 +105,7 @@ describe("Core htmx AJAX Tests", function(){
     it('handles afterbegin properly with no initial content', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -128,11 +128,11 @@ describe("Core htmx AJAX Tests", function(){
     it('handles afterend properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, '<a id="a' + i + '" hx-get="/test2" hx-swap="innerHTML">' + i + '</a>');
         });
-        this.server.respondWith("GET", "/test2", "*");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "*");
 
         var div = make('<div hx-get="/test" hx-swap="afterend">*</div>')
         var parent = div.parentElement;
@@ -158,7 +158,7 @@ describe("Core htmx AJAX Tests", function(){
     it('handles beforeend properly', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -181,7 +181,7 @@ describe("Core htmx AJAX Tests", function(){
     it('handles beforeend properly with no initial content', function()
     {
         var i = 0;
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             i++;
             xhr.respond(200, {}, "" + i);
         });
@@ -203,7 +203,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles hx-target properly', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button hx-get="/test" hx-target="#s1">Click Me!</button>');
         var target = make('<span id="s1">Initial</span>');
@@ -215,7 +215,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles 204 NO CONTENT responses properly', function()
     {
-        this.server.respondWith("GET", "/test", [204, {}, "No Content!"]);
+        this.server.respondWith("GET", "/test?htmx-request=1", [204, {}, "No Content!"]);
 
         var btn = make('<button hx-get="/test">Click Me!</button>');
         btn.click();
@@ -226,8 +226,8 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles 304 NOT MODIFIED responses properly', function()
     {
-        this.server.respondWith("GET", "/test-1", [200, {}, "Content for Tab 1"]);
-        this.server.respondWith("GET", "/test-2", [200, {}, "Content for Tab 2"]);
+        this.server.respondWith("GET", "/test-1?htmx-request=1", [200, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2?htmx-request=1", [200, {}, "Content for Tab 2"]);
 
         var target = make('<div id="target"></div>')
         var btn1 = make('<button hx-get="/test-1" hx-target="#target">Tab 1</button>');
@@ -242,8 +242,8 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         target.innerHTML.should.equal("Content for Tab 2");
 
-        this.server.respondWith("GET", "/test-1", [304, {}, "Content for Tab 1"]);
-        this.server.respondWith("GET", "/test-2", [304, {}, "Content for Tab 2"]);
+        this.server.respondWith("GET", "/test-1?htmx-request=1", [304, {}, "Content for Tab 1"]);
+        this.server.respondWith("GET", "/test-2?htmx-request=1", [304, {}, "Content for Tab 2"]);
 
         btn1.click();
         this.server.respond();
@@ -256,7 +256,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles hx-trigger with non-default value', function()
     {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var form = make('<form hx-get="/test" hx-trigger="click">Click Me!</form>');
         form.click();
@@ -267,7 +267,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('handles hx-trigger with load event', function()
     {
-        this.server.respondWith("GET", "/test", "Loaded!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Loaded!");
         var div = make('<div hx-get="/test" hx-trigger="load">Load Me!</div>');
         div.innerHTML.should.equal("Load Me!");
         this.server.respond();
@@ -275,7 +275,7 @@ describe("Core htmx AJAX Tests", function(){
     });
 
     it('sets the content type of the request properly', function (done) {
-        this.server.respondWith("GET", "/test", function(xhr){
+        this.server.respondWith("GET", "/test?htmx-request=1", function(xhr){
             xhr.respond(200, {}, "done");
             xhr.overriddenMimeType.should.equal("text/html");
             done();
@@ -288,7 +288,7 @@ describe("Core htmx AJAX Tests", function(){
     it('issues two requests when clicked twice before response', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "click " + i);
             i++
         });
@@ -304,7 +304,7 @@ describe("Core htmx AJAX Tests", function(){
     it('issues two requests when clicked three times before response', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "click " + i);
             i++
         });
@@ -319,7 +319,7 @@ describe("Core htmx AJAX Tests", function(){
     it('properly handles hx-select for basic situation', function()
     {
         var i = 1;
-        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1'>foo</div><div id='d2'>bar</div>");
         var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
@@ -328,7 +328,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('properly handles hx-select for full html document situation', function()
     {
-        this.server.respondWith("GET", "/test", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<html><body><div id='d1'>foo</div><div id='d2'>bar</div></body></html>");
         var div = make('<div hx-get="/test" hx-select="#d1"></div>');
         div.click();
         this.server.respond();
@@ -337,7 +337,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('properly settles attributes on interior elements', function(done)
     {
-        this.server.respondWith("GET", "/test", "<div hx-get='/test'><div width='bar' id='d1'></div></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div hx-get='/test'><div width='bar' id='d1'></div></div>");
         var div = make("<div hx-get='/test' hx-swap='outerHTML settle:10ms'><div id='d1'></div></div>");
         div.click();
         this.server.respond();
@@ -535,8 +535,8 @@ describe("Core htmx AJAX Tests", function(){
 
     it('text nodes dont screw up settling via variable capture', function()
     {
-        this.server.respondWith("GET", "/test", "<div id='d1' hx-trigger='click consume' hx-get='/test2'></div>fooo");
-        this.server.respondWith("GET", "/test2", "clicked");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div id='d1' hx-trigger='click consume' hx-get='/test2'></div>fooo");
+        this.server.respondWith("GET", "/test2?htmx-request=1", "clicked");
         var div = make("<div hx-get='/test'/>");
         div.click();
         this.server.respond();
@@ -552,7 +552,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<div></div><script type='text/javascript'>callGlobal()</script>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div></div><script type='text/javascript'>callGlobal()</script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -569,7 +569,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<script type='text/javascript'>callGlobal()</script>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<script type='text/javascript'>callGlobal()</script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -583,7 +583,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         try {
             window.foo = {}
-            this.server.respondWith("GET", "/test", "<script type='text/javascript'>foo.bar = function() { return 42 }</script>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<script type='text/javascript'>foo.bar = function() { return 42 }</script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -600,7 +600,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<div><script type='text/javascript'>callGlobal()</script></div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div><script type='text/javascript'>callGlobal()</script></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -617,7 +617,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<script type='text/javascript'>callGlobal()</script><div></div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<script type='text/javascript'>callGlobal()</script><div></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -634,7 +634,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script></div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div><script>callGlobal()</script></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -651,7 +651,7 @@ describe("Core htmx AJAX Tests", function(){
             globalWasCalled = true;
         }
         try {
-            this.server.respondWith("GET", "/test", "<div><script type='text/samplescript'>callGlobal()</script></div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div><script type='text/samplescript'>callGlobal()</script></div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -668,7 +668,7 @@ describe("Core htmx AJAX Tests", function(){
             window.tempVal = byId("d1").innerText
         }
         try {
-            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script><div id='d1'>After settle...</div> </div>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<div><script>callGlobal()</script><div id='d1'>After settle...</div> </div>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -682,7 +682,7 @@ describe("Core htmx AJAX Tests", function(){
     it('script node exceptions do not break rendering', function()
     {
         this.skip("Rendering does not break, but the exception bubbles up and mocha reports it");
-        this.server.respondWith("GET", "/test", "clicked<script type='text/javascript'>throw 'foo';</script>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "clicked<script type='text/javascript'>throw 'foo';</script>");
         var div = make("<div hx-get='/test'></div>");
         div.click();
         this.server.respond();
@@ -719,7 +719,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('input values are not settle swapped (causes flicker)', function()
     {
-        this.server.respondWith("GET", "/test", "<input id='i1' value='bar'/>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<input id='i1' value='bar'/>");
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='outerHTML settle:50' hx-trigger='click'/>");
         input.click();
         this.server.respond();
@@ -729,7 +729,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('autofocus attribute works properly', function()
     {
-        this.server.respondWith("GET", "/test", "<input id='i2' value='bar' autofocus/>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<input id='i2' value='bar' autofocus/>");
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
@@ -741,7 +741,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('autofocus attribute works properly w/ child', function()
     {
-        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus/></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div><input id='i2' value='bar' autofocus/></div>");
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
@@ -753,7 +753,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('autofocus attribute works properly w/ true value', function()
     {
-        this.server.respondWith("GET", "/test", "<div><input id='i2' value='bar' autofocus='true'/></div>");
+        this.server.respondWith("GET", "/test?htmx-request=1", "<div><input id='i2' value='bar' autofocus='true'/></div>");
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
@@ -783,7 +783,7 @@ describe("Core htmx AJAX Tests", function(){
     it('removed elements do not issue requests', function()
     {
         var count = 0;
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             count++;
             xhr.respond(200, {}, "");
         });
@@ -796,7 +796,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('title tags update title', function()
     {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "<title class=''>htmx rocks!</title>Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -809,7 +809,7 @@ describe("Core htmx AJAX Tests", function(){
     it('svg title tags do not update title', function()
     {
         var originalTitle = window.document.title
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "<svg class=''><title>" + originalTitle + "UPDATE" + "</title></svg>Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -823,7 +823,7 @@ describe("Core htmx AJAX Tests", function(){
     {
         var originalTitle = window.document.title
         var newTitle = originalTitle + "!!!";
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "<title class=''>" + newTitle + "</title><svg class=''><title>foo</title></svg>Clicked!<title class=''>x</title>");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -835,7 +835,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('title update does not URL escape', function()
     {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(200, {}, "<title>&lt;/> htmx rocks!</title>Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -847,7 +847,7 @@ describe("Core htmx AJAX Tests", function(){
 
     it('by default 400 content is not swapped', function()
     {
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(400, {}, "Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -864,7 +864,7 @@ describe("Core htmx AJAX Tests", function(){
             }
         });
 
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(400, {}, "Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -883,7 +883,7 @@ describe("Core htmx AJAX Tests", function(){
             }
         });
 
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(400, {}, "Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -900,10 +900,10 @@ describe("Core htmx AJAX Tests", function(){
         var handler = htmx.on("htmx:responseError", function(){
             errors++;
         })
-        this.server.respondWith("GET", "/test1", function (xhr) {
+        this.server.respondWith("GET", "/test1?htmx-request=1", function (xhr) {
             xhr.respond(204, {}, "Clicked!");
         });
-        this.server.respondWith("GET", "/test2", function (xhr) {
+        this.server.respondWith("GET", "/test2?htmx-request=1", function (xhr) {
             xhr.respond(400, {}, "Clicked!");
         });
         var btn1 = make('<button hx-get="/test1">Click Me!</button>')
@@ -926,7 +926,7 @@ describe("Core htmx AJAX Tests", function(){
             }
         });
 
-        this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test?htmx-request=1", function (xhr) {
             xhr.respond(400, {}, "Clicked!");
         });
         var btn = make('<button hx-get="/test">Click Me!</button>')
@@ -939,7 +939,7 @@ describe("Core htmx AJAX Tests", function(){
     it('scripts w/ src attribute are properly loaded', function(done)
     {
         try {
-            this.server.respondWith("GET", "/test", "<script src='setGlobal.js'></script>");
+            this.server.respondWith("GET", "/test?htmx-request=1", "<script src='setGlobal.js'></script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
@@ -953,4 +953,12 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
+    it('adds an internal querystring param to trick browser cache', function () {
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
+
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("Clicked!");
+    })
 })

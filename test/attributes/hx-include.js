@@ -51,7 +51,7 @@ describe("hx-include attribute", function() {
     });
 
     it('GET does not include closest form by default', function () {
-        this.server.respondWith("GET", "/include", function (xhr) {
+        this.server.respondWith("GET", "/include?htmx-request=1", function (xhr) {
             var params = getParameters(xhr);
             should.equal(params['i1'], undefined);
             xhr.respond(200, {}, "Clicked!")

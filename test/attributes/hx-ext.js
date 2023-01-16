@@ -45,7 +45,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('A simple extension is invoked properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button hx-get="/test" hx-ext="ext-1">Click Me!</button>')
         btn.click();
@@ -56,7 +56,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('Extensions are merged properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         make('<div hx-ext="ext-1"><button id="btn-1" hx-get="/test" hx-ext="ext-2">Click Me!</button>' +
             '<button id="btn-2"  hx-get="/test" hx-ext="ext-3">Click Me!</button></div>')
@@ -77,7 +77,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('supports comma separated lists', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         make('<div hx-ext="ext-1"><button id="btn-1" hx-get="/test" hx-ext="ext-2,  ext-3 ">Click Me!</button></div>')
         var btn1 = byId("btn-1");
@@ -91,7 +91,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('A simple extension is invoked properly  w/ data-* prefix', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         var btn = make('<button data-hx-get="/test" data-hx-ext="ext-1">Click Me!</button>')
         btn.click();
@@ -102,7 +102,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('A simple extension is invoked properly when an HX-Trigger event w/ a namespace fires', function () {
-        this.server.respondWith("GET", "/test", [200, {"HX-Trigger":"namespace:example"}, ""]);
+        this.server.respondWith("GET", "/test?htmx-request=1", [200, {"HX-Trigger":"namespace:example"}, ""]);
         var btn = make('<button data-hx-get="/test" data-hx-ext="ext-4">Click Me!</button>')
         btn.click();
         this.server.respond();
@@ -114,7 +114,7 @@ describe("hx-ext attribute", function() {
     });
 
     it('Extensions are ignored properly', function () {
-        this.server.respondWith("GET", "/test", "Clicked!");
+        this.server.respondWith("GET", "/test?htmx-request=1", "Clicked!");
 
         make('<div id="div-AA" hx-ext="ext-1, ext-2"><button id="btn-AA" hx-get="/test">Click Me!</button>' +
             '<div id="div-BB" hx-ext="ignore:ext-1"><button id="btn-BB" hx-get="/test"></div></div>')
