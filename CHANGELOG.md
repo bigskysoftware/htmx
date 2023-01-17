@@ -2,6 +2,16 @@
 
 ## [1.8.5] - 2023-01-??
 
+* Support a new optional cache-busting configuration option, `getCacheBusterParam`, to allow browsers to disambiguate
+  between `GET` requests from htmx and from the raw browser
+* Support new `hx-history='false'` attribute, to prevent sensitive data from being stored in the history cache. (Thank you @croxton!)
+* Extensive new event-oriented features are available in the [Web Socket](/extensions/web-sockets/) extension (Thank you @Renerick!)
+* A bug fix for when a form contains multiple empty input values with the same name (Thank you @bluekeyes!)
+* A bug fix around inputs that throw exceptions when calling `setSelectionRange()` (Thank you @gone!)
+* A bug fix to pass through the proper event for the `htmx:configRequest` event
+* A bug fix/improvement for the `preload` extension
+* Many other small bug fixes 
+
 ## [1.8.4] - 2022-11-05
 
 * Fix the _exact same_ regression in `revealed` logic as in 1.8.2 
