@@ -17,7 +17,8 @@
     "dist/htmx.d.ts",
     "dist/*.js",
     "dist/ext/*.js",
-    "dist/*.js.gz"
+    "dist/*.js.gz",
+    "editors/jetbrains/htmx.web-types.json"
   ],
   "main": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
