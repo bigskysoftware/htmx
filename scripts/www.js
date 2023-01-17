@@ -11,6 +11,7 @@ fs.copySync("node_modules/mocha/mocha.css", currentReleaseRoot + "/node_modules/
 fs.copySync("node_modules/chai/chai.js", currentReleaseRoot + "/node_modules/chai/chai.js");
 fs.copySync("node_modules/chai-dom/chai-dom.js", currentReleaseRoot + "/node_modules/chai-dom/chai-dom.js");
 fs.copySync("node_modules/sinon/pkg/sinon.js", currentReleaseRoot + "/node_modules/sinon/pkg/sinon.js");
+fs.copySync("node_modules/mock-socket/dist/mock-socket.js", currentReleaseRoot + "/node_modules/mock-socket/dist/mock-socket.js");
 fs.copySync("test/", currentReleaseRoot + "/test");
 fs.copySync("src/", currentReleaseRoot + "/src");
 fs.copySync("src/htmx.js", "www/js/htmx.js");
@@ -18,7 +19,7 @@ fs.copySync("src/ext/class-tools.js", "www/js/class-tools.js");
 fs.copySync("src/ext/preload.js", "www/js/preload.js");
 
 var testHTML = "<html><body style='font-family: sans-serif'><h1>HTMX TESTS</h1><ul>\n"
-fs.readdirSync(testRoot).reverse().forEach(function(file){
+fs.readdirSync(testRoot).reverse().forEach(function (file) {
         if (file !== "index.html") {
                 testHTML += "<li><a href='/test/" + file + "/test'>" + file + "</a>\n";
         }
