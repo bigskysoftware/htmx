@@ -30,6 +30,8 @@
 
                 htmlDoc.innerHTML = headTag;
                 var newHeadTag = htmlDoc.querySelector("head");
+                var currentHead = document.head;
+
                 if (newHeadTag == null) {
                     return;
                 } else {
@@ -46,7 +48,6 @@
                 var mergeStrategy = api.getAttributeValue(newHeadTag, "hx-head") || defaultMergeStrategy;
 
                 // get the current head
-                var currentHead = document.head;
                 for (const currentHeadElt of currentHead.children) {
 
                     // If the current head element is in the map
