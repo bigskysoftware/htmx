@@ -144,6 +144,7 @@ You can see a working example of this code below.
                 </table>
               </form>
               <br/>
+              <br/>
               <div hx-include="#checked-contacts" hx-target="#tbody">
                 <a class="btn" hx-put="/activate">Activate</a>
                 <a class="btn" hx-put="/deactivate">Deactivate</a>
