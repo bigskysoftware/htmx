@@ -26,7 +26,9 @@ htmx.defineExtension("preload", {
 			// Called after a successful AJAX request, to mark the
 			// content as loaded (and prevent additional AJAX calls.)
 			var done = function(html) {
-				node.preloadState = "DONE"
+				if (!node.preloadAlways) {
+					node.preloadState = "DONE"
+				}
 
 				if (attr(node, "preload-images") == "true") {
 					document.createElement("div").innerHTML = html // create and populate a node to load linked resources, too.
@@ -81,6 +83,10 @@ htmx.defineExtension("preload", {
 			
 			// Get event name from config.
 			var on = attr(node, "preload") || "mousedown"
+			const always = on.indexOf("always") !== -1
+			if (always) {
+				on = on.replace('always', '').trim()
+			}
 						
 			// FALL THROUGH to here means we need to add an EventListener
 	
@@ -121,6 +127,7 @@ htmx.defineExtension("preload", {
 
 			// Mark the node as ready to run.
 			node.preloadState = "PAUSE";
+			node.preloadAlways = always;
 			htmx.trigger(node, "preload:init") // This event can be used to load content immediately.
 		}
 

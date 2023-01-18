@@ -113,7 +113,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.8.4" integrity="sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.8.5" integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -806,9 +806,13 @@ attribute to specify a different one.
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
 
-### Disable History Snapshot
+### Disabling History Snapshots
 
-History snapshotting can be disabled for a URL by setting the [hx-history](/attributes/hx-history) attribute to `false` on any element in the current document, or any html fragment loaded into the current document by htmx. This can be used to prevent sensitive data entering the localStorage cache, which can be important for shared-use / public computers. History navigation will work as expected, but on restoration the URL will be requested from the server instead of the history cache.
+History snapshotting can be disabled for a URL by setting the [hx-history](/attributes/hx-history) attribute to `false` 
+on any element in the current document, or any html fragment loaded into the current document by htmx. This can be used
+to prevent sensitive data entering the localStorage cache, which can be important for shared-use / public computers. 
+History navigation will work as expected, but on restoration the URL will be requested from the server instead of the 
+local history cache.
 
 ## <a name="requests">[Requests &amp; Responses](#requests)
 
@@ -1331,6 +1335,11 @@ when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cac
 keyed based on a composite of the response URL and the `HX-Request` request header — 
 rather than being based just on the response URL.
 
+If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
+`getCacheBusterParam` to `true`.  If this configuration variable is set, htmx will include a cache-busting parameter
+in `GET` requests that it makes, which will prevent browsers from caching htmx-based and non-htmx based responses
+in the same cache slot.
+
 htmx also works with [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 as expected.  Be mindful that if your server can render different content for the same 
 URL (for example, depending on the value of the `HX-Request` header), the server needs 
@@ -1370,27 +1379,28 @@ listed below:
 
 <div class="info-table">
 
-| Config Variable | Info |
-|-----------------|-------
-|  `htmx.config.historyEnabled` | defaults to `true`, really only useful for testing
-|  `htmx.config.historyCacheSize` | defaults to 10
-|  `htmx.config.refreshOnHistoryMiss` | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request
-|  `htmx.config.defaultSwapStyle` | defaults to `innerHTML`
-|  `htmx.config.defaultSwapDelay` | defaults to 0
-|  `htmx.config.defaultSettleDelay` | defaults to 20
-|  `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)
-|  `htmx.config.indicatorClass` | defaults to `htmx-indicator`
-|  `htmx.config.requestClass` | defaults to `htmx-request`
-|  `htmx.config.addedClass` | defaults to `htmx-added`
-|  `htmx.config.settlingClass` | defaults to `htmx-settling`
-|  `htmx.config.swappingClass` | defaults to `htmx-swapping`
-|  `htmx.config.allowEval` | defaults to `true`
-|  `htmx.config.inlineScriptNonce` | default to '', no nonce will be added to inline scripts
-|  `htmx.config.useTemplateFragments` | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)
-|  `htmx.config.wsReconnectDelay` | defaults to `full-jitter`
-|  `htmx.config.disableSelector` | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent
-|  `htmx.config.timeout` | defaults to 0 in milliseconds
-|  `htmx.config.defaultFocusScroll` | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier.
+| Config Variable                      | Info                                                                                                                                                                    |
+|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `htmx.config.historyEnabled`         | defaults to `true`, really only useful for testing                                                                                                                      |
+| `htmx.config.historyCacheSize`       | defaults to 10                                                                                                                                                          |
+| `htmx.config.refreshOnHistoryMiss`   | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request                                             |
+| `htmx.config.defaultSwapStyle`       | defaults to `innerHTML`                                                                                                                                                 |
+| `htmx.config.defaultSwapDelay`       | defaults to 0                                                                                                                                                           |
+| `htmx.config.defaultSettleDelay`     | defaults to 20                                                                                                                                                          |
+| `htmx.config.includeIndicatorStyles` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                      |
+| `htmx.config.indicatorClass`         | defaults to `htmx-indicator`                                                                                                                                            |
+| `htmx.config.requestClass`           | defaults to `htmx-request`                                                                                                                                              |
+| `htmx.config.addedClass`             | defaults to `htmx-added`                                                                                                                                                |
+| `htmx.config.settlingClass`          | defaults to `htmx-settling`                                                                                                                                             |
+| `htmx.config.swappingClass`          | defaults to `htmx-swapping`                                                                                                                                             |
+| `htmx.config.allowEval`              | defaults to `true`                                                                                                                                                      |
+| `htmx.config.inlineScriptNonce`      | default to '', no nonce will be added to inline scripts                                                                                                                 |
+| `htmx.config.useTemplateFragments`   | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                      |
+| `htmx.config.wsReconnectDelay`       | defaults to `full-jitter`                                                                                                                                               |
+| `htmx.config.disableSelector`        | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent                                                 |
+| `htmx.config.timeout`                | defaults to 0 in milliseconds                                                                                                                                           |
+| `htmx.config.defaultFocusScroll`     | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier. |
+| `htmx.config.getCacheBusterParam`    | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                       |
 
 </div>
 

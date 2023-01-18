@@ -122,6 +122,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 * `useTemplateFragments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `wsReconnectDelay:full-jitter` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
+* `scrollBehavior:smooth` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
 
 ##### Example
 
@@ -372,7 +373,7 @@ Removes an element from the DOM
 
 * `elt` - element to remove
 
-or 
+or
 
 * `elt` - element to remove
 * `delay` - delay (in milliseconds ) before element is removed

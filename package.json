@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "1.8.4",
+  "version": "1.8.5",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
@@ -14,13 +14,14 @@
   "files": [
     "LICENSE",
     "README.md",
-    "src/htmx.d.ts",
+    "dist/htmx.d.ts",
     "dist/*.js",
     "dist/ext/*.js",
-    "dist/*.js.gz"
+    "dist/*.js.gz",
+    "editors/jetbrains/htmx.web-types.json"
   ],
   "main": "dist/htmx.min.js",
-  "types": "src/htmx.d.ts",
+  "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
@@ -44,6 +45,7 @@
     "mocha": "^10.2.0",
     "mocha-chrome": "^2.2.0",
     "mocha-webdriver-runner": "^0.6.3",
+    "mock-socket": "^9.1.5",
     "sass": "^1.51.0",
     "sinon": "^9.2.4",
     "typescript": "^4.5.5",

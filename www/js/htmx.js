@@ -58,10 +58,12 @@ return (function () {
                 withCredentials:false,
                 timeout:0,
                 wsReconnectDelay: 'full-jitter',
+                wsBinaryType: 'blob',
                 disableSelector: "[hx-disable], [data-hx-disable]",
                 useTemplateFragments: false,
                 scrollBehavior: 'smooth',
                 defaultFocusScroll: false,
+                getCacheBusterParam: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -69,9 +71,11 @@ return (function () {
                 return new EventSource(url, {withCredentials:true})
             },
             createWebSocket: function(url){
-                return new WebSocket(url, []);
+                var sock = new WebSocket(url, []);
+                sock.binaryType = htmx.config.wsBinaryType;
+                return sock;
             },
-            version: "1.8.4"
+            version: "1.8.5"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -509,12 +513,14 @@ return (function () {
             if (elt.closest) {
                 return elt.closest(selector);
             } else {
+                // TODO remove when IE goes away
                 do{
                     if (elt == null || matches(elt, selector)){
                         return elt;
                     }
                 }
                 while (elt = elt && parentElt(elt));
+                return null;
             }
         }
 
@@ -834,11 +840,14 @@ return (function () {
 
         function attributeHash(elt) {
             var hash = 0;
-            for (var i = 0; i < elt.attributes.length; i++) {
-                var attribute = elt.attributes[i];
-                if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
-                    hash = stringHash(attribute.name, hash);
-                    hash = stringHash(attribute.value, hash);
+            // IE fix
+            if (elt.attributes) {
+                for (var i = 0; i < elt.attributes.length; i++) {
+                    var attribute = elt.attributes[i];
+                    if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
+                        hash = stringHash(attribute.name, hash);
+                        hash = stringHash(attribute.value, hash);
+                    }
                 }
             }
             return hash;
@@ -1261,7 +1270,7 @@ return (function () {
                     path = getRawAttribute(elt, 'action');
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
-                    addEventListener(elt, function(evt) {
+                    addEventListener(elt, function(elt, evt) {
                         issueAjaxRequest(verb, path, elt, evt)
                     }, nodeData, triggerSpec, true);
                 });
@@ -1727,7 +1736,10 @@ return (function () {
                 } catch (e) {
                     logError(e);
                 } finally {
-                    parent.removeChild(script);
+                    // remove old script element, but only if it is still in DOM
+                    if (script.parentElement) {
+                        script.parentElement.removeChild(script);
+                    }
                 }
             }
         }
@@ -1758,9 +1770,10 @@ return (function () {
 
         function initButtonTracking(form){
             var maybeSetLastButtonClicked = function(evt){
-                if (matches(evt.target, "button, input[type='submit']")) {
+                var elt = closest(evt.target, "button, input[type='submit']");
+                if (elt !== null) {
                     var internalData = getInternalData(form);
-                    internalData.lastButtonClicked = evt.target;
+                    internalData.lastButtonClicked = elt;
                 }
             };
 
@@ -1969,13 +1982,32 @@ return (function () {
         function saveCurrentPageToHistory() {
             var elt = getHistoryElement();
             var path = currentPathForHistory || location.pathname+location.search;
-            triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path:path, historyElt:elt});
-            if(htmx.config.historyEnabled) history.replaceState({htmx:true}, getDocument().title, window.location.href);
-            saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+
+            // Allow history snapshot feature to be disabled where hx-history="false"
+            // is present *anywhere* in the current document we're about to save,
+            // so we can prevent privileged data entering the cache.
+            // The page will still be reachable as a history entry, but htmx will fetch it
+            // live from the server onpopstate rather than look in the localStorage cache
+            var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
+            if (!disableHistoryCache) {
+                triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
+                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+            }
+
+            if (htmx.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
         }
 
         function pushUrlIntoHistory(path) {
-            if(htmx.config.historyEnabled)  history.pushState({htmx:true}, "", path);
+            // remove the cache buster parameter, if any
+            if (htmx.config.getCacheBusterParam) {
+                path = path.replace(/org\.htmx\.cache-buster=[^&]*&?/, '')
+                if (path.endsWith('&') || path.endsWith("?")) {
+                    path = path.slice(0, -1);
+                }
+            }
+            if(htmx.config.historyEnabled) {
+                history.pushState({htmx:true}, "", path);
+            }
             currentPathForHistory = path;
         }
 
@@ -2121,7 +2153,7 @@ return (function () {
                 // and the new value could be arrays, so we have to handle all four cases :/
                 if (name != null && value != null) {
                     var current = values[name];
-                    if(current) {
+                    if (current !== undefined) {
                         if (Array.isArray(current)) {
                             if (Array.isArray(value)) {
                                 values[name] = current.concat(value);
@@ -2749,6 +2781,10 @@ return (function () {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
+            if (htmx.config.getCacheBusterParam && verb === 'get') {
+                filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, "id") || "true";
+            }
+
             // behavior of anchors w/ empty href is to use the current URL
             if (path == null || path === "") {
                 path = getDocument().location.href;
@@ -3108,7 +3144,11 @@ return (function () {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
                                     // @ts-ignore
-                                    newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                    try {
+                                        newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end);
+                                    } catch (e) {
+                                        // the setSelectionRange method is present on fields that don't support it, so just let this fail
+                                    }
                                 }
                                 newActiveElt.focus(focusOptions);
                             }
