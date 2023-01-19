@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.8.5] - 2023-01-??
+## [1.8.5] - 2023-01-17
 
 * Support a new optional cache-busting configuration option, `getCacheBusterParam`, to allow browsers to disambiguate
   between `GET` requests from htmx and from the raw browser
