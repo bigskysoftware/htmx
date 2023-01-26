@@ -2199,6 +2199,7 @@ return (function () {
                     historyCache.shift(); // shrink the cache and retry
                 }
             }
+            if (historyCache.length === 0) localStorage.removeItem("htmx-history-cache");
         }
 
         function getCachedHistory(url) {
