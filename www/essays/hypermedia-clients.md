@@ -99,7 +99,9 @@ Let's look at the proposed JSON-as-hypermedia again:
 }
 ```
 Now a client of this API *could* simply and generically transform this into, say, some HTML, via a client-side templating
-language.  However, note that there isn't a lot of presentation information in this JSON response.  A client that wanted
+language.  
+
+However, note that there isn't a lot of *presentation information* in this JSON response.  A client that wanted
 to satisfy the uniform interface constraint of REST wouldn't have the ability to show much more than a generic UI, since
 there simply isn't much more info to go with.
 
