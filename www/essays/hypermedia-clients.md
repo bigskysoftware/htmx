@@ -48,18 +48,21 @@ A smart and experienced developer will then reply with this:
 ```
 > There, now there are hypermedia controls (normal humans call them links, btw) so this JSON is a hypermedia.
 
-And one has to concede that, at least at a high-level, our online opponent has something of a talking point here: these
+...
+
+One has to concede that, at least at a high-level, our online opponent has something of a talking point here: these
 do appear to be hypermedia controls, and they are, in fact, in a JSON response.  So, couldn't you call this JSON response
 REST-ful?  
 
-Well, being geeks, we still aren't willing to concede the immediate point without a good [ackchyually](https://i.imgur.com/DpQ9YJl.png) or two:
+Well, being obstinate by nature, we still aren't willing to concede the immediate point without a 
+good [ackchyually](https://i.imgur.com/DpQ9YJl.png) or two:
 
 * These links hold no information about what HTTP method to use to access them
 * These links aren't a *native* part of JSON the way that, for example, anchor and form tags are with HTML
 * There is a lot of missing information about the hypermedia interactions at each end point (e.g. what data needs to
   go up with the request.)
 
-All good and fine points for pointless, pedantic flame wars about things that don't really matter on the internet.
+All good and fine points for the pointless and pedantic technical flame wars that make the internet so special.
 
 However, there is a deeper [ackchyually](https://i.imgur.com/DpQ9YJl.png) here, and one that doesn't involve the *JSON API* 
 itself, but rather the *client* that is interpreting the JSON.
