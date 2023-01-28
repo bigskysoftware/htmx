@@ -143,9 +143,12 @@ and the client didn't come up much.
 
 What I see now is that a lot of these discussions were putting the cart before the horse: the only way a REST-ful hypermedia
 API can be useful is if it is consumed by a proper hypermedia client.  Otherwise, your hypermedia controls are wasted
-on what is, at the end of the day, a domain-specific thick client that just wants to get things done.  Further, your
-hypermedia API is almost certainly going to have to carry a fair amount of presentation-layer information in it to make
-the whole thing usable.
+on what is, at the end of the day, a domain-specific thick client that just wants to get things done.  
+
+Further, your hypermedia API is almost certainly going to have to carry a fair amount of presentation-layer information 
+in it to make the whole thing usable.  It turns out that "Level 3" of the Richard Maturity Model, Hypermedia Controls,
+*isn't* enough.  In practice, you are going to need to add in a bunch of practical presentation-level technology to make 
+your hypermedia API really work.
 
 I had a nascent sense of this when I wrote [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html),
 but I didn't, at that time, appreciate just how special the browser was.
