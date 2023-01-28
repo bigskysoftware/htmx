@@ -146,6 +146,10 @@ I had a nascent sense of this when I wrote [HATEOAS Is For Humans](https://inter
 but I didn't, at that time, appreciate just how special the browser was.
 
 REST isn't just about APIs, and, except for a few people like [Mike](https://training.amundsen.com/), we've been largely
-ignoring the larger, maybe much larger, part of the REST-ful story.
+ignoring the larger, maybe much larger, part of the REST-ful story:
+
+<div style="text-align:center;padding-top: 24px">
 
 ![Iceberg](/img/creating-client.png)
+
+</div>
