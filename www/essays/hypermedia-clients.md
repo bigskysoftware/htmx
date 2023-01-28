@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-title: Hypermedia Clients: The Missing Link
+title: Hypermedia Clients - The Missing Link
 ---
 
 # Hypermedia Clients: The Missing Link
