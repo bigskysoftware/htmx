@@ -85,7 +85,7 @@ RESTful architectural style places on the entire system.
 
 In particular, the client needs to satisfy the [uniform interface](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5),
 in which the client code knows nothing about the "shape" or details of the response beyond the ability to display
-the given hypermedia to a user.  In a properly functioning RESTful system, the client isn't allowed to have andy 
+the given hypermedia to a user.  In a properly functioning RESTful system, the client isn't allowed to have any 
 "out of band" knowledge about the domain that a particular hypermedia representation, er, represents.
 
 Let's look at the proposed JSON-as-hypermedia again: 
