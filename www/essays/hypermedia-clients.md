@@ -5,8 +5,8 @@ title: Hypermedia Clients
 
 # Hypermedia Clients
 
-Often, when we are being insufferably pedantic in [discussions about](https://news.ycombinator.com/item?id=32141027) 
-[REST](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) & [HATEOAS](/essays/hateoas), we will
+Often, when we are being insufferably pedantic in [online discussions](https://news.ycombinator.com/item?id=32141027) 
+about [REST](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) & [HATEOAS](/essays/hateoas), we will
 say something along the lines of this:
 
 > JSON isn't a hypermedia because it doesn't have hypermedia controls.  Look at this JSON:
@@ -48,6 +48,8 @@ To this, occasionally, a smart and experienced web developer will reply with som
 ```
 > There, now there are hypermedia controls in this response (normal humans call them links, btw) so this JSON is a 
 > hypermedia and, therefore, this API JSON is now REST-ful.
+
+...
 
 ...
 
@@ -115,20 +117,23 @@ It would probably end up being roughly a set of name/value pairs and a set gener
 
 There simply isn't much more it could do while remaining agnostic about the form of the JSON response.
 
-We could fix this by making our JSON API more elaborate and start including more information on how to lay out the
-information: perhaps indications that some fields should be emphasized, or hidden or what have you.  But that would only 
-be part of the story.  
+### Pushing Our JSON API Further
 
-We would also need to update our client side to interpret these new elements of the API properly, so we are getting
+We could fix this by making our JSON API more elaborate and start including more information on how to lay out the
+information: perhaps indications that some fields should be emphasized, or hidden, etc.  
+
+But that would only be part of the story.  
+
+We would also need to update our client side to interpret these new elements of the JSON API properly, so we are getting
 in to the hypermedia *client* creation business as well.  Or, more likely, we are asking our *API clients* to get into
 the hypermedia client business as well.
 
 Now, Mike Amundsen has written an [excellent book](https://www.oreilly.com/library/view/restful-web-clients/9781491921890/) on
 how to build a proper, generic hypermedia client.  But what you will see in that book is that creating a good hypermedia 
 client isn't trivial, and, further, it is certainly not what *most* engineers would build to consume a JSON API, even if 
-the JSON API had hypermedia-ish controls in their responses.
+the JSON API had increasingly elaborate hypermedia controls and presentation information in their responses.
 
-## Inefficient Representations: Good
+### Inefficient Representations
 
 As we begin to consider adding more information to our JSON response, a quote from Roy Fielding's dissertation jumps
 to mind:
@@ -147,7 +152,7 @@ system that is the web.
 
 And that exactly what we find ourselves adding to our own JSON API to support a proper hypermedia client.
 
-## Creating Hypermedia Clients: Hard
+## Building Hypermedia Clients
 
 So, you can see, just offering hypermedia controls in a JSON API response isn't enough.  It is *part* of the REST story, 
 but not the entire story.  And, I have come to understand, it is not really the *hard* part of the story.  In fact, creating the 
@@ -159,11 +164,13 @@ parsing and rendering HTML to an end user in a normal, every day web request.  I
 That's why, if we want to build web-based [hypermedia-driven applications](https://htmx.org/essays/hypermedia-driven-applications/), 
 it's probably a good idea to use the standard, web-based hypermedia client: the browser.
 
-It is already an extremely powerful, well tested hypermedia client.  And, [with just a bit of help](https://htmx.org/docs), 
+It is already an extremely powerful, well tested hypermedia client.  And, [with a bit of help](https://htmx.org/docs), 
 it can be an even better hypermedia client.
 
-In general, building a good hypermedia client that satisfies all the constraints of REST is hard, and we should leverage
-(and extend) existing clients rather than building our own.
+In general, building a good hypermedia client that satisfies all the constraints of REST is hard, and we should lean
+towards using (and extending) existing clients rather than building our own new ones.
+
+### Hyperview
 
 That being said, there are times when building a new hypermedia client is appropriate.  For example, this is what makes 
 a technology like [Hyperview](https://hyperview.org/) so impressive and special.  Hyperview
