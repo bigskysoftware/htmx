@@ -210,8 +210,10 @@ your hypermedia API really work, *and* you are going to need a properly built hy
 I had a nascent sense of this when I wrote [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html),
 but I didn't, at that time, appreciate just how special the client/web browser was.
 
-REST isn't solely about APIs. Except for a few people like [Mike](https://training.amundsen.com/), we've been largely
-ignoring a larger (really, *much* larger) part of the REST story:
+REST isn't solely about APIs: as Roy Fielding makes clear in his disseration, it is a *system* architecture. 
+
+Except for a few people like [Mike](https://training.amundsen.com/), we've been largely ignoring a larger (really, 
+*much* larger) part of the REST story:
 
 <div style="text-align:center;padding-top: 24px">
 
