@@ -9,7 +9,10 @@ Often, when we are being insufferably pedantic in [online discussions](https://n
 about [REST](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) & [HATEOAS](/essays/hateoas), we will
 say something along the lines of this:
 
-> JSON isn't a hypermedia because it doesn't have hypermedia controls.  Look at this JSON:
+> JSON isn't a hypermedia because it doesn't have hypermedia controls.  
+> 
+> Look at this JSON:
+
  ```json
 {
   "account": {
@@ -22,8 +25,10 @@ say something along the lines of this:
   }
 }
 ```
+
+> See?  No hypermedia controls.  
 > 
-> See?  No hypermedia controls.  So this JSON isn't a hypermedia, and, therefore, the API returning it isn't REST-ful.
+> So this JSON isn't a hypermedia, and, therefore, the API returning this JSON isn't RESTful.
 
 To this, occasionally, a smart and experienced web developer will reply with something along these lines:
 
@@ -47,17 +52,17 @@ To this, occasionally, a smart and experienced web developer will reply with som
 }
 ```
 > There, now there are hypermedia controls in this response (normal humans call them links, btw) so this JSON is a 
-> hypermedia and, therefore, this API JSON is now REST-ful.
+> hypermedia.
+> 
+> So this JSON API is now RESTful.  Feel better?
 
-...
+😑
 
-...
-
-One has to concede that, at least at a high-level, our online opponent has something of a talking point here: these
+One must concede that, at least at a high-level, our online adversary has something of a talking point here: these
 do appear to be hypermedia controls, and they are, in fact, in a JSON response.  So, couldn't you call this JSON response
-REST-ful?  
+RESTful?  
 
-Being obstinate by nature, we still aren't willing to concede the immediate point without a good 
+Being obstinate by nature, we still wouldn't be willing to concede the immediate point without a good 
 [ackchyually](https://i.imgur.com/DpQ9YJl.png) or two:
 
 * First, these links hold no information about what HTTP method to use to access them
@@ -65,21 +70,21 @@ Being obstinate by nature, we still aren't willing to concede the immediate poin
 * Third, there is a lot of missing information about the hypermedia interactions at each end point (e.g. what data needs to
   go up with the request.)
 
-And so on: the sorts of pedantic points that make technical flame wars on the internet such a special joy.
+And so on: the sorts of pedantic nit-picking that makes technical flame wars about REST on the internet such a *special* joy.
 
 However, there is a deeper [ackchyually](https://i.imgur.com/DpQ9YJl.png) here, and one that doesn't involve the *JSON API* 
 itself, but rather the other side of the wire: the *client* that receives the JSON.
 
-## Hypermedia Clients: Important!
+## Hypermedia Clients & Presentation Information
 
-The deeper problem with this proposed fix for non-REST-ful JSON APIs is that, for this JSON response to participate 
+The deeper problem with this proposed fix for non-RESTful JSON APIs is that, for this JSON response to participate 
 properly in a [hypermedia system](https://hypermedia.systems), the *client* that consumes the JSON needs to *also* 
 satisfy the [constraints](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) that the 
-REST-ful architectural style places on the entire system.
+RESTful architectural style places on the entire system.
 
 In particular, the client needs to satisfy the [uniform interface](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5),
 in which the client code knows nothing about the "shape" or details of the response beyond the ability to display
-the given hypermedia to a user.  In a properly functioning REST-ful system, the client isn't allowed to have andy 
+the given hypermedia to a user.  In a properly functioning RESTful system, the client isn't allowed to have andy 
 "out of band" knowledge about the domain that a particular hypermedia representation, er, represents.
 
 Let's look at the proposed JSON-as-hypermedia again: 
@@ -124,16 +129,16 @@ information: perhaps indications that some fields should be emphasized, or hidde
 
 But that would only be part of the story.  
 
-We would also need to update our client side to interpret these new elements of the JSON API properly, so we are getting
-in to the hypermedia *client* creation business as well.  Or, more likely, we are asking our *API clients* to get into
-the hypermedia client business as well.
+We would also need to update the client side to interpret these new elements of our JSON API properly.  So we are no 
+longer just API designers: we are getting in to the hypermedia *client* creation business as well.  Or, more likely, we
+are asking our *API clients* to get into the hypermedia client business as well.
 
 Now, Mike Amundsen has written an [excellent book](https://www.oreilly.com/library/view/restful-web-clients/9781491921890/) on
 how to build a proper, generic hypermedia client.  But what you will see in that book is that creating a good hypermedia 
 client isn't trivial, and, further, it is certainly not what *most* engineers would build to consume a JSON API, even if 
 the JSON API had increasingly elaborate hypermedia controls and presentation information in their responses.
 
-### Inefficient Representations
+### "Inefficient" Representations
 
 As we begin to consider adding more information to our JSON response, a quote from Roy Fielding's dissertation jumps
 to mind:
@@ -179,18 +184,18 @@ doesn't just provide a specification for a new, mobile-friendly hypermedia, [HXM
 It also provides developers with a hypermedia *client* that understands how to render HXML.
 
 Without that hypermedia client, Hyperview would be just another hypermedia-in-theory, like the JSON above, rather
-than a compelling, practical and *complete* REST-ful hypermedia solution.
+than a compelling, practical and *complete* RESTful hypermedia solution.
 
 A hypermedia without a hypermedia client is like a fish without a bicycle, except where the fish is really only good at
 bicycling.
 
 ## Conclusion
 
-It took me a long time to appreciate how important the *client* is to a proper, REST-ful hypermedia system.  This is understandable,
+It took me a long time to appreciate how important the *client* is to a proper, RESTful hypermedia system.  This is understandable,
 since most of the early discussion around REST was around [API Design](https://www.martinfowler.com/articles/richardsonMaturityModel.html),
 and the client simply didn't come up much.
 
-What I see now is that a lot of these discussions were putting the cart before the horse: the only way a REST-ful hypermedia
+What I see now is that a lot of these discussions were putting the cart before the horse: the only way a RESTful hypermedia
 API can be useful is if it is consumed by a proper hypermedia client.  Otherwise, your hypermedia controls are wasted
 on what is, at the end of the day, a domain-specific thick client that just wants to get things done.  
 
