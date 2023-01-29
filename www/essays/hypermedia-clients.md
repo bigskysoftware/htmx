@@ -217,6 +217,6 @@ Except for a few people like [Mike](https://training.amundsen.com/), we've been 
 
 <div style="text-align:center;padding-top: 24px">
 
-![Iceberg](/img/creating-client.png)
+<img src="/img/creating-client.png" alt="Creating A Hypermedia Client Is Hard Joke" style="max-width: 95%">
 
 </div>
