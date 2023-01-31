@@ -16,12 +16,15 @@ The [`hx-boost`](/attributes/hx-boost) attribute moved htmx closer to this world
 support for extracting the `title` tag out of head elements was eventually added, but full head tag support has never been
 a feature of the library.
 
-This extension addresses that shortcoming & will likely be integrated into htmx for the 2.0 release.  
+This extension addresses that shortcoming & will likely be integrated into htmx for the 2.0 release.
+
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/head-support.js">
+```
 
 ### Usage
-
-The `head-support` extension is simple to install.  Simply add the `/ext/head-support.js` file to your head tag and
-install the extension using the `hx-ext` attribute:
 
 ```html
 <body hx-ext="head-support">
@@ -103,9 +106,9 @@ The final head element will look like this:
 
 This extension triggers the following events:
 
-* `htmx:removingHeadElement` - triggered when a head element is about to be removed, with the element being removed 
+* `htmx:removingHeadElement` - triggered when a head element is about to be removed, with the element being removed
    available in `event.detail.headElement`.  If `preventDefault()` is invoked on the event, the element will not be removed.
-* `htmx:addingHeadElement` - triggered when a head element is about to be added, with the element being added 
+* `htmx:addingHeadElement` - triggered when a head element is about to be added, with the element being added
    available in `event.detail.headElement`.  If `preventDefault()` is invoked on the event, the element will not be added.
 * `htmx:afterHeadMerge` - triggered after a head tag merge has occurred, with the following values available in the event `detail`:
   * `added` - added head elements
