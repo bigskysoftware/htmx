@@ -7,6 +7,12 @@ title: </> htmx - high power tools for html
 
 This extension disables an element during an htmx request, when configured on the element triggering the request.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js">
+```
+
 ### Usage
 
 #### Nominal case: disabling the element triggering the request
@@ -19,7 +25,3 @@ This extension disables an element during an htmx request, when configured on th
 <button hx-get="/whatever" hx-ext="disable-element" hx-disable-element="#to-disable">Click me</button>
 <button id="to-disable">Watch me being disabled</button>
 ```
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/disable-element.js>

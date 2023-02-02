@@ -5,11 +5,17 @@ title: </> htmx - multi-swap extension
 
 ## The `multi-swap` extension
 
-This extension allows you to swap multiple elements marked with the `id` attribute from the HTML response. You can also choose for each element which [swap method](/docs/#swapping) should be used. 
+This extension allows you to swap multiple elements marked with the `id` attribute from the HTML response. You can also choose for each element which [swap method](/docs/#swapping) should be used.
 
 Multi-swap can help in cases where OOB ([Out of Band Swaps](/docs/#oob_swaps)) is not enough for you. OOB requires HTML tags marked with `hx-swap-oob` attributes to be at the TOP level of HTML, which significantly limited its use. With OOB is not possible to swap multiple elements arbitrarily placed and nested in the DOM tree.
 
 It is a very powerful tool in conjunction with `hx-boost` and `preload` extension.
+
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js">
+```
 
 #### Usage
 
@@ -64,8 +70,3 @@ The use case below shows how to ensure that only the `#submenu` and `#content` e
 * Attribute `hx-swap` value **must not contain spaces**, otherwise only the part of the value up to the first space will be accepted.
 * If the `delete` swap method is used, the HTML response must also contain deleted element (it can be empty div with `id` attribute).
 * Only elements with an `id` selector are supported, as the function internally uses OOB internal method. So it is not possible to use `class` or any other selectors.
-
-#### Source
-
-<https://unpkg.com/htmx.org/dist/ext/multi-swap.js>
-

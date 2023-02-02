@@ -17,6 +17,12 @@ Use the following attributes to configure how SSE connections behave:
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
 * `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](/attributes/hx-trigger) attribute.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/sse.js">
+```
+
 ### Usage
 
 ```html
@@ -118,7 +124,3 @@ Previous versions of htmx used a built-in tag `hx-sse` to implement Server Sent 
 *[Wikipedia](https://en.wikipedia.org/wiki/Server-sent_events)
 *[MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
 *[Can I Use?](https://caniuse.com/eventsource)
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/sse.js>

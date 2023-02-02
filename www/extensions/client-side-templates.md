@@ -22,33 +22,35 @@ the template the standard way for that template engine:
 
 The AJAX response body will be parsed as JSON and passed into the template rendering.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js">
+```
+
 ### Usage
 
 ```html
 <div hx-ext="client-side-templates">
-  <button hx-get="/some_json" 
+  <button hx-get="/some_json"
           mustache-template="my-mustache-template">
      Handle with mustache
   </button>
-  <button hx-get="/some_json" 
+  <button hx-get="/some_json"
           handlebars-template="my-handlebars-template">
      Handle with handlebars
   </button>
-  <button hx-get="/some_json" 
+  <button hx-get="/some_json"
           nunjucks-template="my-nunjucks-template">
      Handle with nunjucks
   </button>
 </div>
 ```
 
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/client-side-templates.js>
-
 ### Full HTML Example
 
 To use the client side template, you will need to include htmx, the extension, and the rendering engine.
-Here is an example of this setup for Mustache using 
+Here is an example of this setup for Mustache using
 a [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).
 
 If you wish to put a template into another file, you can use a directive such as
@@ -67,7 +69,7 @@ If you wish to put a template into another file, you can use a directive such as
 </head>
 <body>
   <div hx-ext="client-side-templates">
-    <button hx-get="https://jsonplaceholder.typicode.com/todos/1" 
+    <button hx-get="https://jsonplaceholder.typicode.com/todos/1"
             hx-swap="innerHTML"
             hx-target="#content"
             mustache-template="foo">
@@ -75,7 +77,7 @@ If you wish to put a template into another file, you can use a directive such as
     </button>
 
     <p id="content">Start</p>
-    
+
     <template id="foo">
       <p> {% raw %}{{userID}}{% endraw %} and {% raw %}{{id}}{% endraw %} and {% raw %}{{title}}{% endraw %} and {% raw %}{{completed}}{% endraw %}</p>
     </template>
@@ -92,7 +94,7 @@ As a warning, many web services use CORS protection and/or other protection sche
 REST/JSON request from a web browser - for example, GitHub will issue a CORS error if you try to
 use the above snippet to access public APIs. This can be frustrating, as a dedicated REST development
 client may work fine, but the CORS error will appear when running JavaScript. This doesn't really
-have anything to do with HTMX (as you'd have the same issues with any JavaScript code), but can be 
+have anything to do with HTMX (as you'd have the same issues with any JavaScript code), but can be
 a frustrating surprise.
 
 Unfortunately, the solution will vary depending on the provider of the web service. Depending on

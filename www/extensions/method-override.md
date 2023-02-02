@@ -8,6 +8,12 @@ title: </> htmx - high power tools for html
 This extension makes non-`GET` and `POST` requests use a `POST` with the `X-HTTP-Method-Override` header set to the
 actual HTTP method.  This is necessary when dealing with some firewall or proxy situations.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/method-override.js">
+```
+
 #### Usage
 
 ```html
@@ -17,8 +23,3 @@ actual HTTP method.  This is necessary when dealing with some firewall or proxy 
 </button>
 </body>
 ```
-
-#### Source
-
-<https://unpkg.com/htmx.org/dist/ext/method-override.js>
-
