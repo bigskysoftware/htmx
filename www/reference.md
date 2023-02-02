@@ -12,7 +12,7 @@ title: </> htmx - Attributes
 * [htmx Request Headers](#request_headers)
 * [htmx Response Headers](#response_headers)
 * [htmx Events](#events)
-* [htmx Extensions](/extensions#reference)
+* [htmx Extensions](/extensions#included)
 * [Javascript API](#api)
 
 ## <a name="attributes"></a> [Core Attribute Reference](#attributes)
@@ -116,7 +116,7 @@ The table below lists all other attributes available in htmx.
 | `HX-Redirect`                                    | can be used to do a client-side redirect to a new location
 | `HX-Refresh`                                     | if set to "true" the client side will do a a full refresh of the page
 | [`HX-Replace-Url`](/headers/hx-replace-url)      | replaces the current URL in the location bar
-| `HX-Reswap`                                      | Allows you to specify how the response will be swapped. See [hx-swap](/attributes/hx-swap) for possible values 
+| `HX-Reswap`                                      | Allows you to specify how the response will be swapped. See [hx-swap](/attributes/hx-swap) for possible values
 | `HX-Retarget`                                    | A CSS selector that updates the target of the content update to a different element on the page
 | [`HX-Trigger`](/headers/hx-trigger)              | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
 | [`HX-Trigger-After-Settle`](/headers/hx-trigger) | allows you to trigger client side events, see the [documentation](/headers/hx-trigger) for more info
@@ -145,8 +145,8 @@ The table below lists all other attributes available in htmx.
 | [`htmx:confirm`](/events#htmx:confirm)  | triggered after a trigger occurs on an element, allows you to cancel (or delay) issuing the AJAX request
 | [`htmx:historyCacheError`](/events#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](/events#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
-| [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval 
-| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval 
+| [`htmx:historyCacheMissError`](/events#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval
+| [`htmx:historyCacheMissLoad`](/events#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval
 | [`htmx:historyRestore`](/events#htmx:historyRestore)  | triggered when htmx handles a history restoration action
 | [`htmx:beforeHistorySave`](/events#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
 | [`htmx:load`](/events#htmx:load)  | triggered when new content is added to the DOM

@@ -10,6 +10,12 @@ swapping mechanism in htmx.
 
 The `morphdom` library does not support morph element to multiple elements. If the result of `hx-select` is more than one element, it will pick the first one.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/morphdom-swap.js">
+```
+
 #### Usage
 
 ```html
@@ -20,8 +26,3 @@ The `morphdom` library does not support morph element to multiple elements. If t
    <button hx-swap="morphdom">This button will be swapped with morphdom!</button>
 </body>
 ```
-
-#### Source
-
-<https://unpkg.com/htmx.org/dist/ext/morphdom-swap.js>
-

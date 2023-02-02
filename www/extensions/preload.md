@@ -5,9 +5,15 @@ title: </> htmx - high power tools for html
 
 ## The `preload` Extension
 
-The `preload` extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously.  As a developer, you can customize its behavior to fit your applications needs and use cases.  
+The `preload` extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously.  As a developer, you can customize its behavior to fit your applications needs and use cases.
 
 **IMPORTANT:** Preloading content judiciously can improve your web application's perceived performance, but preloading too many resources can negatively impact your visitors' bandwidth and your server performance by initiating too many unused requests.  Use this extension carefully!
+
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/preload.js">
+```
 
 ### Usage
 
@@ -79,7 +85,7 @@ Preload can also listen to any custom event within the system, triggering resour
 <body hx-ext="preload">
     <button hx-get="/server" preload="preload:init" hx-target="idLoadMore">Load More</a>
     <div id="idLoadMore">
-        Content for this DIV will be preloaded as soon as the page is ready.  
+        Content for this DIV will be preloaded as soon as the page is ready.
         Clicking the button above will swap it into the DOM.
     </div>
 </body>
@@ -98,7 +104,3 @@ To accomodate touchscreen devices, an additional `ontouchstart` event handler is
 ### Credits
 
 The behavior for this plugin was inspired by the work done by [Alexandre Dieulot](https://github.com/dieulot) on [InstantClick](http://instantclick.io/), which is released under the MIT license.
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/preload.js>

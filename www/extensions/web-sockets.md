@@ -19,6 +19,12 @@ Use the following attributes to configure how WebSockets behave:
   event
   of the event specified by [`hx-trigger`])
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/ws.js">
+```
+
 ### Usage
 
 ```html
@@ -240,7 +246,3 @@ extension instead. Here are the steps you need to take to migrate to this versio
 | `hx-ws=""`              | `hx-ext="ws"`        | Use the `hx-ext="ws"` attribute to install the WebSockets extension into any HTML element.                                       |
 | `hx-ws="connect:<url>"` | `ws-connect="<url>"` | Add a new attribute `ws-connect` to the tag that defines the extension to specify the URL of the WebSockets server you're using. |
 | `hx-ws="send"`          | `ws-send=""`         | Add a new attribute `ws-send` to mark any child forms that should send data to your WebSocket server                             |
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/ws.js>

@@ -7,6 +7,12 @@ title: </> htmx - high power tools for html
 
 This extension triggers an event ``restored`` whenever a back button even is detected while using ``hx-boost``.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/restored.js">
+```
+
 ### Usage
 A page utilizing ``hx-boost`` that will reload the ``h1`` each time the back button is pressed:
 ```html
@@ -15,7 +21,3 @@ A page utilizing ``hx-boost`` that will reload the ``h1`` each time the back but
     <a href="/other_page">I'll be back</a>
 </body>
 ```
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/restored.js>
