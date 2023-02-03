@@ -181,7 +181,7 @@ Many developers and consultants have bet their careers on it.  Many hiring manag
 alone htmx, but put React on every job they post out of habit.  It is certainly much easier to hire for!
 
 While this is frustrating, it is a real phenomenon and should be borne in mind with humility.  Although Contexte
-was able to rewrite their application quickly and every effectively in htmx, not all teams are as small, agile and
+was able to rewrite their application quickly and effectively in htmx, not all teams are as small, agile and
 passionate, nor are all applications such slam dunks for the approach.  It may be better to adopt hypermedia around
 the edges, perhaps for internal tools first, to prove its value first, before taking a broader look at it.
 
