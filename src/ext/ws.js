@@ -177,11 +177,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 */
 	function createWebsocketWrapper(socketElt, socketFunc) {
 		var wrapper = {
-			publicInterface: {
-				send: this.send,
-				sendImmediately: this.sendImmediately,
-				queue: this.queue
-			},
 			socket: null,
 			messageQueue: [],
 			retryCount: 0,
@@ -290,6 +285,12 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 
 		wrapper.init();
+
+		wrapper.publicInterface = {
+			send: wrapper.send.bind(wrapper),
+			sendImmediately: wrapper.sendImmediately.bind(wrapper),
+			queue: wrapper.messageQueue
+		};
 
 		return wrapper;
 	}
