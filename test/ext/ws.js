@@ -81,13 +81,26 @@ describe("web-sockets extension", function () {
         var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div><div id="d2">div2</div></div>');
         this.tickMock();
 
-        this.socketServer.emit('message', "<div id=\"d1\">replaced</div>")
+        this.socketServer.emit('message', "<div id=\"d1\">replaced</div>");
 
         this.tickMock();
         byId("d1").innerHTML.should.equal("replaced");
         byId("d2").innerHTML.should.equal("div2");
     })
 
+    it('raises event when socket is connecting', function () {
+        var myEventCalled = false;
+        var handler = function (evt) {
+            myEventCalled = true;
+        };
+        htmx.on("htmx:wsConnecting", handler);
+
+        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">');
+        this.tickMock();
+        myEventCalled.should.be.true;
+        htmx.off("htmx:wsConnecting", handler);
+    })
+ 
     it('raises event when socket connected', function () {
         var myEventCalled = false;
         var handler = function (evt) {
@@ -98,7 +111,7 @@ describe("web-sockets extension", function () {
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">');
         this.tickMock();
         myEventCalled.should.be.true;
-        htmx.off("htmx:wsOpen", handler)
+        htmx.off("htmx:wsOpen", handler);
     })
 
     it('raises event when socket closed', function () {
@@ -108,7 +121,7 @@ describe("web-sockets extension", function () {
         };
 
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
-        htmx.on(div, "htmx:wsClose", handler)
+        htmx.on(div, "htmx:wsClose", handler);
         this.tickMock();
 
         div.parentElement.removeChild(div);
@@ -117,7 +130,42 @@ describe("web-sockets extension", function () {
         this.tickMock();
         myEventCalled.should.be.true;
         this.tickMock();
-        htmx.off(div, "htmx:wsClose", handler)
+        htmx.off(div, "htmx:wsClose", handler);
+    })
+
+    it('raises lifecycle events in correct order', function () {
+        var order = 1;
+        var connecting = 0;
+        var open = 0;
+        var closed = 0;
+
+        var connectingHandler = function (evt) { connecting = order++ };
+        var openHandler = function (evt) { open = order++ };
+        var closeHandler = function (evt) { closed = order++ };
+
+        htmx.on("htmx:wsConnecting", connectingHandler);
+
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
+
+        htmx.on(div, "htmx:wsOpen", openHandler);
+        htmx.on(div, "htmx:wsClose", closeHandler);
+
+        this.tickMock();
+
+        div.parentElement.removeChild(div);
+        this.socketServer.emit('message', 'foo');
+
+        this.tickMock();
+
+        connecting.should.be.eql(1);
+        open.should.be.eql(2);
+        closed.should.be.eql(3);
+
+        this.tickMock();
+
+        htmx.off("htmx:wsConnecting", connectingHandler);
+        htmx.off(div, "htmx:wsOpen", openHandler);
+        htmx.off(div, "htmx:wsClose", closeHandler);
     })
 
     it('raises htmx:wsConfig when sending, allows message modification', function () {

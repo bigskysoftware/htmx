@@ -247,6 +247,8 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				/** @type {WebSocket} */
 				var socket = socketFunc();
 
+				api.triggerEvent(socketElt, "htmx:wsConnecting");
+
 				this.socket = socket;
 
 				socket.onopen = function (e) {
