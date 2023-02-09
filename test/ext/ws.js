@@ -88,52 +88,7 @@ describe("web-sockets extension", function () {
         byId("d2").innerHTML.should.equal("div2");
     })
 
-    it('raises event when socket is connecting', function () {
-        var myEventCalled = false;
-        var handler = function (evt) {
-            myEventCalled = true;
-        };
-        htmx.on("htmx:wsConnecting", handler);
-
-        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">');
-        this.tickMock();
-        myEventCalled.should.be.true;
-        htmx.off("htmx:wsConnecting", handler);
-    })
- 
-    it('raises event when socket connected', function () {
-        var myEventCalled = false;
-        var handler = function (evt) {
-            myEventCalled = true;
-        };
-        htmx.on("htmx:wsOpen", handler)
-
-        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">');
-        this.tickMock();
-        myEventCalled.should.be.true;
-        htmx.off("htmx:wsOpen", handler);
-    })
-
-    it('raises event when socket closed', function () {
-        var myEventCalled = false;
-        var handler = function (evt) {
-            myEventCalled = true;
-        };
-
-        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
-        htmx.on(div, "htmx:wsClose", handler);
-        this.tickMock();
-
-        div.parentElement.removeChild(div);
-
-        this.socketServer.emit('message', 'foo');
-        this.tickMock();
-        myEventCalled.should.be.true;
-        this.tickMock();
-        htmx.off(div, "htmx:wsClose", handler);
-    })
-
-    it('raises lifecycle events in correct order', function () {
+    it('raises lifecycle events (connecting, open, close) in correct order', function () {
         var order = 1;
         var connecting = 0;
         var open = 0;
