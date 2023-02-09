@@ -89,21 +89,15 @@ describe("web-sockets extension", function () {
     })
 
     it('raises lifecycle events (connecting, open, close) in correct order', function () {
-        var order = 1;
-        var connecting = 0;
-        var open = 0;
-        var closed = 0;
+        var handledEventTypes = [];
+        var handler = function (evt) { handledEventTypes.push(evt.detail.event.type) };
 
-        var connectingHandler = function (evt) { connecting = order++ };
-        var openHandler = function (evt) { open = order++ };
-        var closeHandler = function (evt) { closed = order++ };
-
-        htmx.on("htmx:wsConnecting", connectingHandler);
+        htmx.on("htmx:wsConnecting", handler);
 
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="ws" ws-connect="ws://localhost:8080">');
 
-        htmx.on(div, "htmx:wsOpen", openHandler);
-        htmx.on(div, "htmx:wsClose", closeHandler);
+        htmx.on(div, "htmx:wsOpen", handler);
+        htmx.on(div, "htmx:wsClose", handler);
 
         this.tickMock();
 
@@ -112,15 +106,13 @@ describe("web-sockets extension", function () {
 
         this.tickMock();
 
-        connecting.should.be.eql(1);
-        open.should.be.eql(2);
-        closed.should.be.eql(3);
+        handledEventTypes.should.eql(['connecting', 'open', 'close'])
 
         this.tickMock();
 
-        htmx.off("htmx:wsConnecting", connectingHandler);
-        htmx.off(div, "htmx:wsOpen", openHandler);
-        htmx.off(div, "htmx:wsClose", closeHandler);
+        htmx.off("htmx:wsConnecting", handler);
+        htmx.off(div, "htmx:wsOpen", handler);
+        htmx.off(div, "htmx:wsClose", handler);
     })
 
     it('raises htmx:wsConfig when sending, allows message modification', function () {
