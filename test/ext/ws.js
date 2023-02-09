@@ -106,7 +106,7 @@ describe("web-sockets extension", function () {
 
         this.tickMock();
 
-        handledEventTypes.should.eql(['connecting', 'open', 'close'])
+        handledEventTypes.should.eql(['connecting', 'open', 'close']);
 
         this.tickMock();
 
