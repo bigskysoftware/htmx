@@ -2111,7 +2111,7 @@ return (function () {
 
         function haveSeenNode(processedIdsSet, processedNodes, elt) {
             var id = elt.id;
-            if (id !== undefined) {
+            if (id !== undefined && id.length > 0) {
                 var seen = processedIdsSet.has(id);
                 return seen;
             } else {
