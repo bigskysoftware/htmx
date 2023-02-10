@@ -2109,14 +2109,20 @@ return (function () {
         // Input Value Processing
         //====================================================================
 
-        function haveSeenNode(processed, elt) {
-            for (var i = 0; i < processed.length; i++) {
-                var node = processed[i];
-                if (node.isSameNode(elt)) {
-                    return true;
+        function haveSeenNode(processedIdsSet, processedNodes, elt) {
+            var id = elt.id;
+            if (id !== undefined) {
+                var seen = processedIdsSet.has(id);
+                return seen;
+            } else {
+                for (var i = 0; i < processedNodes.length; i++) {
+                    var node = processedNodes[i];
+                    if (node.isSameNode(elt)) {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }
 
         function shouldInclude(elt) {
@@ -2133,11 +2139,12 @@ return (function () {
             return true;
         }
 
-        function processInputValue(processed, values, errors, elt, validate) {
-            if (elt == null || haveSeenNode(processed, elt)) {
+        function processInputValue(processedIdsSet, processedNodes, values, errors, elt, validate) {
+            if (elt == null || haveSeenNode(processedIdsSet, processedNodes, elt)) {
                 return;
             } else {
-                processed.push(elt);
+                processedIdsSet.add(elt.id);
+                processedNodes.push(elt);
             }
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
@@ -2178,7 +2185,7 @@ return (function () {
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
                 forEach(inputs, function(input) {
-                    processInputValue(processed, values, errors, input, validate);
+                    processInputValue(processedIdsSet, processedNodes, values, errors, input, validate);
                 });
             }
         }
@@ -2198,7 +2205,8 @@ return (function () {
          * @param {string} verb
          */
         function getInputValues(elt, verb) {
-            var processed = [];
+            var processedIdsSet = new Set();
+            var processedNodes = [];
             var values = {};
             var formValues = {};
             var errors = [];
@@ -2213,11 +2221,11 @@ return (function () {
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, formValues, errors, closest(elt, 'form'), validate);
+                processInputValue(processedIdsSet, processedNodes, formValues, errors, closest(elt, 'form'), validate);
             }
 
             // include the element itself
-            processInputValue(processed, values, errors, elt, validate);
+            processInputValue(processedIdsSet, processedNodes, values, errors, elt, validate);
 
             // if a button or submit was clicked last, include its value
             if (internalData.lastButtonClicked) {
@@ -2230,11 +2238,11 @@ return (function () {
             // include any explicit includes
             var includes = findAttributeTargets(elt, "hx-include");
             forEach(includes, function(node) {
-                processInputValue(processed, values, errors, node, validate);
+                processInputValue(processedIdsSet, processedNodes, values, errors, node, validate);
                 // if a non-form is included, include any input values within it
                 if (!matches(node, 'form')) {
                     forEach(node.querySelectorAll(INPUT_SELECTOR), function (descendant) {
-                        processInputValue(processed, values, errors, descendant, validate);
+                        processInputValue(processedIdsSet, processedNodes, values, errors, descendant, validate);
                     })
                 }
             });
