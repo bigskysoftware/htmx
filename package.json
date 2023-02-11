@@ -20,16 +20,17 @@
     "dist/*.js.gz",
     "editors/jetbrains/htmx.web-types.json"
   ],
+  "type": "module",
   "main": "dist/htmx.min.js",
+  "module": "dist/htmx.esm.min.js",
   "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
+    "build": "rollup -c rollup.config.mjs",
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
-    "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
-    "www": "node scripts/www.js",
-    "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
+    "www": "node scripts/www.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",
     "@11ty/eleventy-plugin-rss": "^1.1.2",
+    "@rollup/plugin-terser": "^0.4.0",
     "chai": "^4.3.6",
     "chai-dom": "^1.11.0",
     "eleventy-plugin-sass": "^1.2.0",
@@ -46,9 +48,11 @@
     "mocha-chrome": "^2.2.0",
     "mocha-webdriver-runner": "^0.6.3",
     "mock-socket": "^9.1.5",
+    "rollup": "^3.15.0",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-gzip": "^3.1.0",
     "sass": "^1.51.0",
     "sinon": "^9.2.4",
-    "typescript": "^4.5.5",
-    "uglify-js": "^3.15.0"
+    "typescript": "^4.5.5"
   }
 }
