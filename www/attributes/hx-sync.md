@@ -51,7 +51,7 @@ If you'd rather prioritize the validation request over the submit request, you c
 </form>
 ```
 
-When dealing with forms that contain many inputs, you can prioritize the submit request over all input validation requests using the hx-sync `replace` stragegy on the form tag. This will cancel any in-flight validation requests and issue only the `hx-post="/store"` request. If you'd rather abort the submit request and prioritize any existing validation requests you can use the `hx-sync="this:abort"` strategy on the form tag
+When dealing with forms that contain many inputs, you can prioritize the submit request over all input validation requests using the hx-sync `replace` strategy on the form tag. This will cancel any in-flight validation requests and issue only the `hx-post="/store"` request. If you'd rather abort the submit request and prioritize any existing validation requests you can use the `hx-sync="this:abort"` strategy on the form tag.
 
 ```html
 <form hx-post="/store" hx-sync="this:replace">
