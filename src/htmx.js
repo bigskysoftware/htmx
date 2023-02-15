@@ -924,6 +924,10 @@ return (function () {
             return parentElt(target).removeChild(target);
         }
 
+        function swapEmpty(target, fragment, settleInfo) {
+            target.innerHTML = '';
+        }
+
         function swapInnerHTML(target, fragment, settleInfo) {
             var firstChild = target.firstChild;
             insertNodesBefore(target, firstChild, fragment, settleInfo);
@@ -970,6 +974,9 @@ return (function () {
                     return;
                 case "delete":
                     swapDelete(target, fragment, settleInfo);
+                    return;
+                case "empty":
+                    swapEmpty(target, fragment, settleInfo);
                     return;
                 default:
                     var extensions = getExtensions(elt);
