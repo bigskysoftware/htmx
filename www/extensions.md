@@ -84,6 +84,7 @@ See the individual extension documentation for more details.
 | [`server-sent-events`](/extensions/server-sent-events)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
 | [`web-sockets`](/extensions/web-sockets)                     | bi-directional connection to WebSocket servers
 | [`head-support`](/extensions/head-support)                   | support for merging the `head` tag from responses into the existing documents `head`
+| [`refresh-href`](/extensions/refresh-href)                   | refresh href attributes of anchors on events with actual ajax target
 
 </div>
 
