@@ -399,6 +399,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
+| `delete` | deletes the target element regardless of the response
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
 #### <a name="morphing"></a> [Morph Swaps](#morphing)
