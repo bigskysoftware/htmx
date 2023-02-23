@@ -1,10 +1,16 @@
-//AMD insanity
+// UMD insanity
+// This code sets up support for (in order) AMD, ES6 modules, and globals.
 (function (root, factory) {
     //@ts-ignore
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         //@ts-ignore
         define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
     } else {
         // Browser globals
         root.htmx = root.htmx || factory();
