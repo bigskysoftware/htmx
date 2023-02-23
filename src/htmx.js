@@ -1318,11 +1318,16 @@ return (function () {
         }
 
         function addEventListener(elt, handler, nodeData, triggerSpec, explicitCancel) {
+            var elementData = getInternalData(elt);
             var eltsToListenOn;
             if (triggerSpec.from) {
                 eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
             } else {
                 eltsToListenOn = [elt];
+            }
+            // store the initial value of the element so we can tell if it changes
+            if (triggerSpec.changed) {
+                elementData.lastValue = elt.value;
             }
             forEach(eltsToListenOn, function (eltToListenOn) {
                 var eventListener = function (evt) {
@@ -1344,7 +1349,6 @@ return (function () {
                     if (eventData.handledFor == null) {
                         eventData.handledFor = [];
                     }
-                    var elementData = getInternalData(elt);
                     if (eventData.handledFor.indexOf(elt) < 0) {
                         eventData.handledFor.push(elt);
                         if (triggerSpec.consume) {
@@ -1399,7 +1403,7 @@ return (function () {
                     on: eltToListenOn
                 })
                 eltToListenOn.addEventListener(triggerSpec.trigger, eventListener);
-            })
+            });
         }
 
         var windowIsScrolling = false // used by initScrollHandler

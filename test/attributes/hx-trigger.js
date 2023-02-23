@@ -26,7 +26,7 @@ describe("hx-trigger attribute", function(){
             requests++;
             xhr.respond(200, {}, "Requests: " + requests);
         });
-        var input = make('<input hx-trigger="click changed" hx-target="#d1" hx-get="/test" value="foo"/>');
+        var input = make('<input hx-trigger="click changed" hx-target="#d1" hx-get="/test"/>');
         var div = make('<div id="d1"></div>');
         input.click();
         this.server.respond();
