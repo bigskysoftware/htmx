@@ -115,7 +115,7 @@ describe("web-sockets extension", function () {
         htmx.off(div, "htmx:wsClose", handler);
     })
 
-    it('raises htmx:wsConfig when sending, allows message modification', function () {
+    it('raises htmx:wsConfigSend when sending, allows message modification', function () {
         var myEventCalled = false;
 
         function handle(evt) {
@@ -136,6 +136,35 @@ describe("web-sockets extension", function () {
         this.messages.length.should.equal(1);
         this.messages[0].should.contains('"foo":"bar"')
         htmx.off("htmx:wsConfigSend", handle)
+    })
+
+    it('passes socketWrapper to htmx:wsConfigSend', function () {
+        var socketWrapper = null;
+
+        function handle(evt) {
+            evt.preventDefault();
+            socketWrapper = evt.detail.socketWrapper;
+            socketWrapper.send(JSON.stringify({foo: 'bar'}), evt.detail.elt)
+        }
+
+        htmx.on("htmx:wsConfigSend", handle)
+
+        var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div ws-send id="d1">div1</div></div>');
+        this.tickMock();
+
+        byId("d1").click();
+
+        this.tickMock();
+
+        socketWrapper.should.not.be.null;
+        socketWrapper.send.should.be.a('function');
+        socketWrapper.sendImmediately.should.be.a('function');
+        socketWrapper.queue.should.be.an('array');
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+
+        htmx.off("htmx:wsConfigSend", handle);
     })
 
     it('cancels sending when htmx:wsConfigSend is cancelled', function () {
