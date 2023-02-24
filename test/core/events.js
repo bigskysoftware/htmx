@@ -628,4 +628,30 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("has updated target available when target set via htmx:beforeSwap", function () {
+
+        var targetWasUpdatedInAfterSwapHandler = false;
+
+        var beforeSwapHandler = htmx.on("htmx:beforeSwap", function (evt) {
+            console.log("beforeSwap", evt.detail.target, byId('d2'));
+            evt.detail.target = byId('d2');
+        });
+        var afterSwapHandler = htmx.on("htmx:afterSwap", function (evt) {
+            console.log("afterSwap", evt.detail.target, byId('d2'));
+            targetWasUpdatedInAfterSwapHandler = evt.detail.target === byId('d2');
+        });
+
+        try {
+            this.server.respondWith("GET", "/test", "updated");
+            make("<div id='d0' hx-get='/test' hx-target='#d1'></div><div id='d1'></div><div id='d2'></div>");
+            var div = byId('d0');
+            div.click();
+            this.server.respond();
+            targetWasUpdatedInAfterSwapHandler.should.equal(true);
+        } finally {
+            htmx.off("htmx:beforeSwap", beforeSwapHandler);
+            htmx.off("htmx:afterSwap", afterSwapHandler);
+        }
+    });
+
 });

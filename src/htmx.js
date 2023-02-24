@@ -3102,6 +3102,7 @@ return (function () {
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
 
+            responseInfo.target = target; // Make updated target available to response events
             responseInfo.failed = isError; // Make failed property available to response events
             responseInfo.successful = !isError; // Make successful property available to response events
 
