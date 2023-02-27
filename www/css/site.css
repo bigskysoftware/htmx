@@ -1,5 +1,7 @@
-$midBlue: #3465a4;
-$lightBlue: #3d72d7;
+:root {
+    --midBlue: #3465a4;
+    --lightBlue: #3d72d7;
+}
 
 body {
     overflow-x:hidden;
@@ -31,17 +33,19 @@ table {
     font-size: 28px;
     font-weight: bold;
 
-    & b {
-        font-weight: inherit;
-        color: $midBlue;
-    }
+}
+.logo b {
+    font-weight: inherit;
+    color: var(--midBlue);
 }
 
+/*
 .light {
 }
 
 .content{
 }
+*/
 
 .top-nav {
     line-height: 30px;
@@ -78,32 +82,30 @@ code:not(code[class*="language-"]) {
     vertical-align: center;
     color: whitesmoke;
     margin-top: -2em;
-    * {
-        opacity: 0;
-        transition: all 500ms ease-in;
-    }
-    sub {
-        display: inline-block;
-        position: relative;
-        top: 40px;
-    }
-    &.appear {
-        * {
-            opacity: 1;
-            top: 10px;
-        }
-    }
-    .logo {
-        font-size: 100px;
-    }
-    a {
-        color: $lightBlue;
-    }
     box-shadow:
             inset 0px 11px 8px -10px #262626,
             inset 0px -11px 8px -10px #262626;
     border-bottom: 1px solid whitesmoke;
 }
+    .dark-hero * {
+        opacity: 0;
+        transition: all 500ms ease-in;
+    }
+    .dark-hero sub {
+        display: inline-block;
+        position: relative;
+        top: 40px;
+    }
+    .dark-hero.appear * {
+        opacity: 1;
+        top: 10px;
+    }
+    .dark-hero .logo {
+        font-size: 100px;
+    }
+    .dark-hero a {
+        color: var(--lightBlue);
+    }
 
 p {
     margin: 0.5em 0;
@@ -128,7 +130,7 @@ table {
 
 a {
   text-decoration: none;
-  color: $midBlue
+  color: var(--midBlue)
 }
 
 .center {
@@ -136,12 +138,12 @@ a {
 }
 
 .nav {
-    ul {
+    margin-bottom: 1em;
+}
+    .nav ul {
         list-style: none;
         padding-left: 12px;
     }
-    margin-bottom: 1em;
-}
 
 .hamburger {
     display: none;
@@ -170,10 +172,10 @@ h4 {
         overflow: hidden;
         text-align: center;
         font-size: 22px;
-        &.show {
-            height: initial;
-            overflow: visible;
-        }
+    }
+    #nav.show {
+        height: initial;
+        overflow: visible;
     }
     .hero {
         font-size: 2.5em;
@@ -189,7 +191,6 @@ h4 {
         display: none !important;
     }
     .hamburger {
-        display: inline-block;
         float: right;
     }
     .nav {
@@ -225,7 +226,7 @@ h4 {
     .row {
         display: table;
         table-layout: fixed;
-        // border-spacing: 1em 0;
+        /* border-spacing: 1em 0; */
     }
 }
 
@@ -236,7 +237,7 @@ h4 {
 
 .card:focus {
     outline: 0;
-    border: solid $midBlue;
+    border: solid var(--midBlue);
 }
 
 hr {
@@ -264,8 +265,8 @@ a[href]:hover, .btn:hover {
 
 .btn.primary {
     color: white;
-    background: $midBlue;
-    border: solid $midBlue;
+    background: var(--midBlue);
+    border: solid var(--midBlue);
 }
 
 td {
@@ -301,7 +302,7 @@ table.delete-row-example .htmx-swapping {
   transition: visibility 0s 1s, opacity 1s linear;
 }
 
-// MENU
+/* MENU */
 
 .menu{
     padding:1em 0;
@@ -311,7 +312,7 @@ table.delete-row-example .htmx-swapping {
     max-width:95px
 }
 
-// Content
+/* Content */
 
 .content {
     padding-top:1em;
@@ -323,22 +324,23 @@ h1,h2,h3,h4{
     line-height: 1em;
 }
 
-// UL in content
+/* UL in content */
 :not(.nav) ul{
     padding-left: 1em;
 }
 
 .nav ul{
     padding-left: 0;
-    li ul {
-        padding-left:12px;
-    }
+}
+
+.nav ul ul {
+    padding-left:12px;
 }
 
 
 @media(min-width:45em) {
 
-    // Menu
+    /* Menu */
     .menu,
     .navigation > div{
         display:flex;
@@ -356,13 +358,12 @@ h1,h2,h3,h4{
     .github-stars{
         display:flex;
         align-items:center;
-        a{
-            margin:0 calc(.5em + .7vw);
-        }
-
+    }
+    .github-stars a{
+        margin:0 calc(.5em + .7vw);
     }
 
-    // Content
+    /* Content */
     .content .col:not(:nth-child(1)):not(.nav) {
         padding-left: calc(1em + 1.5vw);
     }
@@ -397,9 +398,9 @@ h1,h2,h3,h4{
     .github-stars{
         text-align:center;
         margin-top:1em;
-        a{
-            display:block;
-        }
+    }
+    .github-stars a{
+        display:block;
     }
 }
 
