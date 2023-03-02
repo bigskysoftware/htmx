@@ -111,9 +111,17 @@ state and sends them once the connection is restored.
 
 WebSockets extensions exposes a set of events that allow you to observe and customize its behavior.
 
+#### <a name="htmx:wsConnecting"></a> Event - [`htmx:wsConnecting`](#htmx:wsConnecting)
+
+This event is triggered when a connection to a WebSocket endpoint is being attempted.
+
+##### Details
+
+* `detail.event.type` - the type of the event (`'connecting'`)
+
 #### <a name="htmx:wsOpen"></a> Event - [`htmx:wsOpen`](#htmx:wsOpen)
 
-This event is triggered when a connection to WebSockets endpoint has been established.
+This event is triggered when a connection to a WebSocket endpoint has been established.
 
 ##### Details
 
@@ -123,7 +131,7 @@ This event is triggered when a connection to WebSockets endpoint has been establ
 
 #### <a name="htmx:wsClose"></a> Event - [`htmx:wsClose`](#htmx:wsClose)
 
-This event is triggered when a connection to WebSockets endpoint has been closed normally.
+This event is triggered when a connection to a WebSocket endpoint has been closed normally.
 You can check if the event was caused by an error by inspecting `detail.event` property.
 
 ##### Details

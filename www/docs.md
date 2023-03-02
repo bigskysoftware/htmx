@@ -399,6 +399,7 @@ with any of the following values:
 | `beforebegin` | prepends the content before the target in the targets parent element
 | `beforeend` | appends the content after the last child inside the target
 | `afterend` | appends the content after the target in the targets parent element
+| `delete` | deletes the target element regardless of the response
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
 #### <a name="morphing"></a> [Morph Swaps](#morphing)
@@ -485,7 +486,7 @@ Imagine this content is replaced by htmx via an ajax request with this new conte
 
 Note two things: 
 
-* The div has the *same* id in the original an in the new content
+* The div has the *same* id in the original and in the new content
 * The `red` class has been added to the new content
 
 Given this situation, we can write a CSS transition from the old state to the new state:
@@ -671,7 +672,7 @@ a wider audience to use your sites functionality.
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.  
 
 Consider the [active search](/examples/active-search) example.  As it is written, it will not degrade gracefully:
-someone who does not have javascript enabled will not be able to use this feature. This is done for simplicities sake, 
+someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity’s sake, 
 to keep the example as brief as possible.  
  
 However, you could wrap the htmx-enhanced input in a form element:

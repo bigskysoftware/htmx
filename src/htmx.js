@@ -2895,7 +2895,7 @@ return (function () {
                     removeRequestIndicatorClasses(indicators);
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
-                    // if the body no longer contains the element, trigger the even on the closest parent
+                    // if the body no longer contains the element, trigger the event on the closest parent
                     // remaining in the DOM
                     if (!bodyContains(elt)) {
                         var secondaryTriggerElt = null;

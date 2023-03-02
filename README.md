@@ -7,7 +7,6 @@
 [![Bundlephobia](https://badgen.net/bundlephobia/dependency-count/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
 [![Bundlephobia](https://badgen.net/bundlephobia/minzip/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
 
-
 ## introduction
 
 htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
@@ -67,20 +66,24 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 * please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
 * please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
 * if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
-keep the core htmx code tidy
+  keep the core htmx code tidy
 * development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
 * No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
 ### hacking guide
 
 To develop htmx locally, you will need to install the development dependencies.
-Use node 15 and run:
+
+__Requires Python 2 and Node 15.__
+
+Run:
 
 ```
 npm install
 ```
 
 Then, run a web server in the root.
+
 This is easiest with Python:
 
 ```
