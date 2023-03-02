@@ -793,7 +793,8 @@ return (function () {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
                 if (newNode.id && newNode.id.length > 0) {
                     var normalizedId = newNode.id.replace("'", "\\'");
-                    var oldNode = parentNode.querySelector(newNode.tagName + "[id='" + normalizedId + "']");
+                    var normalizedTag = newNode.tagName.replace(':', '\\:');
+                    var oldNode = parentNode.querySelector(normalizedTag + "[id='" + normalizedId + "']");
                     if (oldNode && oldNode !== parentNode) {
                         var newAttributes = newNode.cloneNode();
                         cloneAttributes(newNode, oldNode);
