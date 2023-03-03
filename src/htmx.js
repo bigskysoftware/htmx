@@ -1688,6 +1688,16 @@ return (function () {
                     });
                 }
             });
+            if (!explicitAction && hasAttribute(elt,'hx-eval')) {
+                var str = getAttributeValue(elt, 'hx-eval');
+                explicitAction = true;
+                triggerSpecs.forEach(function(triggerSpec) {
+                    addTriggerHandler(elt, triggerSpec, nodeData, function (elt, evt) {
+                        var toEval = new Function(str).bind(elt)
+                        return maybeEval(elt, toEval)
+                    })
+                });
+            }
             return explicitAction;
         }
 
@@ -1772,7 +1782,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-eval], [data-hx-eval]");
                 return results;
             } else {
                 return [];
