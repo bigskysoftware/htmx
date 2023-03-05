@@ -380,8 +380,8 @@ return (function () {
 
         function bodyContains(elt) {
             // IE Fix
-            if (elt.getRootNode && elt.getRootNode() instanceof ShadowRoot) {
-                return getDocument().body.contains(elt.getRootNode().host);
+            if (elt.getRootNode && elt.getRootNode({composed:true}) instanceof ShadowRoot) {
+                return getDocument().body.contains(elt.getRootNode({composed:true}).host);
             } else {
                 return getDocument().body.contains(elt);
             }
@@ -549,7 +549,7 @@ return (function () {
                 while (true) {
                     elts = n.querySelectorAll(selector)
                     if (elts.length > 0 || n === window.top.document) return elts
-                    n = n.getRootNode()
+                    n = n.getRootNode({composed:true})
                 }
             }
         }
