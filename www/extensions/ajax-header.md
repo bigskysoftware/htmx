@@ -9,6 +9,12 @@ This extension adds the `X-Requested-With` header to requests with the value "XM
 
 This header is commonly used by javascript frameworks to differentiate ajax requests from normal http requests.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/ajax-header.js">
+```
+
 ### Usage
 
 ```html
@@ -16,7 +22,3 @@ This header is commonly used by javascript frameworks to differentiate ajax requ
  ...
 </body>
 ```
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/ajax-header.js>

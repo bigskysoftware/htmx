@@ -27,6 +27,12 @@ You can use a `*` to match any path component:
        path-deps="/contacts/*">...</div>
 ```
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/path-deps.js">
+```
+
 #### Usage
 
 ```html
@@ -55,7 +61,3 @@ This method manually triggers a refresh for the given path.
   // Trigger a refresh on all elements with the path-deps attribute '/path/to/refresh', including elements with a parent path, e.g. '/path'
   PathDeps.refresh('/path/to/refresh');
 ```
-
-#### Source
-
-<https://unpkg.com/htmx.org/dist/ext/path-deps.js>

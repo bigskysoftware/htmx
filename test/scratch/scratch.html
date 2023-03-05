@@ -18,10 +18,10 @@
 
 </head>
 <body style="padding:20px;font-family: sans-serif">
-<script src="../node_modules/sinon/pkg/sinon.js"></script>
-<script src="../src/htmx.js"></script>
-<script src="util/util.js"></script>
-<script src="util/scratch_server.js"></script>
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/htmx.js"></script>
+<script src="../util/util.js"></script>
+<script src="../util/scratch_server.js"></script>
 
 <script>
 
@@ -62,12 +62,12 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 </div>
 
 <script>
-    this.server.respondWith("GET", "/preserve", 'foo');
+    this.server.respondWith("GET", "/demo", 'demo response...');
 </script>
 
-<div hx-post="/preserve" hx-trigger="every 1s">
-    <iframe hx-preserve='true' id='iframe1' width="300" height="200" src="https://www.youtube.com/embed/Z1oB2EDu5XA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
+<button>First</button>
+<input hx-get="/demo" hx-target="next output" hx-trigger="keyup changed"/>
+<output>--</output>
 
 </body>
 </html>

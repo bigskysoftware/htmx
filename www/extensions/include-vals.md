@@ -9,6 +9,12 @@ The `include-vals` extension allows you to programatically include values in a r
 a `include-vals` attribute.  The value of this attribute is one or more name/value pairs, which
 will be evaluated as the fields in a javascript object literal.
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/include-vals.js">
+```
+
 ### Usage
 
 ```html
@@ -16,9 +22,5 @@ will be evaluated as the fields in a javascript object literal.
     <div hx-get="/test" include-vals="included:true, computed: computeValue()">
       Will Include Additional Values
     </div>
-</div> 
+</div>
 ```
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/include-vals.js>

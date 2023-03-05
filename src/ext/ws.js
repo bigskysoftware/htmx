@@ -177,11 +177,6 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 */
 	function createWebsocketWrapper(socketElt, socketFunc) {
 		var wrapper = {
-			publicInterface: {
-				send: this.send,
-				sendImmediately: this.sendImmediately,
-				queue: this.queue
-			},
 			socket: null,
 			messageQueue: [],
 			retryCount: 0,
@@ -247,6 +242,11 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 				/** @type {WebSocket} */
 				var socket = socketFunc();
 
+				// The event.type detail is added for interface conformance with the
+				// other two lifecycle events (open and close) so a single handler method
+				// can handle them polymorphically, if required.
+				api.triggerEvent(socketElt, "htmx:wsConnecting", { event: { type: 'connecting' } });
+
 				this.socket = socket;
 
 				socket.onopen = function (e) {
@@ -290,6 +290,12 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 		}
 
 		wrapper.init();
+
+		wrapper.publicInterface = {
+			send: wrapper.send.bind(wrapper),
+			sendImmediately: wrapper.sendImmediately.bind(wrapper),
+			queue: wrapper.messageQueue
+		};
 
 		return wrapper;
 	}

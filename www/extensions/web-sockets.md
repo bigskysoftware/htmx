@@ -19,6 +19,12 @@ Use the following attributes to configure how WebSockets behave:
   event
   of the event specified by [`hx-trigger`])
 
+### Install
+
+```html
+<script src="https://unpkg.com/htmx.org/dist/ext/ws.js">
+```
+
 ### Usage
 
 ```html
@@ -105,9 +111,17 @@ state and sends them once the connection is restored.
 
 WebSockets extensions exposes a set of events that allow you to observe and customize its behavior.
 
+#### <a name="htmx:wsConnecting"></a> Event - [`htmx:wsConnecting`](#htmx:wsConnecting)
+
+This event is triggered when a connection to a WebSocket endpoint is being attempted.
+
+##### Details
+
+* `detail.event.type` - the type of the event (`'connecting'`)
+
 #### <a name="htmx:wsOpen"></a> Event - [`htmx:wsOpen`](#htmx:wsOpen)
 
-This event is triggered when a connection to WebSockets endpoint has been established.
+This event is triggered when a connection to a WebSocket endpoint has been established.
 
 ##### Details
 
@@ -117,7 +131,7 @@ This event is triggered when a connection to WebSockets endpoint has been establ
 
 #### <a name="htmx:wsClose"></a> Event - [`htmx:wsClose`](#htmx:wsClose)
 
-This event is triggered when a connection to WebSockets endpoint has been closed normally.
+This event is triggered when a connection to a WebSocket endpoint has been closed normally.
 You can check if the event was caused by an error by inspecting `detail.event` property.
 
 ##### Details
@@ -240,7 +254,3 @@ extension instead. Here are the steps you need to take to migrate to this versio
 | `hx-ws=""`              | `hx-ext="ws"`        | Use the `hx-ext="ws"` attribute to install the WebSockets extension into any HTML element.                                       |
 | `hx-ws="connect:<url>"` | `ws-connect="<url>"` | Add a new attribute `ws-connect` to the tag that defines the extension to specify the URL of the WebSockets server you're using. |
 | `hx-ws="send"`          | `ws-send=""`         | Add a new attribute `ws-send` to mark any child forms that should send data to your WebSocket server                             |
-
-### Source
-
-<https://unpkg.com/htmx.org/dist/ext/ws.js>

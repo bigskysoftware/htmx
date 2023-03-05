@@ -10,7 +10,7 @@ title: </> htmx - high power tools for html
 
 ### The LoB Principle
 
-Locality of Behavior is the principle that: 
+Locality of Behaviour is the principle that: 
 
 > The behaviour of a unit of code should be as obvious as possible by looking only at that unit of code
 
@@ -46,13 +46,13 @@ In the latter, the behaviour of the `button` element is spread out amongst multi
 exactly what the button does without a total knowledge of the code base.  This "spooky action at a distance" is a source
 of maintenance issues and stands in the way of developers understanding of the code base.
 
-The htmx example demonstrates good Locality of Behavior, while the jQuery example has poor Locality of Behavior.
+The htmx example demonstrates good Locality of Behaviour, while the jQuery example has poor Locality of Behaviour.
 
 #### Surfacing Behaviour vs. Inlining Implementation
 
-A common objection to Locality of Behavior is that it is inlining implementation details within a code unit, making the
+A common objection to Locality of Behaviour is that it is inlining implementation details within a code unit, making the
 code unit less abstract and more brittle.  However, it is important to make the distinction between inlining the
-*implementation* of some behavior and inlining the invocation (or declaration) of some behavior.  
+*implementation* of some behaviour and inlining the invocation (or declaration) of some behaviour.  
 
 Consider functions in most programming languages: there is a distinction between the declaration of function and its 
 use at call sites.  A good function abstracts away its implementation details, but is also invoked in an obvious manner, 

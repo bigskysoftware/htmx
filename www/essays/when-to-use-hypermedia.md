@@ -181,7 +181,7 @@ Many developers and consultants have bet their careers on it.  Many hiring manag
 alone htmx, but put React on every job they post out of habit.  It is certainly much easier to hire for!
 
 While this is frustrating, it is a real phenomenon and should be borne in mind with humility.  Although Contexte
-was able to rewrite their application quickly and every effectively in htmx, not all teams are as small, agile and
+was able to rewrite their application quickly and effectively in htmx, not all teams are as small, agile and
 passionate, nor are all applications such slam dunks for the approach.  It may be better to adopt hypermedia around
 the edges, perhaps for internal tools first, to prove its value first, before taking a broader look at it.
 
@@ -208,6 +208,6 @@ every web application, even Google Sheets or Google Maps, has parts where, poten
 better: simpler, faster and cleaner.
 
 Having hypermedia as a tool in your tool-chest will improve your ability to address engineering problems as a web
-developer, even if it doesn't become your favorite hammer.  There is a good [theoretical basis](https://htmx.org/essays/a-real-world-React-to-htmx-port/) 
+developer, even if it doesn't become your favorite hammer.  There is a good [theoretical basis](https://htmx.org/essays/hateoas/) 
 for the approach, [practical benefits for many applications](https://htmx.org/essays/a-real-world-React-to-htmx-port/),
 and it is "with the grain" of the web in a way that other approaches are not.
