@@ -380,8 +380,8 @@ return (function () {
 
         function bodyContains(elt) {
             // IE Fix
-            if (elt.getRootNode && elt.getRootNode({composed:true}) instanceof ShadowRoot) {
-                return getDocument().body.contains(elt.getRootNode({composed:true}).host);
+            if (elt.getRootNode && elt.getRootNode() instanceof ShadowRoot) {
+                return getDocument().body.contains(elt.getRootNode().host);
             } else {
                 return getDocument().body.contains(elt);
             }
