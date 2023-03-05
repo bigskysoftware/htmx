@@ -249,7 +249,9 @@ return (function () {
          */
         function parseHTML(resp, depth) {
             var parser = new DOMParser();
-            var responseDoc = parser.parseFromString(resp, "text/html");
+            var responseDoc = parser.parseFromString(resp, "text/html", {
+                includeShadowRoots: true
+              });
 
             /** @type {Element} */
             var responseNode = responseDoc.body;
