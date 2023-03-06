@@ -1,9 +1,6 @@
----
-layout: layout.njk
-title: </> intercooler.js -> htmx migration
----
-
-# Intercooler.js &rarr; htmx Migration Guide
++++
+title = "intercooler.js &rarr; htmx Migration Guide"
++++
 
 The purpose of this guide is to:
  -  _map_ the equivalent htmx attributes, headers, events, methods, etc. that are available in Intercooler

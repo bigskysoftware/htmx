@@ -1,8 +1,6 @@
----
-layout: layout.njk
-title: </> htmx - Attributes
----
-
++++
+title = "Reference"
++++
 
 ## Contents
 
@@ -13,9 +11,9 @@ title: </> htmx - Attributes
 * [htmx Response Headers](#response_headers)
 * [htmx Events](#events)
 * [htmx Extensions](/extensions#included)
-* [Javascript API](#api)
+* [JavaScript API](#api)
 
-## <a name="attributes"></a> [Core Attribute Reference](#attributes)
+## Core Attribute Reference {#attributes}
 
 The following are the most common attributes when using htmx.
 
@@ -37,7 +35,7 @@ The following are the most common attributes when using htmx.
 
 </div>
 
-## <a name="attributes-additional"></a> [Additional Attribute Reference](#attributes-additional)
+## Additional Attribute Reference {#attributes-additional}
 
 The table below lists all other attributes available in htmx.
 
@@ -72,7 +70,7 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
-## <a name="classes"></a> [CSS Class Reference](#classes)
+## CSS Class Reference {#classes}
 
 <div class="info-table">
 
@@ -86,9 +84,9 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
-## <a name="headers"></a> [HTTP Header Reference](#headers)
+## HTTP Header Reference {#headers}
 
-### <a name="request_headers"></a> [Request Headers Reference](#request_headers)
+### Request Headers Reference {#request_headers}
 
 <div class="info-table">
 
@@ -105,7 +103,7 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
-### <a name="response_headers"></a> [Response Headers Reference](#response_headers)
+### Response Headers Reference {#response_headers}
 
 <div class="info-table">
 
@@ -124,7 +122,7 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
-## <a name="events"></a> [Event Reference](#events)
+## Event Reference {#events}
 
 <div class="info-table">
 
@@ -173,7 +171,7 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
-## <a name="api"></a> [Javascript API Reference](#api)
+## JavaScript API Reference {#api}
 
 <div class="info-table">
 

@@ -1,15 +1,13 @@
 +++
-title = "</> htmx - Javascript API"
+title = "Javascript API"
 +++
-
-## Javascript API
 
 While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](/extensions) or for working with [events](/events).
 
 The [hyperscript](https://hyperscript.org) project is intended to provide more extensive scripting support
 for htmx-based applications.
 
-### <a name="addClass"></a> Method -  [`htmx.addClass()`](#addClass)
+### Method - `htmx.addClass()` {#addClass}
 
 This method adds a class to the given element.
 
@@ -34,7 +32,7 @@ or
   htmx.addClass(htmx.find('#demo'), 'myClass', 1000);
 ```
 
-### <a name="ajax"></a> Method -  [`htmx.ajax()`](#ajax)
+### Method - `htmx.ajax()` {#ajax}
 
 Issues an htmx-style AJAX request. This method returns a Promise, so a callback can be executed after the content has been inserted into the DOM.
 
@@ -81,7 +79,7 @@ or
 
 ```
 
-### <a name="closest"></a> Method -  [`htmx.closest()`](#closest)
+### Method - `htmx.closest()` {#closest}
 
 Finds the closest matching element in the given elements parentage, inclusive of the element
 
@@ -97,7 +95,7 @@ Finds the closest matching element in the given elements parentage, inclusive of
   htmx.closest(htmx.find('#demo'), 'div');
 ```
 
-### <a name="config"></a> Property -  [`htmx.config`](#config)
+### Property - `htmx.config` {#config}
 
 A property holding the configuration htmx uses at runtime.
 
@@ -130,7 +128,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
   htmx.config.historyCacheSize = 30;
 ```
 
-### <a name="createEventSource"></a> Property -  [`htmx.createEventSource`](#createEventSource)
+### Property - `htmx.createEventSource` {#createEventSource}
 
 A property used to create new [Server Sent Event](/docs/#sse) sources.  This can be updated
 to provide custom SSE setup.
@@ -148,7 +146,7 @@ to provide custom SSE setup.
   };
 ```
 
-### <a name="createWebSocket"></a> Property -  [`htmx.createWebSocket`](#createWebSocket)
+### Property - `htmx.createWebSocket` {#createWebSocket}
 
 A property used to create new [WebSocket](/docs/#websockets).  This can be updated
 to provide custom WebSocket setup.
@@ -166,7 +164,7 @@ to provide custom WebSocket setup.
   };
 ```
 
-### <a name="defineExtension"></a> Method -  [`htmx.defineExtension()`](#defineExtension)
+### Method - `htmx.defineExtension()` {#defineExtension}
 
 Defines a new htmx [extension](/extensions).
 
@@ -186,7 +184,7 @@ Defines a new htmx [extension](/extensions).
   });
 ```
 
-### <a name="find"></a> Method -  [`htmx.find()`](#find)
+### Method - `htmx.find()` {#find}
 
 Finds an element matching the selector
 
@@ -209,7 +207,7 @@ or
     var anotherDiv = htmx.find(div, "#another-div")
 ```
 
-### <a name="findAll"></a> Method -  [`htmx.findAll()`](#findAll)
+### Method - `htmx.findAll()` {#findAll}
 
 Finds all elements matching the selector
 
@@ -232,7 +230,7 @@ or
     var allParagraphsInMyDiv = htmx.findAll(htmx.find("#my-div"), "p")
 ```
 
-### <a name="logAll"></a> Method -  [`htmx.logAll()`](#logAll)
+### Method - `htmx.logAll()` {#logAll}
 
 Log all htmx events, useful for debugging.
 
@@ -242,7 +240,7 @@ Log all htmx events, useful for debugging.
     htmx.logAll();
 ```
 
-### <a name="logger"></a> Property -  [`htmx.logger`](#logger)
+### Property - `htmx.logger` {#logger}
 
 The logger htmx uses to log with
 
@@ -260,7 +258,7 @@ The logger htmx uses to log with
     }
 ```
 
-### <a name="off"></a> Method -  [`htmx.off()`](#off)
+### Method - `htmx.off()` {#off}
 
 Removes an event listener from an element
 
@@ -285,7 +283,7 @@ or
     htmx.off("#my-div", "click", myEventListener)
 ```
 
-### <a name="on"></a> Method -  [`htmx.on()`](#on)
+### Method - `htmx.on()` {#on}
 
 Adds an event listener to an element
 
@@ -310,7 +308,7 @@ or
     var myEventListener = htmx.on("#my-div", "click", function(evt){ console.log(evt); });
 ```
 
-### <a name="onLoad"></a> Method -  [`htmx.onLoad()`](#onLoad)
+### Method - `htmx.onLoad()` {#onLoad}
 
 Adds a callback for the `htmx:load` event. This can be used to process new content, for example
 initializing the content with a javascript library
@@ -327,7 +325,7 @@ initializing the content with a javascript library
     })
 ```
 
-### <a name="parseInterval"></a> Method -  [`htmx.parseInterval()`](#parseInterval)
+### Method - `htmx.parseInterval()` {#parseInterval}
 
 Parses an interval string consistent with the way htmx does.  Useful for plugins that have timing-related attributes.
 
@@ -347,7 +345,7 @@ Caution: Accepts an int followed by either `s` or `ms`. All other values use `pa
     var milliseconds = htmx.parseInterval("3m");
 ```
 
-### <a name="process"></a> Method -  [`htmx.process()`](#process)
+### Method - `htmx.process()` {#process}
 
 Processes new content, enabling htmx behavior.  This can be useful if you have content that is added to the DOM
 outside of the normal htmx request cycle but still want htmx attributes to work.
@@ -364,7 +362,7 @@ outside of the normal htmx request cycle but still want htmx attributes to work.
   htmx.process(document.body);
 ```
 
-### <a name="remove"></a> Method -  [`htmx.remove()`](#remove)
+### Method - `htmx.remove()` {#remove}
 
 Removes an element from the DOM
 
@@ -387,7 +385,7 @@ or
   htmx.remove(htmx.find("#my-div"), 2000);
 ```
 
-### <a name="removeClass"></a> Method -  [`htmx.removeClass()`](#removeClass)
+### Method - `htmx.removeClass()` {#removeClass}
 
 Removes a class from the given element
 
@@ -412,7 +410,7 @@ or
   htmx.removeClass(htmx.find("#my-div"), "myClass", 6000);
 ```
 
-### <a name="removeExtension"></a> Method -  [`htmx.removeExtension()`](#removeExtension)
+### Method - `htmx.removeExtension()` {#removeExtension}
 
 Removes the given extension from htmx
 
@@ -426,7 +424,7 @@ Removes the given extension from htmx
   htmx.removeExtension("my-extension");
 ```
 
-### <a name="takeClass"></a> Method -  [`htmx.takeClass()`](#takeClass)
+### Method - `htmx.takeClass()` {#takeClass}
 
 Takes the given class from its siblings, so that among its siblings, only the given element will have the class.
 
@@ -442,7 +440,7 @@ Takes the given class from its siblings, so that among its siblings, only the gi
   htmx.takeClass(htmx.find("#tab2"), "selected");
 ```
 
-### <a name="toggleClass"></a> Method -  [`htmx.toggleClass()`](#toggleClass)
+### Method - `htmx.toggleClass()` {#toggleClass}
 
 Toggles the given class on an element
 
@@ -458,7 +456,7 @@ Toggles the given class on an element
   htmx.toggleClass(htmx.find("#tab2"), "selected");
 ```
 
-### <a name="trigger"></a> Method -  [`htmx.trigger()`](#trigger)
+### Method - `htmx.trigger()` {#trigger}
 
 Triggers a given event on an element
 
@@ -475,7 +473,7 @@ Triggers a given event on an element
   htmx.trigger("#tab2", "myEvent", {answer:42});
 ```
 
-### <a name="values"></a> Method -  [`htmx.values()`](#values)
+### Method - `htmx.values()` {#values}
 
 Returns the input values that would resolve for a given element via the htmx value resolution mechanism
 

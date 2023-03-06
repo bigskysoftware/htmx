@@ -1,9 +1,6 @@
----
-layout: layout.njk
-title: </> Hotwire / Turbo ➡️ htmx Migration Guide
----
-
-# Hotwire / Turbo ➡️ htmx Migration Guide
++++
+title = "Hotwire / Turbo ➡️ htmx Migration Guide"
++++
 
 The purpose of this guide is to provide common practices for "Hotwire Equivalent" features in htmx.
 
@@ -27,8 +24,6 @@ addEventListener("htmx:afterOnLoad", (event) => {
 })
 ```
 * Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Cookbook](https://hyperscript.org/cookbook/)
-  
-  
 
 ## Turbo Frames
 
@@ -49,7 +44,6 @@ document.body.addEventListener('htmx:configRequest', (event) => {
   * Does not currently resolve async calls such as `fetch`. See: https://github.com/bigskysoftware/htmx/issues/912
 * Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit halt the event action(target) trigger ready"` `hx-trigger="ready"`
   * Will resolve async calls such as `fetch`. See: [async transparency](https://hyperscript.org/docs/#async)
-
 
 ## Stimulus
 

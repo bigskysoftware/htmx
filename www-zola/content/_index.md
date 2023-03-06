@@ -1,5 +1,5 @@
 +++
-title = "</> htmx - high power tools for html"
+insert_anchor_links = "left"
 +++
 
 <div class="dark-hero full-width" classes="add appear">
@@ -8,7 +8,7 @@ title = "</> htmx - high power tools for html"
 </div>
 
 
-## introduction
+<h2>introduction</h2>
 
 htmx gives you access to  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),  [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
 directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
@@ -20,7 +20,7 @@ htmx is small ([~12k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [extendable](https://htmx.org/extensions), 
 IE11 compatible & has **reduced** code base sizes by [67% when compared with react](/essays/a-real-world-react-to-htmx-port/)
 
-## motivation
+<h2>motivation</h2>
 
 * Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
 * Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
@@ -29,7 +29,7 @@ IE11 compatible & has **reduced** code base sizes by [67% when compared with rea
 
 By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
-## quick start
+<h2>quick start</h2>
 
 ```html
   <script src="https://unpkg.com/htmx.org@1.8.5"></script>
@@ -48,7 +48,7 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
 
-## sponsors
+<h2>sponsors</h2>
 
 A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>, including:
 

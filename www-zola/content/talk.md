@@ -1,9 +1,6 @@
----
-layout: layout.njk
-title: </> htmx - high power tools for html
----
-
-## htmx Talk
++++
+title = "htmx Talk"
++++
 
 [htmx Discord Server](/discord)
 

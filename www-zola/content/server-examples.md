@@ -1,9 +1,6 @@
----
-layout: layout.njk
-title: </> htmx - Server-Side Examples
----
-
-# htmx Server-Side Examples
++++
+title = "Server-Side Examples"
++++
 
 There are many examples of integrating htmx with server-side frameworks available on GitHub. Generally speaking,
 most server-side frameworks are already pretty well set up to integrate with htmx - after all, most of them were

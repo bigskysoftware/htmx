@@ -39,7 +39,7 @@ When designing your server application, remember that SSE works just like any HT
 
 SSE messages consist of an event name and a data packet.  No other metadata is allowed in the message.  Here is an example:
 
-```text
+```txt
 event: EventName
 data: <div>Content to swap into your HTML page.</div>
 ```
@@ -56,7 +56,7 @@ Notice that the name `EventName` from the server's message must match the value 
 
 SSE messages can also be sent without any event name.  In this case, the browser uses the default name `message` in its place.  The same rules specified above still apply.  If your server sends an unnamed message, then you must listen for it by including `sse-swap="message"`.  There is no option for using a catch-all name.  Here's how this looks:
 
-```text
+```txt
 data: <div>Content to swap into your HTML page.</div>
 ```
 

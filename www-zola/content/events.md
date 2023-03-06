@@ -1,14 +1,11 @@
----
-layout: layout.njk
-title: </> htmx - Events
----
-
-## Events
++++
+title = "Events"
++++
 
 Htmx provides an extensive events system that can be used to modify and enhance behavior.  Events
 are listed below.
 
-### <a name="htmx:abort"></a> Event - [`htmx:abort`](#htmx:abort)
+### Event - `htmx:abort` {#htmx:abort}
 
 This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.
 
@@ -19,7 +16,7 @@ If you send an `htmx:abort` event to an element making a request, it will abort 
 <button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
 ```
 
-### <a name="htmx:afterOnLoad"></a> Event - [`htmx:afterOnLoad`](#htmx:afterOnLoad)
+### Event - `htmx:afterOnLoad` {#htmx:afterOnLoad}
 
 This event is triggered after an AJAX `onload` has finished.  Note that this does not mean that the content
 has been swapped or settled yet, only that the request has finished.
@@ -31,7 +28,7 @@ has been swapped or settled yet, only that the request has finished.
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:afterProcessNode"></a> Event - [`htmx:afterProcessNode`](#htmx:afterProcessNode)
+### Event - `htmx:afterProcessNode` {#htmx:afterProcessNode}
 
 This event is triggered after htmx has initialized a DOM node.  It can be useful for extensions to build additional features onto a node.
 
@@ -39,7 +36,7 @@ This event is triggered after htmx has initialized a DOM node.  It can be useful
 
 * `detail.elt` - the element that dispatched the request
 
-### <a name="htmx:afterRequest"></a> Event - [`htmx:afterRequest`](#htmx:afterRequest)
+### Event - `htmx:afterRequest` {#htmx:afterRequest}
 
 This event is triggered after an AJAX request has finished either in the case of a successful request (although
 one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
@@ -56,7 +53,7 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the
   `htmx:beforeSwap` event, else false
 
-### <a name="htmx:afterSettle"></a> Event - [`htmx:afterSettle`](#htmx:afterSettle)
+### Event - `htmx:afterSettle` {#htmx:afterSettle}
 
 This event is triggered after the DOM has [settled](/docs#settling).
 
@@ -67,7 +64,7 @@ This event is triggered after the DOM has [settled](/docs#settling).
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:afterSwap"></a> Event - [`htmx:afterSwap`](#htmx:afterSwap)
+### Event - `htmx:afterSwap` {#htmx:afterSwap}
 
 This event is triggered after new content has been [swapped into the DOM](/docs#swapping).
 
@@ -78,7 +75,7 @@ This event is triggered after new content has been [swapped into the DOM](/docs#
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:beforeOnLoad"></a> Event - [`htmx:beforeOnLoad`](#htmx:beforeOnLoad)
+### Event - `htmx:beforeOnLoad` {#htmx:beforeOnLoad}
 
 This event is triggered before any response processing occurs.  If the event is cancelled, no swap will occur.
 
@@ -89,7 +86,7 @@ This event is triggered before any response processing occurs.  If the event is 
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:beforeProcessNode"></a> Event - [`htmx:beforeProcessNode`](#htmx:beforeProcessNode)
+### Event - `htmx:beforeProcessNode` {#htmx:beforeProcessNode}
 
 This event is triggered before htmx initializes a DOM node and has processed all of its `hx-` attributes.  This gives extensions and other external code the ability to modify the contents of a DOM node before it is processed.
 
@@ -97,7 +94,7 @@ This event is triggered before htmx initializes a DOM node and has processed all
 
 * `detail.elt` - the element that dispatched the request
 
-### <a name="htmx:beforeRequest"></a> Event - [`htmx:beforeRequest`](#htmx:beforeRequest)
+### Event - `htmx:beforeRequest` {#htmx:beforeRequest}
 
 This event is triggered before an AJAX request is issued.  If the event is cancelled, no request will occur.
 
@@ -108,7 +105,7 @@ This event is triggered before an AJAX request is issued.  If the event is cance
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:beforeSend"></a> Event - [`htmx:beforeSend`](#htmx:beforeSend)
+### Event - `htmx:beforeSend` {#htmx:beforeSend}
 
 This event is triggered right before a request is sent.  You may not cancel the request with this event.
 
@@ -119,7 +116,7 @@ This event is triggered right before a request is sent.  You may not cancel the 
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:beforeSwap"></a> Event - [`htmx:beforeSwap`](#htmx:beforeSwap)
+### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
 
 This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If the event is cancelled, no swap will occur.
 
@@ -134,7 +131,7 @@ the documentation on [configuring swapping](/docs#modifying_swapping_behavior_wi
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
 
-### <a name="htmx:configRequest"></a> Event - [`htmx:configRequest`](#htmx:configRequest)
+### Event - `htmx:configRequest` {#htmx:configRequest}
 
 This event is triggered after htmx has collected parameters for inclusion in the request.  It can be
 used to include or update the parameters that htmx will send:
@@ -157,13 +154,12 @@ than a single value.
 * `detail.target` - the target of the request
 * `detail.verb` - the HTTP verb in use
 
-### <a name="htmx:confirm"></a> Event - [`htmx:confirm`](#htmx:confirm)
+### Event - `htmx:confirm` {#htmx:confirm}
 
 This event is triggered immediate after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
 the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail`
 object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
 later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
-
 
 Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
 
@@ -196,7 +192,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 * `detail.triggeringEvent` - the original event that triggered this request
 * `detail.verb` - the verb of the request (e.g. `GET`)
 
-### <a name="htmx:historyCacheError"></a> Event - [`htmx:historyCacheError`](#htmx:historyCacheError)
+### Event - `htmx:historyCacheError` {#htmx:historyCacheError}
 
 This event is triggered when an attempt to save the cache to `localStorage` fails
 
@@ -204,7 +200,7 @@ This event is triggered when an attempt to save the cache to `localStorage` fail
 
 * `detail.cause` - the `Exception` that was thrown when attempting to save history to `localStorage`
 
-### <a name="htmx:historyCacheMiss"></a> Event - [`htmx:historyCacheMiss`](#htmx:historyCacheMiss)
+### Event - `htmx:historyCacheMiss` {#htmx:historyCacheMiss}
 
 This event is triggered when a cache miss occurs when restoring history
 
@@ -213,7 +209,7 @@ This event is triggered when a cache miss occurs when restoring history
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
 
-### <a name="htmx:historyCacheMissError"></a> Event - [`htmx:historyCacheMissError`](#htmx:historyCacheMissError)
+### Event - `htmx:historyCacheMissError` {#htmx:historyCacheMissError}
 
 This event is triggered when a cache miss occurs and a response has been retrieved from the server
 for the content to restore, but the response is an error (e.g. `404`)
@@ -223,7 +219,7 @@ for the content to restore, but the response is an error (e.g. `404`)
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 
-### <a name="htmx:historyCacheMissLoad"></a> Event - [`htmx:historyCacheMissLoad`](#htmx:historyCacheMissLoad)
+### Event - `htmx:historyCacheMissLoad` {#htmx:historyCacheMissLoad}
 
 This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server
 for the content to restore
@@ -233,7 +229,7 @@ for the content to restore
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 
-### <a name="htmx:historyRestore"></a> Event - [`htmx:historyRestore`](#htmx:historyRestore)
+### Event - `htmx:historyRestore` {#htmx:historyRestore}
 
 This event is triggered when htmx handles a history restoration action
 
@@ -241,7 +237,7 @@ This event is triggered when htmx handles a history restoration action
 
 * `detail.path` - the path and query of the page being restored
 
-### <a name="htmx:beforeHistorySave"></a> Event - [`htmx:beforeHistorySave`](#htmx:beforeHistorySave)
+### Event - `htmx:beforeHistorySave` {#htmx:beforeHistorySave}
 
 This event is triggered when htmx handles a history restoration action
 
@@ -254,7 +250,7 @@ This event is triggered when htmx handles a history restoration action
 
 * `detail.config` - the config that will be passed to the `EventSource` constructor
 
-### <a name="htmx:load"></a> Event - [`htmx:load`](#htmx:load)
+### Event - `htmx:load` {#htmx:load}
 
 This event is triggered when a new node is loaded into the DOM by htmx.
 
@@ -262,7 +258,7 @@ This event is triggered when a new node is loaded into the DOM by htmx.
 
 * `detail.elt` - the newly added element
 
-### <a name="htmx:noSSESourceError"></a> Event - [`htmx:noSSESourceError`](#htmx:noSSESourceError)
+### Event - `htmx:noSSESourceError` {#htmx:noSSESourceError}
 
 This event is triggered when an element refers to an SSE event in its trigger, but no parent SSE source has been defined
 
@@ -270,7 +266,7 @@ This event is triggered when an element refers to an SSE event in its trigger, b
 
 * `detail.elt` - the element with the bad SSE trigger
 
-### <a name="htmx:oobAfterSwap"></a> Event - [`htmx:oobAfterSwap`](#htmx:oobAfterSwap)
+### Event - `htmx:oobAfterSwap` {#htmx:oobAfterSwap}
 
 This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to an [after swap event](/events#afterSwap)
 
@@ -281,7 +277,7 @@ This event is triggered as part of an [out of band swap](/docs##oob_swaps) and b
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:oobBeforeSwap"></a> Event - [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap)
+### Event - `htmx:oobBeforeSwap` {#htmx:oobBeforeSwap}
 
 This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to a [before swap event](/events#beforeSwap)
 
@@ -293,7 +289,7 @@ This event is triggered as part of an [out of band swap](/docs##oob_swaps) and b
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
 
-### <a name="htmx:oobErrorNoTarget"></a> Event - [`htmx:oobErrorNoTarget`](#htmx:oobErrorNoTarget)
+### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
 
 This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
 in the DOM to switch with.
@@ -302,7 +298,7 @@ in the DOM to switch with.
 
 * `detail.content` - the element with the bad oob `id`
 
-### <a name="htmx:onLoadError"></a> Event - [`htmx:onLoadError`](#htmx:onLoadError)
+### Event - `htmx:onLoadError` {#htmx:onLoadError}
 
 This event is triggered when an error occurs during the `load` handling of an AJAX call
 
@@ -314,7 +310,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.exception` - the exception that occurred
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:prompt"></a> Event - [`htmx:prompt`](#htmx:prompt)
+### Event - `htmx:prompt` {#htmx:prompt}
 
 This event is triggered after a prompt has been shown to the user with the [`hx-prompt`](/attributes/hx-prompt)
 attribute.  If this event is cancelled, the AJAX request will not occur.
@@ -325,7 +321,7 @@ attribute.  If this event is cancelled, the AJAX request will not occur.
 * `detail.target` - the target of the request
 * `detail.prompt` - the user response to the prompt
 
-### <a name="htmx:pushedIntoHistory"></a> Event - [`htmx:pushedIntoHistory`](#htmx:pushedIntoHistory)
+### Event - `htmx:pushedIntoHistory` {#htmx:pushedIntoHistory}
 
 This event is triggered after a URL has been pushed into history.
 
@@ -333,7 +329,7 @@ This event is triggered after a URL has been pushed into history.
 
 * `detail.path` - the path and query of the URL that has been pushed into history
 
-### <a name="htmx:responseError"></a> Event - [`htmx:responseError`](#htmx:responseError)
+### Event - `htmx:responseError` {#htmx:responseError}
 
 This event is triggered when an HTTP error response occurs
 
@@ -344,7 +340,7 @@ This event is triggered when an HTTP error response occurs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:sendError"></a> Event - [`htmx:sendError`](#htmx:sendError)
+### Event - `htmx:sendError` {#htmx:sendError}
 
 This event is triggered when a network error prevents an HTTP request from occurring
 
@@ -355,7 +351,7 @@ This event is triggered when a network error prevents an HTTP request from occur
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:sseError"></a> Event - [`htmx:sseError`](#htmx:sseError)
+### Event - `htmx:sseError` {#htmx:sseError}
 
 This event is triggered when an error occurs with an SSE source
 
@@ -365,7 +361,7 @@ This event is triggered when an error occurs with an SSE source
 * `detail.error` - the error
 * `detail.source` - the SSE source
 
-### <a name="htmx:swapError"></a> Event - [`htmx:swapError`](#htmx:swapError)
+### Event - `htmx:swapError` {#htmx:swapError}
 
 This event is triggered when an error occurs during the swap phase
 
@@ -376,7 +372,7 @@ This event is triggered when an error occurs during the swap phase
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:targetError"></a> Event - [`htmx:targetError`](#htmx:targetError)
+### Event - `htmx:targetError` {#htmx:targetError}
 
 This event is triggered when a bad selector is used for a [`hx-target`](/attributes/hx-target) attribute (e.g. an
 element ID without a preceding `#`)
@@ -386,7 +382,7 @@ element ID without a preceding `#`)
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the bad CSS selector
 
-### <a name="htmx:timeout"></a> Event - [`htmx:timeout`](#htmx:timeout)
+### Event - `htmx:timeout` {#htmx:timeout}
 
 This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.
 
@@ -399,7 +395,7 @@ Timeout time can be set using `htmx.config.timeout` or per element using [`hx-re
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
-### <a name="htmx:validation:validate"></a> Event - [htmx:validation:validate](#htmx:validation:validate)
+### Event - `htmx:validation:validate` {#htmx:validation:validate}
 
 This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method
 to implement custom validation rules.
@@ -419,7 +415,7 @@ to implement custom validation rules.
 
 * `detail.elt` - the element that triggered the request
 
-### <a name="htmx:validation:failed"></a> Event - [htmx:validation:failed](#htmx:validation:failed)
+### Event - `htmx:validation:failed` {#htmx:validation:failed}
 
 This event is triggered when an element fails validation.
 
@@ -429,7 +425,7 @@ This event is triggered when an element fails validation.
 * `detail.message` - the validation error message
 * `detail.validity` - the validity object, which contains properties specifying how validation failed
 
-### <a name="htmx:validation:halted"></a> Event - [htmx:validation:halted](#htmx:validation:halted)
+### Event - `htmx:validation:halted` {#htmx:validation:halted}
 
 This event is triggered when a request is halted due to validation errors.
 
@@ -438,7 +434,7 @@ This event is triggered when a request is halted due to validation errors.
 * `detail.elt` - the element that triggered the request
 * `detail.errors` - an array of error objects with the invalid elements and errors associated with them
 
-### <a name="htmx:xhr:abort"></a> Event - [htmx:xhr:abort](#htmx:xhr:abort)
+### Event - `htmx:xhr:abort` {#htmx:xhr:abort}
 
 This event is triggered when an ajax request aborts
 
@@ -446,7 +442,7 @@ This event is triggered when an ajax request aborts
 
 * `detail.elt` - the element that triggered the request
 
-### <a name="htmx:xhr:loadstart"></a> Event - [htmx:xhr:loadstart](#htmx:xhr:loadstart)
+### Event - `htmx:xhr:loadstart` {#htmx:xhr:loadstart}
 
 This event is triggered when an ajax request starts
 
@@ -454,7 +450,7 @@ This event is triggered when an ajax request starts
 
 * `detail.elt` - the element that triggered the request
 
-### <a name="htmx:xhr:loadend"></a> Event - [htmx:xhr:loadend](#htmx:xhr:loadend)
+### Event - `htmx:xhr:loadend` {#htmx:xhr:loadend}
 
 This event is triggered when an ajax request finishes
 
@@ -462,7 +458,7 @@ This event is triggered when an ajax request finishes
 
 * `detail.elt` - the element that triggered the request
 
-### <a name="htmx:xhr:progress"></a> Event - [htmx:xhr:progress](#htmx:xhr:progress)
+### Event - `htmx:xhr:progress` {#htmx:xhr:progress}
 
 This event is triggered periodically when an ajax request that supports progress is in flight
 
