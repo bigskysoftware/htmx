@@ -1,0 +1,20 @@
+base_url = "https://htmx.org"
+title = "</> htmx - high power tools for html"
+theme = "htmx-theme"
+
+compile_sass = false
+build_search_index = true
+
+taxonomies = [
+  { name = "tag", render = false, feed = true }
+]
+
+[markdown]
+highlight_code = true
+highlight_theme = "visual-studio-dark"
+
+[slugify]
+paths_keep_dates = true
+
+[extra]
+# Put all your custom variables here
