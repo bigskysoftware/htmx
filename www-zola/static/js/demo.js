@@ -144,7 +144,7 @@ function pushActivityChip(name, id, content) {
     var contentDiv = `<div id="${id}">${content}</div>`;
     document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", contentDiv);
     showTimelineEntry(id);
-    Prism.highlightAll();
+    //Prism.highlightAll();
 }
 
 //====================================

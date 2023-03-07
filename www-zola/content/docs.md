@@ -1,7 +1,7 @@
 +++
-title = "</> htmx - Documentation"
+title = "Documentation"
 [extra]
-customClasses = "wide-content"
+custom_classes = "wide-content"
 +++
 <div class="row">
 <div class="2 col nav">

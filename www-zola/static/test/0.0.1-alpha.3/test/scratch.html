@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <style>
+        div {
+            transition: all 1000ms ease-in;
+        }
+
+        .indicator {
+            opacity: 0;
+        }
+
+        .kt-show-indicator .indicator {
+            opacity: 100%;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body>
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../src/kutty.js"></script>
+<script src="util/util.js"></script>
+<script src="util/scratch_server.js"></script>
+
+<script>
+    // this.server.respondWith("GET", "/test", '<a kt-get="/test2">Click Me</a>');
+    // this.server.respondWith("GET", "/test2", "Clicked!");
+    //
+    // make('<div kt-get="/test">dd</div>')
+
+    this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
+    make('<div kt-swap="outerHTML" kt-get="/test" kt-push-url="true" id="d1">Foo</div>');
+</script>
+
+
+<h2>Server Options</h2>
+<button onclick="server.respond()">Server Respond</button>
+<br/>
+Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond()">
+<br/>
+<br/>
+<em>Work Area</em>
+<hr/>
+
+<div id="work-area" kt-history-elt>
+
+</div>
+
+</body>
+</html>

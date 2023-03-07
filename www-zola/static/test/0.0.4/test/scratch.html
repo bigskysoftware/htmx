@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <style>
+        div {
+            transition: all 1000ms ease-in;
+        }
+
+        .indicator {
+            opacity: 0;
+        }
+
+        .hx-show-indicator .indicator {
+            opacity: 100%;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../src/htmx.js"></script>
+<script src="util/util.js"></script>
+<script src="util/scratch_server.js"></script>
+
+<script>
+    // this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
+    // this.server.respondWith("GET", "/test2", "Clicked!");
+    //
+    // make('<div hx-get="/test">dd</div>')
+
+    this.server.respondWith("GET", "/test", '<div id="d1" style="color: red; margin: 100px">Foo</div>');
+    make('<div hx-swap="outerHTML" hx-get="/test" hx-push-url="true" id="d1">Foo</div>');
+</script>
+
+
+<h2>Server Options</h2>
+<button onclick="server.respond()">Server Respond</button>
+<br/>
+Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond()">
+<br/>
+<br/>
+<em>Work Area</em>
+<hr/>
+
+<div id="work-area" hx-history-elt>
+
+</div>
+
+</body>
+</html>
