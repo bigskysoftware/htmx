@@ -2,7 +2,7 @@
 title = "Javascript API"
 +++
 
-While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](/extensions) or for working with [events](/events).
+While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](@/extensions/_index.md) or for working with [events](@/events.md).
 
 The [hyperscript](https://hyperscript.org) project is intended to provide more extensive scripting support
 for htmx-based applications.
@@ -99,14 +99,14 @@ Finds the closest matching element in the given elements parentage, inclusive of
 
 A property holding the configuration htmx uses at runtime.
 
-Note that using a [meta tag](/docs/#config) is the preferred mechanism for setting these properties.
+Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for setting these properties.
 
 ##### Properties
 
 * `attributesToSettle:["class", "style", "width", "height"]` - array of strings: the attributes to settle during the settling phase
 * `defaultSettleDelay:20` - int: the default delay between completing the content swap and settling attributes
 * `defaultSwapDelay:0` - int: the default delay between receiving a response from the server and doing the swap
-* `defaultSwapStyle:'innerHtml'` - string: the default swap style to use if [`hx-swap`](/attributes/hx-swap) is omitted
+* `defaultSwapStyle:'innerHtml'` - string: the default swap style to use if [`hx-swap`](@/attributes/hx-swap.md) is omitted
 * `historyCacheSize:10` - int: the number of pages to keep in `localStorage` for history support
 * `historyEnabled:true` - boolean: whether or not to use history
 * `includeIndicatorStyles:true` - boolean: if true, htmx will inject a small amount of CSS into the page to make indicators invisible unless the `htmx-indicator` class is present
@@ -130,7 +130,7 @@ Note that using a [meta tag](/docs/#config) is the preferred mechanism for setti
 
 ### Property - `htmx.createEventSource` {#createEventSource}
 
-A property used to create new [Server Sent Event](/docs/#sse) sources.  This can be updated
+A property used to create new [Server Sent Event](@/docs.md#sse) sources.  This can be updated
 to provide custom SSE setup.
 
 ##### Value
@@ -148,7 +148,7 @@ to provide custom SSE setup.
 
 ### Property - `htmx.createWebSocket` {#createWebSocket}
 
-A property used to create new [WebSocket](/docs/#websockets).  This can be updated
+A property used to create new [WebSocket](@/docs.md#websockets).  This can be updated
 to provide custom WebSocket setup.
 
 ##### Value
@@ -166,7 +166,7 @@ to provide custom WebSocket setup.
 
 ### Method - `htmx.defineExtension()` {#defineExtension}
 
-Defines a new htmx [extension](/extensions).
+Defines a new htmx [extension](@/extensions/_index.md).
 
 ##### Parameters
 

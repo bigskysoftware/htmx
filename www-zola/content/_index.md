@@ -10,15 +10,15 @@ insert_anchor_links = "left"
 
 <h2>introduction</h2>
 
-htmx gives you access to  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),  [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets) and [Server Sent Events](@/docs.md#sse) 
+directly in HTML, using [attributes](@/reference.md#attributes), so you can build 
+[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~12k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://htmx.org/extensions), 
-IE11 compatible & has **reduced** code base sizes by [67% when compared with react](/essays/a-real-world-react-to-htmx-port/)
+[extendable](@/extensions/_index.md), 
+IE11 compatible & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
 
@@ -39,14 +39,14 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
   </button>
 ```
 
-The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes on
+The [`hx-post`](@/attributes/hx-post.md) and [`hx-swap`](@/attributes/hx-swap.md) attributes on
 this button tell htmx:
 
 > "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the HTML response"
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
-Read the [docs introduction](/docs#introduction) for a more in-depth... introduction.
+Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
 <h2>sponsors</h2>
 
