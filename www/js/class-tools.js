@@ -1,4 +1,4 @@
-(function(){
+(function () {
 
     function splitOnWhitespace(trigger) {
         return trigger.split(/\s+/);
@@ -20,13 +20,27 @@
                 delay = 100;
             }
             return {
-                operation:operation,
-                cssClass:cssClass,
-                delay:delay
+                operation: operation,
+                cssClass: cssClass,
+                delay: delay
             }
         } else {
             return null;
         }
+    }
+
+    function performOperation(elt, classOperation, classList, currentRunTime) {
+        setTimeout(function () {
+            elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+        }, currentRunTime)
+    }
+
+    function toggleOperation(elt, classOperation, classList, currentRunTime) {
+        setTimeout(function () {
+            setInterval(function () {
+                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
+            }, classOperation.delay);
+        }, currentRunTime)
     }
 
     function processClassList(elt, classList) {
@@ -41,17 +55,11 @@
                 var classOperation = parseClassOperation(trimmedValue);
                 if (classOperation) {
                     if (classOperation.operation === "toggle") {
-                        setTimeout(function () {
-                            setInterval(function () {
-                                elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
-                            }, classOperation.delay);
-                        }, currentRunTime);
+                        toggleOperation(elt, classOperation, classList, currentRunTime);
                         currentRunTime = currentRunTime + classOperation.delay;
                     } else {
                         currentRunTime = currentRunTime + classOperation.delay;
-                        setTimeout(function () {
-                            elt.classList[classOperation.operation].call(elt.classList, classOperation.cssClass);
-                        }, currentRunTime);
+                        performOperation(elt, classOperation, classList, currentRunTime);
                     }
                 }
             }

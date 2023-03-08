@@ -2,5 +2,5 @@
 *.iml
 /node_modules
 _site
-test/scratch.html
+test/scratch/scratch.html
 .DS_Store
