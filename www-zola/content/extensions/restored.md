@@ -7,7 +7,7 @@ This extension triggers an event ``restored`` whenever a back button even is det
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/restored.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/restored.js"></script>
 ```
 
 ## Usage

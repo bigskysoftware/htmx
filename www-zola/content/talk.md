@@ -39,15 +39,17 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## Announcements
 
-<ul> 
+<ul>
+
 {%- for post in collections.announcements reversed -%}
   <li><a href="{{ post.url  }}">{{ post.date | date: "%Y-%m-%d"}} - {{ post.data.title }} </a>🔥🔥</li>
 {%- endfor -%}
+
 </ul>
 
 ## Essays
 
-[See the essays page &rarr;](/essays)
+[See the essays page &rarr;](@/essays/_index.md)
 
 ## Podcasts
 

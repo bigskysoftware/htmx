@@ -4,7 +4,7 @@ title = "hx-select-oob"
 
 The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band swap.  
 The value of this attribute is comma separated list of elements to be swapped out of band.  This attribute is almost
-always paired with [hx-select](/attributes/hx-select).
+always paired with [hx-select](@/attributes/hx-select.md).
 
 Here is an example that selects a subset of the response content:
 

@@ -9,7 +9,7 @@ htmx began as a library focused on _partial replacement_ of HTML within the `bod
 information such as the head tag was not a focus of the library.  (This is in contrast with, for example, TurboLinks,
 which was focused on merging entire web pages retrieved via AJAX into the browser.)
 
-The [`hx-boost`](/attributes/hx-boost) attribute moved htmx closer to this world of full HTML-document support &
+The [`hx-boost`](@/attributes/hx-boost.md) attribute moved htmx closer to this world of full HTML-document support &
 support for extracting the `title` tag out of head elements was eventually added, but full head tag support has never been
 a feature of the library.
 
@@ -18,7 +18,7 @@ This extension addresses that shortcoming & will likely be integrated into htmx 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/head-support.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/head-support.js"></script>
 ```
 
 ## Usage

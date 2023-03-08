@@ -7,7 +7,7 @@ This extension encodes parameters in JSON format instead of url format.
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 ```
 
 ## Usage

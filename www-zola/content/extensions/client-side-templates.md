@@ -22,7 +22,7 @@ The AJAX response body will be parsed as JSON and passed into the template rende
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
 ```
 
 ## Usage

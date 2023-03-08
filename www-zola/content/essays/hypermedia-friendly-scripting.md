@@ -14,9 +14,9 @@ tag = ["posts"]
 
 ## Scripting & The Web {#scripting_and_the_web}
 
-In [Hypermedia-Driven Applications](https://htmx.org/essays/hypermedia-driven-applications/) we discuss how to build
+In [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) we discuss how to build
 web applications in such a manner that they are _hypermedia_-driven, in contrast with the popular SPA approach, in which
-they are _JavaScript_ and, at the network-level, [RPC-driven](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/).
+they are _JavaScript_ and, at the network-level, [RPC-driven](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md).
 
 In the HDA article we mention scripting briefly:
 
@@ -44,7 +44,7 @@ Each of these rules will be elaborated on below.
 
 ## The Prime Directive {#prime_directive}
 
-The prime directive of an HDA is to use [Hypermedia As The Engine of Application State](https://htmx.org/essays/hateoas/).
+The prime directive of an HDA is to use [Hypermedia As The Engine of Application State](@/essays/hateoas.md).
 A hypermedia-friendly scripting approach will follow this directive.  
 
 **Practically, this means that scripting should avoid making non-hypermedia exchanges over the network with a server.**
@@ -100,7 +100,7 @@ A JavaScript-based component that triggers events allows for hypermedia-oriented
 to listen for those events and trigger hypermedia exchanges.  This, in turn, makes any JavaScript library a potential
 _hypermedia control_, able to drive the Hypermedia-Driven Application via user-selected actions.
 
-A good example of this is the [Sortable.js](https://htmx.org/examples/sortable/) example, in which htmx listens for
+A good example of this is the [Sortable.js](@/examples/sortable.md) example, in which htmx listens for
 the `end` event triggered by Sortable.js:
 
 ```html
@@ -115,7 +115,7 @@ the `end` event triggered by Sortable.js:
 ```
 
 The `end` event is triggered by Sortable.js when a drag-and-drop completes.  htmx listens for this event via the 
-[`hx-trigger`](/attributes/hx-trigger) attribute and then issues an HTTP request, exchanging hypermedia with the 
+[`hx-trigger`](@/attributes/hx-trigger.md) attribute and then issues an HTTP request, exchanging hypermedia with the 
 server.  This turns this Sortable.js drag-and-drop powered widget into a new, powerful hypermedia control.
 
 ## Islands
@@ -179,7 +179,7 @@ class Button extends React.Component {
 Here, you can see that the JavaScript is the primary technology in use, with the hypermedia/HTML being used as a UI
 description mechanism.  The fact that the HTML is a hypermedia is almost immaterial in this case.
 
-That being said, the inline scripting and the JSX approach do share an advantage in common: both satisfy the [Locality of Behavior(LoB)](https://htmx.org/essays/locality-of-behaviour/),
+That being said, the inline scripting and the JSX approach do share an advantage in common: both satisfy the [Locality of Behavior(LoB)](@/essays/locality-of-behaviour.md),
 design principle.  They both _localize_ behavior to the elements or components in question, which makes it easier to see
 what these elements and components do.
 

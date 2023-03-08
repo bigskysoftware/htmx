@@ -3,7 +3,7 @@ title = "hx-disinherit"
 +++
 
 The default behavior for htmx is to "inherit" many attributes automatically: that is, an attribute such as
-[hx-target](/attributes/hx-target) may be placed on a parent element, and all child elements will inherit
+[hx-target](@/attributes/hx-target.md) may be placed on a parent element, and all child elements will inherit
 that target.
 
 The `hx-disinherit` attribute allows you to control this automatic attribute inheritance. An example scenario is to 
@@ -44,4 +44,4 @@ htmx evaluates attribute inheritance as follows:
 
 ## Notes
 
-* Read more about [Attribute Inheritance](/docs/#inheritance)
+* Read more about [Attribute Inheritance](@/docs.md#inheritance)

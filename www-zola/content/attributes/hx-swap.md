@@ -3,7 +3,7 @@ title = "hx-swap"
 +++
 
 The `hx-swap` attribute allows you to specify how the response will be swapped in relative to the
-[target](/attributes/hx-target) of an AJAX request.
+[target](@/attributes/hx-target.md) of an AJAX request.
 
 The possible values of this attribute are:
 

@@ -469,8 +469,10 @@ pre[class|="language"] {
 }
 .zola-anchor {
   font-size: 80%;
+  margin-left: -.75rem;
   margin-right: .75rem;
   color: var(--midBlue);
+
 }
 .zola-anchor:hover {
   color: var(--lightBlue);

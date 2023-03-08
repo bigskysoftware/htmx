@@ -34,12 +34,12 @@ By adopting these two constraints, the HDA architecture stays within the origina
 [REST-ful](https://developer.mozilla.org/en-US/docs/Glossary/REST) architecture of the web in a way that the SPA architecture
 does not.  
 
-In particular, HDAs continue to use [Hypermedia As The Engine of Application State (HATEOAS)](/essays/hateoas/), whereas
+In particular, HDAs continue to use [Hypermedia As The Engine of Application State (HATEOAS)](@/essays/hateoas.md), whereas
 most SPAs abandon HATEOAS in favor of a client-side model and data (rather than hypermedia) APIs.
 
 ## An Example SPA fragment
 
-Consider the htmx [Active Search](/examples/active-search) example:
+Consider the htmx [Active Search](@/examples/active-search.md) example:
 
 ```html
 <h3> 
@@ -93,7 +93,7 @@ This addresses the concern regarding Code-On-Demand that Roy Fielding mentions i
 >  However, (Code-On-Demand) also reduces visibility, and thus is only an optional constraint within REST.
 
 By embedding Code-On-Demand (scripts) directly in HTML, visibility is enhanced, satisfying the 
-[Locality of Behavior](/essays/locality-of-behaviour/) software design principle.
+[Locality of Behavior](@/essays/locality-of-behaviour.md) software design principle.
 
 Three approaches to scripting that satisfy this third constraint are [hyperscript](https://hyperscript.org), 
 [AlpineJS](https://alpinejs.dev) and [VanillaJS](http://vanilla-js.com/) (when embedded directly on HTML elements).
@@ -148,5 +148,5 @@ The HDA architecture is a synthesis of two preceding architectures: the original
 
 It attempts to capture the advantages of both: the simplicity and reliability of MPAs, with a 
 [REST-ful Architecture](https://developer.mozilla.org/en-US/docs/Glossary/REST) that uses 
-[Hypermedia As The Engine Of Application State](/essays/hateoas/)), while providing a better user experience, on par
+[Hypermedia As The Engine Of Application State](@/essays/hateoas.md), while providing a better user experience, on par
 with SPAs in many cases.

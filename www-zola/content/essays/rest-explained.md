@@ -160,7 +160,7 @@ Again, don't get bogged down in the jargon here, just think about this HTML and 
 ingenuity it is:
 
 ```html
-<html
+<html>
   <body>
   <div>
     <div>

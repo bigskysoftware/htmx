@@ -46,7 +46,7 @@ largely REST-ful, without any particular effort on the part of the original part
 
 By picking HTML-Centric Development, you accrue many benefits:
 
-* A simpler front end allows you to save your [complexity budget](/essays/complexity-budget) for the back end functionality
+* A simpler front end allows you to save your [complexity budget](@/essays/complexity-budget.md) for the back end functionality
   that differentiates your application from others.
 * You do not face pressure to adopt javascript on the back end "since the front end is written in javascript".  This allows
   you to use the best backend framework for your particular application.
@@ -73,7 +73,7 @@ This is in large part because HTML is a limited hypertext.  In particular:
 * Only GET & POST [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) are widely available
 * A request must replace the entire screen, leading to a clunkly and sometimes jarring user experience
 
-Of course, none of the constraints are inherent in the concept of a hypertext, and the goal of [htmx](https://htmx.org) 
+Of course, none of the constraints are inherent in the concept of a hypertext, and the goal of [htmx](@/_index.md)
 is to remove each of them.
 
 By removing these constraints and completing HTML as a fully-functional and high-powered hypertext, HTML-Centric 

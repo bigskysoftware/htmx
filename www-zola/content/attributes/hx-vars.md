@@ -2,7 +2,7 @@
 title = "hx-vars"
 +++
 
-**NOTE: `hx-vars` has been deprecated in favor of [`hx-vals`](/attributes/hx-vals), which is safer by default.**
+**NOTE: `hx-vars` has been deprecated in favor of [`hx-vals`](@/attributes/hx-vals.md), which is safer by default.**
 
 The `hx-vars` attribute allows you to dynamically add to the parameters that will be submitted with an AJAX request.  
 
@@ -15,7 +15,7 @@ syntax of javascript [Object Literals](https://developer.mozilla.org/en-US/docs/
 
 ## Security Considerations
 
-* The expressions in `hx-vars` are dynamically computed which allows you to add JavaScript code that will be executed. Be careful to **never** trust user input in your expressions as this may lead to a [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/) vulnerability. If you are dealing with user input such as query strings or user-generated content, consider using [hx-vals](/attributes/hx-vals) which is a safer alternative. 
+* The expressions in `hx-vars` are dynamically computed which allows you to add JavaScript code that will be executed. Be careful to **never** trust user input in your expressions as this may lead to a [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/) vulnerability. If you are dealing with user input such as query strings or user-generated content, consider using [hx-vals](@/attributes/hx-vals.md) which is a safer alternative.
 
 ## Notes
 

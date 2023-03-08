@@ -27,7 +27,7 @@ You can use a `*` to match any path component:
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/path-deps.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/path-deps.js"></script>
 ```
 
 ## Usage

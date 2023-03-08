@@ -35,7 +35,7 @@ Because there is an id on the progress bar div, htmx will smoothly transition be
 style attribute into its new value.  This, when coupled with CSS transitions, make the visual transition continuous
 rather than jumpy.
 
-Finally, when the process is complete, a restart button is added to the UI (we are using the [`class-tools`](/extensions/class-tools)
+Finally, when the process is complete, a restart button is added to the UI (we are using the [`class-tools`](@/extensions/class-tools.md)
 extension in this example):
 
 ```html

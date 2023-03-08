@@ -3,20 +3,20 @@ title = "Essays"
 insert_anchor_links = "left"
 +++
 
-* [Hypermedia Friendly Scripting](/essays/hypermedia-friendly-scripting/)
-* [When To Use Hypermedia?](/essays/when-to-use-hypermedia/)
-* [A Real World React to htmx Port](/essays/a-real-world-react-to-htmx-port/)
-* [How Did REST Come To Mean The Opposite of REST?](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/)
-* [Hypermedia-Driven Applications (HDAs)](/essays/hypermedia-driven-applications)
-* [HATEOAS](/essays/hateoas)
-* [Hypermedia Clients](/essays/hypermedia-clients)
-* [Locality of Behavior (LoB)](/essays/locality-of-behaviour)
-* [Splitting Your Data & Application APIs: Going Further](/essays/splitting-your-apis)
-* [Hypermedia APIs vs. Data APIs](/essays/hypermedia-apis-vs-data-apis)
-* [Complexity Budget](/essays/complexity-budget)
-* [SPA Alternative](/essays/spa-alternative)
-* [A Response To "Have SPAs Ruined The Web"](/essays/a-response-to-rich-harris)
-* [Template Fragments](/essays/template-fragments/)
+* [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
+* [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
+* [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
+* [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
+* [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
+* [HATEOAS](@/essays/hateoas.md)
+* [Hypermedia Clients](@/essays/hypermedia-clients.md)
+* [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
+* [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
+* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
+* [Complexity Budget](@/essays/complexity-budget.md)
+* [SPA Alternative](@/essays/spa-alternative.md)
+* [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
+* [Template Fragments](@/essays/template-fragments.md)
 
 
 ### Older [intercooler.js](https://intercoolerjs.org) Essays

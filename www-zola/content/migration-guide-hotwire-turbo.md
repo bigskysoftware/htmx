@@ -9,7 +9,7 @@ The purpose of this guide is to provide common practices for "Hotwire Equivalent
 
 ## Turbo Drive
 
-* `<body hx-boost="true">` to enable a Turbo Drive-like experience. See: [hx-boost](/attributes/hx-boost)
+* `<body hx-boost="true">` to enable a Turbo Drive-like experience. See: [hx-boost](@/attributes/hx-boost.md)
 * As with Turbo Drive, if the user does not have javascript enabled, the site will continue to work. See: [Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement)
 * `hx-boost="false"` is equivalent to `data-turbo="false"` and used to disable boost on specific links or forms. See: [Handbook](https://turbo.hotwired.dev/handbook/drive#disabling-turbo-drive-on-specific-links-or-forms)
 * Redirect after form submission (302, 303, 307, 3xx) `hx-target="body" hx-swap="outerHTML" hx-push-url="true"` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#redirecting-after-a-form-submission)
@@ -32,7 +32,7 @@ addEventListener("htmx:afterOnLoad", (event) => {
 ## Events
 
 * Intercepting or Pausing Events. `htmx:config-request` is equivalent to `turbo:before-fetch-request` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#pausing-requests)
-  * `htmx:config-request` is the same as `htmx:configRequest` See: [Event Naming](https://htmx.org/docs/#event_naming)
+  * `htmx:config-request` is the same as `htmx:configRequest` See: [Event Naming](@/docs.md#event_naming)
 
 ```javascript
 document.body.addEventListener('htmx:configRequest', (event) => {
@@ -40,7 +40,7 @@ document.body.addEventListener('htmx:configRequest', (event) => {
 })
 ```
 
-* Or, a condition call may be used: `hx-trigger="submit[action(target)]"` See: [hx-trigger](/attributes/hx-trigger)
+* Or, a condition call may be used: `hx-trigger="submit[action(target)]"` See: [hx-trigger](@/attributes/hx-trigger.md)
   * Does not currently resolve async calls such as `fetch`. See: https://github.com/bigskysoftware/htmx/issues/912
 * Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit halt the event action(target) trigger ready"` `hx-trigger="ready"`
   * Will resolve async calls such as `fetch`. See: [async transparency](https://hyperscript.org/docs/#async)

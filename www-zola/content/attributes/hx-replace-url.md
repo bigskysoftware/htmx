@@ -34,7 +34,7 @@ This will replace the URL `/account/home' in the browser location bar.
 ## Notes
 
 * `hx-replace-url` is inherited and can be placed on a parent element
-* The [`HX-Replace-Url` response header](/headers/hx-replace-url) has similar behavior and can override this attribute.
-* The [`hx-history-elt` attribute](/attributes/hx-history-elt) allows changing which element is saved in the history cache.
-* The [`hx-push-url` attribute](/attributes/hx-push-url) is a similar and more commonly used attribute, which creates a 
+* The [`HX-Replace-Url` response header](@/headers/hx-replace-url.md) has similar behavior and can override this attribute.
+* The [`hx-history-elt` attribute](@/attributes/hx-history-elt.md) allows changing which element is saved in the history cache.
+* The [`hx-push-url` attribute](@/attributes/hx-push-url.md) is a similar and more commonly used attribute, which creates a 
   new history entry rather than replacing the current one.

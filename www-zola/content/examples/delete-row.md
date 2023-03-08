@@ -22,9 +22,9 @@ table body:
 </table>
 ```
 
-The table body has a [`hx-confirm`](/attributes/hx-confirm) attribute to confirm the delete action.  It also
-set the target to be the `closest tr` that is, the closest table row, for all the buttons ([`hx-target`](/attributes/hx-target) 
-is inherited from parents in the DOM.)  The swap specification in [`hx-swap`](/attributes/hx-swap) says to swap the
+The table body has a [`hx-confirm`](@/attributes/hx-confirm.md) attribute to confirm the delete action.  It also
+set the target to be the `closest tr` that is, the closest table row, for all the buttons ([`hx-target`](@/attributes/hx-target.md) 
+is inherited from parents in the DOM.)  The swap specification in [`hx-swap`](@/attributes/hx-swap.md) says to swap the
 entire target out and to wait 1 second after receiving a response.  This last bit is so that we can use the following
 CSS:
 
@@ -37,7 +37,7 @@ tr.htmx-swapping td {
 
 To fade the row out before it is swapped/removed.
 
-Each row has a button with a [`hx-delete`](/attributes/hx-delete) attribute containing the url on which to issue a `DELETE` 
+Each row has a button with a [`hx-delete`](@/attributes/hx-delete.md) attribute containing the url on which to issue a `DELETE` 
 request to delete the row from the server. This request responds with empty content, indicating that the row should
 be replaced with nothing.
 

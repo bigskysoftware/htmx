@@ -4,7 +4,7 @@ title = "server-sent-events"
 
 The `Server Sent Events` connects to an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.  It manages the connections to your web server, listens for server events, and then swaps their contents into your htmx webpage in real-time.
 
-SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through proxy servers and firewalls.  Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE server once the connection has been established.  If you need bi-directional communication, then you should consider using [WebSockets](/extensions/web-sockets) instead.
+SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through proxy servers and firewalls.  Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE server once the connection has been established.  If you need bi-directional communication, then you should consider using [WebSockets](@/extensions/web-sockets.md) instead.
 
 This extension replaces the experimental `hx-sse` attribute built into previous versions of htmx.  For help migrating from older versions, see the migration guide at the bottom of this page.
 
@@ -12,12 +12,12 @@ Use the following attributes to configure how SSE connections behave:
 
 * `sse-connect="<url>"` - The URL of the SSE server.
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
-* `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](/attributes/hx-trigger) attribute.
+* `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](@/attributes/hx-trigger.md) attribute.
 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/sse.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
 ```
 
 ## Usage
@@ -82,7 +82,7 @@ Multiple events in different elements (from the same source).
 
 ### Trigger Server Callbacks
 
-When a connection for server sent events has been established, child elements can listen for these events by using the special [`hx-trigger`](/attributes/hx-trigger) syntax `sse:<event_name>`.  This, when combined with an `hx-get` or similar will trigger the element to make a request.
+When a connection for server sent events has been established, child elements can listen for these events by using the special [`hx-trigger`](@/attributes/hx-trigger.md) syntax `sse:<event_name>`.  This, when combined with an `hx-get` or similar will trigger the element to make a request.
 
 Here is an example:
 

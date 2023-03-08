@@ -9,7 +9,7 @@ will be evaluated as the fields in a javascript object literal.
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/include-vals.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/include-vals.js"></script>
 ```
 
 ## Usage

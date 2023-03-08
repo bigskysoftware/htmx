@@ -9,7 +9,7 @@ This header is commonly used by javascript frameworks to differentiate ajax requ
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/ajax-header.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/ajax-header.js"></script>
 ```
 
 ## Usage

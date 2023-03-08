@@ -9,7 +9,7 @@ The `preload` extension allows you to load HTML fragments into your browser's ca
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/preload.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/preload.js"></script>
 ```
 
 ## Usage

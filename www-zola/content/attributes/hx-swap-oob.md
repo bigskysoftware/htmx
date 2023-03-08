@@ -22,8 +22,8 @@ The first div will be swapped into the target the usual manner.  The second div,
 The value of the `hx-swap-oob` can be:
 
 * `true`
-* any valid [`hx-swap`](/attributes/hx-swap) value
-* any valid [`hx-swap`](/attributes/hx-swap) value, followed by a colon, followed by a CSS selector
+* any valid [`hx-swap`](@/attributes/hx-swap.md) value
+* any valid [`hx-swap`](@/attributes/hx-swap.md) value, followed by a colon, followed by a CSS selector
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.  
 

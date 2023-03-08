@@ -20,4 +20,4 @@ Here is an example:
 
 ## Notes
 
-* `hx-history="false"` can be present *anywhere* in the document to embargo the current page state from the history cache (i.e. even outside the element specified for the history snapshot [hx-history-elt](/attributes/hx-history-elt)).
+* `hx-history="false"` can be present *anywhere* in the document to embargo the current page state from the history cache (i.e. even outside the element specified for the history snapshot [hx-history-elt](@/attributes/hx-history-elt.md)).

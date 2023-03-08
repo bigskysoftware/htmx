@@ -68,7 +68,7 @@ Because the div has a stable id, `color-demo`, htmx will structure the swap such
 
 ### Smooth Progress Bar
 
-The [Progress Bar](/examples/progress-bar) demo uses this basic CSS animation technique as well, by updating the `length` 
+The [Progress Bar](@/examples/progress-bar.md) demo uses this basic CSS animation technique as well, by updating the `length` 
 property of a progress bar element, allowing for a smooth animation.
 
 ## Swap Transitions {#swapping}
@@ -199,9 +199,9 @@ is a form that on submit will change its look to indicate that a request is bein
   onPost("/name", function(){ return "Submitted!"; });
 </script>
 
-## Using the HTMX `class-tools` Extension
+## Using the htmx `class-tools` Extension
 
-Many interesting animations can be created by using the [`class-tools`](/extensions/class-tools) extension.
+Many interesting animations can be created by using the [`class-tools`](@/extensions/class-tools.md) extension.
 
 Here is an example that toggles the opacity of a div.  Note that we set the toggle time to be a bit longer than
 the transition time.  This avoids flickering that can happen if the transition is interrupted by a class change.

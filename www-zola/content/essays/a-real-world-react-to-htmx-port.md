@@ -4,8 +4,8 @@ title = "A Real World React -> htmx Port"
 tag = ["posts"]
 +++
 
-It is all well and good talking about [REST & HATEOAS](/essays/hateoas) in theory or describing the
-[Hypermedia-Driven Application](/essays/hypermedia-driven-applications) architecture, but, at the end of the day, what 
+It is all well and good talking about [REST & HATEOAS](@/essays/hateoas.md) in theory or describing the
+[Hypermedia-Driven Application](@/essays/hypermedia-driven-applications.md) architecture, but, at the end of the day, what 
 matters in software is practical: Does it work?  Does it improve things?
 
 We can say for sure that htmx _works_, since we use it in our own software.  But it is hard to say that it would be

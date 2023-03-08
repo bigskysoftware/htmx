@@ -307,10 +307,10 @@ And, with that, I began boring the internet to tears:
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
 * [HATEOAS is for Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
-* [Hypermedia APIs vs. Data APIs](https://htmx.org/essays/hypermedia-apis-vs-data-apis/)
-* [HATEOAS](https://htmx.org/essays/hateoas/)
-* [Hypermedia Driven Applications](https://htmx.org/essays/hypermedia-driven-applications/)
-* This, gentle reader, [your current article](/essays/how-did-rest-come-to-mean-the-opposite-of-rest).
+* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
+* [HATEOAS](@/essays/hateoas.md)
+* [Hypermedia Driven Applications](@/essays/hypermedia-driven-applications.md)
+* This, gentle reader, [your current article](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md).
 
 ### The State of REST Today
 
@@ -383,8 +383,8 @@ jobs for working on v138 of their RESTful JSON API's swagger documentation.
 Regardless, there is an opportunity here to explain REST and, in particular, the uniform interface to a new generation of web
 developers who may have never heard of those concepts in their original context, and who assume REST === JSON APIs.  
 
-[People sense something is wrong](https://htmx.org/essays/a-response-to-rich-harris/), and maybe REST, real, actual REST, 
-not RPC-EST, could be a part of [the answer to that](/essays/spa-alternative).
+[People sense something is wrong](@/essays/a-response-to-rich-harris.md), and maybe REST, real, actual REST, 
+not RPC-EST, could be a part of [the answer to that](@/essays/spa-alternative.md).
 
 At the very least, the ideas behind REST are interesting and worth knowing just as general software engineering knowledge.
 

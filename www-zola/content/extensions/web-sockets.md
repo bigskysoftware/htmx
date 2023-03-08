@@ -5,7 +5,7 @@ title = "websockets"
 The `WebSockets` extension enables easy, bi-directional communication
 with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 servers directly from HTML. This replaces the experimental `hx-ws` attribute built into previous versions of htmx. For
-help migrating from older versions, see the [Migrating] guide at the bottom of this page.
+help migrating from older versions, see the [Migrating](#migrating-from-previous-versions) guide at the bottom of this page.
 
 Use the following attributes to configure how WebSockets behave:
 
@@ -19,7 +19,7 @@ Use the following attributes to configure how WebSockets behave:
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/ws.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
 ```
 
 ## Usage
@@ -52,7 +52,7 @@ WebSockets extension support two configuration options:
 The example above establishes a WebSocket to the `/chatroom` end point. Content that is sent down from the websocket
 will
 be parsed as HTML and swapped in by the `id` property, using the same logic
-as [Out of Band Swaps](/attributes/hx-swap-oob).
+as [Out of Band Swaps](@/attributes/hx-swap-oob.md).
 
 As such, if you want to change the swapping method (e.g., append content at the end of an element or delegate swapping
 to an extension),
@@ -173,7 +173,7 @@ Cancelling this event has no effect.
 #### Event - `htmx:wsConfigSend` {#htmx:wsConfigSend}
 
 This event is triggered when preparing to send a message from `ws-send` element.
-Similarly to [`htmx:configRequest`](/events#htmx:configRequest), it allows you to modify the message
+Similarly to [`htmx:configRequest`](@/events.md#htmx:configRequest), it allows you to modify the message
 before sending.
 
 If the event is cancelled, no further processing will occur and no messages will be sent.
@@ -182,10 +182,10 @@ If the event is cancelled, no further processing will occur and no messages will
 
 * `detail.parameters` - the parameters that will be submitted in the request
 * `detail.unfilteredParameters` - the parameters that were found before filtering
-  by [`hx-select`](/attributes/hx-select)
+  by [`hx-select`](@/attributes/hx-select.md)
 * `detail.headers` - the request headers. Will be attached to the body in `HEADERS` property, if not falsy
 * `detail.errors` - validation errors. Will prevent sending and
-  trigger [`htmx:validation:halted`](/events#htmx:validation:halted) event if not empty
+  trigger [`htmx:validation:halted`](@/events.md#htmx:validation:halted) event if not empty
 * `detail.triggeringEvent` - the event that triggered sending
 * `detail.messageBody` - raw message body that will be sent to the socket. Undefined, can be set to value of any type,
   supported by WebSockets. If set, will override

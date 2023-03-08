@@ -38,7 +38,7 @@ Here we find ourselves in violent agreement with Mr. Harris, with the caveat tha
 for just "the web platform", since that is what is in play with Instagram.
 
 We would further clarify that SPA applications and frameworks often simply *ignore* the *actual* web platform, that is,
-the original, [REST-ful model](/essays/rest-explained) of the web, except as a bootstrap mechanism.
+the original, [REST-ful model](@/essays/rest-explained.md) of the web, except as a bootstrap mechanism.
 
 ## Problems with MPAs
 
@@ -47,27 +47,27 @@ click-a-link-load-a-page-of-HTML web applications we are all familiar with and t
 being supplanted by SPAs.
 
 Below, we will go through the various problems he outlines, all of which are true of "standard" MPAs,
-and we will demonstrate how an MPA using a hypermedia-oriented technology, [htmx](/), can solve each of them.
+and we will demonstrate how an MPA using a hypermedia-oriented technology, [htmx](@/_index.md), can solve each of them.
 
 ### "You Can't Keep A Video Running On Navigations"
 
 A general problem with standard MPAs is that they issue a full page refresh on
 every request.  This means something like a video or audio player will be replaced and, thus, stop playing, when a request is made.
 
-This problem can be addressed in htmx via the [`hx-preserve`](/attributes/hx-preserve) attribute, which tells htmx to
+This problem can be addressed in htmx via the [`hx-preserve`](@/attributes/hx-preserve.md) attribute, which tells htmx to
 preserve a particular piece of content between requests.
 
 ### "Back Button & Infinite Scroll Don't Work"
 
 In the presence of infinite scroll behavior (presumably implemented via javascript of some sort) the back button will not work properly with an MPA.  I would note that the presence of infinite scroll calls into question the term MPA, which would traditionally use paging instead of an infinite scroll.
 
-That said, [infinite scroll](/examples/infinite-scroll) can be achieved quite easily using htmx, in a hypermedia-oriented and obvious manner.  When combined with the [`hx-push-url`](/attributes/hx-push-url) attribute, history and the back button works properly with very little effort by the developer, all with nice Copy-and-Pasteable URLs, sometimes referred to as "Deep Links" by people in the SPA community.
+That said, [infinite scroll](@/examples/infinite-scroll.md) can be achieved quite easily using htmx, in a hypermedia-oriented and obvious manner.  When combined with the [`hx-push-url`](@/attributes/hx-push-url.md) attribute, history and the back button works properly with very little effort by the developer, all with nice Copy-and-Pasteable URLs, sometimes referred to as "Deep Links" by people in the SPA community.
 
 ### "What about Nice Navigation Transitions?"
 
 Nice transitions are, well, nice.  We think that designers tend to over-estimate their contribution to application usability, however.  Yes, the demo sizzles, but on the 20th click users often just want the UI to get on with it.
 
-That being said, htmx supports using [standard CSS transtions](https://htmx.org/examples/animations/) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
+That being said, htmx supports using [standard CSS transtions](@/examples/animations.md) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
 
 ### "Multipage Apps Load Javascript Libraries Every Request"
 
@@ -87,7 +87,7 @@ Of course the problem with latency issues is that they can make an app feel lagg
 
 Github does, indeed, have UI bugs.  However, none of them are particularly difficult to solve.
 
-htmx offers multiple ways to [update content beyond the target element](https://htmx.org/examples/update-other-content/), all of them quite easy and any of which would work to solve the UI consistency issues Mr. Harris points out.
+htmx offers multiple ways to [update content beyond the target element](@/examples/update-other-content.md), all of them quite easy and any of which would work to solve the UI consistency issues Mr. Harris points out.
 
 Contrast the Github UI issues with the Instagram UI issues Mr. Harris pointed out earlier: the Instagram issues would
 require far more sophisticated engineering work to resolve.
@@ -124,11 +124,11 @@ There is a technical issue as well.
 This technical issue can be summarized as "The Hypermedia Approach" vs. "The Remote Procedure Call (RPC) Approach".
 
 When web applications moved from MPAs to SPAs, they adopted, often unwittingly, an RPC approach to application development:
-AJAX moved to JSON as a data serialization format and largely ([and correctly](/essays/hypermedia-apis-vs-data-apis/))
+AJAX moved to JSON as a data serialization format and largely ([and correctly](@/essays/hypermedia-apis-vs-data-apis.md))
 abandoned the hypermedia concept.   This abandonment of The Hypermedia Approach was driven by the admitted usability
 issues with vanilla MPAs.
 
-It turns out, however, that those usability issues often *can* [be addressed](/examples) using The Hypermedia Approach:
+It turns out, however, that those usability issues often *can* [be addressed](@/examples/_index.md) using The Hypermedia Approach:
 rather than *abandoning* Hypermedia for RPC, what we needed then and what we need today is a *more powerful* Hypermedia.
 
 This is exactly what htmx gives you.

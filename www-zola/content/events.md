@@ -55,7 +55,7 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 
 ### Event - `htmx:afterSettle` {#htmx:afterSettle}
 
-This event is triggered after the DOM has [settled](/docs#settling).
+This event is triggered after the DOM has [settled](@/docs.md#request-operations).
 
 ##### Details
 
@@ -66,7 +66,7 @@ This event is triggered after the DOM has [settled](/docs#settling).
 
 ### Event - `htmx:afterSwap` {#htmx:afterSwap}
 
-This event is triggered after new content has been [swapped into the DOM](/docs#swapping).
+This event is triggered after new content has been [swapped into the DOM](@/docs.md#swapping).
 
 ##### Details
 
@@ -118,10 +118,10 @@ This event is triggered right before a request is sent.  You may not cancel the 
 
 ### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
 
-This event is triggered before any new content has been [swapped into the DOM](/docs#swapping).  If the event is cancelled, no swap will occur.
+This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).  If the event is cancelled, no swap will occur.
 
 You can modify the default swap behavior by modifying the `shouldSwap` and `target` properties of the event detail. See
-the documentation on [configuring swapping](/docs#modifying_swapping_behavior_with_events) for more details.
+the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
@@ -148,7 +148,7 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](/attributes/hx-select)
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](@/attributes/hx-select.md)
 * `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
@@ -268,7 +268,7 @@ This event is triggered when an element refers to an SSE event in its trigger, b
 
 ### Event - `htmx:oobAfterSwap` {#htmx:oobAfterSwap}
 
-This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to an [after swap event](/events#afterSwap)
+This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to an [after swap event](#htmx:afterSwap)
 
 ##### Details
 
@@ -279,7 +279,7 @@ This event is triggered as part of an [out of band swap](/docs##oob_swaps) and b
 
 ### Event - `htmx:oobBeforeSwap` {#htmx:oobBeforeSwap}
 
-This event is triggered as part of an [out of band swap](/docs##oob_swaps) and behaves identically to a [before swap event](/events#beforeSwap)
+This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to a [before swap event](#htmx:beforeSwap)
 
 ##### Details
 
@@ -291,7 +291,7 @@ This event is triggered as part of an [out of band swap](/docs##oob_swaps) and b
 
 ### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
 
-This event is triggered when an [out of band swap](/docs##oob_swaps) does not have a corresponding element
+This event is triggered when an [out of band swap](@/docs.md#oob_swaps) does not have a corresponding element
 in the DOM to switch with.
 
 ##### Details
@@ -312,7 +312,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 
 ### Event - `htmx:prompt` {#htmx:prompt}
 
-This event is triggered after a prompt has been shown to the user with the [`hx-prompt`](/attributes/hx-prompt)
+This event is triggered after a prompt has been shown to the user with the [`hx-prompt`](@/attributes/hx-prompt.md)
 attribute.  If this event is cancelled, the AJAX request will not occur.
 
 ##### Details
@@ -374,7 +374,7 @@ This event is triggered when an error occurs during the swap phase
 
 ### Event - `htmx:targetError` {#htmx:targetError}
 
-This event is triggered when a bad selector is used for a [`hx-target`](/attributes/hx-target) attribute (e.g. an
+This event is triggered when a bad selector is used for a [`hx-target`](@/attributes/hx-target.md) attribute (e.g. an
 element ID without a preceding `#`)
 
 ##### Details
@@ -386,7 +386,7 @@ element ID without a preceding `#`)
 
 This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.
 
-Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](/attributes/hx-request)
+Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](@/attributes/hx-request.md)
 
 ##### Details
 

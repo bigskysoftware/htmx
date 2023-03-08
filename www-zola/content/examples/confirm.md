@@ -3,11 +3,11 @@ title = "A Customized Confirmation UI"
 template = "demo.html"
 +++
 
-htmx supports the [`hx-confirm`](/attributes/hx-confirm) attribute to provide a simple mechanism for confirming a user
+htmx supports the [`hx-confirm`](@/attributes/hx-confirm.md) attribute to provide a simple mechanism for confirming a user
 action.  This uses the default `confirm()` function in javascript which, while trusty, may not be consistent with your 
 applications UX.
 
-In this example we will see how to use [sweetalert2](https://sweetalert2.github.io) and the [`htmx:confirm`](/events#htmx:confirm)
+In this example we will see how to use [sweetalert2](https://sweetalert2.github.io) and the [`htmx:confirm`](@/events.md#htmx:confirm)
 event to implement a custom confirmation dialog.
 
 ```html

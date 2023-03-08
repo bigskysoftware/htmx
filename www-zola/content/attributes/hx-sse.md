@@ -3,7 +3,7 @@ title = "hx-sse"
 +++
 
 *Note: This attribute will be migrated to an extension in htmx 2.0, which is available now.  Please visit the
-[SSE extension page](/extensions/server-sent-events) to learn about the new implementation of SSE as an extension.*
+[SSE extension page](@/extensions/server-sent-events.md) to learn about the new implementation of SSE as an extension.*
 
 The `hx-sse` allows you to work with [Server Sent Event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 `EventSource`s directly from HTML.  The value of the attribute can be one or more of the following, separated by white space:
@@ -42,7 +42,7 @@ This example connects the Server Sent Event stream to the parent node, and direc
 
 ### Trigger Server Callbacks
 
-When a connection for server sent events has been established, child elements can listen for these events by using the special [`hx-trigger`](/attributes/hx-trigger) syntax `sse:<event_name>`.  This, when combined with an `hx-get` or similar will trigger the element to make a request.
+When a connection for server sent events has been established, child elements can listen for these events by using the special [`hx-trigger`](@/attributes/hx-trigger.md) syntax `sse:<event_name>`.  This, when combined with an `hx-get` or similar will trigger the element to make a request.
 
 Here is an example:
 

@@ -5,7 +5,7 @@ template = "demo.html"
 
 This example shows how to load tab contents using htmx, and to select the "active" tab using Javascript.  This reduces some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your clients' browsers.  
 
-You may also consider [a more idiomatic approach](../tabs-hateoas) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
+You may also consider [a more idiomatic approach](@/examples/tabs-hateoas.md) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
 
 ## Example Code
 

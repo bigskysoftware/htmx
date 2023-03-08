@@ -9,7 +9,7 @@ request.
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/event-header.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/event-header.js"></script>
 ```
 
 ## Usage

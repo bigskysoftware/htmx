@@ -5,7 +5,7 @@ tag = ["posts"]
 +++
 
 Often, when we are being insufferably pedantic in [online discussions](https://news.ycombinator.com/item?id=32141027) 
-about [REST](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) & [HATEOAS](/essays/hateoas), we will
+about [REST](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md) & [HATEOAS](@/essays/hateoas.md), we will
 say something along the lines of this:
 
 > JSON isn't a hypermedia because it doesn't have hypermedia controls.  
@@ -165,10 +165,10 @@ hypermedia *client* is the hard part, and creating a *good* hypermedia client is
 Now, we are all used to web browsers just being there, but think for a moment about all the technology that goes in to simply
 parsing and rendering HTML to an end user in a normal, every day web request.  It's *extremely* complicated.  
 
-That's why, if we want to build web-based [hypermedia-driven applications](https://htmx.org/essays/hypermedia-driven-applications/), 
+That's why, if we want to build web-based [hypermedia-driven applications](@/essays/hypermedia-driven-applications.md),
 it's probably a good idea to use the standard, web-based hypermedia client: the browser.
 
-It is already an extremely powerful, well tested hypermedia client.  And, [with a bit of help](https://htmx.org/docs), 
+It is already an extremely powerful, well tested hypermedia client.  And, [with a bit of help](@/docs.md),
 it can be an even better hypermedia client.
 
 In general, building a good hypermedia client that satisfies all the constraints of REST is hard, and we should lean

@@ -19,7 +19,7 @@ The LoB principle is a simple prescriptive formulation of the quoted statement f
 In as much as it is possible, and in balance with other concerns, developers should strive to make the behaviour of
 a code element obvious on inspection.
 
-Consider two different implementations of an AJAX request in HTML, the first in [htmx](https://htmx.org):
+Consider two different implementations of an AJAX request in HTML, the first in [htmx](@/_index.md):
 
 ```html
 <button hx-get="/clicked">Click Me</button>

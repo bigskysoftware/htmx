@@ -2,16 +2,16 @@
 title = "multi-swap"
 +++
 
-This extension allows you to swap multiple elements marked with the `id` attribute from the HTML response. You can also choose for each element which [swap method](/docs/#swapping) should be used.
+This extension allows you to swap multiple elements marked with the `id` attribute from the HTML response. You can also choose for each element which [swap method](@/docs.md#swapping) should be used.
 
-Multi-swap can help in cases where OOB ([Out of Band Swaps](/docs/#oob_swaps)) is not enough for you. OOB requires HTML tags marked with `hx-swap-oob` attributes to be at the TOP level of HTML, which significantly limited its use. With OOB is not possible to swap multiple elements arbitrarily placed and nested in the DOM tree.
+Multi-swap can help in cases where OOB ([Out of Band Swaps](@/docs.md#oob_swaps)) is not enough for you. OOB requires HTML tags marked with `hx-swap-oob` attributes to be at the TOP level of HTML, which significantly limited its use. With OOB is not possible to swap multiple elements arbitrarily placed and nested in the DOM tree.
 
 It is a very powerful tool in conjunction with `hx-boost` and `preload` extension.
 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js">
+<script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js"></script>
 ```
 
 ## Usage
@@ -24,10 +24,10 @@ Selectors must be separated by a comma (without surrounding spaces) and a colon 
 
 ```html
 <body hx-boost="true" hx-ext="multi-swap">
-   <-- simple example how to swap #id1 and #id2 from /example by innerHTML (default swap method) -->
+   <!-- simple example how to swap #id1 and #id2 from /example by innerHTML (default swap method) -->
    <button hx-get="/example" hx-swap="multi:#id1,#id2">Click to swap #id1 and #id2 content</button>
 
-   <-- advanced example how to swap multiple elements from /example by different swap methods -->
+   <!-- advanced example how to swap multiple elements from /example by different swap methods -->
    <a href="/example" hx-swap="multi:#id1,#id2:outerHTML,#id3:beforeend,#id4:delete">Click to swap #id1 and #id2, extend #id3 content and delete #id4 element</a>
 
    <div id="id1">Old 1 content</div>

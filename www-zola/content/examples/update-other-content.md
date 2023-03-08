@@ -10,7 +10,7 @@ A question that often comes up when people are first working with htmx is:
 There are multiple ways to do so, and in this example will walk you through some of them.
 
 We'll use the following basic UI to discuss this concept: a simple table of contacts, and a form below it
-to add new contacts to the table using [hx-post](/attributes/hx-post).  
+to add new contacts to the table using [hx-post](@/attributes/hx-post.md).
 
 ```html
 <h2>Contacts</h2>
@@ -78,14 +78,14 @@ you could wrap the whole thing in a `div` and then target that `div` in the form
 </div>
 ```
 
-Note that we are targeting the enclosing div using the [hx-target](/attributes/hx-target) attribute.  You would need
+Note that we are targeting the enclosing div using the [hx-target](@/attributes/hx-target.md) attribute.  You would need
 to render both the table and the form in the response to the `POST` to `/contacts`.
 
 This is a simple and reliable approach, although it might not feel particularly elegant.
 
 ## Solution 2: Out of Band Responses {#oob}
 
-A more sophisticated approach to this problem would use [out of band swaps](/attributes/hx-swap-oob/) to swap in
+A more sophisticated approach to this problem would use [out of band swaps](@/attributes/hx-swap-oob.md) to swap in
 updated content to the DOM.  
 
 Using this approach, the HTML doesn't need to change from the original setup at all:
@@ -136,7 +136,7 @@ Instead of modifying something on the front end, in your response to the `POST` 
 </form>
 ```
 
-This content uses the [hx-swap-oob](/attributes/hx-swap-oob/) attribute to append itself to the `#contacts-table`, updating
+This content uses the [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute to append itself to the `#contacts-table`, updating
 the table after a contact is added successfully.
 
 Note that because we are using table rows here, we must enable template fragment parsing (thus sacrificing IE11 compatibility)
@@ -182,7 +182,7 @@ is a custom event, `newContact`.  We listen for this event on the `body` because
 is triggered by the response to the form, it will end up hitting the body due to event bubbling.
 
 When a successful contact creation occurs during a POST to `/contacts`, the response includes 
-an [HX-Trigger](https://htmx.org/headers/hx-trigger/) response header that looks like this:
+an [HX-Trigger](@/headers/hx-trigger.md) response header that looks like this:
 
 ```txt
 HX-Trigger:newContact
@@ -199,7 +199,7 @@ A final approach is to use REST-ful path dependencies to refresh the table.  Int
 to htmx, had [path-based dependencies](https://intercoolerjs.org/docs.html#dependencies) integrated into the 
 library.  
  
-htmx dropped this as a core feature, but supports an extension, [path deps](/extensions/path-deps/), that gives you 
+htmx dropped this as a core feature, but supports an extension, [path deps](@/extensions/path-deps.md), that gives you 
 similar functionality.
  
 Updating our example to use the extension would involve loading the extension javascript and then

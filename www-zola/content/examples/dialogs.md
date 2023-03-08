@@ -3,7 +3,7 @@ title = "Dialogs"
 template = "demo.html"
 +++
 
-Dialogs can be triggered with the [`hx-prompt`](/attributes/hx-prompt) and [`hx-confirm`](/attributes/hx-confirm) attributes.  These are triggered by the user interaction that would trigger the AJAX request, but the request is only sent if the dialog is accepted.
+Dialogs can be triggered with the [`hx-prompt`](@/attributes/hx-prompt.md) and [`hx-confirm`](@/attributes/hx-confirm.md)attributes.  These are triggered by the user interaction that would trigger the AJAX request, but the request is only sent if the dialog is accepted.
 
 ```html
 <div>

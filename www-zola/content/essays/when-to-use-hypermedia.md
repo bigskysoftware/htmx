@@ -14,13 +14,13 @@ _-Roy Fielding, <https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_s
 We are obviously fans of hypermedia and think that it can address, at least in part, many of the problems that the web 
 development world is facing today:
 
-* Hypermedia is often [significantly less complex](/essays/a-real-world-React-to-htmx-port/) than an SPA approach would 
+* Hypermedia is often [significantly less complex](@/essays/a-real-world-react-to-htmx-port.md) than an SPA approach would 
   be for many problems
-* Hypermedia allows your application API to be [much more aggressively refactored and optimized](/essays/hateoas)
+* Hypermedia allows your application API to be [much more aggressively refactored and optimized](@/essays/hateoas.md)
 * Hypermedia takes pressure off adopting a particular server technology, since you do not have an extensive JavaScript
   front-end code base
 
-With [htmx](/) and the additional UX possibilities that it gives you, we believe that many modern web applications can be built 
+With [htmx](@/_index.md) and the additional UX possibilities that it gives you, we believe that many modern web applications can be built 
 using HTML and the hypermedia paradigm.
 
 With that being said, as with all technical choices, there are tradeoffs associated with hypermedia.  In this article
@@ -34,7 +34,7 @@ of Single Page Applications utilizes hypermedia after all: as a bootstrap mechan
 
 In his talk, [Have SPAs Ruined The Web](https://www.youtube.com/watch?v=860d8usGC0o), Rich Harris gives us the term
 "Transitional" Applications, that is applications that _mix_ both hypermedia and non-hypermedia (SPA) concepts.  We
-have responded to Mr. Harris' talk [in more detail here](/essays/a-response-to-rich-harris/), but suffice to say we 
+have responded to Mr. Harris' talk [in more detail here](@/essays/a-response-to-rich-harris.md), but suffice to say we 
 violently agree with him that a pragmatic "Transitional" approach to web development is best: you should use the
 right tool for the particular job you are working on.
 
@@ -47,7 +47,7 @@ applications, it can address many or all of their UX needs.
 
 ### _...If your UI is mostly text & images_
 
-In [The Mother Of All htmx Demos](/essays/a-real-world-React-to-htmx-port/), David Guillot of Contexte shows how replacing
+In [The Mother Of All htmx Demos](@/essays/a-real-world-react-to-htmx-port.md), David Guillot of Contexte shows how replacing
 React with htmx lead to a 67% reduction in the total codebase, along with numerous other eye-popping results.  
 
 As much as we would like to claim that every team moving from React to htmx would experience these results, the fact is that the
@@ -64,8 +64,8 @@ Another area where hypermedia has a long track-record of success is [CRUD](https
 web applications, in the [Ruby on Rails](https://rubyonrails.org/) style.  If your main application mechanic is showing
 forms and saving the forms into a database, hypermedia can work very well.  
 
-And, with htmx, it can also be [very smooth](https://htmx.org/examples/click-to-edit/), and not just constrained
-to the simple [list view/detail view](https://htmx.org/examples/edit-row/) approach many server side applications take.
+And, with htmx, it can also be [very smooth](@/examples/click-to-edit.md), and not just constrained
+to the simple [list view/detail view](@/examples/edit-row.md) approach many server side applications take.
 
 ### _...If your UI is "nested", with updates mostly taking place within well-defined blocks_
 
@@ -78,7 +78,7 @@ when you closed an issue on Github, the issue count on the tab did not update pr
 "Ah ha!", exclaims the SPA enthusiast, "See, even GitHub can't get this right!"
 
 Well, Github has fixed the issue, but it does demonstrate a problem with the hypermedia approach: how do you update
-disjoint parts of the UI cleanly?  htmx offers [a few techniques for making this work](https://htmx.org/examples/update-other-content/), 
+disjoint parts of the UI cleanly?  htmx offers [a few techniques for making this work](@/examples/update-other-content.md),
 and Contexte, in their talk, discuss handling this situation very cleanly, using the event approach.
 
 But, let us grant that this is an area where the hypermedia approach can get into trouble.  To avoid this problem, one
@@ -102,7 +102,7 @@ In this scenario, each subsection can have its own dedicated hypermedia end-poin
 * `/contacts/<id>/phonenumbers` for the phone numbers section
 
 The trick here is that the email and phone counts are co-located on the screen with their collections, which allows you to 
-[target](/attributes/hx-target) just that particular area for update when a modification is made to the respective 
+[target](@/attributes/hx-target.md) just that particular area for update when a modification is made to the respective 
 collections.  All the data dependencies are co-located within a single area that can be updated via a single, simple
 and obvious target, and that, further, don't interfere with one another when they are replaced.
 
@@ -113,11 +113,11 @@ all nested within a broader contact detail user interface.
 
 Note that our hypermedia API (i.e. our end-points) in this case is _driven by the UI_: we have a particular UI layout 
 that we want to achieve, and we adapt our API to that.  If the UI changed, we would have no qualms with completely changing
-our API to satisfy the new requirements.  This is a [unique aspect](https://htmx.org/essays/hateoas/) of developing with
-hypermedia, and we [discuss it in more detail here](https://htmx.org/essays/hypermedia-apis-vs-data-apis/).
+our API to satisfy the new requirements.  This is a [unique aspect](@/essays/hateoas.md) of developing with
+hypermedia, and we [discuss it in more detail here](@/essays/hypermedia-apis-vs-data-apis.md).
 
 Of course, there may be UI requirements that do not allow for grouping of dependent element in this manner and, if
-the techniques [mentioned above](https://htmx.org/examples/update-other-content/) aren't satisfactory, then it may be 
+the techniques [mentioned above](@/examples/update-other-content.md) aren't satisfactory, then it may be 
 time to consider an alternative approach.
 
 ### _...If you need "deep links" & good first-render performance_
@@ -141,7 +141,7 @@ Particularly difficult for hypermedia to handle is when these dependencies are d
 that cannot be determined at server-side render-time.  A good example of this is something like a spreadsheet: a user can
 enter an arbitrary function into a cell and introduce all sorts of dependencies on the screen, on the fly.
 
-(Note, however, that for many applications, the ["editable row"](https://htmx.org/examples/edit-row/) pattern is an 
+(Note, however, that for many applications, the ["editable row"](@/examples/edit-row.md) pattern is an 
 acceptable alternative to more general spreadsheet-like behavior, and this pattern does play well with hypermedia by 
 isolating edits within a bounded area.)
 
@@ -169,7 +169,7 @@ style!
 We should note, however, that it is typically easier to embed SPA components _within_ a larger hypermedia
 architecture, than vice-versa.  Isolated client-side components can communicate with a broader hypermedia application
 via [events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events), in the manner demonstrated
-in the [drag-and-drop Sortable.js + htmx](https://htmx.org/examples/sortable/) example.
+in the [drag-and-drop Sortable.js + htmx](@/examples/sortable.md) example.
 
 ### _...If your team is not on board_
 
@@ -206,6 +206,6 @@ every web application, even Google Sheets or Google Maps, has parts where, poten
 better: simpler, faster and cleaner.
 
 Having hypermedia as a tool in your tool-chest will improve your ability to address engineering problems as a web
-developer, even if it doesn't become your favorite hammer.  There is a good [theoretical basis](https://htmx.org/essays/hateoas/) 
-for the approach, [practical benefits for many applications](https://htmx.org/essays/a-real-world-React-to-htmx-port/),
+developer, even if it doesn't become your favorite hammer.  There is a good [theoretical basis](@/essays/hateoas.md) 
+for the approach, [practical benefits for many applications](@/essays/a-real-world-react-to-htmx-port.md),
 and it is "with the grain" of the web in a way that other approaches are not.

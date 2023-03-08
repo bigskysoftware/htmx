@@ -41,7 +41,7 @@ In this way, RESTful interaction is driven by hypermedia, rather than out-of-ban
 
 A concrete example will clarify this.  Consider this GET request, issued by a web browser, which fetches a bank account resource:
 
-```
+```txt
 GET /accounts/12345 HTTP/1.1
 Host: bank.example.com
 ```
