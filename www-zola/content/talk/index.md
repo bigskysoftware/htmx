@@ -1,5 +1,6 @@
 +++
 title = "htmx Talk"
+template = "talk.html"
 +++
 
 [htmx Discord Server](/discord)
@@ -37,6 +38,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 [feed.xml](/feed.xml)
 
+<!--
 ## Announcements
 
 <ul>
@@ -61,3 +63,4 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 * [.NET Rocks!](https://www.dotnetrocks.com/?show=1749)
 
 [Contact Us](mailto:podcasts@bigsky.software) to Join You on Your Podcast!
+-->
