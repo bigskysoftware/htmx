@@ -74,7 +74,7 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 
 To develop htmx locally, you will need to install the development dependencies.
 
-__Requires Python 2 and Node 15.__
+__Requires Python and Node 15.__
 
 Run:
 
