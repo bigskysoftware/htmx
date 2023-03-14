@@ -11,7 +11,6 @@ describe("hx-trigger attribute", function(){
     it('non-default value works', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
-
         var form = make('<form hx-get="/test" hx-trigger="click">Click Me!</form>');
         form.click();
         form.innerHTML.should.equal("Click Me!");
@@ -756,5 +755,33 @@ describe("hx-trigger attribute", function(){
         div.innerHTML.should.equal("test 1");
     });
 
+    it("fires the htmx:trigger event when an AJAX attribute is specified", function () {
+        var param = "foo"
+        var handler = htmx.on("htmx:trigger", function (evt) {
+            param = "bar"
+        });
+        try {
+            this.server.respondWith("GET", "/test1", "test 1");
+            var div = make('<button hx-get="/test1">Submit</button>');
+            div.click();
+            should.equal(param, "bar");
+        } finally {
+            htmx.off("htmx:trigger", handler);
+        }
+    });
+
+    it("fires the htmx:trigger event when no AJAX attribute is specified", function () {
+        var param = "foo"
+        var handler = htmx.on("htmx:trigger", function (evt) {
+            param = "bar"
+        });
+        try {
+            var div = make('<button hx-trigger="click">Submit</button>');
+            div.click();
+            should.equal(param, "bar");
+        } finally {
+            htmx.off("htmx:trigger", handler);
+        }
+    });
 
 })

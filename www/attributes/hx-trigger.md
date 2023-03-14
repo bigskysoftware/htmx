@@ -64,7 +64,7 @@ is seen again before the delay completes it is ignored, the element will trigger
     * `closest <CSS selector>` - finds the closest parent matching the given css selector
     * `find <CSS selector>` - finds the closest child matching the given css selector
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
-triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body, 
+triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element
 * `consume` - if this option is included the event will not trigger any other htmx requests on parents (or on elements
   listening on parents)
@@ -78,7 +78,7 @@ Here is an example of a search box that searches on `keyup`, but only if the sea
 and the user hasn't typed anything new for 1 second:
 
 ```html
-<input name="q" 
+<input name="q"
        hx-get="/search" hx-trigger="keyup changed delay:1s"
        hx-target="#search-results"/>
 ```
@@ -95,10 +95,10 @@ There are some additional non-standard events that htmx supports:
     * `root:<selector>` - a CSS selector of the root element for intersection
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire the event on
 
-### Triggering via the `HX-Trigger` header 
+### Triggering via the `HX-Trigger` header
 
-If you're trying to fire an event from <code>HX-Trigger</code> response  header, you will likely want to 
-use the `from:body` modifier.  E.g. if you send a header like this <code>HX-Trigger: my-custom-event</code> 
+If you're trying to fire an event from <code>HX-Trigger</code> response  header, you will likely want to
+use the `from:body` modifier.  E.g. if you send a header like this <code>HX-Trigger: my-custom-event</code>
 with a response, an element would likely need to look like this:
 
 ```html
@@ -108,7 +108,7 @@ with a response, an element would likely need to look like this:
 ```
 
 in order to fire.
-  
+
 This is because the header will likely trigger the event in a different DOM hierarchy than the element that you
 wish to be triggered.  For a similar reason, you will often listen for hot keys from the body.
 
@@ -148,3 +148,4 @@ The AJAX request can be triggered via Javascript [`htmx.trigger()`](/api#trigger
 ### Notes
 
 * `hx-trigger` is not inherited
+* `hx-trigger` can be used without an AJAX request, in which case it will only fire the `htmx:trigger` event

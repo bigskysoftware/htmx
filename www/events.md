@@ -399,6 +399,16 @@ Timeout time can be set using `htmx.config.timeout` or per element using [`hx-re
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### <a name="htmx:trigger"></a> Event - [`htmx:trigger`](#htmx:trigger)
+
+This event is triggered whenever an AJAX request would be, even if no AJAX request is specified. It
+is primarily intended to allow `hx-trigger` to execute client-side scripts; AJAX requests have more
+granular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [`htmx:afterSend`](#htmx:afterSend).
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+
 ### <a name="htmx:validation:validate"></a> Event - [htmx:validation:validate](#htmx:validation:validate)
 
 This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method
