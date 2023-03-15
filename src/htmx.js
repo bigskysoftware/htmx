@@ -1922,10 +1922,43 @@ return (function () {
                 var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
+            triggerInlineHandlers(elt, kebabName);
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
             return eventResult;
+        }
+
+        function triggerInlineHandlers(elt, kebabbedEvent, noBubble) {
+            var strippedEventName = kebabbedEvent.replace('htmx:', '').replace(":", "\\:").replace(".", "\\.");
+            var hxOnAttributeNameForEvent = "hx-on-" + strippedEventName;
+            var selector = "[" + hxOnAttributeNameForEvent + "]";
+            if (noBubble) {
+                if (matches(elt, selector)) {
+                    evalAttrValue(elt, hxOnAttributeNameForEvent);
+                }
+            } else {
+                var closestMatch = closest(elt, selector);
+                while (closestMatch != null) {
+                    // terminate simulated bubbling if handler returns false
+                    if(evalAttrValue(closestMatch, hxOnAttributeNameForEvent) === false) {
+                        return;
+                    }
+                    var parentOfMatch = parentElt(closestMatch);
+                    closestMatch = closest(parentOfMatch, selector);
+                }
+
+            }
+        }
+
+        function evalAttrValue(elt, attributeName) {
+            var attrValue = elt.getAttribute(attributeName);
+            try {
+                return eval(attrValue)
+            } catch(e) {
+                console.error("Error evaluating " + attributeName + " on", elt, ":", e);
+            }
+            return true;
         }
 
         //====================================================================
