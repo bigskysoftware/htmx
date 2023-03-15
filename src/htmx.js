@@ -1922,7 +1922,7 @@ return (function () {
                 var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
-            triggerInlineHandlers(elt, kebabName);
+            eventResult = eventResult && triggerInlineHandlers(elt, kebabName);
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
@@ -1935,19 +1935,19 @@ return (function () {
             var selector = "[" + hxOnAttributeNameForEvent + "]";
             if (noBubble) {
                 if (matches(elt, selector)) {
-                    evalAttrValue(elt, hxOnAttributeNameForEvent);
+                    return evalAttrValue(elt, hxOnAttributeNameForEvent);
                 }
             } else {
                 var closestMatch = closest(elt, selector);
                 while (closestMatch != null) {
                     // terminate simulated bubbling if handler returns false
                     if(evalAttrValue(closestMatch, hxOnAttributeNameForEvent) === false) {
-                        return;
+                        return false;
                     }
                     var parentOfMatch = parentElt(closestMatch);
                     closestMatch = closest(parentOfMatch, selector);
                 }
-
+                return true;
             }
         }
 
