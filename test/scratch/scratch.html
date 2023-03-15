@@ -66,7 +66,7 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 </script>
 
 <button>First</button>
-<input hx-get="/demo" hx-target="next output" hx-trigger="keyup changed"/>
+<input hx-get="/demo" hx-target="next output" hx-trigger="keyup changed" hx-on-before-request="alert('foo')"/>
 <output>--</output>
 
 </body>
