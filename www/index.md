@@ -33,7 +33,7 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.8.5"></script>
+  <script src="https://unpkg.com/htmx.org@1.8.6"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

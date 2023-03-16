@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.6] - 2023-03-02
+
+* ESM support!
+* Sass has been vanquished from the htmx.org website, which should set us up for some good progress going forward
+* Fixed a bug where the `changed` modifier on `keyup` did not work properly if an input was tabbed into
+* Many other smaller bug fixes and doc fixes
+
 ## [1.8.5] - 2023-01-17
 
 * Support a new optional cache-busting configuration option, `getCacheBusterParam`, to allow browsers to disambiguate
