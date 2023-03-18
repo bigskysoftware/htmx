@@ -1922,26 +1922,26 @@ return (function () {
                 var kebabedEvent = makeEvent(kebabName, event.detail);
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
-            eventResult = eventResult && triggerInlineHandlers(elt, kebabName);
+            eventResult = eventResult && triggerInlineHandlers(elt, event, kebabName);
             withExtensions(elt, function (extension) {
                 eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
             });
             return eventResult;
         }
 
-        function triggerInlineHandlers(elt, kebabbedEvent, noBubble) {
+        function triggerInlineHandlers(elt, evt, kebabbedEvent, noBubble) {
             var strippedEventName = kebabbedEvent.replace('htmx:', '').replace(":", "\\:").replace(".", "\\.");
             var hxOnAttributeNameForEvent = "hx-on-" + strippedEventName;
             var selector = "[" + hxOnAttributeNameForEvent + "]";
             if (noBubble) {
                 if (matches(elt, selector)) {
-                    return evalAttrValue(elt, hxOnAttributeNameForEvent);
+                    return evalAttrValue(elt, evt, hxOnAttributeNameForEvent);
                 }
             } else {
                 var closestMatch = closest(elt, selector);
                 while (closestMatch != null) {
                     // terminate simulated bubbling if handler returns false
-                    if(evalAttrValue(closestMatch, hxOnAttributeNameForEvent) === false) {
+                    if(evalAttrValue(closestMatch, evt, hxOnAttributeNameForEvent) === false) {
                         return false;
                     }
                     var parentOfMatch = parentElt(closestMatch);
@@ -1951,10 +1951,14 @@ return (function () {
             }
         }
 
-        function evalAttrValue(elt, attributeName) {
+        function evalAttrValue(elt, evt, attributeName) {
             var attrValue = elt.getAttribute(attributeName);
             try {
-                return eval(attrValue)
+                return maybeEval(elt,
+                    function () {
+                    return Function("event", attrValue + "; return true;")(evt);
+                    },
+                    true)
             } catch(e) {
                 console.error("Error evaluating " + attributeName + " on", elt, ":", e);
             }

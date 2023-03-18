@@ -63,11 +63,20 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 
 <script>
     this.server.respondWith("GET", "/demo", 'demo response...');
+    this.server.respondWith("GET", "/demo2", 'demo2 response...');
 </script>
 
 <button>First</button>
-<input hx-get="/demo" hx-target="next output" hx-trigger="keyup changed" hx-on-before-request="alert('foo')"/>
+
+<input hx-get="/demo"
+       hx-target="next output"
+       hx-trigger="keyup changed"
+       hx-on-config-request="event.detail.path = '/demo2'"/>
 <output>--</output>
+
+<button onclick="console.log(event)">
+    Log
+</button>
 
 </body>
 </html>
