@@ -191,6 +191,7 @@ h4 {
       display: none !important;
   }
   .hamburger {
+      display: revert;
       float: right;
   }
   .nav {
@@ -466,6 +467,7 @@ pre[class|="language"] {
   padding: .5rem;
   margin: .5rem 0;
   border-radius: .25rem;
+  color: lightgray;
 }
 .zola-anchor {
   font-size: 80%;

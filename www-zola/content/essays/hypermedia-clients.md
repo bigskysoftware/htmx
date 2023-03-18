@@ -1,5 +1,7 @@
 +++
 title = "Hypermedia Clients"
+date = 2023-01-28
+updated = 2023-01-29
 [taxonomies]
 tag = ["posts"]
 +++

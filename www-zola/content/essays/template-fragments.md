@@ -1,5 +1,7 @@
 +++
 title = "Template Fragments"
+date = 2022-08-03
+updated = 2023-03-18
 [taxonomies]
 tag = ["posts"]
 +++
@@ -144,5 +146,7 @@ Here are some known implementations of the fragment concept:
   * [jinja_partials package](https://github.com/mikeckennedy/jinja_partials) ([discussion](https://github.com/mikeckennedy/jinja_partials/issues/1) on motivation)
   * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
   * [htmlgenerator](https://github.com/basxsoftwareassociation/htmlgenerator)
+* .NET
+  * [Giraffe.ViewEngine.Htmx](https://github.com/bit-badger/Giraffe.Htmx/tree/main/src/ViewEngine.Htmx)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.

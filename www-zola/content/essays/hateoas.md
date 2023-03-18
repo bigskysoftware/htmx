@@ -1,5 +1,7 @@
 +++
 title = "HATEOAS"
+date = 2021-10-16
+updated = 2022-02-06
 [taxonomies]
 tag = ["posts"]
 [extra]
@@ -239,27 +241,6 @@ necessity for building RESTful systems.
       text-transform: none;
       letter-spacing: 0;
     }
-
-  .content pre, .content code {
-    background: none;
-    padding: none;
-    color: black;
-    text-shadow: none;
-    font-weight: inherit;
-  }
-
-  .content code {
-    filter: brightness(.8);
-  }
-
-  .content pre {
-    padding: 0 1em;
-    scrollbar-width: thin;
-    scrollbar-color: #aaa transparent;
-    background: #f5f5f5;
-    margin: 16px 32px !important;
-    border-radius: 0;
-  }
 
   .content a {
     font-variant: all-small-caps;

@@ -2,6 +2,7 @@
 title = "How Did REST Come To Mean The Opposite of REST?"
 author = "Carson Gross <carson@bigsky.software>"
 date = 2022-07-18
+updated = 2022-11-26
 [taxonomies]
 tag = ["posts"]
 +++

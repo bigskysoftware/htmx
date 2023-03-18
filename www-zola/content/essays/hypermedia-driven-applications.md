@@ -1,5 +1,7 @@
 +++
 title = "Hypermedia-Driven Applications"
+date = 2022-02-06
+updated = 2022-10-18
 [taxonomies]
 tag = ["posts"]
 +++

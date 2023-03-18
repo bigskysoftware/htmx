@@ -1,5 +1,7 @@
 +++
 title = "REST - Explained For Beginners"
+date = 2021-07-13
+updated = 2022-02-06
 +++
 
 There is no topic that generates more confusion in web development than the idea of Representational State Transfer, 

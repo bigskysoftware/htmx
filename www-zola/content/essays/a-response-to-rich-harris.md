@@ -1,5 +1,7 @@
 +++
 title = "A Response To &quot;Have Single-Page Apps Ruined the Web?&quot;"
+date = 2021-12-24
+updated = 2022-05-27
 [taxonomies]
 tag = ["posts"]
 +++
