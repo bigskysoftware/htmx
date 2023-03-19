@@ -875,6 +875,11 @@ return (function () {
                     }
                 });
             }
+            if (internalData.onHandlers) {
+                for (var eventName of internalData.onHandlers) {
+                    element.removeEventListener(eventName, internalData.onHandlers[eventName]);
+                }
+            }
         }
 
         function cleanUpElement(element) {
@@ -1051,7 +1056,7 @@ return (function () {
         var WHITESPACE = /\s/;
         var WHITESPACE_OR_COMMA = /[\s,]/;
         var SYMBOL_START = /[_$a-zA-Z]/;
-        var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
+        var SYMBOL_CONT = /[_$a-zA-Z0-9:-]/;
         var STRINGISH_START = ['"', "'", "/"];
         var NOT_WHITESPACE = /[^\s]/;
         function tokenizeString(str) {
@@ -1772,7 +1777,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-on], [data-hx-on]");
                 return results;
             } else {
                 return [];
@@ -1800,6 +1805,57 @@ return (function () {
             })
         }
 
+        function countCurlies(line) {
+            var tokens = tokenizeString(line);
+            var netCurlies = 0;
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+                if (token === "{") {
+                    netCurlies++;
+                } else if (token === "}") {
+                    netCurlies--;
+                }
+            }
+            return netCurlies;
+        }
+
+        function addHxOnEventHandler(elt, eventName, code) {
+            var nodeData = getInternalData(elt);
+            nodeData.onHandlers ||= {};
+            var func = new Function("event", code + "; return;");
+            var listener = elt.addEventListener(eventName, function (e) {
+                return func(e);
+            });
+            nodeData.onHandlers[eventName] = listener;
+            return {nodeData, code, func, listener};
+        }
+
+        function processHxOn(elt) {
+            var hxOnValue = getAttributeValue(elt, 'hx-on');
+            if (hxOnValue) {
+                var handlers = {}
+                var lines = hxOnValue.split("\n");
+                var currentEvent = null;
+                var curlyCount = 0;
+                while (lines.length > 0) {
+                    var line = lines.shift();
+                    var match = line.match(/^\s*([a-zA-Z:\-]+:)(.*)/);
+                    if (curlyCount === 0 && match) {
+                        line.split(":")
+                        currentEvent = match[1].slice(0, -1); // strip last colon
+                        handlers[currentEvent] = match[2];
+                    } else {
+                        handlers[currentEvent] += line;
+                    }
+                    curlyCount += countCurlies(line);
+                }
+
+                for (var eventName in handlers) {
+                    addHxOnEventHandler(elt, eventName, handlers[eventName]);
+                }
+            }
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1811,6 +1867,8 @@ return (function () {
 
                 // clean up any previously processed info
                 deInitNode(elt);
+
+                processHxOn(elt);
 
                 triggerEvent(elt, "htmx:beforeProcessNode")
 
