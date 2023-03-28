@@ -1396,6 +1396,7 @@ return (function () {
                         } else if (triggerSpec.delay) {
                             elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
                         } else {
+                            triggerEvent(elt, 'htmx:trigger')
                             handler(elt, evt);
                         }
                     }
@@ -1688,6 +1689,13 @@ return (function () {
                     });
                 }
             });
+            if (!explicitAction && hasAttribute(elt, 'hx-trigger')) {
+                explicitAction = true
+                triggerSpecs.forEach(function(triggerSpec) {
+                    // For "naked" triggers, don't do anything at all
+                    addTriggerHandler(elt, triggerSpec, nodeData, function () { })
+                })
+            }
             return explicitAction;
         }
 
@@ -1772,7 +1780,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]");
                 return results;
             } else {
                 return [];
