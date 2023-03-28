@@ -472,7 +472,10 @@ return (function () {
         function removeElement(elt, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){removeElement(elt);}, delay)
+                setTimeout(function(){
+                    removeElement(elt);
+                    elt = null;
+                }, delay);
             } else {
                 elt.parentElement.removeChild(elt);
             }
@@ -481,7 +484,10 @@ return (function () {
         function addClassToElement(elt, clazz, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){addClassToElement(elt, clazz);}, delay)
+                setTimeout(function(){
+                    addClassToElement(elt, clazz);
+                    elt = null;
+                }, delay);
             } else {
                 elt.classList && elt.classList.add(clazz);
             }
@@ -490,7 +496,10 @@ return (function () {
         function removeClassFromElement(elt, clazz, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
+                setTimeout(function(){
+                    removeClassFromElement(elt, clazz);
+                    elt = null;
+                }, delay);
             } else {
                 if (elt.classList) {
                     elt.classList.remove(clazz);
@@ -1397,6 +1406,7 @@ return (function () {
                         } else if (triggerSpec.delay) {
                             elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
                         } else {
+                            triggerEvent(elt, 'htmx:trigger')
                             handler(elt, evt);
                         }
                     }
@@ -1689,6 +1699,13 @@ return (function () {
                     });
                 }
             });
+            if (!explicitAction && hasAttribute(elt, 'hx-trigger')) {
+                explicitAction = true
+                triggerSpecs.forEach(function(triggerSpec) {
+                    // For "naked" triggers, don't do anything at all
+                    addTriggerHandler(elt, triggerSpec, nodeData, function () { })
+                })
+            }
             return explicitAction;
         }
 
@@ -1773,7 +1790,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]");
                 return results;
             } else {
                 return [];
@@ -3435,6 +3452,7 @@ return (function () {
             };
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
+                body = null; // kill reference for gc
             }, 0);
         })
 
