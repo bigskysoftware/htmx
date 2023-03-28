@@ -417,6 +417,22 @@ The following extensions are available for morph-style swaps:
 * [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators 
  of htmx.  Idiomorph will be available out of the box in htmx 2.0.
 
+#### <a name="view-transitions"></a> [View Transitions](#view-transitions)
+
+The new, experimental [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) 
+gives developers a way to create an animated transition between different DOM states.  It is still in active development
+and is not available in all browsers, but htmx provides a way to work with this new API that falls back to the non-transition
+mechanism if the API is not available in a given browser.
+
+You can experiment with this new API using the following approaches:
+
+* Set the `htmx.config.globalViewTransitions` config variable to `true` to use transitions for all swaps
+* Use the `transition:true` option in the `hx-swap` attribute
+* If an element swap is going to be transitioned due to either of the above configurations, you may catch the
+  `htmx:beforeTransition` event and call `preventDefault()` on it to cancel the transition.
+
+View Transitions can be configured using CSS, as outlined in [the Chrome documentation for the feature](https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization).
+
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
@@ -1402,6 +1418,7 @@ listed below:
 | `htmx.config.timeout`                | defaults to 0 in milliseconds                                                                                                                                           |
 | `htmx.config.defaultFocusScroll`     | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](/attributes/hx-swap/#focus-scroll) swap modifier. |
 | `htmx.config.getCacheBusterParam`    | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                       |
+| `htmx.config.globalViewTransitions`  | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.          |
 
 </div>
 

@@ -134,6 +134,20 @@ the documentation on [configuring swapping](/docs#modifying_swapping_behavior_wi
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
 
+### <a name="htmx:beforeTransition"></a> Event - [`htmx:beforeTransition`](#htmx:beforeTransition)
+
+This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) 
+wrapped swap occurs.  If the event is cancelled, the View Transition will not occur and the normal swapping logic will
+happen instead.
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.requestConfig` - the configuration of the AJAX request
+* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
+* `detail.target` - the target of the swap
+
 ### <a name="htmx:configRequest"></a> Event - [`htmx:configRequest`](#htmx:configRequest)
 
 This event is triggered after htmx has collected parameters for inclusion in the request.  It can be

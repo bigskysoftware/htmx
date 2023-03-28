@@ -14,6 +14,36 @@
         }
 
     </style>
+
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; }
+        }
+
+        @keyframes fade-out {
+            to { opacity: 0; }
+        }
+
+        @keyframes slide-from-right {
+            from { transform: translateX(30px); }
+        }
+
+        @keyframes slide-to-left {
+            to { transform: translateX(-30px); }
+        }
+
+        ::view-transition-old(root) {
+            animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+            300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+        }
+
+        ::view-transition-new(root) {
+            animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+            300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+        }
+    </style>
+
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 </head>
@@ -48,6 +78,7 @@
 </script>
 
 
+
 <h2>Server Options</h2>
 <button onclick="server.respond()">Server Respond</button>
 <br/>
@@ -62,12 +93,17 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
 </div>
 
 <script>
-    this.server.respondWith("GET", "/demo", 'demo response...');
+    let requestCount = 0;
+    this.server.respondWith("GET", "/demo", function(xhr){
+        let randomStr = (Math.random() + 1).toString(36).substring(7);
+        xhr.respond(200,  {}, "Request #" + requestCount++ + " : " + randomStr)
+    });
 </script>
 
-<button>First</button>
-<input hx-get="/demo" hx-target="next output" hx-trigger="keyup changed" hx-on-before-request="alert('foo')"/>
-<output>--</output>
+<button hx-get="/demo"
+        hx-target="next h1"
+        hx-swap="innerHTML transition:true">Issue Request</button>
+<h1 id="h1">--</h1>
 
 </body>
 </html>

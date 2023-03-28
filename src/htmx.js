@@ -70,6 +70,7 @@ return (function () {
                 scrollBehavior: 'smooth',
                 defaultFocusScroll: false,
                 getCacheBusterParam: false,
+                globalViewTransitions: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2396,6 +2397,9 @@ return (function () {
                         if (modifier.indexOf("settle:") === 0) {
                             swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
                         }
+                        if (modifier.indexOf("transition:") === 0) {
+                            swapSpec["transition"] = modifier.substr(11) === "true";
+                        }
                         if (modifier.indexOf("scroll:") === 0) {
                             var scrollSpec = modifier.substr(7);
                             var splitSpec = scrollSpec.split(":");
@@ -3127,9 +3131,13 @@ return (function () {
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
+
+                // optional transition API promise callbacks
+                var settleResolve = null;
+                var settleReject = null;
+
                 var doSwap = function () {
                     try {
-
                         var activeElt = document.activeElement;
                         var selectionInfo = {};
                         try {
@@ -3228,6 +3236,7 @@ return (function () {
                                 }
                                 handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                             }
+                            maybeCall(settleResolve);
                         }
 
                         if (swapSpec.settleDelay > 0) {
@@ -3237,9 +3246,33 @@ return (function () {
                         }
                     } catch (e) {
                         triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
+                        maybeCall(settleReject);
                         throw e;
                     }
                 };
+
+                var shouldTransition = htmx.config.globalViewTransitions
+                if(swapSpec.hasOwnProperty('transition')){
+                    shouldTransition = swapSpec.transition;
+                }
+
+                if(shouldTransition &&
+                    triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
+                    typeof Promise !== "undefined" && document.startViewTransition){
+                    var settlePromise = new Promise(function (_resolve, _reject) {
+                        settleResolve = _resolve;
+                        settleReject = _reject;
+                    });
+                    // wrap the original doSwap() in a call to startViewTransition()
+                    var innerDoSwap = doSwap;
+                    doSwap = function() {
+                        document.startViewTransition(function () {
+                            innerDoSwap();
+                            return settlePromise;
+                        });
+                    }
+                }
+
 
                 if (swapSpec.swapDelay > 0) {
                     setTimeout(doSwap, swapSpec.swapDelay)
