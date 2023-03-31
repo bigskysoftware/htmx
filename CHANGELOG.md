@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.0] - 2023-???
+
+* Support for generalized inline event handling via the new [`hx-on`](/attributes/hx-on) attribute, which addresses
+  the shortcoming of limited [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) attributes in HTML.
+* Support for [view transitions](/docs#view-transitions), based on the experimental [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
+  currently available in Chrome 111+ and coming to other browsers soon.
+* Support for "naked" [`hx-trigger`](/attributes/hx-trigger) attributes, where an `hx-trigger` is present on an element
+  that does not have an `hx-get`, etc. defined on it.  Instead, it will trigger the new `htmx:triggered` event, which can
+  be responded to via your [preferred scripting solution](/docs#scripting).
+* A memory leak fix by [@croxton](https://github.com/bigskysoftware/htmx/commit/8cd3a480a7388877628ce8b9b8e50cd5df48bb81)
+
 ## [1.8.6] - 2023-03-02
 
 * ESM support!
