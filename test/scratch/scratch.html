@@ -81,11 +81,6 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
         hx-swap="innerHTML transition:true">Issue Request</button>
 <h1 id="h1">--</h1>
 
-<script>
-    this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>New Content</h1>")
-    });
-</script>
 
 <style>
     @keyframes fade-in {
@@ -125,6 +120,18 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
         Swap It!
     </button>
 </div>
+
+<script>
+    var originalContent = htmx.find(".slide-it").innerHTML;
+
+    this.server.respondWith("GET", "/new-content", function(xhr){
+        xhr.respond(200,  {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+    });
+
+    this.server.respondWith("GET", "/original-content", function(xhr){
+        xhr.respond(200,  {}, originalContent)
+    });
+</script>
 
 
 </body>

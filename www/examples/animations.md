@@ -295,12 +295,6 @@ implement this feature in the near future.
 
 #### Demo
 
-<script>
-    this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>New Content</h1>")
-    });
-</script>
-
 <style>
    @keyframes fade-in {
      from { opacity: 0; }
@@ -332,13 +326,24 @@ implement this feature in the near future.
    }
 </style>
 
-
 <div class="slide-it">
    <h1>Initial Content</h1>
    <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
      Swap It!
    </button>
 </div>
+
+<script>
+    var originalContent = htmx.find(".slide-it").innerHTML;
+
+    this.server.respondWith("GET", "/new-content", function(xhr){
+        xhr.respond(200,  {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+    });
+
+    this.server.respondWith("GET", "/original-content", function(xhr){
+        xhr.respond(200,  {}, originalContent)
+    });
+</script>
 
 #### Conclusion
 
