@@ -4,9 +4,12 @@ layout: demo_layout.njk
         
 ## Animations
 
-Htmx is designed to allow you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
+htmx is designed to allow you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
 to add smooth animations and transitions to your web page using only CSS and HTML.  Below are a few examples of
 various animation techniques.
+
+htmx also allows you to use the new [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
+for creating animations.
 
 ### <a name='basic'></a>[Basic CSS Animations](#basic)
 
@@ -233,6 +236,100 @@ the transition time.  This avoids flickering that can happen if the transition i
 }
 </style>
 <div class="demo" classes="toggle faded:1s">Toggle Demo</div>
+
+### <a name="view-transitions"></a>[Using the View Transition API](#view-transitions)
+
+htmx provides access to the new  [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
+via the `transition` option of the [`hx-swap`](/attributes/hx-swap) attribute.  Here is an example of a swap
+that will use the transition:
+
+```html
+<style>
+        @keyframes fade-in {
+                from { opacity: 0; }
+        }
+
+        @keyframes fade-out {
+                to { opacity: 0; }
+        }
+
+        @keyframes slide-from-right {
+                from { transform: translateX(90px); }
+        }
+
+        @keyframes slide-to-left {
+                to { transform: translateX(-90px); }
+        }
+
+        .slide-it {
+                view-transition-name: slide-it;
+        }
+
+        ::view-transition-old(slide-it) {
+                animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+                600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+        }
+        ::view-transition-new(slide-it) {
+                animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+                600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+        }
+</style>
+
+
+<div class="slide-it">
+        <h1>Initial Content</h1>
+        <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+                Swap It!
+        </button>
+</div>
+```
+
+#### Demo
+
+<script>
+    this.server.respondWith("GET", "/new-content", function(xhr){
+        xhr.respond(200,  {}, "<h1>New Content</h1>")
+    });
+</script>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; }
+    }
+
+    @keyframes fade-out {
+        to { opacity: 0; }
+    }
+
+    @keyframes slide-from-right {
+        from { transform: translateX(90px); }
+    }
+
+    @keyframes slide-to-left {
+        to { transform: translateX(-90px); }
+    }
+
+    .slide-it {
+        view-transition-name: slide-it;
+    }
+
+    ::view-transition-old(slide-it) {
+        animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+    }
+    ::view-transition-new(slide-it) {
+        animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+    }
+</style>
+
+
+<div class="slide-it">
+    <h1>Initial Content</h1>
+    <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+        Swap It!
+    </button>
+</div>
 
 #### Conclusion
 

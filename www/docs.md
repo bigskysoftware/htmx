@@ -434,6 +434,8 @@ You can experiment with this new API using the following approaches:
 
 View Transitions can be configured using CSS, as outlined in [the Chrome documentation for the feature](https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization).
 
+You can see a view transition example on the [Animation Examples](/examples/animations#view-transitions) page.
+
 ### <a name="synchronization"></a> [Synchronization](#synchronization)
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
