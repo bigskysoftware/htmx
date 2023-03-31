@@ -245,42 +245,42 @@ that will use the transition:
 
 ```html
 <style>
-        @keyframes fade-in {
-                from { opacity: 0; }
-        }
+   @keyframes fade-in {
+     from { opacity: 0; }
+   }
 
-        @keyframes fade-out {
-                to { opacity: 0; }
-        }
+   @keyframes fade-out {
+     to { opacity: 0; }
+   }
 
-        @keyframes slide-from-right {
-                from { transform: translateX(90px); }
-        }
+   @keyframes slide-from-right {
+     from { transform: translateX(90px); }
+   }
 
-        @keyframes slide-to-left {
-                to { transform: translateX(-90px); }
-        }
+   @keyframes slide-to-left {
+     to { transform: translateX(-90px); }
+   }
 
-        .slide-it {
-                view-transition-name: slide-it;
-        }
+   .slide-it {
+     view-transition-name: slide-it;
+   }
 
-        ::view-transition-old(slide-it) {
-                animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-                600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
-        }
-        ::view-transition-new(slide-it) {
-                animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
-                600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
-        }
+   ::view-transition-old(slide-it) {
+     animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+   }
+   ::view-transition-new(slide-it) {
+     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+   }
 </style>
 
 
 <div class="slide-it">
-        <h1>Initial Content</h1>
-        <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
-                Swap It!
-        </button>
+   <h1>Initial Content</h1>
+   <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+     Swap It!
+   </button>
 </div>
 ```
 
@@ -293,42 +293,42 @@ that will use the transition:
 </script>
 
 <style>
-    @keyframes fade-in {
-        from { opacity: 0; }
-    }
+   @keyframes fade-in {
+     from { opacity: 0; }
+   }
 
-    @keyframes fade-out {
-        to { opacity: 0; }
-    }
+   @keyframes fade-out {
+     to { opacity: 0; }
+   }
 
-    @keyframes slide-from-right {
-        from { transform: translateX(90px); }
-    }
+   @keyframes slide-from-right {
+     from { transform: translateX(90px); }
+   }
 
-    @keyframes slide-to-left {
-        to { transform: translateX(-90px); }
-    }
+   @keyframes slide-to-left {
+     to { transform: translateX(-90px); }
+   }
 
-    .slide-it {
-        view-transition-name: slide-it;
-    }
+   .slide-it {
+     view-transition-name: slide-it;
+   }
 
-    ::view-transition-old(slide-it) {
-        animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
-    }
-    ::view-transition-new(slide-it) {
-        animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
-        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
-    }
+   ::view-transition-old(slide-it) {
+     animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+   }
+   ::view-transition-new(slide-it) {
+     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+   }
 </style>
 
 
 <div class="slide-it">
-    <h1>Initial Content</h1>
-    <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
-        Swap It!
-    </button>
+   <h1>Initial Content</h1>
+   <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+     Swap It!
+   </button>
 </div>
 
 #### Conclusion
