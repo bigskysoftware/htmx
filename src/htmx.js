@@ -70,6 +70,7 @@ return (function () {
                 scrollBehavior: 'smooth',
                 defaultFocusScroll: false,
                 getCacheBusterParam: false,
+                globalViewTransitions: false,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -471,7 +472,10 @@ return (function () {
         function removeElement(elt, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){removeElement(elt);}, delay)
+                setTimeout(function(){
+                    removeElement(elt);
+                    elt = null;
+                }, delay);
             } else {
                 elt.parentElement.removeChild(elt);
             }
@@ -480,7 +484,10 @@ return (function () {
         function addClassToElement(elt, clazz, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){addClassToElement(elt, clazz);}, delay)
+                setTimeout(function(){
+                    addClassToElement(elt, clazz);
+                    elt = null;
+                }, delay);
             } else {
                 elt.classList && elt.classList.add(clazz);
             }
@@ -489,7 +496,10 @@ return (function () {
         function removeClassFromElement(elt, clazz, delay) {
             elt = resolveTarget(elt);
             if (delay) {
-                setTimeout(function(){removeClassFromElement(elt, clazz);}, delay)
+                setTimeout(function(){
+                    removeClassFromElement(elt, clazz);
+                    elt = null;
+                }, delay);
             } else {
                 if (elt.classList) {
                     elt.classList.remove(clazz);
@@ -1401,6 +1411,7 @@ return (function () {
                         } else if (triggerSpec.delay) {
                             elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
                         } else {
+                            triggerEvent(elt, 'htmx:trigger')
                             handler(elt, evt);
                         }
                     }
@@ -1693,6 +1704,13 @@ return (function () {
                     });
                 }
             });
+            if (!explicitAction && hasAttribute(elt, 'hx-trigger')) {
+                explicitAction = true
+                triggerSpecs.forEach(function(triggerSpec) {
+                    // For "naked" triggers, don't do anything at all
+                    addTriggerHandler(elt, triggerSpec, nodeData, function () { })
+                })
+            }
             return explicitAction;
         }
 
@@ -1777,7 +1795,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-on], [data-hx-on]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
                 return [];
@@ -2453,6 +2471,9 @@ return (function () {
                         }
                         if (modifier.indexOf("settle:") === 0) {
                             swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
+                        }
+                        if (modifier.indexOf("transition:") === 0) {
+                            swapSpec["transition"] = modifier.substr(11) === "true";
                         }
                         if (modifier.indexOf("scroll:") === 0) {
                             var scrollSpec = modifier.substr(7);
@@ -3185,9 +3206,13 @@ return (function () {
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 target.classList.add(htmx.config.swappingClass);
+
+                // optional transition API promise callbacks
+                var settleResolve = null;
+                var settleReject = null;
+
                 var doSwap = function () {
                     try {
-
                         var activeElt = document.activeElement;
                         var selectionInfo = {};
                         try {
@@ -3286,6 +3311,7 @@ return (function () {
                                 }
                                 handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                             }
+                            maybeCall(settleResolve);
                         }
 
                         if (swapSpec.settleDelay > 0) {
@@ -3295,9 +3321,33 @@ return (function () {
                         }
                     } catch (e) {
                         triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
+                        maybeCall(settleReject);
                         throw e;
                     }
                 };
+
+                var shouldTransition = htmx.config.globalViewTransitions
+                if(swapSpec.hasOwnProperty('transition')){
+                    shouldTransition = swapSpec.transition;
+                }
+
+                if(shouldTransition &&
+                    triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
+                    typeof Promise !== "undefined" && document.startViewTransition){
+                    var settlePromise = new Promise(function (_resolve, _reject) {
+                        settleResolve = _resolve;
+                        settleReject = _reject;
+                    });
+                    // wrap the original doSwap() in a call to startViewTransition()
+                    var innerDoSwap = doSwap;
+                    doSwap = function() {
+                        document.startViewTransition(function () {
+                            innerDoSwap();
+                            return settlePromise;
+                        });
+                    }
+                }
+
 
                 if (swapSpec.swapDelay > 0) {
                     setTimeout(doSwap, swapSpec.swapDelay)
@@ -3460,6 +3510,7 @@ return (function () {
             };
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
+                body = null; // kill reference for gc
             }, 0);
         })
 

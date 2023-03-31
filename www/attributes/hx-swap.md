@@ -35,6 +35,12 @@ The `div` will issue a request to `/example` and append the returned content aft
 
 The `hx-swap` attributes supports modifiers for changing the behavior of the swap.  They are outlined below.
 
+#### Transition: `transition`
+
+If you want to use the new (View Transitions)[https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API] API
+when a swap occurs, you can use the `transition:true` option for your swap.  You can also enable this feature globally by
+setting the `htmx.config.globalViewTransitions` config setting to `true`.
+
 #### Timing: `swap` & `settle`
 
 You can modify the amount of time that htmx will wait after receiving a response to swap the content
