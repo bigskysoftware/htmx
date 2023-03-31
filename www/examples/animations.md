@@ -337,7 +337,7 @@ implement this feature in the near future.
     var originalContent = htmx.find(".slide-it").innerHTML;
 
     this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+        xhr.respond(200,  {}, "<h1>New Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
     });
 
     this.server.respondWith("GET", "/original-content", function(xhr){
