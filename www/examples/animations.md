@@ -240,8 +240,17 @@ the transition time.  This avoids flickering that can happen if the transition i
 ### <a name="view-transitions"></a>[Using the View Transition API](#view-transitions)
 
 htmx provides access to the new  [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
-via the `transition` option of the [`hx-swap`](/attributes/hx-swap) attribute.  Here is an example of a swap
-that will use the transition:
+via the `transition` option of the [`hx-swap`](/attributes/hx-swap) attribute.  
+
+Below is an example of a swap that uses a view transition.  The transition is tied to the outer div via a 
+`view-transition-name` property in CSS, and that transition is defined in terms of `::view-transition-old`
+and `::view-transition-new`, using `@keyframes` to define the animation.  (Fuller details on the View Transition
+API can be found on the [Chrome Developer Page](https://developer.chrome.com/docs/web-platform/view-transitions/) on them.)
+
+The old content of this transition should slide out to the left and the new content should slide in from the right.  
+
+Note that, as of this writing, the visual transition will only occur on Chrome 111+, but more browsers are expected to
+implement this feature in the near future.
 
 ```html
 <style>
