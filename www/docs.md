@@ -37,7 +37,8 @@ customClasses: wide-content
 * [extensions](#extensions)
 * [events & logging](#events)
 * [debugging](#debugging)
-* [hyperscript](#hyperscript)
+* [scripting](#scripting)
+  * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
 * [security](#security)
@@ -1166,7 +1167,80 @@ Here is an example of the code in action:
 
 ```
 
-## <a name="hyperscript"></a>[hyperscript](#hyperscript)
+## <a name="scripting"></a>[Scripting](#scripting)
+
+While htmx encourages a hypermedia-based approach to building web applications, it does not preclude scripting and
+offers a few mechanisms for integrating scripting into your web application.  Scripting was explicitly included in
+the REST-ful description of the web architecture in the [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
+section.  As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach
+to scripting in your htmx-based web application:
+
+* [Respect HATEOAS](/essays/hypermedia-friendly-scripting#prime_directive)
+* [Use events to communicate between components](/essays/hypermedia-friendly-scripting#events)
+* [Use islands to isolate non-hypermedia components from the rest of your application](/essays/hypermedia-friendly-scripting#islands)
+* [Consider inline scripting](/essays/hypermedia-friendly-scripting#inline)
+
+The primary integration point between htmx and scripting solutions is the [events](#events) that htmx sends and can
+respond to.  See the SortableJS example in the [3rd Party Javascript](3rd-party) section for a good template for
+integrating a JavaScript library with htmx via events.
+
+Scripting solutions that pair well with htmx include:
+
+* [VanillaJS](http://vanilla-js.com/) - Simply using the built-in abilities of JavaScript to hook in event handlers to
+  respond to the events htmx emits can work very well for scripting.  This is an extremely lightweight and increasingly 
+  popular approach.
+* [AlpineJS](https://alpinejs.dev/) - Alpine.js provides a rich set of tools for creating sophisticated front end scripts,
+  including reactive programming support, while still remaining extremely lightweight.  Alpine encourages the "inline scripting"
+  approach that we feel pairs well with htmx.
+* [jQuery](https://jquery.com/) - Despite its age and reputation in some circles, jQuery pairs very well with htmx, particularly
+  in older code-bases that already have a lot of jQuery in them.
+* [hyperscript](https://hyperscript.org) - Hyperscript is an experimental front-end scripting language created by the same
+  team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
+  with htmx.
+
+### <a name="hx-on"></a>[The `hx-on` Attribute](#hyperscript)
+
+HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
+such as `onClick`:
+
+```html
+<button onclick="alert('You clicked me!')">
+    Click Me!
+</button>
+```
+
+This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
+[Locality of Behavior (LoB)](/essays/locality-of-behavior).  Unfortunately, HTML only allows `on*` attributes for a fixed
+number of specific DOM events (e.g. `onclick`) and doesn't offer a way to respond generally to events in this embedded
+manner.
+
+In order to address this shortcoming, htmx offers the [`hx-on`](/attributes/hx-on) attribute.  This attribute allows
+you to respond to any event in a manner that preserves the LoB of the `on*` properties:
+
+```html
+<button hx-on="click: alert('You clicked me!')">
+    Click Me!
+</button>
+```
+
+For a `click` event, we would recommend sticking with the standard `onclick` attribute.  However, consider an htmx-powered
+button that wishes to add an attribute to a request using the `htmx:configRequest` event.  This would not be possible
+with an `on*` property, but can be done using the `hx-on` attribute:
+
+```html
+<button hx-post="/example"
+        hx-on="htmx:beforeRequest: event.detail.parameters.example = 'Hello Scripting!'">
+    Post Me!
+</button>
+```
+
+Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
+
+The `hx-on` attribute is a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
+fully developed front-end scripting solutions such as AlpineJS or hyperscript.  It can, however, augment a VanillaJS-based
+approach to scripting in your htmx-powered application.
+
+### <a name="hyperscript"></a>[hyperscript](#hyperscript)
 
 Hyperscript is an experimental front end scripting language designed to be expressive and easily embeddable directly in HTML
 for handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),

@@ -56,6 +56,7 @@ The table below lists all other attributes available in htmx.
 | [`hx-history-elt`](/attributes/hx-history-elt) | the element to snapshot and restore during history navigation
 | [`hx-include`](/attributes/hx-include)         | include additional data in requests
 | [`hx-indicator`](/attributes/hx-indicator)     | the element to put the `htmx-request` class on during the request
+| [`hx-on`](/attributes/hx-on)                   | defines event handlers inline on an element
 | [`hx-params`](/attributes/hx-params)           | filters the parameters that will be submitted with a request
 | [`hx-patch`](/attributes/hx-patch)             | issues a `PATCH` to the specified URL
 | [`hx-preserve`](/attributes/hx-preserve)       | specifies elements to keep unchanged between requests

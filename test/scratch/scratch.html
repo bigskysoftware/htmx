@@ -92,6 +92,8 @@ Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond(
     <a id="a1" hx-boost="true" href="#" target="">Asdf</a>
 </div>
 
+<button onclick="console.log(this, event)">Log It...</button>
+
 <script>
     let requestCount = 0;
     this.server.respondWith("GET", "/demo", function(xhr){

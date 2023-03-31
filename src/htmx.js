@@ -1066,7 +1066,7 @@ return (function () {
         var WHITESPACE = /\s/;
         var WHITESPACE_OR_COMMA = /[\s,]/;
         var SYMBOL_START = /[_$a-zA-Z]/;
-        var SYMBOL_CONT = /[_$a-zA-Z0-9:-]/;
+        var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
         var STRINGISH_START = ['"', "'", "/"];
         var NOT_WHITESPACE = /[^\s]/;
         function tokenizeString(str) {
@@ -1842,7 +1842,7 @@ return (function () {
             nodeData.onHandlers ||= {};
             var func = new Function("event", code + "; return;");
             var listener = elt.addEventListener(eventName, function (e) {
-                return func(e);
+                return func.call(elt, e);
             });
             nodeData.onHandlers[eventName] = listener;
             return {nodeData, code, func, listener};

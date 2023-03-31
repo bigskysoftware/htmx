@@ -506,7 +506,7 @@ describe("Core htmx Events", function() {
     it("preventDefault() in htmx:configRequest stops the request", function () {
         try {
             var handler = htmx.on("htmx:configRequest", function (evt) {
-                evt.detail.errors.push("An error");
+                evt.preventDefault();
             });
             var request = false;
             this.server.respondWith("POST", "/test", function (xhr) {
