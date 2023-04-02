@@ -17,9 +17,6 @@
             Prism.highlightAllUnder(content);
         })
     </script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
 </head>
 <body hx-ext="class-tools, preload">
 
@@ -55,12 +52,11 @@
                     <div>
                         <a href="/essays/">essays</a>
                     </div>
-                    <div>
-                        <input _="on keyup[key is 'Escape'] or click elsewhere
-                                    blur() then set my.value to ''
-                                  on keyup[key is '/'] from <body/>
-                                    focus()"
-                                placeholder="&#128269;" type="text" id="search"/>
+                    <div hx-disable>
+                        <form action="https://google.com/search">
+                            <input type="hidden" name="q" value="site:htmx.org">
+                            <label><span style="display:none;">Search</span><input type="text" name="q" placeholder="🔍️" class="search-box"></label>
+                        </form>
                     </div>
                 </div>
                 <div class="github-stars">
@@ -117,13 +113,5 @@
   </div>
 </footer>
 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
-<script type="text/javascript"> docsearch({
-    apiKey: '47070108e6ce8dfee6beee94b83bee7d',
-    indexName: 'htmx',
-    inputSelector: '#search',
-    debug: false // Set debug to true if you want to inspect the dropdown
-});
-</script>
 </body>
 </html>
