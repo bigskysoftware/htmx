@@ -1,6 +1,6 @@
 [build]
 base    = "www"
-publish = "www/public"
+publish = "public"
 command = "zola build"
 
 [build.environment]
