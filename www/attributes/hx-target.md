@@ -12,8 +12,13 @@ request.  The value of this attribute can be:
  * `this` which indicates that the element that the `hx-target` attribute is on is the target
  * `closest <CSS selector>` which will find the closest parent ancestor that matches the given CSS selector. 
     (e.g. `closest tr` will target the closest table row to the element)
+ * `next <CSS selector>` which will find the next element in the DOM from the element that the `hx-target` attribute is on matching the given CSS selector.
+ * `previous <CSS selector>` which will find the next element in the DOM from the element that the `hx-target` attribute is on matching the given CSS selector.
  * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
     (e.g `find tr` will target the first child descendant row to the element)
+
+Note that in all cases, the CSS selector may be wrapped in a `<` and `/>`, mimicking the [query literal](https://hyperscript.org/expressions/query-reference/) syntax of 
+hyperscript.
 
 Here is an example that targets a div:
 

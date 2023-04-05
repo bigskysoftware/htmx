@@ -540,21 +540,30 @@ return (function () {
             }
         }
 
+        function normalizeSelector(selector) {
+            var trimmedSelector = selector.trim();
+            if (trimmedSelector.startsWith("<") && trimmedSelector.endsWith("/>")) {
+                return trimmedSelector.substring(1, trimmedSelector.length - 2);
+            } else {
+                return trimmedSelector;
+            }
+        }
+
         function querySelectorAllExt(elt, selector) {
             if (selector.indexOf("closest ") === 0) {
-                return [closest(elt, selector.substr(8))];
+                return [closest(elt, normalizeSelector(selector.substr(8)))];
             } else if (selector.indexOf("find ") === 0) {
-                return [find(elt, selector.substr(5))];
+                return [find(elt, normalizeSelector(selector.substr(5)))];
             } else if (selector.indexOf("next ") === 0) {
-                return [scanForwardQuery(elt, selector.substr(5))];
+                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
             } else if (selector.indexOf("previous ") === 0) {
-                return [scanBackwardsQuery(elt, selector.substr(9))];
+                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
                 return [window];
             } else {
-                return getDocument().querySelectorAll(selector);
+                return getDocument().querySelectorAll(normalizeSelector(selector));
             }
         }
 
@@ -770,7 +779,7 @@ return (function () {
                 var oobSelectValues = oobSelects.split(",");
                 for (let i = 0; i < oobSelectValues.length; i++) {
                     var oobSelectValue = oobSelectValues[i].split(":", 2);
-                    var id = oobSelectValue[0];
+                    var id = oobSelectValue[0].trim();
                     if (id.indexOf("#") === 0) {
                         id = id.substring(1);
                     }
