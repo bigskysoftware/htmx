@@ -979,4 +979,14 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
+    it('should load tags with colon in their names', function() {
+        this.server.respondWith('GET', '/test', '<with:colon id="foobar">Foobar</with:colon>');
+
+        var btn = make('<button hx-get="/test">Give me colons!</button>');
+        btn.click();
+        this.server.respond();
+
+        btn.innerHTML.should.equal('<with:colon id="foobar">Foobar</with:colon>');
+    });
+
 })
