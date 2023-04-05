@@ -386,6 +386,24 @@ use the  [hx-target](/attributes/hx-target) attribute, which takes a CSS selecto
 You can see that the results from the search are going to be loaded into `div#search-results`, rather than into the
 input tag.
 
+#### <a name="extended-css-selectors"></a> [Extended CSS Selectors](#extended-css-selectors)
+
+`hx-target`, and most attributes that take a CSS selector, support an "extended" CSS syntax:
+
+* You can use the `this` keyword, which indicates that the element that the `hx-target` attribute is on is the target
+* The `closest <CSS selector>` syntax will find the closest parent ancestor that matches the given CSS selector.
+  (e.g. `closest tr` will target the closest table row to the element)
+* The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
+* The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
+* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
+  (e.g `find tr` would target the first child descendant row to the element)
+
+In addition, a CSS selector may be wrapped in `<` and `/>` characters, mimicking the 
+[query literal](https://hyperscript.org/expressions/query-reference/) syntax of hyperscript.
+
+Relative targets like this can be useful for creating flexible user interfaces without peppering your DOM with loads
+of `id` attributes.
+
 ### <a name="swapping"></a> [Swapping](#swapping)
 
 htmx offers a few different ways to swap the HTML returned into the DOM.  By default, the content replaces the
