@@ -158,6 +158,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:responseError`](@/events.md#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`htmx:sendError`](@/events.md#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
 | [`htmx:sseError`](@/events.md#htmx:sseError)  | triggered when an error occurs with a SSE source
+| `htmx:sseOpen` | triggered when a SSE source is opened
 | [`htmx:swapError`](@/events.md#htmx:swapError)  | triggered when an error occurs during the swap phase
 | [`htmx:targetError`](@/events.md#htmx:targetError)  | triggered when an invalid target is specified
 | [`htmx:timeout`](@/events.md#htmx:timeout)  | triggered when a request timeout occurs

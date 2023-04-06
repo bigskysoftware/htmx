@@ -39,6 +39,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### FastAPI
 
 - <https://github.com/renceInbox/fastapi-todo>
+- <https://github.com/AutomationPanda/bulldoggy-reminders-app>
 
 ### Flask
 
