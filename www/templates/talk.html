@@ -1,0 +1,39 @@
+{% extends "htmx-theme/templates/base.html" %}
+
+{% block title %}
+  {% set html_title = "&lt;/&gt; htmx ~ " ~ page.title %}
+{% endblock title %}
+
+{% block content %}
+  <h1>{{ page.title | safe }}</h1>
+  {{ page.content | safe }}
+  
+  {% set section = get_section(path="posts/_index.md") -%}
+  <h2 id="announcements">
+    <a class="zola-anchor" href="#announcements" aria-label="Anchor link for: announcements">🔗</a>Announcements
+  </h2>
+  <ul>
+    {% for page in section.pages | sort(attribute="date") | reverse -%}
+      <li><a href="{{ page.permalink }}">{{ page.date }} - {{ page.title }} </a>🔥🔥</li>
+    {% endfor %}
+  </ul>
+  
+  {% set essays = get_section(path="essays/_index.md", metadata_only=true) %}
+  <h2 id="essays">
+    <a class="zola-anchor" href="#essays" aria-label="Anchor link for: essays">🔗</a>Essays
+  </h2>
+  <p><a href="{{ essays.permalink }}">See the essays page &rarr;</a></p>
+  
+  {% set podcasts = load_data(path="content/talk/podcasts.csv") %}
+  <h2 id="podcasts">
+    <a class="zola-anchor" href="#podcasts" aria-label="Anchor link for: podcasts">🔗</a>Podcasts
+  </h2>
+  <ul>
+    {% for podcast in podcasts.records %}
+      <li><a href="{{ podcast[1] }}" target="_blank" rel="noopener">{{ podcast[0] | safe }}</a></li>
+    {% endfor %}
+  </ul>
+  
+  <p><a href="mailto:podcasts@bigsky.software">Contact Us</a> to Join You on Your Podcast!</p>
+  
+{% endblock content %}

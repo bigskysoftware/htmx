@@ -1,0 +1,38 @@
+base_url = "https://htmx.org"
+title = "</> htmx - high power tools for html"
+theme = "htmx-theme"
+
+compile_sass = false
+build_search_index = false
+generate_feed = true
+
+taxonomies = [
+  { name = "tag", render = false, feed = true }
+]
+
+[markdown]
+highlight_code = true
+highlight_theme = "two-dark"
+external_links_target_blank = true
+smart_punctuation = true
+
+[slugify]
+paths_keep_dates = true
+
+[extra]
+# Put all your custom variables here
+
+## Candidate code highlighting schemes:
+# 1337
+# ayu-mirage
+# boron
+# charcoal
+# material-dark
+# monokai
+
+# subway-madrid
+# subway-moscow
+# Tomorrow
+# two-dark
+# visual-studio-dark
+# zenburn

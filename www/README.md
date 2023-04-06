@@ -1,13 +1,11 @@
 ## Running The Website Locally
 
-The htmx.org website is built on [eleventy](https://www.11ty.dev/).
-To run the site, use node 15 and run:
+The htmx.org website is built with [Zola](https://www.getzola.org/).
+To run the site, [install Zola](https://www.getzola.org/documentation/getting-started/installation/); then, from the root of the repository:
 
 ```
-npm install
-npx eleventy --serve
+cd www
+zola serve
 ```
 
-The site should then be available at <http://localhost:8080>
-
-**macOS 64-bit users may need to run `npm rebuild node-sass` to get the documentation site working.**
+The site should then be available at <http://localhost:1111>
