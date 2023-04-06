@@ -1,7 +1,10 @@
----
-layout: layout.njk
-title: Architectural Sympathy
----
++++
+title = "Architectural Sympathy"
+date = 2023-04-06
+updated = 2023-04-06
+[taxonomies]
++++
+
 
 # Mechanical Sympathy & Architectural Sympathy
 

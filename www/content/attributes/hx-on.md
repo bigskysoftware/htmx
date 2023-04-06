@@ -1,7 +1,6 @@
----
-layout: layout.njk
-title: </> htmx - hx-on
----
++++
+title = "hx-on"
++++
 
 ## `hx-on`
 

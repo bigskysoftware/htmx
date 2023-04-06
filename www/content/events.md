@@ -413,7 +413,7 @@ Timeout time can be set using `htmx.config.timeout` or per element using [`hx-re
 
 This event is triggered whenever an AJAX request would be, even if no AJAX request is specified. It
 is primarily intended to allow `hx-trigger` to execute client-side scripts; AJAX requests have more
-granular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [`htmx:afterSend`](#htmx:afterSend).
+granular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [`htmx:afterRequest`](#htmx:afterRequest).
 
 ##### Details
 
