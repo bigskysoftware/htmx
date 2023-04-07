@@ -10,6 +10,8 @@
   that does not have an `hx-get`, etc. defined on it.  Instead, it will trigger the new `htmx:triggered` event, which can
   be responded to via your [preferred scripting solution](/docs#scripting).
 * A memory leak fix by [@croxton](https://github.com/bigskysoftware/htmx/commit/8cd3a480a7388877628ce8b9b8e50cd5df48bb81)
+* The htmx website has been migrated from 11ty to [zola](https://www.getzola.org/) by [@danieljsummers](https://github.com/danieljsummers), cutting
+  way down on the number of "development" javascript dependencies
 
 ## [1.8.6] - 2023-03-02
 
