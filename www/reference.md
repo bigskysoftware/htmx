@@ -159,6 +159,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:pushedIntoHistory`](/events#htmx:pushedIntoHistory)  | triggered after an url is pushed into history
 | [`htmx:responseError`](/events#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`htmx:sendError`](/events#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
+| [`htmx:sseOpen`](/events#htmx:sseOpen)  | triggered when a SSE source is opened
 | [`htmx:sseError`](/events#htmx:sseError)  | triggered when an error occurs with a SSE source
 | [`htmx:swapError`](/events#htmx:swapError)  | triggered when an error occurs during the swap phase
 | [`htmx:targetError`](/events#htmx:targetError)  | triggered when an invalid target is specified
