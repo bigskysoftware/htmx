@@ -17,6 +17,7 @@ insert_anchor_links = "left"
 * [SPA Alternative](@/essays/spa-alternative.md)
 * [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
 * [Template Fragments](@/essays/template-fragments.md)
+* [View Transitions](@/essays/view-transitions.md)
 
 
 ### Older [intercooler.js](https://intercoolerjs.org) Essays
