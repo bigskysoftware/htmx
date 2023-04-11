@@ -155,6 +155,10 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				}, timeout);
 			}			
 		};
+
+		source.onopen = function (evt) {
+			api.triggerEvent(elt, "htmx::sseOpen", {source: source});
+		}
 		
 		// Add message handlers for every `sse-swap` attribute
 		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
