@@ -266,13 +266,18 @@ return (function () {
             return responseNode;
         }
 
+        function aFullPageResponse(resp) {
+            return resp.match(/<body/);
+        }
+
         /**
          *
          * @param {string} resp
          * @returns {Element}
          */
         function makeFragment(resp) {
-            if (htmx.config.useTemplateFragments) {
+            var partialResponse = !aFullPageResponse(resp);
+            if (htmx.config.useTemplateFragments && partialResponse) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
                 // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangably?
@@ -882,6 +887,9 @@ return (function () {
 
         function deInitNode(element) {
             var internalData = getInternalData(element);
+            if (internalData.timeout) {
+                clearTimeout(internalData.timeout);
+            }
             if (internalData.webSocket) {
                 internalData.webSocket.close();
             }
