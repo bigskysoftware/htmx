@@ -96,7 +96,7 @@ Doing so will involve two parts:
 
 The first thing that we need to do is define the View Transition animation that we want.
 
-* Define some animations using @keframes to slide and fade content
+* Define some animations using @keyframes to slide and fade content
 * Define a view transition with the name `slide-it` using the `:view-transition-old()` and `:view-transition-new()` pseudo-selectors
 * Tie the `.sample-transition` class to the `slide-it` view transition that we just defined, so we can bind it to elements via a that CSS class name
 
