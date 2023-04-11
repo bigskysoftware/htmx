@@ -34,25 +34,18 @@
             <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
                 <div class="navigation-items" preload="mouseover">
-                    <div>
-                        <a href="/docs/">docs</a>
-                    </div>
-                    <div>
-                        <a href="/reference/">reference</a>
-                    </div>
-                    <div>
-                        <a href="/examples/">examples</a>
-                    </div>
-                    <div>
-                        <a href="/talk/">talk</a>
-                    </div>
-                    <div>
-                        <a href="/essays/">essays</a>
-                    </div>
+                    <div><a href="/docs/">docs</a></div>
+                    <div><a href="/reference/">reference</a></div>
+                    <div><a href="/examples/">examples</a></div>
+                    <div><a href="/talk/">talk</a></div>
+                    <div><a href="/essays/">essays</a></div>
                     <div hx-disable>
                         <form action="https://google.com/search">
                             <input type="hidden" name="q" value="site:htmx.org">
-                            <label><span style="display:none;">Search</span><input type="text" name="q" placeholder="🔍️" class="search-box"></label>
+                            <label>
+                                <span style="display:none;">Search</span>
+                                <input type="text" name="q" placeholder="🔍️" class="search-box">
+                            </label>
                         </form>
                     </div>
                 </div>
@@ -63,57 +56,43 @@
         </div>
     </div>
 </div>
-</div>
 
 {% if page and page.extra and page.extra.custom_classes %}
-  {% set disp_classes = page.extra.custom_classes %}
+    {% set disp_classes = page.extra.custom_classes %}
 {% else %}
-  {% set disp_classes = "" %}
+    {% set disp_classes = "" %}
 {% endif %}
 
 <div class="c content {{ disp_classes }}">
-  {% block content %} {% endblock content -%}
+    {% block content %} {% endblock content -%}
 </div>
 
 <footer>
     <div class="c content {{ disp_classes }}">
-      <div class="row">
-        <div class="6 col footer-haiku">
-          <h2>haiku</h2>
-          <p><em>
-            javascript fatigue:<br>
-            longing for a hypertext<br>
-            already in hand
-          </em></p>
+        <div class="row">
+            <div class="6 col footer-haiku">
+                <h2>haiku</h2>
+                <p><em>
+                    javascript fatigue:<br>
+                    longing for a hypertext<br>
+                    already in hand
+                </em></p>
+            </div>
+            <div class="6 col footer-menu">
+                <div><a href="/docs/">docs</a></div>
+                <div><a href="/reference/">reference</a></div>
+                <div><a href="/examples/">examples</a></div>
+                <div><a href="/talk/">talk</a></div>
+                <div><a href="/essays/">essays</a></div>
+                <div><a href="https://twitter.com/htmx_org">@htmx_org</a></div>
+            </div>
         </div>
-        <div class="6 col footer-menu">
-          <div>
-              <a href="/docs/">docs</a>
-          </div>
-          <div>
-              <a href="/reference/">reference</a>
-          </div>
-          <div>
-              <a href="/examples/">examples</a>
-          </div>
-          <div>
-              <a href="/talk/">talk</a>
-          </div>
-          <div>
-              <a href="/essays/">essays</a>
-          </div>
-          <div>
-              <a href="https://twitter.com/htmx_org">@htmx_org</a>
-          </div>
+        <div class="row" style="text-align: center;">
+            <div class="col">
+                <img src="/img/bss_bars.png" style="max-width: 30px; margin-top: 3em;">
+            </div>
         </div>
-      </div>
-      <div class="row" style="text-align: center;">
-        <div class="col">
-            <img src="/img/bss_bars.png" style="max-width: 30px; margin-top: 3em;">
-        </div>
-      </div>
     </div>
-  </div>
 </footer>
 
 </body>
