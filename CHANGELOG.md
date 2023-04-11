@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.9.0] - 2023-???
+## [1.9.0] - 2023-04-11
 
 * Support for generalized inline event handling via the new [`hx-on`](/attributes/hx-on) attribute, which addresses
   the shortcoming of limited [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) attributes in HTML.
@@ -12,6 +12,7 @@
 * A memory leak fix by [@croxton](https://github.com/bigskysoftware/htmx/commit/8cd3a480a7388877628ce8b9b8e50cd5df48bb81)
 * The htmx website has been migrated from 11ty to [zola](https://www.getzola.org/) by [@danieljsummers](https://github.com/danieljsummers), cutting
   way down on the number of "development" javascript dependencies
+* Many other smaller bug fixes
 
 ## [1.8.6] - 2023-03-02
 
