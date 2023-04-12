@@ -52,38 +52,38 @@ Read the [docs introduction](@/docs.md#introduction) for a more in-depth... intr
 
 A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>, including:
 
-<div class="row" style="text-align: center">
-<div class="col 2" style="padding: 16px">
-<a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
-</div>
-</div>
-<div class="row" style="text-align: center">
-<div class="col 2" style="padding: 16px">
-
-<a href="https://www.commspace.co.za/"><img class="shift-up-img" src="/img/commspace.svg" style="width:100%;max-width:200px"></a>
-
-</div>
-
-<div class="col 2" style="padding: 0">
-</div>
-
-<div class="col 2" style="padding: 16px">
-
-<a href="https://craftcms.com"><img class="shift-up-img" src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
-
-</div>
-</div><div class="row" style="text-align: center">
-<div class="col 2" style="padding: 16px">
-<a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome"><img class="shift-up-img" src="/img/butter-cms.svg" style="width:100%;max-width:200px"></a>
-</div>
-
-<div class="col 2" style="padding: 0;">
-</div>
-
-<div class="col 2" style="padding: 16px">
-<a href="https://bigsky.software"><img class="shift-up-img" src="/img/bss.png" style="width:100%;max-width:200px"></a>
-
-</div>
-</div>
+<style>
+#sponsor-table td {
+  text-align: center;
+  padding: 16px;
+}
+</style>
+<table id="sponsor-table">
+<tr>
+<td>
+        <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
+</td>
+<td>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
+</td>
+<tr>
+<td>
+        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:200px"></a>
+</td>
+<td>
+        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
+</td>
+</tr>
+<tr>
+<td>
+        <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
+          <img src="/img/butter-cms.svg" style="width:100%;max-width:200px">
+        </a>
+</td>
+<td>
+      <a href="https://bigsky.software"><img src="/img/bss.png" style="width:100%;max-width:150px"></a>
+</td>
+</tr>
+</table>
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>
