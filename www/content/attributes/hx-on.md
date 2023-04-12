@@ -10,7 +10,7 @@ found in HTML, such as `onClick`.
 The value is an event name, followed by a colon `:`, followed by the script:
 
 ```html
-<button hx-on="click: alert('Clicked!')">Click</button>
+<div hx-on="click: alert('Clicked!')">Click</div>
 ```
 
 All htmx events can be captured, too!
