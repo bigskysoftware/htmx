@@ -2,10 +2,9 @@
 title = "hx-on"
 +++
 
-The `hx-on` attribute allows you to directly embed scripts inline to respond to events on an element.  Similar to the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties)
-found in HTML, such as `onClick`.
+The `hx-on` attribute allows you to directly embed scripts inline to respond to events on an element; similar to the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.
 
-`hx-on` improves on `onevent` by enabling the element to handle any event. Additionally, this enables you to respond to any htmx event  in a convenient manner for [Locality of Behavior (LoB)](/essays/locality-of-behavior).
+`hx-on` improves on `onevent` by enabling the element to handle any event. Additionally, this enables you to respond to any htmx event in a convenient manner for [Locality of Behavior (LoB)](/essays/locality-of-behavior).
 
 The value is an event name, followed by a colon `:`, followed by the script:
 
