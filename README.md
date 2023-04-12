@@ -1,6 +1,6 @@
-[![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/static/img/htmx_logo.1.png "high power tools for HTML")](https://htmx.org)
+[![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/img/htmx_logo.1.png "high power tools for HTML")](https://htmx.org)
 
-_high power tools for HTML_
+*high power tools for HTML*
 
 [![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
 [![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
@@ -9,38 +9,35 @@ _high power tools for HTML_
 
 ## introduction
 
-htmx allows you to access [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
-[WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse)
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
+htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
+[WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
+directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build 
+[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)),
+htmx is small ([~10k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://htmx.org/extensions) &
+[extendable](https://htmx.org/extensions) & 
 IE11 compatible
 
 ## motivation
 
-- Why should only `<a>` and `<form>` be able to make HTTP requests?
-- Why should only `click` & `submit` events trigger them?
-- Why should only GET & POST be available?
-- Why should you only be able to replace the _entire_ screen?
+* Why should only `<a>` and `<form>` be able to make HTTP requests?
+* Why should only `click` & `submit` events trigger them?
+* Why should only GET & POST be available?
+* Why should you only be able to replace the *entire* screen?
 
-By removing these arbitrary constraints htmx completes HTML as a
+By removing these arbitrary constraints htmx completes HTML as a 
 [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 ## quick start
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.0"></script>
-<!-- have a button POST a click via AJAX -->
-<button
-  hx-post="/clicked"
-  hx-swap="outerHTML"
->
-  Click Me
-</button>
+  <script src="https://unpkg.com/htmx.org@1.9.0"></script>
+  <!-- have a button POST a click via AJAX -->
+  <button hx-post="/clicked" hx-swap="outerHTML">
+    Click Me
+  </button>
 ```
 
 The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
@@ -57,27 +54,27 @@ To install using npm:
 npm install htmx.org --save
 ```
 
-Note there is an old broken package called `htmx`. This is `htmx.org`.
+Note there is an old broken package called `htmx`.  This is `htmx.org`.
 
 ## website & docs
 
-- <https://htmx.org>
-- <https://htmx.org/docs>
+* <https://htmx.org>
+* <https://htmx.org/docs>
 
 ## contributing
 
-- please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
-- please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
-- if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
+* please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
+* please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
+* if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
   keep the core htmx code tidy
-- development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
-- No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
+* development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
+* No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
 ### hacking guide
 
 To develop htmx locally, you will need to install the development dependencies.
 
-**Requires Python and Node 15.**
+__Requires Python and Node 15.__
 
 Run:
 
@@ -99,18 +96,18 @@ You can then run the test suite by navigating to:
 
 At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
 
-- `/test/index.html` - the root test page from which all other tests are included
-- `/test/attributes` - attribute specific tests
-- `/test/core` - core functionality tests
-- `/test/core/regressions.js` - regression tests
-- `/test/ext` - extension tests
-- `/test/manual` - manual tests that cannot be automated
+* `/test/index.html` - the root test page from which all other tests are included
+* `/test/attributes` - attribute specific tests
+* `/test/core` - core functionality tests
+* `/test/core/regressions.js` - regression tests
+* `/test/ext` - extension tests
+* `/test/manual` - manual tests that cannot be automated
 
-htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework
-and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests. They are all OK.
+htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework 
+and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
 
 ## haiku
 
-_javascript fatigue:<br/>
+*javascript fatigue:<br/>
 longing for a hypertext<br/>
-already in hand_
+already in hand*
