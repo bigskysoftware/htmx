@@ -74,7 +74,7 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 
 To develop htmx locally, you will need to install the development dependencies.
 
-__Requires Python and Node 15.__
+__Requires Node 15.__
 
 Run:
 
@@ -84,15 +84,15 @@ npm install
 
 Then, run a web server in the root.
 
-This is easiest with Python:
+This is easiest with:
 
 ```
-python3 -m http.server
+npx serve
 ```
 
 You can then run the test suite by navigating to:
 
-<http://0.0.0.0:8000/test/>
+<http://0.0.0.0:3000/test/>
 
 At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
 
