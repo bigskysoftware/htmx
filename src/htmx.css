@@ -1,0 +1,13 @@
+:root {
+  --indicator-class: "htmx-indicator";
+  --request-class: "htmx-request";
+}
+
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
+
+.htmx-indicator .htmx-request, .htmx-indicator.htmx-request{
+  opacity: 1;
+}
