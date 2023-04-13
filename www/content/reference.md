@@ -24,6 +24,7 @@ The following are the most common attributes when using htmx.
 | [`hx-boost`](@/attributes/hx-boost.md)             | add or remove [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms
 | [`hx-get`](@/attributes/hx-get.md)                 | issues a `GET` to the specified URL
 | [`hx-post`](@/attributes/hx-post.md)               | issues a `POST` to the specified URL
+| [`hx-on`](@/attributes/hx-on.md)                   | handle any event with a script inline
 | [`hx-push-url`](@/attributes/hx-push-url.md)       | pushes the URL into the browser location bar, creating a new history entry
 | [`hx-select`](@/attributes/hx-select.md)           | select content to swap in from a response
 | [`hx-select-oob`](@/attributes/hx-select-oob.md)   | select content to swap in from a response, out of band (somewhere other than the target)
