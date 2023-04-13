@@ -58,6 +58,7 @@ A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?
   padding: 16px;
 }
 </style>
+<div style="overflow-x: auto">
 <table id="sponsor-table">
 <tr>
 <td>
@@ -85,5 +86,6 @@ A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?
 </td>
 </tr>
 </table>
+</div>
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>
