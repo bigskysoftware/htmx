@@ -82,6 +82,13 @@ A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?
         </a>
 </td>
 <td>
+        <a href="https://www.peakcrypto.com/">
+          <img src="/img/peakcrypto.png" style="width:100%;max-width:65px">
+        </a>
+</td>
+</tr>
+<tr>
+<td colspan="2">
       <a href="https://bigsky.software"><img src="/img/bss.png" style="width:100%;max-width:150px"></a>
 </td>
 </tr>
