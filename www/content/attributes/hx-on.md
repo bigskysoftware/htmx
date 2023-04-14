@@ -2,47 +2,40 @@
 title = "hx-on"
 +++
 
-## `hx-on`
+The `hx-on` attribute allows you to embed scripts inline to respond to events directly on an element; similar to the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.
 
-The `hx-on` attribute allows you embed JavaScript scripts to respond to events directly on an element.  It is 
-very similar to the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties)
-found in HTML, such as `onClick`.
+`hx-on` improves upon `onevent` by enabling the handling of any event for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/). This also enables you to handle any htmx event.
 
-`hx-on` improves on the `onevent` handlers in that it can handle any events, not just a fixed number of specific
-DOM events.  This allows you to respond to, for example, the many htmx-emitted events in a nice, embedded manner
-that gives good [Locality of Behavior (LoB)](/essays/locality-of-behavior).  
-
-The `hx-on` attribute's value is an event name, followed by a colon, followed by the event handler code:
+The value is an event name, followed by a colon `:`, followed by the script:
 
 ```html
-<div>
-    <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')">
-        Get Info!
-    </button>
-</div>
+<div hx-on="click: alert('Clicked!')">Click</div>
 ```
 
-Here the event `hmtx:beforeRequest` is captured and shows an alert.  Note that it is not possible to respond to this
-event using the `onevent` properties in normal HTML.
+All htmx events can be captured, too!
+
+```html
+<button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')">
+    Get Info!
+</button>
+```
 
 ### Symbols
 
-Following the conventions of the `onevent` properties, two symbols are available in the body of the event handler code:
+Like `onevent`, two symbols are made available to event handler scripts:
 
-* `this` - Set to the element on which the `hx-on` attribute is defined
-* `event` - Set to the event that triggered the handler
+* `this` - The element on which the `hx-on` attribute is defined
+* `event` - The event that triggered the handler
 
 ### Multiple Handlers
 
 Multiple handlers can be defined by putting them on new lines:
 
 ```html
-<div>
-    <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
-                                  htmx:afterRequest: alert('Done making a request!')">
-        Get Info!
-    </button>
-</div>
+<button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
+                              htmx:afterRequest: alert('Done making a request!')">
+    Get Info!
+</button>
 ```
 
 ### Notes

@@ -1232,7 +1232,7 @@ such as `onClick`:
 ```
 
 This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
-[Locality of Behavior (LoB)](/essays/locality-of-behavior).  Unfortunately, HTML only allows `on*` attributes for a fixed
+[Locality of Behaviour (LoB)](/essays/locality-of-behaviour).  Unfortunately, HTML only allows `on*` attributes for a fixed
 number of specific DOM events (e.g. `onclick`) and doesn't offer a way to respond generally to events in this embedded
 manner.
 
