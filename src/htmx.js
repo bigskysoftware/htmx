@@ -994,8 +994,8 @@ return (function () {
             }
         }
 
-        function maybeSelectFromResponse(elt, fragment) {
-            var selector = getClosestAttributeValue(elt, "hx-select");
+        function maybeSelectFromResponse(elt, fragment, selectOverride) {
+            var selector = selectOverride || getClosestAttributeValue(elt, "hx-select");
             if (selector) {
                 var newFragment = getDocument().createDocumentFragment();
                 forEach(fragment.querySelectorAll(selector), function (node) {
@@ -1069,12 +1069,12 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectAndSwap) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);
-                fragment = maybeSelectFromResponse(elt, fragment);
+                fragment = maybeSelectFromResponse(elt, fragment, selectAndSwap);
                 handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
             }
@@ -3266,8 +3266,13 @@ return (function () {
                             // safari issue - see https://github.com/microsoft/playwright/issues/5894
                         }
 
+                        var selectOverride;
+                        if (hasHeader(xhr, /HX-Reselect:/i)) {
+                            selectOverride = xhr.getResponseHeader("HX-Reselect");
+                        }
+
                         var settleInfo = makeSettleInfo(target);
-                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride);
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&
