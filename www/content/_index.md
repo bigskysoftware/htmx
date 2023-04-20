@@ -83,7 +83,7 @@ A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?
 </td>
 <td>
         <a href="https://www.peakcrypto.com/">
-          <img src="/img/peakcrypto.png" style="width:100%;max-width:65px">
+          <img alt="Peak Crypto" src="/img/peakcrypto.png" style="width:100%;max-width:65px">
         </a>
 </td>
 </tr>
