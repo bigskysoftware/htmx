@@ -141,7 +141,7 @@ Here are some known implementations of the fragment concept:
 * PHP
   * [Latte](https://latte.nette.org/en/template-inheritance#toc-blocks) - Use the 3rd parameter to only render 1 block from the template -  `$Latte_Engine->render('path/to/template.latte', [ 'foo' => 'bar' ], 'content');`
 * Python
-  * [Django Render Block Extension](https://pypi.org/project/django-render-block/)
+  * [Django Render Block Extension](https://pypi.org/project/django-render-block/) - see [example code for htmx](https://github.com/spookylukey/django-htmx-patterns/blob/master/inline_partials.rst)
   * [jinja2-fragments package](https://github.com/sponsfreixes/jinja2-fragments)
   * [jinja_partials package](https://github.com/mikeckennedy/jinja_partials) ([discussion](https://github.com/mikeckennedy/jinja_partials/issues/1) on motivation)
   * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
