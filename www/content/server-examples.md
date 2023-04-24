@@ -44,6 +44,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Flask
 
+- <https://github.com/edmondchuc/flask-htmx>
 - <https://github.com/cscortes/htmxflask>
 
 ### py4web
