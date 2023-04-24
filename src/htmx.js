@@ -1874,7 +1874,7 @@ return (function () {
 
         function addHxOnEventHandler(elt, eventName, code) {
             var nodeData = getInternalData(elt);
-            nodeData.onHandlers ||= {};
+            nodeData.onHandlers || (nodeData.onHandlers = {});
             var func = new Function("event", code + "; return;");
             var listener = elt.addEventListener(eventName, function (e) {
                 return func.call(elt, e);
