@@ -29,6 +29,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/DamianStanger/hapi-htmx>
 
 ## Python
+- <https://github.com/PyHAT-stack/awesome-python-htmx>
 
 ### Django
 
