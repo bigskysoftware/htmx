@@ -107,3 +107,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 ## Julia
 
 - <https://github.com/clarkevans/TodoMVC.jl>
+
+## OCaml
+
+- <https://ocaml.org/p/dream-htmx>
+- <https://github.com/yawaramin/dream-html>
