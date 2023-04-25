@@ -1203,7 +1203,7 @@ to scripting in your htmx-based web application:
 * [Consider inline scripting](/essays/hypermedia-friendly-scripting#inline)
 
 The primary integration point between htmx and scripting solutions is the [events](#events) that htmx sends and can
-respond to.  See the SortableJS example in the [3rd Party Javascript](3rd-party) section for a good template for
+respond to.  See the SortableJS example in the [3rd Party Javascript](#3rd-party) section for a good template for
 integrating a JavaScript library with htmx via events.
 
 Scripting solutions that pair well with htmx include:
