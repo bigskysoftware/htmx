@@ -1069,12 +1069,12 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectAndSwap) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);
-                fragment = maybeSelectFromResponse(elt, fragment, selectAndSwap);
+                fragment = maybeSelectFromResponse(elt, fragment, selectOverride);
                 handlePreservedElements(fragment);
                 return swap(swapStyle, elt, target, fragment, settleInfo);
             }
