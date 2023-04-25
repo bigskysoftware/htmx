@@ -133,7 +133,7 @@ The following libraries allow developers to create HDAs:
 
 * <https://htmx.org>
 * <https://unpoly.com/>
-* <https://kasta-ua.github.io/twinspark-js/>
+* <https://piranha.github.io/twinspark-js/>
 * <https://hotwire.dev>
 * <https://hyperview.org/> (a mobile hypermedia!)
 
