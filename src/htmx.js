@@ -3536,6 +3536,7 @@ return (function () {
                     internalData.xhr.abort();
                 }
             });
+            var originalPopstate = window.onpopstate;
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
@@ -3545,6 +3546,10 @@ return (function () {
                             'triggerEvent': triggerEvent
                         });
                     });
+                } else {
+                    if (originalPopstate) {
+                        originalPopstate(event);
+                    }
                 }
             };
             setTimeout(function () {
