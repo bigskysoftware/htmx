@@ -1,5 +1,6 @@
 describe("hx-boost attribute", function() {
 
+    htmx.logAll();
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -21,10 +22,18 @@ describe("hx-boost attribute", function() {
 
     it('handles basic form post properly', function () {
         this.server.respondWith("POST", "/test", "Boosted");
-        this.server.respondWith("POST", "/test", "Boosted");
         var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>');
         var btn = byId('b1');
         btn.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Boosted");
+    })
+
+    it('handles basic form post properly w/ explicit action', function () {
+        this.server.respondWith("POST", "/test", "Boosted");
+        var div = make('<div hx-target="this"><form id="f1" action="/test" method="post"  hx-trigger="click" hx-boost="true"></form></div>');
+        var form = byId('f1');
+        form.click();
         this.server.respond();
         div.innerHTML.should.equal("Boosted");
     })
