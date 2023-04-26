@@ -77,6 +77,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/jerriepelser-blog/htmx-with-aspnet-core>
 - <https://github.com/mryderie/aspnet-core-htmx-example>
+- <https://github.com/khalidabuhakmeh/Htmx.Net>
+- <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
 
 ## Prolog
 
