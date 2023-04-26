@@ -82,7 +82,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.0"
+            version: "1.9.1"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1739,13 +1739,6 @@ return (function () {
                     });
                 }
             });
-            if (!explicitAction && hasAttribute(elt, 'hx-trigger')) {
-                explicitAction = true
-                triggerSpecs.forEach(function(triggerSpec) {
-                    // For "naked" triggers, don't do anything at all
-                    addTriggerHandler(elt, triggerSpec, nodeData, function () { })
-                })
-            }
             return explicitAction;
         }
 
@@ -1930,10 +1923,18 @@ return (function () {
                 }
 
                 var triggerSpecs = getTriggerSpecs(elt);
-                var explicitAction = processVerbs(elt, nodeData, triggerSpecs);
+                var hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs);
 
-                if (!explicitAction && getClosestAttributeValue(elt, "hx-boost") === "true") {
-                    boostElement(elt, nodeData, triggerSpecs);
+                if (!hasExplicitHttpAction) {
+                    if (getClosestAttributeValue(elt, "hx-boost") === "true") {
+                        boostElement(elt, nodeData, triggerSpecs);
+                    } else if (hasAttribute(elt, 'hx-trigger')) {
+                        triggerSpecs.forEach(function (triggerSpec) {
+                            // For "naked" triggers, don't do anything at all
+                            addTriggerHandler(elt, triggerSpec, nodeData, function () {
+                            })
+                        })
+                    }
                 }
 
                 if (elt.tagName === "FORM") {
@@ -3536,6 +3537,7 @@ return (function () {
                     internalData.xhr.abort();
                 }
             });
+            var originalPopstate = window.onpopstate;
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
@@ -3545,6 +3547,10 @@ return (function () {
                             'triggerEvent': triggerEvent
                         });
                     });
+                } else {
+                    if (originalPopstate) {
+                        originalPopstate(event);
+                    }
                 }
             };
             setTimeout(function () {
