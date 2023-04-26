@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.1] - 2023-04-16
+
+* Fixed a bug with the new naked triggers that prevented boosted elements with explicit `hx-trigger`'s from functioning
+  properly
+* Added code to play well with other libraries that also use the `window.onpopstate` Daily reminder: <https://htmx.org/img/memes/javascripthistory.png>
+
 ## [1.9.0] - 2023-04-11
 
 * Support for generalized inline event handling via the new [`hx-on`](/attributes/hx-on) attribute, which addresses
