@@ -113,3 +113,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://ocaml.org/p/dream-htmx>
 - <https://github.com/yawaramin/dream-html>
+
+## PHP
+
+### CodeIgniter 4
+
+- <https://github.com/michalsn/codeigniter-htmx-demo>
