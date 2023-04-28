@@ -921,8 +921,9 @@ return (function () {
                 });
             }
             if (internalData.onHandlers) {
-                for (var eventName of internalData.onHandlers) {
-                    element.removeEventListener(eventName, internalData.onHandlers[eventName]);
+                for (let i = 0; i < internalData.onHandlers.length; i++) {
+                    const handlerInfo = internalData.onHandlers[i];
+                    element.removeEventListener(handlerInfo.name, handlerInfo.handler);
                 }
             }
         }
@@ -1867,12 +1868,12 @@ return (function () {
 
         function addHxOnEventHandler(elt, eventName, code) {
             var nodeData = getInternalData(elt);
-            nodeData.onHandlers ||= {};
+            nodeData.onHandlers = [];
             var func = new Function("event", code + "; return;");
             var listener = elt.addEventListener(eventName, function (e) {
                 return func.call(elt, e);
             });
-            nodeData.onHandlers[eventName] = listener;
+            nodeData.onHandlers.push({event:eventName, listener:listener});
             return {nodeData, code, func, listener};
         }
 

@@ -93,4 +93,30 @@ describe("hx-on attribute", function() {
         delete window.foo;
     });
 
+    it("de-initializes hx-on content properly", function () {
+        window.tempCount = 0;
+        this.server.respondWith("POST", "/test", function (xhr) {
+            xhr.respond(200, {}, "<button id='foo' hx-on=\"click: window.tempCount++;\">increment</button>");
+        });
+        var div = make("<div hx-post='/test'>Foo</div>");
+
+        // get response
+        div.click();
+        this.server.respond();
+
+        // click button
+        byId('foo').click();
+        window.tempCount.should.equal(1);
+
+        // get second response
+        div.click();
+        this.server.respond();
+
+        // click button again
+        byId('foo').click();
+        window.tempCount.should.equal(2);
+
+        delete window.tempCount;
+    });
+
 });
