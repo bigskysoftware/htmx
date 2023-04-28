@@ -1,6 +1,10 @@
 # Changelog
 
-## [1.9.1] - 2023-04-16
+## [1.9.2] - 2023-04-28
+
+* Fixed bug w/ `hx-on` not properly de-initializing
+
+## [1.9.1] - 2023-04-27
 
 * Fixed a bug with the new naked triggers that prevented boosted elements with explicit `hx-trigger`'s from functioning
   properly
