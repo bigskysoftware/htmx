@@ -1,9 +1,8 @@
 +++
-title = "Different Types Of Decoupling"
+title = "Two Types Of Decoupling"
 date = 2022-10-23
 updated = 2023-02-03
 [taxonomies]
-tag = ["posts"]
 +++
 
 > The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on 
