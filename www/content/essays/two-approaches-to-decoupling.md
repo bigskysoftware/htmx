@@ -106,7 +106,7 @@ involved with it.
 #### Another Solution: Splitting Your Application & General Data APIs
 
 Another approach recommended by [Max Chernyak](https://max.engineer/) in his article
-[Don’t Build A General Purpose API To Power Your Own Front End](https://max.engineer/server-informed-ui), is two build
+[Don’t Build A General Purpose API To Power Your Own Front End](https://max.engineer/server-informed-ui), is to build
 *two* JSON APIs: 
 
 * An application specific JSON API that can be modified as needed
