@@ -1,8 +1,9 @@
 +++
 title = "Two Approaches To Decoupling"
-date = 2022-10-23
-updated = 2023-02-03
+date = 2022-05-01
+updated = 2022-05-01
 [taxonomies]
+tag = ["posts"]
 +++
 
 > The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on 
@@ -17,7 +18,7 @@ In this essay we will look at two different types of decoupling in the context o
 * Decoupling at the _application level_ via a generic JSON Data API
 * Decoupling at the _network architecture level_ via a hypermedia API
 
-We will see that, at the application level, a hypermedia API tighlty couples your front-end and back-end.  Despite this
+We will see that, at the application level, a hypermedia API tightly couples your front-end and back-end.  Despite this
 fact, surprisingly, the hypermedia API is in fact more resilient in the face of change.
 
 ## Coupling
@@ -156,6 +157,9 @@ client (in the case of the web, the browser) from the hypermedia server.
 
 This is accomplished primarily via the Uniform Interface constraint of REST and, in particular, by using 
 Hypermedia As The Engine of Application State ([HATOEAS](/essays/hateoas)).
+
+This style of decoupling allows tighter coupling at the higher, application level, which we have seen may be an 
+_inherent_ coupling, while still retaining the benefits of decoupling for the overall system.
 
 ### Decoupling Via Hypermedia In Practice
 

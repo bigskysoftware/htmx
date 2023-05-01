@@ -15,6 +15,7 @@ insert_anchor_links = "left"
 * [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
+* [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
 * [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
 * [Template Fragments](@/essays/template-fragments.md)
 * [View Transitions](@/essays/view-transitions.md)
