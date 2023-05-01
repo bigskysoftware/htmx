@@ -88,7 +88,7 @@ the front-end needs.
 Worse, these front-end needs will often change frequently as your application evolves, necessitating the modification
 of your JSON API.  What if other non-web application clients have come to depend on the original API?
 
-This problem leads to the "versioning hell" that many JSON Data APIs that are supporting both web applications as well
+This problem leads to the "versioning hell" that many JSON Data API developers face when supporting both web applications as well
 as other non-web application clients.
 
 #### A Solution: GraphQL
