@@ -94,7 +94,7 @@ as other non-web application clients.
 #### A Solution: GraphQL
 
 One potential solution to this problem is to introduce [GraphQL](https://graphql.org/), which allows you to have a much
-more expressive JSON API.  This means that you don't need to change it as often when application needs change.  
+more expressive JSON API.  This means that you don't need to change it as often when your API client's needs change.  
 
 This is a reasonable approach for addressing the problem outlined above, but there are problems with it.  The biggest 
 issue that we see is security, as we outline this in [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html) essay.  
