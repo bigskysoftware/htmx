@@ -187,12 +187,12 @@ You can see that in this response, links for those two actions have been removed
 render the new HTML to the user.  To a rounding error, there are no clients sitting around using the _old_ API.  The
 API is encoded within and discovered through the hypermedia.
 
-This means we can dramatically change our API without breaking our clients.
+This means that we can dramatically change our API without breaking our clients.
 
 This flexibility is the crux of the REST-ful network architecture and, in particular, of [HATEOAS](/essays/hateoas/).
 
 As you can see, despite much tighter _application-level_ coupling between our front-end and back-end, we actually have
-more flexibility due to the _networks architecture_ decoupling afforded to us by the Uniform Interface aspect of 
+more flexibility due to the _network architecture_ decoupling afforded to us by the Uniform Interface aspect of 
 REST-ful [hypermedia systems](https://hypermedia.systems).
 
 ### But That's A Terrible (Data) API!
@@ -218,5 +218,5 @@ In this essay we looked at two different types of decoupling:
 * Application level decoupling via a JSON Data API
 * Network-architecture decoupling via REST/HATEOAS in a hypermedia system
 
-And we saw that despite the tighter application-level coupling found in a hypermedia-based application, it is the
+And we saw that, despite the tighter application-level coupling found in a hypermedia-based application, it is the
 hypermedia system that handles changes more gracefully.
