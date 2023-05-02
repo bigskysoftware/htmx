@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.3] - 2023-04-28
+
 ## [1.9.2] - 2023-04-28
 
 * Fixed bug w/ `hx-on` not properly de-initializing

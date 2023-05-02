@@ -784,4 +784,18 @@ describe("hx-trigger attribute", function(){
         }
     });
 
+    it('filters support "this" reference to the current element', function(){
+        this.server.respondWith("GET", "/test", "Called!");
+        var form = make('<form hx-get="/test" hx-trigger="click[this.classList.contains(\'bar\')]">Not Called</form>');
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("Not Called");
+
+        form.classList.add('bar');
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("Called!");
+    })
+
+
 })

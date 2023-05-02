@@ -82,7 +82,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.2"
+            version: "1.9.3"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1299,7 +1299,10 @@ return (function () {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
                 if (bodyContains(elt) && nodeData.cancelled !== true) {
-                    if (!maybeFilterEvent(spec, makeEvent('hx:poll:trigger', {triggerSpec:spec, target:elt}))) {
+                    if (!maybeFilterEvent(spec, elt, makeEvent('hx:poll:trigger', {
+                        triggerSpec: spec,
+                        target: elt
+                    }))) {
                         handler(elt);
                     }
                     processPolling(elt, handler, spec);
@@ -1361,11 +1364,11 @@ return (function () {
             return getInternalData(elt).boosted && elt.tagName === "A" && evt.type === "click" && (evt.ctrlKey || evt.metaKey);
         }
 
-        function maybeFilterEvent(triggerSpec, evt) {
+        function maybeFilterEvent(triggerSpec, elt, evt) {
             var eventFilter = triggerSpec.eventFilter;
             if(eventFilter){
                 try {
-                    return eventFilter(evt) !== true;
+                    return eventFilter.call(elt, evt) !== true;
                 } catch(e) {
                     triggerErrorEvent(getDocument().body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
                     return true;
@@ -1398,7 +1401,7 @@ return (function () {
                     if (explicitCancel || shouldCancel(evt, elt)) {
                         evt.preventDefault();
                     }
-                    if (maybeFilterEvent(triggerSpec, evt)) {
+                    if (maybeFilterEvent(triggerSpec, elt, evt)) {
                         return;
                     }
                     var eventData = getInternalData(evt);
@@ -1770,7 +1773,7 @@ return (function () {
                 observer.observe(elt);
                 addEventListener(elt, handler, nodeData, triggerSpec);
             } else if (triggerSpec.trigger === "load") {
-                if (!maybeFilterEvent(triggerSpec, makeEvent("load", {elt:elt}))) {
+                if (!maybeFilterEvent(triggerSpec, elt, makeEvent("load", {elt: elt}))) {
                                 loadImmediately(elt, handler, nodeData, triggerSpec.delay);
                             }
             } else if (triggerSpec.pollInterval) {

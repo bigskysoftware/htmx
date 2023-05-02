@@ -114,7 +114,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.3" integrity="sha384-TODO" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -266,7 +266,8 @@ Here is an example that triggers only on a Control-Click of the element
 </div>
 ```
 
-Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.
+Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.  The
+`this` symbol will be set to the current element.
 
 #### Special Events
 
