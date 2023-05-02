@@ -82,7 +82,7 @@ will find the following quote:
 
 This quote shows that, although we have driven coupling out with a pitchfork (or, in our case, with a JSON API) it has come 
 back through requests for web application-specific JSON API end points.  These sorts of requests end up recoupling the
-front-end and back-end code: the JSON API is longer providing a generic JSON Data API, but rather a specific API for 
+front-end and back-end code: the JSON API is no longer providing a generic JSON Data API, but rather a specific API for 
 the front-end needs.
 
 Worse, these front-end needs will often change frequently as your application evolves, necessitating the modification
