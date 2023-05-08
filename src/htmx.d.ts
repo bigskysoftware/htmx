@@ -290,6 +290,8 @@ export const version: string;
 export interface HtmxConfig {
     /** array of strings: the attributes to settle during the settling phase */
     attributesToSettle?: ["class", "style", "width", "height"] | string[];
+    /** if the focused element should be scrolled into view */
+    defaultFocusScroll?: boolean;
     /** the default delay between completing the content swap and settling attributes */
     defaultSettleDelay?: number;
     /** the default delay between receiving a response from the server and doing the swap */
