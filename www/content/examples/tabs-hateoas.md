@@ -16,9 +16,9 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 ```html
 <div class="tab-list">
-	<a hx-get href="#" class="selected">Tab 1</a>
-	<a hx-get href="#">Tab 2</a>
-	<a hx-get href="#">Tab 3</a>
+	<a hx-get="/tab1" href="#" class="selected">Tab 1</a>
+	<a hx-get="/tab2" href="#">Tab 2</a>
+	<a hx-get="/tab3" href="#">Tab 3</a>
 </div>
 
 <div class="tab-content">

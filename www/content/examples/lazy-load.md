@@ -53,7 +53,7 @@ img {
 
     // templates
     function lazyTemplate(page) {
-      return `<div hx-get="/graph" aria-busy='true' hx-trigger="load">
+      return `<div hx-get="/graph" aria-busy="true" hx-trigger="load">
   <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>`;
     }
