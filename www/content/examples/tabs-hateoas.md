@@ -33,7 +33,21 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 {{ demoenv() }}
 
-<div id="tabs" hx-get="/tab1" hx-trigger="load delay:100ms" hx-target="#tabs" hx-swap="innerHTML"></div>
+<div id="tabs" hx-target="this" hx-swap="innerHTML">
+		<div class="tab-list">
+			<a hx-get="/tab1" href="#" class="selected">Tab 1</a>
+			<a hx-get="/tab2" href="#">Tab 2</a>
+			<a hx-get="/tab3" href="#">Tab 3</a>
+		</div>
+		<div class="tab-content">
+			Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.
+			Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.
+			Polaroid duis occaecat narwhal small batch food truck.
+			PBR&B venmo shaman small batch you probably haven't heard of them hot chicken readymade.
+			Enim tousled cliche woke, typewriter single-origin coffee hella culpa.
+			Art party readymade 90's, asymmetrical hell of fingerstache ipsum.
+		</div>
+</div>
 
 
 <script>

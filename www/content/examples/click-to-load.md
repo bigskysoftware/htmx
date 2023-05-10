@@ -72,7 +72,7 @@ results (which will contain a button to load the *next* page of results).  And s
       var txt = "";
       for (var i = 0; i < contacts.length; i++) {
         var c = contacts[i];
-        txt += `<tr ${i==0&&'autofocus'}><td>  ${c.name}  </td><td>  ${c.email}  </td><td>  ${c.id}  </td></tr>\n`;
+        txt += `<tr><td>${c.name}</td><td>${c.email}</td><td>${c.id}</td></tr>\n`;
       }
       txt += loadMoreRow(page);
       return txt;
