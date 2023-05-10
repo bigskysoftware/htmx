@@ -20,8 +20,8 @@ This div is then replaced with a new div that reloads itself every 600ms:
 
 ```html
 <div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="load delay:600ms" 
+    hx-get="/job"
+    hx-trigger="load delay:600ms"
     hx-swap="outerHTML">
   <h3>Running</h3>
   <div class="progress">
@@ -40,8 +40,8 @@ extension in this example):
 
 ```html
 <div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="none" 
+    hx-get="/job"
+    hx-trigger="none"
     hx-swap="outerHTML">
   <h3>Complete</h3>
   <div class="progress">
@@ -49,7 +49,7 @@ extension in this example):
   </div>
 <button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
   Restart Job
-</button> 
+</button>
 </div>
 ```
 
@@ -125,17 +125,17 @@ This example uses styling cribbed from the bootstrap progress bar:
     init("/demo", function(request, params){
       return startButton("Start Progress");
     });
-    
+
     onPost("/start", function(request, params){
         var job = jobManager.start();
         return jobStatusTemplate(job);
     });
-    
+
     onGet("/job", function(request, params){
         var job = jobManager.currentProcess();
         return jobStatusTemplate(job);
     });
-    
+
     // templates
     function startButton(message) {
       return `<div hx-target="this" hx-swap="outerHTML">
@@ -145,15 +145,19 @@ This example uses styling cribbed from the bootstrap progress bar:
   </button>
 </div>`;
     }
-    
+
     function jobStatusTemplate(job) {
         return `<div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="${job.complete ? 'none' : 'load delay:600ms'}" 
-    hx-swap="outerHTML">
-  <h3>${job.complete ? "Complete" : "Running"}</h3>
-  <div class="progress">
-    <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
+    hx-get="/job"
+    hx-trigger="${job.complete ? 'none' : 'load delay:600ms'}"
+    hx-swap="outerHTML"
+    >
+  <h3 id="pblabel">${job.complete ? "Complete" : "Running"}</h3>
+
+  <div>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}" aria-labelledby="pblabel">
+      <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
+    </div>
   </div>
 </div>
 ${restartButton(job)}`;
@@ -161,7 +165,8 @@ ${restartButton(job)}`;
 
     function restartButton(job) {
       if(job.complete){
-        return `<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
+        return `
+<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
   Restart Job
 </button>`
       } else {

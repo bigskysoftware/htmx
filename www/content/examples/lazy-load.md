@@ -46,14 +46,14 @@ img {
     init("/demo", function(request, params){
       return lazyTemplate();
     });
-    
+
     onGet("/graph", function(request, params){
       return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
     });
-    
+
     // templates
     function lazyTemplate(page) {
-      return `<div hx-get="/graph" hx-trigger="load">
+      return `<div hx-get="/graph" aria-busy='true' hx-trigger="load">
   <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>`;
     }
