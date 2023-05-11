@@ -45,7 +45,7 @@ export function ajax(verb: string, path: string, selector: string): void;
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
 ): void;
 
 /**
@@ -324,7 +324,7 @@ export interface HtmxConfig {
     refreshOnHistoryMiss?: boolean;
     timeout?: number;
     disableSelector?: "[hx-disable], [data-hx-disable]" | string;
-    scrollBehavior?: "smooth";
+    scrollBehavior?: "smooth" | "auto";
 }
 
 /**
