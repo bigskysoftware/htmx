@@ -32,6 +32,11 @@ insert_anchor_links = "left"
 
 * [The Grug Brained Developer](https://grugbrain.dev)
 
+## Banners
+<div style="text-align: center;margin:32px">
+  <img width="90%" loading="lazy" src="/img/createdwith.jpeg">
+</div>
+
 ## Memes
 
 <style>
