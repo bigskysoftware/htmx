@@ -71,7 +71,7 @@ See the individual extension documentation for more details.
 | [`head-support`](@/extensions/head-support.md)                   | support for merging the `head` tag from responses into the existing documents `head`
 | [`include-vals`](@/extensions/include-vals.md)                   | allows you to include additional values in a request
 | [`json-enc`](@/extensions/json-enc.md)                           | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-| [`idiomoroph`](https://github.com/bigskysoftware/idiomorph)      | an extension for using the idimorph morphing algorightm as a swapping mechanism
+| [`idiomorph`](https://github.com/bigskysoftware/idiomorph)       | an extension for using the idiomorph morphing algorightm as a swapping mechanism
 | [`loading-states`](@/extensions/loading-states.md)               | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
 | [`method-override`](@/extensions/method-override.md)             | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
 | [`morphdom-swap`](@/extensions/morphdom-swap.md)                 | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
