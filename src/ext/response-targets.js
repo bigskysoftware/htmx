@@ -12,7 +12,7 @@
      * @returns {HTMLElement | null}
      */
     function getRespCodeTarget(elt, respCode) {
-        if (!respCode) return null;
+        if (!elt || !respCode) return null;
 
         var targetAttr = targetAttrPrefix + respCode;
         var targetStr  = api.getClosestAttributeValue(elt, targetAttr);
