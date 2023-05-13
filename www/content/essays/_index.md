@@ -56,6 +56,7 @@ insert_anchor_links = "left"
 <img loading="lazy" src="/img/memes/uarealldoingitwrong.png">
 <img loading="lazy" src="/img/memes/restapi.png">
 <img loading="lazy" src="/img/memes/justusehtml.png">
+<img loading="lazy" src="/img/memes/istudiedhtml.png">
 <img loading="lazy" src="/img/memes/htmlvsjson.png">
 <img loading="lazy" src="/img/memes/dontknowwhatclientsideroutingis.png">
 <img loading="lazy" src="/img/memes/nocap.png">
