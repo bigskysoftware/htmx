@@ -79,6 +79,7 @@ See the individual extension documentation for more details.
 | [`path-deps`](@/extensions/path-deps.md)                         | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`preload`](@/extensions/preload.md)                             | preloads selected `href` and `hx-get` targets based on rules you control.
 | [`remove-me`](@/extensions/remove-me.md)                         | allows you to remove an element after a given amount of time
+| [`response-targets`](@/extensions/response-targets.md)           | allows to specify different target elements to be swapped when different HTTP response codes are received
 | [`restored`](@/extensions/restored.md)                           | allows you to trigger events when the back button has been pressed
 | [`server-sent-events`](@/extensions/server-sent-events.md)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
 | [`web-sockets`](@/extensions/web-sockets.md)                     | bi-directional connection to WebSocket servers
