@@ -42,6 +42,17 @@
         }
     }
 
+    /** @param {Event} evt */
+    function handleErrorFlag(evt) {
+        if (evt.detail.isError) {
+            if (htmx.config.responseTargetUnsetsError) {
+                evt.detail.isError = false;
+            }
+        } else if (htmx.config.responseTargetSetsError) {
+            evt.detail.isError = true;
+        }
+    }
+
     htmx.defineExtension('response-targets', {
 
         /** @param {import("../htmx").HtmxInternalApi} apiRef */
@@ -54,6 +65,12 @@
             if (htmx.config.responseTargetUnsetsError === undefined) {
                 htmx.config.responseTargetSetsError = false;
             }
+            if (htmx.config.responseTargetPrefersExisting === undefined) {
+                htmx.config.responseTargetPrefersExisting = false;
+            }
+            if (htmx.config.responseTargetPrefersRetargetHeader === undefined) {
+                htmx.config.responseTargetPrefersRetargetHeader = true;
+            }
         },
 
         /**
@@ -61,19 +78,28 @@
          * @param {Event} evt
          */
         onEvent: function (name, evt) {
-             if (name === "htmx:beforeSwap"    &&
-                 evt.detail.xhr                &&
-                 evt.detail.xhr.status !== 200 &&
-                 evt.detail.requestConfig) {
+            if (name === "htmx:beforeSwap"    &&
+                evt.detail.xhr                &&
+                evt.detail.xhr.status !== 200) {
+                if (evt.detail.target) {
+                    if (htmx.config.responseTargetPrefersExisting) {
+                        evt.detail.shoudSwap = true;
+                        handleErrorFlag(evt);
+                        return true;
+                    }
+                    if (htmx.config.responseTargetPrefersRetargetHeader &&
+                        evt.detail.xhr.getAllResponseHeaders().match(/HX-Retarget:/i)) {
+                        evt.detail.shouldSwap = true;
+                        handleErrorFlag(evt);
+                        return true;
+                    }
+                }
+                if (!evt.detail.requestConfig) {
+                    return true;
+                }
                 var target = getRespCodeTarget(evt.detail.requestConfig.elt, evt.detail.xhr.status);
                 if (target) {
-                    if (evt.detail.isError) {
-                        if (htmx.config.responseTargetUnsetsError) {
-                            evt.detail.isError = false;
-                        }
-                    } else if (htmx.config.responseTargetSetsError) {
-                        evt.detail.isError = true;
-                    }
+                    handleErrorFlag(evt);
                     evt.detail.shouldSwap = true;
                     evt.detail.target = target;
                 }

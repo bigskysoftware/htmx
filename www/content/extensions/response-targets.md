@@ -28,20 +28,35 @@ The value of each attribute can be:
 
 ## Configure (optional)
 
-`isError` flag on the `detail` member of an event associated with swapping the
-content with `hx-target-[CODE]` will be set to `false` when error response code is
-received. This is different from the default behavior.
+* When `HX-Retarget` response header is received it disables any lookup that would be
+  performed by this extension but any responses with error status codes will be
+  swapped (normally they would not be, even with target set via header) and internal
+  error flag (`isError`) will be modified. You may change this and choose to ignore
+  `HX-Retarget` header when `hx-target-…` is in place by setting a configuration flag
+  `htmx.config.responseTargetPrefersRetargetHeader` to `false` (default is
+  `true`). Note that this extension only performs a simple check whether the header
+  is set and target exists. It is not extracting target's value from the header but
+  trusts it was set by HTMX core logic.
 
-You may change this by setting a configuration flag
-`htmx.config.responseTargetUnsetsError` to `false` (default is `true`).
+* Normally, any target which is already established by HTMX built-in functions or
+  extensions called before will be overwritten if a matching `hx-target-…` tag is
+  found. You may change it by using a configuration flag
+  `htmx.config.responseTargetPrefersExisting` to `true` (default is `false`). This is
+  kinky and risky option. It has a real-life applications similar to a skilled,
+  full-stack tardigrade eating parentheses when no one is watching.
 
-`isError` flag on the `detail` member of an event associated with swapping the
-content with `hx-target-[CODE]` will be set to `false` when non-erroneous response
-code is received. This is no different from the default behavior.
+* `isError` flag on the `detail` member of an event associated with swapping the
+  content with `hx-target-[CODE]` will be set to `false` when error response code is
+  received. This is different from the default behavior. You may change this by
+  setting a configuration flag `htmx.config.responseTargetUnsetsError` to `false`
+  (default is `true`).
 
-You may change this by setting a configuration flag
-`htmx.config.responseTargetSetsError` to `true` (default is `false`). This setting
-will not affect the response code 200 since it is not handled by this extension.
+* `isError` flag on the `detail` member of an event associated with swapping the
+  content with `hx-target-[CODE]` will be set to `false` when non-erroneous response
+  code is received. This is no different from the default behavior. You may change
+  this by setting a configuration flag `htmx.config.responseTargetSetsError` to
+  `true` (default is `false`). This setting will not affect the response code 200
+  since it is not handled by this extension.
 
 ## Usage
 
@@ -90,6 +105,9 @@ be looked up (in the given order):
 
 * `hx-target-…` is inherited and can be placed on a parent element.
 * `hx-target-…` cannot be used to handle HTTP response code 200.
+* `hx-target-…` will honor `HX-Retarget` by default and will prefer it over any
+  calculated target but it can be changed by disabling the
+  `htmx.config.responseTargetPrefersRetargetHeader` configuration option.
 * To avoid surprises the `hx-ext` attribute used to enable this extension should be
   placed on a parent element containing elements with `hx-target-…` and `hx-target`
   attributes.
