@@ -62,7 +62,7 @@
             if (htmx.config.responseTargetUnsetsError === undefined) {
                 htmx.config.responseTargetUnsetsError = true;
             }
-            if (htmx.config.responseTargetUnsetsError === undefined) {
+            if (htmx.config.responseTargetSetsError === undefined) {
                 htmx.config.responseTargetSetsError = false;
             }
             if (htmx.config.responseTargetPrefersExisting === undefined) {
