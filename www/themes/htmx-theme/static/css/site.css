@@ -165,6 +165,9 @@ h4 {
   box-sizing: border-box;
 }
 
+ul li {
+    padding: 8px;
+}
 
 @media(max-width:45rem) {
   #nav {
