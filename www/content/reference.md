@@ -28,7 +28,7 @@ The following are the most common attributes when using htmx.
 | [`hx-push-url`](@/attributes/hx-push-url.md)       | pushes the URL into the browser location bar, creating a new history entry
 | [`hx-select`](@/attributes/hx-select.md)           | select content to swap in from a response
 | [`hx-select-oob`](@/attributes/hx-select-oob.md)   | select content to swap in from a response, out of band (somewhere other than the target)
-| [`hx-swap`](@/attributes/hx-swap.md)               | controls how content is swapped in (`outerHTML`, `beforeEnd`, `afterend`, ...)
+| [`hx-swap`](@/attributes/hx-swap.md)               | controls how content is swapped in (`outerHTML`, `beforeend`, `afterend`, ...)
 | [`hx-swap-oob`](@/attributes/hx-swap-oob.md)       | marks content in a response to be out of band (should swap in somewhere other than the target)
 | [`hx-target`](@/attributes/hx-target.md)           | specifies the target element to be swapped
 | [`hx-trigger`](@/attributes/hx-trigger.md)         | specifies the event that triggers the request
