@@ -101,7 +101,7 @@ We'll define some nice animations in CSS, and use some Hyperscript events (or al
 }
 
 #modal.closing > .modal-content {
-	/* Aniate when closing */
+	/* Animate when closing */
 	animation-name: zoomOut;
 	animation-duration:150ms;
 	animation-timing-function: ease;
@@ -218,7 +218,7 @@ We'll define some nice animations in CSS, and use some Hyperscript events (or al
 }
 
 #modal.closing > .modal-content {
-	/* Aniate when closing */
+	/* Animate when closing */
 	animation-name: zoomOut;
 	animation-duration:150ms;
 	animation-timing-function: ease;
