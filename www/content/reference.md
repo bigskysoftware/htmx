@@ -151,7 +151,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:load`](@/events.md#htmx:load)  | triggered when new content is added to the DOM
 | [`htmx:noSSESourceError`](@/events.md#htmx:noSSESourceError)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
 | [`htmx:onLoadError`](@/events.md#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
-| [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an of band element as been swapped in
+| [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an out of band element as been swapped in
 | [`htmx:oobBeforeSwap`](@/events.md#htmx:oobBeforeSwap)  | triggered before an out of band element swap is done, allows you to configure the swap
 | [`htmx:oobErrorNoTarget`](@/events.md#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
 | [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown
