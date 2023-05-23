@@ -79,6 +79,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/mryderie/aspnet-core-htmx-example>
 - <https://github.com/khalidabuhakmeh/Htmx.Net>
 - <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
+- <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
 
 ## Prolog
 
@@ -121,3 +122,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### CodeIgniter 4
 
 - <https://github.com/michalsn/codeigniter-htmx-demo>
+
+## Elixir
+
+### Phoenix
+
+- <https://github.com/hungle00/todo-htmx>

@@ -193,7 +193,7 @@
         },
         {
           "name": "hx-swap",
-          "description": "The **hx-swap** attribute controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeEnd')",
+          "description": "The **hx-swap** attribute controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeend')",
           "description-sections": {
             "Inherited": ""
           },

@@ -45,7 +45,7 @@ export function ajax(verb: string, path: string, selector: string): void;
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
 ): void;
 
 /**
@@ -290,6 +290,8 @@ export const version: string;
 export interface HtmxConfig {
     /** array of strings: the attributes to settle during the settling phase */
     attributesToSettle?: ["class", "style", "width", "height"] | string[];
+    /** if the focused element should be scrolled into view */
+    defaultFocusScroll?: boolean;
     /** the default delay between completing the content swap and settling attributes */
     defaultSettleDelay?: number;
     /** the default delay between receiving a response from the server and doing the swap */
@@ -324,7 +326,7 @@ export interface HtmxConfig {
     refreshOnHistoryMiss?: boolean;
     timeout?: number;
     disableSelector?: "[hx-disable], [data-hx-disable]" | string;
-    scrollBehavior?: "smooth";
+    scrollBehavior?: "smooth" | "auto";
 }
 
 /**
