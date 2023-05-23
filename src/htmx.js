@@ -2199,7 +2199,9 @@ return (function () {
                 swapInnerHTML(historyElement, fragment, settleInfo)
                 settleImmediately(settleInfo.tasks);
                 document.title = cached.title;
-                window.scrollTo(0, cached.scroll);
+                setTimeout(function () {
+                    window.scrollTo(0, cached.scroll);
+                }, 0); // next 'tick', so browser has time to render layout
                 currentPathForHistory = path;
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
