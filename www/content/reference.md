@@ -44,7 +44,7 @@ The table below lists all other attributes available in htmx.
 
 | Attribute                                          | Description |
 |----------------------------------------------------|-------------|
-| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confim()` dialog before issuing a request
+| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confirm()` dialog before issuing a request
 | [`hx-delete`](@/attributes/hx-delete.md)           | issues a `DELETE` to the specified URL
 | [`hx-disable`](@/attributes/hx-disable.md)         | disables htmx processing for the given node and any children nodes
 | [`hx-disinherit`](@/attributes/hx-disinherit.md)   | control and disable automatic attribute inheritance for child nodes
