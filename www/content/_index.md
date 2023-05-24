@@ -68,17 +68,17 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div style="overflow-x: auto">
 <table id="sponsor-table">
 <tr>
-<td colspan="2">
-        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:500px"></a>
-</td>
-</tr>
-<tr>
 <td>
         <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <td>
         <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
 </td>
+<tr>
+<td colspan="2">
+        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:500px"></a>
+</td>
+</tr>
 <tr>
 <td>
         <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
