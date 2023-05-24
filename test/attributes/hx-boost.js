@@ -87,6 +87,15 @@ describe("hx-boost attribute", function() {
         div.innerHTML.should.equal('Boosted');
     })
 
+    it('handles form with action and method overriding', function () {
+        this.server.respondWith('GET', '/test-overriding', 'Boosted');
+        var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="post"><button id="b1" formaction="/test-overriding" formmethod="get">Submit</button></form></div>');
+        var btn = byId('b1');
+        btn.click();
+        this.server.respond();
+        div.innerHTML.should.equal('Boosted');
+    })
+
     it('overriding default swap style does not effect boosting', function () {
         htmx.config.defaultSwapStyle = "afterend";
         try {

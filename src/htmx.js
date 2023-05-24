@@ -1327,8 +1327,18 @@ return (function () {
                             path = elt.href; // DOM property gives the fully resolved href of a relative link
                         } else {
                             var method = getRawAttribute(elt, "method") || "get";
+                            var action = getRawAttribute(elt, "action");
+                            // support for overriding method and action
+                            if (evt.submitter) {
+                                if (evt.submitter.hasAttribute('formmethod')) {
+                                    method = evt.submitter.getAttribute('formmethod');
+                                }
+                                if (evt.submitter.hasAttribute('formaction')) {
+                                    action = evt.submitter.getAttribute('formaction');
+                                }
+                            }
                             verb = method.toLowerCase();
-                            path = getRawAttribute(elt, "action");
+                            path = action;
                         }
                         issueAjaxRequest(verb, path, elt, evt)
                     }, nodeData, triggerSpec, true);
