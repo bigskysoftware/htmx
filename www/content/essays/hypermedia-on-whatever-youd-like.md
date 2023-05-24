@@ -101,7 +101,8 @@ code-base. Hypermedia doesn't care what you use to produce it: you can use hyper
 
 And when we say "whatever", we really mean it.
 
-Here is a screenshot of the [htmx discord](/discord)'s HOWL subsection recently:
+Here is a screenshot of the [htmx discord](/discord)'s HOWL subsection recently.  Note that these are just the channels
+that happen to have active traffic, there are many more.
 
 <div style="text-align: center; padding: 16px">
 <img src="/img/howl-channels.png">
@@ -132,26 +133,26 @@ JavaScript, which, whatever else one might say, has the great virtue of [_being 
 And we even go so far as to _recommend using_ JavaScript for front-end scripting needs in a hypermedia-driven 
 application, so long as you script in a [hypermedia-friendly](/hypermedia-friendly-scripting/) way.
 
-Further, we wouldn't steer someone away from using JavaScript (or, perhaps, TypeScript) on the _server side_ for a 
+Further, we wouldn't steer someone away from using JavaScript (or TypeScript) on the _server side_ for a 
 hypermedia-driven application, if that language is the best option for your team.  As we said earlier, JavaScript now 
-has multiple excellent server-side runtimes, and many excellent server-side libraries available.  It might be the best
-option for you and your team!
+has multiple excellent server-side runtimes and many excellent server-side libraries available.  
+
+It might be the best option for you and your team, and there is no reason not to use it in that case.
 
 Hypermedia On Whatever you'd Like means just that: whatever you'd like.
 
 But JavaScript is not, and it should not be, the *only* server-side option for your team.
 
-## The Dream of the 90s Is Alive...
+## Turning The Ship Around
 
 With the resurgence of interest in (and improvements of) hypermedia, an open and diverse future for The Web is now a
 real possibility, if not an emerging reality.
 
-The Web was designed to be an open, polyglot & participative hypermedia system.  The ship _hasn't sailed_ on that dream,
-at least not yet!  
+The Web was designed to be an open, polyglot & participative hypermedia system.  
 
-We can keep it that way by re-learning and re-embracing the foundational technology of the web: hypermedia.
+And the ship _hasn't sailed_ on that dream, at least not yet!  
 
-The [dream of the 90s](https://www.youtube.com/watch?v=TZt-pOc3moc) is alive, with hypermedia.
+We can keep that dream alive by re-learning and re-embracing the foundational technology of the web: hypermedia.
 
 > I hate that the htmx community has devolved into builders helping each other without regard for likes, engaging
 > those who don't follow the hype, expanding sound bytes into nuance. It may not score cheap social media points, but
