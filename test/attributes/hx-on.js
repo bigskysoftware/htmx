@@ -119,4 +119,11 @@ describe("hx-on attribute", function() {
         delete window.tempCount;
     });
 
+    it("can handle event types with dots", function () {
+        var btn = make("<button hx-on='my.custom.event: window.foo = true'>Foo</button>");
+        btn.dispatchEvent(new CustomEvent('my.custom.event'));
+        window.foo.should.equal(true);
+        delete window.foo;
+    });
+
 });
