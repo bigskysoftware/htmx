@@ -1319,19 +1319,17 @@ return (function () {
         function boostElement(elt, nodeData, triggerSpecs) {
             if ((elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
-                var verb, path;
-                if (elt.tagName === "A") {
-                    verb = "get";
-                    path = elt.href; // DOM property gives the fully resolved href of a relative link
-                } else {
-                    var rawAttribute = getRawAttribute(elt, "method");
-                    verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
-                    if (verb === "get") {
-                    }
-                    path = getRawAttribute(elt, 'action');
-                }
                 triggerSpecs.forEach(function(triggerSpec) {
                     addEventListener(elt, function(elt, evt) {
+                        var verb, path;
+                        if (elt.tagName === "A") {
+                            verb = "get";
+                            path = elt.href; // DOM property gives the fully resolved href of a relative link
+                        } else {
+                            var method = getRawAttribute(elt, "method") || "get";
+                            verb = method.toLowerCase();
+                            path = getRawAttribute(elt, "action");
+                        }
                         issueAjaxRequest(verb, path, elt, evt)
                     }, nodeData, triggerSpec, true);
                 });
@@ -1732,12 +1730,12 @@ return (function () {
             var explicitAction = false;
             forEach(VERBS, function (verb) {
                 if (hasAttribute(elt,'hx-' + verb)) {
-                    var path = getAttributeValue(elt, 'hx-' + verb);
                     explicitAction = true;
-                    nodeData.path = path;
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
                         addTriggerHandler(elt, triggerSpec, nodeData, function (elt, evt) {
+                            var path = getAttributeValue(elt, 'hx-' + verb);
+                            nodeData.path = path;
                             issueAjaxRequest(verb, path, elt, evt)
                         })
                     });

@@ -65,6 +65,27 @@ describe("hx-boost attribute", function() {
         div.innerHTML.should.equal("Boosted");
     })
 
+    it('handles anchor with modified href at runtime', function () {
+        this.server.respondWith('GET', '/test-modified', 'Boosted');
+        var div = make('<div hx-target="this" hx-boost="true"><a id="a1" href="/test">Foo</a></div>');
+        var a = byId('a1');
+        a.setAttribute('href', '/test-modified');
+        a.click();
+        this.server.respond();
+        div.innerHTML.should.equal('Boosted');
+    })
+
+    it('handles form with modified action and method at runtime', function () {
+        this.server.respondWith('GET', '/test-modified', 'Boosted');
+        var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>');
+        var form = byId('f1');
+        form.setAttribute('method', 'GET');
+        form.setAttribute('action', '/test-modified');
+        var btn = byId('b1');
+        btn.click();
+        this.server.respond();
+        div.innerHTML.should.equal('Boosted');
+    })
 
     it('overriding default swap style does not effect boosting', function () {
         htmx.config.defaultSwapStyle = "afterend";

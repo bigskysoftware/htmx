@@ -126,4 +126,14 @@ describe("hx-get attribute", function() {
             htmx.config.getCacheBusterParam = false;
         }
     });
+
+    it('issues a GET request with modified path on click and swaps content', function () {
+        this.server.respondWith('GET', '/test-modified', 'Clicked!');
+
+        var btn = make('<button hx-get="/test">Click Me!</button>')
+        btn.setAttribute('hx-get', '/test-modified');
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal('Clicked!');
+    });
 });

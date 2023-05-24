@@ -31,4 +31,14 @@ describe("hx-patch attribute", function(){
         this.server.respond();
         btn.innerHTML.should.equal("Patched!");
     });
+
+    it('issues a PATCH request with modified path on click and swaps content', function () {
+        this.server.respondWith('PATCH', '/test-modified', 'Clicked!');
+
+        var btn = make('<button hx-patch="/test">Click Me!</button>')
+        btn.setAttribute('hx-patch', '/test-modified');
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal('Clicked!');
+    });
 })

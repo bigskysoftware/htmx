@@ -31,4 +31,14 @@ describe("hx-delete attribute", function(){
         this.server.respond();
         btn.innerHTML.should.equal("Deleted!");
     });
+
+    it('issues a DELETE request with modified path on click and swaps content', function () {
+        this.server.respondWith('DELETE', '/test-modified', 'Clicked!');
+
+        var btn = make('<button hx-delete="/test">Click Me!</button>')
+        btn.setAttribute('hx-delete', '/test-modified');
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal('Clicked!');
+    });
 })

@@ -31,4 +31,14 @@ describe("hx-put attribute", function(){
         this.server.respond();
         btn.innerHTML.should.equal("Putted!");
     });
+
+    it('issues a PUT request with modified path on click and swaps content', function () {
+        this.server.respondWith('PUT', '/test-modified', 'Clicked!');
+
+        var btn = make('<button hx-put="/test">Click Me!</button>')
+        btn.setAttribute('hx-put', '/test-modified');
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal('Clicked!');
+    });
 })

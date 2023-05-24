@@ -33,4 +33,14 @@ describe("hx-post attribute", function(){
         this.server.respond();
         btn.innerHTML.should.equal("Posted!");
     });
+
+    it('issues a POST request with modified path on click and swaps content', function () {
+        this.server.respondWith('POST', '/test-modified', 'Clicked!');
+
+        var btn = make('<button hx-post="/test">Click Me!</button>')
+        btn.setAttribute('hx-post', '/test-modified');
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal('Clicked!');
+    });
 })
