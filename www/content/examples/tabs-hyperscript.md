@@ -12,24 +12,24 @@ You may also consider [a more idiomatic approach](@/examples/tabs-hateoas.md) th
 The HTML below displays a list of tabs, with added HTMX to dynamically load each tab pane from the server.  A simple [hyperscript](https://hyperscript.org) event handler uses the [`take` command](https://hyperscript.org/commands/take/) to switch the selected tab when the content is swapped into the DOM.  Alternatively, this could be accomplished with a slightly longer Javascript event handler.
 
 ```html
-<div id="tabs" hx-target="#tab-contents" _="on htmx:afterOnLoad take .selected for event.target">
-	<a href="#" hx-get="/tab1" class="selected">Tab 1</a>
-	<a href="#" hx-get="/tab2">Tab 2</a>
-	<a href="#" hx-get="/tab3">Tab 3</a>
+<div id="tabs" hx-target="#tab-contents" role="tablist" _="on htmx:afterOnLoad set @aria-selected of <[aria-selected=true]/> to false tell the target take .selected set @aria-selected to true">
+	<button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
+	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
-<div id="tab-contents" hx-get="/tab1" hx-trigger="load"></div>
+<div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 ```
 
 {{ demoenv() }}
 
-<div id="tabs" hx-target="#tab-contents" _="on click take .selected for event.target">
-	<a href="#" hx-get="/tab1" class="selected">Tab 1</a>
-	<a href="#" hx-get="/tab2">Tab 2</a>
-	<a href="#" hx-get="/tab3">Tab 3</a>
+<div id="tabs" hx-target="#tab-contents" role="tablist" _="on htmx:afterOnLoad set @aria-selected of <[aria-selected=true]/> to false tell the target take .selected set @aria-selected to true">
+	<button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
+	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
-<div id="tab-contents" hx-get="/tab1" hx-trigger="load"></div>
+<div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 
 <script src="https://unpkg.com/hyperscript.org"></script>
 <script>
@@ -42,7 +42,6 @@ The HTML below displays a list of tabs, with added HTMX to dynamically load each
 			Enim tousled cliche woke, typewriter single-origin coffee hella culpa.
 			Art party readymade 90's, asymmetrical hell of fingerstache ipsum.</p>
 		`});
-
 	onGet("/tab2", function() {
 		return `
 			<p>Kitsch fanny pack yr, farm-to-table cardigan cillum commodo reprehenderit plaid dolore cronut meditation.
@@ -54,7 +53,6 @@ The HTML below displays a list of tabs, with added HTMX to dynamically load each
 			Prism street art cray salvia.</p>
 		`
 	});
-
 	onGet("/tab3", function() {
 		return `
 			<p>Aute chia marfa echo park tote bag hammock mollit artisan listicle direct trade.
@@ -76,13 +74,19 @@ The HTML below displays a list of tabs, with added HTMX to dynamically load each
 		border-bottom: solid 3px #eee;
 	}
 
-	#tabs > a {
+	#tabs > button {
+		border: none;
 		display: inline-block;
 		padding: 5px 10px;
 		cursor:pointer;
+		background-color: transparent;
 	}
 
-	#tabs > a.selected {
+	#tabs > button:hover {
+		color: var(--midBlue);
+	}
+
+	#tabs > button.selected {
 		background-color: #eee;
 	}
 

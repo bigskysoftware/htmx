@@ -35,7 +35,7 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 <div id="tabs" hx-target="this" hx-swap="innerHTML">
 		<div class="tab-list" role="tablist">
-			<button hx-get="/tab1" class="selected" role="tab" aria-selected="false" aria-controls="tab-content">Tab 1</button>
+			<button hx-get="/tab1" class="selected" role="tab" aria-selected="true" aria-controls="tab-content">Tab 1</button>
 			<button hx-get="/tab2" role="tab" aria-selected="false" aria-controls="tab-content">Tab 2</button>
 			<button hx-get="/tab3" role="tab" aria-selected="false" aria-controls="tab-content">Tab 3</button>
 		</div>
