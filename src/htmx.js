@@ -2599,40 +2599,35 @@ return (function () {
             if (swapInfo) {
                 var split = splitOnWhitespace(swapInfo);
                 if (split.length > 0) {
-                    swapSpec["swapStyle"] = split[0];
-                    for (var i = 1; i < split.length; i++) {
-                        var modifier = split[i];
-                        if (modifier.indexOf("swap:") === 0) {
-                            swapSpec["swapDelay"] = parseInterval(modifier.substr(5));
-                        }
-                        if (modifier.indexOf("settle:") === 0) {
-                            swapSpec["settleDelay"] = parseInterval(modifier.substr(7));
-                        }
-                        if (modifier.indexOf("transition:") === 0) {
-                            swapSpec["transition"] = modifier.substr(11) === "true";
-                        }
-                        if (modifier.indexOf("ignoreTitle:") === 0) {
-                            swapSpec["ignoreTitle"] = modifier.substr(12) === "true";
-                        }
-                        if (modifier.indexOf("scroll:") === 0) {
-                            var scrollSpec = modifier.substr(7);
+                    for (var i = 0; i < split.length; i++) {
+                        var value = split[i];
+                        if (value.indexOf("swap:") === 0) {
+                            swapSpec["swapDelay"] = parseInterval(value.substr(5));
+                        } else if (value.indexOf("settle:") === 0) {
+                            swapSpec["settleDelay"] = parseInterval(value.substr(7));
+                        } else if (value.indexOf("transition:") === 0) {
+                            swapSpec["transition"] = value.substr(11) === "true";
+                        } else if (value.indexOf("ignoreTitle:") === 0) {
+                            swapSpec["ignoreTitle"] = value.substr(12) === "true";
+                        } else if (value.indexOf("scroll:") === 0) {
+                            var scrollSpec = value.substr(7);
                             var splitSpec = scrollSpec.split(":");
                             var scrollVal = splitSpec.pop();
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
                             swapSpec["scroll"] = scrollVal;
                             swapSpec["scrollTarget"] = selectorVal;
-                        }
-                        if (modifier.indexOf("show:") === 0) {
-                            var showSpec = modifier.substr(5);
+                        } else if (value.indexOf("show:") === 0) {
+                            var showSpec = value.substr(5);
                             var splitSpec = showSpec.split(":");
                             var showVal = splitSpec.pop();
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
                             swapSpec["show"] = showVal;
                             swapSpec["showTarget"] = selectorVal;
-                        }
-                        if (modifier.indexOf("focus-scroll:") === 0) {
-                            var focusScrollVal = modifier.substr("focus-scroll:".length);
+                        } else if (value.indexOf("focus-scroll:") === 0) {
+                            var focusScrollVal = value.substr("focus-scroll:".length);
                             swapSpec["focusScroll"] = focusScrollVal == "true";
+                        } else if (i == 0) {
+                            swapSpec["swapStyle"] = value;
                         }
                     }
                 }
