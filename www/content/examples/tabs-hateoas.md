@@ -15,13 +15,13 @@ The main page simply includes the following HTML to load the initial tab into th
 Subsequent tab pages display all tabs and highlight the selected one accordingly.
 
 ```html
-<div class="tab-list">
-	<a hx-get="/tab1" href="#" class="selected">Tab 1</a>
-	<a hx-get="/tab2" href="#">Tab 2</a>
-	<a hx-get="/tab3" href="#">Tab 3</a>
+<div class="tab-list" role="tablist">
+	<button hx-get="/tab1" class="selected" role="tab" aria-selected="false" aria-controls="tab-content">Tab 1</button>
+	<button hx-get="/tab2" role="tab" aria-selected="false" aria-controls="tab-content">Tab 2</button>
+	<button hx-get="/tab3" role="tab" aria-selected="false" aria-controls="tab-content">Tab 3</button>
 </div>
 
-<div class="tab-content">
+<div id="tab-content" role="tabpanel" class="tab-content">
 	Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.
 	Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.
 	Polaroid duis occaecat narwhal small batch food truck.
@@ -34,12 +34,12 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 {{ demoenv() }}
 
 <div id="tabs" hx-target="this" hx-swap="innerHTML">
-		<div class="tab-list">
-			<a hx-get="/tab1" href="#" class="selected">Tab 1</a>
-			<a hx-get="/tab2" href="#">Tab 2</a>
-			<a hx-get="/tab3" href="#">Tab 3</a>
+		<div class="tab-list" role="tablist">
+			<button hx-get="/tab1" class="selected" role="tab" aria-selected="false" aria-controls="tab-content">Tab 1</button>
+			<button hx-get="/tab2" role="tab" aria-selected="false" aria-controls="tab-content">Tab 2</button>
+			<button hx-get="/tab3" role="tab" aria-selected="false" aria-controls="tab-content">Tab 3</button>
 		</div>
-		<div class="tab-content">
+		<div id="tab-content" role="tabpanel" class="tab-content">
 			Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.
 			Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.
 			Polaroid duis occaecat narwhal small batch food truck.
@@ -53,13 +53,13 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 <script>
 	onGet("/tab1", function() {
 		return `
-		<div class="tab-list">
-			<a hx-get="/tab1" href="#" class="selected" autofocus>Tab 1</a>
-			<a hx-get="/tab2" href="#">Tab 2</a>
-			<a hx-get="/tab3" href="#">Tab 3</a>
+		<div class="tab-list" role="tablist">
+			<button hx-get="/tab1" class="selected" aria-selected="true" autofocus role="tab" aria-controls="tab-content">Tab 1</button>
+			<button hx-get="/tab2" role="tab" aria-selected="false" aria-controls="tab-content">Tab 2</button>
+			<button hx-get="/tab3" role="tab" aria-selected="false" aria-controls="tab-content">Tab 3</button>
 		</div>
 
-		<div class="tab-content">
+		<div id="tab-content" role="tabpanel" class="tab-content">
 			Commodo normcore truffaut VHS duis gluten-free keffiyeh iPhone taxidermy godard ramps anim pour-over.
 			Pitchfork vegan mollit umami quinoa aute aliquip kinfolk eiusmod live-edge cardigan ipsum locavore.
 			Polaroid duis occaecat narwhal small batch food truck.
@@ -71,13 +71,13 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 	onGet("/tab2", function() {
 		return `
-		<div class="tab-list">
-			<a href="#" hx-get="/tab1">Tab 1</a>
-			<a href="#" hx-get="/tab2" class="selected" autofocus>Tab 2</a>
-			<a href="#" hx-get="/tab3">Tab 3</a>
+		<div class="tab-list" role="tablist">
+			<button hx-get="/tab1" role="tab" aria-selected="false" aria-controls="tab-content">Tab 1</button>
+			<button hx-get="/tab2" class="selected" aria-selected="true" autofocus role="tab" aria-controls="tab-content">Tab 2</button>
+			<button hx-get="/tab3" role="tab" aria-selected="false" aria-controls="tab-content">Tab 3</button>
 		</div>
 
-		<div class="tab-content">
+		<div id="tab-content" role="tabpanel" class="tab-content">
 			Kitsch fanny pack yr, farm-to-table cardigan cillum commodo reprehenderit plaid dolore cronut meditation.
 			Tattooed polaroid veniam, anim id cornhole hashtag sed forage.
 			Microdosing pug kitsch enim, kombucha pour-over sed irony forage live-edge.
@@ -90,13 +90,13 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 
 	onGet("/tab3", function() {
 		return `
-		<div class="tab-list">
-			<a href="#" hx-get="/tab1">Tab 1</a>
-			<a href="#" hx-get="/tab2">Tab 2</a>
-			<a href="#" hx-get="/tab3" class="selected" autofocus>Tab 3</a>
+		<div class="tab-list" role="tablist">
+			<button hx-get="/tab1" role="tab" aria-selected="false" aria-controls="tab-content">Tab 1</button>
+			<button hx-get="/tab2" role="tab" aria-selected="false" aria-controls="tab-content">Tab 2</button>
+			<button hx-get="/tab3" class="selected" aria-selected="true" autofocus role="tab" aria-controls="tab-content">Tab 3</button>
 		</div>
 
-		<div class="tab-content">
+		<div id="tab-content" role="tabpanel" class="tab-content">
 			Aute chia marfa echo park tote bag hammock mollit artisan listicle direct trade.
 			Raw denim flexitarian eu godard etsy.
 			Poke tbh la croix put a bird on it fixie polaroid aute cred air plant four loko gastropub swag non brunch.
@@ -115,13 +115,19 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 		border-bottom: solid 3px #eee;
 	}
 
-	#tabs > .tab-list a {
+	#tabs > .tab-list button {
+		border: none;
 		display: inline-block;
 		padding: 5px 10px;
 		cursor:pointer;
+		background-color: transparent;
 	}
 
-	#tabs > .tab-list a.selected {
+	#tabs > .tab-list button:hover {
+		color: var(--midBlue);
+	}
+
+	#tabs > .tab-list button.selected {
 		background-color: #eee;
 	}
 
