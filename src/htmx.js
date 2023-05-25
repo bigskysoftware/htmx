@@ -2628,6 +2628,8 @@ return (function () {
                             swapSpec["focusScroll"] = focusScrollVal == "true";
                         } else if (i == 0) {
                             swapSpec["swapStyle"] = value;
+                        } else {
+                            logError('Unknown modifier in hx-swap: ' + value);
                         }
                     }
                 }
