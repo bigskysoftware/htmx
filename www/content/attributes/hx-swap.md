@@ -112,6 +112,15 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
   </div>
 ```
 
+For boosted links and forms the default behaviour is `show:top`. You can disable it globally with
+[htmx.config.scrollIntoViewOnBoost](@/api.md#config) or you can use `hx-swap="show:none"` on an element basis.
+
+```html
+<form action="/example" hx-swap="show:none">
+  ...
+</form>
+```
+
 #### Focus scroll
 
 htmx preserves focus between requests for inputs that have a defined id attribute. By default htmx prevents auto-scrolling to focused inputs between requests which can be unwanted behavior on longer requests when the user has already scrolled away. To enable focus scroll you can use `focus-scroll:true`.

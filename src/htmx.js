@@ -74,7 +74,8 @@ return (function () {
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
-                selfRequestsOnly: false
+                selfRequestsOnly: false,
+                scrollIntoViewOnBoost: true
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2641,7 +2642,7 @@ return (function () {
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
             }
-            if (getInternalData(elt).boosted && !isAnchorLink(elt)) {
+            if (htmx.config.scrollIntoViewOnBoost && getInternalData(elt).boosted && !isAnchorLink(elt)) {
               swapSpec["show"] = "top"
             }
             if (swapInfo) {
