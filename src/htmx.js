@@ -2649,7 +2649,7 @@ return (function () {
                 }
                 var varsValues;
                 if (evaluateValue) {
-                    varsValues = maybeEval(elt,function () {return Function("return (" + str + ")")();}, {});
+                    varsValues = maybeEval(elt,function () {return Function("event", "return (" + str + ")")(values.event);}, {});
                 } else {
                     varsValues = parseJSON(str);
                 }
@@ -2693,10 +2693,11 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
+         * @param {*} expressionVars
          * @returns {Object}
          */
-        function getExpressionVars(elt) {
-            return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt));
+        function getExpressionVars(elt, expressionVars) {
+            return mergeObjects(getHXVarsForElement(elt, expressionVars), getHXValsForElement(elt, expressionVars));
         }
 
         function safelySetHeaderValue(xhr, header, headerValue) {
@@ -2909,7 +2910,7 @@ return (function () {
             if (etc.values) {
                 rawParameters = mergeObjects(rawParameters, etc.values);
             }
-            var expressionVars = getExpressionVars(elt);
+            var expressionVars = getExpressionVars(elt, {event:event});
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
