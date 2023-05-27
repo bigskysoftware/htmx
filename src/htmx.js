@@ -2649,7 +2649,10 @@ return (function () {
                 }
                 var varsValues;
                 if (evaluateValue) {
-                    varsValues = maybeEval(elt,function () {return Function("event", "return (" + str + ")")(values.event);}, {});
+                    varsValues = maybeEval(elt, function () {
+                        return Function.apply(null, Object.keys(values).concat("return (" + str + ")"))
+                                       .apply(null, Object.values(values));
+                    }, {});
                 } else {
                     varsValues = parseJSON(str);
                 }
