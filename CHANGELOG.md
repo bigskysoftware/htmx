@@ -1,6 +1,8 @@
 # Changelog
 
-## [1.9.3] - 2023-04-28
+## [1.9.3] - 2023-06-??
+
+* Fixed bug w/ WebSocket extension initilization caused by "naked" `hx-trigger` feature
 
 ## [1.9.2] - 2023-04-28
 
