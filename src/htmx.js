@@ -950,7 +950,7 @@ return (function () {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
-                settleInfo.elts = [] // clear existing elements
+                settleInfo.elts = settleInfo.elts.filter(e => e != target);
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
                         settleInfo.elts.push(newElt);
