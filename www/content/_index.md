@@ -7,6 +7,9 @@ insert_anchor_links = "left"
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
+<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
+<b>NEWS:</b> We are excited to announce that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">Github Open Source Accelerator!</a>
+</div>
 
 <h2>introduction</h2>
 
@@ -48,9 +51,13 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
-<h2>sponsors</h2>
+<h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
 
-A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>, including:
+
+htmx development can be supported via [Github Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
+
+
+Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">supporters</a>, including:
 
 <style>
 #sponsor-table td {
@@ -68,27 +75,27 @@ A huge thank you to all our <a href="https://github.com/sponsors/bigskysoftware?
         <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <tr>
-<td>
-        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:200px"></a>
-</td>
-<td>
-        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
+<td colspan="2">
+        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:500px"></a>
 </td>
 </tr>
 <tr>
+<td>
+        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
+</td>
 <td>
         <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
           <img src="/img/butter-cms.svg" style="width:100%;max-width:200px">
         </a>
 </td>
+</tr>
+<tr>
 <td>
         <a href="https://www.peakcrypto.com/">
           <img alt="Peak Crypto" src="/img/peakcrypto.png" style="width:100%;max-width:65px">
         </a>
 </td>
-</tr>
-<tr>
-<td colspan="2">
+<td>
       <a href="https://bigsky.software"><img src="/img/bss.png" style="width:100%;max-width:150px"></a>
 </td>
 </tr>

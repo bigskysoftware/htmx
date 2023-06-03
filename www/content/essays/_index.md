@@ -15,6 +15,7 @@ insert_anchor_links = "left"
 * [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
+* [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
 * [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
 * [Template Fragments](@/essays/template-fragments.md)
 * [View Transitions](@/essays/view-transitions.md)
@@ -30,6 +31,11 @@ insert_anchor_links = "left"
 ### Grug
 
 * [The Grug Brained Developer](https://grugbrain.dev)
+
+## Banners
+<div style="text-align: center;margin:32px">
+  <img width="90%" loading="lazy" src="/img/createdwith.jpeg">
+</div>
 
 ## Memes
 
@@ -50,6 +56,7 @@ insert_anchor_links = "left"
 <img loading="lazy" src="/img/memes/uarealldoingitwrong.png">
 <img loading="lazy" src="/img/memes/restapi.png">
 <img loading="lazy" src="/img/memes/justusehtml.png">
+<img loading="lazy" src="/img/memes/istudiedhtml.png">
 <img loading="lazy" src="/img/memes/htmlvsjson.png">
 <img loading="lazy" src="/img/memes/dontknowwhatclientsideroutingis.png">
 <img loading="lazy" src="/img/memes/nocap.png">

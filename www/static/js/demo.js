@@ -7,7 +7,7 @@ server.getHTTPMethod = function(xhr) {
     return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
 }
 server.autoRespond = true;
-server.autoRespondAfter = 200;
+server.autoRespondAfter = 80;
 server.xhr.useFilters = true;
 server.xhr.addFilter(function (method, url, async, username, password){
     return url === "/" || url.indexOf("http") === 0;

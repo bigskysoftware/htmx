@@ -165,8 +165,12 @@ h4 {
   box-sizing: border-box;
 }
 
+ul {
+    margin-left: 12px;
+}
+
 ul li {
-    padding: 8px;
+    padding: 4px;
 }
 
 @media(max-width:45rem) {

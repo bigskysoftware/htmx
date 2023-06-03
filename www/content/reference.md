@@ -28,7 +28,7 @@ The following are the most common attributes when using htmx.
 | [`hx-push-url`](@/attributes/hx-push-url.md)       | pushes the URL into the browser location bar, creating a new history entry
 | [`hx-select`](@/attributes/hx-select.md)           | select content to swap in from a response
 | [`hx-select-oob`](@/attributes/hx-select-oob.md)   | select content to swap in from a response, out of band (somewhere other than the target)
-| [`hx-swap`](@/attributes/hx-swap.md)               | controls how content is swapped in (`outerHTML`, `beforeEnd`, `afterend`, ...)
+| [`hx-swap`](@/attributes/hx-swap.md)               | controls how content is swapped in (`outerHTML`, `beforeend`, `afterend`, ...)
 | [`hx-swap-oob`](@/attributes/hx-swap-oob.md)       | marks content in a response to be out of band (should swap in somewhere other than the target)
 | [`hx-target`](@/attributes/hx-target.md)           | specifies the target element to be swapped
 | [`hx-trigger`](@/attributes/hx-trigger.md)         | specifies the event that triggers the request
@@ -44,7 +44,7 @@ The table below lists all other attributes available in htmx.
 
 | Attribute                                          | Description |
 |----------------------------------------------------|-------------|
-| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confim()` dialog before issuing a request
+| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confirm()` dialog before issuing a request
 | [`hx-delete`](@/attributes/hx-delete.md)           | issues a `DELETE` to the specified URL
 | [`hx-disable`](@/attributes/hx-disable.md)         | disables htmx processing for the given node and any children nodes
 | [`hx-disinherit`](@/attributes/hx-disinherit.md)   | control and disable automatic attribute inheritance for child nodes
@@ -151,7 +151,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:load`](@/events.md#htmx:load)  | triggered when new content is added to the DOM
 | [`htmx:noSSESourceError`](@/events.md#htmx:noSSESourceError)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
 | [`htmx:onLoadError`](@/events.md#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
-| [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an of band element as been swapped in
+| [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an out of band element as been swapped in
 | [`htmx:oobBeforeSwap`](@/events.md#htmx:oobBeforeSwap)  | triggered before an out of band element swap is done, allows you to configure the swap
 | [`htmx:oobErrorNoTarget`](@/events.md#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
 | [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown

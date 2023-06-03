@@ -77,6 +77,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/jerriepelser-blog/htmx-with-aspnet-core>
 - <https://github.com/mryderie/aspnet-core-htmx-example>
+- <https://github.com/khalidabuhakmeh/Htmx.Net>
+- <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
+- <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
 
 ## Prolog
 
@@ -113,3 +116,15 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://ocaml.org/p/dream-htmx>
 - <https://github.com/yawaramin/dream-html>
+
+## PHP
+
+### CodeIgniter 4
+
+- <https://github.com/michalsn/codeigniter-htmx-demo>
+
+## Elixir
+
+### Phoenix
+
+- <https://github.com/hungle00/todo-htmx>
