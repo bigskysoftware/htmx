@@ -1095,7 +1095,10 @@ return (function () {
                     }
                 }
             } else {
-                triggerEvent(elt, triggerBody, []);
+                var eventNames = triggerBody.split(",")
+                for (var i = 0; i < eventNames.length; i++) {
+                    triggerEvent(elt, eventNames[i].trim(), []);
+                }
             }
         }
 
