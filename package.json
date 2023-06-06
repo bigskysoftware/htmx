@@ -46,5 +46,10 @@
     "sinon": "^9.2.4",
     "typescript": "^4.9.5",
     "uglify-js": "^3.17.4"
+  },
+  "overrides": {
+    "mocha-webdriver-runner": {
+      "mocha": "$mocha"
+    }
   }
 }
