@@ -25,11 +25,10 @@
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
+    "build": "gulp",
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
-    "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
-    "www": "node scripts/www.js",
-    "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
+    "www": "node scripts/www.js"
   },
   "repository": {
     "type": "git",
@@ -39,13 +38,17 @@
     "chai": "^4.3.7",
     "chai-dom": "^1.11.0",
     "fs-extra": "^9.1.0",
+    "gulp": "^4.0.2",
+    "gulp-gzip": "^1.4.2",
+    "gulp-plugin-terser": "^2.1.0",
+    "gulp-umd": "^2.0.0",
     "mocha": "^10.2.0",
     "mocha-chrome": "^2.2.0",
     "mocha-webdriver-runner": "^0.6.4",
     "mock-socket": "^9.2.1",
+    "rimraf": "^5.0.1",
     "sinon": "^9.2.4",
-    "typescript": "^4.9.5",
-    "uglify-js": "^3.17.4"
+    "typescript": "^4.9.5"
   },
   "overrides": {
     "mocha-webdriver-runner": {
