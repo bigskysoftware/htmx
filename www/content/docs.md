@@ -132,44 +132,34 @@ and include it where necessary with a `<script>` tag:
 
 You can also add extensions this way, by downloading them from the `ext/` directory.
 
-### npm
+### As a Module
 
-For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
+You can install htmx via NPM or Yarn and import it into a bundle.
+
+Install via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org
+npm i htmx.org
 ```
 
-After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
-For example, you might bundle htmx with some extensions and project-specific code.
+Install via [yarn](https://yarnpkg.com/):
 
-### Webpack
+```sh
+yarn add htmx.org
+```
 
-If you are using webpack to manage your javascript:
-
-* Install `htmx` via your favourite package manager (like npm or yarn)
-* Add the import to your `index.js`
+Now import htmx into your bundle and initialize it like so:
 
 ```js
-import 'htmx.org';
+import htmx from 'htmx.org';
+import '<extensions>'
+
+window.htmx = htmx;
+
+htmx.start();
 ```
-
-If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
-
-* Create a custom JS file
-* Import this file to your `index.js` (below the import from step 2)
-
-```js
-import 'path/to/my_custom.js';
-```
-
-* Then add this code to the file:
-
-```js
-window.htmx = require('htmx.org');
-```
-
-* Finally, rebuild your bundle
+>The window.htmx = htmx is optional, but is nice to have for freedom and flexibility.
+>If you have imported htmx into a bundle, you must ensure that you have imported or registered any extension after the import of htmx and before the initialization `htmx.start()`.
 
 ## AJAX
 

@@ -103,6 +103,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 
 ##### Properties
 
+* `autoStart:true` - boolean: whether or not htmx should be initialized automatically when DOM is ready. If htmx is loaded as module this defaults to `false` and you must initialize htmx manually by calling `htmx.start()`
 * `attributesToSettle:["class", "style", "width", "height"]` - array of strings: the attributes to settle during the settling phase
 * `defaultSettleDelay:20` - int: the default delay between completing the content swap and settling attributes
 * `defaultSwapDelay:0` - int: the default delay between receiving a response from the server and doing the swap
@@ -228,6 +229,19 @@ or
 
     // find all paragraphs within a given div
     var allParagraphsInMyDiv = htmx.findAll(htmx.find("#my-div"), "p")
+```
+
+### Method - `htmx.start()` {#start}
+
+When htmx is imported as a module, this function must be called to initialize it.
+
+##### Example
+
+```js
+    import htmx from 'htmx.org';
+    import '<extensions>';
+
+    htmx.start();
 ```
 
 ### Method - `htmx.logAll()` {#logAll}

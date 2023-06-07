@@ -23,6 +23,7 @@ return (function () {
         //** @type {import("./htmx").HtmxApi} */
         // TODO: list all methods in public API
         var htmx = {
+            start: start,
             onLoad: onLoadHelper,
             process: processNode,
             on: addEventListenerImpl,
@@ -47,6 +48,7 @@ return (function () {
             logNone : logNone,
             logger : null,
             config : {
+                autoStart: document.currentScript !== null, // do not initialize htmx automatically if executed as module
                 historyEnabled:true,
                 historyCacheSize:10,
                 refreshOnHistoryMiss:false,
@@ -2102,6 +2104,14 @@ return (function () {
             }
         }
 
+        function logWarn(msg) {
+            if(console.warn) {
+                console.warn(msg);
+            } else if (console.log) {
+                console.log("WARN: ", msg);
+            }
+        }
+
         function triggerEvent(elt, eventName, detail) {
             elt = resolveTarget(elt);
             if (detail == null) {
@@ -3633,22 +3643,35 @@ return (function () {
             }
         }
 
+        var metaConfigLoaded = false;
         function mergeMetaConfig() {
+            if (metaConfigLoaded) {
+                return;
+            }
+
             var metaConfig = getMetaConfig();
             if (metaConfig) {
                 htmx.config = mergeObjects(htmx.config , metaConfig)
             }
+            metaConfigLoaded = true;
         }
 
-        // initialize the document
-        ready(function () {
+        var started = false;
+        function start() {
+            if (started) {
+                logWarn('htmx has already been initialized on this page. Calling htmx.start() more than once may cause problems.');
+            }
+            started = true;
+
+            var body = getDocument().body;
+            if (!body) {
+                logError('Unable to initialize. Trying to load htmx before `<body>` is available. Did you forget to add `defer` in htmx\'s `<script>` tag?');
+            }
+
             mergeMetaConfig();
             insertIndicatorStyles();
-            var body = getDocument().body;
             processNode(body);
-            var restoredElts = getDocument().querySelectorAll(
-                "[hx-trigger='restored'],[data-hx-trigger='restored']"
-            );
+
             body.addEventListener("htmx:abort", function (evt) {
                 var target = evt.target;
                 var internalData = getInternalData(target);
@@ -3656,6 +3679,8 @@ return (function () {
                     internalData.xhr.abort();
                 }
             });
+
+            var restoredElts = getDocument().querySelectorAll('[hx-trigger="restored"],[data-hx-trigger="restored"]');
             var originalPopstate = window.onpopstate;
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
@@ -3672,11 +3697,20 @@ return (function () {
                     }
                 }
             };
+
             setTimeout(function () {
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
                 body = null; // kill reference for gc
             }, 0);
-        })
+        }
+
+        // initialize if auto start is enabled
+        ready(function() {
+            mergeMetaConfig();
+            if (htmx.config.autoStart) {
+                start();
+            }
+        });
 
         return htmx;
     }

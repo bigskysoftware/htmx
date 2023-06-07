@@ -130,6 +130,13 @@ export function findAll(selector: string): NodeListOf<Element>;
 export function findAll(elt: Element, selector: string): NodeListOf<Element>;
 
 /**
+ * When htmx is imported as a module, this function must be called to initialize it.
+ *
+ * https://htmx.org/api/#start
+ */
+export function start(): void;
+
+/**
  * Log all htmx events, useful for debugging.
  *
  * https://htmx.org/api/#logAll
@@ -288,6 +295,8 @@ export function values(elt: Element, requestType?: string): any;
 export const version: string;
 
 export interface HtmxConfig {
+    /** whether or not htmx should be initialized automatically when DOM is ready */
+    autoStart?: boolean;
     /** array of strings: the attributes to settle during the settling phase */
     attributesToSettle?: ["class", "style", "width", "height"] | string[];
     /** if the focused element should be scrolled into view */
