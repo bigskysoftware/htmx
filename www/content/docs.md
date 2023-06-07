@@ -110,7 +110,7 @@ If you are migrating to htmx from intercooler.js, please see the [migration guid
 
 ### Via A CDN (e.g. unpkg.com)
 
-The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag 
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag
 and get going:
 
 ```html
@@ -157,18 +157,18 @@ import 'htmx.org';
 If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
 
 * Create a custom JS file
-* Import this file to your `index.js` (below the import from step 2) 
-  
-```js   
+* Import this file to your `index.js` (below the import from step 2)
+
+```js
 import 'path/to/my_custom.js';
 ```
- 
+
 * Then add this code to the file:
 
-```js   
+```js
 window.htmx = require('htmx.org');
 ```
- 
+
 * Finally, rebuild your bundle
 
 ## AJAX
@@ -426,7 +426,7 @@ with any of the following values:
 #### Morph Swaps {#morphing}
 
 In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
-attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job 
+attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job
 preserving things like focus, video state, etc. by preserving nodes in-place during the swap operation.
 
 The following extensions are available for morph-style swaps:
@@ -435,7 +435,7 @@ The following extensions are available for morph-style swaps:
   the original DOM morphing library.
 * [Alpine-morph](@/extensions/alpine-morph.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
   well with alpine.js
-* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators 
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators
   of htmx.  Idiomorph will be available out of the box in htmx 2.0.
 
 #### View Transitions {#view-transitions}
@@ -467,24 +467,24 @@ Consider a race condition between a form submission and an individual input's va
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
+    <input id="title" name="title" type="text"
+        hx-post="/validate"
         hx-trigger="change"
     >
     <button type="submit">Submit</button>
 </form>
 ```
 
-Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to 
-`/validate` and `/store`. 
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to
+`/validate` and `/store`.
 
-Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if 
+Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if
 a form request is present or starts while the input request is in flight:
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
+    <input id="title" name="title" type="text"
+        hx-post="/validate"
         hx-trigger="change"
         hx-sync="closest form:abort"
     >
@@ -510,7 +510,7 @@ More examples and details can be found on the [`hx-sync` attribute page.](@/attr
 
 ### CSS Transitions {#css_transitions}
 
-htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without 
+htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without
 javascript.  Consider this HTML content:
 
 ```html
@@ -523,7 +523,7 @@ Imagine this content is replaced by htmx via an ajax request with this new conte
 <div id="div1" class="red">New Content</div>
 ```
 
-Note two things: 
+Note two things:
 
 * The div has the *same* id in the original and in the new content
 * The `red` class has been added to the new content
@@ -592,8 +592,8 @@ attribute on the elements you wish to be preserved.
 By default, an element that causes a request will include its value if it has one.  If the element is a form it
 will include the values of all inputs within it.
 
-As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends. 
- 
+As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends.
+
 Additionally, if the element causes a non-`GET` request, the values of all the inputs of the nearest enclosing form
 will be included.
 
@@ -704,25 +704,25 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 ### Progressive Enhancement {#progressive_enhancement}
 
 A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
-to work, they simply don't use ajax requests.  This is known as 
+to work, they simply don't use ajax requests.  This is known as
 [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
 a wider audience to use your sites functionality.
 
-Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.  
+Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
 Consider the [active search](@/examples/active-search.md) example.  As it is written, it will not degrade gracefully:
-someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity’s sake, 
-to keep the example as brief as possible.  
- 
+someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity’s sake,
+to keep the example as brief as possible.
+
 However, you could wrap the htmx-enhanced input in a form element:
 
 ```html
 <form action="/search" method="POST">
-    <input class="form-control" type="search" 
-        name="search" placeholder="Begin typing to search users..." 
-        hx-post="/search" 
-        hx-trigger="keyup changed delay:500ms, search" 
-        hx-target="#search-results" 
+    <input class="form-control" type="search"
+        name="search" placeholder="Begin typing to search users..."
+        hx-post="/search"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#search-results"
         hx-indicator=".htmx-indicator"
     >
 </form>
@@ -733,7 +733,7 @@ clients would be able to hit the enter key and still search.  Even better, you c
 You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
 
-You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a 
+You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
 regular request, to determine exactly what to render to the client.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
@@ -742,8 +742,8 @@ As you can see, this requires more thought and more work.  It also rules some fu
 These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
 
 [Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
-closely related to progressive enhancement.  Using progressive enhancement techniques such as `hx-boost` will make your 
-htmx application more accessible to a wide array of users.  
+closely related to progressive enhancement.  Using progressive enhancement techniques such as `hx-boost` will make your
+htmx application more accessible to a wide array of users.
 
 htmx-based applications are very similar to normal, non-AJAX driven web applications because htmx is HTML-oriented.
 
@@ -764,7 +764,7 @@ and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Serve
 
 **Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
-both SSE and web sockets will be done in the extensions.  
+both SSE and web sockets will be done in the extensions.
 
 Please visit the [SSE extension](@/extensions/server-sent-events.md) and [WebSocket extension](@/extensions/web-sockets.md)
 pages to learn more about the new extensions.
@@ -848,10 +848,10 @@ Careful: this element will need to be on all pages or restoring from history won
 
 ### Disabling History Snapshots
 
-History snapshotting can be disabled for a URL by setting the [hx-history](@/attributes/hx-history.md) attribute to `false` 
+History snapshotting can be disabled for a URL by setting the [hx-history](@/attributes/hx-history.md) attribute to `false`
 on any element in the current document, or any html fragment loaded into the current document by htmx. This can be used
-to prevent sensitive data entering the localStorage cache, which can be important for shared-use / public computers. 
-History navigation will work as expected, but on restoration the URL will be requested from the server instead of the 
+to prevent sensitive data entering the localStorage cache, which can be important for shared-use / public computers.
+History navigation will work as expected, but on restoration the URL will be requested from the server instead of the
 local history cache.
 
 ## Requests &amp; Responses {#requests}
@@ -907,7 +907,7 @@ For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/head
 
 Submitting a form via htmx has the benefit, that the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) is not needed
 any more. After successful processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
- 
+
 ### Request Order of Operations {#request-operations}
 
 The order of operations in a htmx request are:
@@ -944,7 +944,7 @@ Htmx fires events around validation that can be used to hook in custom validatio
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
   in the `event.detail.errors` object
 
-Non-form elements do not validate before they make requests by default, but you can enable validation by setting 
+Non-form elements do not validate before they make requests by default, but you can enable validation by setting
 the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
 ### Validation Example
@@ -1015,7 +1015,7 @@ document.body.addEventListener('htmx:load', function(evt) {
     myJavascriptLib.init(evt.detail.elt);
 });
 ```
- 
+
 or, if you would prefer, you can use the following htmx helper:
 
 ```javascript
@@ -1024,8 +1024,8 @@ htmx.on("htmx:load", function(evt) {
 });
 ```
 
-The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent 
- to the normal `load` event.  
+The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent
+ to the normal `load` event.
 
 Some common uses for htmx events are:
 
@@ -1073,13 +1073,13 @@ document.body.addEventListener('htmx:beforeSwap', function(evt) {
     } else if(evt.detail.xhr.status === 418){
         // if the response code 418 (I'm a teapot) is returned, retarget the
         // content of the response to the element with the id `teapot`
-        evt.detail.shouldSwap = true;        
+        evt.detail.shouldSwap = true;
         evt.detail.target = htmx.find("#teapot");
     }
 });
 ```
 
-Here we handle a few [400-level error response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses) 
+Here we handle a few [400-level error response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses)
 that would normally not do a swap in htmx.
 
 ### Event Naming {#event_naming}
@@ -1108,20 +1108,20 @@ htmx.logger = function(elt, event, data) {
 
 Declarative and event driven programming with htmx (or any other declartive language) can be a wonderful and highly productive
 activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
- 
-Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.  
+
+Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.
 
 Well, here are the tricks:
- 
+
 The first debugging tool you can use is the `htmx.logAll()` method.  This will log every event that htmx triggers and
-will allow you to see exactly what the library is doing.  
+will allow you to see exactly what the library is doing.
 
 ```javascript
 htmx.logAll();
 ```
 
 Of course, that won't tell you why htmx *isn't* doing something.  You might also not know *what* events a DOM
-element is firing to use as a trigger.  To address this, you can use the 
+element is firing to use as a trigger.  To address this, you can use the
 [`monitorEvents()`](https://developers.google.com/web/updates/2015/05/quickly-monitor-events-from-the-console-panel) method available in the
 browser console:
 
@@ -1134,7 +1134,7 @@ to see exactly what is going on with it.
 
 Note that this *only* works from the console, you cannot embed it in a script tag on your page.
 
-Finally, push come shove, you might want to just debug `htmx.js` by loading up the unminimized version.  It's 
+Finally, push come shove, you might want to just debug `htmx.js` by loading up the unminimized version.  It's
 about 2500 lines of javascript, so not an insurmountable amount of code.  You would most likely want to set a break
 point in the `issueAjaxRequest()` and `handleAjaxResponse()` methods to see what's going on.
 
@@ -1156,7 +1156,7 @@ Simply add the following script tag to your demo/fiddle/whatever:
 <script src="https://demo.htmx.org"></script>
 ```
 
-This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL. 
+This helper allows you to add mock responses by adding `template` tags with a `url` attribute to indicate which URL.
 The response for that url will be the innerHTML of the template, making it easy to construct mock responses. You can
 add a delay to the response with a `delay` attribute, which should be an integer indicating the number of milliseconds
 to delay
@@ -1177,7 +1177,7 @@ Here is an example of the code in action:
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">
     Count Up
-</button> 
+</button>
 <output id="result"></output>
 
 <!-- respond to /foo with some dynamic content in a template tag -->
@@ -1210,7 +1210,7 @@ integrating a JavaScript library with htmx via events.
 Scripting solutions that pair well with htmx include:
 
 * [VanillaJS](http://vanilla-js.com/) - Simply using the built-in abilities of JavaScript to hook in event handlers to
-  respond to the events htmx emits can work very well for scripting.  This is an extremely lightweight and increasingly 
+  respond to the events htmx emits can work very well for scripting.  This is an extremely lightweight and increasingly
   popular approach.
 * [AlpineJS](https://alpinejs.dev/) - Alpine.js provides a rich set of tools for creating sophisticated front end scripts,
   including reactive programming support, while still remaining extremely lightweight.  Alpine encourages the "inline scripting"
@@ -1252,7 +1252,7 @@ with an `on*` property, but can be done using the `hx-on` attribute:
 
 ```html
 <button hx-post="/example"
-        hx-on="htmx:beforeRequest: event.detail.parameters.example = 'Hello Scripting!'">
+        hx-on="htmx:configRequest: event.detail.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
@@ -1278,11 +1278,11 @@ Hyperscript is *not* required when using htmx, anything you can do in hyperscrip
  well together.
 
 #### Installing Hyperscript
- 
+
  To use hyperscript in combination with htmx, you need to [install the hyperscript library](https://unpkg.com/browse/hyperscript.org/)
  either via a CDN or locally.  See the [hyperscript website](https://hyperscript.org) for the latest version of the
- library.  
- 
+ library.
+
  When hyperscript is included, it will automatically integrate with htmx and begin processing all hyperscripts embedded
  in your HTML.
 
@@ -1349,7 +1349,7 @@ In hyperscript you can implement similar functionality like so:
 ### 3rd Party Javascript {#3rd-party}
 
 Htmx integrates fairly well with third party libraries.  If the library fires events on the DOM, you can use those events to
-trigger requests from htmx.  
+trigger requests from htmx.
 
 A good example of this is the [SortableJS demo](@/examples/sortable.md):
 
@@ -1362,7 +1362,7 @@ A good example of this is the [SortableJS demo](@/examples/sortable.md):
 </form>
 ```
 
-With Sortable, as with most javascript libraries, you need to initialize content at some point.  
+With Sortable, as with most javascript libraries, you need to initialize content at some point.
 
 In jquery you might do this like so:
 
@@ -1397,10 +1397,10 @@ htmx.onLoad(function(content) {
 
 This will ensure that as new content is added to the DOM by htmx, sortable elements are properly initialized.
 
-If javascript adds content to the DOM that has htmx attributes on it, you need to make sure that this content 
+If javascript adds content to the DOM that has htmx attributes on it, you need to make sure that this content
 is initialized with the `htmx.process()` function.
 
-For example, if you were to fetch some data and put it into a div using the `fetch` API, and that HTML had 
+For example, if you were to fetch some data and put it into a div using the `fetch` API, and that HTML had
 htmx attributes in it, you would need to add a call to `htmx.process()` like this:
 
 ```js
@@ -1410,7 +1410,7 @@ fetch('http://example.com/movies.json')
     .then(data => { myDiv.innerHTML = data; htmx.process(myDiv); } );
 ```
 
-Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if` 
+Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if`
 attribute on templates to add content conditionally. Such templates are not initially part of the DOM and,
 if they contain htmx attributes, will need a call to `htmx.process()` after they are loaded. The following
 example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
@@ -1436,17 +1436,17 @@ example uses Alpine's `$watch` function to look for a change of value that would
 htmx works with standard [HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
 mechanisms out of the box.
 
-If your server adds the 
-[`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified) 
-HTTP response header to the response for a given URL, the browser will automatically add the 
-[`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since) 
-request HTTP header to the next requests to the same URL. Be mindful that if 
+If your server adds the
+[`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified)
+HTTP response header to the response for a given URL, the browser will automatically add the
+[`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
+request HTTP header to the next requests to the same URL. Be mindful that if
 your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
-response HTTP header. For example, if your server renders the full HTML when the 
+response HTTP header. For example, if your server renders the full HTML when the
 `HX-Request` header is missing or `false`, and it renders a fragment of that HTML
 when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be
-keyed based on a composite of the response URL and the `HX-Request` request header — 
+keyed based on a composite of the response URL and the `HX-Request` request header —
 rather than being based just on the response URL.
 
 If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
@@ -1455,25 +1455,25 @@ in `GET` requests that it makes, which will prevent browsers from caching htmx-b
 in the same cache slot.
 
 htmx also works with [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
-as expected.  Be mindful that if your server can render different content for the same 
-URL (for example, depending on the value of the `HX-Request` header), the server needs 
+as expected.  Be mindful that if your server can render different content for the same
+URL (for example, depending on the value of the `HX-Request` header), the server needs
 to generate a different `ETag` for each content.
 
 ## Security
 
 htmx allows you to define logic directly in your DOM.  This has a number of advantages, the
-largest being [Locality of Behavior](@/essays/locality-of-behaviour.md) making your system 
+largest being [Locality of Behavior](@/essays/locality-of-behaviour.md) making your system
 more coherent.
 
 One concern with this approach, however, is security. This is especially the case if you are injecting user-created
-content into your site without any sort of HTML escaping discipline.  
+content into your site without any sort of HTML escaping discipline.
 
 You should, of course, escape all 3rd party untrusted content that is injected into your site to prevent, among other issues, [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). Attributes starting with `hx-` and `data-hx`, as well as inline `<script>` tags should be filtered.
 
 It is important to understand that htmx does *not* require inline scripts or `eval()` for most of its features. You (or your security team) may use a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) that intentionally disallows inline scripts and the use of `eval()`. This, however, will have *no effect* on htmx functionality, which will still be able to execute JavaScript code placed in htmx attributes and may be a security concern. With that said, if your site relies on inline scripts that you do wish to allow and have a CSP in place, you may need to define [htmx.config.inlineScriptNonce](#config)--however, HTMX will add this nonce to *all* inline script tags it encounters, meaning a nonce-based CSP will no longer be effective for HTMX-loaded content.
 
 To address this, if you don't want a particular part of the DOM to allow for htmx functionality, you can place the
-`hx-disable` or `data-hx-disable` attribute on the enclosing element of that area.  
+`hx-disable` or `data-hx-disable` attribute on the enclosing element of that area.
 
 This will prevent htmx from executing within that area in the DOM:
 
@@ -1484,7 +1484,7 @@ This will prevent htmx from executing within that area in the DOM:
 ```
 
 This approach allows you to enjoy the benefits of [Locality of Behavior](@/essays/locality-of-behaviour.md)
-while still providing additional safety if your HTML-escaping discipline fails. 
+while still providing additional safety if your HTML-escaping discipline fails.
 
 ## Configuring htmx {#config}
 
@@ -1527,7 +1527,7 @@ You can set them directly in javascript, or you can use a `meta` tag:
 
 ## Conclusion
 
-And that's it!  
+And that's it!
 
 Have fun with htmx! You can accomplish [quite a bit](@/examples/_index.md) without writing a lot of code!
 
