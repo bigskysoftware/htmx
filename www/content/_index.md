@@ -8,7 +8,7 @@ insert_anchor_links = "left"
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> We are excited to announce that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">Github Open Source Accelerator!</a>
+<b>NEWS:</b> We are excited to <a href="/posts/2023-06-06-htmx-github-accelerator/">announce</a> that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">Github Open Source Accelerator!</a>
 </div>
 
 <h2>introduction</h2>
