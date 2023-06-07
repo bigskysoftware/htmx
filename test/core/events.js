@@ -305,6 +305,25 @@ describe("Core htmx Events", function() {
         }
     });
 
+    it("htmx:afterSettle is called multiple times when doing OOB outerHTML swaps", function () {
+        var called = 0;
+        var handler = htmx.on("htmx:afterSettle", function (evt) {
+            called++;
+        });
+        try {
+            this.server.respondWith("POST", "/test", function (xhr) {
+                xhr.respond(200, {}, "<button>Bar</button>\n <div id='t1' hx-swap-oob='true'>t1</div><div id='t2' hx-swap-oob='true'>t2</div>");
+            });
+            var div = make("<button id='button' hx-post='/test' hx-target='#t'>Foo</button><div id='t'></div><div id='t1'></div><div id='t2'></div>");
+            var button = byId("button")
+            button.click();
+            this.server.respond();
+            should.equal(called, 3);
+        } finally {
+            htmx.off("htmx:afterSettle", handler);
+        }
+    });
+
     it("htmx:afterRequest is called after a successful request", function () {
         var called = false;
         var handler = htmx.on("htmx:afterRequest", function (evt) {
