@@ -3670,7 +3670,6 @@ return (function () {
 
             mergeMetaConfig();
             insertIndicatorStyles();
-            processNode(body);
 
             body.addEventListener("htmx:abort", function (evt) {
                 var target = evt.target;
@@ -3699,6 +3698,7 @@ return (function () {
             };
 
             setTimeout(function () {
+                processNode(body);
                 triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
                 body = null; // kill reference for gc
             }, 0);
