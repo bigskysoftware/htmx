@@ -902,6 +902,17 @@ return (function () {
             return hash;
         }
 
+        function deInitOnHandlers(elt) {
+            var internalData = getInternalData(elt);
+            if (internalData.onHandlers) {
+                for (let i = 0; i < internalData.onHandlers.length; i++) {
+                    const handlerInfo = internalData.onHandlers[i];
+                    elt.removeEventListener(handlerInfo.name, handlerInfo.handler);
+                }
+                delete internalData.onHandlers
+            }
+        }
+
         function deInitNode(element) {
             var internalData = getInternalData(element);
             if (internalData.timeout) {
@@ -920,12 +931,7 @@ return (function () {
                     }
                 });
             }
-            if (internalData.onHandlers) {
-                for (let i = 0; i < internalData.onHandlers.length; i++) {
-                    const handlerInfo = internalData.onHandlers[i];
-                    element.removeEventListener(handlerInfo.name, handlerInfo.handler);
-                }
-            }
+            deInitOnHandlers(element);
         }
 
         function cleanUpElement(element) {
@@ -1823,6 +1829,16 @@ return (function () {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
+        function findHxOnWildcardElements(elt) {
+            if (!document.evaluate) return []
+
+            let node = null
+            const elements = []
+            const iter = document.evaluate('//*[@*[starts-with(name(), "hx-on:")]] | //*[@*[starts-with(name(), "data-hx-on:")]]', elt)
+            while (node = iter.iterateNext()) elements.push(node)
+            return elements
+        }
+
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
@@ -1906,6 +1922,19 @@ return (function () {
             }
         }
 
+        function processHxOnWildcard(elt) {
+            // wipe any previous on handlers so that this function takes precedence
+            deInitOnHandlers(elt)
+
+            for (const attr of elt.attributes) {
+                const { name, value } = attr
+                if (name.startsWith("hx-on:") || name.startsWith("data-hx-on:")) {
+                    let eventName = name.slice(name.indexOf(":") + 1)
+                    addHxOnEventHandler(elt, eventName, value)
+                }
+            }
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1962,6 +1991,9 @@ return (function () {
             elt = resolveTarget(elt);
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
+            // Because it happens second, the new way of adding onHandlers superseeds the old one
+            // i.e. if there are any hx-on:eventName attributes, the hx-on attribute will be ignored
+            forEach(findHxOnWildcardElements(elt), processHxOnWildcard);
         }
 
         //====================================================================
