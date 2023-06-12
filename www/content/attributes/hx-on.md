@@ -17,20 +17,30 @@ The event name follows a colon `:` in the attribute, and the attribute value is 
 ```html
 <div hx-on:click="alert('Clicked!')">Click</div>
 ```
+
 All htmx events can be captured, too! Make sure to use the [kebab-case event name](@/docs.md#events),
 because DOM attributes do not preserve casing.
 
+To make writing these a little easier, you can use the shorthand double-colon `hx-on::` for htmx
+events, and omit the "htmx" part:
+
 ```html
+<!-- These two are equivalent -->
 <button hx-get="/info" hx-on:htmx:before-request="alert('Making a request!')">
     Get Info!
 </button>
+
+<button hx-get="/info" hx-on::before-request="alert('Making a request!')">
+    Get Info!
+</button>
+
 ```
 
 Adding multiple handlers is easy, you just specify additional attributes:
 ```html
 <button hx-get="/info"
-        hx-on:htmx:beforeRequest="alert('Making a request!'")
-        hx-on:htmx:afterRequest="alert('Done making a request!')">
+        hx-on::beforeRequest="alert('Making a request!'")
+        hx-on::afterRequest="alert('Done making a request!')">
     Get Info!
 </button>
 ```

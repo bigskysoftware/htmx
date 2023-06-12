@@ -26,6 +26,17 @@ describe("hx-on:* attribute", function() {
         btn.innerText.should.equal("bar");
     });
 
+    it("expands :: shorthand into htmx:", function () {
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = parseParams(xhr.requestBody);
+            xhr.respond(200, {}, params.foo);
+        });
+        var btn = make("<button hx-on::config-request='event.detail.parameters.foo = \"bar\"' hx-post='/test'>Foo</button>");
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("bar");
+    });
+
     it("can cancel an event via preventDefault for htmx:config-request", function () {
         this.server.respondWith("POST", "/test", function (xhr) {
             xhr.respond(200, {}, "<button>Bar</button>");

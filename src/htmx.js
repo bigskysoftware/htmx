@@ -1834,7 +1834,7 @@ return (function () {
 
             let node = null
             const elements = []
-            const iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "hx-on:") ]]', elt)
+            const iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
             while (node = iter.iterateNext()) elements.push(node)
             return elements
         }
@@ -1930,6 +1930,9 @@ return (function () {
                 const { name, value } = attr
                 if (name.startsWith("hx-on:") || name.startsWith("data-hx-on:")) {
                     let eventName = name.slice(name.indexOf(":") + 1)
+                    // if the eventName starts with a colon, prepend "htmx" for shorthand support
+                    if (eventName.startsWith(":")) eventName = "htmx" + eventName
+
                     addHxOnEventHandler(elt, eventName, value)
                 }
             }
