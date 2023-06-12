@@ -1,4 +1,4 @@
-describe("hx-on-* attribute", function() {
+describe("hx-on:* attribute", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();

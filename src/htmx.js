@@ -1834,7 +1834,7 @@ return (function () {
 
             let node = null
             const elements = []
-            const iter = document.evaluate('//*[@*[starts-with(name(), "hx-on:")]] | //*[@*[starts-with(name(), "data-hx-on:")]]', elt)
+            const iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "hx-on:") ]]', elt)
             while (node = iter.iterateNext()) elements.push(node)
             return elements
         }
