@@ -392,7 +392,8 @@ input tag.
 `hx-target`, and most attributes that take a CSS selector, support an "extended" CSS syntax:
 
 * You can use the `this` keyword, which indicates that the element that the `hx-target` attribute is on is the target
-* The `closest <CSS selector>` syntax will find the closest parent ancestor that matches the given CSS selector.
+* The `closest <CSS selector>` syntax will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
+  ancestor element or itself, that matches the given CSS selector.
   (e.g. `closest tr` will target the closest table row to the element)
 * The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
 * The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
