@@ -17,6 +17,7 @@
     * Snapshot the DOM before mutation somehow?  Can this be done efficiently?
 * Remove `hx-on` in favor of `hx-on:`
 * Remove all IE related hacks
+* Proper JSDoc for the entire library
 
 # Themes
 
