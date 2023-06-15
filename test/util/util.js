@@ -106,3 +106,14 @@ function log(val) {
     console.log(val);
     return val;
 }
+
+function makeElements(htmlStr) {
+    let range = document.createRange();
+    let fragment = range.createContextualFragment(htmlStr);
+    return fragment.children;
+}
+
+function parseHTML(src) {
+    let parser = new DOMParser();
+    return parser.parseFromString(src, "text/html");
+}
