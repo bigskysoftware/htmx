@@ -389,12 +389,7 @@ return (function () {
         }
 
         function bodyContains(elt) {
-            // IE Fix
-            if (elt.getRootNode && elt.getRootNode() instanceof ShadowRoot) {
-                return getDocument().body.contains(elt.getRootNode().host);
-            } else {
-                return getDocument().body.contains(elt);
-            }
+            return getDocument().body.contains(elt);
         }
 
         function splitOnWhitespace(trigger) {
@@ -438,20 +433,15 @@ return (function () {
         }
 
         function normalizePath(path) {
-            try {
-                var url = new URL(path);
-                if (url) {
-                    path = url.pathname + url.search;
-                }
-                // remove trailing slash, unless index page
-                if (!path.match('^/$')) {
-                    path = path.replace(/\/+$/, '');
-                }
-                return path;
-            } catch (e) {
-                // be kind to IE11, which doesn't support URL()
-                return path;
+            var url = new URL(path);
+            if (url) {
+                path = url.pathname + url.search;
             }
+            // remove trailing slash, unless index page
+            if (!path.match('^/$')) {
+                path = path.replace(/\/+$/, '');
+            }
+            return path;
         }
 
         //==========================================================================================
@@ -552,18 +542,7 @@ return (function () {
 
         function closest(elt, selector) {
             elt = resolveTarget(elt);
-            if (elt.closest) {
-                return elt.closest(selector);
-            } else {
-                // TODO remove when IE goes away
-                do{
-                    if (elt == null || matches(elt, selector)){
-                        return elt;
-                    }
-                }
-                while (elt = elt && parentElt(elt));
-                return null;
-            }
+            return elt.closest(selector);
         }
 
         function normalizeSelector(selector) {
@@ -893,14 +872,11 @@ return (function () {
 
         function attributeHash(elt) {
             var hash = 0;
-            // IE fix
-            if (elt.attributes) {
-                for (var i = 0; i < elt.attributes.length; i++) {
-                    var attribute = elt.attributes[i];
-                    if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
-                        hash = stringHash(attribute.name, hash);
-                        hash = stringHash(attribute.value, hash);
-                    }
+            for (var i = 0; i < elt.attributes.length; i++) {
+                var attribute = elt.attributes[i];
+                if(attribute.value){ // only include attributes w/ actual values (empty is same as non-existent)
+                    hash = stringHash(attribute.name, hash);
+                    hash = stringHash(attribute.value, hash);
                 }
             }
             return hash;
@@ -929,9 +905,7 @@ return (function () {
         function cleanUpElement(element) {
             triggerEvent(element, "htmx:beforeCleanupElement")
             deInitNode(element);
-            if (element.children) { // IE
-                forEach(element.children, function(child) { cleanUpElement(child) });
-            }
+            forEach(element.children, function(child) { cleanUpElement(child) });
         }
 
         function swapOuterHTML(target, fragment, settleInfo) {
@@ -2481,8 +2455,7 @@ return (function () {
         }
 
         function getPathFromResponse(xhr) {
-            // NB: IE11 does not support this stuff
-            if (xhr.responseURL && typeof(URL) !== "undefined") {
+            if (xhr.responseURL) {
                 try {
                     var url = new URL(xhr.responseURL);
                     return url.pathname + url.search;
