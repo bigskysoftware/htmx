@@ -19,6 +19,10 @@
 * Remove `hx-on` in favor of `hx-on:`
 * ~~Remove all IE related hacks~~
 * Proper JSDoc for the entire library
+* Improving attribute inheritance
+  * Making it configurable?
+* Switch to `fetch()` maybe?
+  * needs discussion
 
 # Themes
 
