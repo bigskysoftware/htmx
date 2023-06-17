@@ -179,9 +179,9 @@ HTTP/1.1 200 OK
 <html>
   <body>
     <form method="post" action="/accounts/12345/deposits">
-        <input name="amount" type="number'/>
+        <input name="amount" type="number" />
         <button>Submit</button>
-    </div>
+    </form>
   <body>
 </html>
 ```
