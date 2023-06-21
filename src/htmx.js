@@ -434,7 +434,8 @@ return (function () {
         }
 
         function normalizePath(path) {
-            var url = new URL(path);
+            const base = path.startsWith("/") ? window.location.origin : undefined
+            var url = new URL(path, base);
             if (url) {
                 path = url.pathname + url.search;
             }

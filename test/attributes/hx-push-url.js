@@ -135,37 +135,37 @@ describe("hx-push-url attribute", function() {
 
     it("deals with malformed JSON in history cache when getting", function () {
         localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
-        var history = htmx._('getCachedHistory')('url');
+        var history = htmx._('getCachedHistory')('/url');
         should.equal(history, null);
     });
 
     it("deals with malformed JSON in history cache when saving", function () {
         localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
-        htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(1);
     });
 
     it("does not blow out cache when saving a URL twice", function () {
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url1', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url3', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url2', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(3);
     });
 
     it("history cache is LRU", function () {
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url1', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url3', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url2', 'content', 'title', 'scroll');
+        htmx._('saveToHistoryCache')('/url1', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(3);
-        cache[0].url.should.equal("url3");
-        cache[1].url.should.equal("url2");
-        cache[2].url.should.equal("url1");
+        cache[0].url.should.equal("/url3");
+        cache[1].url.should.equal("/url2");
+        cache[2].url.should.equal("/url1");
     });
 
     it("htmx:afterSettle is called when replacing outerHTML", function () {
