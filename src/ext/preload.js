@@ -48,12 +48,20 @@ htmx.defineExtension("preload", {
 				// in the future
 				var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
 				if (hxGet) {
+					var previousIndicator = node.getAttribute("hx-indicator");
+					node.setAttribute("hx-indicator", "")
+
 					htmx.ajax("GET", hxGet, {
 						source: node,
 						handler:function(elt, info) {
 							done(info.xhr.responseText);
 						}
 					});
+					if(previousIndicator) {
+						node.setAttribute("hx-indicator", previousIndicator)
+					} else {
+						node.removeAttribute("hx-indicator")
+					}
 					return;
 				}
 
