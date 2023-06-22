@@ -23,12 +23,44 @@ describe("hx-swap attribute", function(){
         a.innerHTML.should.equal('Clicked!');
     });
 
+    it('swap morph:innerHTML properly', function()
+    {
+        this.server.respondWith("GET", "/test", '<a hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2", "Clicked!");
+
+        var div = make('<div hx-get="/test" hx-swap="morph:innerHTML"></div>')
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal('<a hx-get="/test2">Click Me</a>');
+        var a = div.querySelector('a');
+        console.log("logging a")
+        console.log(a)
+        a.click();
+        this.server.respond();
+        a.innerHTML.should.equal('Clicked!');
+    });
+
     it('swap outerHTML properly', function()
     {
         this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
 
         var div = make('<div id="d1" hx-get="/test" hx-swap="outerHTML"></div>')
+        div.click();
+        should.equal(byId("d1"), div);
+        this.server.respond();
+        should.equal(byId("d1"), null);
+        byId("a1").click();
+        this.server.respond();
+        byId("a1").innerHTML.should.equal('Clicked!');
+    });
+
+    it('swap morph:outerHTML properly', function()
+    {
+        this.server.respondWith("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
+        this.server.respondWith("GET", "/test2", "Clicked!");
+
+        var div = make('<div id="d1" hx-get="/test" hx-swap="morph:outerHTML"></div>')
         div.click();
         should.equal(byId("d1"), div);
         this.server.respond();

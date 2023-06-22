@@ -832,14 +832,17 @@ return (function () {
             });
         }
 
-        function makeAjaxLoadTask(child) {
-            return function () {
-                removeClassFromElement(child, htmx.config.addedClass);
-                processNode(child);
-                processScripts(child);
+        function pushChildLoadTasks(child, settleInfo) {
+            if (child.nodeType == Node.TEXT_NODE || child.nodeType == Node.COMMENT_NODE) return
+
+            const task = () => {
+                removeClassFromElement(child, htmx.config.addedClass)
+                processNode(child)
+                processScripts(child)
                 processFocus(child)
-                triggerEvent(child, 'htmx:load');
-            };
+                triggerEvent(child, 'htmx:load')
+            }
+            settleInfo.tasks.push(task)
         }
 
         function processFocus(child) {
@@ -856,9 +859,7 @@ return (function () {
                 var child = fragment.firstChild;
                 addClassToElement(child, htmx.config.addedClass);
                 parentNode.insertBefore(child, insertBefore);
-                if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
-                    settleInfo.tasks.push(makeAjaxLoadTask(child));
-                }
+                pushChildLoadTasks(child, settleInfo)
             }
         }
 
@@ -969,6 +970,15 @@ return (function () {
             }
         }
 
+        function swapMorph(target, fragment, settleInfo, morphStyle) {
+            const newElements = morph(target, fragment.children, { morphStyle })
+            if (newElements && newElements.length) {
+                for (const child of newElements) {
+                    pushChildLoadTasks(child, settleInfo)
+                }
+            }
+        }
+
         function maybeSelectFromResponse(elt, fragment) {
             var selector = getClosestAttributeValue(elt, "hx-select");
             if (selector) {
@@ -1005,33 +1015,16 @@ return (function () {
                     return;
                 case "morph":
                 case "morph:outerHTML": // intentional fall-through; morph === morph:outerHTML
-                    morph(target, fragment.children);
+                    swapMorph(target, fragment, settleInfo, 'outerHTML')
                     return;
                 case "morph:innerHTML":
-                    morph(target, fragment.children, {morphStyle:'innerHTML'});
+                    swapMorph(target, fragment, settleInfo, 'innerHTML')
                     return;
                 default:
-                    var extensions = getExtensions(elt);
-                    for (var i = 0; i < extensions.length; i++) {
-                        var ext = extensions[i];
-                        try {
-                            var newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo);
-                            if (newElements) {
-                                if (typeof newElements.length !== 'undefined') {
-                                    // if handleSwap returns an array (like) of elements, we handle them
-                                    for (var j = 0; j < newElements.length; j++) {
-                                        var child = newElements[j];
-                                        if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
-                                            settleInfo.tasks.push(makeAjaxLoadTask(child));
-                                        }
-                                    }
-                                }
-                                return;
-                            }
-                        } catch (e) {
-                            logError(e);
-                        }
-                    }
+                    // Try to handle this swap style with an extension, and return if you do
+                    if (runSwapExtension(swapStyle, elt, target, fragment, settleInfo)) return
+
+                    // Otherwise use either innerHTML or the config default swap style
                     if (swapStyle === "innerHTML") {
                         swapInnerHTML(target, fragment, settleInfo);
                     } else {
@@ -1039,6 +1032,27 @@ return (function () {
                     }
             }
         }
+
+        function runSwapExtension(swapStyle, elt, target, fragment, settleInfo) {
+            const extensionsWithSwap = getExtensions(elt).filter(ext => typeof ext.handleSwap === 'function')
+            for (const ext of extensionsWithSwap) {
+                try {
+                    const newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo)
+                    // if handleSwap returns an iterable of elements, we handle them
+                    if (newElements && newElements.length) {
+                        for (const child of newElements) {
+                            pushChildLoadTasks(child, settleInfo)
+                        }
+                        return true;
+                    }
+                } catch (e) {
+                    logError(e);
+                }
+            }
+
+            return false
+        }
+
 
         function findTitle(content) {
             if (content.indexOf('<title') > -1) {
