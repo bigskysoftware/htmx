@@ -3006,7 +3006,7 @@ return (function () {
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
             var finalPathForGet = null;
-            if (verb === 'get') {
+            if (verb === 'get' || verb === 'delete') {
                 finalPathForGet = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
@@ -3020,7 +3020,7 @@ return (function () {
                         finalPathForGet += "#" + anchor;
                     }
                 }
-                xhr.open('GET', finalPathForGet, true);
+                xhr.open(verb.toUpperCase(), finalPathForGet, true);
             } else {
                 xhr.open(verb.toUpperCase(), path, true);
             }
