@@ -45,6 +45,7 @@ return (function () {
             removeExtension : removeExtension,
             morph : morph,
             logAll : logAll,
+            logNone : logNone,
             logger : null,
             config : {
                 historyEnabled:true,
@@ -469,6 +470,10 @@ return (function () {
                     console.log(event, elt, data);
                 }
             }
+        }
+
+        function logNone() {
+            htmx.logger = null
         }
 
         function find(eltOrSelector, selector) {
