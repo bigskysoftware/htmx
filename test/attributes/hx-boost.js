@@ -1,6 +1,5 @@
 describe("hx-boost attribute", function() {
 
-    htmx.logAll();
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
