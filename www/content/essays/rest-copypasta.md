@@ -54,11 +54,10 @@ Copy For HN
 <output></output>
 
 <br/>
-<br/>
 
 ## l໐, t໐ thē ¢໐ຖtrคrฯ
 
-<div style="font-family: monospace>
+<div style="font-family: monospace">
 
 In a world of digital wonder, allow me to take a moment to clarify. What many name as REST is, in truth, JSON/RPC, or as
 I've lately begun to refer to it, the REST-less. JSON is not a magical script unto itself, but rather a simple parchment
