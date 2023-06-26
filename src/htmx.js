@@ -790,7 +790,8 @@ return (function () {
                 oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
-                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement});
+                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget",
+                    {message:"Unable locate target for out-of-band swap. selector:"+selector, content: oobElement, selector: selector});
             }
             return oobValue;
         }
@@ -1174,7 +1175,8 @@ return (function () {
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
-                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                triggerErrorEvent(getDocument().body, "htmx:syntax:error",
+                                    {message: "Error generating filter conditional", error:e, source:conditionalSource})
                                 return null;
                             }
                         }
@@ -1271,7 +1273,8 @@ return (function () {
                                     tokens.shift();
                                     triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else {
-                                    triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                                    triggerErrorEvent(elt, "htmx:syntax:error", {
+                                        message: "Error with trigger syntax ("+explicitTrigger+")", trigger: explicitTrigger, token:tokens.shift()});
                                 }
                             }
                             triggerSpecs.push(triggerSpec);
@@ -1376,7 +1379,8 @@ return (function () {
                 try {
                     return eventFilter.call(elt, evt) !== true;
                 } catch(e) {
-                    triggerErrorEvent(getDocument().body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
+                    triggerErrorEvent(getDocument().body, "htmx:eventFilter:error",
+                        {message: "Error filtering event", error: e, source:eventFilter.source});
                     return true;
                 }
             }
@@ -1537,7 +1541,7 @@ return (function () {
             }
             var socket = htmx.createWebSocket(wssSource);
             socket.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:wsError", {error:e, socket:socket});
+                triggerErrorEvent(elt, "htmx:wsError", {message: "Web socket error", error:e, socket:socket});
                 maybeCloseWebSocketSource(elt);
             };
 
@@ -1608,7 +1612,7 @@ return (function () {
                     }
                 });
             } else {
-                triggerErrorEvent(elt, "htmx:noWebSocketSourceError");
+                triggerErrorEvent(elt, "htmx:noWebSocketSourceError", {message:"Error locating element for sending web socket request"});
             }
         }
 
@@ -1647,7 +1651,7 @@ return (function () {
         function processSSESource(elt, sseSrc) {
             var source = htmx.createEventSource(sseSrc);
             source.onerror = function (e) {
-                triggerErrorEvent(elt, "htmx:sseError", {error:e, source:source});
+                triggerErrorEvent(elt, "htmx:sseError", {message: "Error processing SSE source", error:e, source:source});
                 maybeCloseSSESource(elt);
             };
             getInternalData(elt).sseEventSource = source;
@@ -1683,7 +1687,7 @@ return (function () {
                 getInternalData(elt).sseListener = sseListener;
                 sseEventSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerErrorEvent(elt, "htmx:noSSESourceError");
+                triggerErrorEvent(elt, "htmx:noSSESourceError",{message: "Unable to locate SSE source element", elt: elt});
             }
         }
 
@@ -1703,7 +1707,7 @@ return (function () {
                 getInternalData(elt).sseListener = sseListener;
                 sseEventSource.addEventListener(sseEventName, sseListener);
             } else {
-                triggerErrorEvent(elt, "htmx:noSSESourceError");
+                triggerErrorEvent(elt, "htmx:noSSESourceError", {message: "Unable to locate SSE source element", elt: elt});
             }
         }
 
@@ -2045,11 +2049,20 @@ return (function () {
             });
         }
 
-        function logError(msg) {
+        function logError(msg, detailMessage) {
             if(console.error) {
-                console.error(msg);
+                if(detailMessage) {
+                    console.error(msg, detailMessage);
+                } else {
+                    console.error(msg);
+                }
             } else if (console.log) {
-                console.log("ERROR: ", msg);
+                if(detailMessage) {
+                    console.log("ERROR: ", msg, detailMessage);
+                } else {
+                    console.log("ERROR: ", msg);
+                }
+
             }
         }
 
@@ -2064,7 +2077,11 @@ return (function () {
                 htmx.logger(elt, eventName, detail);
             }
             if (detail.error) {
-                logError(detail.error);
+                if(!detail.message) {
+                    detail.message = "Unknown error reason: "+ detail.error;
+                }
+
+                logError(detail.error, detail.message);
                 triggerEvent(elt, "htmx:error", {errorInfo:detail})
             }
             var eventResult = elt.dispatchEvent(event);
@@ -2114,7 +2131,8 @@ return (function () {
                     localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
                     break;
                 } catch (e) {
-                    triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
+                    triggerErrorEvent(getDocument().body, "htmx:historyCacheError",
+                        {message: "Error writing to history cache", cause:e, cache: historyCache})
                     historyCache.shift(); // shrink the cache and retry
                 }
             }
@@ -2217,6 +2235,7 @@ return (function () {
                     currentPathForHistory = path;
                     triggerEvent(getDocument().body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
                 } else {
+                    details.message = "Error restoring history"
                     triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
                 }
             };
@@ -2701,7 +2720,8 @@ return (function () {
             if (htmx.config.allowEval) {
                 return toEval();
             } else {
-                triggerErrorEvent(elt, 'htmx:evalDisallowedError');
+                triggerErrorEvent(elt, 'htmx:evalDisallowedError',
+                    {message: "Attempted to use eval (likely via hx-on) but it is disabled by config. Returning default value:"+defaultVal});
                 return defaultVal;
             }
         }
@@ -2751,7 +2771,8 @@ return (function () {
                     var url = new URL(xhr.responseURL);
                     return url.pathname + url.search;
                 } catch (e) {
-                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {
+                        message: "Error getting path urL:"+xhr.responseURL, url: xhr.responseURL});
                 }
             }
         }
@@ -2815,7 +2836,8 @@ return (function () {
             }
             var target = etc.targetOverride || getTarget(elt);
             if (target == null || target == DUMMY_ELT) {
-                triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
+                var targetAttribute = getAttributeValue(elt, "hx-target")
+                triggerErrorEvent(elt, 'htmx:targetError', {message: "Error finding target selector:"+targetAttribute, target: targetAttribute});
                 return;
             }
 
@@ -3071,28 +3093,28 @@ return (function () {
                     maybeCall(resolve);
                     endRequestLock();
                 } catch (e) {
-                    triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e}, responseInfo));
+                    triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({error:e, message:"Request onload error path:"+responseInfo.pathInfo.requestPath}, responseInfo));
                     throw e;
                 }
             }
             xhr.onerror = function () {
                 removeRequestIndicatorClasses(indicators);
-                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
+                triggerErrorEvent(elt, 'htmx:afterRequest', mergeObjects({message:"Request error path:"+responseInfo.pathInfo.requestPath}, responseInfo));
+                triggerErrorEvent(elt, 'htmx:sendError', mergeObjects({message:"Request error path:"+responseInfo.pathInfo.requestPath}, responseInfo));
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
                 removeRequestIndicatorClasses(indicators);
-                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
+                triggerErrorEvent(elt, 'htmx:afterRequest', mergeObjects({message:"Request aborted path:"+responseInfo.pathInfo.requestPath}, responseInfo));
+                triggerErrorEvent(elt, 'htmx:sendAbort', mergeObjects({message:"Request aborted path:"+responseInfo.pathInfo.requestPath}, responseInfo));
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.ontimeout = function() {
                 removeRequestIndicatorClasses(indicators);
-                triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
-                triggerErrorEvent(elt, 'htmx:timeout', responseInfo);
+                triggerErrorEvent(elt, 'htmx:afterRequest', mergeObjects({message:"Timeout error path:"+responseInfo.pathInfo.requestPath}, responseInfo));
+                triggerErrorEvent(elt, 'htmx:timeout', mergeObjects({message:"Timeout error path:"+responseInfo.pathInfo.requestPath}, responseInfo));
                 maybeCall(reject);
                 endRequestLock();
             }
@@ -3399,7 +3421,8 @@ return (function () {
                             doSettle();
                         }
                     } catch (e) {
-                        triggerErrorEvent(elt, 'htmx:swapError', responseInfo);
+                        triggerErrorEvent(elt, 'htmx:swapError',
+                            mergeObjects({message:"Error swapping: "+e}, responseInfo));
                         maybeCall(settleReject);
                         throw e;
                     }
@@ -3435,7 +3458,9 @@ return (function () {
                 }
             }
             if (isError) {
-                triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.requestPath}, responseInfo));
+                var errorMsg = "Response Status Error Code " + xhr.status + " from " + responseInfo.pathInfo.requestPath
+                triggerErrorEvent(elt, 'htmx:responseError',
+                    mergeObjects({error: errorMsg, message:errorMsg}, responseInfo));
             }
         }
 
