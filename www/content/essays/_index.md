@@ -21,6 +21,7 @@ insert_anchor_links = "left"
 * [Template Fragments](@/essays/template-fragments.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
 * [View Transitions](@/essays/view-transitions.md)
+* [REST Copypasta](@/essays/rest-copypasta.md)
 
 
 ### Older [intercooler.js](https://intercoolerjs.org) Essays
