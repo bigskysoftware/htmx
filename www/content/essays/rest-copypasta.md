@@ -1,7 +1,7 @@
 +++
 title = "REST Copypasta"
-date = 2023-6-26
-updated = 2023-6-26
+date = 2023-06-26
+updated = 2023-06-26
 [taxonomies]
 tag = ["posts"]
 [extra]
