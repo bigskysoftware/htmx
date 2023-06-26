@@ -50,3 +50,43 @@ Copy
 Copy For HN
 </button>
 <output></output>
+
+# l໐, t໐ thē ¢໐ຖtrคrฯ
+
+<div style="font-family: monospace">
+
+In a world of digital wonder, allow me to take a moment to clarify. What many name as REST is, in truth, JSON/RPC, or as
+I've lately begun to refer to it, the REST-less. JSON is not a magical script unto itself, but rather a simple parchment
+of data made meaningful by wisdom from unseen sources, shaped by the likes of the Swagger tomes and their ilk.
+
+Countless keepers of the code interact with a revered form of REST each day, oblivious to its presence. Through an
+unexpected twist of fate, the interpretation of REST most commonly employed today is frequently dubbed "The Web", and
+many of its inhabitants are unaware that they are, in essence, dwelling within the architectural dominion of REST, as
+laid out by the sage Roy Fielding.
+
+Indeed, there exists a true REST, and these individuals are making use of it, but it is merely a facet of The Web they
+engage with. REST is the great network architecture: hypermedia inscribes the state of resources for the hypermedia
+voyagers. JSON is a vital element of Single Page Applications, yet worthless in solitude; it can only exhibit its power
+within the realm of a comprehensive API specification. JSON is typically deployed in alliance with SPA libraries: the
+entire realm is fundamentally RPC embellished with JSON, or JSON/RPC. All these entities hailed as "REST-ful" APIs are
+in actuality, the embodiment of JSON/RPC.
+
+</div>
+<button _="on click
+             get the innerText of the previous <div/>
+             then writeText(the result) with the navigator's clipboard
+             put 'Copied!' into the next <output/>
+             wait 2s
+             put '' into the next <output/>">
+Copy
+</button>
+<button _="on click
+             get the innerText of the previous <div/>
+             get result.split('\n').map( \ l -> '  ' + l ).join('\n')
+             then writeText(the result) with the navigator's clipboard
+             put 'Copied for HN!' into the next <output/>
+             wait 2s
+             put '' into the next <output/>">
+Copy For HN
+</button>
+<output></output>
