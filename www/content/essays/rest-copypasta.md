@@ -32,3 +32,21 @@ is basically RPC with JSON added, or JSON/RPC.  All these so-called "REST-ful"
 APIs are really JSON/RPC.
 
 </div>
+<button _="on click
+             get the innerText of the previous <div/>
+             then writeText(the result) with the navigator's clipboard
+             put 'Copied!' into the next <output/>
+             wait 2s
+             put '' into the next <output/>">
+Copy
+</button>
+<button _="on click
+             get the innerText of the previous <div/>
+             get result.split('\n').map( \ l -> '  ' + l ).join('\n')
+             then writeText(the result) with the navigator's clipboard
+             put 'Copied for HN!' into the next <output/>
+             wait 2s
+             put '' into the next <output/>">
+Copy For HN
+</button>
+<output></output>
