@@ -3008,26 +3008,35 @@ return (function () {
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
-            var finalPathForGet = null;
-            if (verb === 'get' || verb === 'delete') {
-                finalPathForGet = pathNoAnchor;
+
+            // Encode body within the URL if:
+            // 1. The HTTP method for the request is GET or DELETE, or
+            // 2. an extension on the element defines the `encodeParameters` function
+            var shouldEncodeBodyInUrl = verb === 'get' || verb === 'delete'
+            withExtensions(elt, function(extension) {
+                if (typeof extension.encodeParameters === 'function') {
+                    shouldEncodeBodyInUrl = false
+                }
+            })
+
+            var finalPath = path
+            if (shouldEncodeBodyInUrl) {
+                finalPath = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
-                    if (finalPathForGet.indexOf("?") < 0) {
-                        finalPathForGet += "?";
+                    if (finalPath.indexOf("?") < 0) {
+                        finalPath += "?";
                     } else {
-                        finalPathForGet += "&";
+                        finalPath += "&";
                     }
-                    finalPathForGet += urlEncode(filteredParameters);
+                    finalPath += urlEncode(filteredParameters);
                     if (anchor) {
-                        finalPathForGet += "#" + anchor;
+                        finalPath += "#" + anchor;
                     }
                 }
-                xhr.open(verb.toUpperCase(), finalPathForGet, true);
-            } else {
-                xhr.open(verb.toUpperCase(), path, true);
             }
 
+            xhr.open(verb.toUpperCase(), finalPath, true);
             xhr.overrideMimeType("text/html");
             xhr.withCredentials = requestConfig.withCredentials;
             xhr.timeout = requestConfig.timeout;
@@ -3048,7 +3057,7 @@ return (function () {
                 xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
                 pathInfo: {
                     requestPath: path,
-                    finalRequestPath: finalPathForGet || path,
+                    finalRequestPath: finalPath,
                     anchor: anchor
                 }
             };
@@ -3123,7 +3132,7 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            xhr.send(shouldEncodeBodyInUrl ? null : encodeParamsForBody(xhr, elt, filteredParameters));
             return promise;
         }
 
