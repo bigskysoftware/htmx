@@ -67,7 +67,7 @@ object:
 
 `HX-Trigger: {"event1":"A message", "event2":"Another message"}`
 
-You may as well trigger multiple events with no additional details by sending event names separated by commas, like so:
+You may also trigger multiple events with no additional details by sending event names separated by commas, like so:
 
 `HX-Trigger: event1, event2`
 
