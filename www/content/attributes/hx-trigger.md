@@ -136,7 +136,7 @@ Multiple triggers can be provided, seprarated by commas.  Each trigger gets its 
 ```html
   <div hx-get="/news" hx-trigger="load, click delay:1s"></div>
 ```
-This example will load `/news` immediate on the page load, and then again with a delay of one second after each click.
+This example will load `/news` immediately on page load, and then again with a delay of one second after each click.
 
 ### Via JavaScript
 
