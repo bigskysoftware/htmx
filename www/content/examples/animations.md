@@ -2,7 +2,7 @@
 title = "Animations"
 template = "demo.html"
 +++
-        
+
 htmx is designed to allow you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
 to add smooth animations and transitions to your web page using only CSS and HTML.  Below are a few examples of
 various animation techniques.
@@ -42,7 +42,7 @@ This div will poll every second and will get replaced with new content which cha
   Color Swap Demo
 </div>
 ```
-  
+
 Because the div has a stable id, `color-demo`, htmx will structure the swap such that a CSS transition, defined on the
 `.smooth` class, applies to the style update from `red` to `blue`, and smoothly transitions between them.
 
@@ -71,7 +71,7 @@ Because the div has a stable id, `color-demo`, htmx will structure the swap such
 
 ### Smooth Progress Bar
 
-The [Progress Bar](@/examples/progress-bar.md) demo uses this basic CSS animation technique as well, by updating the `length` 
+The [Progress Bar](@/examples/progress-bar.md) demo uses this basic CSS animation technique as well, by updating the `length`
 property of a progress bar element, allowing for a smooth animation.
 
 ## Swap Transitions {#swapping}
@@ -79,7 +79,7 @@ property of a progress bar element, allowing for a smooth animation.
 ### Fade Out On Swap
 
 If you want to fade out an element that is going to be removed when the request ends, you want to take advantage
-of the `htmx-swapping` class with some CSS and extend the swap phase to be long enough for your animation to 
+of the `htmx-swapping` class with some CSS and extend the swap phase to be long enough for your animation to
 complete.  This can be done like so:
 
 ```html
@@ -178,7 +178,7 @@ is a form that on submit will change its look to indicate that a request is bein
     transition: opacity 300ms linear;
   }
 </style>
-<form hx-post="/name">
+<form hx-post="/name" hx-swap="outerHTML">
 <label>Name:</label><input name="name"><br/>
 <button>Submit</button>
 </form>
@@ -193,10 +193,12 @@ is a form that on submit will change its look to indicate that a request is bein
   }
 </style>
 
-<form hx-post="/name">
+<div aria-live="polite">
+<form hx-post="/name" hx-swap="outerHTML">
 <label>Name:</label><input name="name"><br/>
 <button>Submit</button>
 </form>
+</div>
 
 <script>
   onPost("/name", function(){ return "Submitted!"; });
@@ -238,14 +240,14 @@ the transition time.  This avoids flickering that can happen if the transition i
 ### Using the View Transition API {#view-transitions}
 
 htmx provides access to the new  [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
-via the `transition` option of the [`hx-swap`](/attributes/hx-swap) attribute.  
+via the `transition` option of the [`hx-swap`](/attributes/hx-swap) attribute.
 
-Below is an example of a swap that uses a view transition.  The transition is tied to the outer div via a 
+Below is an example of a swap that uses a view transition.  The transition is tied to the outer div via a
 `view-transition-name` property in CSS, and that transition is defined in terms of `::view-transition-old`
 and `::view-transition-new`, using `@keyframes` to define the animation.  (Fuller details on the View Transition
 API can be found on the [Chrome Developer Page](https://developer.chrome.com/docs/web-platform/view-transitions/) on them.)
 
-The old content of this transition should slide out to the left and the new content should slide in from the right.  
+The old content of this transition should slide out to the left and the new content should slide in from the right.
 
 Note that, as of this writing, the visual transition will only occur on Chrome 111+, but more browsers are expected to
 implement this feature in the near future.

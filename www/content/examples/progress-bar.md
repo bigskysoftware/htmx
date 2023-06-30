@@ -16,40 +16,51 @@ We start with an initial state with a button that issues a `POST` to `/start` to
 </div>
 ```
 
-This div is then replaced with a new div that reloads itself every 600ms:
+This div is then replaced with a new div containing status and a progress bar that reloads itself every 600ms:
 
 ```html
-<div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="load delay:600ms" 
-    hx-swap="outerHTML">
-  <h3>Running</h3>
-  <div class="progress">
-    <div id="pb" class="progress-bar" style="width:0%"></div>
+<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+  <h3 role="status" id="pblabel" tabindex="-1" autofocus>Running</h3>
+
+  <div
+    hx-get="/job/progress"
+    hx-trigger="every 600ms"
+    hx-target="this"
+    hx-swap="innerHTML">
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="pblabel">
+      <div id="pb" class="progress-bar" style="width:0%">
+    </div>
   </div>
 </div>
+
 ```
 
-This HTML is rerendered every 600 milliseconds, with the "width" style attribute on the progress bar being updated.
+This progress bar is updated every 600 milliseconds, with the "width" style attribute and `aria-valuenow` attributed set to current progress value.
 Because there is an id on the progress bar div, htmx will smoothly transition between requests by settling the
-style attribute into its new value.  This, when coupled with CSS transitions, make the visual transition continuous
+style attribute into its new value.  This, when coupled with CSS transitions, makes the visual transition continuous
 rather than jumpy.
 
-Finally, when the process is complete, a restart button is added to the UI (we are using the [`class-tools`](@/extensions/class-tools.md)
-extension in this example):
+Finally, when the process is complete, a server returns `HX-Trigger: done` header, which triggers an update of the UI to "Complete" state
+with a restart button added to the UI (we are using the [`class-tools`](@/extensions/class-tools.md) extension in this example to add fade-in effect on the button):
 
 ```html
-<div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="none" 
-    hx-swap="outerHTML">
-  <h3>Complete</h3>
-  <div class="progress">
-      <div id="pb" class="progress-bar" style="width:100%"></div>
+<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+  <h3 role="status" id="pblabel" tabindex="-1" autofocus>Complete</h3>
+
+  <div
+    hx-get="/job/progress"
+    hx-trigger="none"
+    hx-target="this"
+    hx-swap="innerHTML">
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="122" aria-labelledby="pblabel">
+        <div id="pb" class="progress-bar" style="width:122%">
+      </div>
+    </div>
   </div>
-<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
-  Restart Job
-</button> 
+
+  <button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
+    Restart Job
+  </button>
 </div>
 ```
 
@@ -125,17 +136,26 @@ This example uses styling cribbed from the bootstrap progress bar:
     init("/demo", function(request, params){
       return startButton("Start Progress");
     });
-    
+
     onPost("/start", function(request, params){
         var job = jobManager.start();
         return jobStatusTemplate(job);
     });
-    
+
     onGet("/job", function(request, params){
         var job = jobManager.currentProcess();
         return jobStatusTemplate(job);
     });
-    
+
+    onGet("/job/progress", function(request, params, responseHeaders){
+        var job = jobManager.currentProcess();
+
+        if (job.complete) {
+          responseHeaders["HX-Trigger"] = "done";
+        }
+        return jobProgressTemplate(job);
+    });
+
     // templates
     function startButton(message) {
       return `<div hx-target="this" hx-swap="outerHTML">
@@ -145,23 +165,32 @@ This example uses styling cribbed from the bootstrap progress bar:
   </button>
 </div>`;
     }
-    
+
+    function jobProgressTemplate(job) {
+      return `<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}" aria-labelledby="pblabel">
+      <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
+    </div>
+  </div>`
+    }
+
     function jobStatusTemplate(job) {
-        return `<div hx-target="this"
-    hx-get="/job" 
-    hx-trigger="${job.complete ? 'none' : 'load delay:600ms'}" 
-    hx-swap="outerHTML">
-  <h3>${job.complete ? "Complete" : "Running"}</h3>
-  <div class="progress">
-    <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
+        return `<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+  <h3 role="status" id="pblabel" tabindex="-1" autofocus>${job.complete ? "Complete" : "Running"}</h3>
+
+  <div
+    hx-get="/job/progress"
+    hx-trigger="${job.complete ? 'none' : 'every 600ms'}"
+    hx-target="this"
+    hx-swap="innerHTML">
+    ${jobProgressTemplate(job)}
   </div>
-</div>
-${restartButton(job)}`;
+  ${restartButton(job)}`;
     }
 
     function restartButton(job) {
       if(job.complete){
-        return `<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
+        return `
+<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
   Restart Job
 </button>`
       } else {
