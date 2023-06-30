@@ -1664,6 +1664,9 @@ return (function () {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function (event) {
                     if (maybeCloseSSESource(sseSourceElt)) {
+                        return;
+                    }
+                    if (!bodyContains(elt)) {
                         sseEventSource.removeEventListener(sseEventName, sseListener);
                         return;
                     }
