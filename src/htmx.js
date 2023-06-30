@@ -1766,6 +1766,7 @@ return (function () {
                 maybeReveal(elt);
             } else if (triggerSpec.trigger === "intersect") {
                 var observerOptions = {};
+                const from = triggerSpec.from ? querySelectorExt(elt, triggerSpec.from) : elt;
                 if (triggerSpec.root) {
                     observerOptions.root = querySelectorExt(elt, triggerSpec.root)
                 }
@@ -1776,12 +1777,12 @@ return (function () {
                     for (var i = 0; i < entries.length; i++) {
                         var entry = entries[i];
                         if (entry.isIntersecting) {
-                            triggerEvent(elt, "intersect");
+                            triggerEvent(from, "intersect");
                             break;
                         }
                     }
                 }, observerOptions);
-                observer.observe(elt);
+                observer.observe(from);
                 addEventListener(elt, handler, nodeData, triggerSpec);
             } else if (triggerSpec.trigger === "load") {
                 if (!maybeFilterEvent(triggerSpec, elt, makeEvent("load", {elt: elt}))) {
