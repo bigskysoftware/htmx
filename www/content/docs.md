@@ -904,8 +904,8 @@ htmx supports some htmx-specific response headers:
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/headers/hx-trigger.md).
 
-Submitting a form via htmx has the benefit, that the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) is not needed
-any more. After successful processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+Submitting a form via htmx has the benefit of no longer needing the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
+After successfully processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
  
 ### Request Order of Operations {#request-operations}
 
