@@ -136,7 +136,7 @@ describe("json-enc extension", function() {
         this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
-    it.skip('handles delete with form parameters', function () {
+    it('handles delete with form parameters', function () {
 
         this.server.respondWith("DELETE", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
