@@ -3010,7 +3010,7 @@ return (function () {
             var anchor = splitPath[1];
 
             // Encode body within the URL if:
-            // 1. The HTTP method for the request is GET or DELETE, or
+            // 1. The HTTP method for the request is GET
             // 2. an extension on the element defines the `encodeParameters` function
             var shouldEncodeBodyInUrl = verb === 'get'
             withExtensions(elt, function(extension) {
