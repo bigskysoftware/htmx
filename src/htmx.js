@@ -3012,7 +3012,7 @@ return (function () {
             // Encode body within the URL if:
             // 1. The HTTP method for the request is GET or DELETE, or
             // 2. an extension on the element defines the `encodeParameters` function
-            var shouldEncodeBodyInUrl = verb === 'get' || verb === 'delete'
+            var shouldEncodeBodyInUrl = verb === 'get'
             withExtensions(elt, function(extension) {
                 if (typeof extension.encodeParameters === 'function') {
                     shouldEncodeBodyInUrl = false
