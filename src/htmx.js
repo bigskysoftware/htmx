@@ -1250,6 +1250,9 @@ return (function () {
 
         var INPUT_SELECTOR = 'input, textarea, select';
 
+        /** @type {Object<string, import("./htmx").HtmxTriggerSpecification[]>} */
+        let triggerSpecsCache = {}
+
         /**
          * @param {HTMLElement} elt
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
@@ -1257,7 +1260,17 @@ return (function () {
         function getTriggerSpecs(elt) {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
-            if (explicitTrigger) {
+            var shouldEvaluateTrigger = !!explicitTrigger
+            if (shouldEvaluateTrigger) {
+                var cachedTriggerSpecs = triggerSpecsCache[explicitTrigger]
+                if (cachedTriggerSpecs) {
+                    cachedTriggerSpecs.forEach(function(cachedTriggerSpec) {
+                        triggerSpecs.push(cachedTriggerSpec)
+                    })
+                    shouldEvaluateTrigger = false
+                }
+            }
+            if (shouldEvaluateTrigger) {
                 var tokens = tokenizeString(explicitTrigger);
                 do {
                     consumeUntil(tokens, NOT_WHITESPACE);
@@ -1337,6 +1350,10 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
+                triggerSpecsCache[explicitTrigger] = []
+                triggerSpecs.forEach(function (triggerSpec) {
+                    triggerSpecsCache[explicitTrigger].push(triggerSpec)
+                })
             }
 
             if (triggerSpecs.length > 0) {
