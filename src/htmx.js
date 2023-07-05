@@ -2973,6 +2973,7 @@ return (function () {
             var eltIsBoosted = getInternalData(elt).boosted;
             var requestConfig = {
                 boosted: eltIsBoosted,
+                useUrlParams: verb === 'get', // For GET requests, default to params in the URL
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
                 headers:headers,
@@ -3009,18 +3010,16 @@ return (function () {
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
 
-            // Encode body within the URL if:
-            // 1. The HTTP method for the request is GET
-            // 2. an extension on the element defines the `encodeParameters` function
-            var shouldEncodeBodyInUrl = verb === 'get'
+            // Override the useUrlParams config if an extension defines encodeParameters
+            var useUrlParams = requestConfig.useUrlParams
             withExtensions(elt, function(extension) {
                 if (typeof extension.encodeParameters === 'function') {
-                    shouldEncodeBodyInUrl = false
+                    useUrlParams = false
                 }
             })
 
             var finalPath = path
-            if (shouldEncodeBodyInUrl) {
+            if (useUrlParams) {
                 finalPath = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
@@ -3132,7 +3131,8 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            xhr.send(shouldEncodeBodyInUrl ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
+            xhr.send(params);
             return promise;
         }
 
