@@ -1412,18 +1412,14 @@ fetch('http://example.com/movies.json')
 Some 3rd party libraries create content from HTML template elements. For instance, Alpine JS uses the `x-if` 
 attribute on templates to add content conditionally. Such templates are not initially part of the DOM and,
 if they contain htmx attributes, will need a call to `htmx.process()` after they are loaded. The following
-example uses Alpine's `$watch` function to look for a change of value that would trigger conditional content:
+example uses Alpine's `x-init` attribute to call `htmx.process()` on the root of the conditional content as
+it is added to the DOM:
 
 ```html
-<div x-data="{show_new: false}"
-    x-init="$watch('show_new', value => {
-        if (show_new) {
-            htmx.process(document.querySelector('#new_content'))
-        }
-    })">
+<div x-data="{show_new: false}">
     <button @click = "show_new = !show_new">Toggle New Content</button>
     <template x-if="show_new">
-        <div id="new_content">
+        <div id="new_content" x-init="htmx.process($el)">
             <a hx-get="/server/newstuff" href="#">New Clickable</a>
         </div>
     </template>
