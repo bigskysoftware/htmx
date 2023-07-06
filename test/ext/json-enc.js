@@ -53,26 +53,6 @@ describe("json-enc extension", function() {
         this.server.lastRequest.response.should.equal("{}");
     })
 
-    it('handles get with form parameters', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            var values = JSON.parse(xhr.requestBody);
-            values.should.have.keys("username","password");
-            values["username"].should.be.equal("joe");
-            values["password"].should.be.equal("123456");
-            var ans = { "passwordok": values["password"] == "123456"};
-            xhr.respond(200, {}, JSON.stringify(ans));
-        });
-
-        var html = make('<form hx-get="/test" hx-ext="json-enc" > ' +
-            '<input type="text"  name="username" value="joe"> ' +
-            '<input type="password"  name="password" value="123456"> ' +
-        '<button  id="btnSubmit">Submit</button> ');
-
-        byId("btnSubmit").click();
-        this.server.respond();
-        this.server.lastRequest.response.should.equal('{"passwordok":true}');
-    })
-
     it('handles post with form parameters', function () {
 
         this.server.respondWith("POST", "/test", function (xhr) {

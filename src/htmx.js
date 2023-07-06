@@ -3015,13 +3015,6 @@ return (function () {
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
 
-            // Override the useUrlParams config if an extension defines encodeParameters
-            withExtensions(elt, function(extension) {
-                if (typeof extension.encodeParameters === 'function') {
-                    useUrlParams = false
-                }
-            })
-
             var finalPath = path
             if (useUrlParams) {
                 finalPath = pathNoAnchor;
