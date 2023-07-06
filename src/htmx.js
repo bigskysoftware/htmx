@@ -72,6 +72,7 @@ return (function () {
                 defaultFocusScroll: false,
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
+                methodsThatUseUrlParams: ["get"],
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2971,9 +2972,12 @@ return (function () {
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
             var eltIsBoosted = getInternalData(elt).boosted;
+
+            var useUrlParams = htmx.config.methodsThatUseUrlParams.indexOf(verb) >= 0
+
             var requestConfig = {
                 boosted: eltIsBoosted,
-                useUrlParams: verb === 'get', // For GET requests, default to params in the URL
+                useUrlParams: useUrlParams,
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
                 headers:headers,
@@ -2998,6 +3002,7 @@ return (function () {
             headers = requestConfig.headers;
             filteredParameters = requestConfig.parameters;
             errors = requestConfig.errors;
+            useUrlParams = requestConfig.useUrlParams;
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
@@ -3011,7 +3016,6 @@ return (function () {
             var anchor = splitPath[1];
 
             // Override the useUrlParams config if an extension defines encodeParameters
-            var useUrlParams = requestConfig.useUrlParams
             withExtensions(elt, function(extension) {
                 if (typeof extension.encodeParameters === 'function') {
                     useUrlParams = false
