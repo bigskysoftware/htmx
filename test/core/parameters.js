@@ -177,5 +177,59 @@ describe("Core htmx Parameter Handling", function() {
         vals['do'].should.equal('rey');
     })
 
+    it('it puts GET params in the URL by default', function () {
+        this.server.respondWith("GET", "/test?i1=value", function (xhr) {
+            xhr.respond(200, {}, "Clicked!");
+        });
+        var form = make('<form hx-trigger="click" hx-get="/test"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("Clicked!");
+    });
+
+    it('it puts GET params in the body if methodsThatUseUrlParams is empty', function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.requestBody.should.equal("i1=value");
+            xhr.respond(200, {}, "Clicked!");
+        });
+        var form = make('<form hx-trigger="click" hx-get="/test"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+
+        try {
+            htmx.config.methodsThatUseUrlParams = [];
+            form.click();
+            this.server.respond();
+            form.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.methodsThatUseUrlParams = ["get"];
+        }
+    });
+
+    it('it puts DELETE params in the body by default', function () {
+        this.server.respondWith("DELETE", "/test", function (xhr) {
+            xhr.requestBody.should.equal("i1=value");
+            xhr.respond(200, {}, "Clicked!");
+        });
+        var form = make('<form hx-trigger="click" hx-delete="/test"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        form.click();
+        this.server.respond();
+        form.innerHTML.should.equal("Clicked!");
+    });
+
+    it('it puts DELETE params in the URL if methodsThatUseUrlParams contains "delete"', function () {
+        this.server.respondWith("DELETE", "/test?i1=value", function (xhr) {
+            xhr.respond(200, {}, "Clicked!");
+        });
+        var form = make('<form hx-trigger="click" hx-delete="/test"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+
+        try {
+            htmx.config.methodsThatUseUrlParams.push("delete")
+            form.click();
+            this.server.respond();
+            form.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.methodsThatUseUrlParams = ["get"];
+        }
+    });
+
 });
 
