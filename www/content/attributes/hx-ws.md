@@ -44,7 +44,7 @@ Own implementations can be provided by setting `htmx.config.wsReconnectDelay` to
 
 ### Test Web Sockets Server
 
-Htmx includes a WebSockets test server with many more examples of how to use Server Sent Events.  Download the htmx source code from github and navigate to /test/servers/ws to experiment.
+Htmx includes a WebSockets test server with many more examples of how to use Server Sent Events.  Download the htmx source code from GitHub and navigate to /test/servers/ws to experiment.
 
 ## Notes
 
