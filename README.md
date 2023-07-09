@@ -1,13 +1,13 @@
 [![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/static/img/htmx_logo.1.png "high power tools for HTML")](https://htmx.org)
 
-*high power tools for HTML*
+*High power tools for HTML*
 
 [![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
 [![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
 [![Bundlephobia](https://badgen.net/bundlephobia/dependency-count/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
 [![Bundlephobia](https://badgen.net/bundlephobia/minzip/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
 
-## introduction
+## Introduction
 
 htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
 [WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse) 
@@ -20,7 +20,7 @@ htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [extendable](https://htmx.org/extensions) & 
 IE11 compatible
 
-## motivation
+## Motivation
 
 * Why should only `<a>` and `<form>` be able to make HTTP requests?
 * Why should only `click` & `submit` events trigger them?
@@ -30,7 +30,7 @@ IE11 compatible
 By removing these arbitrary constraints htmx completes HTML as a 
 [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
-## quick start
+## Quick Start
 
 ```html
   <script src="https://unpkg.com/htmx.org@1.9.2"></script>
@@ -46,7 +46,7 @@ The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htm
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
-### installing as a node package
+### Installing as a node package
 
 To install using npm:
 
@@ -56,25 +56,25 @@ npm install htmx.org --save
 
 Note there is an old broken package called `htmx`.  This is `htmx.org`.
 
-## website & docs
+## Website & Docs
 
 * <https://htmx.org>
 * <https://htmx.org/docs>
 
-## contributing
+## Contributing
 
-* please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
-* please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
-* if you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
+* Please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
+* Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
+* If you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
   keep the core htmx code tidy
-* development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
+* Development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
 * No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
-### hacking guide
+### Hacking Guide
 
 To develop htmx locally, you will need to install the development dependencies.
 
-__Requires Node 15.__
+__Requires Node 15__
 
 Run:
 
@@ -106,7 +106,7 @@ At this point you can modify `/src/htmx.js` to add features, and then add tests 
 htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework 
 and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
 
-## haiku
+## Haiku
 
 *javascript fatigue:<br/>
 longing for a hypertext<br/>
