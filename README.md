@@ -67,7 +67,7 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 * Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
 * If you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to
   keep the core htmx code tidy
-* Development pull requests should be against the `dev` branch, docs fixes can be made directly against `master`
+* Development pull requests should be against the `dev` branch, doc fixes can be made directly against `master`
 * No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
 ### Hacking Guide
