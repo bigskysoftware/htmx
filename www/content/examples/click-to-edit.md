@@ -5,7 +5,7 @@ template = "demo.html"
 
 The click to edit pattern provides a way to offer inline editing of all or part of a record without a page refresh.
 
-* This pattern starts with a UI that shows the details of a contact.  The div has a button that will get the editing UI for the contact from `/contacts/1/edit`
+* This pattern starts with a UI that shows the details of a contact.  The div has a button that will get the editing UI for the contact from `/contact/1/edit`
 
 ```html
 <div hx-target="this" hx-swap="outerHTML">
@@ -39,7 +39,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 </form> 
 ```
 
-* The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
+* The form issues a `PUT` back to `/contact/1`, following the usual REST-ful pattern.
 
 {{ demoenv() }}
 
