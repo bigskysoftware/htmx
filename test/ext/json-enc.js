@@ -1,4 +1,3 @@
-//
 describe("json-enc extension", function() {
     beforeEach(function () {
         this.server = makeServer();
@@ -8,6 +7,15 @@ describe("json-enc extension", function() {
         this.server.restore();
         clearWorkArea();
     });
+
+    it('handles basic get properly', function () {
+        var jsonResponseBody = JSON.stringify({});
+        this.server.respondWith("GET", "/test", jsonResponseBody);
+        var div = make('<div hx-get="/test" hx-ext="json-enc">click me</div>');
+        div.click();
+        this.server.respond();
+        this.server.lastRequest.response.should.equal("{}");
+    })
 
     it('handles basic post properly', function () {
         var jsonResponseBody = JSON.stringify({});
@@ -67,7 +75,6 @@ describe("json-enc extension", function() {
     })
 
     it('handles put with form parameters', function () {
-
         this.server.respondWith("PUT", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);
             values.should.have.keys("username","password");
@@ -109,7 +116,7 @@ describe("json-enc extension", function() {
         this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
 
-    it.skip('handles delete with form parameters', function () {
+    it('handles delete with form parameters', function () {
 
         this.server.respondWith("DELETE", "/test", function (xhr) {
             var values = JSON.parse(xhr.requestBody);

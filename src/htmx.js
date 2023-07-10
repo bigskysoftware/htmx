@@ -72,6 +72,7 @@ return (function () {
                 defaultFocusScroll: false,
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
+                methodsThatUseUrlParams: ["get"],
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2971,8 +2972,12 @@ return (function () {
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
             var eltIsBoosted = getInternalData(elt).boosted;
+
+            var useUrlParams = htmx.config.methodsThatUseUrlParams.indexOf(verb) >= 0
+
             var requestConfig = {
                 boosted: eltIsBoosted,
+                useUrlParams: useUrlParams,
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
                 headers:headers,
@@ -2997,6 +3002,7 @@ return (function () {
             headers = requestConfig.headers;
             filteredParameters = requestConfig.parameters;
             errors = requestConfig.errors;
+            useUrlParams = requestConfig.useUrlParams;
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
@@ -3008,26 +3014,25 @@ return (function () {
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
-            var finalPathForGet = null;
-            if (verb === 'get' || verb === 'delete') {
-                finalPathForGet = pathNoAnchor;
+
+            var finalPath = path
+            if (useUrlParams) {
+                finalPath = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
-                    if (finalPathForGet.indexOf("?") < 0) {
-                        finalPathForGet += "?";
+                    if (finalPath.indexOf("?") < 0) {
+                        finalPath += "?";
                     } else {
-                        finalPathForGet += "&";
+                        finalPath += "&";
                     }
-                    finalPathForGet += urlEncode(filteredParameters);
+                    finalPath += urlEncode(filteredParameters);
                     if (anchor) {
-                        finalPathForGet += "#" + anchor;
+                        finalPath += "#" + anchor;
                     }
                 }
-                xhr.open(verb.toUpperCase(), finalPathForGet, true);
-            } else {
-                xhr.open(verb.toUpperCase(), path, true);
             }
 
+            xhr.open(verb.toUpperCase(), finalPath, true);
             xhr.overrideMimeType("text/html");
             xhr.withCredentials = requestConfig.withCredentials;
             xhr.timeout = requestConfig.timeout;
@@ -3048,7 +3053,7 @@ return (function () {
                 xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
                 pathInfo: {
                     requestPath: path,
-                    finalRequestPath: finalPathForGet || path,
+                    finalRequestPath: finalPath,
                     anchor: anchor
                 }
             };
@@ -3123,7 +3128,8 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
+            xhr.send(params);
             return promise;
         }
 

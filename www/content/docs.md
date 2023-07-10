@@ -1517,6 +1517,7 @@ listed below:
 | `htmx.config.defaultFocusScroll`     | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
 | `htmx.config.getCacheBusterParam`    | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                       |
 | `htmx.config.globalViewTransitions`  | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.          |
+| `htmx.config.methodsThatUseUrlParams`  | defaults to `["get"]`, htmx will format requests with this method by encoding their parameters in the URL, not the request body |
 
 </div>
 
