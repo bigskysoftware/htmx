@@ -8,7 +8,7 @@ insert_anchor_links = "left"
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> We are excited to <a href="/posts/2023-06-06-htmx-github-accelerator/">announce</a> that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">Github Open Source Accelerator!</a>
+<b>NEWS:</b> We are excited to <a href="/posts/2023-06-06-htmx-github-accelerator/">announce</a> that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">GitHub Open Source Accelerator!</a>
 </div>
 
 <h2>introduction</h2>
@@ -54,7 +54,7 @@ Read the [docs introduction](@/docs.md#introduction) for a more in-depth... intr
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
 
 
-htmx development can be supported via [Github Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
+htmx development can be supported via [GitHub Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
 
 
 Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">supporters</a>, including:
