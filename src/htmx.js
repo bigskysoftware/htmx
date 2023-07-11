@@ -757,7 +757,7 @@ return (function () {
          * @returns
          */
         function oobSwap(oobValue, oobElement, settleInfo) {
-            var selector = "#" + oobElement.id;
+            var selector = "#" + getRawAttribute(oobElement, "id");
             var swapStyle = "outerHTML";
             if (oobValue === "true") {
                 // do nothing
@@ -838,8 +838,9 @@ return (function () {
 
         function handleAttributes(parentNode, fragment, settleInfo) {
             forEach(fragment.querySelectorAll("[id]"), function (newNode) {
-                if (newNode.id && newNode.id.length > 0) {
-                    var normalizedId = newNode.id.replace("'", "\\'");
+                var id = getRawAttribute(newNode, "id")
+                if (id && id.length > 0) {
+                    var normalizedId = id.replace("'", "\\'");
                     var normalizedTag = newNode.tagName.replace(':', '\\:');
                     var oldNode = parentNode.querySelector(normalizedTag + "[id='" + normalizedId + "']");
                     if (oldNode && oldNode !== parentNode) {
@@ -3325,8 +3326,8 @@ return (function () {
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&
-                            selectionInfo.elt.id) {
-                            var newActiveElt = document.getElementById(selectionInfo.elt.id);
+                            getRawAttribute(selectionInfo.elt, "id")) {
+                            var newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, "id"));
                             var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll };
                             if (newActiveElt) {
                                 // @ts-ignore
