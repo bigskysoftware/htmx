@@ -937,6 +937,9 @@ return (function () {
                     }
                 });
             }
+            if (internalData.initHash) {
+                internalData.initHash = null
+            }
             deInitOnHandlers(element);
         }
 
@@ -1344,6 +1347,10 @@ return (function () {
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
                     addEventListener(elt, function(elt, evt) {
+                        if (closest(elt, htmx.config.disableSelector)) {
+                            cleanUpElement(elt)
+                            return
+                        }
                         issueAjaxRequest(verb, path, elt, evt)
                     }, nodeData, triggerSpec, true);
                 });
@@ -1753,6 +1760,10 @@ return (function () {
                     nodeData.verb = verb;
                     triggerSpecs.forEach(function(triggerSpec) {
                         addTriggerHandler(elt, triggerSpec, nodeData, function (elt, evt) {
+                            if (closest(elt, htmx.config.disableSelector)) {
+                                cleanUpElement(elt)
+                                return
+                            }
                             issueAjaxRequest(verb, path, elt, evt)
                         })
                     });
@@ -1948,16 +1959,16 @@ return (function () {
         }
 
         function initNode(elt) {
-            if (elt.closest && elt.closest(htmx.config.disableSelector)) {
+            if (closest(elt, htmx.config.disableSelector)) {
+                cleanUpElement(elt)
                 return;
             }
             var nodeData = getInternalData(elt);
             if (nodeData.initHash !== attributeHash(elt)) {
-
-                nodeData.initHash = attributeHash(elt);
-
                 // clean up any previously processed info
                 deInitNode(elt);
+
+                nodeData.initHash = attributeHash(elt);
 
                 processHxOn(elt);
 
@@ -2001,6 +2012,10 @@ return (function () {
 
         function processNode(elt) {
             elt = resolveTarget(elt);
+            if (closest(elt, htmx.config.disableSelector)) {
+                cleanUpElement(elt)
+                return;
+            }
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
             // Because it happens second, the new way of adding onHandlers superseeds the old one
