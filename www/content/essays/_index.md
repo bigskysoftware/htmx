@@ -3,37 +3,39 @@ title = "Essays"
 insert_anchor_links = "left"
 +++
 
-* [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
-* [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
-* [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
-* [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
-* [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
-* [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
+### Hypermedia and REST
 * [HATEOAS](@/essays/hateoas.md)
-* [Hypermedia Clients](@/essays/hypermedia-clients.md)
-* [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
-* [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
-* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
-* [Complexity Budget](@/essays/complexity-budget.md)
-* [SPA Alternative](@/essays/spa-alternative.md)
+* [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
 * [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
-* [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
-* [Template Fragments](@/essays/template-fragments.md)
-* [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
-* [View Transitions](@/essays/view-transitions.md)
+* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
+* [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
+* [Hypermedia Clients](@/essays/hypermedia-clients.md)
+* [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
+* [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
+* [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
 * [REST Copypasta](@/essays/rest-copypasta.md)
 
-
-### Older [intercooler.js](https://intercoolerjs.org) Essays
-
-* [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
-* [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
+### Why Hypermedia? Why Multi-Page Applications?
+* [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
+* [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
+* [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
-* [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
+* [SPA Alternative](@/essays/spa-alternative.md)
 
-### Grug
+### Building Hypermedia Applications
+* [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
+* [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
+* [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
+* [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
+* [Template Fragments](@/essays/template-fragments.md)
+* [View Transitions](@/essays/view-transitions.md)
 
+### Complexity Very Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
+* [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
+* [Complexity Budget](@/essays/complexity-budget.md)
+
+
 
 ## Banners
 <div style="text-align: center;margin:32px">

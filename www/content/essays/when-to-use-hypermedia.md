@@ -73,13 +73,13 @@ to the simple [list view/detail view](@/examples/edit-row.md) approach many serv
 
 One area where hypermedia can start to go a little wobbly is when you have UI dependencies that span structural
 areas of the screen.  A good example of this, and one that often comes up when discussing the hypermedia approach, is the issue
-count number shown on the ["Issues" tab](https://github.com/bigskysoftware/htmx/issues) in Github.  For a long time, 
-when you closed an issue on Github, the issue count on the tab did not update properly.  Github, in general (although
+count number shown on the ["Issues" tab](https://github.com/bigskysoftware/htmx/issues) in GitHub.  For a long time, 
+when you closed an issue on GitHub, the issue count on the tab did not update properly.  GitHub, in general (although
  not exclusively), uses a hypermedia-style application.
 
 "Ah ha!", exclaims the SPA enthusiast, "See, even GitHub can't get this right!"
 
-Well, Github has fixed the issue, but it does demonstrate a problem with the hypermedia approach: how do you update
+Well, GitHub has fixed the issue, but it does demonstrate a problem with the hypermedia approach: how do you update
 disjoint parts of the UI cleanly?  htmx offers [a few techniques for making this work](@/examples/update-other-content.md),
 and Contexte, in their talk, discuss handling this situation very cleanly, using the event approach.
 

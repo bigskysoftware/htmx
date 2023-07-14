@@ -85,13 +85,13 @@ This is a valid point: with an MPA-style application your UI interactions are ga
 
 Of course the problem with latency issues is that they can make an app feel laggy.  But, like you, we have worked with plenty of laggy SPAs, so we must say the problem isn't neatly solved by simply adopting SPA frameworks.  On top of that, optimistically synchronizing data with a server can lead to extremely difficult to understand data consistency issues as well as a significant increase in overall application complexity, a topic we will return to later.
 
-### "Github Has UI Bugs"
+### "GitHub Has UI Bugs"
 
-Github does, indeed, have UI bugs.  However, none of them are particularly difficult to solve.
+GitHub does, indeed, have UI bugs.  However, none of them are particularly difficult to solve.
 
 htmx offers multiple ways to [update content beyond the target element](@/examples/update-other-content.md), all of them quite easy and any of which would work to solve the UI consistency issues Mr. Harris points out.
 
-Contrast the Github UI issues with the Instagram UI issues Mr. Harris pointed out earlier: the Instagram issues would
+Contrast the GitHub UI issues with the Instagram UI issues Mr. Harris pointed out earlier: the Instagram issues would
 require far more sophisticated engineering work to resolve.
 
 ## Transitional Applications
@@ -167,7 +167,7 @@ unexpected happened: Python took off and, at the same time, javascript flat line
 
 </div>
 
-This trend of javascript peaking in the mid-2010's can be observed [on Github](https://www.benfrederickson.com/ranking-programming-languages-by-github-users/) as well:
+This trend of javascript peaking in the mid-2010's can be observed [on GitHub](https://www.benfrederickson.com/ranking-programming-languages-by-github-users/) as well:
 
 <div style="text-align:center">
 

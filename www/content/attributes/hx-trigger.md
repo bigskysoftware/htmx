@@ -132,11 +132,11 @@ If you want to add a filter to polling, it should be added *after* the poll decl
 
 ### Multiple Triggers
 
-Multiple triggers can be provided, seprarated by commas.  Each trigger gets its own options.
+Multiple triggers can be provided, separated by commas.  Each trigger gets its own options.
 ```html
   <div hx-get="/news" hx-trigger="load, click delay:1s"></div>
 ```
-This example will load `/news` immediate on the page load, and then again with a delay of one second after each click.
+This example will load `/news` immediately on page load, and then again with a delay of one second after each click.
 
 ### Via JavaScript
 

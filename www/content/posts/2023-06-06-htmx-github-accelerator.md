@@ -1,19 +1,19 @@
 +++
-title = "htmx is part of the Github Accelerator!"
+title = "htmx is part of the GitHub Accelerator!"
 date = 2023-06-06
 [taxonomies]
 tag = ["posts", "announcements"]
 +++
 
 We are excited to announce that htmx has been accepted into the first class of the 
-[Github Open Source Accelerator](https://accelerator.github.com/)!  This is a tremendous opportunity to work with and
+[GitHub Open Source Accelerator](https://accelerator.github.com/)!  This is a tremendous opportunity to work with and
 learn from some of the most successful open source developers and projects, and a great chance to get the message
 out about hypermedia and htmx.
 
 We plan on using this opportunity to begin work on htmx 2.0 and, we hope, possibly learn how to make working on htmx
 a full time job!
 
-Here are some of the other open source projects that we have met through the Github accelerator and that we recommend 
+Here are some of the other open source projects that we have met through the GitHub accelerator and that we recommend 
 people check out:
 
 <ul>

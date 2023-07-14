@@ -128,3 +128,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Phoenix
 
 - <https://github.com/hungle00/todo-htmx>
+
+## Go
+
+### templ
+
+- <https://templ.guide/server-side-rendering/htmx>

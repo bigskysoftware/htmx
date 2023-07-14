@@ -84,7 +84,7 @@ data: <div>Content to swap into your HTML page.</div>
 
 ### Test SSE Server
 
-Htmx includes an SSE test server with many more examples of how to use Server Sent Events.  Download the htmx source code from github and navigate to /test/servers/sse to experiment.
+Htmx includes an SSE test server with many more examples of how to use Server Sent Events.  Download the htmx source code from GitHub and navigate to /test/servers/sse to experiment.
 
 ## Notes
 
