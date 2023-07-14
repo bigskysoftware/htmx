@@ -12,6 +12,7 @@
 * Fix bug where the `htmx:afterSettle` event was raised multiple times with oob swaps occured
 * A large number of accessibility fixes were made in the docs (Thank you Denis & crew!)
 * Fixed bug w/ WebSocket extension initialization caused by "naked" `hx-trigger` feature
+* The `HX-Reselect` HTTP response header has been added to change the selection from the returned content
 * Many other smaller bug fixes
 
 ## [1.9.2] - 2023-04-28
