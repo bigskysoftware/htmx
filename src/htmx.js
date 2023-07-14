@@ -3357,6 +3357,7 @@ return (function () {
 
                             // if we need to save history, do so
                             if (historyUpdate.type) {
+                                triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo));
                                 if (historyUpdate.type === "push") {
                                     pushUrlIntoHistory(historyUpdate.path);
                                     triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
