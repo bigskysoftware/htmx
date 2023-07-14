@@ -1,0 +1,52 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/stylesheet.css">
+	<title>&lt;/&gt; htmx Realtime Test Server</title>
+	<script src="/htmx/htmx.js"></script>
+	<script src="/htmx/ext/sse.js"></script>
+	<script src="/htmx/ext/ws.js"></script>
+
+	<script src="https://unpkg.com/hyperscript.org"></script>
+	<script type="text/hyperscript">
+		on click(target) from <#navigation a/>
+			take .selected for target
+	</script>
+</head>
+
+<body>
+	<div id="header"></div>
+	<div id="navigation" hx-target="#page" hx-push-url="false">
+		<a href="index.html" class="selected" hx-boost="false">Introduction</a>
+
+		<div class="group">
+			<a href="" hx-get="/ws-about.html">WebSockets</a>
+			<a href="" hx-get="/ws-echo.html">Echo</a>
+			<a href="" hx-get="/ws-heartbeat.html">Heartbeat</a>
+		</div>
+
+		<div class="group">
+			<a href="" hx-get="/sse-about.html">Server Sent Events</a>
+			<a href="" hx-get="/sse-simple.html">Simple</a>
+			<a href="" hx-get="/sse-multiple.html">Multiple</a>
+			<a href="" hx-get="/sse-multichannel.html">Multi-Channel</a>
+			<a href="" hx-get="/sse-triggers.html">Event Trigger</a>
+			<a href="" hx-get="/sse-target.html">Event Target</a>
+			<a href="" hx-get="/sse-settle.html">Settling</a>
+		</div>
+
+	</div>
+	<div id="page">
+		<h1>Realtime Test Server</h1>
+
+		<h2>New Extensions</h2>
+		<p>As of version 1.7, we have created two new extensions <b>ws.js</b> and <b>sse.js</b> to support realtime development in htmx.  All new effort on WebSockets and Server Sent Events will occur in these extensions.</p>
+		
+		<h2>Old Tags Deprecated</h2>
+		<p>The existing <b>hx-ws</b> and <b>hx-sse</b> tags have been deprecated and will not receive any more updates.  We plan to remove these two tags from the core library in htmx version 2.0.</p>
+
+		<h2>Try It For Yourself</h2>
+		<p>Because extensions use a different calling syntax, there are minor differences in the way that this new code is invoked.  This test server includes several demos / manual tests for each extension that you can try out for yourself.  Each is presented side-by-side with test cases for the original code so that you can see the difference.</p>
+	</div>
+
+</body>
+</html>
