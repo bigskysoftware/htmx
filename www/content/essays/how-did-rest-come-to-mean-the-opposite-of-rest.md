@@ -189,9 +189,9 @@ the resource it is working with that must be derived from some other source beyo
 
 This API is, in spirit, nearly the opposite of REST.  
 
-Let's call this style of API RPC-EST.
+Let's call this style of API "RESTless".
 
-## How "REST" came to mean "RPC-EST"
+## How "REST" came to mean "RESTless"
 
 Now, how on earth did we get to a spot where APIs that are _obviously_ not RESTful are called RESTful by 99.9% of the
 industry?
@@ -285,7 +285,7 @@ That's the one sentence version of how we got here.
 ### The REST Wars
 
 Despite the JSON API world never consistently achieving truly RESTful APIs, there were plenty of fights over whether
-or not the RPC-EST APIs being created were "RESTful": arguments over URL layouts, over which HTTP verb was
+or not the RESTless APIs being created were "RESTful": arguments over URL layouts, over which HTTP verb was
 appropriate for a given action, flame wars about media types, and so forth.  
 
 I was young at the time, and the whole thing struck me as opaque, puritanical and alienating, so I pretty much gave up
@@ -319,7 +319,7 @@ Eventually most people got tired of trying to add hypermedia controls to JSON AP
 worked well in certain specialized situations (e.g. paging), they never achieved the broad, obvious utility 
 that REST found in the general, human-oriented internet.  [(I have a theory why that is.)](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
 
-Things settled into this intermediate RPC-EST state, with REST slowly cementing its meaning as a JSON API at Level 1 
+Things settled into this intermediate RESTless state, with REST slowly cementing its meaning as a JSON API at Level 1 
 or 2 of the RMM.  But there was always the possibility that we would break through to Level 3 and the glory of REST.
 
 Then Single Page Applications (SPAs) hit.
@@ -339,7 +339,7 @@ Even though they were doing things like publishing swagger documentation for the
 churn of their RESTful APIs](https://www.infoq.com/articles/no-more-mvc-frameworks/), things that wouldn't be occuring
 if they were actually creating RESTful APIs.
 
-Finally, in the late 2010s, people had had enough:  REST, even in its RPC-EST form, simply wasn't keep up with the needs
+Finally, in the late 2010s, people had had enough:  REST, even in its RESTless form, simply wasn't keep up with the needs
 of increasingly complex SPA applications.  The applications were becoming more and more like thick clients, and thick 
 client problems need thick client solutions, not bastardized hypermedia client solutions.  
 
@@ -385,7 +385,7 @@ Regardless, there is an opportunity here to explain REST and, in particular, the
 developers who may have never heard of those concepts in their original context, and who assume REST === JSON APIs.  
 
 [People sense something is wrong](@/essays/a-response-to-rich-harris.md), and maybe REST, real, actual REST, 
-not RPC-EST, could be a part of [the answer to that](@/essays/spa-alternative.md).
+not RESTless, could be a part of [the answer to that](@/essays/spa-alternative.md).
 
 At the very least, the ideas behind REST are interesting and worth knowing just as general software engineering knowledge.
 
