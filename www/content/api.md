@@ -240,6 +240,16 @@ Log all htmx events, useful for debugging.
     htmx.logAll();
 ```
 
+### Method - `htmx.logNone()` {#logNone}
+
+Log no htmx events, call this to turn off the debugger if you previously enabled it.
+
+##### Example
+
+```js
+    htmx.logNone();
+```
+
 ### Property - `htmx.logger` {#logger}
 
 The logger htmx uses to log with

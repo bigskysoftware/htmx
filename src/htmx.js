@@ -44,6 +44,7 @@ return (function () {
             defineExtension : defineExtension,
             removeExtension : removeExtension,
             logAll : logAll,
+            logNone : logNone,
             logger : null,
             config : {
                 historyEnabled:true,
@@ -71,6 +72,7 @@ return (function () {
                 defaultFocusScroll: false,
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
+                methodsThatUseUrlParams: ["get"],
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -476,6 +478,10 @@ return (function () {
                     console.log(event, elt, data);
                 }
             }
+        }
+
+        function logNone() {
+            htmx.logger = null
         }
 
         function find(eltOrSelector, selector) {
@@ -905,6 +911,17 @@ return (function () {
             return hash;
         }
 
+        function deInitOnHandlers(elt) {
+            var internalData = getInternalData(elt);
+            if (internalData.onHandlers) {
+                for (let i = 0; i < internalData.onHandlers.length; i++) {
+                    const handlerInfo = internalData.onHandlers[i];
+                    elt.removeEventListener(handlerInfo.name, handlerInfo.handler);
+                }
+                delete internalData.onHandlers
+            }
+        }
+
         function deInitNode(element) {
             var internalData = getInternalData(element);
             if (internalData.timeout) {
@@ -923,12 +940,7 @@ return (function () {
                     }
                 });
             }
-            if (internalData.onHandlers) {
-                for (let i = 0; i < internalData.onHandlers.length; i++) {
-                    const handlerInfo = internalData.onHandlers[i];
-                    element.removeEventListener(handlerInfo.name, handlerInfo.handler);
-                }
-            }
+            deInitOnHandlers(element);
         }
 
         function cleanUpElement(element) {
@@ -953,7 +965,7 @@ return (function () {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
-                settleInfo.elts = [] // clear existing elements
+                settleInfo.elts = settleInfo.elts.filter(e => e != target);
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
                         settleInfo.elts.push(newElt);
@@ -1656,6 +1668,9 @@ return (function () {
                 var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
                 var sseListener = function (event) {
                     if (maybeCloseSSESource(sseSourceElt)) {
+                        return;
+                    }
+                    if (!bodyContains(elt)) {
                         sseEventSource.removeEventListener(sseEventName, sseListener);
                         return;
                     }
@@ -1672,7 +1687,7 @@ return (function () {
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, elt, target, response, settleInfo)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
@@ -1826,6 +1841,16 @@ return (function () {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
+        function findHxOnWildcardElements(elt) {
+            if (!document.evaluate) return []
+
+            let node = null
+            const elements = []
+            const iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+            while (node = iter.iterateNext()) elements.push(node)
+            return elements
+        }
+
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
                 var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
@@ -1909,6 +1934,22 @@ return (function () {
             }
         }
 
+        function processHxOnWildcard(elt) {
+            // wipe any previous on handlers so that this function takes precedence
+            deInitOnHandlers(elt)
+
+            for (const attr of elt.attributes) {
+                const { name, value } = attr
+                if (name.startsWith("hx-on:") || name.startsWith("data-hx-on:")) {
+                    let eventName = name.slice(name.indexOf(":") + 1)
+                    // if the eventName starts with a colon, prepend "htmx" for shorthand support
+                    if (eventName.startsWith(":")) eventName = "htmx" + eventName
+
+                    addHxOnEventHandler(elt, eventName, value)
+                }
+            }
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
@@ -1965,6 +2006,9 @@ return (function () {
             elt = resolveTarget(elt);
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
+            // Because it happens second, the new way of adding onHandlers superseeds the old one
+            // i.e. if there are any hx-on:eventName attributes, the hx-on attribute will be ignored
+            forEach(findHxOnWildcardElements(elt), processHxOnWildcard);
         }
 
         //====================================================================
@@ -2933,8 +2977,12 @@ return (function () {
             var requestAttrValues = getValuesForElement(elt, 'hx-request');
 
             var eltIsBoosted = getInternalData(elt).boosted;
+
+            var useUrlParams = htmx.config.methodsThatUseUrlParams.indexOf(verb) >= 0
+
             var requestConfig = {
                 boosted: eltIsBoosted,
+                useUrlParams: useUrlParams,
                 parameters: filteredParameters,
                 unfilteredParameters: allParameters,
                 headers:headers,
@@ -2959,6 +3007,7 @@ return (function () {
             headers = requestConfig.headers;
             filteredParameters = requestConfig.parameters;
             errors = requestConfig.errors;
+            useUrlParams = requestConfig.useUrlParams;
 
             if(errors && errors.length > 0){
                 triggerEvent(elt, 'htmx:validation:halted', requestConfig)
@@ -2970,26 +3019,25 @@ return (function () {
             var splitPath = path.split("#");
             var pathNoAnchor = splitPath[0];
             var anchor = splitPath[1];
-            var finalPathForGet = null;
-            if (verb === 'get') {
-                finalPathForGet = pathNoAnchor;
+
+            var finalPath = path
+            if (useUrlParams) {
+                finalPath = pathNoAnchor;
                 var values = Object.keys(filteredParameters).length !== 0;
                 if (values) {
-                    if (finalPathForGet.indexOf("?") < 0) {
-                        finalPathForGet += "?";
+                    if (finalPath.indexOf("?") < 0) {
+                        finalPath += "?";
                     } else {
-                        finalPathForGet += "&";
+                        finalPath += "&";
                     }
-                    finalPathForGet += urlEncode(filteredParameters);
+                    finalPath += urlEncode(filteredParameters);
                     if (anchor) {
-                        finalPathForGet += "#" + anchor;
+                        finalPath += "#" + anchor;
                     }
                 }
-                xhr.open('GET', finalPathForGet, true);
-            } else {
-                xhr.open(verb.toUpperCase(), path, true);
             }
 
+            xhr.open(verb.toUpperCase(), finalPath, true);
             xhr.overrideMimeType("text/html");
             xhr.withCredentials = requestConfig.withCredentials;
             xhr.timeout = requestConfig.timeout;
@@ -3010,7 +3058,7 @@ return (function () {
                 xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
                 pathInfo: {
                     requestPath: path,
-                    finalRequestPath: finalPathForGet || path,
+                    finalRequestPath: finalPath,
                     anchor: anchor
                 }
             };
@@ -3085,7 +3133,8 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            xhr.send(verb === 'get' ? null : encodeParamsForBody(xhr, elt, filteredParameters));
+            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
+            xhr.send(params);
             return promise;
         }
 

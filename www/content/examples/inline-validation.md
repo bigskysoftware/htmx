@@ -41,7 +41,7 @@ When a request occurs, it will return a partial to replace the outer div.  It mi
   <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="test@foo.com">
   <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   <div class='error-message'>That email is already taken.  Please enter another email.</div>
-</div> 
+</div>
 ```
 
 Note that this div is annotated with the `error` class and includes an error message element.
@@ -92,7 +92,7 @@ Below is a working demo of this example.  The only email that will be accepted i
     onPost("/contact", function(request, params){
       return formTemplate();
     });
-    
+
     onPost(/\/contact\/email.*/, function(request, params){
         var email = params['email'];
         if(!/\S+@\S+\.\S+/.test(email)) {
@@ -103,38 +103,38 @@ Below is a working demo of this example.  The only email that will be accepted i
           return emailInputTemplate(email);
         }
      });
-    
+
     // templates
     function demoTemplate() {
-        
+
         return `<h3>Signup Form</h3><p>Enter an email into the input below and on tab out it will be validated.  Only "test@test.com" will pass.</p> ` + formTemplate();
     }
-    
+
     function formTemplate() {
       return `<form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
-    <label>Email Address</label>
-    <input name="email" hx-post="/contact/email" hx-indicator="#ind">
+    <label for="email">Email Address</label>
+    <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
     <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
   </div>
   <div class="form-group">
-    <label>First Name</label>
-    <input type="text" class="form-control" name="firstName">
+    <label for="firstName">First Name</label>
+    <input type="text" class="form-control" name="firstName" id="firstName">
   </div>
   <div class="form-group">
-    <label>Last Name</label>
-    <input type="text" class="form-control" name="lastName">
+    <label for="lastName">Last Name</label>
+    <input type="text" class="form-control" name="lastName" id="lastName">
   </div>
-  <button class="btn btn-default" disabled>Submit</button>
+  <button type='submit' class="btn btn-default" disabled>Submit</button>
 </form>`;
     }
-    
+
         function emailInputTemplate(val, errorMsg) {
             return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
-  <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}">
+  <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
   <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
-  ${errorMsg ? ("<div class='error-message'>" + errorMsg + "</div>") : ""}
+  ${errorMsg ? (`<div class='error-message' >${errorMsg}</div>`) : ""}
 </div>`;
         }
 </script>

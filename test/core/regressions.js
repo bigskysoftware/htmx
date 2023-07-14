@@ -130,7 +130,6 @@ describe("Core htmx Regression Tests", function(){
 
     it('a form can reset based on the htmx:afterRequest event', function() {
         this.server.respondWith("POST", "/test", "posted");
-        //htmx.logAll();
 
         var form = make('<div id="d1"></div><form _="on htmx:afterRequest reset() me" hx-post="/test" hx-target="#d1">' +
             '  <input type="text" name="input" id="i1"/>' +
@@ -174,7 +173,6 @@ describe("Core htmx Regression Tests", function(){
 
     it("supports unset on hx-select", function(){
         this.server.respondWith("GET", "/test", "Foo<span id='example'>Bar</span>");
-        htmx.logAll();
         make('<form hx-select="#example">\n' +
             '      <button id="b1" hx-select="unset" hx-get="/test">Initial</button>\n' +
             '</form>')

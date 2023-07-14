@@ -46,11 +46,11 @@ img {
     init("/demo", function(request, params){
       return lazyTemplate();
     });
-    
+
     onGet("/graph", function(request, params){
       return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
     });
-    
+
     // templates
     function lazyTemplate(page) {
       return `<div hx-get="/graph" hx-trigger="load">

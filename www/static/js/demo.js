@@ -3,13 +3,13 @@
 //====================================
 var server = sinon.fakeServer.create();
 server.fakeHTTPMethods = true;
-server.getHTTPMethod = function(xhr) {
+server.getHTTPMethod = function (xhr) {
     return xhr.requestHeaders['X-HTTP-Method-Override'] || xhr.method;
 }
 server.autoRespond = true;
 server.autoRespondAfter = 80;
 server.xhr.useFilters = true;
-server.xhr.addFilter(function (method, url, async, username, password){
+server.xhr.addFilter(function (method, url, async, username, password) {
     return url === "/" || url.indexOf("http") === 0;
 })
 
@@ -46,10 +46,10 @@ function parseParams(str) {
 function getQuery(url) {
     var question = url.indexOf("?");
     var hash = url.indexOf("#");
-    if(hash==-1 && question==-1) return "";
-    if(hash==-1) hash = url.length;
-    return question==-1 || hash==question+1 ? url.substring(hash) :
-        url.substring(question+1,hash);
+    if (hash == -1 && question == -1) return "";
+    if (hash == -1) hash = url.length;
+    return question == -1 || hash == question + 1 ? url.substring(hash) :
+        url.substring(question + 1, hash);
 }
 
 function params(request) {
@@ -58,6 +58,9 @@ function params(request) {
     } else {
         return parseParams(request.requestBody);
     }
+}
+function headers(request) {
+    return request.getAllResponseHeaders().split("\r\n").filter(h => h.toLowerCase().startsWith("hx-")).map(h => h.split(": ")).reduce((acc, v) => ({ ...acc, [v[0]]: v[1] }), {})
 }
 
 //====================================
@@ -75,30 +78,34 @@ function init(path, response) {
 }
 
 function onGet(path, response) {
-    server.respondWith("GET", path, function(request){
-        let body = response(request, params(request));
-        request.respond(200, {}, body);
+    server.respondWith("GET", path, function (request) {
+        let headers = {};
+        let body = response(request, params(request), headers);
+        request.respond(200, headers, body);
     });
 }
 
 function onPut(path, response) {
-    server.respondWith("PUT", path, function(request){
-        let body = response(request, params(request));
-        request.respond(200, {}, body);
+    server.respondWith("PUT", path, function (request) {
+        let headers = {};
+        let body = response(request, params(request), headers);
+        request.respond(200, headers, body);
     });
 }
 
 function onPost(path, response) {
-    server.respondWith("POST", path, function(request){
-        let body = response(request, params(request));
-        request.respond(200, {}, body);
+    server.respondWith("POST", path, function (request) {
+        let headers = {};
+        let body = response(request, params(request), headers);
+        request.respond(200, headers, body);
     });
 }
 
 function onDelete(path, response) {
-    server.respondWith("DELETE", path, function(request){
-        let body = response(request, params(request));
-        request.respond(200, {}, body);
+    server.respondWith("DELETE", path, function (request) {
+        let headers = {};
+        let body = response(request, params(request), headers);
+        request.respond(200, headers, body);
     });
 }
 
@@ -107,7 +114,7 @@ function onDelete(path, response) {
 //====================================
 
 var requestId = 0;
-htmx.on("htmx:beforeSwap", function(event) {
+htmx.on("htmx:beforeSwap", function (event) {
     if (document.getElementById("request-count")) {
         requestId++;
         pushActivityChip(`${server.getHTTPMethod(event.detail.xhr)} ${event.detail.xhr.url}`, `req-${requestId}`, demoResponseTemplate(event.detail));
@@ -128,7 +135,7 @@ function showTimelineEntry(id) {
     var children = document.getElementById("demo-timeline").children;
     for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.id == id + "-link" ) {
+        if (child.id == id + "-link") {
             child.classList.add('active');
         } else {
             child.classList.remove('active');
@@ -153,19 +160,19 @@ function pushActivityChip(name, id, content) {
 
 function escapeHtml(string) {
     var pre = document.createElement('pre');
-    var text = document.createTextNode( string );
+    var text = document.createTextNode(string);
     pre.appendChild(text);
     return pre.innerHTML;
 }
 
-function demoInitialStateTemplate(html){
+function demoInitialStateTemplate(html) {
     return `<span class="activity initial">
   <b>HTML</b>
   <pre class="language-html"><code class="language-html">${escapeHtml(html)}</code></pre>
 </span>`
 }
 
-function demoResponseTemplate(details){
+function demoResponseTemplate(details) {
     return `<span class="activity response">
   <div>
   <b>${server.getHTTPMethod(details.xhr)}</b> ${details.xhr.url}
@@ -174,8 +181,11 @@ function demoResponseTemplate(details){
     parameters: ${JSON.stringify(params(details.xhr))}
   </div>
   <div>
+    headers: ${JSON.stringify(headers(details.xhr))}
+  </div>
+  <div>
   <b>Response</b>
-  <pre class="language-html"><code class="language-html">${escapeHtml(details.xhr.response)}</code> </pre>  
+  <pre class="language-html"><code class="language-html">${escapeHtml(details.xhr.response)}</code> </pre>
   </div>
 </span>`;
 }

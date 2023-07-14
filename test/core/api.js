@@ -241,13 +241,13 @@ describe("Core htmx API test", function(){
         div3.classList.contains("foo").should.equal(true);
     });
 
-    it('logAll works', function () {
-        var initialLogger = htmx.config.logger
-        try {
-            htmx.logAll();
-        } finally {
-            htmx.config.logger = initialLogger;
-        }
+    it('logAll and logNone works', function () {
+        var initialLogger = htmx.logger
+        htmx.logAll();
+        htmx.logger.should.not.equal(null);
+        htmx.logNone();
+        should.equal(htmx.logger, null);
+        htmx.logger = initialLogger;
     });
 
     it('eval can be suppressed', function () {
