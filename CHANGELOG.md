@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.9.3] - 2023-06-??
+## [1.9.3] - 2023-07-14
 
 * The `hx-on` attribute has been deprecated (sorry) in favor of `hx-on-<event name>` attributes.  See [`hx-on`](/attributes/hx-on) for more information.
 * We now have functioning CI using GitHub actions!
