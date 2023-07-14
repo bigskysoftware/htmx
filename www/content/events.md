@@ -343,6 +343,14 @@ This event is triggered after a URL has been pushed into history.
 
 * `detail.path` - the path and query of the URL that has been pushed into history
 
+### Event - `htmx:replacedInHistory` {#htmx:replacedInHistory}
+
+This event is triggered after a URL has been replaced in history.
+
+##### Details
+
+* `detail.path` - the path and query of the URL that has been replaced in history
+
 ### Event - `htmx:responseError` {#htmx:responseError}
 
 This event is triggered when an HTTP error response occurs
