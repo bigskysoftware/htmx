@@ -1413,11 +1413,11 @@ return (function () {
                     if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
                         return;
                     }
-                    if (explicitCancel || shouldCancel(evt, elt)) {
-                        evt.preventDefault();
-                    }
                     if (maybeFilterEvent(triggerSpec, elt, evt)) {
                         return;
+                    }
+                    if (explicitCancel || shouldCancel(evt, elt)) {
+                        evt.preventDefault();
                     }
                     var eventData = getInternalData(evt);
                     eventData.triggerSpec = triggerSpec;
