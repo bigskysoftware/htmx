@@ -16,10 +16,8 @@
                 var elements = swapStyle.replace(/^multi\s*:\s*/, '').split(/\s*,\s*/);
 
                 elements.map(function (element) {
-                    var split = element.split(/\s*:\s*/);
-                    var elementSelector = split[0];
-                    var elementSwapStyle = typeof (split[1]) !== "undefined" ? split[1] : "innerHTML";
-
+                    const [elementSelector, elementSwapStyle = "innerHTML"] = element.split(/\s*:\s*/);
+                    
                     if (elementSelector.charAt(0) !== '#') {
                         console.error("HTMX multi-swap: unsupported selector '" + elementSelector + "'. Only ID selectors starting with '#' are supported.");
                         return;
