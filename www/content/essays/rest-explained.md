@@ -233,7 +233,7 @@ From the paper:
 
 This is all very true, and is why the web has been so successful and will continue to be successful.
 
-## [Sections 5.4](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_4) & [5.5]((https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_5)) - Related Work & Summary
+## [Sections 5.4](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_4) & [5.5](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_5) - Related Work & Summary
 
 These brief sections are not relevant to non-academics interested in REST. 
 
