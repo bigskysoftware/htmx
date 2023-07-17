@@ -118,6 +118,6 @@ Previous versions of htmx used a built-in tag `hx-sse` to implement Server Sent 
 
 ### Additional SSE Resources
 
-*[Wikipedia](https://en.wikipedia.org/wiki/Server-sent_events)
-*[MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-*[Can I Use?](https://caniuse.com/eventsource)
+* [Wikipedia](https://en.wikipedia.org/wiki/Server-sent_events)
+* [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+* [Can I Use?](https://caniuse.com/eventsource)
