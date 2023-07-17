@@ -554,7 +554,7 @@ content of the page is examined for elements that match by the `id` attribute.  
 is found for an element in the new content, the attributes of the old content are copied
 onto the new element before the swap occurs.  The new content is then swapped in, but with the
 *old* attribute values.  Finally, the new attribute values are swapped in, after a "settle" delay
-(20ms by default).  A little crazy, but this is what allowes CSS transitions to work without any javascript by
+(20ms by default).  A little crazy, but this is what allows CSS transitions to work without any javascript by
 the developer.
 
 ### Out of Band Swaps {#oob_swaps}
@@ -603,7 +603,7 @@ with a CSS selector of all the elements whose values you want to include in the 
 
 If you wish to filter out some parameters you can use the [hx-params](@/attributes/hx-params.md) attribute.
 
-Finally, if you want to programatically modify the parameters, you can use the [htmx:configRequest](@/events.md#htmx:configRequest)
+Finally, if you want to programmatically modify the parameters, you can use the [htmx:configRequest](@/events.md#htmx:configRequest)
 event.
 
 #### File Upload {#files}
@@ -1107,7 +1107,7 @@ htmx.logger = function(elt, event, data) {
 
 ## Debugging
 
-Declarative and event driven programming with htmx (or any other declartive language) can be a wonderful and highly productive
+Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly productive
 activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
 
 Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.
@@ -1130,7 +1130,7 @@ browser console:
 monitorEvents(htmx.find("#theElement"));
 ```
 
-This will spit out all events that are occuring on the element with the id `theElement` to the console, and allow you
+This will spit out all events that are occurring on the element with the id `theElement` to the console, and allow you
 to see exactly what is going on with it.
 
 Note that this *only* works from the console, you cannot embed it in a script tag on your page.
@@ -1321,7 +1321,7 @@ In hyperscript you can implement this, as well as fade effect, like so:
 ##### `ic-post-errors-to`
 
 Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
-for posting errors that occured during requests and responses.
+for posting errors that occurred during requests and responses.
 
 In hyperscript similar functionality is implemented like so:
 
@@ -1489,7 +1489,7 @@ while still providing additional safety if your HTML-escaping discipline fails.
 
 ## Configuring htmx {#config}
 
-Htmx has some configuration options that can be accessed either programatically or declaratively.  They are
+Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
 listed below:
 
 <div class="info-table">

@@ -110,7 +110,7 @@ function onDelete(path, response) {
 }
 
 //====================================
-// Activites
+// Activities
 //====================================
 
 var requestId = 0;
