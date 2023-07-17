@@ -1340,9 +1340,9 @@ In hyperscript you can implement similar functionality like so:
 
 ```html
 <div hx-target="#content" _="on htmx:beforeOnLoad take .active from .tabs for event.target">
-    <a class="tabs active" hx-get="/tab1" >Tab 1</a>
-    <a class="tabs" hx-get="/tab2">Tab 2</a>
-    <a class="tabs" hx-get="/tab3">Tab 3</a>
+    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
+    <a class="tabs" hx-get="/tabl2">Tab 2</a>
+    <a class="tabs" hx-get="/tabl3">Tab 3</a>
 </div>
 <div id="content">Tab 1 Content</div>
 ```
