@@ -391,7 +391,7 @@ return (function () {
 
         function bodyContains(elt) {
             // IE Fix
-            if (elt.getRootNode && elt.getRootNode() instanceof ShadowRoot) {
+            if (elt.getRootNode && elt.getRootNode() instanceof window.ShadowRoot) {
                 return getDocument().body.contains(elt.getRootNode().host);
             } else {
                 return getDocument().body.contains(elt);
@@ -965,7 +965,7 @@ return (function () {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
                 getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
-                settleInfo.elts = settleInfo.elts.filter(e => e != target);
+                settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
                         settleInfo.elts.push(newElt);
@@ -1905,7 +1905,7 @@ return (function () {
                 return func.call(elt, e);
             });
             nodeData.onHandlers.push({event:eventName, listener:listener});
-            return {nodeData, code, func, listener};
+            return {nodeData:nodeData, code:code, func:func, listener:listener};
         }
 
         function processHxOn(elt) {
@@ -1938,8 +1938,9 @@ return (function () {
             // wipe any previous on handlers so that this function takes precedence
             deInitOnHandlers(elt)
 
-            for (const attr of elt.attributes) {
-                const { name, value } = attr
+            for (var i = 0; i < elt.attributes.length; i++) {
+                var name = elt.attributes[i].name
+                var value = elt.attributes[i].value
                 if (name.startsWith("hx-on:") || name.startsWith("data-hx-on:")) {
                     let eventName = name.slice(name.indexOf(":") + 1)
                     // if the eventName starts with a colon, prepend "htmx" for shorthand support
