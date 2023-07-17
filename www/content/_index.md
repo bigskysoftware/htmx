@@ -51,6 +51,15 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
+<h2><a name='book'></a>book</h2>
+
+We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build 
+[Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
+
+<div style="text-align: center;padding: 24px">
+<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png"></a>
+</div>
+
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
 
 
