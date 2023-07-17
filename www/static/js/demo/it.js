@@ -13,7 +13,7 @@
                 `env => { with (env) { return \`${escapedCode}\` } }`
             )(params)
         } catch (e) {
-            log('demo:response-error', "An error occured during a mock response", e);
+            log('demo:response-error', "An error occurred during a mock response", e);
             return e.message;
         }
     }

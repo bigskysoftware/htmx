@@ -47,4 +47,4 @@ document.body.addEventListener('htmx:configRequest', (event) => {
 
 ## Stimulus
 
-* [hyperscript](https://hyperscript.org) is a close analogue and an official companion project to htmx, but the two projects are entirely seperated and can be used exclusively from each other or any other library.
+* [hyperscript](https://hyperscript.org) is a close analogue and an official companion project to htmx, but the two projects are entirely separated and can be used exclusively from each other or any other library.

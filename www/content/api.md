@@ -67,7 +67,7 @@ or
     // issue a GET to /example and put the response HTML into #myDiv
     htmx.ajax('GET', '/example', '#myDiv')
 
-    // issue a GET to /example and replace #myDiv with the repsonse
+    // issue a GET to /example and replace #myDiv with the response
     htmx.ajax('GET', '/example', {target:'#myDiv', swap:'outerHTML'})
 
     // execute some code after the content has been inserted into the DOM

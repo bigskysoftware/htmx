@@ -69,7 +69,7 @@ That said, [infinite scroll](@/examples/infinite-scroll.md) can be achieved quit
 
 Nice transitions are, well, nice.  We think that designers tend to over-estimate their contribution to application usability, however.  Yes, the demo sizzles, but on the 20th click users often just want the UI to get on with it.
 
-That being said, htmx supports using [standard CSS transtions](@/examples/animations.md) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
+That being said, htmx supports using [standard CSS transitions](@/examples/animations.md) to make animations possible.  Obviously there is a limit to what you can achieve with these pure CSS techniques, but we believe this can give you the 80 of an 80/20 situation.  (Or, perhaps, the 95 of a 95/5 situation.)
 
 ### "Multipage Apps Load Javascript Libraries Every Request"
 

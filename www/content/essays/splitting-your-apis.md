@@ -43,7 +43,7 @@ And these as application API needs:
 
 </div>
 
-I will term this mis-alignment of needs the **Data/App API Impedance Mismatch** problem.
+I will term this misalignment of needs the **Data/App API Impedance Mismatch** problem.
 
 Max's recommendation is to split the API into two "halves": a generic API and an application API:
 

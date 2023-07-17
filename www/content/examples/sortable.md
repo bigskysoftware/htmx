@@ -6,7 +6,7 @@ template = "demo.html"
 In this example we show how to integrate the [Sortable](https://sortablejs.github.io/Sortable/)
 javascript library with htmx.
 
-To begin we intialize the `.sortable` class with the `Sortable` javascript library:
+To begin we initialize the `.sortable` class with the `Sortable` javascript library:
 
 ```js
 htmx.onLoad(function(content) {

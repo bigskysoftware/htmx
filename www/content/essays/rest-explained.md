@@ -38,7 +38,7 @@ REST is, of course, a client-server architecture, since the web is a client (bro
 ### [Stateless](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_3)
 
 The web, most developers know, is intended to be stateless.  All requests should encapsulate all information necessary
-to understand that request.  For example, there should not be a long running transaction implicity associated with a series
+to understand that request.  For example, there should not be a long running transaction implicitly associated with a series
 of requests, as you might have with a SQL database session.
 
 ### [Cache](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_4)

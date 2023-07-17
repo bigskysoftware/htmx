@@ -336,7 +336,7 @@ The back end engineers were still concerned with the network architecture to an 
 term "REST" to describe what they were doing.
 
 Even though they were doing things like publishing swagger documentation for their RESTful APIs or [complaining about API 
-churn of their RESTful APIs](https://www.infoq.com/articles/no-more-mvc-frameworks/), things that wouldn't be occuring
+churn of their RESTful APIs](https://www.infoq.com/articles/no-more-mvc-frameworks/), things that wouldn't be occurring
 if they were actually creating RESTful APIs.
 
 Finally, in the late 2010s, people had had enough:  REST, even in its RESTless form, simply wasn't keep up with the needs
