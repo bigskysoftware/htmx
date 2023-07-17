@@ -83,7 +83,7 @@
                 evt.detail.xhr.status !== 200) {
                 if (evt.detail.target) {
                     if (htmx.config.responseTargetPrefersExisting) {
-                        evt.detail.shouldSwap = true;
+                        evt.detail.shoudSwap = true;
                         handleErrorFlag(evt);
                         return true;
                     }
