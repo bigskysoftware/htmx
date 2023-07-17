@@ -525,7 +525,7 @@ describe("hx-trigger attribute", function(){
 
     });
 
-    it('consume prevents event propogation', function()
+    it('consume prevents event propagation', function()
     {
         this.server.respondWith("GET", "/foo", "foo");
         this.server.respondWith("GET", "/bar", "bar");

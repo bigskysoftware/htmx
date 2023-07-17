@@ -227,7 +227,7 @@ return (function () {
          * @returns {boolean}
          */
         function matches(elt, selector) {
-            // @ts-ignore: non-standard properties for browser compatability
+            // @ts-ignore: non-standard properties for browser compatibility
             // noinspection JSUnresolvedVariable
             var matchesFunction = elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector;
             return matchesFunction && matchesFunction.call(elt, selector);
@@ -285,7 +285,7 @@ return (function () {
             if (htmx.config.useTemplateFragments && partialResponse) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
                 // @ts-ignore type mismatch between DocumentFragment and Element.
-                // TODO: Are these close enough for htmx to use interchangably?
+                // TODO: Are these close enough for htmx to use interchangeably?
                 return documentFragment.querySelector('template').content;
             } else {
                 var startTag = getStartTag(resp);

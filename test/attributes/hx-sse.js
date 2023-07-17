@@ -82,7 +82,7 @@ describe("hx-sse attribute", function() {
         byId("d1").innerHTML.should.equal("div1 updated");
     })
 
-    it('does not trigger events not on decendents', function () {
+    it('does not trigger events not on descendents', function () {
 
         this.server.respondWith("GET", "/d1", "div1 updated");
 

@@ -670,7 +670,7 @@ describe("Core htmx AJAX Tests", function(){
         }
     });
 
-    it('script nodes do not evaluate when explicity marked as something other than javascript', function()
+    it('script nodes do not evaluate when explicitly marked as something other than javascript', function()
     {
         var globalWasCalled = false;
         window.callGlobal = function() {
