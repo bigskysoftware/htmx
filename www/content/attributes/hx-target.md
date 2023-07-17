@@ -15,6 +15,8 @@ request.  The value of this attribute can be:
   (e.g. `next .error` will target the closest following sibling element with `error` class)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
   (e.g `previous .error` will target the closest previous sibling with `error` class)
+* `nextElementSibling` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
+* `previousElementSibling` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
 
 
 Here is an example that targets a div:

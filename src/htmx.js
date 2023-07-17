@@ -600,6 +600,10 @@ return (function () {
                 return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
             } else if (selector.indexOf("previous ") === 0) {
                 return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
+            } else if (selector === "nextElementSibling") {
+                return [elt.nextElementSibling]
+            } else if (selector === "previousElementSibling") {
+                return [elt.previousElementSibling]
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
