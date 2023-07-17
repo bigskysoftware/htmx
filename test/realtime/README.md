@@ -16,7 +16,7 @@ This listens for incoming WebSocket connections coming in to ws://localhost:1323
 
 ### Echo
 
-The echo endpont listens for incoming WebSocket connections coming in to `ws://localhost:1323/echo`.  When it receives messages from any WebSocket client, it responds with that same content wrapped as an OOB Swap.  So, if you post the message `Hello There. General Kenobi.` the server will respond with this: `<div id="idMessage" hx-swap-oob="true">Hello There. General Kenobi.</div>`
+The echo endpoint listens for incoming WebSocket connections coming in to `ws://localhost:1323/echo`.  When it receives messages from any WebSocket client, it responds with that same content wrapped as an OOB Swap.  So, if you post the message `Hello There. General Kenobi.` the server will respond with this: `<div id="idMessage" hx-swap-oob="true">Hello There. General Kenobi.</div>`
 
 ### Heartbeat
 
