@@ -916,7 +916,7 @@ return (function () {
             if (internalData.onHandlers) {
                 for (let i = 0; i < internalData.onHandlers.length; i++) {
                     const handlerInfo = internalData.onHandlers[i];
-                    elt.removeEventListener(handlerInfo.name, handlerInfo.handler);
+                    elt.removeEventListener(handlerInfo.event, handlerInfo.listener);
                 }
                 delete internalData.onHandlers
             }
@@ -1901,9 +1901,10 @@ return (function () {
             var nodeData = getInternalData(elt);
             nodeData.onHandlers = [];
             var func = new Function("event", code + "; return;");
-            var listener = elt.addEventListener(eventName, function (e) {
+            var listener = function (e) {
                 return func.call(elt, e);
-            });
+            };
+            elt.addEventListener(eventName, listener);
             nodeData.onHandlers.push({event:eventName, listener:listener});
             return {nodeData, code, func, listener};
         }
