@@ -177,6 +177,13 @@ return (function () {
         }
 
         /**
+         * @returns {HTMLElement} body
+         */
+        function body() {
+            return document.body;
+        }
+
+        /**
          * @param {HTMLElement} elt
          * @param {(e:HTMLElement) => boolean} condition
          * @returns {HTMLElement | null}
@@ -385,9 +392,9 @@ return (function () {
         function bodyContains(elt) {
             // IE Fix
             if (elt.getRootNode && elt.getRootNode() instanceof window.ShadowRoot) {
-                return document.body.contains(elt.getRootNode().host);
+                return body().contains(elt.getRootNode().host);
             } else {
-                return document.body.contains(elt);
+                return body().contains(elt);
             }
         }
 
@@ -453,7 +460,7 @@ return (function () {
         //==========================================================================================
 
         function internalEval(str){
-            return maybeEval(document.body, function () {
+            return maybeEval(body(), function () {
                 return eval(str);
             });
         }
@@ -615,7 +622,7 @@ return (function () {
             if (selector) {
                 return querySelectorAllExt(eltOrSelector, selector)[0];
             } else {
-                return querySelectorAllExt(document.body, eltOrSelector)[0];
+                return querySelectorAllExt(body(), eltOrSelector)[0];
             }
         }
 
@@ -630,7 +637,7 @@ return (function () {
         function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg2)) {
                 return {
-                    target: document.body,
+                    target: body(),
                     event: arg1,
                     listener: arg2
                 }
@@ -700,7 +707,7 @@ return (function () {
             } else {
                 var data = getInternalData(elt);
                 if (data.boosted) {
-                    return document.body;
+                    return body();
                 } else {
                     return elt;
                 }
@@ -792,7 +799,7 @@ return (function () {
                 oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
-                triggerErrorEvent(document.body, "htmx:oobErrorNoTarget", {content: oobElement});
+                triggerErrorEvent(body(), "htmx:oobErrorNoTarget", {content: oobElement});
             }
             return oobValue;
         }
@@ -1176,7 +1183,7 @@ return (function () {
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
-                                triggerErrorEvent(document.body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                triggerErrorEvent(body(), "htmx:syntax:error", {error:e, source:conditionalSource})
                                 return null;
                             }
                         }
@@ -1378,7 +1385,7 @@ return (function () {
                 try {
                     return eventFilter.call(elt, evt) !== true;
                 } catch(e) {
-                    triggerErrorEvent(document.body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
+                    triggerErrorEvent(body(), "htmx:eventFilter:error", {error: e, source:eventFilter.source});
                     return true;
                 }
             }
@@ -2092,7 +2099,7 @@ return (function () {
 
         function getHistoryElement() {
             var historyElt = document.querySelector('[hx-history-elt],[data-hx-history-elt]');
-            return historyElt || document.body;
+            return historyElt || body();
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
@@ -2110,7 +2117,7 @@ return (function () {
                 }
             }
             var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
-            triggerEvent(document.body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            triggerEvent(body(), "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
@@ -2120,7 +2127,7 @@ return (function () {
                     localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
                     break;
                 } catch (e) {
-                    triggerErrorEvent(document.body, "htmx:historyCacheError", {cause:e, cache: historyCache})
+                    triggerErrorEvent(body(), "htmx:historyCacheError", {cause:e, cache: historyCache})
                     historyCache.shift(); // shrink the cache and retry
                 }
             }
@@ -2162,7 +2169,7 @@ return (function () {
             // live from the server onpopstate rather than look in the localStorage cache
             var disableHistoryCache = document.querySelector('[hx-history="false" i],[data-hx-history="false" i]');
             if (!disableHistoryCache) {
-                triggerEvent(document.body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
+                triggerEvent(body(), "htmx:beforeHistorySave", {path: path, historyElt: elt});
                 saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), document.title, window.scrollY);
             }
 
@@ -2197,12 +2204,12 @@ return (function () {
         function loadHistoryFromServer(path) {
             var request = new XMLHttpRequest();
             var details = {path: path, xhr:request};
-            triggerEvent(document.body, "htmx:historyCacheMiss", details);
+            triggerEvent(body(), "htmx:historyCacheMiss", details);
             request.open('GET', path, true);
             request.setRequestHeader("HX-History-Restore-Request", "true");
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
-                    triggerEvent(document.body, "htmx:historyCacheMissLoad", details);
+                    triggerEvent(body(), "htmx:historyCacheMissLoad", details);
                     var fragment = makeFragment(this.response);
                     // @ts-ignore
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
@@ -2221,9 +2228,9 @@ return (function () {
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
-                    triggerEvent(document.body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
+                    triggerEvent(body(), "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
                 } else {
-                    triggerErrorEvent(document.body, "htmx:historyCacheMissLoadError", details);
+                    triggerErrorEvent(body(), "htmx:historyCacheMissLoadError", details);
                 }
             };
             request.send();
@@ -2244,7 +2251,7 @@ return (function () {
                     window.scrollTo(0, cached.scroll);
                 }, 0); // next 'tick', so browser has time to render layout
                 currentPathForHistory = path;
-                triggerEvent(document.body, "htmx:historyRestore", {path:path, item:cached});
+                triggerEvent(body(), "htmx:historyRestore", {path:path, item:cached});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
 
@@ -2759,7 +2766,7 @@ return (function () {
                     var url = new URL(xhr.responseURL);
                     return url.pathname + url.search;
                 } catch (e) {
-                    triggerErrorEvent(document.body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                    triggerErrorEvent(body(), "htmx:badResponseUrl", {url: xhr.responseURL});
                 }
             }
         }
@@ -2814,7 +2821,7 @@ return (function () {
                 });
             }
             if(elt == null) {
-                elt = document.body;
+                elt = body();
             }
             var responseHandler = etc.handler || handleAjaxResponse;
 
@@ -3357,7 +3364,7 @@ return (function () {
                         if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                             var finalElt = elt;
                             if (!bodyContains(elt)) {
-                                finalElt = document.body;
+                                finalElt = body();
                             }
                             handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
                         }
@@ -3380,7 +3387,7 @@ return (function () {
                                     triggerEvent(document.body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
                                 } else {
                                     replaceUrlInHistory(historyUpdate.path);
-                                    triggerEvent(document.body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                                    triggerEvent(body(), 'htmx:replacedInHistory', {path: historyUpdate.path});
                                 }
                             }
                             if (responseInfo.pathInfo.anchor) {
@@ -3404,7 +3411,7 @@ return (function () {
                             if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
                                 var finalElt = elt;
                                 if (!bodyContains(elt)) {
-                                    finalElt = document.body;
+                                    finalElt = body();
                                 }
                                 handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                             }
@@ -3582,12 +3589,11 @@ return (function () {
         ready(function () {
             mergeMetaConfig();
             insertIndicatorStyles();
-            var body = document.body;
-            processNode(body);
+            processNode(body());
             var restoredElts = document.querySelectorAll(
                 "[hx-trigger='restored'],[data-hx-trigger='restored']"
             );
-            body.addEventListener("htmx:abort", function (evt) {
+            body().addEventListener("htmx:abort", function (evt) {
                 var target = evt.target;
                 var internalData = getInternalData(target);
                 if (internalData && internalData.xhr) {
@@ -3611,8 +3617,7 @@ return (function () {
                 }
             };
             setTimeout(function () {
-                triggerEvent(body, 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
-                body = null; // kill reference for gc
+                triggerEvent(body(), 'htmx:load', {}); // give ready handlers a chance to load up before firing this event
             }, 0);
         })
 
