@@ -584,11 +584,11 @@ return (function () {
             if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, normalizeSelector(selector.substr(8)))];
             } else if (selector.indexOf("find ") === 0) {
-                return [find(elt, normalizeSelector(selector.substr(5)))];
+                return findAll(elt, normalizeSelector(selector.substr(5)));
             } else if (selector.indexOf("next ") === 0) {
-                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
+                return findNextAll(elt, normalizeSelector(selector.substr(5)));
             } else if (selector.indexOf("previous ") === 0) {
-                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
+                return findPreviousAll(elt, normalizeSelector(selector.substr(9)));
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
@@ -598,24 +598,28 @@ return (function () {
             }
         }
 
-        var scanForwardQuery = function(start, match) {
+        var findNextAll = function(start, match) {
+            var elts = [];
             var results = getDocument().querySelectorAll(match);
             for (var i = 0; i < results.length; i++) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
-                    return elt;
+                    elts.push(elt);
                 }
             }
+            return elts;
         }
 
-        var scanBackwardsQuery = function(start, match) {
+        var findPreviousAll = function(start, match) {
+            var elts = [];
             var results = getDocument().querySelectorAll(match);
             for (var i = results.length - 1; i >= 0; i--) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
-                    return elt;
+                    elts.push(elt);
                 }
             }
+            return elts;
         }
 
         function querySelectorExt(eltOrSelector, selector) {

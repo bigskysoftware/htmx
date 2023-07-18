@@ -59,8 +59,10 @@ is seen again before the delay completes it is ignored, the element will trigger
   * The extended CSS selector here allows for the following non-standard CSS values:
     * `document` - listen for events on the document
     * `window` - listen for events on the window
-    * `closest <CSS selector>` - finds the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest) ancestor element or itself, matching the given css selector
-    * `find <CSS selector>` - finds the closest child matching the given css selector
+    * `closest <CSS selector>` - finds the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest) ancestor element or itself, matching the given CSS selector
+    * `find <CSS selector>` - finds children matching the given CSS selector
+    * `previous <CSS selector>` - finds elements whose position precedes this element and which match the given CSS selector
+    * `next <CSS selector>` - finds elements whose position follows this element and which match the given CSS selector
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element
@@ -88,7 +90,7 @@ The response from the `/search` url will be appended to the `div` with the id `s
 There are some additional non-standard events that htmx supports:
 
 * `load` - triggered on load (useful for lazy-loading something)
-* `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading). If you are using `overflow` in css like `overflow-y: scroll` you should use `intersect once` instead of `revealed`.
+* `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading). If you are using `overflow` in CSS like `overflow-y: scroll` you should use `intersect once` instead of `revealed`.
 * `intersect` - fires once when an element first intersects the viewport.  This supports two additional options:
     * `root:<selector>` - a CSS selector of the root element for intersection
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire the event on
