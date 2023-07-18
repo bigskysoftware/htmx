@@ -119,9 +119,6 @@ return (function () {
         }
 
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
-        var VERB_SELECTOR = VERBS.map(function(verb){
-            return "[hx-" + verb + "], [data-hx-" + verb + "]"
-        }).join(", ");
 
         //====================================================================
         // Utilities
@@ -1837,10 +1834,6 @@ return (function () {
             });
         }
 
-        function hasChanceOfBeingBoosted() {
-            return document.querySelector("[hx-boost], [data-hx-boost]");
-        }
-
         function findHxOnWildcardElements(elt) {
             if (!document.evaluate) return []
 
@@ -1853,10 +1846,17 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
-                return results;
+                // hx-* or data-hx-*
+                var selectors = ['sse', 'ws', 'ext', 'trigger', 'on']
+                    .concat(VERBS)
+                    .map(function(name) { 
+                        return '[hx-' + name + '], [data-hx-' + name + ']'
+                    });
+
+                selectors.push('a[hx-boost], a[data-hx-boost]');
+                selectors.push('form[hx-boost], form[data-hx-boost]');
+
+                return elt.querySelectorAll(selectors.join(', '));
             } else {
                 return [];
             }
