@@ -177,13 +177,6 @@ return (function () {
         }
 
         /**
-         * @returns {Document}
-         */
-        function getDocument() {
-            return document;
-        }
-
-        /**
          * @param {HTMLElement} elt
          * @param {(e:HTMLElement) => boolean} condition
          * @returns {HTMLElement | null}
@@ -266,7 +259,7 @@ return (function () {
             }
             if (responseNode == null) {
                 // @ts-ignore
-                responseNode = getDocument().createDocumentFragment();
+                responseNode = document.createDocumentFragment();
             }
             return responseNode;
         }
@@ -392,9 +385,9 @@ return (function () {
         function bodyContains(elt) {
             // IE Fix
             if (elt.getRootNode && elt.getRootNode() instanceof window.ShadowRoot) {
-                return getDocument().body.contains(elt.getRootNode().host);
+                return document.body.contains(elt.getRootNode().host);
             } else {
-                return getDocument().body.contains(elt);
+                return document.body.contains(elt);
             }
         }
 
@@ -460,7 +453,7 @@ return (function () {
         //==========================================================================================
 
         function internalEval(str){
-            return maybeEval(getDocument().body, function () {
+            return maybeEval(document.body, function () {
                 return eval(str);
             });
         }
@@ -488,7 +481,7 @@ return (function () {
             if (selector) {
                 return eltOrSelector.querySelector(selector);
             } else {
-                return find(getDocument(), eltOrSelector);
+                return find(document, eltOrSelector);
             }
         }
 
@@ -496,7 +489,7 @@ return (function () {
             if (selector) {
                 return eltOrSelector.querySelectorAll(selector);
             } else {
-                return findAll(getDocument(), eltOrSelector);
+                return findAll(document, eltOrSelector);
             }
         }
 
@@ -594,12 +587,12 @@ return (function () {
             } else if (selector === 'window') {
                 return [window];
             } else {
-                return getDocument().querySelectorAll(normalizeSelector(selector));
+                return document.querySelectorAll(normalizeSelector(selector));
             }
         }
 
         var scanForwardQuery = function(start, match) {
-            var results = getDocument().querySelectorAll(match);
+            var results = document.querySelectorAll(match);
             for (var i = 0; i < results.length; i++) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
@@ -609,7 +602,7 @@ return (function () {
         }
 
         var scanBackwardsQuery = function(start, match) {
-            var results = getDocument().querySelectorAll(match);
+            var results = document.querySelectorAll(match);
             for (var i = results.length - 1; i >= 0; i--) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -622,7 +615,7 @@ return (function () {
             if (selector) {
                 return querySelectorAllExt(eltOrSelector, selector)[0];
             } else {
-                return querySelectorAllExt(getDocument().body, eltOrSelector)[0];
+                return querySelectorAllExt(document.body, eltOrSelector)[0];
             }
         }
 
@@ -637,7 +630,7 @@ return (function () {
         function processEventArgs(arg1, arg2, arg3) {
             if (isFunction(arg2)) {
                 return {
-                    target: getDocument().body,
+                    target: document.body,
                     event: arg1,
                     listener: arg2
                 }
@@ -672,7 +665,7 @@ return (function () {
         // Node processing
         //====================================================================
 
-        var DUMMY_ELT = getDocument().createElement("output"); // dummy element for bad selectors
+        var DUMMY_ELT = document.createElement("output"); // dummy element for bad selectors
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
             if (attrTarget) {
@@ -707,7 +700,7 @@ return (function () {
             } else {
                 var data = getInternalData(elt);
                 if (data.boosted) {
-                    return getDocument().body;
+                    return document.body;
                 } else {
                     return elt;
                 }
@@ -771,14 +764,14 @@ return (function () {
                 swapStyle = oobValue;
             }
 
-            var targets = getDocument().querySelectorAll(selector);
+            var targets = document.querySelectorAll(selector);
             if (targets) {
                 forEach(
                     targets,
                     function (target) {
                         var fragment;
                         var oobElementClone = oobElement.cloneNode(true);
-                        fragment = getDocument().createDocumentFragment();
+                        fragment = document.createDocumentFragment();
                         fragment.appendChild(oobElementClone);
                         if (!isInlineSwap(swapStyle, target)) {
                             fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
@@ -799,7 +792,7 @@ return (function () {
                 oobElement.parentNode.removeChild(oobElement);
             } else {
                 oobElement.parentNode.removeChild(oobElement);
-                triggerErrorEvent(getDocument().body, "htmx:oobErrorNoTarget", {content: oobElement});
+                triggerErrorEvent(document.body, "htmx:oobErrorNoTarget", {content: oobElement});
             }
             return oobValue;
         }
@@ -832,7 +825,7 @@ return (function () {
         function handlePreservedElements(fragment) {
             forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function (preservedElt) {
                 var id = getAttributeValue(preservedElt, "id");
-                var oldElt = getDocument().getElementById(id);
+                var oldElt = document.getElementById(id);
                 if (oldElt != null) {
                     preservedElt.parentNode.replaceChild(oldElt, preservedElt);
                 }
@@ -1013,7 +1006,7 @@ return (function () {
         function maybeSelectFromResponse(elt, fragment, selectOverride) {
             var selector = selectOverride || getClosestAttributeValue(elt, "hx-select");
             if (selector) {
-                var newFragment = getDocument().createDocumentFragment();
+                var newFragment = document.createDocumentFragment();
                 forEach(fragment.querySelectorAll(selector), function (node) {
                     newFragment.appendChild(node);
                 });
@@ -1183,7 +1176,7 @@ return (function () {
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
-                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                triggerErrorEvent(document.body, "htmx:syntax:error", {error:e, source:conditionalSource})
                                 return null;
                             }
                         }
@@ -1385,7 +1378,7 @@ return (function () {
                 try {
                     return eventFilter.call(elt, evt) !== true;
                 } catch(e) {
-                    triggerErrorEvent(getDocument().body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
+                    triggerErrorEvent(document.body, "htmx:eventFilter:error", {error: e, source:eventFilter.source});
                     return true;
                 }
             }
@@ -1493,7 +1486,7 @@ return (function () {
                 setInterval(function() {
                     if (windowIsScrolling) {
                         windowIsScrolling = false;
-                        forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
+                        forEach(document.querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function (elt) {
                             maybeReveal(elt);
                         })
                     }
@@ -1804,7 +1797,7 @@ return (function () {
 
         function evalScript(script) {
             if (script.type === "text/javascript" || script.type === "module" || script.type === "") {
-                var newScript = getDocument().createElement("script");
+                var newScript = document.createElement("script");
                 forEach(script.attributes, function (attr) {
                     newScript.setAttribute(attr.name, attr.value);
                 });
@@ -2025,7 +2018,7 @@ return (function () {
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
                 evt = new CustomEvent(eventName, {bubbles: true, cancelable: true, detail: detail});
             } else {
-                evt = getDocument().createEvent('CustomEvent');
+                evt = document.createEvent('CustomEvent');
                 evt.initCustomEvent(eventName, true, true, detail);
             }
             return evt;
@@ -2098,8 +2091,8 @@ return (function () {
         var currentPathForHistory = location.pathname+location.search;
 
         function getHistoryElement() {
-            var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
-            return historyElt || getDocument().body;
+            var historyElt = document.querySelector('[hx-history-elt],[data-hx-history-elt]');
+            return historyElt || document.body;
         }
 
         function saveToHistoryCache(url, content, title, scroll) {
@@ -2117,7 +2110,7 @@ return (function () {
                 }
             }
             var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
-            triggerEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
+            triggerEvent(document.body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
@@ -2127,7 +2120,7 @@ return (function () {
                     localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
                     break;
                 } catch (e) {
-                    triggerErrorEvent(getDocument().body, "htmx:historyCacheError", {cause:e, cache: historyCache})
+                    triggerErrorEvent(document.body, "htmx:historyCacheError", {cause:e, cache: historyCache})
                     historyCache.shift(); // shrink the cache and retry
                 }
             }
@@ -2167,13 +2160,13 @@ return (function () {
             // so we can prevent privileged data entering the cache.
             // The page will still be reachable as a history entry, but htmx will fetch it
             // live from the server onpopstate rather than look in the localStorage cache
-            var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
+            var disableHistoryCache = document.querySelector('[hx-history="false" i],[data-hx-history="false" i]');
             if (!disableHistoryCache) {
-                triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
-                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+                triggerEvent(document.body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
+                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), document.title, window.scrollY);
             }
 
-            if (htmx.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
+            if (htmx.config.historyEnabled) history.replaceState({htmx: true}, document.title, window.location.href);
         }
 
         function pushUrlIntoHistory(path) {
@@ -2204,12 +2197,12 @@ return (function () {
         function loadHistoryFromServer(path) {
             var request = new XMLHttpRequest();
             var details = {path: path, xhr:request};
-            triggerEvent(getDocument().body, "htmx:historyCacheMiss", details);
+            triggerEvent(document.body, "htmx:historyCacheMiss", details);
             request.open('GET', path, true);
             request.setRequestHeader("HX-History-Restore-Request", "true");
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
-                    triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
+                    triggerEvent(document.body, "htmx:historyCacheMissLoad", details);
                     var fragment = makeFragment(this.response);
                     // @ts-ignore
                     fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment;
@@ -2221,16 +2214,16 @@ return (function () {
                         if (titleElt) {
                             titleElt.innerHTML = title;
                         } else {
-                            window.document.title = title;
+                            document.title = title;
                         }
                     }
                     // @ts-ignore
                     swapInnerHTML(historyElement, fragment, settleInfo)
                     settleImmediately(settleInfo.tasks);
                     currentPathForHistory = path;
-                    triggerEvent(getDocument().body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
+                    triggerEvent(document.body, "htmx:historyRestore", {path: path, cacheMiss:true, serverResponse:this.response});
                 } else {
-                    triggerErrorEvent(getDocument().body, "htmx:historyCacheMissLoadError", details);
+                    triggerErrorEvent(document.body, "htmx:historyCacheMissLoadError", details);
                 }
             };
             request.send();
@@ -2251,7 +2244,7 @@ return (function () {
                     window.scrollTo(0, cached.scroll);
                 }, 0); // next 'tick', so browser has time to render layout
                 currentPathForHistory = path;
-                triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
+                triggerEvent(document.body, "htmx:historyRestore", {path:path, item:cached});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
 
@@ -2488,7 +2481,7 @@ return (function () {
                 "HX-Trigger" : getRawAttribute(elt, "id"),
                 "HX-Trigger-Name" : getRawAttribute(elt, "name"),
                 "HX-Target" : getAttributeValue(target, "id"),
-                "HX-Current-URL" : getDocument().location.href,
+                "HX-Current-URL" : document.location.href,
             }
             getValuesForElement(elt, "hx-headers", false, headers)
             if (prompt !== undefined) {
@@ -2766,7 +2759,7 @@ return (function () {
                     var url = new URL(xhr.responseURL);
                     return url.pathname + url.search;
                 } catch (e) {
-                    triggerErrorEvent(getDocument().body, "htmx:badResponseUrl", {url: xhr.responseURL});
+                    triggerErrorEvent(document.body, "htmx:badResponseUrl", {url: xhr.responseURL});
                 }
             }
         }
@@ -2821,7 +2814,7 @@ return (function () {
                 });
             }
             if(elt == null) {
-                elt = getDocument().body;
+                elt = document.body;
             }
             var responseHandler = etc.handler || handleAjaxResponse;
 
@@ -2971,7 +2964,7 @@ return (function () {
 
             // behavior of anchors w/ empty href is to use the current URL
             if (path == null || path === "") {
-                path = getDocument().location.href;
+                path = document.location.href;
             }
 
 
@@ -3261,7 +3254,7 @@ return (function () {
             }
 
             if (hasHeader(xhr,/HX-Retarget:/i)) {
-                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+                responseInfo.target = document.querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
             var historyUpdate = determineHistoryUpdates(elt, responseInfo);
@@ -3364,7 +3357,7 @@ return (function () {
                         if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                             var finalElt = elt;
                             if (!bodyContains(elt)) {
-                                finalElt = getDocument().body;
+                                finalElt = document.body;
                             }
                             handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
                         }
@@ -3384,10 +3377,10 @@ return (function () {
                             if (historyUpdate.type) {
                                 if (historyUpdate.type === "push") {
                                     pushUrlIntoHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
+                                    triggerEvent(document.body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
                                 } else {
                                     replaceUrlInHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                                    triggerEvent(document.body, 'htmx:replacedInHistory', {path: historyUpdate.path});
                                 }
                             }
                             if (responseInfo.pathInfo.anchor) {
@@ -3402,7 +3395,7 @@ return (function () {
                                 if(titleElt) {
                                     titleElt.innerHTML = settleInfo.title;
                                 } else {
-                                    window.document.title = settleInfo.title;
+                                    document.title = settleInfo.title;
                                 }
                             }
 
@@ -3411,7 +3404,7 @@ return (function () {
                             if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
                                 var finalElt = elt;
                                 if (!bodyContains(elt)) {
-                                    finalElt = getDocument().body;
+                                    finalElt = document.body;
                                 }
                                 handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
                             }
@@ -3550,16 +3543,16 @@ return (function () {
         //====================================================================
 
         function ready(fn) {
-            if (getDocument().readyState !== 'loading') {
+            if (document.readyState !== 'loading') {
                 fn();
             } else {
-                getDocument().addEventListener('DOMContentLoaded', fn);
+                document.addEventListener('DOMContentLoaded', fn);
             }
         }
 
         function insertIndicatorStyles() {
             if (htmx.config.includeIndicatorStyles !== false) {
-                getDocument().head.insertAdjacentHTML("beforeend",
+                document.head.insertAdjacentHTML("beforeend",
                     "<style>\
                       ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
                       ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
@@ -3569,7 +3562,7 @@ return (function () {
         }
 
         function getMetaConfig() {
-            var element = getDocument().querySelector('meta[name="htmx-config"]');
+            var element = document.querySelector('meta[name="htmx-config"]');
             if (element) {
                 // @ts-ignore
                 return parseJSON(element.content);
@@ -3589,9 +3582,9 @@ return (function () {
         ready(function () {
             mergeMetaConfig();
             insertIndicatorStyles();
-            var body = getDocument().body;
+            var body = document.body;
             processNode(body);
-            var restoredElts = getDocument().querySelectorAll(
+            var restoredElts = document.querySelectorAll(
                 "[hx-trigger='restored'],[data-hx-trigger='restored']"
             );
             body.addEventListener("htmx:abort", function (evt) {
@@ -3607,7 +3600,7 @@ return (function () {
                     restoreHistory();
                     forEach(restoredElts, function(elt){
                         triggerEvent(elt, 'htmx:restored', {
-                            'document': getDocument(),
+                            'document': document,
                             'triggerEvent': triggerEvent
                         });
                     });
