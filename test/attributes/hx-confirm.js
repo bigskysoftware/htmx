@@ -42,14 +42,17 @@ describe("hx-confirm attribute", function () {
     })
 
     it('should prompt when htmx:confirm handler calls issueRequest', function () {
-        var btn = make('<button hx-get="/test" hx-confirm="Surely?">Click Me!</button>')
-        var handler = htmx.on("htmx:confirm", function (evt) {
-            evt.preventDefault();
-            evt.detail.issueRequest();
-        });
-        btn.click();
-        confirm.calledOnce.should.equal(true);
-        htmx.off("htmx:confirm", handler);
+        try {
+            var btn = make('<button hx-get="/test" hx-confirm="Surely?">Click Me!</button>')
+            var handler = htmx.on("htmx:confirm", function (evt) {
+                evt.preventDefault();
+                evt.detail.issueRequest();
+            });
+            btn.click();
+            confirm.calledOnce.should.equal(true);
+        } finally {
+            htmx.off("htmx:confirm", handler);
+        }
     })
 
     it('should include the question in htmx:confirm event', function () {
