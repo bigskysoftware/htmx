@@ -1,4 +1,4 @@
-describe("Core htmx Events", function () {
+describe("Core htmx Events", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
