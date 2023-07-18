@@ -19,7 +19,8 @@ The event name follows a colon `:` in the attribute, and the attribute value is 
 ```
 
 All htmx events can be captured, too! Make sure to use the [kebab-case event name](@/docs.md#events),
-because DOM attributes do not preserve casing.
+because DOM attributes do not preserve casing. For instance, `hx-on::beforeRequest` **will not work:**
+use `hx-on::before-request` instead.
 
 To make writing these a little easier, you can use the shorthand double-colon `hx-on::` for htmx
 events, and omit the "htmx" part:
@@ -39,8 +40,8 @@ events, and omit the "htmx" part:
 Adding multiple handlers is easy, you just specify additional attributes:
 ```html
 <button hx-get="/info"
-        hx-on::beforeRequest="alert('Making a request!'")
-        hx-on::afterRequest="alert('Done making a request!')">
+        hx-on::before-request="alert('Making a request!'")
+        hx-on::after-request="alert('Done making a request!')">
     Get Info!
 </button>
 ```
