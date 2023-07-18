@@ -53,5 +53,33 @@ describe("hx-confirm attribute", function () {
         }
     })
 
+    it('should prompt when htmx:confirm handler calls issueRequest', function () {
+        var confirm = sinon.stub(window, "confirm");
+        try {
+            var btn = make('<button hx-get="/test" hx-confirm="Surely?">Click Me!</button>')
+            var handler = htmx.on("htmx:confirm", function (evt) {
+                evt.preventDefault();
+                evt.detail.issueRequest();
+            });
+            btn.click();
+            confirm.calledOnce.should.equal(true);
+        } finally {
+            htmx.off("htmx:confirm", handler);
+        }
+    })
+
+    it('should include the question in htmx:confirm event', function () {
+        var stub = sinon.stub();
+        try {
+            var btn = make('<button hx-get="/test" hx-confirm="Surely?">Click Me!</button>')
+            var handler = htmx.on("htmx:confirm", stub);
+            btn.click();
+            stub.calledOnce.should.equal(true);
+            stub.firstCall.args[0].detail.should.have.property("question", "Surely?");
+        } finally {
+            htmx.off("htmx:confirm", handler);
+        }
+    })
+
 
 });

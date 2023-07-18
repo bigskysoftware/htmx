@@ -2868,12 +2868,13 @@ return (function () {
                 return;
             }
 
+            var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
             // allow event-based confirmation w/ a callback
             if (!confirmed) {
                 var issueRequest = function() {
                     return issueAjaxRequest(verb, path, elt, event, etc, true);
                 }
-                var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest};
+                var confirmDetails = { target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest, question: confirmQuestion };
                 if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
                     return;
                 }
@@ -2971,7 +2972,7 @@ return (function () {
                 }
             }
 
-            var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
+
             if (confirmQuestion) {
                 if(!confirm(confirmQuestion)) {
                     maybeCall(resolve);
