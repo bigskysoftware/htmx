@@ -78,7 +78,7 @@ describe("hx-confirm attribute", function () {
                 evt.detail.issueRequest(true);
             });
             btn.click();
-            confirm.calledOnce.should.equal(false);
+            confirm.called.should.equal(false);
             this.server.respond();
             btn.innerHTML.should.equal("Clicked!");
         } finally {
@@ -95,7 +95,7 @@ describe("hx-confirm attribute", function () {
                 evt.detail.issueRequest(true);
             });
             btn.click();
-            confirm.calledOnce.should.equal(false);
+            confirm.called.should.equal(false);
             this.server.respond();
             btn.innerHTML.should.equal("Clicked!");
         } finally {
@@ -114,7 +114,7 @@ describe("hx-confirm attribute", function () {
                 evt.detail.issueRequest();
             });
             btn.click();
-            confirm.calledOnce.should.equal(false); // no hx-confirm means no window.confirm
+            confirm.called.should.equal(false); // no hx-confirm means no window.confirm
             this.server.respond();
             btn.innerHTML.should.equal("Clicked!");
         } finally {
