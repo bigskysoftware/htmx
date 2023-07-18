@@ -99,7 +99,7 @@ describe("Core htmx Regression Tests", function(){
         byId("d1").innerText.should.equal('Replaced');
     });
 
-    it('does not submit with a false condition on a form', function() {
+    it('submission is aborted but event default is not prevented when event is excluded via filter', function() {
         this.server.respondWith("POST", "/test", "Submitted");
         var defaultPrevented = false;
         htmx.on("click", function(evt) {
@@ -108,7 +108,8 @@ describe("Core htmx Regression Tests", function(){
         var form = make('<form hx-post="/test" hx-trigger="click[false]"></form>');
         form.click()
         this.server.respond();
-        defaultPrevented.should.equal(true);
+        defaultPrevented.should.equal(false);
+        form.innerHTML.should.equal("");
     })
 
     it('two elements can listen for the same event on another element', function() {
