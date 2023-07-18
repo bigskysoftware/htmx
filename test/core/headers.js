@@ -168,6 +168,78 @@ describe("Core htmx AJAX headers", function () {
         htmx.off('foo', handler);
     })
 
+    it("should handle simple comma separated list HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo, bar"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        div.addEventListener("foo", function (evt) {
+            invokedEventFoo = true;
+        });
+        div.addEventListener("bar", function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+    })
+
+    it("should handle simple comma separated list without space HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo,bar"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        div.addEventListener("foo", function (evt) {
+            invokedEventFoo = true;
+        });
+        div.addEventListener("bar", function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+    })
+
+    it("should handle dot path in comma separated list HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "foo.bar,bar.baz"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        div.addEventListener("foo.bar", function (evt) {
+            invokedEventFoo = true;
+        });
+        div.addEventListener("bar.baz", function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+    })
+
+    it("should handle a namespaced comma separated list HX-Trigger response header properly", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger": "namespace:foo,bar"}, ""]);
+
+        var div = make('<div hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        div.addEventListener("namespace:foo", function (evt) {
+            invokedEventFoo = true;
+        });
+        div.addEventListener("bar", function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+    })
+
     it("should handle HX-Retarget", function () {
         this.server.respondWith("GET", "/test", [200, {"HX-Retarget": "#d2"}, "Result"]);
 
@@ -212,6 +284,26 @@ describe("Core htmx AJAX headers", function () {
         htmx.off('foo', handler);
     })
 
+    it("should handle simple comma separated list HX-Trigger-After-Swap response header properly w/ outerHTML swap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Swap": "foo, bar"}, ""]);
+
+        var div = make('<div hx-swap="outerHTML" hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        var handlerFoo = htmx.on('foo', function (evt) {
+            invokedEventFoo = true;
+        });
+        var handlerBar = htmx.on('bar', function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+        htmx.off('foo', handlerFoo);
+        htmx.off('bar', handlerBar);
+    })
+
     it("should handle simple string HX-Trigger-After-Settle response header properly w/ outerHTML swap", function () {
         this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Settle": "foo"}, ""]);
 
@@ -224,6 +316,26 @@ describe("Core htmx AJAX headers", function () {
         this.server.respond();
         invokedEvent.should.equal(true);
         htmx.off('foo', handler);
+    })
+
+    it("should handle simple comma separated list HX-Trigger-After-Settle response header properly w/ outerHTML swap", function () {
+        this.server.respondWith("GET", "/test", [200, {"HX-Trigger-After-Settle": "foo, bar"}, ""]);
+
+        var div = make('<div hx-swap="outerHTML" hx-get="/test"></div>');
+        var invokedEventFoo = false;
+        var invokedEventBar = false;
+        var handlerFoo = htmx.on('foo', function (evt) {
+            invokedEventFoo = true;
+        });
+        var handlerBar = htmx.on('bar', function (evt) {
+            invokedEventBar = true;
+        });
+        div.click();
+        this.server.respond();
+        invokedEventFoo.should.equal(true);
+        invokedEventBar.should.equal(true);
+        htmx.off('foo', handlerFoo);
+        htmx.off('bar', handlerBar);
     })
 
 
