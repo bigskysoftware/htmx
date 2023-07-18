@@ -30,9 +30,30 @@ describe("hx-swap-oob attribute", function () {
         byId("d2").innerHTML.should.equal("Swapped2");
     })
 
+    it('handles more than one oob swap with special characters properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='d:1' hx-swap-oob='true'>Swapped1</div><div id='d,2' hx-swap-oob='true'>Swapped2</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d:1"></div>');
+        make('<div id="d,2"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked");
+        byId("d:1").innerHTML.should.equal("Swapped1");
+        byId("d,2").innerHTML.should.equal("Swapped2");
+    })
+
     it('handles no id match properly', function () {
         this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped2</div>");
         var div = make('<div hx-get="/test">click me</div>');
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Clicked");
+    })
+
+    it('handles id with special characters match properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='d/1' hx-swap-oob='true'>Swapped2</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="d/1"></div>');
         div.click();
         this.server.respond();
         div.innerText.should.equal("Clicked");
