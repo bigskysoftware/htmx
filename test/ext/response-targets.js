@@ -221,4 +221,46 @@ describe("response-targets extension", function() {
         div2.innerHTML.should.equal("");
         div3.innerHTML.should.equal("Not found!");
     });
+
+    it('targets the element specified in headers if configured to prefer it (default)', function () {
+        this.server.respondWith("GET", "/test", [404, { "HX-Retarget": "#d2" }, "Not found!"]);
+        var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+        var div1 = make('<div id="d1"></div>')
+        var div2 = make('<div id="d2"></div>')
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("Not found!");
+    });
+
+    it('ignores the HX-Retarget header when responseTargetPrefersRetargetHeader is false', function () {
+        htmx.config.responseTargetPrefersRetargetHeader = false;
+        try {
+            this.server.respondWith("GET", "/test", [404, { "HX-Retarget": "#d2" }, "Not found!"]);
+            var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+            var div1 = make('<div id="d1"></div>')
+            var div2 = make('<div id="d2"></div>')
+            btn.click();
+            this.server.respond();
+            div1.innerHTML.should.equal("Not found!");
+            div2.innerHTML.should.equal("");
+        } finally {
+            htmx.config.responseTargetPrefersRetargetHeader = true;
+        }
+    });
+
+    it('targets the already established target when responseTargetPrefersExisting is true', function () {
+        htmx.config.responseTargetPrefersExisting = true;
+        try {
+            this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
+            var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+            var div1 = make('<div id="d1"></div>')
+            btn.click();
+            this.server.respond();
+            div1.innerHTML.should.equal("");
+            btn.innerHTML.should.equal("Not found!");
+        } finally {
+            htmx.config.responseTargetPrefersExisting = false;
+        }
+    });
 });
