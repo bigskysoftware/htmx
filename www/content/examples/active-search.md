@@ -45,6 +45,9 @@ To make this trigger a new `POST` we have to specify another trigger. We specify
 separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override 
 the 500 ms delay on `keyup` by just pressing enter.
 
+Please note, certain functionalities described in this example, such as the presence of a clear `x` button in the input field
+and the ability to override the delay by pressing enter, are currently not supported by Firefox.
+
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
 
 {{ demoenv() }}
