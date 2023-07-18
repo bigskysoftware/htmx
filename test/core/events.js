@@ -1,4 +1,4 @@
-describe("Core htmx Events", function() {
+describe("Core htmx Events", function () {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
@@ -643,7 +643,7 @@ describe("Core htmx Events", function() {
             this.server.respond();
             div.innerHTML.should.equal("updated");
         } finally {
-            htmx.off("htmx:load", handler);
+            htmx.off("htmx:confirm", handler);
         }
     });
 
