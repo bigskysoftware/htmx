@@ -589,10 +589,6 @@ return (function () {
                 return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
             } else if (selector.indexOf("previous ") === 0) {
                 return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
-            } else if (selector === 'document') {
-                return [document];
-            } else if (selector === 'window') {
-                return [window];
             } else {
                 return getDocument().querySelectorAll(normalizeSelector(selector));
             }
@@ -1406,7 +1402,13 @@ return (function () {
             var elementData = getInternalData(elt);
             var eltsToListenOn;
             if (triggerSpec.from) {
-                eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
+                if (triggerSpec.from === 'window') {
+                    eltsToListenOn = [window];
+                } else if (triggerSpec.from === 'document') {
+                    eltsToListenOn = [document];
+                } else {
+                    eltsToListenOn = querySelectorAllExt(elt, triggerSpec.from);
+                }
             } else {
                 eltsToListenOn = [elt];
             }
