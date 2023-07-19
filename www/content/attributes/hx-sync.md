@@ -4,9 +4,10 @@ title = "hx-sync"
 
 The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.
 
-The `hx-sync` attribute consists of a CSS selector to indicate the element to synchronize on, followed optionally
-by a colon and then by an optional syncing strategy.  The available strategies are:
+The `hx-sync` attribute consists of a extended CSS selector to indicate the element to synchronize on, followed optionally
+by a colon and then by an optional syncing strategy. See [Extended CSS Syntax](@/extended-css.md) for more details.
 
+The available strategies are:
 * `drop` - drop (ignore) this request if an existing request is in flight (the default)
 * `abort` - drop (ignore) this request if an existing request is in flight, and, if that is not the case, 
             *abort* this request if another request occurs while it is still in flight

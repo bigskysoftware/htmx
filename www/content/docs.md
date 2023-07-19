@@ -389,23 +389,11 @@ input tag.
 
 #### Extended CSS Selectors {#extended-css-selectors}
 
-`hx-target`, and most attributes that take a CSS selector, support an "extended" CSS syntax:
+`hx-target`, and most attributes that accept a CSS selector support an "extended" CSS syntax that allows an element to be selected relative to the element that specified the CSS selector.
 
-* You can use the `this` keyword, which indicates that the element that the `hx-target` attribute is on is the target
-* The `closest <CSS selector>` syntax will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
-  ancestor element or itself, that matches the given CSS selector.
-  (e.g. `closest tr` will target the closest table row to the element)
-* The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
-* The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
-* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
-  (e.g `find tr` would target the first child descendant row to the element)
+Relative targets can be useful for creating flexible user interfaces without peppering your DOM with loads of `id` attributes.
 
-In addition, a CSS selector may be wrapped in `<` and `/>` characters, mimicking the
-[query literal](https://hyperscript.org/expressions/query-reference/) syntax of hyperscript.
-
-Relative targets like this can be useful for creating flexible user interfaces without peppering your DOM with loads
-of `id` attributes.
-
+See [Extended CSS Syntax](@/extended-css.md) for more details.
 
 ### Swapping {#swapping}
 

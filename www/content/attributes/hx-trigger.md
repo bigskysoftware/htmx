@@ -54,13 +54,7 @@ Standard events can also have modifiers that change how they behave.  The modifi
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
 is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
-* `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
-  * A standard CSS selector resolves to all elements matching that selector. Thus, `from:input` would listen on every input on the page.
-  * The extended CSS selector here allows for the following non-standard CSS values:
-    * `document` - listen for events on the document
-    * `window` - listen for events on the window
-    * `closest <CSS selector>` - finds the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest) ancestor element or itself, matching the given css selector
-    * `find <CSS selector>` - finds the closest child matching the given css selector
+* `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys). See [Extended CSS Syntax](@/extended-css.md) for more details.
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element

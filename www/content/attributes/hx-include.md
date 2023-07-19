@@ -2,8 +2,10 @@
 title = "hx-include"
 +++
 
-The `hx-include` attribute allows you to include additional element values in an AJAX request.  The value of
- this attribute is a CSS query selector of the element or elements to include in the query.
+The `hx-include` attribute allows you to include additional element values in an AJAX request.
+
+The value of this attribute is an extended CSS selector that matches the elements whose values should
+be included in the request. See [Extended CSS Syntax](@/extended-css.md) for more details.
 
 Here is an example that includes a separate input value:
 

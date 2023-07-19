@@ -82,8 +82,8 @@ of which take the values `top` and `bottom`:
   </div>
 ```
 
-If you wish to target a different element for scrolling or showing, you may place a CSS selector after the `scroll:`
-or `show:`, followed by `:top` or `:bottom`:
+If you wish to target a different element for scrolling or showing, you may place an extended CSS selector after the `scroll:`
+or `show:`, followed by `:top` or `:bottom`. See [Extended CSS Syntax](@/extended-css.md) for more details.
 
 ```html
   <!-- this will get some content and swap it into the current div, then ensure that the top of #another-div is visible in the 

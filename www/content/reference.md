@@ -12,6 +12,7 @@ title = "Reference"
 * [htmx Events](#events)
 * [htmx Extensions](/extensions#included)
 * [JavaScript API](#api)
+* [Extended CSS Syntax](/extended-css)
 
 ## Core Attribute Reference {#attributes}
 
