@@ -1948,9 +1948,26 @@ return (function () {
             }
         }
 
+        function hasAttributeNameStartsWith(elt, prefix) {
+            for (var i = 0; i < elt.attributes.length; i++) {
+                if (elt.attributes[i].name.indexOf(prefix) === 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
+            }
+            // skip links or forms without hx-* attributes or not nested into hx-boost or hx-ext
+            if ((elt.tagName === 'FORM' || elt.tagName === 'A') &&
+                !hasAttributeNameStartsWith(elt, 'hx-') && !hasAttributeNameStartsWith(elt, 'data-hx-')) {
+                if ((elt.tagName === 'FORM' && !elt.closest('[hx-boost],[data-hx-boost],[hx-ext],[data-hx-ext]')) ||
+                    (elt.tagName === 'A' && !elt.closest('[hx-boost],[data-hx-boost]'))) {
+                    return;
+                }
             }
             var nodeData = getInternalData(elt);
             if (nodeData.initHash !== attributeHash(elt)) {
