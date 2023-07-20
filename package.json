@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "1.9.2",
+  "version": "1.9.3",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
@@ -24,6 +24,9 @@
   "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
+  "engines": {
+    "node": "15.x"
+  },
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",

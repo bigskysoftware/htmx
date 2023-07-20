@@ -52,7 +52,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 					return;
 
 				// Try to create websockets when elements are processed
-				case "htmx:afterProcessNode":
+				case "htmx:beforeProcessNode":
 					var parent = evt.target;
 
 					forEach(queryAttributeOnThisOrChildren(parent, "ws-connect"), function (child) {

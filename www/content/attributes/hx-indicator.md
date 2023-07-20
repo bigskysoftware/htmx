@@ -7,7 +7,8 @@ added to it for the duration of the request. This can be used to show spinners o
 while the request is in flight.
 
 The value of this attribute is a CSS query selector of the element or elements to apply the class to,
-or the keyword `closest`, followed by a CSS selector, which will find the closest matching parent (e.g. `closest tr`);
+or the keyword [`closest`](https://developer.mozilla.org/docs/Web/API/Element/closest), followed by a CSS selector, 
+which will find the closest ancestor element or itself, that matches the given CSS selector (e.g. `closest tr`);
 
 Here is an example with a spinner adjacent to the button:
 
@@ -56,7 +57,7 @@ Note that the target of the `hx-indicator` selector need not be the exact elemen
 want to show: it can be any element in the parent hierarchy of the indicator.
 
 Finally, note that the `htmx-request` class by default is added to the element causing
-the request, so you can place an indicator inside of that element and not need to explictly
+the request, so you can place an indicator inside of that element and not need to explicitly
 call it out with the `hx-indicator` attribute:
 
 ```html

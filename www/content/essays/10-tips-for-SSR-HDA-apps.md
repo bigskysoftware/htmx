@@ -11,7 +11,7 @@ Building web applications using traditional Server-Side Rendering (SSR) or, sayi
 compared with building web applications with Single Page Application frameworks like React.
 
 If you come at this style of development with an SPA-engineering hat on, you are likely to be frustrated and miss out
-on many advantages of this particular architectual choice.
+on many advantages of this particular architectural choice.
 
 Here are 10 tip to help you make the mental shift smoothly, taking advantage of the strengths of this approach and
 minimizing the weaknesses of it:
