@@ -1845,7 +1845,7 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [type='submit']" + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
