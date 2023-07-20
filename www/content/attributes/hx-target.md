@@ -7,7 +7,8 @@ request.  The value of this attribute can be:
 
 * A CSS query selector of the element to target.
 * `this` which indicates that the element that the `hx-target` attribute is on is the target.
-* `closest <CSS selector>` which will find the closest parent ancestor that matches the given CSS selector
+* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
+  ancestor element or itself, that matches the given CSS selector
   (e.g. `closest tr` will target the closest table row to the element).
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.

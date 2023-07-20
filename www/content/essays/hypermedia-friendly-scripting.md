@@ -64,7 +64,7 @@ To reiterate what Fielding says regarding the purpose of scripting in REST:
 
 > Allowing features to be downloaded after deployment improves system extensibility.
 
-So scripting is in part a REST-ful system, in order to allow the creation of additional features not directly implemented
+So scripting is a legitimate part a REST-ful system, in order to allow the creation of additional features not directly implemented
 within the underlying hypermedia, thus making a hypermedia (e.g. HTML) more extensible.
 
 A good example of this sort of feature is a rich-text editor: it might have an extremely sophisticated JavaScript model

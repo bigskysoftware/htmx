@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.9.3] - 2023-07-14
+
+* The `hx-on` attribute has been deprecated (sorry) in favor of `hx-on-<event name>` attributes.  See [`hx-on`](/attributes/hx-on) for more information.
+* We now have functioning CI using GitHub actions!
+* You can now configure if a type of HTTP request uses the body for parameters or not.  In particular, the `DELETE` _should_ use
+  query parameters, according to the spec.  htmx has used the body, instead.  To avoid breaking code we are keeping this undefined
+  behavior for now, but allowing people to fix it for their use cases by updating the `htmx.config.methodsThatUseUrlParams` config
+  option.  Thank you to Alex and Vincent for their feedback and work on this issue!
+* The `this` symbol is now available in event filter expressions, and refers to the element the `hx-trigger` is on
+* Fix bug where the `htmx:afterSettle` event was raised multiple times with oob swaps occured
+* A large number of accessibility fixes were made in the docs (Thank you Denis & crew!)
+* Fixed bug w/ WebSocket extension initialization caused by "naked" `hx-trigger` feature
+* The `HX-Reselect` HTTP response header has been added to change the selection from the returned content
+* Many other smaller bug fixes
+
 ## [1.9.2] - 2023-04-28
 
 * Fixed bug w/ `hx-on` not properly de-initializing

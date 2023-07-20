@@ -34,7 +34,7 @@ The `hx-swap` attributes supports modifiers for changing the behavior of the swa
 
 #### Transition: `transition`
 
-If you want to use the new (View Transitions)[https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API] API
+If you want to use the new [View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API
 when a swap occurs, you can use the `transition:true` option for your swap.  You can also enable this feature globally by
 setting the `htmx.config.globalViewTransitions` config setting to `true`.
 

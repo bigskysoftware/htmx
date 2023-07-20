@@ -1,0 +1,63 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/stylesheet.css">
+	<title>&lt;/&gt; htmx WebSocket Server</title>
+	<script src="/htmx/htmx.js"></script>
+	<script src="/htmx/ext/ws.js"></script>
+	
+	<script src="https://unpkg.com/hyperscript.org@0.8.3"></script>
+	<script type="text/hyperscript">
+		on click(target) from <#navigation a/>
+			take .selected for target
+	</script>
+</head>
+
+<body>
+	<div id="header"></div>
+	<div id="navigation" hx-target="#page" hx-push-url="false">
+		<a href="index.html" class="selected" hx-boost="false">About</a>
+		<a href="" hx-get="ws-heartbeat.html">Heartbeat Test</a>
+		<a href="" hx-get="ws-echo.html">Echo Test</a>
+	</div>
+	<div id="page">
+		<h1>WebSockets Extension Tests</h1>
+
+		<p>As of version 1.7, WebSocket support has been moved out of the core htmx library and into an extension.  This server runs a test suite for the htmx WebSocket extension.</p>
+		<p>This extension connects to a WebSocket echo server and can send and receive messages to and from the server.</p>
+
+		<h3>Required Attributes</h3>
+		<table>
+		<tr>
+			<td class="bold nowrap">hx-ext</td>
+			<td>Make sure the SSE extension is initialized on every page or page fragment where you use SSE streams.</td>
+		</tr>
+		<tr>
+			<td class="bold nowrap">ws-connect</td>
+			<td>Connects to a WebSocket server.  Attribute value must begin with ws:// wss://</td>
+		</tr>
+		<tr>
+			<td class="bold nowrap">ws-send</td>
+			<td>Add to a form to submit form data to the websocket server instead of to an HTTP server.</td>
+		</tr>
+		</table>
+
+		<h3>Example Code</h3>
+
+<pre class="code">
+&lt;body hx-ext="ws"&gt;
+    &lt;div ws-connect="wss://my.websocket.server.com"&gt;&lt;/div&gt;
+
+	&lt;form ws-send&gt;
+		&lt;input name="WebSocketMessage"&gt;
+	&lt;form/&gt;
+&lt;/body&gt;
+</pre>
+		<h3>WebSocket Resources</h3>
+		<ul>
+			<li><a href="https://en.wikipedia.org/wiki/WebSocket">Wikipedia</a></li>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">MDN Web Docs</a></li>
+			<li><a href="https://caniuse.com/eventsource">Can I Use?</a></li>
+		</ul>
+	</div>
+</body>
+</html>

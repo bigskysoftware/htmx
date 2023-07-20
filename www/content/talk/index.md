@@ -5,11 +5,11 @@ template = "talk.html"
 
 [htmx Discord Server](/discord)
 
-[Github Discussions](https://github.com/bigskysoftware/htmx/discussions)
+[GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
 
 ## Feature Requests & Bug Reports
 
-[Github Issues](https://github.com/bigskysoftware/htmx/issues)
+[GitHub Issues](https://github.com/bigskysoftware/htmx/issues)
 
 ## Social
 
@@ -26,7 +26,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 <iframe src="https://github.com/sponsors/bigskysoftware/card" title="Sponsor bigskysoftware" height="225" width="600" style="border: 0;"></iframe>
 
-## Github Stars
+## GitHub Stars
 
 <iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX3oybDFUTnBMSTZBaXNhcjFwZmN5UVRnZEFSR3JFdTRPckV2Rw==#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date" frameBorder="0"></iframe>
 

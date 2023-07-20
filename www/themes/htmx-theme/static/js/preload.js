@@ -48,9 +48,12 @@ htmx.defineExtension("preload", {
 				// in the future
 				var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
 				if (hxGet) {
-					htmx.ajax("GET", hxGet, {handler:function(elt, info) {
-						done(info.xhr.responseText);
-					}});
+					htmx.ajax("GET", hxGet, {
+						source: node,
+						handler:function(elt, info) {
+							done(info.xhr.responseText);
+						}
+					});
 					return;
 				}
 
@@ -93,7 +96,7 @@ htmx.defineExtension("preload", {
 			// Apply the listener to the node
 			node.addEventListener(on, function(evt) {
 				if (node.preloadState === "PAUSE") { // Only add one event listener
-					node.preloadState = "READY"; // Requred for the `load` function to trigger
+					node.preloadState = "READY"; // Required for the `load` function to trigger
 
 					// Special handling for "mouseover" events.  Wait 100ms before triggering load.
 					if (on === "mouseover") {
