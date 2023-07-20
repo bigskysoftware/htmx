@@ -202,12 +202,12 @@ describe("hx-target attribute", function(){
         div3.innerHTML.should.equal("Clicked!");
     });
 
-    it('targets a `nextElementSibling` properly', function()
+    it('targets a `next` element properly without selector', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
         make('<div>' +
             '  <div id="d3"></div>' +
-            '  <button id="b1" hx-target="nextElementSibling" hx-get="/test">Click Me!</button>' +
+            '  <button id="b1" hx-target="next" hx-get="/test">Click Me!</button>' +
             '  <div id="d1"></div>' +
             '  <div id="d2"></div>' +
             '</div>')
@@ -222,12 +222,12 @@ describe("hx-target attribute", function(){
         div3.innerHTML.should.equal("");
     });
 
-    it('targets a `previousElementSibling` properly', function()
+    it('targets a `previous` element properly without selector', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
         make('<div>' +
             '  <div id="d3"></div>' +
-            '  <button id="b1" hx-target="previousElementSibling" hx-get="/test">Click Me!</button>' +
+            '  <button id="b1" hx-target="previous" hx-get="/test">Click Me!</button>' +
             '  <div id="d1"></div>' +
             '  <div id="d2"></div>' +
             '</div>')
