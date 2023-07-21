@@ -74,7 +74,9 @@ return (function () {
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
-                selfRequestsOnly: false
+                selfRequestsOnly: false,
+                defaultErrorSwapStyle: "none",
+                defaultErrorTarget: "mirror",
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -731,6 +733,44 @@ return (function () {
             }
         }
 
+        /**
+         * @param elt
+         * @param initialTarget
+         * @returns {{shouldSwap: boolean, target: (HTMLElement|null), targetStr: string}}
+         */
+        function getErrorTargetSpec(elt, initialTarget) {
+            var targetStr = getClosestAttributeValue(elt, "hx-error-target") || htmx.config.defaultErrorTarget
+            var swapStr = getClosestAttributeValue(elt, "hx-error-swap") || htmx.config.defaultErrorSwapStyle
+            if (!swapStr || swapStr === "none") {
+                return {
+                    shouldSwap: false,
+                    target: null,
+                    targetStr: "",
+                }
+            }
+            if (targetStr) {
+                var target
+                if (targetStr === "mirror") {
+                    target = initialTarget
+                } else if (targetStr === "this") {
+                    target = findThisElement(elt, "hx-error-target") || elt;
+                } else {
+                    target = querySelectorExt(elt, targetStr)
+                }
+                return {
+                    shouldSwap: true,
+                    target: target,
+                    targetStr: targetStr,
+                }
+            }
+            // fallback to normal hx-target if no error target was specified
+            return {
+                shouldSwap: true,
+                target: initialTarget,
+                targetStr: "",
+            }
+        }
+
         function shouldSettleAttribute(name) {
             var attributesToSettle = htmx.config.attributesToSettle;
             for (var i = 0; i < attributesToSettle.length; i++) {
@@ -806,7 +846,7 @@ return (function () {
 
                         target = beforeSwapDetails.target; // allow re-targeting
                         if (beforeSwapDetails['shouldSwap']){
-                            swap(swapStyle, target, target, fragment, settleInfo);
+                            swap(swapStyle, target, target, fragment, settleInfo, false);
                         }
                         forEach(settleInfo.elts, function (elt) {
                             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails);
@@ -1043,7 +1083,7 @@ return (function () {
             return fragment;
         }
 
-        function swap(swapStyle, elt, target, fragment, settleInfo) {
+        function swap(swapStyle, elt, target, fragment, settleInfo, isStandardError) {
             switch (swapStyle) {
                 case "none":
                     return;
@@ -1090,7 +1130,11 @@ return (function () {
                     if (swapStyle === "innerHTML") {
                         swapInnerHTML(target, fragment, settleInfo);
                     } else {
-                        swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
+                        var defaultSwapStyle = htmx.config.defaultSwapStyle
+                        if (isStandardError && htmx.config.defaultErrorSwapStyle !== "mirror") {
+                            defaultSwapStyle = htmx.config.defaultErrorSwapStyle
+                        }
+                        swap(defaultSwapStyle, elt, target, fragment, settleInfo, isStandardError);
                     }
             }
         }
@@ -1106,14 +1150,14 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride, isStandardError) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment, selectOverride);
                 handlePreservedElements(fragment);
-                return swap(swapStyle, elt, target, fragment, settleInfo);
+                return swap(swapStyle, elt, target, fragment, settleInfo, isStandardError);
             }
         }
 
@@ -1720,7 +1764,7 @@ return (function () {
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo, false)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
@@ -2648,13 +2692,28 @@ return (function () {
         /**
          *
          * @param {HTMLElement} elt
-         * @param {string} swapInfoOverride
+         * @param {string?} swapInfoOverride
+         * @param {boolean?} isStandardErrorSwap
          * @returns {import("./htmx").HtmxSwapSpecification}
          */
-        function getSwapSpecification(elt, swapInfoOverride) {
-            var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
+        function getSwapSpecification(elt, swapInfoOverride, isStandardErrorSwap) {
+            var swapInfo
+            var defaultSwapStyle = htmx.config.defaultSwapStyle
+            if (swapInfoOverride) {
+                swapInfo = swapInfoOverride
+            } else if (isStandardErrorSwap) {
+                if (htmx.config.defaultErrorSwapStyle !== "mirror") {
+                    defaultSwapStyle = htmx.config.defaultErrorSwapStyle
+                }
+                swapInfo = getClosestAttributeValue(elt, "hx-error-swap")
+                if ((swapInfo && swapInfo === "mirror") || (!swapInfo && htmx.config.defaultErrorSwapStyle === "mirror")) {
+                    swapInfo = getClosestAttributeValue(elt, "hx-swap") || htmx.config.defaultSwapStyle
+                }
+            } else {
+                swapInfo = getClosestAttributeValue(elt, "hx-swap")
+            }
             var swapSpec = {
-                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
+                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
             }
@@ -2897,7 +2956,9 @@ return (function () {
                             headers : context.headers,
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
+                            errorTargetOverride: resolveTarget(context.errorTarget),
                             swapOverride: context.swap,
+                            errorSwapOverride: context.errorSwap,
                             returnPromise: true
                         });
                 }
@@ -3421,19 +3482,36 @@ return (function () {
                 return;
             }
 
+            // by default htmx only swaps on 200 return codes and does not swap
+            // on 204 'No Content'
+            // this can be overridden by responding to the htmx:beforeSwap event and
+            // overriding the detail.shouldSwap property
+            var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
+
+            var isError = xhr.status >= 400;
+            // User could force shouldSwap to true from a htmx:beforeSwap listener, in which case we don't want to
+            // interfere with hx-error-target & hx-error-swap logic by relying solely on isError
+            var isStandardErrorSwap = false
+            if (isError) {
+                var errorSwapSpec = getErrorTargetSpec(elt, target);
+                if (errorSwapSpec.shouldSwap) {
+                    shouldSwap = true;
+                    isStandardErrorSwap = true
+                    responseInfo.target = errorSwapSpec.target;
+                    if (responseInfo.target == null || responseInfo.target == DUMMY_ELT) {
+                        triggerErrorEvent(elt, 'htmx:targetError', {target: errorSwapSpec.targetStr});
+                        return;
+                    }
+                }
+            }
+
             if (hasHeader(xhr,/HX-Retarget:/i)) {
                 responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
             }
 
             var historyUpdate = determineHistoryUpdates(elt, responseInfo);
 
-            // by default htmx only swaps on 200 return codes and does not swap
-            // on 204 'No Content'
-            // this can be ovverriden by responding to the htmx:beforeSwap event and
-            // overriding the detail.shouldSwap property
-            var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
-            var isError = xhr.status >= 400;
             var ignoreTitle = htmx.config.ignoreTitle
             var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle }, responseInfo);
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
@@ -3461,11 +3539,11 @@ return (function () {
                     saveCurrentPageToHistory();
                 }
 
-                var swapOverride = etc.swapOverride;
+                var swapOverride = isError ? etc.errorSwapOverride : etc.swapOverride;
                 if (hasHeader(xhr,/HX-Reswap:/i)) {
                     swapOverride = xhr.getResponseHeader("HX-Reswap");
                 }
-                var swapSpec = getSwapSpecification(elt, swapOverride);
+                var swapSpec = getSwapSpecification(elt, swapOverride, isStandardErrorSwap);
 
                 if (swapSpec.hasOwnProperty('ignoreTitle')) {
                     ignoreTitle = swapSpec.ignoreTitle;
@@ -3499,7 +3577,7 @@ return (function () {
                         }
 
                         var settleInfo = makeSettleInfo(target);
-                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride, isStandardErrorSwap);
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&

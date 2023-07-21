@@ -18,6 +18,18 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped0");
     })
 
+    it('handles basic error response properly', function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(400, {}, "Clicked<div id='d1' hx-swap-oob='true'>Swapped0</div>")
+        });
+        var div = make('<div hx-get="/test" hx-error-swap="mirror">click me</div>');
+        make('<div id="d1"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked");
+        byId("d1").innerHTML.should.equal("Swapped0");
+    })
+
     it('handles more than one oob swap properly', function () {
         this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped1</div><div id='d2' hx-swap-oob='true'>Swapped2</div>");
         var div = make('<div hx-get="/test">click me</div>');
