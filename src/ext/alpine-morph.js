@@ -1,16 +1,14 @@
-htmx.defineExtension('alpine-morph', {
-    isInlineSwap: function (swapStyle) {
-        return swapStyle === 'morph';
-    },
-    handleSwap: function (swapStyle, target, fragment) {
-        if (swapStyle === 'morph') {
+htmx.registerExtension('alpine-morph', (features) => {
+    features.addSwap('alpine-morph', {
+        isInlineSwap: true,
+        handleSwap: (target, fragment) => {
             if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
                 Alpine.morph(target, fragment.firstElementChild);
-                return [target];
+                return { newElements: [target] };
             } else {
                 Alpine.morph(target, fragment.outerHTML);
-                return [target];
+                return { newElements: [target] };
             }
-        }
-    }
-});
+        },
+    })
+})

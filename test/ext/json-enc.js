@@ -12,7 +12,7 @@ describe("json-enc extension", function() {
     it('handles basic post properly', function () {
         var jsonResponseBody = JSON.stringify({});
         this.server.respondWith("POST", "/test", jsonResponseBody);
-        var div = make("<div hx-post='/test' hx-ext='json-enc'>click me</div>");
+        var div = make("<div hx-post='/test' hx-ext='json-enc' hx-encoding='application/json'>click me</div>");
         div.click();
         this.server.respond();
         this.server.lastRequest.response.should.equal("{}");
@@ -21,7 +21,7 @@ describe("json-enc extension", function() {
     it('handles basic put properly', function () {
         var jsonResponseBody = JSON.stringify({});
         this.server.respondWith("PUT", "/test", jsonResponseBody);
-        var div = make('<div hx-put="/test" hx-ext="json-enc">click me</div>');
+        var div = make('<div hx-put="/test" hx-ext="json-enc" hx-encoding="application/json">click me</div>');
         div.click();
         this.server.respond();
         this.server.lastRequest.response.should.equal("{}");
@@ -30,7 +30,7 @@ describe("json-enc extension", function() {
     it('handles basic patch properly', function () {
         var jsonResponseBody = JSON.stringify({});
         this.server.respondWith("PATCH", "/test", jsonResponseBody);
-        var div = make('<div hx-patch="/test" hx-ext="json-enc">click me</div>');
+        var div = make('<div hx-patch="/test" hx-ext="json-enc" hx-encoding="application/json">click me</div>');
         div.click();
         this.server.respond();
         this.server.lastRequest.response.should.equal("{}");
@@ -39,7 +39,7 @@ describe("json-enc extension", function() {
     it('handles basic delete properly', function () {
         var jsonResponseBody = JSON.stringify({});
         this.server.respondWith("DELETE", "/test", jsonResponseBody);
-        var div = make('<div hx-delete="/test" hx-ext="json-enc">click me</div>');
+        var div = make('<div hx-delete="/test" hx-ext="json-enc" hx-encoding="application/json">click me</div>');
         div.click();
         this.server.respond();
         this.server.lastRequest.response.should.equal("{}");
@@ -56,7 +56,7 @@ describe("json-enc extension", function() {
             xhr.respond(200, {}, JSON.stringify(ans));
         });
 
-        var html = make('<form hx-post="/test" hx-ext="json-enc" > ' +
+        var html = make('<form hx-post="/test" hx-ext="json-enc" hx-encoding="application/json" > ' +
             '<input type="text"  name="username" value="joe"> ' +
             '<input type="password"  name="password" value="123456"> ' +
         '<button  id="btnSubmit">Submit</button> ');
@@ -77,7 +77,7 @@ describe("json-enc extension", function() {
             xhr.respond(200, {}, JSON.stringify(ans));
         });
 
-        var html = make('<form hx-put="/test" hx-ext="json-enc" > ' +
+        var html = make('<form hx-put="/test" hx-ext="json-enc" hx-encoding="application/json" > ' +
             '<input type="text"  name="username" value="joe"> ' +
             '<input type="password"  name="password" value="123456"> ' +
         '<button  id="btnSubmit">Submit</button> ');
@@ -99,7 +99,7 @@ describe("json-enc extension", function() {
             xhr.respond(200, {}, JSON.stringify(ans));
         });
 
-        var html = make('<form hx-patch="/test" hx-ext="json-enc" > ' +
+        var html = make('<form hx-patch="/test" hx-ext="json-enc" hx-encoding="application/json" > ' +
             '<input type="text"  name="username" value="joe"> ' +
             '<input type="password"  name="password" value="123456"> ' +
         '<button  id="btnSubmit">Submit</button> ');
@@ -120,7 +120,7 @@ describe("json-enc extension", function() {
             xhr.respond(200, {}, JSON.stringify(ans));
         });
 
-        var html = make('<form hx-delete="/test" hx-ext="json-enc" > ' +
+        var html = make('<form hx-delete="/test" hx-ext="json-enc" hx-encoding="application/json" > ' +
             '<input type="text"  name="username" value="joe"> ' +
             '<input type="password"  name="password" value="123456"> ' +
         '<button  id="btnSubmit">Submit</button> ');
@@ -129,8 +129,5 @@ describe("json-enc extension", function() {
         this.server.respond();
         this.server.lastRequest.response.should.equal('{"passwordok":true}');
     })
-
-
-
 });
 

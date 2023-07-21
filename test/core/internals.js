@@ -129,7 +129,7 @@ describe("Core htmx internals Tests", function() {
     it("encoding values respects enctype on forms", function(){
         var form = make("<form enctype='multipart/form-data'></form>");
         var value = htmx._("encodeParamsForBody")(null, form, {});
-        (value instanceof FormData).should.equal(true);
+        (value.body instanceof FormData).should.equal(true);
     })
 
 });

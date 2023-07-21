@@ -1,4 +1,4 @@
-describe("default extensions behavior", function() {
+describe("default extensions behavior", function () {
 
     var loadCalls, afterSwapCalls, afterSettleCalls;
 
@@ -7,21 +7,24 @@ describe("default extensions behavior", function() {
         this.server = makeServer();
         clearWorkArea();
 
+        htmx.registerExtension("ext-testswap", (features) => {
+            features.addSwap("testswap", {
+                handleSwap: (target, fragment) => {
+                    // simple outerHTML replacement for tests
+                    var parentEl = target.parentElement;
+                    parentEl.removeChild(target);
+                    return { newElements: [parentEl.appendChild(fragment)] };  // return the newly added element
+                }
+            });
+        });
+
         htmx.defineExtension("ext-testswap", {
             onEvent : function(name, evt) {
                 if (name === "htmx:load") {
                     loadCalls.push(evt.detail.elt);
                 }
             },
-            handleSwap: function (swapStyle, target, fragment, settleInfo) {
-                // simple outerHTML replacement for tests
-                var parentEl = target.parentElement;
-                parentEl.removeChild(target);
-                return [parentEl.appendChild(fragment)];  // return the newly added element
-            }
-
         });
-
     });
 
     afterEach(function () {
@@ -40,8 +43,8 @@ describe("default extensions behavior", function() {
         loadCalls[0].textContent.should.equal('Clicked!');  // the new button is loaded
     });
 
-    it('handleSwap: new content is handled by htmx', function() {
-        this.server.respondWith("GET", "/test", '<button id="test-ext-testswap">Clicked!<span hx-get="/test-inner" hx-trigger="load"></span></button>');
+    it('handleSwap: new content is handled by htmx', function () {
+        this.server.respondWith("GET", "/test", '<button id="test-ext-testswap">Clicked!<span hx-swap="testswap" hx-get="/test-inner" hx-trigger="load"></span></button>');
         this.server.respondWith("GET", "/test-inner", 'Loaded!');
         make('<div hx-ext="ext-testswap"><button hx-get="/test" hx-swap="testswap">Click Me!</button></div>').querySelector('button').click();
 

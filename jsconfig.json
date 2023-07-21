@@ -8,7 +8,9 @@
         "lib": [ "dom" ]
     },
     "include": [
-        "./src/htmx.js"
+        "./src/htmx.js",
+        "./src/ext/*.js",
+        "./test/**/*.js",
     ],
     "verbose": true
 }

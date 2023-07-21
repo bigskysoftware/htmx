@@ -1,12 +1,8 @@
-htmx.defineExtension('json-enc', {
-    onEvent: function (name, evt) {
-        if (name === "htmx:configRequest") {
-            evt.detail.headers['Content-Type'] = "application/json";
+htmx.registerExtension('json-enc', features => {
+    features.addEncoding('application/json', parameters => {
+        return {
+            contentType: 'application/json',
+            body: JSON.stringify(parameters)
         }
-    },
-    
-    encodeParameters : function(xhr, parameters, elt) {
-        xhr.overrideMimeType('text/json');
-        return (JSON.stringify(parameters));
-    }
-});
+    })
+})

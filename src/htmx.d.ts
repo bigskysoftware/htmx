@@ -1,4 +1,81 @@
 // https://htmx.org/reference/#api
+export as namespace htmx
+export interface HtmxExtension {
+    init(api): void;
+    onEvent(name: string, evt: CustomEvent): boolean | void;
+    transformResponse(text: string, xhr: XMLHttpRequest, elt: HTMLElement): any;
+    isInlineSwap(swapStyle: string): boolean;
+    handleSwap(swapStyle: string, target: HTMLElement, fragment: HTMLElement, settleInfo: any): HTMLElement[] | boolean;
+    encodeParameters(xhr: XMLHttpRequest, parameters: object, elt: HTMLElement): XMLHttpRequestBodyInit;
+}
+export interface HtmxConfig {
+    /** default body encoding */
+    defaultEncoding: string;
+    /** array of strings: the attributes to settle during the settling phase */
+    attributesToSettle?: ["class", "style", "width", "height"] | string[];
+    /** the default delay between completing the content swap and settling attributes */
+    defaultSettleDelay?: number;
+    /** the default delay between receiving a response from the server and doing the swap */
+    defaultSwapDelay?: number;
+    /** the default swap style to use if **[hx-swap](https://htmx.org/attributes/hx-swap)** is omitted */
+    defaultSwapStyle?: "innerHTML" | string;
+    /** the number of pages to keep in **localStorage** for history support */
+    historyCacheSize?: number;
+    /** whether or not to use history */
+    historyEnabled?: boolean;
+    /** if true, htmx will inject a small amount of CSS into the page to make indicators invisible unless the **htmx-indicator** class is present */
+    includeIndicatorStyles?: boolean;
+    /** the class to place on indicators when a request is in flight */
+    indicatorClass?: "htmx-indicator" | string;
+    /** the class to place on triggering elements when a request is in flight */
+    requestClass?: "htmx-request" | string;
+    /** the class to temporarily place on elements that htmx has added to the DOM */
+    addedClass?: "htmx-added" | string;
+    /** the class to place on target elements when htmx is in the settling phase */
+    settlingClass?: "htmx-settling" | string;
+    /** the class to place on target elements when htmx is in the swapping phase */
+    swappingClass?: "htmx-swapping" | string;
+    /** allows the use of eval-like functionality in htmx, to enable **hx-vars**, trigger conditions & script tag evaluation. Can be set to **false** for CSP compatibility */
+    allowEval?: boolean;
+    /** use HTML template tags for parsing content from the server. This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible. */
+    useTemplateFragments?: boolean;
+    /** allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates */
+    withCredentials?: boolean;
+    /** the default implementation of **getWebSocketReconnectDelay** for reconnecting after unexpected connection loss by the event code **Abnormal Closure**, **Service Restart** or **Try Again Later** */
+    wsReconnectDelay?: "full-jitter" | string | ((retryCount: number) => number);
+    wsBinaryType?: BinaryType;
+    // following don't appear in the docs
+    refreshOnHistoryMiss?: boolean;
+    defaultFocusScroll?: boolean;
+    getCacheBusterParam?: boolean;
+    globalViewTransitions?: boolean;
+    inlineScriptNonce?: string;
+    timeout?: number;
+    disableSelector?: "[hx-disable], [data-hx-disable]" | string;
+    scrollBehavior?: "smooth";
+}
+
+/**
+ * A registrator for htmx features
+ */
+export interface FeaturesRegistration {
+    /** Registration of body encoder
+     * @param name Name of the encoding
+     * @param encoder Encoding function
+     */
+    addEncoding(name: string, encoder: BodyEncoding | string): void
+
+    /** Registration of response swap method
+     * @param name Name of the morph
+     * @param swapper Swapping function
+     */
+    addSwap(name: string, swapper: Swap | string): void
+}
+
+
+/*
+===== Public JS API =====
+*/
 
 /**
  * This method adds a class to the given element.
@@ -45,7 +122,7 @@ export function ajax(verb: string, path: string, selector: string): void;
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; values: any; headers: any }>
 ): void;
 
 /**
@@ -65,21 +142,21 @@ export function closest(elt: Element, selector: string): Element | null;
  *
  * https://htmx.org/api/#config
  */
-export var config: HtmxConfig;
+var config: HtmxConfig;
 
 /**
  * A property used to create new [Server Sent Event](https://htmx.org/docs/#sse) sources. This can be updated to provide custom SSE setup.
  *
  * https://htmx.org/api/#createEventSource
  */
-export var createEventSource: (url: string) => EventSource;
+var createEventSource: (url: string) => EventSource;
 
 /**
  * A property used to create new [WebSocket](https://htmx.org/docs/#websockets). This can be updated to provide custom WebSocket setup.
  *
  * https://htmx.org/api/#createWebSocket
  */
-export var createWebSocket: (url: string) => WebSocket;
+var createWebSocket: (url: string) => WebSocket;
 
 /**
  * Defines a new htmx [extension](https://htmx.org/extensions).
@@ -89,7 +166,7 @@ export var createWebSocket: (url: string) => WebSocket;
  * @param name the extension name
  * @param ext the extension definition
  */
-export function defineExtension(name: string, ext: HtmxExtension): void;
+export function defineExtension(name: string, ext: Partial<HtmxExtension>): void;
 
 /**
  * Finds an element matching the selector
@@ -137,11 +214,18 @@ export function findAll(elt: Element, selector: string): NodeListOf<Element>;
 export function logAll(): void;
 
 /**
+ * Disable logging
+ *
+ * https://htmx.org/api/#logNone
+ */
+export function logNone(): void;
+
+/**
  * The logger htmx uses to log with
  *
  * https://htmx.org/api/#logger
  */
-export var logger: (elt: Element, eventName: string, detail: any) => void | null;
+var logger: (elt: Element, eventName: string, detail: any) => void | null;
 
 /**
  * Removes an event listener from an element
@@ -245,6 +329,15 @@ export function removeClass(elt: Element, clazz: string, delay?: number): void;
 export function removeExtension(name: string): void;
 
 /**
+ * Removes the given extension from htmx
+ *
+ * https://htmx.org/api/#removeExtension
+ *
+ * @param name the name of the extension to remove
+ */
+export function morph(name: string): void;
+
+/**
  * Takes the given class from its siblings, so that among its siblings, only the given element will have the class.
  *
  * https://htmx.org/api/#takeClass
@@ -283,59 +376,60 @@ export function trigger(elt: Element, name: string, detail: any): void;
  * @param elt the element to resolve values on
  * @param requestType the request type (e.g. **get** or **post**) non-GET's will include the enclosing form of the element. Defaults to **post**
  */
-export function values(elt: Element, requestType?: string): any;
-
-export const version: string;
-
-export interface HtmxConfig {
-    /** array of strings: the attributes to settle during the settling phase */
-    attributesToSettle?: ["class", "style", "width", "height"] | string[];
-    /** if the focused element should be scrolled into view */
-    defaultFocusScroll?: boolean;
-    /** the default delay between completing the content swap and settling attributes */
-    defaultSettleDelay?: number;
-    /** the default delay between receiving a response from the server and doing the swap */
-    defaultSwapDelay?: number;
-    /** the default swap style to use if **[hx-swap](https://htmx.org/attributes/hx-swap)** is omitted */
-    defaultSwapStyle?: "innerHTML" | string;
-    /** the number of pages to keep in **localStorage** for history support */
-    historyCacheSize?: number;
-    /** whether or not to use history */
-    historyEnabled?: boolean;
-    /** if true, htmx will inject a small amount of CSS into the page to make indicators invisible unless the **htmx-indicator** class is present */
-    includeIndicatorStyles?: boolean;
-    /** the class to place on indicators when a request is in flight */
-    indicatorClass?: "htmx-indicator" | string;
-    /** the class to place on triggering elements when a request is in flight */
-    requestClass?: "htmx-request" | string;
-    /** the class to temporarily place on elements that htmx has added to the DOM */
-    addedClass?: "htmx-added" | string;
-    /** the class to place on target elements when htmx is in the settling phase */
-    settlingClass?: "htmx-settling" | string;
-    /** the class to place on target elements when htmx is in the swapping phase */
-    swappingClass?: "htmx-swapping" | string;
-    /** allows the use of eval-like functionality in htmx, to enable **hx-vars**, trigger conditions & script tag evaluation. Can be set to **false** for CSP compatibility */
-    allowEval?: boolean;
-    /** use HTML template tags for parsing content from the server. This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible. */
-    useTemplateFragments?: boolean;
-    /** allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates */
-    withCredentials?: boolean;
-    /** the default implementation of **getWebSocketReconnectDelay** for reconnecting after unexpected connection loss by the event code **Abnormal Closure**, **Service Restart** or **Try Again Later** */
-    wsReconnectDelay?: "full-jitter" | string | ((retryCount: number) => number);
-    // following don't appear in the docs
-    refreshOnHistoryMiss?: boolean;
-    timeout?: number;
-    disableSelector?: "[hx-disable], [data-hx-disable]" | string;
-    scrollBehavior?: "smooth" | "auto";
-}
+export function values(elt: HtmlElement, requestType?: string): any;
 
 /**
- * https://htmx.org/extensions/#defining
+ * Evaluates a script
+ *
+ * https://htmx.org/api/#values
+ *
+ * @param elt the element to resolve values on
+ * @param requestType the request type (e.g. **get** or **post**) non-GET's will include the enclosing form of the element. Defaults to **post**
  */
-export interface HtmxExtension {
-    onEvent?: (name: string, evt: CustomEvent) => any;
-    transformResponse?: (text: any, xhr: XMLHttpRequest, elt: any) => any;
-    isInlineSwap?: (swapStyle: any) => any;
-    handleSwap?: (swapStyle: any, target: any, fragment: any, settleInfo: any) => any;
-    encodeParameters?: (xhr: XMLHttpRequest, parameters: any, elt: any) => any;
+export function _(elt: HtmlElement, requestType?: string): any;
+
+const version: string;
+
+/*
+===== End Public JS API =====
+*/
+
+/*
+===== Extensibility =====
+*/
+
+type EncodedBody = { contentType: string, body: XMLHttpRequestBodyInit };
+type BodyEncoding = (parameters: object) => EncodedBody;
+
+type SwapResult = { newElements: HTMLElement[] };
+type Swap = { isInlineSwap?: boolean, handleSwap: (target: HTMLElement, fragment: HTMLElement, settleInfo?: object) => SwapResult | void }
+
+/**
+ * Register htmx 2.0 extension
+ * @param name extension name
+ * @param registration registration factory
+ */
+export function registerExtension(name: string, registration: (features: FeaturesRegistration) => void): void
+
+/*
+===== End Extensions =====
+*/
+
+export module Internal {
+    interface Feature<T> {
+        [key: string]: string | T
+    }
+
+    type FeaturesCollection = {
+        encodings: Feature<BodyEncoding>
+        swaps: Feature<Swap>
+    }
+
+    type FeatureCollectionNames = keyof FeaturesCollection
+
+    type FeatureSet = {
+        name: string,
+        features: FeaturesCollection,
+        registration: FeaturesRegistration,
+    }
 }
