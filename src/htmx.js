@@ -20,25 +20,15 @@
 return (function () {
         'use strict';
 
-        /** @returns {import("./htmx").Internal.FeatureSet} */
-        function makeFeatureSet(name) {
-
-            /** @type {import("./htmx").Internal.FeaturesCollection} */
-            var features = {
-                encodings: {},
-                swaps: {}
-            };
-
-            /** @type {htmx.FeaturesRegistration} */
-            var registration = {
-                addEncoding: (name, encoder) => features.encodings[name] = encoder,
-                addSwap: (name, swap) => features.swaps[name] = swap
-            };
-
+        /**
+         * @returns {import("./htmx").Internal.FeatureSet}
+         * @param {string} name
+         * @param {Partial<import("./htmx").FeaturesCollection>} features
+         */
+        function makeFeatureSet(name, features) {
             return {
                 name: name,
                 features: features,
-                registration: registration
             }
         }
         /** @type {Record<string, import("./htmx").Internal.FeatureSet>} */
@@ -145,53 +135,56 @@ return (function () {
             withExtensions: withExtensions,
         }
 
-        var coreFeatureSet = makeFeatureSet("htmx");
-        coreFeatureSet.registration.addEncoding("application/x-www-form-urlencoded", (values) => {
-            var returnStr = "";
-            for (var name in values) {
-                if (values.hasOwnProperty(name)) {
-                    var value = values[name];
-                    if (Array.isArray(value)) {
-                        forEach(value, function (v) {
-                            returnStr = appendParam(returnStr, name, v);
-                        });
-                    } else {
-                        returnStr = appendParam(returnStr, name, value);
+        var coreFeatureSet = makeFeatureSet("htmx", {
+            encodings: {
+                "application/x-www-form-urlencoded": (values) => {
+                    var returnStr = "";
+                    for (var name in values) {
+                        if (values.hasOwnProperty(name)) {
+                            var value = values[name];
+                            if (Array.isArray(value)) {
+                                forEach(value, function (v) {
+                                    returnStr = appendParam(returnStr, name, v);
+                                });
+                            } else {
+                                returnStr = appendParam(returnStr, name, value);
+                            }
+                        }
                     }
-                }
-            }
-            return { body: returnStr, contentType: "application/x-www-form-urlencoded" };
-        })
-        coreFeatureSet.registration.addEncoding("multipart/form-data", (values) => {
-            var formData = new FormData();
-            for (var name in values) {
-                if (values.hasOwnProperty(name)) {
-                    var value = values[name];
-                    if (Array.isArray(value)) {
-                        forEach(value, function (v) {
-                            formData.append(name, v);
-                        });
-                    } else {
-                        formData.append(name, value);
+                    return { body: returnStr, contentType: "application/x-www-form-urlencoded" };
+                },
+                "multipart/form-data": (values) => {
+                    var formData = new FormData();
+                    for (var name in values) {
+                        if (values.hasOwnProperty(name)) {
+                            var value = values[name];
+                            if (Array.isArray(value)) {
+                                forEach(value, function (v) {
+                                    formData.append(name, v);
+                                });
+                            } else {
+                                formData.append(name, value);
+                            }
+                        }
                     }
+                    // contentType is null, because the browser will generate it automatically
+                    return { body: formData, contentType: null }
                 }
-            }
-            // contentType is null, because the browser will generate it automatically
-            return { body: formData, contentType: null }
-        })
-
-        coreFeatureSet.registration.addSwap("none", { handleSwap: () => { } });
-        coreFeatureSet.registration.addSwap("innerHTML", { handleSwap: swapInnerHTML });
-        coreFeatureSet.registration.addSwap("outerHTML", { handleSwap: swapOuterHTML, isInlineSwap: true });
-        coreFeatureSet.registration.addSwap("afterbegin", { handleSwap: swapAfterBegin });
-        coreFeatureSet.registration.addSwap("beforebegin", { handleSwap: swapBeforeBegin });
-        coreFeatureSet.registration.addSwap("beforeend", { handleSwap: swapBeforeEnd });
-        coreFeatureSet.registration.addSwap("afterend", { handleSwap: swapAfterEnd });
-        coreFeatureSet.registration.addSwap("delete", { handleSwap: swapDelete })
-        coreFeatureSet.registration.addSwap("morph", "morph:outerHTML");
-        coreFeatureSet.registration.addSwap("morph:outerHTML", { handleSwap: (target, fragment) => swapMorph(target, fragment, "outerHTML"), isInlineSwap: true });
-        coreFeatureSet.registration.addSwap("morph:innerHTML", { handleSwap: (target, fragment) => swapMorph(target, fragment, "innerHTML") });
-
+            },
+            swaps: {
+                "none": { handleSwap: () => { } },
+                "innerHTML": { handleSwap: swapInnerHTML },
+                "outerHTML": { handleSwap: swapOuterHTML, isInlineSwap: true },
+                "afterbegin": { handleSwap: swapAfterBegin },
+                "beforebegin": { handleSwap: swapBeforeBegin },
+                "beforeend": { handleSwap: swapBeforeEnd },
+                "afterend": { handleSwap: swapAfterEnd },
+                "delete": { handleSwap: swapDelete },
+                "morph": "morph:outerHTML",
+                "morph:outerHTML": { handleSwap: (target, fragment) => swapMorph(target, fragment, "outerHTML"), isInlineSwap: true },
+                "morph:innerHTML": { handleSwap: (target, fragment) => swapMorph(target, fragment, "innerHTML") },
+            },
+        });
         var VERBS = ['get', 'post', 'put', 'delete', 'patch'];
         var VERB_SELECTOR = VERBS.map(function(verb){
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
@@ -1797,7 +1790,7 @@ return (function () {
         /**
          * @returns {any}
          * @param {HTMLElement} elt an element for which we attempt to discover available features
-         * @param {import("./htmx").Internal.FeatureCollectionNames} featureCollectionName a name of the feature collection for which we perform the lookup
+         * @param {keyof import("./htmx").FeaturesCollection} featureCollectionName a name of the feature collection for which we perform the lookup
          * @param {string} featureName a name of the feature we need from the collection
          */
         function getFeature(elt, featureCollectionName, featureName) {
@@ -1808,7 +1801,12 @@ return (function () {
                 return coreFeature;
             };
 
-            /** @returns {import("./htmx").Internal.Feature<any>[]} */
+            /**
+             * @returns {import("./htmx").Feature<any>[]}
+             * @param {HTMLElement} elt
+             * @param {htmx.Feature<any>[]} featuresToReturn
+             * @param {string[]} featuresToIgnore
+             */
             function getFeaturesRecursively(elt, featuresToReturn, featuresToIgnore) {
                 if (elt == undefined) {
                     return featuresToReturn;
@@ -1836,9 +1834,9 @@ return (function () {
             var finalFeatures = Object.assign.apply(null, features);
 
             /**
-             * @template T
-             * @param {import("./htmx").Internal.Feature<T>} feature
+             * @param {import("./htmx").Feature<any>} feature
              * @param {string} name
+             * @returns {any}
              */
             function get(feature, name) {
                 var featureImpl = feature[name]
@@ -2392,7 +2390,7 @@ return (function () {
             return getClosestAttributeValue(elt, "hx-encoding") || (matches(elt, "form") && getRawAttribute(elt, 'enctype')) || htmxObj.config.defaultEncoding;
         }
 
-        /** @returns {import("./htmx").EncodedBody | XMLHttpRequestBodyInit} */
+        /** @returns {import("./htmx").EncodingResult | XMLHttpRequestBodyInit} */
         function encodeParamsForBody(xhr, elt, filteredParameters) {
             var encodedParameters = null;
             withExtensions(elt, function (extension) {
@@ -3292,8 +3290,7 @@ return (function () {
          * @type {htmx.registerExtension}
          */
         function registerExtension(name, registration) {
-            var featureSet = makeFeatureSet(name);
-            registration(featureSet.registration);
+            var featureSet = makeFeatureSet(name, registration);
             extensionFeatures[name] = featureSet;
         }
 

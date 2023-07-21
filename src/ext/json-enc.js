@@ -1,8 +1,8 @@
-htmx.registerExtension('json-enc', features => {
-    features.addEncoding('application/json', parameters => {
-        return {
+htmx.registerExtension('json-enc', {
+    encodings: {
+        'application/json': parameters => ({
             contentType: 'application/json',
             body: JSON.stringify(parameters)
-        }
-    })
+        })
+    }
 })

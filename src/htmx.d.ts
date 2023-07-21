@@ -55,23 +55,13 @@ export interface HtmxConfig {
     scrollBehavior?: "smooth";
 }
 
-/**
- * A registrator for htmx features
- */
-export interface FeaturesRegistration {
-    /** Registration of body encoder
-     * @param name Name of the encoding
-     * @param encoder Encoding function
-     */
-    addEncoding(name: string, encoder: BodyEncoding | string): void
-
-    /** Registration of response swap method
-     * @param name Name of the morph
-     * @param swapper Swapping function
-     */
-    addSwap(name: string, swapper: Swap | string): void
+interface Feature<T> {
+    [key: string]: string | T
 }
-
+type FeaturesCollection = {
+    encodings: Feature<BodyEncoding>
+    swaps: Feature<Swap>
+}
 
 /*
 ===== Public JS API =====
@@ -398,8 +388,8 @@ const version: string;
 ===== Extensibility =====
 */
 
-type EncodedBody = { contentType: string, body: XMLHttpRequestBodyInit };
-type BodyEncoding = (parameters: object) => EncodedBody;
+type EncodingResult = { contentType: string, body: XMLHttpRequestBodyInit };
+type BodyEncoding = (parameters: object) => EncodingResult;
 
 type SwapResult = { newElements: HTMLElement[] };
 type Swap = { isInlineSwap?: boolean, handleSwap: (target: HTMLElement, fragment: HTMLElement, settleInfo?: object) => SwapResult | void }
@@ -407,29 +397,17 @@ type Swap = { isInlineSwap?: boolean, handleSwap: (target: HTMLElement, fragment
 /**
  * Register htmx 2.0 extension
  * @param name extension name
- * @param registration registration factory
+ * @param features features extension provides
  */
-export function registerExtension(name: string, registration: (features: FeaturesRegistration) => void): void
+export function registerExtension(name: string, features: Partial<FeaturesCollection>): void
 
 /*
 ===== End Extensions =====
 */
 
 export module Internal {
-    interface Feature<T> {
-        [key: string]: string | T
-    }
-
-    type FeaturesCollection = {
-        encodings: Feature<BodyEncoding>
-        swaps: Feature<Swap>
-    }
-
-    type FeatureCollectionNames = keyof FeaturesCollection
-
     type FeatureSet = {
         name: string,
-        features: FeaturesCollection,
-        registration: FeaturesRegistration,
+        features: Partial<FeaturesCollection>,
     }
 }

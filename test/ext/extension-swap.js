@@ -7,15 +7,17 @@ describe("default extensions behavior", function () {
         this.server = makeServer();
         clearWorkArea();
 
-        htmx.registerExtension("ext-testswap", (features) => {
-            features.addSwap("testswap", {
-                handleSwap: (target, fragment) => {
-                    // simple outerHTML replacement for tests
-                    var parentEl = target.parentElement;
-                    parentEl.removeChild(target);
-                    return { newElements: [parentEl.appendChild(fragment)] };  // return the newly added element
+        htmx.registerExtension("ext-testswap", {
+            swaps: {
+                "testswap": {
+                    handleSwap: (target, fragment) => {
+                        // simple outerHTML replacement for tests
+                        var parentEl = target.parentElement;
+                        parentEl.removeChild(target);
+                        return { newElements: [parentEl.appendChild(fragment)] };  // return the newly added element
+                    }
                 }
-            });
+            }
         });
 
         htmx.defineExtension("ext-testswap", {
