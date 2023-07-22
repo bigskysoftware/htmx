@@ -1411,9 +1411,12 @@ return (function () {
             } else {
                 eltsToListenOn = [elt];
             }
-            // store the initial value of the element so we can tell if it changes
+            // store the initial values of the elements, so we can tell if they change
             if (triggerSpec.changed) {
-                elementData.lastValue = elt.value;
+                eltsToListenOn.forEach(function (eltToListenOn) {
+                    var eltToListenOnData = getInternalData(eltToListenOn);
+                    eltToListenOnData.lastValue = eltToListenOn.value;
+                })
             }
             forEach(eltsToListenOn, function (eltToListenOn) {
                 var eventListener = function (evt) {
@@ -1453,11 +1456,11 @@ return (function () {
                             }
                         }
                         if (triggerSpec.changed) {
-                            if (elementData.lastValue === elt.value) {
+                            var eltToListenOnData = getInternalData(eltToListenOn)
+                            if (eltToListenOnData.lastValue === eltToListenOn.value) {
                                 return;
-                            } else {
-                                elementData.lastValue = elt.value;
                             }
+                            eltToListenOnData.lastValue = eltToListenOn.value
                         }
                         if (elementData.delayed) {
                             clearTimeout(elementData.delayed);
