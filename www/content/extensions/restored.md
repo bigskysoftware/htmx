@@ -2,7 +2,7 @@
 title = "restored"
 +++
 
-This extension triggers an event ``restored`` whenever a back button even is detected while using ``hx-boost``.
+This extension triggers an event ``restored`` whenever a back button event is detected while using ``hx-boost``.
 
 ## Install
 
