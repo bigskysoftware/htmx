@@ -24,10 +24,19 @@
                 return api.querySelectorExt(elt, targetStr);
             }
         } else {
-            for (let l = targetAttr.length - 1; l > targetAttrMinLen; l--) {
-                targetAttr = targetAttr.substring(0, l) + '*';
-                targetStr  = api.getClosestAttributeValue(elt, targetAttr);
-                if (targetStr) break;
+            let wildcardStr = htmx.config.responseTargetWildcard;
+            if (wildcardStr) {
+                for (let l = targetAttr.length - 1, wStrBuf = wildcardStr; l > targetAttrMinLen; l--, wStrBuf += wildcardStr) {
+                    targetAttr = targetAttr.substring(0, l) + wStrBuf;
+                    targetStr  = api.getClosestAttributeValue(elt, targetAttr);
+                    if (targetStr) break;
+                }
+            } else {
+                for (let l = targetAttr.length - 1; l > targetAttrMinLen; l--) {
+                    targetAttr = targetAttr.substring(0, l) + '*';
+                    targetStr  = api.getClosestAttributeValue(elt, targetAttr);
+                    if (targetStr) break;
+                }
             }
         }
 
@@ -70,6 +79,9 @@
             }
             if (htmx.config.responseTargetPrefersRetargetHeader === undefined) {
                 htmx.config.responseTargetPrefersRetargetHeader = true;
+            }
+            if (htmx.config.responseTargetWildcard === undefined) {
+                htmx.config.responseTargetWildcard = false;
             }
         },
 

@@ -28,6 +28,19 @@ describe("response-targets extension", function() {
         div1.innerHTML.should.equal("Not found!");
     });
 
+    it('targets an adjacent element properly with custom wildcard', function()
+    {
+        var prevWildcard = htmx.config.responseTargetWildcard;
+        htmx.config.responseTargetWildcard = 'x';
+        this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
+        var btn = make('<button hx-ext="response-targets" hx-target-4xx="#d1" hx-get="/test">Click Me!</button>')
+        var div1 = make('<div id="d1"></div>')
+        btn.click();
+        this.server.respond();
+        htmx.config.responseTargetWildcard = prevWildcard;
+        div1.innerHTML.should.equal("Not found!");
+    });
+
     it('targets a parent element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
