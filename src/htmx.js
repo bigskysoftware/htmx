@@ -849,7 +849,7 @@ return (function () {
 
                         target = beforeSwapDetails.target; // allow re-targeting
                         if (beforeSwapDetails['shouldSwap']){
-                            swap(swapStyle, target, target, fragment, settleInfo, false);
+                            swap(swapStyle, target, target, fragment, settleInfo, htmx.config.defaultSwapStyle);
                         }
                         forEach(settleInfo.elts, function (elt) {
                             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails);
@@ -1086,7 +1086,7 @@ return (function () {
             return fragment;
         }
 
-        function swap(swapStyle, elt, target, fragment, settleInfo, isStandardError) {
+        function swap(swapStyle, elt, target, fragment, settleInfo, defaultSwapStyle) {
             switch (swapStyle) {
                 case "none":
                     return;
@@ -1133,11 +1133,7 @@ return (function () {
                     if (swapStyle === "innerHTML") {
                         swapInnerHTML(target, fragment, settleInfo);
                     } else {
-                        var defaultSwapStyle = htmx.config.defaultSwapStyle
-                        if (isStandardError && swapStyle !== "mirror" && htmx.config.defaultErrorSwapStyle !== "mirror") {
-                            defaultSwapStyle = htmx.config.defaultErrorSwapStyle
-                        }
-                        swap(defaultSwapStyle, elt, target, fragment, settleInfo, isStandardError);
+                        swap(defaultSwapStyle, elt, target, fragment, settleInfo, defaultSwapStyle);
                     }
             }
         }
@@ -1153,14 +1149,14 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride, isStandardError) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride, defaultSwapStyle) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment, selectOverride);
                 handlePreservedElements(fragment);
-                return swap(swapStyle, elt, target, fragment, settleInfo, isStandardError);
+                return swap(swapStyle, elt, target, fragment, settleInfo, defaultSwapStyle);
             }
         }
 
@@ -1767,7 +1763,7 @@ return (function () {
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo, false)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo, null, htmx.config.defaultSwapStyle)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
@@ -2716,6 +2712,7 @@ return (function () {
                 swapInfo = getClosestAttributeValue(elt, "hx-swap")
             }
             var swapSpec = {
+                "defaultSwapStyle": defaultSwapStyle,
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
@@ -3588,7 +3585,7 @@ return (function () {
                         }
 
                         var settleInfo = makeSettleInfo(target);
-                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride, isStandardErrorSwap);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride, swapSpec.defaultSwapStyle);
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&
