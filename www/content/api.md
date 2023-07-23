@@ -123,6 +123,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `scrollBehavior:smooth` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
 * `defaultErrorSwapStyle:'none'` - string: the default swap style to use if [`hx-error-swap`](@/attributes/hx-error-swap.md) is omitted
 * `defaultErrorTarget:'mirror'` - string: the default target strategy to use if [`hx-error-target`](@/attributes/hx-error-target.md) is omitted
+* `httpErrorCodesToSwap:[]` - array of numbers: the [HTTP error codes](https://developer.mozilla.org/docs/Web/HTTP/Status) to enable errors swapping for (all other error codes will be ignored). If empty, all error codes will be swapped
 
 ##### Example
 

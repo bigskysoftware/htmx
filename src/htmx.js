@@ -77,6 +77,8 @@ return (function () {
                 selfRequestsOnly: false,
                 defaultErrorSwapStyle: "none",
                 defaultErrorTarget: "mirror",
+                /** @type [number] */
+                httpErrorCodesToSwap: [],
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -3492,7 +3494,7 @@ return (function () {
             // User could force shouldSwap to true from a htmx:beforeSwap listener, in which case we don't want to
             // interfere with hx-error-target & hx-error-swap logic by relying solely on isError
             var isStandardErrorSwap = false
-            if (isError) {
+            if (isError && (htmx.config.httpErrorCodesToSwap.length === 0 || htmx.config.httpErrorCodesToSwap.indexOf(xhr.status) >= 0)) {
                 var errorSwapSpec = getErrorTargetSpec(elt, target);
                 if (errorSwapSpec.shouldSwap) {
                     shouldSwap = true;

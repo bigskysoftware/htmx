@@ -1638,6 +1638,9 @@ listed below:
 | `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with this method by encoding their parameters in the URL, not the request body                                            |
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
+| `htmx.config.defaultErrorSwapStyle`   | defaults to `none`, htmx will swap content on error responses by default using the specified [swap method](@/attributes/hx-error-swap.md)                                  |
+| `htmx.config.defaultErrorTarget`      | defaults to `mirror`, htmx will swap content on error responses by default using the specified [swap target](@/attributes/hx-error-target.md)                              |
+| `htmx.config.httpErrorCodesToSwap`    | defaults to `[]`, if this array of [HTTP status codes](https://developer.mozilla.org/docs/Web/HTTP/Status) is not empty, htmx will use it as a whitelist and won't swap error responses with an unlisted status code           |
 
 </div>
 
