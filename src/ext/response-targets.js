@@ -24,9 +24,8 @@
                 return api.querySelectorExt(elt, targetStr);
             }
         } else {
-            let wildcardStr = htmx.config.responseTargetWildcard;
-            if (wildcardStr) {
-                for (let l = targetAttr.length - 1, wStrBuf = wildcardStr; l > targetAttrMinLen; l--, wStrBuf += wildcardStr) {
+            if (htmx.config.responseTargetPadX) {
+                for (let l = targetAttr.length - 1, wStrBuf = 'x'; l > targetAttrMinLen; l--, wStrBuf += 'x') {
                     targetAttr = targetAttr.substring(0, l) + wStrBuf;
                     targetStr  = api.getClosestAttributeValue(elt, targetAttr);
                     if (targetStr) break;
@@ -80,8 +79,8 @@
             if (htmx.config.responseTargetPrefersRetargetHeader === undefined) {
                 htmx.config.responseTargetPrefersRetargetHeader = true;
             }
-            if (htmx.config.responseTargetWildcard === undefined) {
-                htmx.config.responseTargetWildcard = false;
+            if (htmx.config.responseTargetPadX === undefined) {
+                htmx.config.responseTargetPadX = false;
             }
         },
 

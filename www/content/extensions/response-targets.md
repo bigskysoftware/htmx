@@ -42,9 +42,9 @@ The value of each attribute can be:
   can be used as an optional wildcard to create target for multiple status codes
   (e.g. `hx-target-5*` will match any code starting with the number `5`). You can
   change that behavior by setting a configuration flag
-  `htmx.config.responseTargetWildcard` to a string which will substitute each digit
-  that cannot be found (effectively padding the `hx-target-…` attribute name). See
-  the 'Wildcard resolution' section below for more details.
+  `htmx.config.responseTargetPadX` to `true` which will substitute each digit that
+  cannot be found with the `x` character (effectively padding the `hx-target-…`
+  attribute name). See the 'Wildcard resolution' section below for more details.
 
 * Normally, any target which is already established by HTMX built-in functions or
   extensions called before will be overwritten if a matching `hx-target-…` tag is
@@ -109,25 +109,14 @@ be looked up (in the given order):
 * `hx-target-4*`
 * `hx-target-*`.
 
-However, when `htmx.config.responseTargetWildcard` configuration option is in place,
-then the given string is used to replace **each digit at a time** when there was no
-precise match. For this option being set to `x` the lookup will be:
+However, when `htmx.config.responseTargetPadX` configuration option is in place, then
+the given string is used to replace **each digit at a time** with `x`. For this
+option being set the lookup will be:
 
 * `hx-target-404`
 * `hx-target-40x`
 * `hx-target-4xx`
 * `hx-target-xxx`.
-
-Note that if the option `htmx.config.responseTargetWildcard` is manually set to `*`
-the lookup will be:
-
-* `hx-target-404`
-* `hx-target-40*`
-* `hx-target-4**`
-* `hx-target-***`.
-
-To re-enable the default behavior (a single-asterisk lookup), you will have to set it
-to `false` or another falsy value.
 
 ## Notes
 
