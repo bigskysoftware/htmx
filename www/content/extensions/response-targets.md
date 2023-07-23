@@ -110,8 +110,8 @@ be looked up (in the given order):
 * `hx-target-*`.
 
 However, when `htmx.config.responseTargetPadX` configuration option is in place, then
-the given string is used to replace **each digit at a time** with `x`. For this
-option being set the lookup will be:
+the `x` character is used to replace **each digit at a time**. For this option being
+active the lookup will be:
 
 * `hx-target-404`
 * `hx-target-40x`
