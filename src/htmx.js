@@ -738,11 +738,12 @@ return (function () {
         /**
          * @param elt
          * @param initialTarget
+         * @param swapOverride
          * @returns {{shouldSwap: boolean, target: (HTMLElement|null), targetStr: string}}
          */
-        function getErrorTargetSpec(elt, initialTarget) {
+        function getErrorTargetSpec(elt, initialTarget, swapOverride) {
             var targetStr = getClosestAttributeValue(elt, "hx-error-target") || htmx.config.defaultErrorTarget
-            var swapStr = getClosestAttributeValue(elt, "hx-error-swap") || htmx.config.defaultErrorSwapStyle
+            var swapStr = swapOverride || getClosestAttributeValue(elt, "hx-error-swap") || htmx.config.defaultErrorSwapStyle
             if (!swapStr || swapStr === "none") {
                 return {
                     shouldSwap: false,
@@ -1133,7 +1134,7 @@ return (function () {
                         swapInnerHTML(target, fragment, settleInfo);
                     } else {
                         var defaultSwapStyle = htmx.config.defaultSwapStyle
-                        if (isStandardError && htmx.config.defaultErrorSwapStyle !== "mirror") {
+                        if (isStandardError && swapStyle !== "mirror" && htmx.config.defaultErrorSwapStyle !== "mirror") {
                             defaultSwapStyle = htmx.config.defaultErrorSwapStyle
                         }
                         swap(defaultSwapStyle, elt, target, fragment, settleInfo, isStandardError);
@@ -3495,7 +3496,10 @@ return (function () {
             // interfere with hx-error-target & hx-error-swap logic by relying solely on isError
             var isStandardErrorSwap = false
             if (isError && (htmx.config.httpErrorCodesToSwap.length === 0 || htmx.config.httpErrorCodesToSwap.indexOf(xhr.status) >= 0)) {
-                var errorSwapSpec = getErrorTargetSpec(elt, target);
+                if (etc.errorTargetOverride) {
+                    responseInfo.target = etc.errorTargetOverride
+                }
+                var errorSwapSpec = getErrorTargetSpec(elt, responseInfo.target, etc.errorSwapOverride);
                 if (errorSwapSpec.shouldSwap) {
                     shouldSwap = true;
                     isStandardErrorSwap = true
