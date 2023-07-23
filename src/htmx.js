@@ -3492,6 +3492,7 @@ return (function () {
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
 
             var isError = xhr.status >= 400;
+            var swapOverride = isError ? etc.errorSwapOverride : etc.swapOverride;
             // User could force shouldSwap to true from a htmx:beforeSwap listener, in which case we don't want to
             // interfere with hx-error-target & hx-error-swap logic by relying solely on isError
             var isStandardErrorSwap = false
@@ -3499,7 +3500,12 @@ return (function () {
                 if (etc.errorTargetOverride) {
                     responseInfo.target = etc.errorTargetOverride
                 }
-                var errorSwapSpec = getErrorTargetSpec(elt, responseInfo.target, etc.errorSwapOverride);
+                // Error swap override set to "mirror" should replicate standard swap override if defined
+                // Otherwise, fallback to attributes then default strategy
+                if (swapOverride === "mirror" && etc.swapOverride) {
+                    swapOverride = etc.swapOverride
+                }
+                var errorSwapSpec = getErrorTargetSpec(elt, responseInfo.target, swapOverride);
                 if (errorSwapSpec.shouldSwap) {
                     shouldSwap = true;
                     isStandardErrorSwap = true
@@ -3545,7 +3551,6 @@ return (function () {
                     saveCurrentPageToHistory();
                 }
 
-                var swapOverride = isError ? etc.errorSwapOverride : etc.swapOverride;
                 if (hasHeader(xhr,/HX-Reswap:/i)) {
                     swapOverride = xhr.getResponseHeader("HX-Reswap");
                 }

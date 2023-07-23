@@ -399,4 +399,14 @@ describe("Core htmx API test", function(){
         }
     });
 
+    it('ajax api works with errorSwap mirror', function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(400, {}, "<p class='test'>foo!</p>")
+        });
+        var div = make("<div id='target'><div id='child'></div></div>");
+        htmx.ajax("GET", "/test", {target: "#child", swap: "outerHTML", errorSwap: "mirror"});
+        this.server.respond();
+        div.innerHTML.should.equal('<p class="test">foo!</p>');
+    });
+
 })
