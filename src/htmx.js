@@ -35,9 +35,9 @@ return (function () {
         var extensionFeatures = {};
 
         /**
-         * @type {typeof htmx}
+         * @type {typeof import("./htmx")}
          */
-        var htmxObj = {
+        var htmx = {
             onLoad: onLoadHelper,
             process: processNode,
             on: addEventListenerImpl,
@@ -98,7 +98,7 @@ return (function () {
             // TODO 2.0 - should we remove/move these?
             createWebSocket: function(url){
                 var sock = new WebSocket(url, []);
-                sock.binaryType = htmxObj.config.wsBinaryType;
+                sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
             version: "1.9.3",
@@ -349,7 +349,7 @@ return (function () {
          */
         function makeFragment(resp) {
             var partialResponse = !aFullPageResponse(resp);
-            if (htmxObj.config.useTemplateFragments && partialResponse) {
+            if (htmx.config.useTemplateFragments && partialResponse) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
                 // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangably?
@@ -524,14 +524,14 @@ return (function () {
         }
 
         function onLoadHelper(callback) {
-            var value = htmxObj.on("htmx:load", function(evt) {
+            var value = htmx.on("htmx:load", function(evt) {
                 callback(evt.detail.elt);
             });
             return value;
         }
 
         function logAll(){
-            htmxObj.logger = function(elt, event, data) {
+            htmx.logger = function(elt, event, data) {
                 if(console) {
                     console.log(event, elt, data);
                 }
@@ -539,7 +539,7 @@ return (function () {
         }
 
         function logNone() {
-            htmxObj.logger = null
+            htmx.logger = null
         }
 
         function find(eltOrSelector, selector) {
@@ -762,7 +762,7 @@ return (function () {
         }
 
         function shouldSettleAttribute(name) {
-            var attributesToSettle = htmxObj.config.attributesToSettle;
+            var attributesToSettle = htmx.config.attributesToSettle;
             for (var i = 0; i < attributesToSettle.length; i++) {
                 if (name === attributesToSettle[i]) {
                     return true;
@@ -897,7 +897,7 @@ return (function () {
             if (child.nodeType == Node.TEXT_NODE || child.nodeType == Node.COMMENT_NODE) return
 
             const task = () => {
-                removeClassFromElement(child, htmxObj.config.addedClass)
+                removeClassFromElement(child, htmx.config.addedClass)
                 processNode(child)
                 processScripts(child)
                 processFocus(child)
@@ -918,7 +918,7 @@ return (function () {
             handleAttributes(parentNode, fragment, settleInfo);
             while(fragment.childNodes.length > 0){
                 var child = fragment.firstChild;
-                addClassToElement(child, htmxObj.config.addedClass);
+                addClassToElement(child, htmx.config.addedClass);
                 parentNode.insertBefore(child, insertBefore);
                 pushChildLoadTasks(child, settleInfo)
             }
@@ -1054,7 +1054,7 @@ return (function () {
             var swapFeature = getFeature(elt, "swaps", swapStyle);
 
             if (!swapFeature) {
-                swapFeature = getFeature(elt, "swaps", htmxObj.config.defaultSwapStyle)
+                swapFeature = getFeature(elt, "swaps", htmx.config.defaultSwapStyle)
             }
 
             var swapResult = swapFeature.handleSwap(target, fragment, settleInfo);
@@ -1579,8 +1579,8 @@ return (function () {
                 });
                 newScript.textContent = script.textContent;
                 newScript.async = false;
-                if (htmxObj.config.inlineScriptNonce) {
-                    newScript.nonce = htmxObj.config.inlineScriptNonce;
+                if (htmx.config.inlineScriptNonce) {
+                    newScript.nonce = htmx.config.inlineScriptNonce;
                 }
                 var parent = script.parentElement;
 
@@ -1668,7 +1668,7 @@ return (function () {
 
         function processHxOn(elt) {
             var hxOnValue = getAttributeValue(elt, 'hx-on');
-            if (hxOnValue && htmxObj.config.allowEval) {
+            if (hxOnValue && htmx.config.allowEval) {
                 var handlers = {}
                 var lines = hxOnValue.split("\n");
                 var currentEvent = null;
@@ -1693,7 +1693,7 @@ return (function () {
         }
 
         function initNode(elt) {
-            if (elt.closest && elt.closest(htmxObj.config.disableSelector)) {
+            if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
             }
             var nodeData = getInternalData(elt);
@@ -1865,8 +1865,8 @@ return (function () {
             }
             detail["elt"] = elt;
             var event = makeEvent(eventName, detail);
-            if (htmxObj.logger && !ignoreEventForLogging(eventName)) {
-                htmxObj.logger(elt, eventName, detail);
+            if (htmx.logger && !ignoreEventForLogging(eventName)) {
+                htmx.logger(elt, eventName, detail);
             }
             if (detail.error) {
                 logError(detail.error);
@@ -1911,7 +1911,7 @@ return (function () {
             var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
             triggerEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
-            while (historyCache.length > htmxObj.config.historyCacheSize) {
+            while (historyCache.length > htmx.config.historyCacheSize) {
                 historyCache.shift();
             }
             while(historyCache.length > 0){
@@ -1942,7 +1942,7 @@ return (function () {
         }
 
         function cleanInnerHtmlForHistory(elt) {
-            var className = htmxObj.config.requestClass;
+            var className = htmx.config.requestClass;
             var clone = elt.cloneNode(true);
             forEach(findAll(clone, "." + className), function(child){
                 removeClassFromElement(child, className);
@@ -1965,25 +1965,25 @@ return (function () {
                 saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
             }
 
-            if (htmxObj.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
+            if (htmx.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
         }
 
         function pushUrlIntoHistory(path) {
             // remove the cache buster parameter, if any
-            if (htmxObj.config.getCacheBusterParam) {
+            if (htmx.config.getCacheBusterParam) {
                 path = path.replace(/org\.htmx\.cache-buster=[^&]*&?/, '')
                 if (path.endsWith('&') || path.endsWith("?")) {
                     path = path.slice(0, -1);
                 }
             }
-            if(htmxObj.config.historyEnabled) {
+            if(htmx.config.historyEnabled) {
                 history.pushState({htmx:true}, "", path);
             }
             currentPathForHistory = path;
         }
 
         function replaceUrlInHistory(path) {
-            if(htmxObj.config.historyEnabled)  history.replaceState({htmx:true}, "", path);
+            if(htmx.config.historyEnabled)  history.replaceState({htmx:true}, "", path);
             currentPathForHistory = path;
         }
 
@@ -2045,7 +2045,7 @@ return (function () {
                 currentPathForHistory = path;
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
-                if (htmxObj.config.refreshOnHistoryMiss) {
+                if (htmx.config.refreshOnHistoryMiss) {
 
                     // @ts-ignore: optional parameter in reload() function throws error
                     window.location.reload(true);
@@ -2063,7 +2063,7 @@ return (function () {
             forEach(indicators, function (ic) {
                 var internalData = getInternalData(ic);
                 internalData.requestCount = (internalData.requestCount || 0) + 1;
-                ic.classList["add"].call(ic.classList, htmxObj.config.requestClass);
+                ic.classList["add"].call(ic.classList, htmx.config.requestClass);
             });
             return indicators;
         }
@@ -2073,7 +2073,7 @@ return (function () {
                 var internalData = getInternalData(ic);
                 internalData.requestCount = (internalData.requestCount || 0) - 1;
                 if (internalData.requestCount === 0) {
-                    ic.classList["remove"].call(ic.classList, htmxObj.config.requestClass);
+                    ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
                 }
             });
         }
@@ -2338,9 +2338,9 @@ return (function () {
         function getSwapSpecification(elt, swapInfoOverride) {
             var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
             var swapSpec = {
-                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmxObj.config.defaultSwapStyle,
-                "swapDelay" : htmxObj.config.defaultSwapDelay,
-                "settleDelay" : htmxObj.config.defaultSettleDelay
+                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
+                "swapDelay" : htmx.config.defaultSwapDelay,
+                "settleDelay" : htmx.config.defaultSettleDelay
             }
             if (getInternalData(elt).boosted && !isAnchorLink(elt)) {
               swapSpec["show"] = "top"
@@ -2387,7 +2387,7 @@ return (function () {
         }
 
         function getEncoding(elt) {
-            return getClosestAttributeValue(elt, "hx-encoding") || (matches(elt, "form") && getRawAttribute(elt, 'enctype')) || htmxObj.config.defaultEncoding;
+            return getClosestAttributeValue(elt, "hx-encoding") || (matches(elt, "form") && getRawAttribute(elt, 'enctype')) || htmx.config.defaultEncoding;
         }
 
         /** @returns {import("./htmx").EncodingResult | XMLHttpRequestBodyInit} */
@@ -2444,11 +2444,11 @@ return (function () {
                 }
                 if (swapSpec.show === "top" && (first || target)) {
                     target = target || first;
-                    target.scrollIntoView({block:'start', behavior: htmxObj.config.scrollBehavior});
+                    target.scrollIntoView({block:'start', behavior: htmx.config.scrollBehavior});
                 }
                 if (swapSpec.show === "bottom" && (last || target)) {
                     target = target || last;
-                    target.scrollIntoView({block:'end', behavior: htmxObj.config.scrollBehavior});
+                    target.scrollIntoView({block:'end', behavior: htmx.config.scrollBehavior});
                 }
             }
         }
@@ -2502,7 +2502,7 @@ return (function () {
         }
 
         function maybeEval(elt, toEval, defaultVal) {
-            if (htmxObj.config.allowEval) {
+            if (htmx.config.allowEval) {
                 return toEval();
             } else {
                 triggerErrorEvent(elt, 'htmx:evalDisallowedError');
@@ -2749,7 +2749,7 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (htmxObj.config.getCacheBusterParam && verb === 'get') {
+            if (htmx.config.getCacheBusterParam && verb === 'get') {
                 filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, "id") || "true";
             }
 
@@ -2770,8 +2770,8 @@ return (function () {
                 target:target,
                 verb:verb,
                 errors:errors,
-                withCredentials: etc.credentials || requestAttrValues.credentials || htmxObj.config.withCredentials,
-                timeout:  etc.timeout || requestAttrValues.timeout || htmxObj.config.timeout,
+                withCredentials: etc.credentials || requestAttrValues.credentials || htmx.config.withCredentials,
+                timeout:  etc.timeout || requestAttrValues.timeout || htmx.config.timeout,
                 path:path,
                 triggeringEvent:event
             };
@@ -3092,7 +3092,7 @@ return (function () {
                 }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
-                target.classList.add(htmxObj.config.swappingClass);
+                target.classList.add(htmx.config.swappingClass);
 
                 // optional transition API promise callbacks
                 var settleResolve = null;
@@ -3121,7 +3121,7 @@ return (function () {
                             !bodyContains(selectionInfo.elt) &&
                             selectionInfo.elt.id) {
                             var newActiveElt = document.getElementById(selectionInfo.elt.id);
-                            var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmxObj.config.defaultFocusScroll };
+                            var focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll };
                             if (newActiveElt) {
                                 // @ts-ignore
                                 if (selectionInfo.start && newActiveElt.setSelectionRange) {
@@ -3136,10 +3136,10 @@ return (function () {
                             }
                         }
 
-                        target.classList.remove(htmxObj.config.swappingClass);
+                        target.classList.remove(htmx.config.swappingClass);
                         forEach(settleInfo.elts, function (elt) {
                             if (elt.classList) {
-                                elt.classList.add(htmxObj.config.settlingClass);
+                                elt.classList.add(htmx.config.settlingClass);
                             }
                             triggerEvent(elt, 'htmx:afterSwap', responseInfo);
                         });
@@ -3158,7 +3158,7 @@ return (function () {
                             });
                             forEach(settleInfo.elts, function (elt) {
                                 if (elt.classList) {
-                                    elt.classList.remove(htmxObj.config.settlingClass);
+                                    elt.classList.remove(htmx.config.settlingClass);
                                 }
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
@@ -3213,7 +3213,7 @@ return (function () {
                     }
                 };
 
-                var shouldTransition = htmxObj.config.globalViewTransitions
+                var shouldTransition = htmx.config.globalViewTransitions
                 if(swapSpec.hasOwnProperty('transition')){
                     shouldTransition = swapSpec.transition;
                 }
@@ -4075,12 +4075,12 @@ return (function () {
         }
 
         function insertIndicatorStyles() {
-            if (htmxObj.config.includeIndicatorStyles !== false) {
+            if (htmx.config.includeIndicatorStyles !== false) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>\
-                      ." + htmxObj.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
-                      ." + htmxObj.config.requestClass + " ." + htmxObj.config.indicatorClass + "{opacity:1}\
-                      ." + htmxObj.config.requestClass + "." + htmxObj.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
+                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1}\
                     </style>");
             }
         }
@@ -4098,7 +4098,7 @@ return (function () {
         function mergeMetaConfig() {
             var metaConfig = getMetaConfig();
             if (metaConfig) {
-                htmxObj.config = mergeObjects(htmxObj.config , metaConfig)
+                htmx.config = mergeObjects(htmx.config , metaConfig)
             }
         }
 
@@ -4140,7 +4140,7 @@ return (function () {
             }, 0);
         })
 
-        return htmxObj;
+        return htmx;
     }
 )()
 }));
