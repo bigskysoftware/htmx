@@ -6,21 +6,21 @@ date = 2023-07-23
 tag = ["posts"] 
 +++
 
-Accessibility is hard, but it's important to get it right.  Using htmx, it's easy to make accessible web applications. It's also possible to make very inaccessible apps, too.  At its core, htmx is simply a new way to use [REST API principles](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) in your browser, using [whatever server code you like](https://htmx.org/essays/hypermedia-on-whatever-youd-like/).  It doesn't generate any HTML for you, so the results are up to you and your server. 
+Accessibility is hard, but it's important to get it right. Fortunately, with htmx, it's incredibly easy to make accessible applications.  Just make accessible HTML. As a library, htmx extends HTML by exposing the [complete REST API]((https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) to your HTML markup, and helping you make partial page updates from those server responses.  The rest is up to you.
 
-This document lays out some guidelines to follow (and some pitfalls to avoid) on your way to building amazing and accessible apps using htmx.  
-
-You'll need to understand the basics of web accessibility first, so please start with one of the many [resources for web accessibility](https://www.w3.org/WAI/tutorials/) that have already been published.  The same goes for basic htmx, which is simple enough to [learn in an afternoon](https://htmx.org/docs/).
+This document gives you some guidelines to follow (and some pitfalls to avoid) on your way to building amazing and accessible apps using htmx.  You'll need to understand the basics of web accessibility first, so please start with one of the many [resources for web accessibility](https://www.w3.org/WAI/tutorials/) that have already been published.  The same goes for basic htmx, which is simple enough to [learn in an afternoon](https://htmx.org/docs/).
 
 ## Guidelines for Accessible HTMX Applications
 
-For the most part, web browsers have fantastic usability and accessibility features, and well-structured HTML is already accessible to a variety of adaptive technologies, like screen readers, alternate input devices, and so on.  So, if your htmx application uses standard HTML elements in standard ways, you've already done most of the work to make it accessible to people with disabilities.
+For the most part, web browsers have fantastic usability and accessibility features, and well-structured HTML is already accessible to a variety of adaptive technologies, like screen readers, alternate input devices, and so on.  So, if your htmx application uses standard HTML elements in standard ways, you've already done most of the work to make it accessible to people with a variety of disabilities.
 
 ### Accessibility Pitfalls for HTMX
 
 ![](https://i.kym-cdn.com/entries/icons/original/000/040/653/goldblum-quote.jpeg "A meme from the movie Jurassic Park, with the quote: Your scientists were so preoccupied with whether or not they could... they didn't stop to think if they should.")
 
-But browsers often run into trouble when developers create complex applications that step outside the basic assumptions of the semantic web.  And htmx makes this incredibly easy to do:  
+However, it is also easy to make HTML apps that are not accessible. For example, when you break the basic assumptions of the semantic web, screen readers and other adaptive technologies are easily lefts behind. Just because you *can* misuse htmx to do this, doesn't mean you *should*.
+
+Here are a few accessibility traps to avoid.:  
 
 * Using custom attributes like [`hx-get`](https://htmx.org/attributes/hx-get/) and [`hx-post`](https://htmx.org/attributes/hx-post/), you can make any element on a page clickable, even if that interactivity is not announced via a screen reader.  
 
@@ -32,7 +32,9 @@ These missteps are easy to avoid, and following a few simple rules of thumb will
 
 ### 1. Native Elements and ARIA Roles 
 
-The most common issue with accessibility in htmx applications is placing interactive attributes on elements that are not expected to be interactive, such as emulating a link using a `div` or `span`.
+The most common issue with accessibility in an interactive Javascript application (including htmx) is in putting interactive code behind elements that are not expected to be interactive, such as emulating a link using a `div` or `span`.
+
+It is always best to use attributes like `hx-get` and `hx-post` on elements that *should be interactive* like links and buttons.  In cases where this is not possible (and there are many such exceptions) make sure to use aria roles to tell the browser what you're doing.  Otherwise, you're leaving many people behind with an inaccessible design.
 
 ```html
 <!-- Use native elements whenever possible -->
@@ -61,6 +63,15 @@ One reason that native elements are generally recommended instead of `span` and 
 Fortunately, HTML has a simple fix in the [tabIndex attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex), which helps developers to specify which elements can receive focus.  But this only handles half of the issue, because even when using tabIndex, users are unable to actually click on a custom element using the keyboard
 
 Using htmx, however, the attribute `hx-trigger="click, keypress[key=='Enter']"` will mimic the default behavior of native elements, enabling the enter key to be used as a substitute for mouse clicks.  This can be tedious to add to every clickable element, so check out the [htmx accessibility extension](https://github.com/EmissarySocial/emissary/blob/main/_embed/templates/theme-global/javascript/a11y.js) (described below) which automatically applies this behavior to every element on your page.
+
+So, to use our example from above, if you absolutely must use a span as an interactive element in your application, the way to make it accessible in htmx is to do something like this:
+
+```html
+<!-- It's not ideal to make SPANS interactive, but sometimes you have no choice.  Here's how to do it well -->
+<span role="button" tabIndex="0" hx-get="/more-content" hx-target="#somewhere-else" hx-trigger="click, keypress[key=='Enter']">
+    Click Me
+</span>
+```
 
 
 ### 3. Announce DOM Changes with aria-live
