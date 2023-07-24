@@ -26,4 +26,4 @@ in the response and swap it in for div in the DOM with the same ID.
 
 ## Notes
 
-* `hx-select` is inherited and can be placed on a parent element
+* `hx-select-oob` is inherited and can be placed on a parent element

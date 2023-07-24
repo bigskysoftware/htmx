@@ -117,6 +117,7 @@ The table below lists all other attributes available in htmx.
 | [`HX-Replace-Url`](@/headers/hx-replace-url.md)      | replaces the current URL in the location bar
 | `HX-Reswap`                                          | Allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
 | `HX-Retarget`                                        | A CSS selector that updates the target of the content update to a different element on the page
+| `HX-Reselect`                                        | A CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](@/attributes/hx-select.md) on the triggering element
 | [`HX-Trigger`](@/headers/hx-trigger.md)              | allows you to trigger client side events, see the [documentation](@/headers/hx-trigger.md) for more info
 | [`HX-Trigger-After-Settle`](@/headers/hx-trigger.md) | allows you to trigger client side events, see the [documentation](@/headers/hx-trigger.md) for more info
 | [`HX-Trigger-After-Swap`](@/headers/hx-trigger.md)   | allows you to trigger client side events, see the [documentation](@/headers/hx-trigger.md) for more info
@@ -145,7 +146,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:historyCacheError`](@/events.md#htmx:historyCacheError)  | triggered on an error during cache writing
 | [`htmx:historyCacheMiss`](@/events.md#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
 | [`htmx:historyCacheMissError`](@/events.md#htmx:historyCacheMissError)  | triggered on a unsuccessful remote retrieval
-| [`htmx:historyCacheMissLoad`](@/events.md#htmx:historyCacheMissLoad)  | triggered on a succesful remote retrieval
+| [`htmx:historyCacheMissLoad`](@/events.md#htmx:historyCacheMissLoad)  | triggered on a successful remote retrieval
 | [`htmx:historyRestore`](@/events.md#htmx:historyRestore)  | triggered when htmx handles a history restoration action
 | [`htmx:beforeHistorySave`](@/events.md#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
 | [`htmx:load`](@/events.md#htmx:load)  | triggered when new content is added to the DOM

@@ -131,7 +131,7 @@ After all, both htmx and hyperscript are _built in JavaScript_.  We couldn't hav
 JavaScript, which, whatever else one might say, has the great virtue of [_being there_](https://en.wikipedia.org/wiki/Being_There).
 
 And we even go so far as to _recommend using_ JavaScript for front-end scripting needs in a hypermedia-driven 
-application, so long as you script in a [hypermedia-friendly](/hypermedia-friendly-scripting/) way.
+application, so long as you script in a [hypermedia-friendly](/essays/hypermedia-friendly-scripting/) way.
 
 Further, we wouldn't steer someone away from using JavaScript (or TypeScript) on the _server side_ for a 
 hypermedia-driven application, if that language is the best option for your team.  As we said earlier, JavaScript now 

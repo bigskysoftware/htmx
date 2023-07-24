@@ -8,7 +8,7 @@ insert_anchor_links = "left"
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> We are excited to announce that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">Github Open Source Accelerator!</a>
+<b>NEWS:</b> We are excited to <a href="/posts/2023-06-06-htmx-github-accelerator/">announce</a> that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">GitHub Open Source Accelerator!</a>
 </div>
 
 <h2>introduction</h2>
@@ -51,10 +51,19 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
+<h2><a name='book'></a>book</h2>
+
+We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build 
+[Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
+
+<div style="text-align: center;padding: 24px">
+<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png"></a>
+</div>
+
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
 
 
-htmx development can be supported via [Github Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
+htmx development can be supported via [GitHub Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
 
 
 Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">supporters</a>, including:

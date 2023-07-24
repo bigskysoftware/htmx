@@ -48,9 +48,12 @@ htmx.defineExtension("preload", {
 				// in the future
 				var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
 				if (hxGet) {
-					htmx.ajax("GET", hxGet, {handler:function(elt, info) {
-						done(info.xhr.responseText);
-					}});
+					htmx.ajax("GET", hxGet, {
+						source: node,
+						handler:function(elt, info) {
+							done(info.xhr.responseText);
+						}
+					});
 					return;
 				}
 

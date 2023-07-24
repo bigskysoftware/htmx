@@ -52,13 +52,13 @@ Standard events can also have modifiers that change how they behave.  The modifi
 * `changed` - the event will only change if the value of the element has changed. Please pay attention `change` is the name of the event and `changed` is the name of the modifier.
 * `delay:<timing declaration>` - a delay will occur before an event triggers a request.  If the event
 is seen again it will reset the delay.
-* `throttle:<timing declaration>` - a throttle will occur before an event triggers a request.  If the event
-is seen again before the delay completes it is ignored, the element will trigger at the end of the delay.
+* `throttle:<timing declaration>` - a throttle will occur after an event triggers a request. If the event
+is seen again before the delay completes, it is ignored, the element will trigger at the end of the delay.
 * `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
   * The extended CSS selector here allows for the following non-standard CSS values:
     * `document` - listen for events on the document
     * `window` - listen for events on the window
-    * `closest <CSS selector>` - finds the closest parent matching the given css selector
+    * `closest <CSS selector>` - finds the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest) ancestor element or itself, matching the given css selector
     * `find <CSS selector>` - finds the closest child matching the given css selector
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
@@ -132,11 +132,11 @@ If you want to add a filter to polling, it should be added *after* the poll decl
 
 ### Multiple Triggers
 
-Multiple triggers can be provided, seprarated by commas.  Each trigger gets its own options.
+Multiple triggers can be provided, separated by commas.  Each trigger gets its own options.
 ```html
   <div hx-get="/news" hx-trigger="load, click delay:1s"></div>
 ```
-This example will load `/news` immediate on the page load, and then again with a delay of one second after each click.
+This example will load `/news` immediately on page load, and then again with a delay of one second after each click.
 
 ### Via JavaScript
 

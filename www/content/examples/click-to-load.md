@@ -9,13 +9,13 @@ the final row:
 ```html
 <tr id="replaceMe">
   <td colspan="3">
-    <button class='btn' hx-get="/contacts/?page=2" 
-                        hx-target="#replaceMe" 
+    <button class='btn' hx-get="/contacts/?page=2"
+                        hx-target="#replaceMe"
                         hx-swap="outerHTML">
          Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
     </button>
   </td>
-</tr> 
+</tr>
 ```
 
 This row contains a button that will replace the entire row with the next page of
@@ -48,31 +48,31 @@ results (which will contain a button to load the *next* page of results).  And s
         }
       }
     }()
-    
+
     // routes
     init("/demo", function(request, params){
         var contacts = dataStore.contactsForPage(1)
         return tableTemplate(contacts)
     });
-    
+
     onGet(/\/contacts.*/, function(request, params){
         var page = parseInt(params['page']);
         var contacts = dataStore.contactsForPage(page)
         return rowsTemplate(page, contacts);
     });
-    
+
     // templates
     function tableTemplate(contacts) {
         return `<table><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
                 ${rowsTemplate(1, contacts)}
                 </tbody></table>`
     }
-    
+
     function rowsTemplate(page, contacts) {
       var txt = "";
       for (var i = 0; i < contacts.length; i++) {
         var c = contacts[i];
-        txt += "<tr><td>" + c.name + "</td><td>" + c.email + "</td><td>" + c.id + "</td></tr>\n";
+        txt += `<tr><td>${c.name}</td><td>${c.email}</td><td>${c.id}</td></tr>\n`;
       }
       txt += loadMoreRow(page);
       return txt;
@@ -82,8 +82,8 @@ results (which will contain a button to load the *next* page of results).  And s
       return `<tr id="replaceMe">
   <td colspan="3">
     <center>
-      <button class='btn' hx-get="/contacts/?page=${page + 1}" 
-                       hx-target="#replaceMe" 
+      <button class='btn' hx-get="/contacts/?page=${page + 1}"
+                       hx-target="#replaceMe"
                        hx-swap="outerHTML">
          Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
        </button>

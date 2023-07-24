@@ -58,7 +58,7 @@ Defaults for this extension are chosen to balance users' perceived performance w
 
 #### preload="mousedown" (DEFAULT)
 
-The default behavior for this extension is to begin loading a resource when the user presses the mouse down.  This is a conservative setting that guarantees the user actually intends to use the linked resource.  Because user click events typcially take 100-200ms to complete, this setting gives your server a significant headstart compared with a regular click.
+The default behavior for this extension is to begin loading a resource when the user presses the mouse down.  This is a conservative setting that guarantees the user actually intends to use the linked resource.  Because user click events typically take 100-200ms to complete, this setting gives your server a significant headstart compared with a regular click.
 
 ```html
 <a href="/server/1" preload="mousedown">This will be preloaded when the user begins to click.</a>
@@ -90,7 +90,7 @@ Preload can also listen to any custom event within the system, triggering resour
 
 ### About Touch Events
 
-To accomodate touchscreen devices, an additional `ontouchstart` event handler is added whenever you specify a `mouseover` or `mousedown` trigger.  This extra trigger fires immediately (no waiting period) whenever the user touches the screen, saving you 300ms of waiting time on Android, and 450ms on iOS.
+To accommodate touchscreen devices, an additional `ontouchstart` event handler is added whenever you specify a `mouseover` or `mousedown` trigger.  This extra trigger fires immediately (no waiting period) whenever the user touches the screen, saving you 300ms of waiting time on Android, and 450ms on iOS.
 
 ### Limitations
 

@@ -2,15 +2,15 @@
 title = "Bulk Update"
 template = "demo.html"
 +++
-        
-This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is 
+
+This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is
 accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
 values in `PUT`'s to two different endpoints: `activate` and `deactivate`:
 
 ```html
 <div hx-include="#checked-contacts" hx-target="#tbody">
-  <a class="btn" hx-put="/activate">Activate</a>
-  <a class="btn" hx-put="/deactivate">Deactivate</a>
+  <button class="btn" hx-put="/activate">Activate</button>
+  <button class="btn" hx-put="/deactivate">Deactivate</button>
 </div>
 
 <form id="checked-contacts">
@@ -90,7 +90,7 @@ You can see a working example of this code below.
         }
       }
     }()
-    
+
     function getIds(params) {
       if(params['ids']) {
         if(Array.isArray(params['ids'])) {
@@ -126,7 +126,7 @@ You can see a working example of this code below.
 
     // templates
     function displayUI(contacts) {
-      return `<h3>Select Rows And Activate Or Deactivate Below<h3>
+      return `<h3>Select Rows And Activate Or Deactivate Below</h3>
                <form id="checked-contacts">
                 <table>
                   <thead>
@@ -145,11 +145,11 @@ You can see a working example of this code below.
               <br/>
               <br/>
               <div hx-include="#checked-contacts" hx-target="#tbody">
-                <a class="btn" hx-put="/activate">Activate</a>
-                <a class="btn" hx-put="/deactivate">Deactivate</a>
+                <button class="btn" hx-put="/activate">Activate</button>
+                <button class="btn" hx-put="/deactivate">Deactivate</button>
               </div>`
     }
-    
+
     function displayTable(ids, contacts, action) {
       var txt = "";
       for (var i = 0; i < contacts.length; i++) {

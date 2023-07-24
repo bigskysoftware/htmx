@@ -36,7 +36,7 @@ is one major reason why many good developers are so much more productive than ot
 
 However, this doesn't change the fact that, somewhere out there, there is a Complexity Wall lurking and, if you aren't 
 careful you will run into it and grind development to a halt.  I have had multiple experiences with this: one day, 
-inexplicably, development on a system that I was working on went from feeling "large, but managable" to 
+inexplicably, development on a system that I was working on went from feeling "large, but manageable" to 
 "this is impossible to deal with".
 
 ## Spending Your Complexity Budget Wisely
