@@ -15,7 +15,7 @@ markup where the dialog will be loaded:
 	hx-target="#modals-here" 
 	hx-trigger="click"
     data-bs-toggle="modal"
-    data-bs-target="#window-modal"
+    data-bs-target="#modals-here"
 	class="btn btn-primary">Open Modal</button>
 
 <div id="modals-here"
@@ -43,13 +43,17 @@ Finally, the server responds with a slightly modified version of Bootstrap's sta
       <p>Modal body text goes here.</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"">Close</button>
     </div>
   </div>
 </div>
 ```
 
-<div id="modals-here"></div>
+<div id="modals-here"
+class="modal modal-blur fade"
+style="display: none"
+aria-hidden="false"
+tabindex="-1"></div>
 
 {{ demoenv() }}
 
@@ -70,7 +74,7 @@ Finally, the server responds with a slightly modified version of Bootstrap's sta
 	hx-target="#modals-here" 
 	hx-trigger="click"
     data-bs-toggle="modal"
-    data-bs-target="#window-modal"
+    data-bs-target="#modals-here"
 	class="btn btn-primary">Open Modal</button>
 	`})
 		
@@ -84,6 +88,9 @@ Finally, the server responds with a slightly modified version of Bootstrap's sta
           <p>Modal body text goes here.</p>
         </div>
       </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
     </div>`
 });
 </script>
