@@ -6,11 +6,11 @@ date = 2023-07-23
 tag = ["posts"] 
 +++
 
-Every now and then, an [#Accessibility](https://mastodon.social/tags/accessibility) proponent or consultant will discover the htmx, skim through the [developer tutorials](https://htmx.org/docs/), and come away with the impression that htmx is bad for accessibility.  This is ridiculous, of course, because htmx doesn't generate any HTML code; it simply gives you new ways to use [REST API principles](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) in your browser.
+Accessibility is hard, but it's important to get it right.  Using htmx, it's easy to make accessible web applications. It's also possible to make very inaccessible apps, too.  At its core, htmx is simply a new way to use [REST API principles](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) in your browser, using [whatever server code you like](https://htmx.org/essays/hypermedia-on-whatever-youd-like/).  It doesn't generate any HTML for you, so the results are up to you and your server. 
 
-With that said, accessibility is hard, and it's important to get it right.  So, this document lays out some guidelines to follow (and the pitfalls to avoid) on your way to building amazing and accessible apps using htmx.  
+This document lays out some guidelines to follow (and some pitfalls to avoid) on your way to building amazing and accessible apps using htmx.  
 
-If you're not already familiar with web accessibility, please start with one of the many [resources for web accessibility](https://www.w3.org/WAI/tutorials/) that have already been published.  The same goes for basic htmx, which is simple enough to [learn in an afternoon](https://htmx.org/docs/).
+You'll need to understand the basics of web accessibility first, so please start with one of the many [resources for web accessibility](https://www.w3.org/WAI/tutorials/) that have already been published.  The same goes for basic htmx, which is simple enough to [learn in an afternoon](https://htmx.org/docs/).
 
 ## Guidelines for Accessible HTMX Applications
 
