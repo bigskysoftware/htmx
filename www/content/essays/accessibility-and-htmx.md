@@ -87,10 +87,28 @@ interruptions.
 | `aria-live="polite"` | Indicates that updates to the region should be presented at the next graceful opportunity, such as at the end of speaking the current sentence or when the user pauses typing. |
 | `aria-live="off"` | (default) Indicates that updates to the region should not be presented to the user unless the user is currently focused on that region. |
 
+### 4. Accessible Event Handling
 
-### 4. Label and Describe Elements
+HTML generates lots of events, but they are not all accessible to people on every device.  One obvious example is the `hover` event, which is only available to people using a mouse.  People using a touch device or keyboard-only navigation will not be able to use an element (such as a pop-up menu) that appears only on hover.
 
-This section is not specific to htmx, but is an important reminder for every accessible application.  For sighted users, there is a natural connection between an onscreen widget (such as an "Add" button) and its text description, usually based on how these two DOM elements are presented.  But screen readers need additional meta data in order to make this connection clear to blind users.  
+As we showed above, [`hx-trigger`](https://htmx.org/attributes/hx-trigger/) allows multiple events, so you can set a fallback to every kind of event.  So you don't have to give up hover effects (or other device-specific features) but you can assign backup events so that every person is included in your app.
+
+
+```html
+<!-- An example of poor accessibility: Touch- and keyboard-only users can't use this menu --->
+<div hx-get="/menu-content" hx-trigger="mouseover">
+    My Menu...
+</div>
+
+<!--- A better example with fallback events and keyboard-focusable element. It's not that hard. --->
+<div role="menu" tabIndex="0" hx-get="menu-content" hx-trigger="click, mouseover, keypress[key=='Enter']">
+   My Menu...
+</div>
+```
+
+### 5. Label and Describe Elements
+
+This last suggestion is not specific to htmx, but is an important reminder for every accessible application.  For sighted users, there is a natural connection between an onscreen widget (such as an "Add" button) and its text description, usually based on how these two DOM elements are presented.  But screen readers need additional meta data in order to make this connection clear to blind users.  
 
 The [`aria-labelledby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby) and [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby) attributes fill this need, and should be used liberally whenever possible.
 
