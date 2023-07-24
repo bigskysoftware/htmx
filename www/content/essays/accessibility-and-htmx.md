@@ -30,11 +30,13 @@ Here are a few accessibility traps to avoid.:
 
 These missteps are easy to avoid, and following a few simple rules of thumb will actually help improve the structure of your web apps and make them more usable for non-disabled users in the process.
 
-### 1. Native Elements and ARIA Roles 
+### 1. Use Native Elements Whenever Possible and ARIA Roles When It's Not
 
 The most common issue with accessibility in an interactive Javascript application (including htmx) is in putting interactive code behind elements that are not expected to be interactive, such as emulating a link using a `div` or `span`.
 
-It is always best to use attributes like `hx-get` and `hx-post` on elements that *should be interactive* like links and buttons.  In cases where this is not possible (and there are many such exceptions) make sure to use aria roles to tell the browser what you're doing.  Otherwise, you're leaving many people behind with an inaccessible design.
+In htmx code, it is always best to use attributes like `hx-get` and `hx-post` on elements that *should be interactive* like **links** and **buttons**.  This lets you use the default browser behaviors without any extra work.  
+
+Sometimes, this is not possible, such as when you need a widget that isn't defined by your browser (like tabs, slide-out menus, or accordions).  There are many similar exceptions.  In these cases, make these widgets accessible using [ARIA roles](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles) to tell the browser what you're doing.  It's basic HTML that's supported by every browser and assistive technology, so it will mesh beautifully with your htmx code. No extra steps required.
 
 ```html
 <!-- Use native elements whenever possible -->
