@@ -992,7 +992,7 @@ return (function () {
         }
 
         function maybeSelectFromResponse(elt, fragment, selectOverride) {
-            var selector = getClosestAttributeValue(elt, "hx-select");
+            var selector = selectOverride || getClosestAttributeValue(elt, "hx-select");
             if (selector) {
                 var newFragment = getDocument().createDocumentFragment();
                 forEach(fragment.querySelectorAll(selector), function (node) {
