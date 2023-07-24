@@ -1297,7 +1297,7 @@ return (function () {
                 return triggerSpecs;
             } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            } else if (matches(elt, 'input[type="button"]')){
+            } else if (matches(elt, 'input[type="button"], input[type="submit"]')){
                 return [{trigger: 'click'}];
             } else if (matches(elt, INPUT_SELECTOR)) {
                 return [{trigger: 'change'}];
@@ -1853,8 +1853,8 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedElts = hasChanceOfBeingBoosted() ? ", a" : "";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", form, [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
@@ -1862,7 +1862,7 @@ return (function () {
             }
         }
 
-        function initButtonTracking(form){
+        function initButtonTracking(eltToTrack, form){
             var maybeSetLastButtonClicked = function(evt){
                 var elt = closest(evt.target, "button, input[type='submit']");
                 if (elt !== null) {
@@ -1875,9 +1875,9 @@ return (function () {
             //   focusin - in case someone tabs in to a button and hits the space bar
             //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
 
-            form.addEventListener('click', maybeSetLastButtonClicked)
-            form.addEventListener('focusin', maybeSetLastButtonClicked)
-            form.addEventListener('focusout', function(evt){
+            eltToTrack.addEventListener('click', maybeSetLastButtonClicked)
+            eltToTrack.addEventListener('focusin', maybeSetLastButtonClicked)
+            eltToTrack.addEventListener('focusout', function(){
                 var internalData = getInternalData(form);
                 internalData.lastButtonClicked = null;
             })
@@ -1971,6 +1971,24 @@ return (function () {
                     nodeData.lastValue = elt.value;
                 }
 
+                if (matches(elt, "form")) {
+                    initButtonTracking(elt, elt);
+                    // look for other buttons outside this form that might also need to be tracked
+                    if (elt.id) {
+                        forEach(findAll("[form='" + elt.id + "']"), function(relatedBtn){
+                            // IE Fix - move to containsNode() in 2.0
+                            if (closest(relatedBtn, 'form') !== elt) {
+                                initButtonTracking(relatedBtn, elt);
+                            }
+                        })
+                    }
+                } else if (matches(elt, "button, input[type='submit']")) {
+                    var closestForm = closest(elt, 'form');
+                    if (closestForm && getRawAttribute(elt, 'form') === null) {
+                        initButtonTracking(elt, closestForm);
+                    }
+                }
+
                 var triggerSpecs = getTriggerSpecs(elt);
                 var hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs);
 
@@ -1984,10 +2002,6 @@ return (function () {
                             })
                         })
                     }
-                }
-
-                if (elt.tagName === "FORM") {
-                    initButtonTracking(elt);
                 }
 
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
@@ -2314,6 +2328,29 @@ return (function () {
             return true;
         }
 
+        function addValueToValues(name, value, values) {
+            if (name != null && value != null) {
+                var current = values[name];
+                if (current !== undefined) {
+                    if (Array.isArray(current)) {
+                        if (Array.isArray(value)) {
+                            values[name] = current.concat(value);
+                        } else {
+                            current.push(value);
+                        }
+                    } else {
+                        if (Array.isArray(value)) {
+                            values[name] = [current].concat(value);
+                        } else {
+                            values[name] = [current, value];
+                        }
+                    }
+                } else {
+                    values[name] = value;
+                }
+            }
+        }
+
         function processInputValue(processed, values, errors, elt, validate) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
@@ -2332,26 +2369,7 @@ return (function () {
                 }
                 // This is a little ugly because both the current value of the named value in the form
                 // and the new value could be arrays, so we have to handle all four cases :/
-                if (name != null && value != null) {
-                    var current = values[name];
-                    if (current !== undefined) {
-                        if (Array.isArray(current)) {
-                            if (Array.isArray(value)) {
-                                values[name] = current.concat(value);
-                            } else {
-                                current.push(value);
-                            }
-                        } else {
-                            if (Array.isArray(value)) {
-                                values[name] = [current].concat(value);
-                            } else {
-                                values[name] = [current, value];
-                            }
-                        }
-                    } else {
-                        values[name] = value;
-                    }
-                }
+                addValueToValues(name, value, values);
                 if (validate) {
                     validateElement(elt, errors);
                 }
@@ -2394,19 +2412,23 @@ return (function () {
 
             // for a non-GET include the closest form
             if (verb !== 'get') {
-                processInputValue(processed, formValues, errors, closest(elt, 'form'), validate);
+                var closestForm = closest(elt, 'form');
+                if (closestForm) {
+                    processInputValue(processed, formValues, errors, closestForm, validate);
+                    var formInternalData = getInternalData(closestForm);
+                    // if a button or submit was clicked last, include its value
+                    if (formInternalData.lastButtonClicked) {
+                        var name = getRawAttribute(formInternalData.lastButtonClicked,"name");
+                        if (name) {
+                            var value = formInternalData.lastButtonClicked.value;
+                            addValueToValues(name, value, formValues);
+                        }
+                    }
+                }
             }
 
             // include the element itself
             processInputValue(processed, values, errors, elt, validate);
-
-            // if a button or submit was clicked last, include its value
-            if (internalData.lastButtonClicked) {
-                var name = getRawAttribute(internalData.lastButtonClicked,"name");
-                if (name) {
-                    values[name] = internalData.lastButtonClicked.value;
-                }
-            }
 
             // include any explicit includes
             var includes = findAttributeTargets(elt, "hx-include");

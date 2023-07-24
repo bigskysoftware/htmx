@@ -989,4 +989,199 @@ describe("Core htmx AJAX Tests", function(){
         btn.innerHTML.should.equal('<with:colon id="foobar">Foobar</with:colon>');
     });
 
+    it('properly handles clicked submit button with a value inside a htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<button id="submit" type="submit" name="b1" value="buttonValue">button</button>' +
+            '</form>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit input with a value inside a htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input id="submit" type="submit" name="b1" value="buttonValue">' +
+            '</form>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit button with a value inside a non-htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form>' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<button id="submit" type="submit" name="b1" value="buttonValue" hx-post="/test">button</button>' +
+            '</form>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit input with a value inside a non-htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form>' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input id="submit" type="submit" name="b1" value="buttonValue" hx-post="/test">' +
+            '</form>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit button with a value outside a htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<div><form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '</form>' +
+            '<button id="submit" form="externalForm" type="submit" name="b1" value="buttonValue">button</button></div>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit input with a value outside a htmx form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<div><form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '</form>' +
+            '<input id="submit" form="externalForm" type="submit" name="b1" value="buttonValue"></div>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+    })
+
+    it('properly handles clicked submit button with a value stacking with regular input', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form hx-post="/test">' +
+            '<input type="hidden" name="action" value="A">' +
+            '<button id="btnA" type="submit">A</button>' +
+            '<button id="btnB" type="submit" name="action" value="B">B</button>' +
+            '<button id="btnC" type="submit" name="action" value="C">C</button>' +
+            '</form>');
+
+        byId("btnA").click();
+        this.server.respond();
+        values.should.deep.equal({action: 'A'});
+
+        byId("btnB").click();
+        this.server.respond();
+        values.should.deep.equal({action: ['A', 'B']});
+
+        byId("btnC").click();
+        this.server.respond();
+        values.should.deep.equal({action: ['A', 'C']});
+    })
+
+    it('properly handles clicked submit input with a value stacking with regular input', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<div><form hx-post="/test">' +
+            '<input type="hidden" name="action" value="A">' +
+            '<input id="btnA" type="submit">A</input>' +
+            '<input id="btnB" type="submit" name="action" value="B">B</input>' +
+            '<input id="btnC" type="submit" name="action" value="C">C</input>' +
+            '</form></div>');
+
+        byId("btnA").click();
+        this.server.respond();
+        values.should.deep.equal({action: 'A'});
+
+        byId("btnB").click();
+        this.server.respond();
+        values.should.deep.equal({action: ['A', 'B']});
+
+        byId("btnC").click();
+        this.server.respond();
+        values.should.deep.equal({action: ['A', 'C']});
+    })
+
+    it('properly handles clicked submit button with a value inside a form, referencing another form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<div><form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input type="hidden" name="b1" value="inputValue">' +
+            '</form>' +
+            '<form hx-post="/test2">' +
+            '<button id="submit" form="externalForm" type="submit" name="b1" value="buttonValue">button</button>' +
+            '</form></div>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue']});
+    })
+
+    it('properly handles clicked submit input with a value inside a form, referencing another form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<div><form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input type="hidden" name="b1" value="inputValue">' +
+            '</form>' +
+            '<form hx-post="/test2">' +
+            '<input id="submit" form="externalForm" type="submit" name="b1" value="buttonValue">' +
+            '</form></div>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue']});
+    })
 })
