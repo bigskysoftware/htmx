@@ -60,9 +60,15 @@ document.body.addEventListener("showMessage", function(evt){
 
 Each property of the JSON object on the right hand side will be copied onto the details object for the event.
 
-Finally, if you wish to invoke multiple events, you can simply add additional properties to the top level JSON
+### Multiple Triggers
+
+If you wish to invoke multiple events, you can simply add additional properties to the top level JSON
 object:
 
 `HX-Trigger: {"event1":"A message", "event2":"Another message"}`
+
+You may also trigger multiple events with no additional details by sending event names separated by commas, like so:
+
+`HX-Trigger: event1, event2`
 
 Using events gives you a lot of flexibility to add functionality to normal htmx responses.

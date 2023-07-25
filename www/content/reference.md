@@ -137,7 +137,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:afterSettle`](@/events.md#htmx:afterSettle)  | triggered after the DOM has settled
 | [`htmx:afterSwap`](@/events.md#htmx:afterSwap)  | triggered after new content has been swapped in
 | [`htmx:beforeOnLoad`](@/events.md#htmx:beforeOnLoad)  | triggered before any response processing occurs
-| [`htmx:beforeProcessNode`](@/events.md#htmx:afterProcessNode) | triggered before htmx initializes a node
+| [`htmx:beforeProcessNode`](@/events.md#htmx:beforeProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)  | triggered before an AJAX request is made
 | [`htmx:beforeSwap`](@/events.md#htmx:beforeSwap)  | triggered before a swap is done, allows you to configure the swap
 | [`htmx:beforeSend`](@/events.md#htmx:beforeSend)  | triggered just before an ajax request is sent

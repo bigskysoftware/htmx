@@ -4,7 +4,7 @@ describe("bad extension", function() {
             transformResponse : function(text, xhr, elt) {throw "transformRequest"},
             isInlineSwap : function(swapStyle) {throw "isInlineSwap"},
             handleSwap : function(swapStyle, target, fragment, settleInfo) {throw "handleSwap"},
-            encodeParameters : function(xhr, parameters, elt) {throw "encodeParmeters"}
+            encodeParameters : function(xhr, parameters, elt) {throw "encodeParameters"}
         }
     )
     beforeEach(function () {

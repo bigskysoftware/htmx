@@ -9,7 +9,7 @@
   behavior for now, but allowing people to fix it for their use cases by updating the `htmx.config.methodsThatUseUrlParams` config
   option.  Thank you to Alex and Vincent for their feedback and work on this issue!
 * The `this` symbol is now available in event filter expressions, and refers to the element the `hx-trigger` is on
-* Fix bug where the `htmx:afterSettle` event was raised multiple times with oob swaps occured
+* Fix bug where the `htmx:afterSettle` event was raised multiple times with oob swaps occurred
 * A large number of accessibility fixes were made in the docs (Thank you Denis & crew!)
 * Fixed bug w/ WebSocket extension initialization caused by "naked" `hx-trigger` feature
 * The `HX-Reselect` HTTP response header has been added to change the selection from the returned content
@@ -130,7 +130,7 @@
   to both of them without compromising the core file size of htmx.  You are encouraged to move over to the new 
   extensions, but `hx-sse` and `hx-ws` will continue to work indefinitely in htmx 1.x.
 * You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](https://htmx.org/attributes/hx-disinherit) attribute.
-* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occuring.
+* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occurring.
 * Many new extensions, with a big thanks to all the contributors!
     * A new [`alpine-morph`](/extensions/alpine-morph) allows you to use Alpine's swapping engine, which preserves Alpine
     * A [restored](/extensions/restored) extension was added that will trigger a `restore` event on all elements in the DOM
