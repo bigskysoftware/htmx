@@ -327,4 +327,162 @@ describe("web-sockets extension", function () {
 
         htmx.off("htmx:wsAfterMessage", handle)
     })
+
+    it('sends data to the server with non-htmx form + submit button & value', function () {
+        make('<form hx-ext="ws" ws-connect="ws://localhost:8080" ws-send>' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '<button id="b1" type="submit" name="action" value="A">A</button>' +
+            '<button id="b2" type="submit" name="action" value="B">B</button>' +
+            '</form>');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
+
+    it('sends data to the server with non-htmx form + submit input & value', function () {
+        make('<form hx-ext="ws" ws-connect="ws://localhost:8080" ws-send>' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '<input id="b1" type="submit" name="action" value="A">' +
+            '<input id="b2" type="submit" name="action" value="B">' +
+            '</form>');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
+
+    it('sends data to the server with child non-htmx form + submit button & value', function () {
+        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
+            '<form ws-send>' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '<button id="b1" type="submit" name="action" value="A">A</button>' +
+            '<button id="b2" type="submit" name="action" value="B">B</button>' +
+            '</form>' +
+            '</div>');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
+
+    it('sends data to the server with child non-htmx form + submit input & value', function () {
+        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
+            '<form ws-send>' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '<input id="b1" type="submit" name="action" value="A">' +
+            '<input id="b2" type="submit" name="action" value="B">' +
+            '</form>' +
+            '</div>');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
+
+    it('sends data to the server with external non-htmx form + submit button & value', function () {
+        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
+            '<form ws-send id="form">' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '</form>' +
+            '</div>' +
+            '<button id="b1" form="form" type="submit" name="action" value="A">A</button>' +
+            '<button id="b2" form="form" type="submit" name="action" value="B">B</button>');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
+
+    it('sends data to the server with external non-htmx form + submit input & value', function () {
+        make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
+            '<form ws-send id="form">' +
+            '<input type="hidden" name="foo" value="bar">' +
+            '</form>' +
+            '</div>' +
+            '<input id="b1" form="form" type="submit" name="action" value="A">' +
+            '<input id="b2" form="form" type="submit" name="action" value="B">');
+        this.tickMock();
+
+        byId("b1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        this.messages[0].should.contains('"foo":"bar"')
+        this.messages[0].should.contains('"action":"A"')
+
+        byId("b2").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+        this.messages[1].should.contains('"foo":"bar"')
+        this.messages[1].should.contains('"action":"B"')
+    })
 });

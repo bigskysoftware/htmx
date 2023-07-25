@@ -1304,7 +1304,7 @@ return (function () {
                 return triggerSpecs;
             } else if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            } else if (matches(elt, 'input[type="button"]')){
+            } else if (matches(elt, 'input[type="button"], input[type="submit"]')){
                 return [{trigger: 'click'}];
             } else if (matches(elt, INPUT_SELECTOR)) {
                 return [{trigger: 'change'}];
@@ -1871,8 +1871,8 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = hasChanceOfBeingBoosted() ? ", a, form" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedElts = hasChanceOfBeingBoosted() ? ", a" : "";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
@@ -1880,8 +1880,15 @@ return (function () {
             }
         }
 
-        function initButtonTracking(form){
-            var maybeSetLastButtonClicked = function(evt){
+        function initButtonTracking(elt) {
+            // Handle submit buttons/inputs that have the form attribute set
+            // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+            var form = resolveTarget("#" + getRawAttribute(elt, "form")) || closest(elt, "form")
+            if (!form) {
+                return
+            }
+
+            var maybeSetLastButtonClicked = function (evt) {
                 var elt = closest(evt.target, "button, input[type='submit']");
                 if (elt !== null) {
                     var internalData = getInternalData(form);
@@ -1893,9 +1900,9 @@ return (function () {
             //   focusin - in case someone tabs in to a button and hits the space bar
             //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
 
-            form.addEventListener('click', maybeSetLastButtonClicked)
-            form.addEventListener('focusin', maybeSetLastButtonClicked)
-            form.addEventListener('focusout', function(evt){
+            elt.addEventListener('click', maybeSetLastButtonClicked)
+            elt.addEventListener('focusin', maybeSetLastButtonClicked)
+            elt.addEventListener('focusout', function(evt){
                 var internalData = getInternalData(form);
                 internalData.lastButtonClicked = null;
             })
@@ -2004,8 +2011,10 @@ return (function () {
                     }
                 }
 
-                if (elt.tagName === "FORM") {
-                    initButtonTracking(elt);
+                // Handle submit buttons/inputs that have the form attribute set
+                // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+                if (elt.tagName === "FORM" || (getRawAttribute(elt, "type") === "submit" && hasAttribute(elt, "form"))) {
+                    initButtonTracking(elt)
                 }
 
                 var sseInfo = getAttributeValue(elt, 'hx-sse');
@@ -2336,6 +2345,29 @@ return (function () {
             return true;
         }
 
+        function addValueToValues(name, value, values) {
+            // This is a little ugly because both the current value of the named value in the form
+            // and the new value could be arrays, so we have to handle all four cases :/
+            if (name != null && value != null) {
+                var current = values[name];
+                if (current === undefined) {
+                    values[name] = value;
+                } else if (Array.isArray(current)) {
+                    if (Array.isArray(value)) {
+                        values[name] = current.concat(value);
+                    } else {
+                        current.push(value);
+                    }
+                } else {
+                    if (Array.isArray(value)) {
+                        values[name] = [current].concat(value);
+                    } else {
+                        values[name] = [current, value];
+                    }
+                }
+            }
+        }
+
         function processInputValue(processed, values, errors, elt, validate) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
@@ -2352,28 +2384,7 @@ return (function () {
                 if (elt.files) {
                     value = toArray(elt.files);
                 }
-                // This is a little ugly because both the current value of the named value in the form
-                // and the new value could be arrays, so we have to handle all four cases :/
-                if (name != null && value != null) {
-                    var current = values[name];
-                    if (current !== undefined) {
-                        if (Array.isArray(current)) {
-                            if (Array.isArray(value)) {
-                                values[name] = current.concat(value);
-                            } else {
-                                current.push(value);
-                            }
-                        } else {
-                            if (Array.isArray(value)) {
-                                values[name] = [current].concat(value);
-                            } else {
-                                values[name] = [current, value];
-                            }
-                        }
-                    } else {
-                        values[name] = value;
-                    }
-                }
+                addValueToValues(name, value, values);
                 if (validate) {
                     validateElement(elt, errors);
                 }
@@ -2423,11 +2434,11 @@ return (function () {
             processInputValue(processed, values, errors, elt, validate);
 
             // if a button or submit was clicked last, include its value
-            if (internalData.lastButtonClicked) {
-                var name = getRawAttribute(internalData.lastButtonClicked,"name");
-                if (name) {
-                    values[name] = internalData.lastButtonClicked.value;
-                }
+            if (internalData.lastButtonClicked || elt.tagName === "BUTTON" ||
+                (elt.tagName === "INPUT" && getRawAttribute(elt, "type") === "submit")) {
+                var button = internalData.lastButtonClicked || elt
+                var name = getRawAttribute(button, "name")
+                addValueToValues(name, button.value, formValues)
             }
 
             // include any explicit includes
