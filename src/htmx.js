@@ -2316,6 +2316,29 @@ return (function () {
             return true;
         }
 
+        function addValueToValues(name, value, values) {
+            // This is a little ugly because both the current value of the named value in the form
+            // and the new value could be arrays, so we have to handle all four cases :/
+            if (name != null && value != null) {
+                var current = values[name];
+                if (current === undefined) {
+                    values[name] = value;
+                } else if (Array.isArray(current)) {
+                    if (Array.isArray(value)) {
+                        values[name] = current.concat(value);
+                    } else {
+                        current.push(value);
+                    }
+                } else {
+                    if (Array.isArray(value)) {
+                        values[name] = [current].concat(value);
+                    } else {
+                        values[name] = [current, value];
+                    }
+                }
+            }
+        }
+
         function processInputValue(processed, values, errors, elt, validate) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
@@ -2332,28 +2355,7 @@ return (function () {
                 if (elt.files) {
                     value = toArray(elt.files);
                 }
-                // This is a little ugly because both the current value of the named value in the form
-                // and the new value could be arrays, so we have to handle all four cases :/
-                if (name != null && value != null) {
-                    var current = values[name];
-                    if (current !== undefined) {
-                        if (Array.isArray(current)) {
-                            if (Array.isArray(value)) {
-                                values[name] = current.concat(value);
-                            } else {
-                                current.push(value);
-                            }
-                        } else {
-                            if (Array.isArray(value)) {
-                                values[name] = [current].concat(value);
-                            } else {
-                                values[name] = [current, value];
-                            }
-                        }
-                    } else {
-                        values[name] = value;
-                    }
-                }
+                addValueToValues(name, value, values);
                 if (validate) {
                     validateElement(elt, errors);
                 }
@@ -2422,17 +2424,8 @@ return (function () {
             if (internalData.lastButtonClicked || elt.tagName === "BUTTON" ||
                 (elt.tagName === "INPUT" && getRawAttribute(elt, "type") === "submit")) {
                 var button = internalData.lastButtonClicked || elt
-                var name = getRawAttribute(button, "name");
-                if (name) {
-                    var currentValue = values[name]
-                    if (typeof currentValue === "undefined") {
-                        values[name] = button.value
-                    } else if (Array.isArray(currentValue)) {
-                        values[name].push(button.value)
-                    } else {
-                        values[name] = [currentValue, button.value];
-                    }
-                }
+                var name = getRawAttribute(button, "name")
+                addValueToValues(name, button.value, values)
             }
 
             return {errors:errors, values:values};
