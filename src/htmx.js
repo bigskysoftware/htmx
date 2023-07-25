@@ -2404,6 +2404,14 @@ return (function () {
             // include the element itself
             processInputValue(processed, values, errors, elt, validate);
 
+            // if a button or submit was clicked last, include its value
+            if (internalData.lastButtonClicked || elt.tagName === "BUTTON" ||
+                (elt.tagName === "INPUT" && getRawAttribute(elt, "type") === "submit")) {
+                var button = internalData.lastButtonClicked || elt
+                var name = getRawAttribute(button, "name")
+                addValueToValues(name, button.value, formValues)
+            }
+
             // include any explicit includes
             var includes = findAttributeTargets(elt, "hx-include");
             forEach(includes, function(node) {
@@ -2418,15 +2426,6 @@ return (function () {
 
             // form values take precedence, overriding the regular values
             values = mergeObjects(values, formValues);
-
-            // if a button or submit was clicked last, include its value
-            // clicked button value shouldn't override nor be overridden, and stack with any existing value
-            if (internalData.lastButtonClicked || elt.tagName === "BUTTON" ||
-                (elt.tagName === "INPUT" && getRawAttribute(elt, "type") === "submit")) {
-                var button = internalData.lastButtonClicked || elt
-                var name = getRawAttribute(button, "name")
-                addValueToValues(name, button.value, values)
-            }
 
             return {errors:errors, values:values};
         }
