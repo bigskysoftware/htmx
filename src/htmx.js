@@ -1833,6 +1833,10 @@ return (function () {
             });
         }
 
+        function hasChanceOfBeingBoosted() {
+            return document.querySelector("[hx-boost], [data-hx-boost]");
+        }
+
         function findHxOnWildcardElements(elt) {
             if (!document.evaluate) return []
 
@@ -1845,7 +1849,8 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var results = elt.querySelectorAll(VERB_SELECTOR + ", a, form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedElts = hasChanceOfBeingBoosted() ? ", a" : "";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
@@ -1948,26 +1953,9 @@ return (function () {
             }
         }
 
-        function hasAttributeNameStartsWith(elt, prefix) {
-            for (var i = 0; i < elt.attributes.length; i++) {
-                if (elt.attributes[i].name.indexOf(prefix) === 0) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         function initNode(elt) {
             if (elt.closest && elt.closest(htmx.config.disableSelector)) {
                 return;
-            }
-            // skip links or forms without hx-* attributes or not nested into hx-boost or hx-ext
-            if ((elt.tagName === 'FORM' || elt.tagName === 'A') &&
-                !hasAttributeNameStartsWith(elt, 'hx-') && !hasAttributeNameStartsWith(elt, 'data-hx-')) {
-                if ((elt.tagName === 'FORM' && !elt.closest('[hx-boost],[data-hx-boost],[hx-ext],[data-hx-ext]')) ||
-                    (elt.tagName === 'A' && !elt.closest('[hx-boost],[data-hx-boost]'))) {
-                    return;
-                }
             }
             var nodeData = getInternalData(elt);
             if (nodeData.initHash !== attributeHash(elt)) {
