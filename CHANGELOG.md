@@ -2,7 +2,14 @@
 
 ## [1.9.4] - 2023-07-25
 
-
+* This is a bug-fix release for the most part, w/a heavy dose of @telroshan
+* The `HX-Trigger` response header now supports comma separated event names
+* Submit buttons that use the `form` attribute now work correctly
+* The `changed` modifier now uses the triggering element, rather than the element the `hx-trigger` is defined on
+* `hx-disable` is now handled dynamically so it can be added and removed
+* IE11 compatibility restored! (maybe, hard to test)
+* Fixed bug with `hx-on` event handler cleanup
+* Many smaller bug fixes, typo fixes and general improvements
 
 ## [1.9.3] - 2023-07-14
 
