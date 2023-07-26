@@ -1,0 +1,53 @@
+<html>
+<body>
+    <div id="message"></div>
+<form hx-post="/reset" hx-target="#message">
+    <p>No hx reset</p>
+    input 1: <input type="text" name="i1" /><br/>
+    input 2: <input type="text" name="i2" /><br/>
+    <input type = "submit" value = "Submit" />
+</form>
+<form hx-post="/reset" hx-reset hx-target="#message">
+    <p>Hx reset on triggering form</p>
+    input 1: <input type="text" name="i1" /><br/>
+    input 2: <input type="text" name="i2" /><br/>
+    <input type = "submit" value = "Submit" />
+</form>
+<form>
+    <p>Hx reset on triggering element with form parent</p>
+    input 1: <input type="text" name="i1" /><br/>
+    input 2: <input type="text" name="i2" /><br/>
+    <button hx-post="/reset" hx-reset hx-target="#message">Submit</button>
+</form>
+<form data-hx-reset="">
+    <p>Data-Hx reset on triggering element's parent form</p>
+    input 1: <input type="text" name="i1" /><br/>
+    input 2: <input type="text" name="i2" /><br/>
+    <button hx-post="/reset" hx-target="#message">Submit</button>
+</form>
+<div>
+    <p>Hx reset targeting another form</p>
+    <form id="targetForm">
+        input 1: <input type="text" name="i1" /><br/>
+        input 2: <input type="text" name="i2" /><br/>
+    </form>
+    <button hx-post="/reset" hx-reset="#targetForm" hx-target="#message">Submit</button>
+</div>
+<div>
+    <p>Hx reset targeting a form which does not exit</p>
+    <form id="targetForm2">
+        input 1: <input type="text" name="i1" /><br/>
+        input 2: <input type="text" name="i2" /><br/>
+    </form>
+    <button hx-post="/reset" hx-reset="#notTheRightNameForm" hx-target="#message">Submit</button>
+</div>
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/htmx.js"></script>
+<script src="../util/util.js"></script>
+<script>
+    var server = sinon.fakeServer.create({autoResponse: true});
+    server.autoRespond = true;
+    server.respondWith("POST", "/reset", [200, { "Content-Type": "text/html" }, "Hi"]);
+</script>
+</body>
+</html>
