@@ -1,6 +1,7 @@
 describe("hx-reset attribute", function() {
     beforeEach(function () {
         this.server = makeServer();
+        this.server.respondImmediately = true;
         clearWorkArea();
     });
     afterEach(function () {
@@ -19,7 +20,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click()
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not"); // make sure the server was called
         reset.calledOnce.should.equal(true); // check at the form call level
     });
@@ -35,7 +35,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click()
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not"); // make sure the server was called
         reset.calledOnce.should.equal(true); // check at the form call level
         input.value.should.equal("default value"); // check at the input level - though that tests the browser more than htmx
@@ -51,7 +50,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("default value");
         reset.calledOnce.should.equal(true);
@@ -70,7 +68,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         reset.calledOnce.should.equal(true);
         input.value.should.equal("default value");
@@ -86,7 +83,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("user typed value");
         reset.called.should.equal(false);
@@ -102,7 +98,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("user typed value");
         reset.called.should.equal(false);
@@ -122,7 +117,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         reset.called.should.equal(true, "Expected form to be reset but form.reset was not called");
     });
@@ -141,7 +135,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         reset.called.should.equal(true, "Expected form to be reset but form.reset was not called");
     });
@@ -160,7 +153,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("user typed value");
     });
@@ -180,7 +172,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("user typed value");
         target.textContent.should.equal("Hello");
@@ -196,7 +187,6 @@ describe("hx-reset attribute", function() {
         var input = byId("i1")
         input.value = "user typed value"
         input.click()
-        this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not"); // make sure the server was called
         reset.calledOnce.should.equal(true); // check at the form call level
     });
