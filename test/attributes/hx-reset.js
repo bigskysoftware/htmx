@@ -156,13 +156,33 @@ describe("hx-reset attribute", function() {
                 <input hx-reset="#theNotForm" hx-post="/test" hx-target="#theNotForm" hx-trigger="click" id="i1" name="i1" value="default value"/>
             </form>
         </div>`)
-        var form = byId("theNotForm")
         var input = byId("i1")
         input.value = "user typed value"
         input.click();
         this.server.respond();
         response.calledOnce.should.equal(true, "Expected server to be called but it was not");
         input.value.should.equal("user typed value");
+    });
+    it('should ignore if specified target does not exist', function () {
+        var response = sinon.spy(function(xhr) {
+            getParameters(xhr)["i1"].should.equal("user typed value");
+            xhr.respond(200, {}, "Hello");
+        })
+        this.server.respondWith("POST", "/test", response);
+        var div = make(`<div>
+            <div id="theTarget"></div>
+            <form>
+                <input hx-reset="#theMissingElement" hx-post="/test" hx-target="#theTarget" hx-trigger="click" id="i1" name="i1" value="default value"/>
+            </form>
+        </div>`)
+        var target= byId("theTarget")
+        var input = byId("i1")
+        input.value = "user typed value"
+        input.click();
+        this.server.respond();
+        response.calledOnce.should.equal(true, "Expected server to be called but it was not");
+        input.value.should.equal("user typed value");
+        target.textContent.should.equal("Hello");
     });
 
 });
