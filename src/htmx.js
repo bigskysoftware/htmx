@@ -3450,7 +3450,7 @@ return (function () {
                             } else {
                                 formElt = document.querySelector(resetTarget)
                             }
-                        } else if(elt.form && elt.form.hasAttribute("hx-reset")) {
+                        } else if(elt.form && hasAttribute(elt.form, "hx-reset")) {
                             formElt = elt.form
                         }
                         
