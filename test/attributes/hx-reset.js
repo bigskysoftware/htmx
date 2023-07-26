@@ -23,6 +23,7 @@ describe("hx-reset attribute", function() {
         response.calledOnce.should.equal(true, "Expected server to be called but it was not"); // make sure the server was called
         reset.calledOnce.should.equal(true); // check at the form call level
     });
+    
     it('should reset the form if hx-reset is present on triggering element and response successful, even with separate target', function () {
         var response = sinon.spy(function(xhr) {
             getParameters(xhr)["i1"].should.equal("user typed value");
@@ -184,5 +185,19 @@ describe("hx-reset attribute", function() {
         input.value.should.equal("user typed value");
         target.textContent.should.equal("Hello");
     });
-
+    it('should reset the form if data-hx-reset is present on form and response is successful', function () {
+        var response = sinon.spy(function(xhr) {
+            getParameters(xhr)["i1"].should.equal("user typed value");
+            xhr.respond(200, {}, "Hello");
+        })
+        this.server.respondWith("POST", "/test", response);
+        var form = make('<form hx-reset hx-post="/test" hx-trigger="click from:#i1"><input id="i1" name="i1" value="default value"/></form>')
+        var reset = sinon.spy(form, "reset");
+        var input = byId("i1")
+        input.value = "user typed value"
+        input.click()
+        this.server.respond();
+        response.calledOnce.should.equal(true, "Expected server to be called but it was not"); // make sure the server was called
+        reset.calledOnce.should.equal(true); // check at the form call level
+    });
 });
