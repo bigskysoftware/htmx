@@ -3440,6 +3440,22 @@ return (function () {
                             maybeCall(settleResolve);
                         }
 
+                        // hx-reset attribute
+                        var formElt
+                        if(hasAttribute(elt, "hx-reset")) {
+                            var resetTarget = getAttributeValue(elt, "hx-reset");
+                            if(!resetTarget) {
+                                if(elt.tagName === "FORM") formElt = elt
+                                else if(elt.form) formElt = elt.form
+                            } else {
+                                formElt = document.querySelector(resetTarget)
+                            }
+                        } else if(elt.form && elt.form.hasAttribute("hx-reset")) {
+                            formElt = elt.form
+                        }
+                        
+                        if(formElt && formElt.reset) formElt.reset()
+
                         if (swapSpec.settleDelay > 0) {
                             setTimeout(doSettle, swapSpec.settleDelay)
                         } else {
