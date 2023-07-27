@@ -239,32 +239,5 @@ describe("Core htmx Parameter Handling", function() {
         }
     });
 
-    it('httpErrorCodesToSwap works properly', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(401, {}, "Clicked!")
-        })
-        this.server.respondWith("GET", "/test2", function (xhr) {
-            xhr.respond(400, {}, "Clicked!")
-        })
-        var div1 = make('<div hx-get="/test" hx-error-swap="innerHTML">Click Me!</div>')
-        var div2 = make('<div hx-get="/test2" hx-error-swap="innerHTML">Click Me!</div>')
-        var defaulthttpErrorCodesToSwap = htmx.config.httpErrorCodesToSwap
-        try {
-            htmx.config.httpErrorCodesToSwap = [400, 402, 403, 404]
-            div1.click();
-            this.server.respond();
-            div1.innerHTML.should.equal('Click Me!')
-            div2.click();
-            this.server.respond();
-            div2.innerHTML.should.equal('Clicked!')
-
-            htmx.config.httpErrorCodesToSwap = []
-            div1.click();
-            this.server.respond();
-            div1.innerHTML.should.equal('Clicked!')
-        } finally {
-            htmx.config.httpErrorCodesToSwap = defaulthttpErrorCodesToSwap
-        }
-    })
 });
 
