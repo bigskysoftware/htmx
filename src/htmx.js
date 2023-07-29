@@ -3302,7 +3302,7 @@ return (function () {
                     if (retargetRootSelector === "this") {
                         retargetRoot = elt;
                     } else {
-                        retargetRoot = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget-Root"))
+                        retargetRoot = getDocument().querySelector(retargetRootSelector)
                     }
                     responseInfo.target = querySelectorExt(retargetRoot, retargetSelector)
                 } else {
