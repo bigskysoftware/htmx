@@ -3294,8 +3294,20 @@ return (function () {
                 }
             }
 
-            if (hasHeader(xhr,/HX-Retarget:/i)) {
-                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+            if (hasHeader(xhr, /HX-Retarget:/i)) {
+                var retargetSelector = xhr.getResponseHeader("HX-Retarget")
+                if (hasHeader(xhr, /HX-Retarget-Root:/i)) {
+                    var retargetRootSelector = xhr.getResponseHeader("HX-Retarget-Root")
+                    var retargetRoot
+                    if (retargetRootSelector === "this") {
+                        retargetRoot = elt;
+                    } else {
+                        retargetRoot = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget-Root"))
+                    }
+                    responseInfo.target = querySelectorExt(retargetRoot, retargetSelector)
+                } else {
+                    responseInfo.target = getDocument().querySelector(retargetSelector);
+                }
             }
 
             var historyUpdate = determineHistoryUpdates(elt, responseInfo);
