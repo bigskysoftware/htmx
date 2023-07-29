@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>HX Retarget sample - to be removed and replaced with actual tests</title>
+	<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+	<script src="../util/util.js"></script>
+	<script src="../../src/htmx.js"></script>
+
+	<script>
+		let requestCount = 0;
+		var server = sinon.fakeServer.create({respondImmediately: true});
+		server.respondWith("GET", "/sample", [200, {
+			"HX-Retarget": "#retargeted"
+		}, "Hi"]);
+		server.respondWith("GET", "/retarget-root", [200, {
+			"HX-Retarget": "find .child",
+			"HX-Retarget-Root": "#div1"
+		}, "Retargeted root"]);
+		server.respondWith("GET", "/retarget-root-this", [200, {
+			"HX-Retarget": "find .withThis",
+			"HX-Retarget-Root": "this"
+		}, "Retargeted root with this"]);
+	</script>
+
+	
+
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<h1>Sample</h1>
+<div style="margin: 20px 0; border-bottom: solid 1px gray" hx-get="/sample" hx-trigger="load">
+	<div id="retargeted"></div>
+</div>
+<div style="margin: 20px 0; border-bottom: solid 1px gray" hx-get="/retarget-root" hx-trigger="load" id="div1">
+	<div class="child">Hello</div>
+	<div>Untouched</div>
+</div>
+<div hx-get="/retarget-root-this" hx-trigger="load">
+	<div class="child">Untouched</div>
+	<div class="withThis"></div>
+</div>
+</body>
+</html>
