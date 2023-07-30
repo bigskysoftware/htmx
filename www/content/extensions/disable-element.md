@@ -22,3 +22,10 @@ This extension disables an element during an htmx request, when configured on th
 <button hx-get="/whatever" hx-ext="disable-element" hx-disable-element="#to-disable">Click me</button>
 <button id="to-disable">Watch me being disabled</button>
 ```
+
+### Disabling multiple elements
+```html
+<button hx-get="/whatever" hx-ext="disable-element" hx-disable-element=".to-disable">Click me</button>
+<button class="to-disable">Watch me being disabled</button>
+<button class="to-disable">Watch me being disabled also</button>
+```
