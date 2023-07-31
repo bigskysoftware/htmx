@@ -6,7 +6,6 @@ describe("security options", function() {
     });
     afterEach(function()  {
         this.server.restore();
-        clearWorkArea();
     });
 
     it("can disable a single elt", function(){
@@ -104,5 +103,51 @@ describe("security options", function() {
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("Clicked a second time");
+    })
+
+    it("can make egress cross site requests when htmx.config.selfRequestsOnly is enabled", function(done){
+        htmx.logAll()
+        // should trigger send error, rather than reject
+        var listener = htmx.on("htmx:sendError", function (){
+            htmx.off("htmx:sendError", listener);
+            done();
+        });
+        this.server.restore(); // use real xhrs
+        // will 404, but should respond
+        var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
+        btn.click();
+    })
+
+    it("can't make egress cross site requests when htmx.config.selfRequestsOnly is enabled", function(done){
+        htmx.logAll()
+        // should trigger send error, rather than reject
+        htmx.config.selfRequestsOnly = true;
+        var listener = htmx.on("htmx:invalidPath", function (){
+            htmx.config.selfRequestsOnly = false;
+            htmx.off("htmx:invalidPath", listener);
+            done();
+        })
+        this.server.restore(); // use real xhrs
+        // will 404, but should respond
+        var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
+        btn.click();
+    })
+
+    it("can cancel egress request based on htmx:validateUrl event", function(done){
+        htmx.logAll()
+        // should trigger send error, rather than reject
+        var pathVerifier = htmx.on("htmx:validateUrl", function (evt){
+            evt.preventDefault();
+            htmx.off("htmx:validateUrl", pathVerifier);
+        })
+        var listener = htmx.on("htmx:invalidPath", function (){
+            htmx.config.selfRequestsOnly = false;
+            htmx.off("htmx:invalidPath", listener);
+            done();
+        })
+        this.server.restore(); // use real xhrs
+        // will 404, but should respond
+        var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
+        btn.click();
     })
 });

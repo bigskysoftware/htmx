@@ -73,6 +73,7 @@ return (function () {
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
+                selfRequestsOnly: false
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -2844,6 +2845,18 @@ return (function () {
             return arr;
         }
 
+        function verifyPath(elt, path, requestConfig) {
+            var url = new URL(path, document.location.href);
+            var hostname = document.location.hostname;
+            var sameHost = hostname !== url.hostname;
+            if (htmx.config.selfRequestsOnly) {
+                if (sameHost) {
+                    return false;
+                }
+            }
+            return triggerEvent(elt, "htmx:validateUrl", mergeObjects({url: url, sameHost: sameHost}, requestConfig));
+        }
+
         function issueAjaxRequest(verb, path, elt, event, etc, confirmed) {
             var resolve = null;
             var reject = null;
@@ -3071,6 +3084,11 @@ return (function () {
                     }
                 }
             }
+
+            if (!verifyPath(elt, finalPath, requestConfig)) {
+                triggerErrorEvent(elt, 'htmx:invalidPath', requestConfig)
+                return;
+            };
 
             xhr.open(verb.toUpperCase(), finalPath, true);
             xhr.overrideMimeType("text/html");
