@@ -3,6 +3,7 @@ title = "Architectural Sympathy"
 date = 2023-04-06
 updated = 2023-04-06
 [taxonomies]
+author = ["Carson Gross"]
 +++
 
 

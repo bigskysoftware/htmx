@@ -2,6 +2,7 @@
 title = "Hypermedia On Whatever you'd Like"
 date = 2023-05-23
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

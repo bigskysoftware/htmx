@@ -7,7 +7,8 @@ build_search_index = false
 generate_feed = true
 
 taxonomies = [
-  { name = "tag", render = false, feed = true }
+  { name = "tag", render = false, feed = true },
+  { name = "author", render = false, feed = false }
 ]
 
 [markdown]
