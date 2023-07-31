@@ -1520,6 +1520,8 @@ want stored in the users `localStorage` cache.  You can omit a given page from t
 htmx also provides configuration options related to security:
 
 * `htmx.config.selfRequestsOnly` - if set to `true`, only requests to the same domain as the current document will be allowed
+* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable 
+   this behavior you can set this configuration variable to `false`
 * `htmx.config.historyCacheSize` - can be set to `0` to avoid storing any HTML in the `localStorage` cache
 * `htmx.config.allowEval` - can be set to `false` to disable all features of htmx that rely on eval:
   * event filters
@@ -1579,7 +1581,8 @@ listed below:
 | `htmx.config.addedClass`              | defaults to `htmx-added`                                                                                                                                                   |
 | `htmx.config.settlingClass`           | defaults to `htmx-settling`                                                                                                                                                |
 | `htmx.config.swappingClass`           | defaults to `htmx-swapping`                                                                                                                                                |
-| `htmx.config.allowEval`               | defaults to `true`                                                                                                                                                         |
+| `htmx.config.allowEval`               | defaults to `true`, can be used to disable htmx's use of eval for certain features (e.g. trigger filters)                                                                  |
+| `htmx.config.allowScriptTags`         | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
 | `htmx.config.inlineScriptNonce`       | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
 | `htmx.config.useTemplateFragments`    | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                         |
 | `htmx.config.wsReconnectDelay`        | defaults to `full-jitter`                                                                                                                                                  |

@@ -60,6 +60,7 @@ return (function () {
                 settlingClass:'htmx-settling',
                 swappingClass:'htmx-swapping',
                 allowEval:true,
+                allowScriptTags:true,
                 inlineScriptNonce:'',
                 attributesToSettle:["class", "style", "width", "height"],
                 withCredentials:false,
@@ -1822,7 +1823,7 @@ return (function () {
         }
 
         function evalScript(script) {
-            if (script.type === "text/javascript" || script.type === "module" || script.type === "") {
+            if (htmx.config.allowScriptTags && (script.type === "text/javascript" || script.type === "module" || script.type === "") ) {
                 var newScript = getDocument().createElement("script");
                 forEach(script.attributes, function (attr) {
                     newScript.setAttribute(attr.name, attr.value);

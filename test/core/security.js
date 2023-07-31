@@ -6,6 +6,7 @@ describe("security options", function() {
     });
     afterEach(function()  {
         this.server.restore();
+        clearWorkArea();
     });
 
     it("can disable a single elt", function(){
@@ -149,5 +150,23 @@ describe("security options", function() {
         // will 404, but should respond
         var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
         btn.click();
+    })
+
+    it("can disable script tag support with htmx.config.allowScriptTags", function(){
+        var globalWasCalled = false;
+        window.callGlobal = function() {
+            globalWasCalled = true;
+        }
+        try {
+            htmx.config.allowScriptTags = false;
+            this.server.respondWith("GET", "/test", "<div><script>callGlobal()</script></div>");
+            var div = make("<div hx-get='/test'></div>");
+            div.click();
+            this.server.respond();
+            globalWasCalled.should.equal(false);
+        } finally {
+            htmx.config.allowScriptTags = true;
+            delete window.callGlobal;
+        }
     })
 });
