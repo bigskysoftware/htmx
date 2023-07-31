@@ -60,11 +60,6 @@ describe("disable-element extension", function() {
     });
 
     it('disables multiple elements during htmx request', function () {
-		// GIVEN:
-		// - A button triggering an htmx request with disable-element extension
-		// - Another button that needs to be disabled during the htmx request
-		// - A control button that won't be disabled during the htmx request
-		// - All buttons are enabled
 		this.server.respondWith("GET", "/test", function (xhr) {
             xhr.respond(200, {})
         });
