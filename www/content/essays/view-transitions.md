@@ -3,6 +3,7 @@ template = "demo.html"
 title = "View Transitions"
 date = 2023-04-11
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

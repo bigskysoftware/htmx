@@ -3,6 +3,7 @@ title = "Two Approaches To Decoupling"
 date = 2022-05-01
 updated = 2022-05-01
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

@@ -3,6 +3,7 @@ title = "Locality of Behaviour (LoB)"
 date = 2020-05-29
 updated = 2023-01-20
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

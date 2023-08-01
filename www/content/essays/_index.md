@@ -1,6 +1,7 @@
 +++
 title = "Essays"
 insert_anchor_links = "left"
+page_template = "essay.html"
 +++
 
 ### Hypermedia and REST

@@ -3,6 +3,7 @@ title = "Complexity Budget"
 date = 2020-10-29
 updated = 2022-02-06
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
