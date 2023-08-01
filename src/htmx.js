@@ -2848,10 +2848,10 @@ return (function () {
 
         function verifyPath(elt, path, requestConfig) {
             var url = new URL(path, document.location.href);
-            var hostname = document.location.hostname;
-            var sameHost = hostname !== url.hostname;
+            var origin = document.location.origin;
+            var sameHost = origin === url.origin;
             if (htmx.config.selfRequestsOnly) {
-                if (sameHost) {
+                if (!sameHost) {
                     return false;
                 }
             }
