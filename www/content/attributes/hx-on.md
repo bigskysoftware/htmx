@@ -7,11 +7,10 @@ The `hx-on` attribute allows you to embed scripts inline to respond to events di
 `hx-on` improves upon `onevent` by enabling the handling of any event for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/). This also enables you to handle any htmx event.
 
 There are two forms of this attribute, one in which you specify the event as part of the attribute name
-after a colon (`hx-on:click`, for example), and one that uses the `hx-on` attribute directly. The
-latter form should only be used if IE11 support is required.
+after a colon (`hx-on:click`, for example), and a deprecated form that uses the `hx-on` attribute directly. The
+latter should only be used if IE11 support is required.
 
-### Forms
-#### hx-on:* (recommended)
+### hx-on:* (recommended)
 The event name follows a colon `:` in the attribute, and the attribute value is the script to be executed:
 
 ```html
@@ -40,21 +39,15 @@ events, and omit the "htmx" part:
 Adding multiple handlers is easy, you just specify additional attributes:
 ```html
 <button hx-get="/info"
-        hx-on::before-request="alert('Making a request!'")
+        hx-on::before-request="alert('Making a request!')"
         hx-on::after-request="alert('Done making a request!')">
     Get Info!
 </button>
 ```
 
 
-#### hx-on (deprecated, except for IE11 support)
+### hx-on (deprecated)
 The value is an event name, followed by a colon `:`, followed by the script:
-
-```html
-<div hx-on="click: alert('Clicked!')">Click</div>
-```
-
-And htmx events:
 
 ```html
 <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')">
