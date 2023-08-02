@@ -60,7 +60,7 @@ describe("disable-element extension", function() {
     });
 
     it('disables multiple elements during htmx request', function () {
-		this.server.respondWith("GET", "/test", function (xhr) {
+        this.server.respondWith("GET", "/test", function (xhr) {
             xhr.respond(200, {})
         });
         var btn = make('<button class="should-be-disabled" hx-get="/test" hx-ext="disable-element" hx-disable-element=".should-be-disabled">Click Me!</button>')
@@ -70,7 +70,7 @@ describe("disable-element extension", function() {
         btn2.disabled.should.equal(false);
         btn3.disabled.should.equal(false);
 
-		// WHEN clicking
+        // WHEN clicking
         btn.click();
 
         // THEN the first two are disabled, but the last one isn't
