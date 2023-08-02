@@ -3605,7 +3605,7 @@ return (function () {
         //====================================================================
 
         function ready(fn) {
-            if (getDocument().readyState !== 'loading') {
+            if (getDocument().readyState === 'complete') {
                 fn();
             } else {
                 getDocument().addEventListener('DOMContentLoaded', fn);
