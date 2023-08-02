@@ -17,7 +17,7 @@ Recently, [Max Chernyak](https://max.engineer/) wrote an essay entitled
 [Don’t Build A General Purpose API To Power Your Own Front End](https://max.engineer/server-informed-ui).  His
 TLDR is this:
 
-> YAGNI, unless you’re working in a big company with federated front-ends or GraphQL.
+> <abbr title="You Ain’t Gonna Need It">YAGNI</abbr>, unless you’re working in a big company with federated front-ends or GraphQL.
 
 He then discusses some of the different needs of a general purpose API and your application API.  He lists the 
 following as needs for a generic API:
