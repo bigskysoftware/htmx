@@ -142,7 +142,25 @@ describe("security options", function() {
             htmx.off("htmx:validateUrl", pathVerifier);
         })
         var listener = htmx.on("htmx:invalidPath", function (){
-            htmx.config.selfRequestsOnly = false;
+            htmx.off("htmx:invalidPath", listener);
+            done();
+        })
+        this.server.restore(); // use real xhrs
+        // will 404, but should respond
+        var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
+        btn.click();
+    })
+
+    it("can cancel egress request based on htmx:validateUrl event, sameHost is false", function(done){
+        htmx.logAll()
+        // should trigger send error, rather than reject
+        var pathVerifier = htmx.on("htmx:validateUrl", function (evt){
+            if (evt.detail.sameHost === false) {
+                evt.preventDefault();
+            }
+            htmx.off("htmx:validateUrl", pathVerifier);
+        })
+        var listener = htmx.on("htmx:invalidPath", function (){
             htmx.off("htmx:invalidPath", listener);
             done();
         })
