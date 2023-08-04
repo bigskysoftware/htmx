@@ -149,7 +149,6 @@ describe("security options", function() {
     })
 
     it("can cancel egress request based on htmx:validateUrl event, sameHost is false", function(done){
-        htmx.logAll()
         // should trigger send error, rather than reject
         var pathVerifier = htmx.on("htmx:validateUrl", function (evt){
             if (evt.detail.sameHost === false) {
