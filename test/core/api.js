@@ -8,64 +8,6 @@ describe("Core htmx API test", function(){
         clearWorkArea();
     });
 
-    it('onLoad is called... onLoad', function(done){
-        // also tests on/off
-        this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test'></div>")
-        var helper = htmx.onLoad(function (elt) {
-            elt.setAttribute("foo", "bar");
-        });
-        var server = this.server;
-        setTimeout(function() {
-            try {
-                var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML'></div>");
-                div.click();
-                server.respond();
-                byId("d1").getAttribute("foo").should.equal("bar");
-                done();
-            } finally {
-                htmx.off("htmx:load", helper);
-            }
-        }, 10)
-    });
-
-    it('triggers properly', function () {
-        var div = make("<div/>");
-        var myEventCalled = false;
-        var detailStr = "";
-        htmx.on("myEvent", function(evt){
-            myEventCalled = true;
-            detailStr = evt.detail.str;
-        })
-        htmx.trigger(div, "myEvent", {str:"foo"})
-
-        myEventCalled.should.equal(true);
-        detailStr.should.equal("foo");
-    });
-
-    it('triggers properly w/ selector', function () {
-        var div = make("<div id='div1'/>");
-        var myEventCalled = false;
-        var detailStr = "";
-        htmx.on("myEvent", function(evt){
-            myEventCalled = true;
-            detailStr = evt.detail.str;
-        })
-        htmx.trigger("#div1", "myEvent", {str:"foo"})
-
-        myEventCalled.should.equal(true);
-        detailStr.should.equal("foo");
-    });
-
-    it('triggers with no details properly', function () {
-        var div = make("<div/>");
-        var myEventCalled = false;
-        htmx.on("myEvent", function(evt){
-            myEventCalled = true;
-        })
-        htmx.trigger(div, "myEvent")
-        myEventCalled.should.equal(true);
-    });
-
     it('should find properly', function(){
         var div = make("<div id='d1' class='c1 c2'>");
         div.should.equal(htmx.find("#d1"));
@@ -339,5 +281,63 @@ describe("Core htmx API test", function(){
         this.server.respond();
         div.innerHTML.should.equal("delete");
     })
+
+    it('onLoad is called... onLoad', function(){
+        // also tests on/off
+        this.server.respondWith("GET", "/test", "<div id='d1' hx-get='/test'></div>")
+        var helper = htmx.onLoad(function (elt) {
+            elt.setAttribute("foo", "bar");
+        });
+
+        try {
+            var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML'></div>");
+            div.click();
+            this.server.respond();
+            byId("d1").getAttribute("foo").should.equal("bar");
+            htmx.off("htmx:load", helper);
+        } catch (error) {
+            // Clean up the event if the test fails, then throw it again
+            htmx.off("htmx:load", helper);
+            throw error;
+        }
+    });
+
+    it('triggers properly', function () {
+        var div = make("<div/>");
+        var myEventCalled = false;
+        var detailStr = "";
+        htmx.on("myEvent", function(evt){
+            myEventCalled = true;
+            detailStr = evt.detail.str;
+        })
+        htmx.trigger(div, "myEvent", {str:"foo"})
+
+        myEventCalled.should.equal(true);
+        detailStr.should.equal("foo");
+    });
+
+    it('triggers properly w/ selector', function () {
+        var div = make("<div id='div1'/>");
+        var myEventCalled = false;
+        var detailStr = "";
+        htmx.on("myEvent", function(evt){
+            myEventCalled = true;
+            detailStr = evt.detail.str;
+        })
+        htmx.trigger("#div1", "myEvent", {str:"foo"})
+
+        myEventCalled.should.equal(true);
+        detailStr.should.equal("foo");
+    });
+
+    it('triggers with no details properly', function () {
+        var div = make("<div/>");
+        var myEventCalled = false;
+        htmx.on("myEvent", function(evt){
+            myEventCalled = true;
+        })
+        htmx.trigger(div, "myEvent")
+        myEventCalled.should.equal(true);
+    });
 
 })
