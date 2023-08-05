@@ -1,0 +1,35 @@
+# https://taskfile.dev
+
+version: "3"
+
+interval: 100ms
+vars:
+  NAME: "htmxtestserver"
+  BIN_NAME: "{{.NAME}}_bin"
+
+tasks:
+  test:
+    cmds:
+      - go mod tidy
+      - go test ./...
+  kill:
+    cmds:
+      - killall -q {{.BIN_NAME}}  || echo "Process was not running."
+
+  hot:
+    desc: Server hot reload
+
+    sources:
+      - "**/*.go" # Backend
+      - "../../../src/**/*" # HTMX
+    deps:
+      - kill
+    cmds:
+      - go mod tidy
+      - go build -o ./{{.BIN_NAME}} cmd/{{.NAME}}/*.go
+      - ./{{.BIN_NAME}}
+
+  default:
+    deps:
+      - hot
+    silent: true
