@@ -618,11 +618,11 @@ differently.
 Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload,
 which you can hook into to show the progress of the upload.
 
-##### File Upload and Binary Files {#files}
+##### File Inputs {#files}
 
-When using server-side error handling with forms that include both primitive values and binary files, the binary file data is lost during the form's return with error messages. Consequently, users are required to re-upload the binary file, resulting in a less user-friendly experience.
+When using server-side error handling and validation with forms that include both primitive values and file inputs, the file input's value is lost when the form returns with error messages. Consequently, users are required to re-upload the file, resulting in a less user-friendly experience.
 
-To overcome the problem of losing binary file data during form error handling, you can adopt the following approach:
+To overcome the problem of losing file input value in simple cases, you can adopt the following approach:
 
 Before:
 
