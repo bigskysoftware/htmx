@@ -35,6 +35,13 @@
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="../src/htmx.js"></script>
+<script>
+  // Do not log all the events in headless mode (the log output is enormous)
+  if (navigator.webdriver) {
+    htmx.logAll = function () { }
+  }
+</script>
+
 <script class="mocha-init">
     mocha.setup('bdd');
     mocha.checkLeaks();
