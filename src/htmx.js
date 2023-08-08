@@ -1929,18 +1929,18 @@ return (function () {
         function addHxOnEventHandler(elt, eventName, code) {
             var nodeData = getInternalData(elt);
             nodeData.onHandlers = [];
-            var func = new Function("event", code + "; return;");
             var listener = function (e) {
-                return func.call(elt, e);
+                return maybeEval(elt, function() {
+                    new Function("event", code).call(elt, e);
+                });
             };
             elt.addEventListener(eventName, listener);
             nodeData.onHandlers.push({event:eventName, listener:listener});
-            return {nodeData:nodeData, code:code, func:func, listener:listener};
         }
 
         function processHxOn(elt) {
             var hxOnValue = getAttributeValue(elt, 'hx-on');
-            if (hxOnValue && htmx.config.allowEval) {
+            if (hxOnValue) {
                 var handlers = {}
                 var lines = hxOnValue.split("\n");
                 var currentEvent = null;
