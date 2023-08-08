@@ -3603,12 +3603,15 @@ return (function () {
         //====================================================================
         // Initialization
         //====================================================================
-
+        var domContentLoaded = false;
         function ready(fn) {
-            if (getDocument().readyState === 'complete') {
+            if (domContentLoaded) {
                 fn();
             } else {
-                getDocument().addEventListener('DOMContentLoaded', fn);
+                getDocument().addEventListener('DOMContentLoaded', function() {
+                    domContentLoaded = true;
+                    fn();
+                });
             }
         }
 
