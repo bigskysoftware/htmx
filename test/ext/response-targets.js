@@ -263,4 +263,38 @@ describe("response-targets extension", function() {
             htmx.config.responseTargetPrefersExisting = false;
         }
     });
+
+    describe('status code formatting', function()
+    {
+        var attributes = [
+            "hx-target-404",
+
+            "hx-target-40*",
+            "hx-target-40x",
+
+            "hx-target-4*",
+            "hx-target-4x",
+            "hx-target-4**",
+            "hx-target-4xx",
+
+            "hx-target-*",
+            "hx-target-x",
+            "hx-target-***",
+            "hx-target-xxx",
+        ];
+
+        // String replacement because IE11 doesn't support template literals
+        var btnMarkup = '<button hx-ext="response-targets" HX_TARGET="#d1" hx-get="/test">Click Me!</button>';
+        // forEach because IE11 doesn't play nice with closures inside for loops
+        attributes.forEach(function(attribute) {
+            it('supports ' + attribute, function() {
+                this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
+                var btn = make(btnMarkup.replace("HX_TARGET", attribute));
+                var div1 = make('<div id="d1"></div>')
+                btn.click();
+                this.server.respond();
+                div1.innerHTML.should.equal("Not found!");
+            });
+        });
+    });
 });

@@ -3,6 +3,7 @@ title = "Hypermedia-Friendly Scripting"
 date = 2022-11-17
 updated = 2022-11-29
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
