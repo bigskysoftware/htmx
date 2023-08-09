@@ -329,6 +329,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with non-htmx form + submit button & value', function () {
+        if (IsIE11()) {
+            this._runnable.title += " - Temporarily skipped in IE11 until mocking gets fixed, as it results in infinite reloads"
+            this.skip()
+            return
+        }
+
         make('<form hx-ext="ws" ws-connect="ws://localhost:8080" ws-send>' +
             '<input type="hidden" name="foo" value="bar">' +
             '<button id="b1" type="submit" name="action" value="A">A</button>' +
@@ -354,6 +360,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with non-htmx form + submit input & value', function () {
+        if (IsIE11()) {
+            this._runnable.title += " - Temporarily skipped in IE11 until mocking gets fixed, as it results in infinite reloads"
+            this.skip()
+            return
+        }
+
         make('<form hx-ext="ws" ws-connect="ws://localhost:8080" ws-send>' +
             '<input type="hidden" name="foo" value="bar">' +
             '<input id="b1" type="submit" name="action" value="A">' +
@@ -379,6 +391,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with child non-htmx form + submit button & value', function () {
+        if (IsIE11()) {
+            this._runnable.title += " - Temporarily skipped in IE11 until mocking gets fixed, as it results in infinite reloads"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send>' +
             '<input type="hidden" name="foo" value="bar">' +
@@ -406,6 +424,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with child non-htmx form + submit input & value', function () {
+        if (IsIE11()) {
+            this._runnable.title += " - Temporarily skipped in IE11 until mocking gets fixed, as it results in infinite reloads"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send>' +
             '<input type="hidden" name="foo" value="bar">' +
@@ -433,6 +457,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit button & value', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +
@@ -460,6 +490,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit input & value', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +

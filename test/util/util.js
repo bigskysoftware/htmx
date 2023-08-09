@@ -5,6 +5,7 @@ function byId(id) {
 }
 
 function make(htmlStr) {
+    htmlStr =  htmlStr.trim()
     var makeFn = function () {
         var range = document.createRange();
         var fragment = range.createContextualFragment(htmlStr);
@@ -38,7 +39,7 @@ function getWorkArea() {
 }
 
 function clearWorkArea() {
-    const workArea = getWorkArea();
+    var workArea = getWorkArea();
     if (workArea) workArea.innerHTML = "";
 }
 
@@ -107,3 +108,33 @@ function log(val) {
     console.log(val);
     return val;
 }
+
+// region IE11
+function supportsTemplates() {
+    return typeof document.createElement("template").content !== "undefined"
+}
+
+function supportsSvgTitles() {
+    // Need to append the element to the body, otherwise innerText will add the svg title to the returned value...
+    var tempButton = document.createElement("button")
+    tempButton.innerHTML = '<svg><title>Svg title</title></svg>Text';
+    document.body.appendChild(tempButton)
+    var titleOk = tempButton.innerText === "Text"
+    document.body.removeChild(tempButton)
+    return titleOk
+}
+
+function supportsFormAttribute() {
+    var parser = new DOMParser()
+    return !!parser.parseFromString('<button form="form"></button><form id="form"></form>', "text/html").body.firstChild.form
+}
+
+function supportsXPath() {
+    return typeof document.evaluate !== "undefined"
+}
+
+function IsIE11() {
+    return !supportsTemplates() && !supportsSvgTitles() && !supportsFormAttribute() && !supportsXPath()
+}
+
+// endregion

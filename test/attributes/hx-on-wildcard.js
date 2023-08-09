@@ -2,6 +2,11 @@ describe("hx-on:* attribute", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
+
+        if (IsIE11()) {
+            this.title += " - Skipped as IE11 doesn't support xpath thus doesn't support hx-on:*"
+            this.skip()
+        }
     });
     afterEach(function () {
         this.server.restore();

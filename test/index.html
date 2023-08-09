@@ -160,6 +160,7 @@
 <div id="mocha"></div>
 
 <script class="mocha-exec">
+    mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame']}); <!-- IE11 -->
     mocha.run();
 </script>
 <em>Work Area</em>
