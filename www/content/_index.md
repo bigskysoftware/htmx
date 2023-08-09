@@ -91,7 +91,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <td>
-        <a href="https://www.nuclei.ai//"><img src="/img/nuclei_logo_with_text.svg" style="max-width:50%;min-width:200px;"></a>
+        <a href="https://www.nuclei.ai/"><img src="/img/nuclei_logo_with_text.svg" style="max-width:50%;min-width:200px;"></a>
 </td>
 <tr>
 <td>
