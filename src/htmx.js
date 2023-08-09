@@ -3603,16 +3603,28 @@ return (function () {
         //====================================================================
         // Initialization
         //====================================================================
-        var domContentLoaded = false;
+
+        var isReady = false;
         function ready(fn) {
-            if (domContentLoaded) {
+            if (isReady) {
                 fn();
             } else {
-                getDocument().addEventListener('DOMContentLoaded', function() {
-                    domContentLoaded = true;
-                    fn();
-                });
+                document.addEventListener('htmx:ready', fn);
             }
+        }
+
+        function loadComplete() {
+            document.removeEventListener('DOMContentLoaded', loadComplete);
+            window.removeEventListener('load', loadComplete);
+            isReady = true;
+            triggerEvent(document, 'htmx:ready');
+        }
+
+        if (document.readyState === 'complete') {
+            loadComplete();
+        } else {
+            document.addEventListener('DOMContentLoaded', loadComplete);
+            window.addEventListener('load', loadComplete);
         }
 
         function insertIndicatorStyles() {
