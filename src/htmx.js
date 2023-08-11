@@ -3678,6 +3678,9 @@ return (function () {
             }, 0);
         })
 
+        // make htmx available in window scope to import extensions without UMD in modules
+        window.htmx = htmx;
+
         return htmx;
     }
 )()
