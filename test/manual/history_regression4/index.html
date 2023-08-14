@@ -1,0 +1,20 @@
+<!-- Test behaviour of hx-boost attribute together with 
+hx-history-elt attribute. Make sure they play nice together on the same page. 
+(Try navigating the links and go back/forward to see page is still intact) -->
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <title>History - Index</title>
+    <meta name="htmx-config" content='{"historyCacheSize":10, "refreshOnHistoryMiss" : true}'>
+    <script>
+        htmx.logAll();
+    </script>
+</head>
+<body style="padding:20px;font-family: sans-serif" hx-boost="true">
+<h1>History Test</h1>
+<a href="1.html">1</a>
+<a hx-get="2.html" hx-push-url="true" hx-target="h3">2</a>
+<h3 hx-history-elt>Index</h3>
+</body>
+</html>
