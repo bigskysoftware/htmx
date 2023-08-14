@@ -2129,12 +2129,16 @@ return (function () {
         //====================================================================
         var currentPathForHistory = location.pathname+location.search;
 
-        function getHistoryElement() {
+        function getHistoryElement(boosted) {
+            if (boosted) {
+                return getDocument().body;
+            }
+
             var historyElt = getDocument().querySelector('[hx-history-elt],[data-hx-history-elt]');
             return historyElt || getDocument().body;
         }
 
-        function saveToHistoryCache(url, content, title, scroll) {
+        function saveToHistoryCache(url, content, title, scroll, boosted) {
             if (!canAccessLocalStorage()) {
                 return;
             }
@@ -2148,7 +2152,7 @@ return (function () {
                     break;
                 }
             }
-            var newHistoryItem = {url:url, content: content, title:title, scroll:scroll};
+            var newHistoryItem = {url:url, content: content, title:title, scroll:scroll, boosted: boosted};
             triggerEvent(getDocument().body, "htmx:historyItemCreated", {item:newHistoryItem, cache: historyCache})
             historyCache.push(newHistoryItem)
             while (historyCache.length > htmx.config.historyCacheSize) {
@@ -2190,8 +2194,8 @@ return (function () {
             return clone.innerHTML;
         }
 
-        function saveCurrentPageToHistory() {
-            var elt = getHistoryElement();
+        function saveCurrentPageToHistory(boosted) {
+            var elt = getHistoryElement(boosted);
             var path = currentPathForHistory || location.pathname+location.search;
 
             // Allow history snapshot feature to be disabled where hx-history="false"
@@ -2202,7 +2206,7 @@ return (function () {
             var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
             if (!disableHistoryCache) {
                 triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
-                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
+                saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY, boosted);
             }
 
             if (htmx.config.historyEnabled) history.replaceState({htmx: true}, getDocument().title, window.location.href);
@@ -2269,12 +2273,12 @@ return (function () {
         }
 
         function restoreHistory(path) {
-            saveCurrentPageToHistory();
             path = path || location.pathname+location.search;
             var cached = getCachedHistory(path);
             if (cached) {
+                saveCurrentPageToHistory(cached.boosted);
                 var fragment = makeFragment(cached.content);
-                var historyElement = getHistoryElement();
+                var historyElement = getHistoryElement(cached.boosted);
                 var settleInfo = makeSettleInfo(historyElement);
                 swapInnerHTML(historyElement, fragment, settleInfo)
                 settleImmediately(settleInfo.tasks);
@@ -2285,6 +2289,7 @@ return (function () {
                 currentPathForHistory = path;
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
+                saveCurrentPageToHistory();
                 if (htmx.config.refreshOnHistoryMiss) {
 
                     // @ts-ignore: optional parameter in reload() function throws error
@@ -3267,7 +3272,7 @@ return (function () {
             }
 
             if (hasHeader(xhr, /HX-Location:/i)) {
-                saveCurrentPageToHistory();
+                saveCurrentPageToHistory(responseInfo.boosted);
                 var redirectPath = xhr.getResponseHeader("HX-Location");
                 var swapSpec;
                 if (redirectPath.indexOf("{") === 0) {
@@ -3329,7 +3334,7 @@ return (function () {
 
                 // Save current page if there will be a history update
                 if (historyUpdate.type) {
-                    saveCurrentPageToHistory();
+                    saveCurrentPageToHistory(responseInfo.boosted);
                 }
 
                 var swapOverride = etc.swapOverride;
