@@ -3,6 +3,7 @@ title = "When Should You Use Hypermedia?"
 date = 2022-10-23
 updated = 2023-02-03
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

@@ -14,7 +14,7 @@ Use the following attributes to configure how WebSockets behave:
   host and port to have browsers send cookies via websockets.
 * `ws-send` - Sends a message to the nearest websocket based on the trigger value for the element (either the natural
   event
-  of the event specified by [`hx-trigger`])
+  or the event specified by [`hx-trigger`])
 
 ## Install
 

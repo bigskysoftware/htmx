@@ -3,6 +3,7 @@ title = "10 Tips For Building SSR/HDA applications"
 date = 2022-06-13
 updated = 2023-06-13
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

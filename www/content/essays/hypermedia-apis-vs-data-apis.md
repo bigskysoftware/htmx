@@ -3,6 +3,7 @@ title = "Hypermedia APIs vs. Data APIs"
 date = 2021-07-17
 updated = 2022-04-07
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

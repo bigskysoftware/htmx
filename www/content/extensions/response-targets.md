@@ -2,7 +2,7 @@
 title = "response-targets"
 +++
 
-This extension allows to specify different target elements to be swapped when
+This extension allows you to specify different target elements to be swapped when
 different HTTP response codes are received.
 
 It uses attribute names in a form of ``hx-target-[CODE]`` where `[CODE]` is a numeric
@@ -100,6 +100,10 @@ be looked up (in the given order):
 * `hx-target-40*`
 * `hx-target-4*`
 * `hx-target-*`.
+
+
+_If you are using tools that do not support asterisks in HTML attributes, you
+may instead use the `x` character, e.g., `hx-target-4xx`._
 
 ## Notes
 
