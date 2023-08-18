@@ -28,7 +28,7 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## GitHub Stars
 
-<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX3oybDFUTnBMSTZBaXNhcjFwZmN5UVRnZEFSR3JFdTRPckV2Rw==#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date" frameBorder="0"></iframe>
+<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2l0aHViX3BhdF8xMUFBRFNSUFkwYmJnMkVucGpvWE1MXzR2NUlHTmZEOXRsNW9WNTc4d3lNU3ZHWldiaW84cjczN3ZSTDVUOHZjbXpGNlVSN1AyUGtKRUZmNVM3#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date" frameBorder="0"></iframe>
 
 ## Training
 
