@@ -41,7 +41,7 @@ func setupServerSentEvents(setupCtx context.Context, router chi.Router) error {
 				ctx := r.Context()
 				htmlFragmentsCh := make(chan string)
 
-				go heartbeatCh(ctx, htmlFragmentsCh, 1*time.Second)
+				go heartbeatCh(ctx, "heartbeat", htmlFragmentsCh, 1*time.Second)
 
 				flusher, ok := w.(http.Flusher)
 				if !ok {

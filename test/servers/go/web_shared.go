@@ -15,7 +15,7 @@ var (
 	encoder = base32.StdEncoding.WithPadding(base32.NoPadding)
 )
 
-func heartbeatCh(ctx context.Context, htmlFragmentCh chan<- string, interval time.Duration) {
+func heartbeatCh(ctx context.Context, id string, htmlFragmentCh chan<- string, interval time.Duration) {
 	buf := make([]byte, 8)
 	count := uint64(1)
 	t := time.NewTicker(interval)
@@ -32,9 +32,8 @@ func heartbeatCh(ctx context.Context, htmlFragmentCh chan<- string, interval tim
 			hasher.Write(buf)
 
 			message := fmt.Sprintf(
-				`<div id="heartbeat" hx-swap-oob="beforeend"><div>Message %d:%s</div></div>`,
-				count,
-				encoder.EncodeToString(hasher.Sum(nil)[0:4]),
+				`<div id="%s" hx-swap-oob="beforeend"><div>Message %d:%s</div></div>`,
+				id, count, encoder.EncodeToString(hasher.Sum(nil)[0:4]),
 			)
 
 			htmlFragmentCh <- message

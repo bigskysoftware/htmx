@@ -17,6 +17,7 @@ func setupWebsockets(setupCtx context.Context, router chi.Router) error {
 				<h1>Websockets</h1>
 				<a href="/ws/heartbeat">Heartbeat</a>
 				<a href="/ws/echo">Echo</a>
+				<a href="/ws/custom">Custom Event</a>
 			`)
 		})
 
@@ -37,7 +38,7 @@ func setupWebsockets(setupCtx context.Context, router chi.Router) error {
 					ctx := r.Context()
 					defer ws.Close()
 					htmlFragmentsCh := make(chan string)
-					go heartbeatCh(ctx, htmlFragmentsCh, 1*time.Second)
+					go heartbeatCh(ctx, "heartbeat", htmlFragmentsCh, 1*time.Second)
 
 					for {
 						select {
@@ -79,6 +80,51 @@ func setupWebsockets(setupCtx context.Context, router chi.Router) error {
 							http.Error(w, err.Error(), http.StatusInternalServerError)
 							return
 						}
+					}
+				}).ServeHTTP(w, r)
+			})
+		})
+
+		webSocketRouter.Route("/custom", func(webSocketCustomRouter chi.Router) {
+			webSocketCustomRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintf(w, htmxPageWithBackFmt, `
+					<h1>Custom Event</h1>
+					<h3>Messages</h3>
+					<table>
+						<thead>
+							<tr>
+								<th>Message</th>
+							</tr>
+						</thead>
+						<tbody id="custom"  hx-get="/ws/custom/stream" hx-swap-oob="beforeend">
+						</tbody>
+					</table>
+					<div
+						hx-ext="ws"
+						ws-connect="/ws/custom/stream"
+						ws-event="custom-event"
+					></div>
+				`)
+			})
+
+			webSocketCustomRouter.Get("/stream", func(w http.ResponseWriter, r *http.Request) {
+				websocket.Handler(func(ws *websocket.Conn) {
+					ctx := r.Context()
+					defer ws.Close()
+					htmlFragmentsCh := make(chan string)
+					go heartbeatCh(ctx, "custom", htmlFragmentsCh, 1*time.Second)
+
+					for {
+						select {
+						case <-ctx.Done():
+							return
+						case message := <-htmlFragmentsCh:
+							if err := websocket.Message.Send(ws, message); err != nil {
+								http.Error(w, err.Error(), http.StatusInternalServerError)
+								return
+							}
+						}
+
 					}
 				}).ServeHTTP(w, r)
 			})
