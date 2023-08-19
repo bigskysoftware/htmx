@@ -111,6 +111,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 </tr>
+<tr>
+<td>
+        <a href="https://www.peakcrypto.com/">
+          <img alt="Peak Crypto" src="/img/peakcrypto.png" style="width:100%;max-width:65px">
+        </a>
+</td>
+<td>
+      <a href="https://bigsky.software"><img src="/img/bss.png" style="width:100%;max-width:150px"></a>
+</td>
+</tr>
 </table>
 </div>
 
