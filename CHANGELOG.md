@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.9.4] - 2023-07-25
+
+* This is a bug-fix release for the most part, w/a heavy dose of @telroshan
+* The `HX-Trigger` response header now supports comma separated event names
+* Submit buttons that use the `form` attribute now work correctly
+* The `changed` modifier now uses the triggering element, rather than the element the `hx-trigger` is defined on
+* `hx-disable` is now handled dynamically so it can be added and removed
+* IE11 compatibility restored! (maybe, hard to test)
+* Fixed bug with `hx-on` event handler cleanup
+* Many smaller bug fixes, typo fixes and general improvements
+
+## [1.9.3] - 2023-07-14
+
+* The `hx-on` attribute has been deprecated (sorry) in favor of `hx-on-<event name>` attributes.  See [`hx-on`](/attributes/hx-on) for more information.
+* We now have functioning CI using GitHub actions!
+* You can now configure if a type of HTTP request uses the body for parameters or not.  In particular, the `DELETE` _should_ use
+  query parameters, according to the spec.  htmx has used the body, instead.  To avoid breaking code we are keeping this undefined
+  behavior for now, but allowing people to fix it for their use cases by updating the `htmx.config.methodsThatUseUrlParams` config
+  option.  Thank you to Alex and Vincent for their feedback and work on this issue!
+* The `this` symbol is now available in event filter expressions, and refers to the element the `hx-trigger` is on
+* Fix bug where the `htmx:afterSettle` event was raised multiple times with oob swaps occurred
+* A large number of accessibility fixes were made in the docs (Thank you Denis & crew!)
+* Fixed bug w/ WebSocket extension initialization caused by "naked" `hx-trigger` feature
+* The `HX-Reselect` HTTP response header has been added to change the selection from the returned content
+* Many other smaller bug fixes
+
+## [1.9.2] - 2023-04-28
+
+* Fixed bug w/ `hx-on` not properly de-initializing
+
+## [1.9.1] - 2023-04-27
+
+* Fixed a bug with the new naked triggers that prevented boosted elements with explicit `hx-trigger`'s from functioning
+  properly
+* Added code to play well with other libraries that also use the `window.onpopstate` Daily reminder: <https://htmx.org/img/memes/javascripthistory.png>
+
+## [1.9.0] - 2023-04-11
+
+* Support for generalized inline event handling via the new [`hx-on`](/attributes/hx-on) attribute, which addresses
+  the shortcoming of limited [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) attributes in HTML.
+* Support for [view transitions](/docs#view-transitions), based on the experimental [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
+  currently available in Chrome 111+ and coming to other browsers soon.
+* Support for "naked" [`hx-trigger`](/attributes/hx-trigger) attributes, where an `hx-trigger` is present on an element
+  that does not have an `hx-get`, etc. defined on it.  Instead, it will trigger the new `htmx:triggered` event, which can
+  be responded to via your [preferred scripting solution](/docs#scripting).
+* A memory leak fix by [@croxton](https://github.com/bigskysoftware/htmx/commit/8cd3a480a7388877628ce8b9b8e50cd5df48bb81)
+* The htmx website has been migrated from 11ty to [zola](https://www.getzola.org/) by [@danieljsummers](https://github.com/danieljsummers), cutting
+  way down on the number of "development" javascript dependencies
+* Many other smaller bug fixes
+
 ## [1.8.6] - 2023-03-02
 
 * ESM support!
@@ -91,7 +141,7 @@
   to both of them without compromising the core file size of htmx.  You are encouraged to move over to the new 
   extensions, but `hx-sse` and `hx-ws` will continue to work indefinitely in htmx 1.x.
 * You can now mask out [attribute inheritance](/docs#inheritance) via the [`hx-disinherit`](https://htmx.org/attributes/hx-disinherit) attribute.
-* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occuring.
+* The `HX-Push` header can now have the `false` value, which will prevent a history snapshot from occurring.
 * Many new extensions, with a big thanks to all the contributors!
     * A new [`alpine-morph`](/extensions/alpine-morph) allows you to use Alpine's swapping engine, which preserves Alpine
     * A [restored](/extensions/restored) extension was added that will trigger a `restore` event on all elements in the DOM

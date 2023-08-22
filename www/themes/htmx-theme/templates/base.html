@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# This block should set html_title appropriately -#}
+    {% block title %} {% endblock title -%}
+    <title>{{ html_title | default(value=config.title) | safe }}</title>
+    <link rel="canonical" href="{{ current_url | safe }}">
+    {#TODO: only generate this for the home page #}
+    <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
+    <link rel="stylesheet" href="/css/site.css">
+    <script src="/js/htmx.js"></script>
+    <script src="/js/class-tools.js"></script>
+    <script src="/js/preload.js"></script>
+    <script src="/js/_hyperscript.js"></script>
+    <meta name="generator" content="Zola v.TODO">
+</head>
+<body hx-ext="class-tools, preload">
+
+<div class="top-nav">
+    <div class="c">
+        <div class="menu">
+            <div class="logo-wrapper">
+                <a href="/" class="logo light">&lt;<b>/</b>&gt; htm<b>x</b></a>
+                <svg _="on click toggle .show on #nav" class="hamburger" viewBox="0 0 100 80" width="25" height="25" style="margin-bottom:-5px">
+                    <rect width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
+                    <rect y="30" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
+                    <rect y="60" width="100" height="20" style="fill:rgb(52, 101, 164)" rx="10"></rect>
+                </svg>
+            </div>
+            {% if page and page.path is starting_with("/examples") %}
+            <div id="nav" class="navigation"> <!-- don't boost on demo pages, sinon hijacks everything :/ -->
+            {% else %}
+            <div id="nav" class="navigation" hx-boost="true">
+            {% endif %}
+                <div class="navigation-items" preload="mouseover">
+                    <div><a href="/docs/">docs</a></div>
+                    <div><a href="/reference/">reference</a></div>
+                    <div><a href="/examples/">examples</a></div>
+                    <div><a href="/talk/">talk</a></div>
+                    <div><a href="/essays/">essays</a></div>
+                    <div hx-disable>
+                        <form action="https://google.com/search">
+                            <input type="hidden" name="q" value="site:htmx.org">
+                            <label>
+                                <span style="display:none;">Search</span>
+                                <input type="text" name="q" placeholder="🔍️" class="search-box">
+                            </label>
+                        </form>
+                    </div>
+                </div>
+                <div class="github-stars">
+                    <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star htmx on GitHub"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if page and page.extra and page.extra.custom_classes %}
+    {% set disp_classes = page.extra.custom_classes %}
+{% else %}
+    {% set disp_classes = "" %}
+{% endif %}
+
+<div class="c content {{ disp_classes }}">
+    {% block content %} {% endblock content -%}
+</div>
+
+<footer>
+    <div class="c content {{ disp_classes }}">
+        <div class="row">
+            <div class="6 col footer-haiku">
+                <h2>haiku</h2>
+                <p><em>
+                    javascript fatigue:<br>
+                    longing for a hypertext<br>
+                    already in hand
+                </em></p>
+            </div>
+            <div class="6 col footer-menu">
+                <div><a href="/docs/">docs</a></div>
+                <div><a href="/reference/">reference</a></div>
+                <div><a href="/examples/">examples</a></div>
+                <div><a href="/talk/">talk</a></div>
+                <div><a href="/essays/">essays</a></div>
+                <div><a href="https://twitter.com/htmx_org">@htmx_org</a></div>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col">
+                <img src="/img/bss_bars.png" style="max-width: 30px; margin-top: 3em;">
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
