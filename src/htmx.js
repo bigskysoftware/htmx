@@ -274,7 +274,7 @@ return (function () {
          * @returns {boolean}
          */
         function aFullPageResponse(resp) {
-            return resp.match(/<body>/) !== null;
+            return resp.match(/<body/) !== null;
         }
 
         /**
@@ -1187,43 +1187,44 @@ return (function () {
         }
 
         function maybeGenerateConditional(elt, tokens, paramName) {
-            if (tokens[0] === '[') {
-                tokens.shift();
-                var bracketCount = 1;
-                var conditionalSource = " return (function(" + paramName + "){ return (";
-                var last = null;
-                while (tokens.length > 0) {
-                    var token = tokens[0];
-                    if (token === "]") {
-                        bracketCount--;
-                        if (bracketCount === 0) {
-                            if (last === null) {
-                                conditionalSource = conditionalSource + "true";
-                            }
-                            tokens.shift();
-                            conditionalSource += ")})";
-                            try {
-                                var conditionFunction = maybeEval(elt,function () {
-                                    return Function(conditionalSource)();
-                                    },
-                                    function(){return true})
-                                conditionFunction.source = conditionalSource;
-                                return conditionFunction;
-                            } catch (e) {
-                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
-                                return null;
-                            }
+            if (tokens[0] !== '[') {
+                return;
+            }
+            tokens.shift();
+            var bracketCount = 1;
+            var conditionalSource = " return (function(" + paramName + "){ return (";
+            var last = null;
+            while (tokens.length > 0) {
+                var token = tokens[0];
+                if (token === "]") {
+                    bracketCount--;
+                    if (bracketCount === 0) {
+                        if (last === null) {
+                            conditionalSource = conditionalSource + "true";
                         }
-                    } else if (token === "[") {
-                        bracketCount++;
+                        tokens.shift();
+                        conditionalSource += ")})";
+                        try {
+                            var conditionFunction = maybeEval(elt,function () {
+                                return Function(conditionalSource)();
+                                },
+                                function(){return true})
+                            conditionFunction.source = conditionalSource;
+                            return conditionFunction;
+                        } catch (e) {
+                            triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                            return null;
+                        }
                     }
-                    if (isPossibleRelativeReference(token, last, paramName)) {
-                            conditionalSource += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
-                    } else {
-                        conditionalSource = conditionalSource + token;
-                    }
-                    last = tokens.shift();
+                } else if (token === "[") {
+                    bracketCount++;
                 }
+                if (isPossibleRelativeReference(token, last, paramName)) {
+                        conditionalSource += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
+                } else {
+                    conditionalSource = conditionalSource + token;
+                }
+                last = tokens.shift();
             }
         }
 
@@ -1322,15 +1323,17 @@ return (function () {
 
             if (triggerSpecs.length > 0) {
                 return triggerSpecs;
-            } else if (matches(elt, 'form')) {
+            }
+            if (matches(elt, 'form')) {
                 return [{trigger: 'submit'}];
-            } else if (matches(elt, 'input[type="button"], input[type="submit"]')){
-                return [{trigger: 'click'}];
-            } else if (matches(elt, INPUT_SELECTOR)) {
-                return [{trigger: 'change'}];
-            } else {
+            }
+            if (matches(elt, 'input[type="button"], input[type="submit"]')) {
                 return [{trigger: 'click'}];
             }
+            if (matches(elt, INPUT_SELECTOR)) {
+                return [{trigger: 'change'}];
+            }
+            return [{trigger: 'click'}];
         }
 
         function cancelPolling(elt) {
@@ -2304,7 +2307,6 @@ return (function () {
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
                 if (htmx.config.refreshOnHistoryMiss) {
-
                     // @ts-ignore: optional parameter in reload() function throws error
                     window.location.reload(true);
                 } else {
@@ -2531,7 +2533,7 @@ return (function () {
         /**
          * @param {HTMLElement} elt
          * @param {HTMLElement} target
-         * @param {string} prompt
+         * @param {string} [prompt]
          * @returns {Object} // TODO: Define/Improve HtmxHeaderSpecification
          */
         function getHeaders(elt, target, prompt) {
@@ -2593,7 +2595,7 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
-         * @param {string} swapInfoOverride
+         * @param {string} [swapInfoOverride]
          * @returns {import("./htmx").HtmxSwapSpecification}
          */
         function getSwapSpecification(elt, swapInfoOverride) {
