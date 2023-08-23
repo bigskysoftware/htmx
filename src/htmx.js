@@ -161,7 +161,6 @@ return (function () {
         }
 
         /**
-         *
          * @param {HTMLElement} elt
          * @param {string} qualifiedName
          * @returns {(string | null)}
@@ -203,9 +202,8 @@ return (function () {
             var disinherit = getAttributeValue(ancestor, "hx-disinherit");
             if (initialElement !== ancestor && disinherit && (disinherit === "*" || disinherit.split(" ").indexOf(attributeName) >= 0)) {
                 return "unset";
-            } else {
-                return attributeValue
             }
+            return attributeValue
         }
 
         /**
@@ -241,16 +239,14 @@ return (function () {
          */
         function getStartTag(str) {
             var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
-            var match = tagMatcher.exec( str );
-            if (match) {
-                return match[1].toLowerCase();
-            } else {
+            var match = tagMatcher.exec(str);
+            if (!match) {
                 return "";
             }
+            return match[1].toLowerCase();
         }
 
         /**
-         *
          * @param {string} resp
          * @param {number} depth
          * @returns {Element}
@@ -273,12 +269,15 @@ return (function () {
             return responseNode;
         }
 
+        /**
+         * @param {string} resp
+         * @returns {boolean}
+         */
         function aFullPageResponse(resp) {
-            return resp.match(/<body/);
+            return resp.match(/<body>/) !== null;
         }
 
         /**
-         *
          * @param {string} resp
          * @returns {Element}
          */
@@ -289,27 +288,26 @@ return (function () {
                 // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangeably?
                 return documentFragment.querySelector('template').content;
-            } else {
-                var startTag = getStartTag(resp);
-                switch (startTag) {
-                    case "thead":
-                    case "tbody":
-                    case "tfoot":
-                    case "colgroup":
-                    case "caption":
-                        return parseHTML("<table>" + resp + "</table>", 1);
-                    case "col":
-                        return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
-                    case "tr":
-                        return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
-                    case "td":
-                    case "th":
-                        return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
-                    case "script":
-                        return parseHTML("<div>" + resp + "</div>", 1);
-                    default:
-                        return parseHTML(resp, 0);
-                }
+            }
+            var startTag = getStartTag(resp);
+            switch (startTag) {
+                case "thead":
+                case "tbody":
+                case "tfoot":
+                case "colgroup":
+                case "caption":
+                    return parseHTML("<table>" + resp + "</table>", 1);
+                case "col":
+                    return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
+                case "tr":
+                    return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
+                case "td":
+                case "th":
+                    return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
+                case "script":
+                    return parseHTML("<div>" + resp + "</div>", 1);
+                default:
+                    return parseHTML(resp, 0);
             }
         }
 
@@ -349,6 +347,7 @@ return (function () {
 
         /**
          * getInternalData retrieves "private" data stored by htmx within an element
+         *
          * @param {HTMLElement} elt
          * @returns {*}
          */
@@ -363,6 +362,7 @@ return (function () {
 
         /**
          * toArray converts an ArrayLike object into a real array.
+         *
          * @param {ArrayLike} arr
          * @returns {any[]}
          */
@@ -384,6 +384,10 @@ return (function () {
             }
         }
 
+        /**
+         * @param {HTMLElement} el
+         * @returns {boolean}
+         */
         function isScrolledIntoView(el) {
             var rect = el.getBoundingClientRect();
             var elemTop = rect.top;
@@ -391,22 +395,30 @@ return (function () {
             return elemTop < window.innerHeight && elemBottom >= 0;
         }
 
+        /**
+         * @param {HTMLElement} elt
+         * @returns {boolean}
+         */
         function bodyContains(elt) {
+            var document = getDocument();
             // IE Fix
             if (elt.getRootNode && elt.getRootNode() instanceof window.ShadowRoot) {
-                return getDocument().body.contains(elt.getRootNode().host);
-            } else {
-                return getDocument().body.contains(elt);
+                return document.body.contains(elt.getRootNode().host);
             }
+            return document.body.contains(elt);
         }
 
+        /**
+         * @param {string} trigger
+         * @returns {Array}
+         */
         function splitOnWhitespace(trigger) {
             return trigger.trim().split(/\s+/);
         }
 
         /**
-         * mergeObjects takes all of the keys from
-         * obj2 and duplicates them into obj1
+         * mergeObjects takes all of the keys from obj2 and duplicates them into obj1
+         *
          * @param {Object} obj1
          * @param {Object} obj2
          * @returns {Object}
@@ -420,6 +432,10 @@ return (function () {
             return obj1;
         }
 
+        /**
+         * @param {string} jString
+         * @returns {Object | null}
+         */
         function parseJSON(jString) {
             try {
                 return JSON.parse(jString);
@@ -429,6 +445,9 @@ return (function () {
             }
         }
 
+        /**
+         * @returns {boolean}
+         */
         function canAccessLocalStorage() {
             var test = 'htmx:localStorageTest';
             try {
@@ -440,6 +459,10 @@ return (function () {
             }
         }
 
+        /**
+         * @param {string} path
+         * @returns {string}
+         */
         function normalizePath(path) {
             try {
                 var url = new URL(path);
@@ -489,17 +512,15 @@ return (function () {
         function find(eltOrSelector, selector) {
             if (selector) {
                 return eltOrSelector.querySelector(selector);
-            } else {
-                return find(getDocument(), eltOrSelector);
             }
+            return find(getDocument(), eltOrSelector);
         }
 
         function findAll(eltOrSelector, selector) {
             if (selector) {
                 return eltOrSelector.querySelectorAll(selector);
-            } else {
-                return findAll(getDocument(), eltOrSelector);
             }
+            return findAll(getDocument(), eltOrSelector);
         }
 
         function removeElement(elt, delay) {
@@ -585,21 +606,26 @@ return (function () {
         function querySelectorAllExt(elt, selector) {
             if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, normalizeSelector(selector.substr(8)))];
-            } else if (selector.indexOf("find ") === 0) {
-                return [find(elt, normalizeSelector(selector.substr(5)))];
-            } else if (selector.indexOf("next ") === 0) {
-                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
-            } else if (selector.indexOf("previous ") === 0) {
-                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
-            } else if (selector === 'document') {
-                return [document];
-            } else if (selector === 'window') {
-                return [window];
-            } else if (selector === 'body') {
-                return [document.body];
-            } else {
-                return getDocument().querySelectorAll(normalizeSelector(selector));
             }
+            if (selector.indexOf("find ") === 0) {
+                return [find(elt, normalizeSelector(selector.substr(5)))];
+            }
+            if (selector.indexOf("next ") === 0) {
+                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
+            }
+            if (selector.indexOf("previous ") === 0) {
+                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
+            }
+            if (selector === 'document') {
+                return [document];
+            }
+            if (selector === 'window') {
+                return [window];
+            }
+            if (selector === 'body') {
+                return [document.body];
+            }
+            return getDocument().querySelectorAll(normalizeSelector(selector));
         }
 
         var scanForwardQuery = function(start, match) {
@@ -625,17 +651,15 @@ return (function () {
         function querySelectorExt(eltOrSelector, selector) {
             if (selector) {
                 return querySelectorAllExt(eltOrSelector, selector)[0];
-            } else {
-                return querySelectorAllExt(getDocument().body, eltOrSelector)[0];
             }
+            return querySelectorAllExt(getDocument().body, eltOrSelector)[0];
         }
 
         function resolveTarget(arg2) {
             if (isType(arg2, 'String')) {
                 return find(arg2);
-            } else {
-                return arg2;
             }
+            return arg2;
         }
 
         function processEventArgs(arg1, arg2, arg3) {
@@ -645,14 +669,12 @@ return (function () {
                     event: arg1,
                     listener: arg2
                 }
-            } else {
-                return {
-                    target: resolveTarget(arg1),
-                    event: arg2,
-                    listener: arg3
-                }
             }
-
+            return {
+                target: resolveTarget(arg1),
+                event: arg2,
+                listener: arg3
+            }
         }
 
         function addEventListenerImpl(arg1, arg2, arg3) {
@@ -682,15 +704,13 @@ return (function () {
             if (attrTarget) {
                 if (attrTarget === "this") {
                     return [findThisElement(elt, attrName)];
-                } else {
-                    var result = querySelectorAllExt(elt, attrTarget);
-                    if (result.length === 0) {
-                        logError('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
-                        return [DUMMY_ELT]
-                    } else {
-                        return result;
-                    }
                 }
+                var result = querySelectorAllExt(elt, attrTarget);
+                if (result.length === 0) {
+                    logError('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
+                    return [DUMMY_ELT]
+                }
+                return result;
             }
         }
 
@@ -705,17 +725,14 @@ return (function () {
             if (targetStr) {
                 if (targetStr === "this") {
                     return findThisElement(elt,'hx-target');
-                } else {
-                    return querySelectorExt(elt, targetStr)
                 }
-            } else {
-                var data = getInternalData(elt);
-                if (data.boosted) {
-                    return getDocument().body;
-                } else {
-                    return elt;
-                }
+                return querySelectorExt(elt, targetStr)
             }
+            var data = getInternalData(elt);
+            if (data.boosted) {
+                return getDocument().body;
+            }
+            return elt;
         }
 
         function shouldSettleAttribute(name) {
@@ -757,11 +774,10 @@ return (function () {
         }
 
         /**
-         *
          * @param {string} oobValue
          * @param {HTMLElement} oobElement
          * @param {*} settleInfo
-         * @returns
+         * @returns {string}
          */
         function oobSwap(oobValue, oobElement, settleInfo) {
             var selector = "#" + getRawAttribute(oobElement, "id");
@@ -962,27 +978,26 @@ return (function () {
         function swapOuterHTML(target, fragment, settleInfo) {
             if (target.tagName === "BODY") {
                 return swapInnerHTML(target, fragment, settleInfo);
-            } else {
-                // @type {HTMLElement}
-                var newElt
-                var eltBeforeNewContent = target.previousSibling;
-                insertNodesBefore(parentElt(target), target, fragment, settleInfo);
-                if (eltBeforeNewContent == null) {
-                    newElt = parentElt(target).firstChild;
-                } else {
-                    newElt = eltBeforeNewContent.nextSibling;
-                }
-                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
-                settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
-                while(newElt && newElt !== target) {
-                    if (newElt.nodeType === Node.ELEMENT_NODE) {
-                        settleInfo.elts.push(newElt);
-                    }
-                    newElt = newElt.nextElementSibling;
-                }
-                cleanUpElement(target);
-                parentElt(target).removeChild(target);
             }
+            // @type {HTMLElement}
+            var newElt
+            var eltBeforeNewContent = target.previousSibling;
+            insertNodesBefore(parentElt(target), target, fragment, settleInfo);
+            if (eltBeforeNewContent == null) {
+                newElt = parentElt(target).firstChild;
+            } else {
+                newElt = eltBeforeNewContent.nextSibling;
+            }
+            getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
+            settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
+            while(newElt && newElt !== target) {
+                if (newElt.nodeType === Node.ELEMENT_NODE) {
+                    settleInfo.elts.push(newElt);
+                }
+                newElt = newElt.nextElementSibling;
+            }
+            cleanUpElement(target);
+            parentElt(target).removeChild(target);
         }
 
         function swapAfterBegin(target, fragment, settleInfo) {
@@ -1000,6 +1015,7 @@ return (function () {
         function swapAfterEnd(target, fragment, settleInfo) {
             return insertNodesBefore(parentElt(target), target.nextSibling, fragment, settleInfo);
         }
+
         function swapDelete(target, fragment, settleInfo) {
             cleanUpElement(target);
             return parentElt(target).removeChild(target);
@@ -1369,10 +1385,9 @@ return (function () {
         }
 
         /**
-         *
          * @param {Event} evt
          * @param {HTMLElement} elt
-         * @returns
+         * @returns {boolean}
          */
         function shouldCancel(evt, elt) {
             if (evt.type === "submit" || evt.type === "click") {
@@ -2082,7 +2097,6 @@ return (function () {
          *
          * @param {HTMLElement} elt
          * @param {(extension:import("./htmx").HtmxExtension) => void} toDo
-         * @returns void
          */
         function withExtensions(elt, toDo) {
             forEach(getExtensions(elt), function(extension){
@@ -2376,9 +2390,8 @@ return (function () {
         function processInputValue(processed, values, errors, elt, validate) {
             if (elt == null || haveSeenNode(processed, elt)) {
                 return;
-            } else {
-                processed.push(elt);
             }
+            processed.push(elt);
             if (shouldInclude(elt)) {
                 var name = getRawAttribute(elt,"name");
                 var value = elt.value;
@@ -2415,6 +2428,7 @@ return (function () {
         /**
          * @param {HTMLElement} elt
          * @param {string} verb
+         * @returns {{errors: Array, values: Object}}
          */
         function getInputValues(elt, verb) {
             var processed = [];
@@ -2542,6 +2556,7 @@ return (function () {
          * filterValues takes an object containing form input values
          * and returns a new object that only contains keys that are
          * specified by the closest "hx-params" attribute
+         *
          * @param {Object} inputValues
          * @param {HTMLElement} elt
          * @returns {Object}
@@ -2551,25 +2566,25 @@ return (function () {
             if (paramsValue) {
                 if (paramsValue === "none") {
                     return {};
-                } else if (paramsValue === "*") {
+                }
+                if (paramsValue === "*") {
                     return inputValues;
-                } else if(paramsValue.indexOf("not ") === 0) {
+                }
+                if (paramsValue.indexOf("not ") === 0) {
                     forEach(paramsValue.substr(4).split(","), function (name) {
                         name = name.trim();
                         delete inputValues[name];
                     });
                     return inputValues;
-                } else {
-                    var newValues = {}
-                    forEach(paramsValue.split(","), function (name) {
-                        name = name.trim();
-                        newValues[name] = inputValues[name];
-                    });
-                    return newValues;
                 }
-            } else {
-                return inputValues;
+                var newValues = {}
+                forEach(paramsValue.split(","), function (name) {
+                    name = name.trim();
+                    newValues[name] = inputValues[name];
+                });
+                return newValues;
             }
+            return inputValues;
         }
 
         function isAnchorLink(elt) {
@@ -2577,7 +2592,6 @@ return (function () {
         }
 
         /**
-         *
          * @param {HTMLElement} elt
          * @param {string} swapInfoOverride
          * @returns {import("./htmx").HtmxSwapSpecification}
@@ -2647,17 +2661,14 @@ return (function () {
             });
             if (encodedParameters != null) {
                 return encodedParameters;
-            } else {
-                if (usesFormData(elt)) {
-                    return makeFormData(filteredParameters);
-                } else {
-                    return urlEncode(filteredParameters);
-                }
             }
+            if (usesFormData(elt)) {
+                return makeFormData(filteredParameters);
+            }
+            return urlEncode(filteredParameters);
         }
 
         /**
-         *
          * @param {Element} target
          * @returns {import("./htmx").HtmxSettleInfo}
          */
@@ -2753,16 +2764,15 @@ return (function () {
         function maybeEval(elt, toEval, defaultVal) {
             if (htmx.config.allowEval) {
                 return toEval();
-            } else {
-                triggerErrorEvent(elt, 'htmx:evalDisallowedError');
-                return defaultVal;
             }
+            triggerErrorEvent(elt, 'htmx:evalDisallowedError');
+            return defaultVal;
         }
 
         /**
          * @param {HTMLElement} elt
-         * @param {*} expressionVars
-         * @returns
+         * @param {any} expressionVars
+         * @returns {any}
          */
         function getHXVarsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vars", true, expressionVars);
@@ -2770,8 +2780,8 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
-         * @param {*} expressionVars
-         * @returns
+         * @param {any} expressionVars
+         * @returns {any}
          */
         function getHXValsForElement(elt, expressionVars) {
             return getValuesForElement(elt, "hx-vals", false, expressionVars);
@@ -2821,22 +2831,20 @@ return (function () {
                         targetOverride: resolveTarget(context),
                         returnPromise: true
                     });
-                } else {
-                    return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
-                        {
-                            handler : context.handler,
-                            headers : context.headers,
-                            values : context.values,
-                            targetOverride: resolveTarget(context.target),
-                            swapOverride: context.swap,
-                            returnPromise: true
-                        });
                 }
-            } else {
-                return issueAjaxRequest(verb, path, null, null, {
+                return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
+                    {
+                        handler : context.handler,
+                        headers : context.headers,
+                        values : context.values,
+                        targetOverride: resolveTarget(context.target),
+                        swapOverride: context.swap,
                         returnPromise: true
-                });
+                    });
             }
+            return issueAjaxRequest(verb, path, null, null, {
+                    returnPromise: true
+            });
         }
 
         function hierarchyForElt(elt) {
@@ -2916,9 +2924,8 @@ return (function () {
                 } else if (syncStrategy === "abort") {
                     if (eltData.xhr) {
                         return;
-                    } else {
-                        abortable = true;
                     }
+                    abortable = true;
                 } else if (syncStrategy === "replace") {
                     triggerEvent(syncElt, 'htmx:abort'); // abort the current request and continue
                 } else if (syncStrategy.indexOf("queue") === 0) {
@@ -3195,7 +3202,6 @@ return (function () {
         }
 
         function determineHistoryUpdates(elt, responseInfo) {
-
             var xhr = responseInfo.xhr;
 
             //===========================================
@@ -3218,11 +3224,10 @@ return (function () {
             if (pathFromHeaders) {
                 if (pathFromHeaders === "false") {
                     return {}
-                } else {
-                    return {
-                        type: typeFromHeaders,
-                        path : pathFromHeaders
-                    }
+                }
+                return {
+                    type: typeFromHeaders,
+                    path : pathFromHeaders
                 }
             }
 
@@ -3271,9 +3276,8 @@ return (function () {
                     type:saveType,
                     path: path
                 }
-            } else {
-                return {};
             }
+            return {};
         }
 
         function handleAjaxResponse(elt, responseInfo) {
@@ -3528,6 +3532,7 @@ return (function () {
 
         /**
          * extensionBase defines the default functions for all extensions.
+         *
          * @returns {import("./htmx").HtmxExtension}
          */
         function extensionBase() {
@@ -3571,7 +3576,6 @@ return (function () {
          * @param {import("./htmx").HtmxExtension[]=} extensionsToIgnore
          */
          function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
-
             if (elt == undefined) {
                 return extensionsToReturn;
             }
@@ -3638,12 +3642,11 @@ return (function () {
 
         function getMetaConfig() {
             var element = getDocument().querySelector('meta[name="htmx-config"]');
-            if (element) {
-                // @ts-ignore
-                return parseJSON(element.content);
-            } else {
+            if (!element) {
                 return null;
             }
+            // @ts-ignore
+            return parseJSON(element.content);
         }
 
         function mergeMetaConfig() {
