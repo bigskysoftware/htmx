@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.5] - 2023-08-25
+
 ## [1.9.4] - 2023-07-25
 
 * This is a bug-fix release for the most part, w/a heavy dose of @telroshan
