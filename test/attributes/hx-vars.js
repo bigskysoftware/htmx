@@ -152,4 +152,26 @@ describe("hx-vars attribute", function() {
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('is not evaluated when allowEval is false', function () {
+        var calledEvent = false;
+        var handler = htmx.on("htmx:evalDisallowedError", function(){
+            calledEvent = true;
+        });
+        try {
+            htmx.config.allowEval = false;
+            this.server.respondWith("POST", "/vars", function (xhr) {
+                var params = getParameters(xhr);
+                should.not.exist(params['i1']);
+                xhr.respond(200, {}, "Clicked!")
+            });
+            var div = make('<div hx-post="/vars" hx-vals="javascript:i1:\'test\'"></div>')
+            div.click();
+            this.server.respond();
+            div.innerHTML.should.equal("Clicked!");
+        } finally {
+            htmx.config.allowEval = true;
+            htmx.off("htmx:evalDisallowedError", handler);
+        }
+        calledEvent.should.equal(true);
+    });
 });

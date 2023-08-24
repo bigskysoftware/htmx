@@ -119,4 +119,21 @@ describe("hx-on attribute", function() {
         delete window.tempCount;
     });
 
+    it("is not evaluated when allowEval is false", function () {
+        var calledEvent = false;
+        var handler = htmx.on("htmx:evalDisallowedError", function(){
+            calledEvent = true;
+        });
+        htmx.config.allowEval = false;
+        try {
+            var btn = make("<button hx-on='click: window.foo = true'>Foo</button>");
+            btn.click();
+            should.not.exist(window.foo);
+        } finally {
+            htmx.config.allowEval = true;
+            htmx.off("htmx:evalDisallowedError", handler);
+            delete window.foo;
+        }
+        calledEvent.should.equal(true);
+    });
 });
