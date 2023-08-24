@@ -129,6 +129,10 @@ table {
   line-height: 1em;
 }
 
+time {
+  font-weight: bold;
+}
+
 a {
 text-decoration: none;
 color: var(--midBlue)

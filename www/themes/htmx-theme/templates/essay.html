@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if page.title -%}
+    {% set html_title = "&lt;/&gt; htmx ~ " ~ page.title -%}
+  {% endif -%}
+{% endblock title %}
+
+{% block content %}
+
+  {% if page.extra and page.extra.show_title is defined -%}
+    {% set show_title = page.extra.show_title -%}
+  {% else -%}
+    {% set show_title = true -%}
+  {% endif -%}
+
+  {% if page.extra and page.extra.show_author is defined -%}
+    {% set show_author = page.extra.show_author -%}
+  {% else -%}
+    {% set show_author = true -%}
+  {% endif -%}
+
+  {% set page_title = page.title -%}
+  {% if show_title %}<h1>{{ page_title | safe }}</h1>{% endif %}
+  {% if show_author and page.taxonomies.author %}
+    <address>{{ page.taxonomies.author | join(sep=", ") }}</address>
+    <time>{{ page.date | date(format="%B %d, %Y") }}</time>
+  {% endif %}
+
+  {{ page.content | safe }}
+  <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+    &lt;/&gt;
+  </div>
+{% endblock content %}

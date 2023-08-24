@@ -27,9 +27,4 @@
   {% endif -%}
   {% if show_title %}<h1>{{ page_title | safe }}</h1>{% endif %}
   {{ page.content | safe }}
-  {% if page.path is starting_with("/essays/") -%}
-    <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
-      &lt;/&gt;
-    </div>
-  {% endif -%}
 {% endblock content %}

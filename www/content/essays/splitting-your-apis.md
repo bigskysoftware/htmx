@@ -3,6 +3,7 @@ title = "Splitting Your Data &amp; Application APIs: Going Further"
 date = 2021-09-16
 updated = 2022-02-06
 [taxonomies]
+author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

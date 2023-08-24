@@ -3,43 +3,55 @@
     /** @type {import("../htmx").HtmxInternalApi} */
     var api;
 
-    const targetAttrPrefix = 'hx-target-';
-    const targetAttrMinLen = targetAttrPrefix.length - 1;
+    var attrPrefix = 'hx-target-';
 
     /**
      * @param {HTMLElement} elt
      * @param {number} respCode
      * @returns {HTMLElement | null}
      */
-    function getRespCodeTarget(elt, respCode) {
-        if (!elt || !respCode) return null;
+    function getRespCodeTarget(elt, respCodeNumber) {
+        if (!elt || !respCodeNumber) return null;
 
-        var targetAttr = targetAttrPrefix + respCode;
-        var targetStr  = api.getClosestAttributeValue(elt, targetAttr);
+        var respCode = respCodeNumber.toString();
 
-        if (targetStr) {
-            if (targetStr === "this") {
-                return api.findThisElement(elt, targetAttr);
-            } else {
-                return api.querySelectorExt(elt, targetStr);
-            }
-        } else {
-            for (let l = targetAttr.length - 1; l > targetAttrMinLen; l--) {
-                targetAttr = targetAttr.substring(0, l) + '*';
-                targetStr  = api.getClosestAttributeValue(elt, targetAttr);
-                if (targetStr) break;
+        // '*' is the original syntax, as the obvious character for a wildcard.
+        // The 'x' alternative was added for maximum compatibility with HTML
+        // templating engines, due to ambiguity around which characters are
+        // supported in HTML attributes.
+        //
+        // Start with the most specific possible attribute and generalize from
+        // there.
+        var attrPossibilities = [
+            respCode,
+
+            respCode.substr(0, 2) + '*',
+            respCode.substr(0, 2) + 'x',
+
+            respCode.substr(0, 1) + '*',
+            respCode.substr(0, 1) + 'x',
+            respCode.substr(0, 1) + '**',
+            respCode.substr(0, 1) + 'xx',
+
+            '*',
+            'x',
+            '***',
+            'xxx',
+        ];
+
+        for (var i = 0; i < attrPossibilities.length; i++) {
+            var attr = attrPrefix + attrPossibilities[i];
+            var attrValue = api.getClosestAttributeValue(elt, attr);
+            if (attrValue) {
+                if (attrValue === "this") {
+                    return api.findThisElement(elt, attr);
+                } else {
+                    return api.querySelectorExt(elt, attrValue);
+                }
             }
         }
-
-        if (targetStr) {
-            if (targetStr === "this") {
-                return api.findThisElement(elt, targetAttr);
-            } else {
-                return api.querySelectorExt(elt, targetStr);
-            }
-        } else {
-            return null;
-        }
+        
+        return null;
     }
 
     /** @param {Event} evt */

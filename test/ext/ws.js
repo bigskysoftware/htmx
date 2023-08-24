@@ -172,6 +172,27 @@ describe("web-sockets extension", function () {
         this.messages.length.should.equal(1);
     })
 
+    it('sends expected headers to the server', function () {
+        var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><button hx-trigger="click" hx-target="#target" ws-send id="d1" name="d1-name">div1</button><output id="target"></output></div>');
+        this.tickMock();
+
+        byId("d1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(1);
+        var message = JSON.parse(this.messages[0]);
+        var headers = message.HEADERS;
+
+        console.log(headers);
+
+        headers['HX-Request'].should.be.equal('true');
+        headers['HX-Current-URL'].should.be.equal(document.location.href)
+        headers['HX-Trigger'].should.be.equal('d1');
+        headers['HX-Trigger-Name'].should.be.equal('d1-name');
+        headers['HX-Target'].should.be.equal('target');
+    })
+
     it('handles message from the server', function () {
         var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div><div id="d2">div2</div></div>');
         this.tickMock();
