@@ -1463,10 +1463,12 @@ to generate a different `ETag` for each content.
 ## Security
 
 htmx allows you to define logic directly in your DOM.  This has a number of advantages, the largest being 
-[Locality of Behavior](@/essays/locality-of-behaviour.md), making your system more coherent.
+[Locality of Behavior](@/essays/locality-of-behaviour.md), which makes your system easier to understand and
+maintain.
 
-One concern with this approach, however, is security: since htmx increases the expressiveness of HTML, if a malicious
-user is able to inject HTML into your application they can leverage this expressiveness.
+A concern with this approach, however, is security: since htmx increases the expressiveness of HTML, if a malicious
+user is able to inject HTML into your application, they can leverage this expressiveness of htmx to malicious
+ends.
 
 ### Rule 1: Escape All User Content
 
@@ -1474,11 +1476,14 @@ The first rule of HTML-based web development has always been: *do not trust inpu
 3rd party, untrusted content that is injected into your site.  This is to prevent, among other issues, 
 [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting).
 
-The good news is that this is a very old and well known rule, and the vast majority of server-side templating languages
-support [automatic escaping](https://docs.djangoproject.com/en/4.2/ref/templates/language/#automatic-html-escaping) of
-content.
+There is extensive documentation on XSS and how to prevent it on the excellent [OWASP Website](https://owasp.org/www-community/attacks/xss/),
+including a [Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
 
-With that being said, there are times people choose to inject HTML more dangerously, often via some sort of `raw()`
+The good news is that this is a very old and well understood topic, and the vast majority of server-side templating languages
+support [automatic escaping](https://docs.djangoproject.com/en/4.2/ref/templates/language/#automatic-html-escaping) of
+content to prevent just such an issue.
+
+That being said, there are times people choose to inject HTML more dangerously, often via some sort of `raw()`
 mechanism in their templating language.  This can be done for good reasons, but if the content being injected is coming
 from a 3rd party then it _must_ be scrubbed, including removing attributes starting with `hx-` and `data-hx`, as well as
 inline `<script>` tags, etc.
@@ -1489,8 +1494,7 @@ allow, rather than to blacklist the ones you disallow.
 ### htmx Security Tools
 
 Of course, bugs happen and developers are not perfect, so it is good to have a layered approach to security for
-your web application.  Browsers have a built-in protection layer, [Content Security Policies](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP),
-which we will discuss [below](#csp-options).  But htmx provides tools to help secure your application as well.
+your web application, and htmx provides tools to help secure your application as well. 
 
 Let's take a look at them.
 
@@ -1498,8 +1502,8 @@ Let's take a look at them.
 
 The first tool htmx provides to help further secure your application is the [`hx-disable`](/attributes/hx-disable) 
 attribute.  This attribute will prevent processing of all htmx attributes on a given element, and on all elements within
-it.  So, for example, if you were including raw HTML content in a template (again, not recommended!) then you could place
-a div around the content with the `hx-disable` attribute on it:
+it.  So, for example, if you were including raw HTML content in a template (again, this is not recommended!) then you 
+could place a div around the content with the `hx-disable` attribute on it:
 
 ```html
 <div hx-disable>
@@ -1507,7 +1511,9 @@ a div around the content with the `hx-disable` attribute on it:
 </div>
 ```
 
-And htmx will not process any htmx-related attributes or features found in that content.
+And htmx will not process any htmx-related attributes or features found in that content.  This attribute cannot be
+disabled by injecting further content: if an `hx-disable` attribute is found anywhere in the parent hierarchy of an
+element, it will not be processed by htmx.
 
 #### `hx-history`
 
@@ -1552,13 +1558,22 @@ document.body.addEventListener('htmx:validateUrl', function (evt) {
 
 ### CSP Options
 
-Browsers provide excellent tools for further securing your web application.
+Browsers also provide tools for further securing your web application.  The most powerful tool available is a 
+[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP).  Using a CSP you can tell the
+browser to, for example, not issue requests to non-origin hosts, to not evaluate inline script tags, etc.
 
-//TODO buff out relevant CSP options
+Here is an example CSP in a `meta` tag:
 
 ```html
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'self'; default-src https;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
 ```
+
+This tells the browser "Only allow connections to the original (source) domain".  This would be redundant with the
+`htmx.config.selfRequestsOnly`, but a layered approach to security is warranted and, in fact, ideal, when dealing
+with application security.
+
+A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provide a good jumping off point
+for exploring this topic.
 
 ## Configuring htmx {#config}
 
