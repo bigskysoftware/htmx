@@ -2880,7 +2880,12 @@ return (function () {
             }
             var target = etc.targetOverride || getTarget(elt);
             if (target == null || target == DUMMY_ELT) {
-                triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
+                var missingTarget = getAttributeValue(elt, "hx-target");
+                if (missingTarget) {
+                    triggerErrorEvent(elt, 'htmx:targetError(' + missingTarget + ')', {target: missingTarget});
+                } else {
+                    triggerErrorEvent(elt, 'htmx:targetError', {target: missingTarget});
+                }
                 return;
             }
 
