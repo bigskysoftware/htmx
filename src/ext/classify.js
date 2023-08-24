@@ -1,3 +1,31 @@
+/**
+ * htmx 'classify' Extension:
+ * 
+ * The `classify` extension enhances htmx's ability to modify CSS class properties of an element
+ * based on user-defined directives. It provides support for adding, removing, replacing, and toggling
+ * classes, potentially with a specified revert time.
+ * 
+ * Usage:
+ * Include the `hx-classify` attribute on an element and define desired class actions.
+ * 
+ * Syntax:
+ * hx-classify="action:classes:revertTime"
+ * 
+ * - `action` can be one of ['add', 'remove', 'replace', 'toggle']
+ * - `classes` is a space-separated list of class names
+ * - `revertTime` is an optional duration after which the action should be reverted.
+ * 
+ * Example:
+ * <div hx-classify="add:newClass:5s"></div>
+ * This would add the class `newClass` to the div and remove it after 5 seconds.
+ * 
+ * Additionally, this extension automatically sets a `/noop-classify` endpoint for any elements
+ * with the `hx-classify` attribute but without a specified HTTP verb (like hx-get, hx-post, etc.)
+ * ensuring a fallback behavior.
+ * 
+ * Note: Ensure to use this extension judiciously to prevent unintended behaviors.
+ */
+
 htmx.defineExtension('classify', {
     onEvent: function(name, evt) {
         if (name === 'htmx:configRequest') {
