@@ -35,6 +35,7 @@ page_template = "essay.html"
 * [The Grug Brained Developer](https://grugbrain.dev)
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
+* [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 
 
 
