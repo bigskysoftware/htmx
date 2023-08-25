@@ -865,5 +865,48 @@ describe("hx-trigger attribute", function(){
         form.innerHTML.should.equal("Called!");
     })
 
+    it('modifier from with CSS descendant combinator should not end up in syntax error', function() {
+        this.server.respondWith('GET', '/test', 'Called');
 
-})
+        document.addEventListener('htmx:syntax:error', function(evt) {
+            chai.assert.fail('htmx:syntax:error');
+        });
+
+        make('<div class="d1"><a id="a1">Click me</a></div>');
+        var div = make('<div hx-trigger="click from:.d1 a once" hx-get="/test">Not Called</div>');
+
+        byId('a1').click();
+        this.server.respond();
+        div.innerHTML.should.equal("Called");
+    });
+
+    it('modifier target with CSS descendant combinator should not end up in syntax error', function() {
+        this.server.respondWith('GET', '/test', 'Called');
+
+        document.addEventListener('htmx:syntax:error', function(evt) {
+            chai.assert.fail('htmx:syntax:error');
+        });
+
+        make('<div class="d1"><a id="a1" class="a1">Click me</a><a id="a2" class="a2">Click me</a></div>');
+        var div = make('<div hx-trigger="click from:body target:.d1 .a2" hx-get="/test">Not Called</div>');
+
+        byId('a1').click();
+        this.server.respond();
+        div.innerHTML.should.equal("Not Called");
+
+        byId('a2').click();
+        this.server.respond();
+        div.innerHTML.should.equal("Called");
+    });
+
+    it('modifier root with CSS descendant combinator should not end up in syntax error', function() {
+        this.server.respondWith('GET', '/test', 'Called');
+
+        document.addEventListener('htmx:syntax:error', function(evt) {
+            chai.assert.fail('htmx:syntax:error');
+        });
+
+        make('<div hx-trigger="intersect root:form input" hx-get="/test">Not Called</div>');
+    });
+
+});
