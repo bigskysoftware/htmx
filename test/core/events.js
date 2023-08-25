@@ -391,7 +391,7 @@ describe("Core htmx Events", function() {
     it("htmx:sendError is called after a failed request", function (done) {
         if (IsIE11()) {
             // IE will throw an exception on xhr.open with the URL below, xhr.send won't even be called
-            this._runnable.title += " - Skipped on IE11"
+            this._runnable.title += " - Skipped on IE11 as xhr.send won't even be called with a file URL"
             this.skip()
             return
         }
