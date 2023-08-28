@@ -20,3 +20,6 @@ Want to contribute but don't know where to start? Look for issues with the "help
 1. Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www).
 1. Refactors that do not make functional changes will be automatically closed, unless explicitly solicited. Imagine someone came into your house unannounced, rearranged a bunch of furniture, and left.
 1. Typo fixes in documentation are welcome, but if it's at all debatable we might just close it.
+
+## Misc
+1. If you think we closed something incorrectly, feel free to (politely) tell us why! We're human and make mistakes.
