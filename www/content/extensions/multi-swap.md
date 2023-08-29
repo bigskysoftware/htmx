@@ -4,7 +4,7 @@ title = "multi-swap"
 
 This extension allows you to swap multiple elements marked with the `id` attribute from the HTML response. You can also choose for each element which [swap method](@/docs.md#swapping) should be used.
 
-Multi-swap can help in cases where OOB ([Out of Band Swaps](@/docs.md#oob_swaps)) is not enough for you. OOB requires HTML tags marked with `hx-swap-oob` attributes to be at the TOP level of HTML, which significantly limited its use. With OOB is not possible to swap multiple elements arbitrarily placed and nested in the DOM tree.
+Multi-swap can help in cases where OOB ([Out of Band Swaps](@/docs.md#oob_swaps)) is not enough for you. OOB requires HTML tags marked with `hx-swap-oob` attributes to be at the TOP level of HTML, which significantly limited its use. With OOB, it's impossible to swap multiple elements arbitrarily placed and nested in the DOM tree.
 
 It is a very powerful tool in conjunction with `hx-boost` and `preload` extension.
 
