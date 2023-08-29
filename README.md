@@ -33,7 +33,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -62,15 +62,9 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 * <https://htmx.org/docs>
 
 ## contributing
+Want to contribute? Check out our [contribution guidelines](CONTRIBUTING.md)
 
-* All PRs should be made against the `dev` branch, except documentation PRs (`www/` directory) which can be made against `master`
-* Please write code, including tests, in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11)
-* Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www)
-* Search the issues before proposing a feature to see if it is already under discussion
-* If you are adding a feature, consider doing it as an [extension](https://htmx.org/extensions) instead to keep the core htmx code tidy
-* Want to contribute but don't know where to start? Look for issues with the "help wanted" tag
-* Refactors that do not make functional changes will be automatically closed, unless explicitly solicited (documentation typo fixes are fine)
-* No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
+No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
 ### hacking guide
 
