@@ -2289,7 +2289,7 @@ return (function () {
                 currentPathForHistory = path;
                 triggerEvent(getDocument().body, "htmx:historyRestore", {path:path, item:cached});
             } else {
-                saveCurrentPageToHistory();
+                saveCurrentPageToHistory(false);
                 if (htmx.config.refreshOnHistoryMiss) {
 
                     // @ts-ignore: optional parameter in reload() function throws error
