@@ -12,19 +12,25 @@ title = "htmx webring"
   #webring-div {
     font-family: Times New Roman;
   }
+
+@media only screen and (max-width: 720px) {
+  .built-with-tds {
+     display:none;
+  }
+}
 </style>
 
-<div id="webring-div" style="min-width: 620px; display: flex; flex-flow: column;height: 100vh">
+<div id="webring-div">
 
 <table id="nav-table" style="border: black 4px double; text-align: center">
 <tr>
-  <td style="border: 1px black solid">
+  <td class="built-with-tds" style="border: 1px black solid">
     <img width="200px" src="/img/createdwith.jpeg">
   </td>
   <td  width="70%" style="text-align: center; font-size: 20px; border: 1px black solid">
      This Great <a href="https://htmx.org">htmx</a> Webring site is owned by <a href="https://bigsky.software">Your Name Here</a>.
   </td>
-  <td style="; border: 1px black solid"">
+  <td class="built-with-tds" style="; border: 1px black solid"">
     <img width="200px" src="/img/createdwith.jpeg">
   </td>
 </tr>
@@ -56,14 +62,14 @@ title = "htmx webring"
              ">Next</a>]<br/>
     [<a href="#" id="show-sites"
         _="on click 
-             transition #webring's height to 0px then
+             hide the #webring
              transition #site-table's height to 100% then 
              hide me then
              show #return-to-webring">List Sites</a><a id="return-to-webring"
         style="display: none"
         _="on click 
              transition #site-table's height to 0px then
-             transition #webring's height to 'calc(100vh - 250px)' then 
+             show the #webring
              hide me then
              show #show-sites">Return To Webring</a>]
 </td>
@@ -85,5 +91,6 @@ title = "htmx webring"
 </table>
 </div>
 
-<iframe id="webring" src="https://www.commspace.co.za" style="position:fixed;right:0;left:0;bottom:0;height:calc(100vh - 250px);width:100%;" name="webring"></iframe>
 </div>
+
+<iframe id="webring" src="https://www.commspace.co.za" style="position:fixed;right:0;left:0;bottom:0;top:250px;width:100%;height:100%" name="webring"></iframe>
