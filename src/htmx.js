@@ -2448,6 +2448,7 @@ return (function () {
                 var button = internalData.lastButtonClicked || elt
                 var name = getRawAttribute(button, "name")
                 addValueToValues(name, button.value, formValues)
+                internalData.lastButtonClicked = null;
             }
 
             // include any explicit includes

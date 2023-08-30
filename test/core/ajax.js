@@ -1064,14 +1064,19 @@ describe("Core htmx AJAX Tests", function(){
             xhr.respond(204, {}, "");
         });
 
-        make('<form id="externalForm" hx-post="/test">' +
-            '<input type="text" name="t1" value="textValue">' +
+        make('<form id="externalForm" hx-post="/test" hx-trigger="input from:#idText">' +
+            '<input id="idText" type="text" name="t1" value="textValue">' +
             '</form>' +
             '<button id="submit" form="externalForm" type="submit" name="b1" value="buttonValue">button</button>');
 
         byId("submit").click();
         this.server.respond();
-        values.should.deep.equal({t1: 'textValue', b1: 'buttonValue'});
+        values.should.deep.equal({ t1: 'textValue', b1: 'buttonValue' });
+
+        // don't include the button if the form is submitted again a different way
+        input("idText").value = "newTextValue";
+        this.server.respond();
+        values.should.deep.equal({ t1: 'newTextValue', b2: 'button2Value' });
     })
 
     it('properly handles clicked submit input with a value outside a htmx form', function () {
