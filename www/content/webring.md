@@ -63,12 +63,14 @@ title = "htmx webring"
     [<a href="#" id="show-sites"
         _="on click 
              transition the #webring's opacity to 0
+             hide the #webring
              transition #site-table's height to 100% over 300ms then 
              hide me then
              show #return-to-webring">List Sites</a><a id="return-to-webring"
         style="display: none"
         _="on click 
              transition #site-table's height to 0px over 800ms then
+             show the #webring
              transition the #webring's opacity to 100%
              hide me then
              show #show-sites">Return To Webring</a>]
