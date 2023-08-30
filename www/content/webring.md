@@ -35,8 +35,11 @@ title = "htmx webring"
   </td>
 </tr>
 <tr>
-<td colspan="3" style="text-align: center; ; border: 1px black solid">
-    [<a href="#" _="on click
+<td colspan="3" style="text-align: center; ; border: 1px black solid; position: relative">
+    [<a
+         class="nav-link"
+         href="#" 
+         _="on click
              set links to <a/> in the #ring-table
              decrement :index
              if :index is -1
@@ -46,12 +49,12 @@ title = "htmx webring"
              log :index
              get links[:index]
              set the #webring's src to the result's @href
-             ">Prev</a>][<a href="#" _="on click
+             ">Prev</a>][<a href="#" class="nav-link" _="on click
              set links to <a/> in the #ring-table
              set :index to Math.floor(Math.random() * length of the links)
              get links[:index]
              set the #webring's src to the result's @href
-             ">Random</a>][<a href="#" _="on click
+             ">Random</a>][<a href="#" class="nav-link" _="on click
              set links to <a/> in the #ring-table
              increment :index
              if :index is length of the links
@@ -74,6 +77,12 @@ title = "htmx webring"
              transition the #webring's opacity to 100%
              hide me then
              show #show-sites">Return To Webring</a>]
+   <img src="/img/navigator.gif"
+        _="on click from .nav-link
+              log 'here'
+              transition my opacity to 100%
+            on load from #webring
+              transition my opacity to 0%" style="opacity: 0; float: right; width: 38px; position:absolute; right:2px; bottom: 2px">
 </td>
 </tr>
 </table>
