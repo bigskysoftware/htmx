@@ -97,6 +97,7 @@ To accommodate touchscreen devices, an additional `ontouchstart` event handler i
 * Links must be marked with a `preload` attribute, or have an ancestor node that has the `preload` attribute.
 * Only `GET` transactions (including `<a href="">` and `hx-get=""`) can be preloaded.  Following REST principles, `GET` transactions are assumed to not make any significant changes to a resource.  Transactions that can potentially make a change (such as `POST`, `PUT`, and `DELETE`) will not be preloaded under any circumstances.
 * When listening to `mouseover` events, preload waits for 100ms before downloading the linked resource.  If the mouse leaves the resource before this timeout expires, the resource is not preloaded.
+* Preloaded responses will only be cached in the browser if the response headers allow it. For example, the response header `Cache-Control: private, max-age=60` allows the browser to cache the response, whereas `Cache-Control: no-cache` prevents it.
 
 ## Credits
 
