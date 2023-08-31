@@ -51,7 +51,11 @@ title = "htmx webring"
              set the #webring's src to the result's @href
              ">Prev</a>][<a href="#" class="nav-link" _="on click
              set links to <a/> in the #ring-table
-             set :index to Math.floor(Math.random() * length of the links)
+             get the :index
+             repeat until the result is not :index
+                get Math.floor(Math.random() * length of the links)
+             end
+             set the :index to the result
              get links[:index]
              set the #webring's src to the result's @href
              ">Random</a>][<a href="#" class="nav-link" _="on click
@@ -98,6 +102,7 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://www.contexte.com/">Contexte</a></td><td>L’écosystème politique, au-delà des politiques publiques sectorielles : les métiers, les gens, les textes, les institutions</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://ocaml.org/">ocaml.org</a></td><td>An industrial-strength functional programming language with an emphasis on expressiveness and safety</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://www.nikevision.com/">Nike Vision</a></td><td>Eye-wear</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://vanillaweather.com/">Vanilla Weather</a></td><td>No ads. No tracking. Just the weather.</td></tr>
 </tbody>
 </table>
 </div>
