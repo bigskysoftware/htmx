@@ -297,5 +297,17 @@ describe("hx-swap attribute", function(){
         }
     });
 
+    it('hx-swap ignoreTitle works', function()
+    {
+        window.document.title = "Test Title";
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, "<title class=''>htmx rocks!</title>Clicked!");
+        });
+        var btn = make('<button hx-get="/test" hx-swap="innerHTML ignoreTitle:true">Click Me!</button>')
+        btn.click();
+        this.server.respond();
+        btn.innerText.should.equal("Clicked!");
+        window.document.title.should.equal("Test Title");
+    });
 
 })

@@ -2611,6 +2611,10 @@ return (function () {
                         if (modifier.indexOf("transition:") === 0) {
                             swapSpec["transition"] = modifier.substr(11) === "true";
                         }
+                        if (modifier.indexOf("ignoreTitle:") === 0) {
+                            console.log("here");
+                            swapSpec["ignoreTitle"] = modifier.substr(12) === "true";
+                        }
                         if (modifier.indexOf("scroll:") === 0) {
                             var scrollSpec = modifier.substr(7);
                             var splitSpec = scrollSpec.split(":");
@@ -3284,6 +3288,7 @@ return (function () {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
             var etc = responseInfo.etc;
+            var requestConfig = responseInfo.requestConfig;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -3332,12 +3337,14 @@ return (function () {
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
             var isError = xhr.status >= 400;
-            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError}, responseInfo);
+            var ignoreTitle = htmx.config.ignoreTitle
+            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle }, responseInfo);
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
+            ignoreTitle = beforeSwapDetails.ignoreTitle; // allow updating ignoring title
 
             responseInfo.target = target; // Make updated target available to response events
             responseInfo.failed = isError; // Make failed property available to response events
@@ -3362,6 +3369,10 @@ return (function () {
                     swapOverride = xhr.getResponseHeader("HX-Reswap");
                 }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
+
+                if (swapSpec.hasOwnProperty('ignoreTitle')) {
+                    ignoreTitle = swapSpec.ignoreTitle;
+                }
 
                 target.classList.add(htmx.config.swappingClass);
 
@@ -3456,7 +3467,9 @@ return (function () {
                                 }
                             }
 
-                            if(settleInfo.title) {
+                            console.log("here1", ignoreTitle)
+                            if(settleInfo.title && !ignoreTitle) {
+                                console.log("here2")
                                 var titleElt = find("title");
                                 if(titleElt) {
                                     titleElt.innerHTML = settleInfo.title;

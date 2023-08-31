@@ -129,6 +129,7 @@ the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavio
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
+* `detail.ignoreTitle` - if `true` any title tag in the response will be ignored
 * `detail.target` - the target of the swap
 
 ### Event - `htmx:beforeTransition` {#htmx:beforeTransition}
