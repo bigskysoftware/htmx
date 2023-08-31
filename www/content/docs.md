@@ -114,7 +114,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-TODO" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).

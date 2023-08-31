@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.6] - ???
+
 ## [1.9.5] - 2023-08-25
 
 * Web sockets now properly pass the target id in the HEADERS struct
