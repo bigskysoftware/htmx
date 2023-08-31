@@ -2612,7 +2612,6 @@ return (function () {
                             swapSpec["transition"] = modifier.substr(11) === "true";
                         }
                         if (modifier.indexOf("ignoreTitle:") === 0) {
-                            console.log("here");
                             swapSpec["ignoreTitle"] = modifier.substr(12) === "true";
                         }
                         if (modifier.indexOf("scroll:") === 0) {
@@ -3467,9 +3466,7 @@ return (function () {
                                 }
                             }
 
-                            console.log("here1", ignoreTitle)
                             if(settleInfo.title && !ignoreTitle) {
-                                console.log("here2")
                                 var titleElt = find("title");
                                 if(titleElt) {
                                     titleElt.innerHTML = settleInfo.title;
