@@ -29,6 +29,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Value Select](@/examples/value-select.md) | Demonstrates making the values of a select dependent on another select
 | [Animations](@/examples/animations.md) | Demonstrates various animation techniques
 | [File Upload](@/examples/file-upload.md) | Demonstrates how to upload a file via ajax with a progress bar
+| [Preserving File Inputs after Form Errors](@/examples/file-upload-input.md) | Demonstrates how to preserve file inputs after form errors
 | [Dialogs - Browser](@/examples/dialogs.md) | Demonstrates the prompt and confirm dialogs
 | [Dialogs - UIKIt](@/examples/modal-uikit.md) | Demonstrates modal dialogs using UIKit
 | [Dialogs - Bootstrap](@/examples/modal-bootstrap.md) | Demonstrates modal dialogs using Bootstrap
