@@ -618,10 +618,7 @@ differently.
 Note that htmx fires a `htmx:xhr:progress` event periodically based on the standard `progress` event during upload,
 which you can hook into to show the progress of the upload.
 
-<ul>
-    <li>
-    [How to preserve File Inputs after Server-Side Error Form Handling](@/examples/file-upload-input.md)</li>
-</ul>
+See the [examples section](@/examples/_index.md) for more advanced form patterns, including [progress bars](@/examples/file-upload.md) and [error handling](@/examples/file-upload-input.md).
 
 #### Extra Values
 
