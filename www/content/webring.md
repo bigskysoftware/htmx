@@ -103,7 +103,8 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://ocaml.org/">ocaml.org</a></td><td>An industrial-strength functional programming language with an emphasis on expressiveness and safety</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://www.nikevision.com/">Nike Vision</a></td><td>Eye-wear</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://vanillaweather.com/">Vanilla Weather</a></td><td>No ads. No tracking. Just the weather.</td></tr>
-  <tr><td><a rel="nofollow" target="_blank" href="https://turboscribe.ai//">TurboScribe</a></td><td>TurboScribe’s mission is to deliver world-class AI transcription at an unbeatable price.</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://turboscribe.ai/">TurboScribe</a></td><td>TurboScribe’s mission is to deliver world-class AI transcription at an unbeatable price.</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://xrss.infogulch.com">XRSS</a></td><td>A simple RSS reader inspired by Google Reader</td></tr>
 </tbody>
 </table>
 </div>
