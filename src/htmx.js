@@ -2880,12 +2880,15 @@ return (function () {
             var responseHandler = etc.handler || handleAjaxResponse;
 
             if (!bodyContains(elt)) {
-                return; // do not issue requests for elements removed from the DOM
+                // do not issue requests for elements removed from the DOM
+                maybeCall(resolve);
+                return promise;
             }
             var target = etc.targetOverride || getTarget(elt);
             if (target == null || target == DUMMY_ELT) {
                 triggerErrorEvent(elt, 'htmx:targetError', {target: getAttributeValue(elt, "hx-target")});
-                return;
+                maybeCall(reject);
+                return promise;
             }
 
             // allow event-based confirmation w/ a callback
@@ -2895,7 +2898,8 @@ return (function () {
                 }
                 var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest};
                 if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
-                    return;
+                    maybeCall(resolve);
+                    return promise;
                 }
             }
 
@@ -2916,10 +2920,12 @@ return (function () {
                 syncStrategy = (syncStrings[1] || 'drop').trim();
                 eltData = getInternalData(syncElt);
                 if (syncStrategy === "drop" && eltData.xhr && eltData.abortable !== true) {
-                    return;
+                    maybeCall(resolve);
+                    return promise;
                 } else if (syncStrategy === "abort") {
                     if (eltData.xhr) {
-                        return;
+                        maybeCall(resolve);
+                        return promise;
                     } else {
                         abortable = true;
                     }
@@ -2963,7 +2969,8 @@ return (function () {
                             issueAjaxRequest(verb, path, elt, event, etc)
                         });
                     }
-                    return;
+                    maybeCall(resolve);
+                    return promise;
                 }
             }
 
@@ -3094,7 +3101,8 @@ return (function () {
 
             if (!verifyPath(elt, finalPath, requestConfig)) {
                 triggerErrorEvent(elt, 'htmx:invalidPath', requestConfig)
-                return;
+                maybeCall(reject);
+                return promise;
             };
 
             xhr.open(verb.toUpperCase(), finalPath, true);
