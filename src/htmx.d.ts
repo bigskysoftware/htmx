@@ -19,6 +19,7 @@ export function addClass(elt: Element, clazz: string, delay?: number): void;
  * @param verb 'GET', 'POST', etc.
  * @param path the URL path to make the AJAX
  * @param element the element to target (defaults to the **body**)
+ * @returns Promise that resolves immediately if no request is sent, or when the request is complete
  */
 export function ajax(verb: string, path: string, element: Element): Promise<void>;
 
@@ -30,6 +31,7 @@ export function ajax(verb: string, path: string, element: Element): Promise<void
  * @param verb 'GET', 'POST', etc.
  * @param path the URL path to make the AJAX
  * @param selector a selector for the target
+ * @returns Promise that resolves immediately if no request is sent, or when the request is complete
  */
 export function ajax(verb: string, path: string, selector: string): Promise<void>;
 
@@ -41,6 +43,7 @@ export function ajax(verb: string, path: string, selector: string): Promise<void
  * @param verb 'GET', 'POST', etc.
  * @param path the URL path to make the AJAX
  * @param context a context object that contains any of the following
+ * @returns Promise that resolves immediately if no request is sent, or when the request is complete
  */
 export function ajax(
     verb: string,
