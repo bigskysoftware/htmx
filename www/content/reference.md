@@ -136,6 +136,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:afterRequest`](@/events.md#htmx:afterRequest)  | triggered after an AJAX request has completed
 | [`htmx:afterSettle`](@/events.md#htmx:afterSettle)  | triggered after the DOM has settled
 | [`htmx:afterSwap`](@/events.md#htmx:afterSwap)  | triggered after new content has been swapped in
+| [`htmx:beforeCleanupElement`](@/events.md#htmx:beforeCleanupElement)  | triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM
 | [`htmx:beforeOnLoad`](@/events.md#htmx:beforeOnLoad)  | triggered before any response processing occurs
 | [`htmx:beforeProcessNode`](@/events.md#htmx:beforeProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)  | triggered before an AJAX request is made
