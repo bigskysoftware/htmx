@@ -75,6 +75,14 @@ This event is triggered after new content has been [swapped into the DOM](@/docs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### Event - `htmx:beforeCleanupElement` {#htmx:beforeCleanupElement}
+
+This event is triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM.
+
+##### Details
+
+* `detail.elt` - the cleaned up element
+
 ### Event - `htmx:beforeOnLoad` {#htmx:beforeOnLoad}
 
 This event is triggered before any response processing occurs.  If the event is cancelled, no swap will occur.
