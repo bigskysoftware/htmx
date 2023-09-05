@@ -9,6 +9,10 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 	/** @type {import("../htmx").HtmxInternalApi} */
 	var api;
+  /**
+   * dictionary of url <- EventSource
+   */
+  var eventSourceCache = {};
 
 	htmx.defineExtension("sse", {
 
@@ -119,7 +123,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		var internalData = api.getInternalData(elt);
 
 		// get URL from element's attribute
-		var sseURL = api.getAttributeValue(elt, "sse-connect");
+		var sseURL = api.getClosestAttributeValue(elt, "sse-connect");
 
 
 		if (sseURL == undefined) {
@@ -132,7 +136,11 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		}
 
 		// Connect to the EventSource
-		var source = htmx.createEventSource(sseURL);
+		var source = eventSourceCache[sseURL];
+    if(source == null) {
+      source = htmx.createEventSource(sseURL);
+    }
+    
 		internalData.sseEventSource = source;
 
 		// Create event handlers
