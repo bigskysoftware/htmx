@@ -136,11 +136,12 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		}
 
 		// Connect to the EventSource
-		var source = eventSourceCache[sseURL];
+    var source = eventSourceCache[sseURL];
     if(source == null) {
       source = htmx.createEventSource(sseURL);
+      eventSourceCache[sseURL] = source;
     }
-    
+        
 		internalData.sseEventSource = source;
 
 		// Create event handlers
