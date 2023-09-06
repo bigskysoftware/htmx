@@ -2,6 +2,11 @@ describe("hyperscript integration", function() {
     beforeEach(function () {
         this.server = makeServer();
         clearWorkArea();
+
+        if (IsIE11()) {
+            this.title += " - Skipped as hyperscript isn't IE11 compatible"
+            this.skip()
+        }
     });
     afterEach(function () {
         this.server.restore();

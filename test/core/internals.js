@@ -22,7 +22,11 @@ describe("Core htmx internals Tests", function() {
     })
 
     it("makeFragment works with template wrapping", function(){
-        htmx.config.useTemplateFragments = true;
+        if (!supportsTemplates()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support templates"
+            this.skip()
+            return
+        }
         try {
             htmx._("makeFragment")("<html></html>").children.length.should.equal(0);
             htmx._("makeFragment")("<html><body></body></html>").children.length.should.equal(0);
@@ -46,6 +50,11 @@ describe("Core htmx internals Tests", function() {
 
 
     it("makeFragment works with template wrapping and funky combos", function(){
+        if (!supportsTemplates()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support templates"
+            this.skip()
+            return
+        }
         htmx.config.useTemplateFragments = true;
         try {
             var fragment = htmx._("makeFragment")("<td></td><div></div>");

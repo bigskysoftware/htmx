@@ -573,9 +573,17 @@ return (function () {
             }
         }
 
+        function startsWith(str, prefix) {
+            return str.substring(0, prefix.length) === prefix
+        }
+
+        function endsWith(str, suffix) {
+            return str.substring(str.length - suffix.length) === suffix
+        }
+
         function normalizeSelector(selector) {
             var trimmedSelector = selector.trim();
-            if (trimmedSelector.startsWith("<") && trimmedSelector.endsWith("/>")) {
+            if (startsWith(trimmedSelector, "<") && endsWith(trimmedSelector, "/>")) {
                 return trimmedSelector.substring(1, trimmedSelector.length - 2);
             } else {
                 return trimmedSelector;
@@ -1864,12 +1872,25 @@ return (function () {
         }
 
         function findHxOnWildcardElements(elt) {
-            if (!document.evaluate) return []
+            var node = null
+            var elements = []
 
-            let node = null
-            const elements = []
-            const iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
-            while (node = iter.iterateNext()) elements.push(node)
+            if (document.evaluate) {
+                var iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+                while (node = iter.iterateNext()) elements.push(node)
+            } else {
+                var allElements = document.getElementsByTagName("*")
+                for (var i = 0; i < allElements.length; i++) {
+                    var attributes = allElements[i].attributes
+                    for (var j = 0; j < attributes.length; j++) {
+                        var attrName = attributes[j].name
+                        if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:")) {
+                            elements.push(allElements[i])
+                        }
+                    }
+                }
+            }
+
             return elements
         }
 
@@ -1975,10 +1996,10 @@ return (function () {
             for (var i = 0; i < elt.attributes.length; i++) {
                 var name = elt.attributes[i].name
                 var value = elt.attributes[i].value
-                if (name.startsWith("hx-on:") || name.startsWith("data-hx-on:")) {
+                if (startsWith(name, "hx-on:") || startsWith(name, "data-hx-on:")) {
                     let eventName = name.slice(name.indexOf(":") + 1)
                     // if the eventName starts with a colon, prepend "htmx" for shorthand support
-                    if (eventName.startsWith(":")) eventName = "htmx" + eventName
+                    if (startsWith(eventName, ":")) eventName = "htmx" + eventName
 
                     addHxOnEventHandler(elt, eventName, value)
                 }
@@ -2207,7 +2228,13 @@ return (function () {
             // so we can prevent privileged data entering the cache.
             // The page will still be reachable as a history entry, but htmx will fetch it
             // live from the server onpopstate rather than look in the localStorage cache
-            var disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]');
+            var disableHistoryCache
+            try {
+                disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
+            } catch (e) {
+                // IE11: insensitive modifier not supported so fallback to case sensitive selector
+                disableHistoryCache = getDocument().querySelector('[hx-history="false"],[data-hx-history="false"]')
+            }
             if (!disableHistoryCache) {
                 triggerEvent(getDocument().body, "htmx:beforeHistorySave", {path: path, historyElt: elt});
                 saveToHistoryCache(path, cleanInnerHtmlForHistory(elt), getDocument().title, window.scrollY);
@@ -2220,7 +2247,7 @@ return (function () {
             // remove the cache buster parameter, if any
             if (htmx.config.getCacheBusterParam) {
                 path = path.replace(/org\.htmx\.cache-buster=[^&]*&?/, '')
-                if (path.endsWith('&') || path.endsWith("?")) {
+                if (endsWith(path, '&') || endsWith(path, "?")) {
                     path = path.slice(0, -1);
                 }
             }
@@ -2856,9 +2883,18 @@ return (function () {
         }
 
         function verifyPath(elt, path, requestConfig) {
-            var url = new URL(path, document.location.href);
-            var origin = document.location.origin;
-            var sameHost = origin === url.origin;
+            var sameHost
+            var url
+            if (typeof URL === "function") {
+                url = new URL(path, document.location.href);
+                var origin = document.location.origin;
+                sameHost = origin === url.origin;
+            } else {
+                // IE11 doesn't support URL
+                url = path
+                sameHost = startsWith(path, document.location.origin)
+            }
+
             if (htmx.config.selfRequestsOnly) {
                 if (!sameHost) {
                     return false;

@@ -39,7 +39,7 @@
     "chai": "^4.3.7",
     "chai-dom": "^1.11.0",
     "fs-extra": "^9.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^9.2.2",
     "mocha-chrome": "^2.2.0",
     "mocha-webdriver-runner": "^0.6.4",
     "mock-socket": "^9.2.1",

@@ -841,7 +841,9 @@ describe("Core htmx AJAX Tests", function(){
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
-        btn.innerText.should.equal("Clicked!");
+        if (supportsSvgTitles()) { // IE 11
+            btn.innerText.should.equal("Clicked!");
+        }
         window.document.title.should.equal(originalTitle);
     });
 
@@ -855,7 +857,9 @@ describe("Core htmx AJAX Tests", function(){
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
-        btn.innerText.should.equal("Clicked!");
+        if (supportsSvgTitles()) { // IE 11
+            btn.innerText.should.equal("Clicked!");
+        }
         window.document.title.should.equal(newTitle);
     });
 
@@ -1058,6 +1062,11 @@ describe("Core htmx AJAX Tests", function(){
     })
 
     it('properly handles clicked submit button with a value outside a htmx form', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
         var values;
         this.server.respondWith("Post", "/test", function (xhr) {
             values = getParameters(xhr);
@@ -1075,6 +1084,11 @@ describe("Core htmx AJAX Tests", function(){
     })
 
     it('properly handles clicked submit input with a value outside a htmx form', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
         var values;
         this.server.respondWith("Post", "/test", function (xhr) {
             values = getParameters(xhr);
@@ -1146,6 +1160,11 @@ describe("Core htmx AJAX Tests", function(){
     })
 
     it('properly handles clicked submit button with a value inside a form, referencing another form', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
         var values;
         this.server.respondWith("Post", "/test", function (xhr) {
             values = getParameters(xhr);
@@ -1166,6 +1185,11 @@ describe("Core htmx AJAX Tests", function(){
     })
 
     it('properly handles clicked submit input with a value inside a form, referencing another form', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
         var values;
         this.server.respondWith("Post", "/test", function (xhr) {
             values = getParameters(xhr);

@@ -129,6 +129,12 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it('a form can reset based on the htmx:afterRequest event', function() {
+        if (IsIE11()) {
+            this._runnable.title += " - Skipped as hyperscript isn't IE11 compatible"
+            this.skip()
+            return
+        }
+
         this.server.respondWith("POST", "/test", "posted");
 
         var form = make('<div id="d1"></div><form _="on htmx:afterRequest reset() me" hx-post="/test" hx-target="#d1">' +
