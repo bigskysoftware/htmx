@@ -1348,7 +1348,7 @@ return (function () {
                 var verb, path;
                 if (elt.tagName === "A") {
                     verb = "get";
-                    path = elt.href; // DOM property gives the fully resolved href of a relative link
+                    path = getRawAttribute(elt, 'href')
                 } else {
                     var rawAttribute = getRawAttribute(elt, "method");
                     verb = rawAttribute ? rawAttribute.toLowerCase() : "get";

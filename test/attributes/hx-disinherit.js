@@ -101,7 +101,7 @@ describe("hx-disinherit attribute", function() {
             var link = byId("a1");
             link.click();
             // should match the fully resolved href of the boosted element
-            should.equal(request.detail.requestConfig.path, request.detail.elt.href);
+            should.equal(request.detail.requestConfig.path, '/test');
             should.equal(request.detail.elt["htmx-internal-data"].boosted, true);
         } finally {
             htmx.off("htmx:beforeRequest", handler);
