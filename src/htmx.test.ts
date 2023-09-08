@@ -59,7 +59,7 @@ var myEventListener = htmx.on("#my-div", "click", function (evt) {
     console.log(evt);
 });
 
-const MyLibrary: any = null;
+const MyLibrary = null;
 
 htmx.onLoad(function (elt) {
     MyLibrary.init(elt);
