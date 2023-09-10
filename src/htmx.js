@@ -2927,6 +2927,21 @@ return (function () {
                 return;
             }
 
+            var eltData = getInternalData(elt);
+            var submitter = eltData.lastButtonClicked;
+
+            if (submitter) {
+                var buttonPath = getRawAttribute(submitter, "formaction");
+                if (buttonPath != null) {
+                    path = buttonPath;
+                }
+
+                var buttonVerb = getRawAttribute(submitter, "formmethod")
+                if (buttonVerb != null) {
+                    verb = buttonVerb;
+                }
+            }
+
             // allow event-based confirmation w/ a callback
             if (!confirmed) {
                 var issueRequest = function() {
@@ -2939,7 +2954,6 @@ return (function () {
             }
 
             var syncElt = elt;
-            var eltData = getInternalData(elt);
             var syncStrategy = getClosestAttributeValue(elt, "hx-sync");
             var queueStrategy = null;
             var abortable = false;
