@@ -2453,6 +2453,9 @@ return (function () {
             var formValues = {};
             var errors = [];
             var internalData = getInternalData(elt);
+            if (internalData.lastButtonClicked && !bodyContains(internalData.lastButtonClicked)) {
+                internalData.lastButtonClicked = null
+            }
 
             // only validate when form is directly submitted and novalidate or formnovalidate are not set
             // or if the element has an explicit hx-validate="true" on it
