@@ -21,7 +21,7 @@ fs.copySync("src/", currentReleaseRoot + "/src");
 var testHTML = "<html><body style='font-family: sans-serif'><h1>HTMX TESTS</h1><ul>\n"
 fs.readdirSync(testRoot).reverse().forEach(function (file) {
         if (file !== "index.html") {
-                testHTML += "<li><a href='/test/" + file + "/test'>" + file + "</a>\n";
+                testHTML += "<li><a href='/test/" + file + "/test'>" + file + "</a></li>\n";
         }
 });
 testHTML += "</ul></body>"
