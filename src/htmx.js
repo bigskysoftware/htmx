@@ -3307,16 +3307,17 @@ return (function () {
                 return;
             }
 
+            var shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && "true" === xhr.getResponseHeader("HX-Refresh");
+
             if (hasHeader(xhr, /HX-Redirect:/i)) {
                 location.href = xhr.getResponseHeader("HX-Redirect");
+                shouldRefresh && location.reload();
                 return;
             }
 
-            if (hasHeader(xhr,/HX-Refresh:/i)) {
-                if ("true" === xhr.getResponseHeader("HX-Refresh")) {
-                    location.reload();
-                    return;
-                }
+            if (shouldRefresh) {
+                location.reload();
+                return;
             }
 
             if (hasHeader(xhr,/HX-Retarget:/i)) {
