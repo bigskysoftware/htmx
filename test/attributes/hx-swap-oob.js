@@ -128,5 +128,41 @@ describe("hx-swap-oob attribute", function () {
         this.server.respond();
         should.equal(byId("d1"), null);
     });
+
+    it('oob swap and table body can be combined', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="true" id="d1">Clicked</div><tbody id="tb"><tr><td>Row1</td></tr><tr><td>Row2</td></tr></tbody>');
+
+        var table = make('<table hx-get="/test"><tbody><tr><td></td></tr></tbody></table>');
+        make('<div id="d1">Foo</div>')
+        table.click();
+        this.server.respond();
+        byId('tb').innerHTML.should.equal('<tr><td>Row1</td></tr><tr><td>Row2</td></tr>');
+        byId('d1').innerHTML.should.equal('Clicked');
+    });
+
+    it('oob swap and table rows can be combined', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="true" id="d1"><div>Clicked</div></div><tr><td>Row1</td></tr><tr><td>Row2</td></tr>');
+
+        var table = make('<table hx-get="/test" hx-target="#tb"><tbody id="tb"><tr><td></td></tr></tbody></table>');
+        make('<div id="d1">Foo</div>')
+        table.click();
+        this.server.respond();
+        byId('tb').innerHTML.should.equal('<tr><td>Row1</td></tr><tr><td>Row2</td></tr>');
+        byId('d1').innerHTML.should.equal('<div>Clicked</div>');
+    });
+
+    it('oob swap and table columns can be combined', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="true" id="d1"><div>Clicked</div></div><td>Col1</td><td>Col2</td>');
+
+        var table = make('<table hx-get="/test" hx-target="#tr"><tbody><tr id="tr"><td></td></tr></tbody></table>');
+        make('<div id="d1">Foo</div>')
+        table.click();
+        this.server.respond();
+        byId('tr').innerHTML.should.equal('<td>Col1</td><td>Col2</td>');
+        byId('d1').innerHTML.should.equal('<div>Clicked</div>');
+    });
 });
 

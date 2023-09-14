@@ -236,20 +236,6 @@ return (function () {
         }
 
         /**
-         * @param {string} str
-         * @returns {string}
-         */
-        function getStartTag(str) {
-            var tagMatcher = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i
-            var match = tagMatcher.exec( str );
-            if (match) {
-                return match[1].toLowerCase();
-            } else {
-                return "";
-            }
-        }
-
-        /**
          *
          * @param {string} resp
          * @param {number} depth
@@ -273,44 +259,116 @@ return (function () {
             return responseNode;
         }
 
-        function aFullPageResponse(resp) {
-            return resp.match(/<body/);
-        }
+        // Regex for element, custom element and comment start tag.
+        // This regex supports more characters to be valid in tag names as defined in the HTML specs.
+        // https://html.spec.whatwg.org/multipage/syntax.html#start-tags
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
+        var START_TAG_REGEX = new RegExp('<([a-zA-Z][^\\s>]*)[^>]*>|<!--', 'g');
 
         /**
-         *
          * @param {string} resp
          * @returns {Element}
          */
         function makeFragment(resp) {
-            var partialResponse = !aFullPageResponse(resp);
+            var partialResponse = !resp.match(/<body/);
             if (htmx.config.useTemplateFragments && partialResponse) {
                 var documentFragment = parseHTML("<body><template>" + resp + "</template></body>", 0);
                 // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangeably?
                 return documentFragment.querySelector('template').content;
             } else {
-                var startTag = getStartTag(resp);
-                switch (startTag) {
-                    case "thead":
-                    case "tbody":
-                    case "tfoot":
-                    case "colgroup":
-                    case "caption":
-                        return parseHTML("<table>" + resp + "</table>", 1);
-                    case "col":
-                        return parseHTML("<table><colgroup>" + resp + "</colgroup></table>", 2);
-                    case "tr":
-                        return parseHTML("<table><tbody>" + resp + "</tbody></table>", 2);
-                    case "td":
-                    case "th":
-                        return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
-                    case "script":
-                    case "style":
-                        return parseHTML("<div>" + resp + "</div>", 1);
-                    default:
-                        return parseHTML(resp, 0);
+                var appendChildNodes = function(targetElt, node) {
+                    while (node.hasChildNodes()) {
+                        targetElt.append(node.childNodes[0]);
+                    }
+                };
+                var fragment = document.createElement('body');
+                var match;
+                var nextIndex = -1;
+
+                while ((match = START_TAG_REGEX.exec(resp)) !== null) {
+                    var lastIndex = START_TAG_REGEX.lastIndex;
+
+                    // skip to next start tag to be processed
+                    if (nextIndex !== -1 && lastIndex < nextIndex) {
+                        continue;
+                    }
+
+                    var startTag = match[0];
+                    var tagName = match[1];
+                    var elementStartIndex = lastIndex - startTag.length;
+                    var endTag = startTag === '<!--' ? '-->' : '</' + tagName + '>';
+                    var endTagIndex = resp.indexOf(endTag, lastIndex);
+
+                    // append leading text nodes
+                    if (nextIndex < elementStartIndex) {
+                        var text = resp.substring(Math.max(nextIndex, 0), elementStartIndex);
+                        // wrap into an element to preserve whitespaces on text nodes
+                        appendChildNodes(fragment, parseHTML('<div>' + text + '</div>', 1));
+                    }
+
+                    // void element e.g. <img>
+                    if (endTagIndex === -1) {
+                        fragment.appendChild(parseHTML(startTag, 1));
+                        nextIndex = elementStartIndex + startTag.length;
+                        continue;
+                    }
+
+                    var elementEndIndex = endTagIndex + endTag.length;
+                    var elementHtml = resp.substring(elementStartIndex, elementEndIndex);
+
+                    // move end tag index forward as many times as there are nested start tags found
+                    var nextStartTagIndex = 1;
+                    while ((nextStartTagIndex = elementHtml.indexOf('<' + tagName, nextStartTagIndex)) !== -1) {
+                        endTagIndex = resp.indexOf(endTag, elementEndIndex);
+                        if (endTagIndex == -1) {
+                            break;
+                        } 
+                        nextStartTagIndex++;
+                        elementEndIndex = endTagIndex + endTag.length;
+                        elementHtml = resp.substring(elementStartIndex, elementEndIndex);
+                    }
+
+                    var element;
+                    switch (tagName) {
+                        case 'thead':
+                        case 'tbody':
+                        case 'tfoot':
+                        case 'colgroup':
+                        case 'caption':
+                            element = parseHTML('<table>' + elementHtml + '</table>', 2);
+                            break;
+                        case "col":
+                            element = parseHTML('<table><colgroup>' + elementHtml + '</colgroup></table>', 3);
+                            break;
+                        case 'tr':
+                            element = parseHTML('<table><tbody>' + elementHtml + '</tbody></table>', 3);
+                            break;
+                        case 'td':
+                        case 'th':
+                            element = parseHTML('<table><tbody><tr>' + elementHtml + '</tr></tbody></table>', 4);
+                            break;
+                        case 'script':
+                        case 'style':
+                            element = parseHTML('<div>' + elementHtml + '</div>', 2);
+                            break;
+                        default:
+                            element = parseHTML(elementHtml, 1);
+                    }
+
+                    fragment.appendChild(element);
+                    nextIndex = elementEndIndex;
                 }
+
+                // append trailing text nodes
+                if (nextIndex < resp.length) {
+                    var text = resp.substring(Math.max(nextIndex, 0), resp.length);
+                    // wrap into an element to preserve whitespaces on text nodes
+                    appendChildNodes(fragment, parseHTML('<div>' + text + '</div>', 1));
+                }
+
+                // @ts-ignore
+                return fragment;
             }
         }
 

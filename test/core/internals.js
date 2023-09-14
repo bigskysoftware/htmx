@@ -12,13 +12,52 @@ describe("Core htmx internals Tests", function() {
     it("makeFragment works with janky stuff", function(){
         htmx._("makeFragment")("<html></html>").tagName.should.equal("BODY");
         htmx._("makeFragment")("<html><body></body></html>").tagName.should.equal("BODY");
+    })
 
-        //NB - the tag name should be the *parent* element hosting the HTML since we use the fragment children
-        // for the swap
-        htmx._("makeFragment")("<td></td>").tagName.should.equal("TR");
-        htmx._("makeFragment")("<thead></thead>").tagName.should.equal("TABLE");
-        htmx._("makeFragment")("<col></col>").tagName.should.equal("COLGROUP");
-        htmx._("makeFragment")("<tr></tr>").tagName.should.equal("TBODY");
+    it('makeFragment works with table partials', function() {
+        htmx._('makeFragment')('<thead></thead>').firstElementChild.tagName.should.equal('THEAD');
+        htmx._('makeFragment')('<tbody></tbody>').firstElementChild.tagName.should.equal('TBODY');
+        htmx._('makeFragment')('<tfoot></tfoot>').firstElementChild.tagName.should.equal('TFOOT');
+        htmx._('makeFragment')('<colgroup></colgroup>').firstElementChild.tagName.should.equal('COLGROUP');
+        htmx._('makeFragment')('<caption></caption>').firstElementChild.tagName.should.equal('CAPTION');
+        htmx._('makeFragment')('<col></col>').firstElementChild.tagName.should.equal('COL');
+        htmx._('makeFragment')('<tr></tr>').firstElementChild.tagName.should.equal('TR');
+        htmx._('makeFragment')('<td></td>').firstElementChild.tagName.should.equal('TD');
+        htmx._('makeFragment')('<th></th>').firstElementChild.tagName.should.equal('TH');
+    })
+
+    it('makeFragment works with elements before table elements', function(){
+        var fragment = htmx._('makeFragment')('leading<div></div><br><td></td>trailing');
+        fragment.childNodes[0].nodeValue.should.equal('leading');
+        fragment.childNodes[1].tagName.should.equal('DIV');
+        fragment.childNodes[2].tagName.should.equal('BR');
+        fragment.childNodes[3].tagName.should.equal('TD');
+        fragment.childNodes[4].nodeValue.should.equal('trailing');
+    })
+
+    it('makeFragment works with text nodes and simple elements', function() {
+        var fragment = htmx._('makeFragment')('Hello world. <a href="https://example.com">This</a> is a simple example.');
+        fragment.innerHTML.should.equal('Hello world. <a href="https://example.com">This</a> is a simple example.');
+    })
+
+    it('makeFragment works with self closing elements', function() {
+        var fragment = htmx._('makeFragment')('This is <br/> a simple example with an <img src="" />.');
+        fragment.innerHTML.should.equal('This is <br> a simple example with an <img src="">.');
+    })
+
+    it('makeFragment works with complex nesting', function() {
+        var fragment = htmx._('makeFragment')('<div><header><div></div><div><table><tbody><tr><td>colum value</td></tr></tbody></table></div></header>text node</div>');
+        fragment.innerHTML.should.equal('<div><header><div></div><div><table><tbody><tr><td>colum value</td></tr></tbody></table></div></header>text node</div>');
+    })
+
+    it('makeFragment works with style', function() {
+        var fragment = htmx._('makeFragment')('<style type="text/css">.myclass {width:10px;}</style><div>content</div>');
+        fragment.innerHTML.should.equal('<style type="text/css">.myclass {width:10px;}</style><div>content</div>');
+    })
+
+    it('makeFragment works with script', function() {
+        var fragment = htmx._('makeFragment')('<script>var x = 1;</script><div>content</div>');
+        fragment.innerHTML.should.equal('<script>var x = 1;</script><div>content</div>');
     })
 
     it("makeFragment works with template wrapping", function(){
