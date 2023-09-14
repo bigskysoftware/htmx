@@ -19,6 +19,8 @@ the template the standard way for that template engine:
 
 The AJAX response body will be parsed as JSON and passed into the template rendering.
 
+A second "array" version of each template is now offered, which is particularly helpful for APIs that return arrays of data. These templates are referenced as `<template-engine>-array-template`, and the data is accessed as `data.my_server_field`. At least in the case of `mustache`, it also enables use of loops using the `{{#data}} my_server_field {{/data}}` syntax.
+
 ## Install
 
 ```html
@@ -84,6 +86,39 @@ If you wish to put a template into another file, you can use a directive such as
 ```
 
 Here is a [jsbin](https://jsbin.com/qonutovico/edit?html,output) playground to try this out.
+
+Here's a working example using the `mustache-array-template` working against an API that returns an array:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+  <script src="https://unpkg.com/mustache@latest"></script>
+</head>
+<body>
+  <div hx-ext="client-side-templates">
+    <button hx-get="https://jsonplaceholder.typicode.com/users"
+            hx-swap="innerHTML"
+            hx-target="#content"
+            mustache-array-template="foo">
+      Click Me
+    </button>
+
+    <p id="content">Start</p>
+
+    <template id="foo">
+      {{#data}}
+      <p> {{name}} at {{email}} is with {{company.name}}</p>
+      {{/data}}
+    </template>
+  </div>
+</body>
+</html>
+```
 
 ## CORS and REST/JSON
 
