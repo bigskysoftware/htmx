@@ -204,6 +204,22 @@ describe("hx-swap attribute", function(){
         swapSpec(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).settleDelay.should.equal(11)
         swapSpec(make("<div hx-swap='innerHTML nonsense settle:11 swap:10'/>")).settleDelay.should.equal(11)
         swapSpec(make("<div hx-swap='innerHTML   nonsense   settle:11   swap:10  '/>")).settleDelay.should.equal(11)
+        
+        swapSpec(make("<div hx-swap='swap:10'/>")).swapStyle.should.equal("innerHTML")
+        swapSpec(make("<div hx-swap='swap:10'/>")).swapDelay.should.equal(10)
+
+        swapSpec(make("<div hx-swap='settle:10'/>")).swapStyle.should.equal("innerHTML")
+        swapSpec(make("<div hx-swap='settle:10'/>")).settleDelay.should.equal(10)
+        
+        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapStyle.should.equal("innerHTML")
+        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).settleDelay.should.equal(11)
+
+        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapStyle.should.equal("innerHTML")
+        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).settleDelay.should.equal(11)
+
+        swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal("customstyle")
     })
 
     it('works with a swap delay', function(done) {
