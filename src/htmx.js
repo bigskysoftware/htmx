@@ -1972,7 +1972,7 @@ return (function () {
                 var curlyCount = 0;
                 while (lines.length > 0) {
                     var line = lines.shift();
-                    var match = line.match(/^\s*([a-zA-Z:\-]+:)(.*)/);
+                    var match = line.match(/^\s*([a-zA-Z:\-\.]+:)(.*)/);
                     if (curlyCount === 0 && match) {
                         line.split(":")
                         currentEvent = match[1].slice(0, -1); // strip last colon
