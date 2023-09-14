@@ -368,6 +368,9 @@ attribute with a CSS selector to do so:
 Here we call out the indicator explicitly by id.  Note that we could have placed the class on the parent `div` as well
 and had the same effect.
 
+You can also add the [the `disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
+elements for the duration of a request by using the [hx-disabled-elts](@/attributes/hx-indicator.md) attribute.
+
 ### Targets
 
 If you want the response to be loaded into a different element other than the one that made the request, you can

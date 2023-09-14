@@ -2343,12 +2343,32 @@ return (function () {
             return indicators;
         }
 
-        function removeRequestIndicatorClasses(indicators) {
+        function disableElements(elt) {
+            var disabledElts = findAttributeTargets(elt, 'hx-disabled-elts');
+            if (disabledElts == null) {
+                disabledElts = [];
+            }
+            forEach(disabledElts, function (disabledElement) {
+                var internalData = getInternalData(disabledElement);
+                internalData.requestCount = (internalData.requestCount || 0) + 1;
+                disabledElement.setAttribute("disabled", "");
+            });
+            return disabledElts;
+        }
+
+        function removeRequestIndicators(indicators, disabled) {
             forEach(indicators, function (ic) {
                 var internalData = getInternalData(ic);
                 internalData.requestCount = (internalData.requestCount || 0) - 1;
                 if (internalData.requestCount === 0) {
                     ic.classList["remove"].call(ic.classList, htmx.config.requestClass);
+                }
+            });
+            forEach(disabled, function (disabledElement) {
+                var internalData = getInternalData(disabledElement);
+                internalData.requestCount = (internalData.requestCount || 0) - 1;
+                if (internalData.requestCount === 0) {
+                    disabledElement.removeAttribute('disabled');
                 }
             });
         }
@@ -3186,7 +3206,7 @@ return (function () {
                     var hierarchy = hierarchyForElt(elt);
                     responseInfo.pathInfo.responsePath = getPathFromResponse(xhr);
                     responseHandler(elt, responseInfo);
-                    removeRequestIndicatorClasses(indicators);
+                    removeRequestIndicators(indicators, disableElts);
                     triggerEvent(elt, 'htmx:afterRequest', responseInfo);
                     triggerEvent(elt, 'htmx:afterOnLoad', responseInfo);
                     // if the body no longer contains the element, trigger the event on the closest parent
@@ -3212,21 +3232,21 @@ return (function () {
                 }
             }
             xhr.onerror = function () {
-                removeRequestIndicatorClasses(indicators);
+                removeRequestIndicators(indicators, disableElts);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendError', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.onabort = function() {
-                removeRequestIndicatorClasses(indicators);
+                removeRequestIndicators(indicators, disableElts);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:sendAbort', responseInfo);
                 maybeCall(reject);
                 endRequestLock();
             }
             xhr.ontimeout = function() {
-                removeRequestIndicatorClasses(indicators);
+                removeRequestIndicators(indicators, disableElts);
                 triggerErrorEvent(elt, 'htmx:afterRequest', responseInfo);
                 triggerErrorEvent(elt, 'htmx:timeout', responseInfo);
                 maybeCall(reject);
@@ -3238,6 +3258,7 @@ return (function () {
                 return promise
             }
             var indicators = addRequestIndicatorClasses(elt);
+            var disableElts = disableElements(elt);
 
             forEach(['loadstart', 'loadend', 'progress', 'abort'], function(eventName) {
                 forEach([xhr, xhr.upload], function (target) {
