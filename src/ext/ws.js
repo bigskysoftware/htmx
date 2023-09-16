@@ -341,7 +341,7 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 
 				/** @type {WebSocketWrapper} */
 				var socketWrapper = api.getInternalData(socketElt).webSocket;
-				var headers = api.getHeaders(sendElt, socketElt);
+				var headers = api.getHeaders(sendElt, api.getTarget(sendElt));
 				var results = api.getInputValues(sendElt, 'post');
 				var errors = results.errors;
 				var rawParameters = results.values;

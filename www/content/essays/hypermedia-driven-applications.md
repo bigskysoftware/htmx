@@ -40,7 +40,7 @@ does not.
 In particular, HDAs continue to use [Hypermedia As The Engine of Application State (HATEOAS)](@/essays/hateoas.md), whereas
 most SPAs abandon HATEOAS in favor of a client-side model and data (rather than hypermedia) APIs.
 
-## An Example SPA fragment
+## An Example HDA fragment
 
 Consider the htmx [Active Search](@/examples/active-search.md) example:
 

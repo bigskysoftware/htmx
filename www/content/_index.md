@@ -35,7 +35,7 @@ By removing these arbitrary constraints, htmx completes HTML as a [hypertext](ht
 <h2>quick start</h2>
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -73,6 +73,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
   text-align: center;
   padding: 16px;
 }
+
+@media only screen and (max-width: 760px)  {
+
+	/* Force table to not be like tables anymore */
+	table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+
+}
+
 </style>
 <div style="overflow-x: auto">
 <table id="sponsor-table">
@@ -81,11 +91,14 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
+        <a href="https://www.nuclei.ai/"><img src="/img/nuclei_logo_with_text.svg" style="max-width:50%;min-width:200px;"></a>
 </td>
 <tr>
-<td colspan="2">
-        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:500px"></a>
+<td>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
+</td>
+<td>
+        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:600px"></a>
 </td>
 </tr>
 <tr>

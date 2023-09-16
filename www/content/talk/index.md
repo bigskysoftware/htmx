@@ -28,7 +28,11 @@ Email: [htmx@bigsky.software](mailto:htmx@bigsky.software)
 
 ## GitHub Stars
 
-<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX3oybDFUTnBMSTZBaXNhcjFwZmN5UVRnZEFSR3JFdTRPckV2Rw==#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date" frameBorder="0"></iframe>
+View a graph of github stars [here](https://star-history.com/embed?#bigskysoftware/htmx&bigskysoftware/_hyperscript&Date)
+
+## Webring
+
+You can find the htmx webring [here](@/webring.md)
 
 ## Training
 

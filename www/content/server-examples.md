@@ -108,6 +108,16 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/libsyz/htmx-to-do-app>
 - <https://github.com/beechnut/pokebutt-htmx>
 
+## Kotlin
+
+### Ktor
+
+<https://github.com/Rattlyy/htmx-ktor>
+
+### Http4k
+
+<https://github.com/corlaez/todo-hda-kt>
+
 ## Julia
 
 - <https://github.com/clarkevans/TodoMVC.jl>
@@ -134,3 +144,4 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### templ
 
 - <https://templ.guide/server-side-rendering/htmx>
+- <https://github.com/jritsema/go-htmx-tailwind-example>

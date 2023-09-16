@@ -75,6 +75,14 @@ This event is triggered after new content has been [swapped into the DOM](@/docs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### Event - `htmx:beforeCleanupElement` {#htmx:beforeCleanupElement}
+
+This event is triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM.
+
+##### Details
+
+* `detail.elt` - the cleaned up element
+
 ### Event - `htmx:beforeOnLoad` {#htmx:beforeOnLoad}
 
 This event is triggered before any response processing occurs.  If the event is cancelled, no swap will occur.
@@ -418,6 +426,26 @@ granular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [
 ##### Details
 
 * `detail.elt` - the element that triggered the request
+
+### Event - `htmx:validateUrl` {#htmx:validateUrl}
+
+This event is triggered before a request is made, allowing you to validate the URL that htmx is going to request.  If
+`preventDefault()` is invoked on the event, the request will not be made.
+
+```javascript
+document.body.addEventListener('htmx:validateUrl', function (evt) {
+  // only allow requests to the current server as well as myserver.com
+  if (!evt.detail.sameHost && evt.detail.url.hostname !== "myserver.com") {
+    evt.preventDefault();
+  }
+});
+```
+
+##### Details
+
+* `detail.elt` - the element that triggered the request
+* `detail.url` - the URL Object representing the URL that a request will be sent to.
+* `detail.sameHost` - will be `true` if the request is to the same host as the document
 
 ### Event - `htmx:validation:validate` {#htmx:validation:validate}
 

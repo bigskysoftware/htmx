@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.5] - 2023-08-25
+
+* Web sockets now properly pass the target id in the HEADERS struct
+* A very rare loading state bug was fixed (see https://github.com/bigskysoftware/htmx/commit/93bd81b6d003bb7bc445f10192bdb8089fa3495d)
+* `hx-on` will not evaluate if `allowEval` is set to false
+* You can disable the interpretation of script tags with the new `htmx.config.allowScriptTags` config variable
+* You can now disable htmx-based requests to non-origin hosts via the `htmx.config.selfRequestsOnly` config variable
+* The [Security](https://htmx.org/docs#security) section has been expanded to help developers better understand how to
+  properly secure their htmx-based applications.
+
 ## [1.9.4] - 2023-07-25
 
 * This is a bug-fix release for the most part, w/a heavy dose of @telroshan
@@ -13,7 +23,7 @@
 
 ## [1.9.3] - 2023-07-14
 
-* The `hx-on` attribute has been deprecated (sorry) in favor of `hx-on-<event name>` attributes.  See [`hx-on`](/attributes/hx-on) for more information.
+* The `hx-on` attribute has been deprecated (sorry) in favor of `hx-on:<event name>` attributes.  See [`hx-on`](/attributes/hx-on) for more information.
 * We now have functioning CI using GitHub actions!
 * You can now configure if a type of HTTP request uses the body for parameters or not.  In particular, the `DELETE` _should_ use
   query parameters, according to the spec.  htmx has used the body, instead.  To avoid breaking code we are keeping this undefined
