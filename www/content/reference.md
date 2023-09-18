@@ -113,7 +113,7 @@ The table below lists all other attributes available in htmx.
 | [`HX-Location`](@/headers/hx-location.md)            | Allows you to do a client-side redirect that does not do a full page reload
 | [`HX-Push-Url`](@/headers/hx-push-url.md)            | pushes a new url into the history stack
 | `HX-Redirect`                                        | can be used to do a client-side redirect to a new location
-| `HX-Refresh`                                         | if set to "true" the client side will do a a full refresh of the page
+| `HX-Refresh`                                         | if set to "true" the client side will do a full refresh of the page
 | [`HX-Replace-Url`](@/headers/hx-replace-url.md)      | replaces the current URL in the location bar
 | `HX-Reswap`                                          | Allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
 | `HX-Retarget`                                        | A CSS selector that updates the target of the content update to a different element on the page
