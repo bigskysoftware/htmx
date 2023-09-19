@@ -28,7 +28,7 @@
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
     "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
-    "www": "node scripts/www.js",
+    "www": "bash ./scripts/www.sh",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
   "repository": {
@@ -38,7 +38,6 @@
   "devDependencies": {
     "chai": "^4.3.7",
     "chai-dom": "^1.11.0",
-    "fs-extra": "^9.1.0",
     "mocha": "^10.2.0",
     "mocha-chrome": "^2.2.0",
     "mocha-webdriver-runner": "^0.6.4",
