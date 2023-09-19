@@ -43,4 +43,17 @@ describe("client-side-templates extension", function() {
         this.server.respond();
         btn.innerHTML.should.equal("*bar*");
     });
+
+    it('works on basic xslt template', function () {
+        this.server.respondWith("GET", "/test", '<foo>bar</foo>');
+        var btn = make('<button hx-get="/test" hx-ext="client-side-templates" xslt-template="mt1">Click Me!</button>')
+        make('<script id="mt1" type="application/xml">' +
+        `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:template match="/">*<xsl:value-of select="foo" />*</xsl:template>
+         </xsl:stylesheet>
+        ` + '</script>')
+        btn.click();
+        this.server.respond();
+        btn.innerHTML.should.equal("*bar*");
+    });
 });
