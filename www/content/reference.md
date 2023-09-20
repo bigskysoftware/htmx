@@ -113,7 +113,7 @@ The table below lists all other attributes available in htmx.
 | [`HX-Location`](@/headers/hx-location.md)            | Allows you to do a client-side redirect that does not do a full page reload
 | [`HX-Push-Url`](@/headers/hx-push-url.md)            | pushes a new url into the history stack
 | `HX-Redirect`                                        | can be used to do a client-side redirect to a new location
-| `HX-Refresh`                                         | if set to "true" the client side will do a a full refresh of the page
+| `HX-Refresh`                                         | if set to "true" the client side will do a full refresh of the page
 | [`HX-Replace-Url`](@/headers/hx-replace-url.md)      | replaces the current URL in the location bar
 | `HX-Reswap`                                          | Allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
 | `HX-Retarget`                                        | A CSS selector that updates the target of the content update to a different element on the page
@@ -136,6 +136,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx:afterRequest`](@/events.md#htmx:afterRequest)  | triggered after an AJAX request has completed
 | [`htmx:afterSettle`](@/events.md#htmx:afterSettle)  | triggered after the DOM has settled
 | [`htmx:afterSwap`](@/events.md#htmx:afterSwap)  | triggered after new content has been swapped in
+| [`htmx:beforeCleanupElement`](@/events.md#htmx:beforeCleanupElement)  | triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM
 | [`htmx:beforeOnLoad`](@/events.md#htmx:beforeOnLoad)  | triggered before any response processing occurs
 | [`htmx:beforeProcessNode`](@/events.md#htmx:beforeProcessNode) | triggered before htmx initializes a node
 | [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)  | triggered before an AJAX request is made

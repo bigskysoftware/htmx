@@ -44,7 +44,7 @@ The server responds with a slightly modified version of Bootstrap's standard mod
       <p>Modal body text goes here.</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"">Close</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
   </div>
 </div>
