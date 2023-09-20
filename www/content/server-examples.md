@@ -139,6 +139,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/hungle00/todo-htmx>
 
+### Bandit with Plug Application
+
+- <https://github.com/lorantkurthy/todo-htmex>
+
 ## Go
 
 ### templ
