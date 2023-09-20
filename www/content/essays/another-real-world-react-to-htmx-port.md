@@ -1,7 +1,7 @@
 +++
 title = "Another Real World React -> htmx Port"
-date = 2022-09-29
-updated = 2022-10-15
+date = 2023-09-20
+updated = 2023-09-20
 [taxonomies]
 author = ["Carson Gross"]
 tag = ["posts"]
