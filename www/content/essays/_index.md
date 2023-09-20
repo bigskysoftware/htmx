@@ -25,6 +25,7 @@ page_template = "essay.html"
 
 ### Building Hypermedia Applications
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
+* [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
 * [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
 * [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
