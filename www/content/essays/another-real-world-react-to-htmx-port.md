@@ -41,12 +41,13 @@ Here is a high-level summary of the port
 
 * They reduced the **code base size** by **61%** (31237 LOC to 12044 LOC)
 * They reduced the **total number of files** by **72%** (588 files to 163 files)
+* They reduced the **total number of file types** by **38%** (18 file types to 11 file types)
 * Subjectively, development velocity felt at least **5X** faster
 * Rather than prototyping in Figma and then porting to HTML, UX development was done directly in HTML
 
 ## Analysis
 
-Once again we have some eye-popping results.  This is because of the fact that the OpenUnited application is extremely 
+Once again we have some eye-popping results.  This is because the OpenUnited application is extremely 
 amenable to hypermedia: like Contexte, it is a content-focused application that shows lots of text and images.  
 
 This experience again demonstrates that, for at least a certain class of web applications, htmx and the hypermedia 
