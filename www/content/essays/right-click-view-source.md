@@ -121,7 +121,7 @@ Now, this is not to criticize the google engineer's technical decisions that lea
 decisions_: obviously, despite similar appearances, the google homepage of 2023 is far more sophisticated than the one 
 available in 2000.
 
-The 2023 google homepage is going to be a lot more complicated than the 2000 page and, given the zietgiest, it is going to 
+The 2023 google homepage is going to be a lot more complicated than the 2000 page and, given the zeitgeist, it is going to 
 involve a lot of JavaScript.
 
 However, this is to point out that something deeply important has been lost, almost certainly unintentionally, along the way:
