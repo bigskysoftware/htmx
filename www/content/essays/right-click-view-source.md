@@ -10,7 +10,7 @@ author = ["Carson Gross"]
 > modify, customize and improve on the things that they found delightful or useful.  This affordance was later adapted 
 > by other human-centered projects like #Scratch, and is a powerful tonic against #enshittification.
 > 
-> \-\-[Cory Doctorow @pluralistic@mamot.fr](https://twitter.com/doctorow/status/1701934607732810208)
+> \-\-[Cory Doctorow @pluralistic@mamot.fr](https://twitter.com/doctorow/status/1701934612686196872)
 
 ## Open Culture & The Web
 
