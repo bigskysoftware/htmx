@@ -2345,7 +2345,7 @@ return (function () {
         }
 
         function disableElements(elt) {
-            var disabledElts = findAttributeTargets(elt, 'hx-disabled-elts');
+            var disabledElts = findAttributeTargets(elt, 'hx-disabled-elt');
             if (disabledElts == null) {
                 disabledElts = [];
             }

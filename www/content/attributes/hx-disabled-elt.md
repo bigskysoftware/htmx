@@ -1,8 +1,8 @@
 +++
-title = "hx-disabled-elts"
+title = "hx-disabled-elt"
 +++
 
-The `hx-disabled-elts` attribute allows you to specify elements that will have the `disabled` attribute
+The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute
 added to them for the duration of the request.
 
 The value of this attribute is a CSS query selector of the element or elements to apply the class to,
@@ -13,7 +13,7 @@ the keyword `this`
 Here is an example with a button that will disable itself during a request:
 
 ```html
-<button hx-post="/example" hx-disabled-elts="this">
+<button hx-post="/example" hx-disabled-elt="this">
     Post It!
 </button>
 ```

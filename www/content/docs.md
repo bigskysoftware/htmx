@@ -369,7 +369,7 @@ Here we call out the indicator explicitly by id.  Note that we could have placed
 and had the same effect.
 
 You can also add the [the `disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
-elements for the duration of a request by using the [hx-disabled-elts](@/attributes/hx-indicator.md) attribute.
+elements for the duration of a request by using the [hx-disabled-elt](@/attributes/hx-disabled-elt.md) attribute.
 
 ### Targets
 
