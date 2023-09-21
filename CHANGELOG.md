@@ -1,6 +1,19 @@
 # Changelog
 
-## [1.9.6] - ???
+## [1.9.6] - 2023-09-21
+
+* IE support has been restored (thank you @telroshan!)
+* Introduced the `hx-disabled-elt` attribute to allow specifing elements to disable during a request
+* You can now explicitly decide to ignore `title` tags found in new content via the `ignoreTitle` option in `hx-swap` and the `htmx.config.ignoreTitle` configuration variable.
+* `hx-swap` modifiers may be used without explicitly specifying the swap mechanism
+* Arrays are now supported in the `client-side-templates` extension
+* XSLT support in the `client-side-templates` extension
+* Support `preventDefault()` in extension event handling
+* Allow the `HX-Refresh` header to apply even after an `HX-Redirect` has occurred
+* the `formaction` and `formmethod` attributes on buttons are now properly respected
+* `hx-on` can now handle events with dots in their name
+* `htmx.ajax()` now always returns a Promise
+* Handle leading `style` tag parsing more effectively
 
 ## [1.9.5] - 2023-08-25
 
