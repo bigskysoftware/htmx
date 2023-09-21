@@ -42,7 +42,7 @@ the application via the browser.
 ### Right-Click-View-Source As Culture
 
 Despite the fact that the web has a somewhat uncomfortable relationship with the notion of free software, the early web 
-none-the-less had radically open _developer culture_. 
+none-the-less had a radically open _developer culture_. 
 
 In fact, in some important and practical ways, the early web had a _more_ open developer culture than what was achieved 
 by the free software movement.
