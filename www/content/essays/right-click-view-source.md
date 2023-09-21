@@ -69,7 +69,7 @@ And, most importantly, you could _learn from it_, even if you couldn't see how t
 This radical openness of the client and network protocol, and the culture it produced, was a big part of the success
 of the early web.
 
-## Digital Enclosure & Technical Enclosure
+## Digital Enclosure vs. Technical Enclosure
 
 The [Enclosure Movement](https://en.wikipedia.org/wiki/Enclosure) was a period in English history when what were 
 previously [commons](https://en.wikipedia.org/wiki/Commons) were privatized.
@@ -86,15 +86,15 @@ This was a traumatic event in English history, as evidenced by this poem by an 1
 In the last decade, the web has gone through a period of "Digital Enclosure", where ["Walled Gardens"](https://en.wikipedia.org/wiki/Closed_platform),
 such as Facebook & Twitter, have replaced the earlier, more open and more chaotic blogs and internet forums.
 
-Many (most?) developers have decried this trend.  However, despite recognizing the danger of an increasingly closed internet, 
+### Technical Enclosure
+
+Many (most?) developers have decried this trend.  However, despite recognizing the danger of an increasingly closed internet,
 many web developers don't consider their own technical decisions and how those decisions can also contribute to the
 disappearance of web's _culture_ of openness.
 
 Inadvertently, for the most part, technical trends and decisions in web development in the last two decades has lead
 to what we term a "Technical Enclosure" of the web, a processes whereby technical decisions chip away at the #ViewSource
 affordance that Cory Doctrow discusses in the opening quote of this article.
-
-### Technical Enclosure
 
 To see a stark example of the decline of the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance
 in web development and Technical Enclosure in action, we can look at what is perhaps the most popular web page on the 
@@ -138,8 +138,8 @@ This principle states that:
 
 The main technical advantage of Locality of Behavior is ease of maintenance, as outlined in the essay above.
 
-However, there is an important cultural benefit to Locality of Behavior as well: it restores the power of
-the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance.
+However, there is an important cultural benefit to the Locality of Behavior of htmx and hyperscript as well: **it restores
+the power of the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance on the web**.
 
 Consider [Hyperwordle](https://arhamjain.com/hyperwordle/), a hyperscript-based clone of the popular 
 [Wordle](https://www.nytimes.com/games/wordle/index.html) game, now owned by the New York Times.
@@ -153,16 +153,22 @@ Contrast this with the view-source experience of the Wordle implementation at th
 Now, this is of course a bit unfair: the NYTimes version has a lot more functionality and is heavily optimized. Hyperwordle
 is a proof of concept and not being hammered by millions of users every day.
 
-Despite that qualification, however, Hyperwordle demonstrates a potential future for the web, where a culture of openness,
-of view-source politeness, is once again a touchstone.
+Despite that qualification, Hyperwordle demonstrates a potential future for the web, a future where a culture of openness,
+of [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) politeness, is once again a touchstone of the
+culture of the web.
 
-Engineers who care about the open culture of the web should recognize the _non-technical_ value of the 
-[#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance and start thinking about making it a 
-priority in their technical decisions.  This may involve trading off against other technical and even functional
-priorities during application development.
+## Prioritizing [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme)
 
+Engineers who care about the open culture of the web should recognize that the threats to that culture come not only from
+Digital Enclosure by large, private companies of the most important pieces of the web.  
 
-If we don't stand up for [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme), no one else will.
+They should also recognize the risks of Technical Enclosure, and the _non-technical_ value of the 
+[#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance in perpetuating the open culture of
+web development.  They should start thinking about making this affordance a priority in their technical decisions.  As
+with all priorities, this may involve trading off against other technical and even functional priorities during 
+application development.
+
+But if we don't stand up for [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme), no one else will.
 
 <br/>
 
