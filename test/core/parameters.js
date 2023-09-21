@@ -123,26 +123,34 @@ describe("Core htmx Parameter Handling", function() {
         htmx._("urlEncode")({"foo": "bar", "do" : ["rey", "blah"]}).should.equal("foo=bar&do=rey&do=blah");
     });
 
-    it('form includes last focused button', function () {
+    it('form includes last focused button', function (done) {
         var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><button id="b1" name="btn" value="bar"></button></form>');
         var input = byId('i1');
         var button = byId('b1');
+        // Listen for focusin on form as it'll bubble up from the button, and htmx binds on the form itself
+        form.addEventListener("focusin", function () {
+            var vals = htmx._('getInputValues')(form).values;
+            vals['foo'].should.equal('bar');
+            vals['do'].should.equal('rey');
+            vals['btn'].should.equal('bar');
+            done();
+        });
         button.focus();
-        var vals = htmx._('getInputValues')(form).values;
-        vals['foo'].should.equal('bar');
-        vals['do'].should.equal('rey');
-        vals['btn'].should.equal('bar');
     })
 
-    it('form includes last focused submit', function () {
+    it('form includes last focused submit', function (done) {
         var form = make('<form hx-get="/foo"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input type="submit" id="s1" name="s1" value="bar"/></form>');
         var input = byId('i1');
         var button = byId('s1');
+        // Listen for focusin on form as it'll bubble up from the button, and htmx binds on the form itself
+        form.addEventListener("focusin", function () {
+            var vals = htmx._('getInputValues')(form).values;
+            vals['foo'].should.equal('bar');
+            vals['do'].should.equal('rey');
+            vals['s1'].should.equal('bar');
+            done();
+        });
         button.focus();
-        var vals = htmx._('getInputValues')(form).values;
-        vals['foo'].should.equal('bar');
-        vals['do'].should.equal('rey');
-        vals['s1'].should.equal('bar');
     })
 
     it('form does not include button when focus is lost', function () {
