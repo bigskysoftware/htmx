@@ -129,8 +129,9 @@ available in 2000.
 The 2023 google homepage is going to be a lot more complicated than the 2000 page and, given the zeitgeist, it is going to 
 involve a lot of JavaScript.
 
-However, this is to point out that something deeply important has been lost, almost certainly unintentionally, along the way:
-the ability to view the source of the page, make sense of what it is doing and, most importantly, to learn from it.
+However, this is to point out that something deeply important about the early web has been lost, almost certainly 
+unintentionally, along the way: the ability to view the source of the page, make sense of what it is doing and, most 
+importantly, to learn from it.
 
 ## Right-Click-View-Source Extremism
 
