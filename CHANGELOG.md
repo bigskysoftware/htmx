@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.9.6] - 2023-09-21
+## [1.9.6] - 2023-09-22
 
 * IE support has been restored (thank you @telroshan!)
 * Introduced the `hx-disabled-elt` attribute to allow specifing elements to disable during a request
