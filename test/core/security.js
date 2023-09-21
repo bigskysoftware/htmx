@@ -107,6 +107,7 @@ describe("security options", function() {
     })
 
     it("can make egress cross site requests when htmx.config.selfRequestsOnly is enabled", function(done){
+        this.timeout(4000)
         // should trigger send error, rather than reject
         var listener = htmx.on("htmx:sendError", function (){
             htmx.off("htmx:sendError", listener);
@@ -119,6 +120,7 @@ describe("security options", function() {
     })
 
     it("can't make egress cross site requests when htmx.config.selfRequestsOnly is enabled", function(done){
+        this.timeout(4000)
         // should trigger send error, rather than reject
         htmx.config.selfRequestsOnly = true;
         var listener = htmx.on("htmx:invalidPath", function (){
@@ -133,6 +135,7 @@ describe("security options", function() {
     })
 
     it("can cancel egress request based on htmx:validateUrl event", function(done){
+        this.timeout(4000)
         // should trigger send error, rather than reject
         var pathVerifier = htmx.on("htmx:validateUrl", function (evt){
             evt.preventDefault();
@@ -149,6 +152,7 @@ describe("security options", function() {
     })
 
     it("can cancel egress request based on htmx:validateUrl event, sameHost is false", function(done){
+        this.timeout(4000)
         // should trigger send error, rather than reject
         var pathVerifier = htmx.on("htmx:validateUrl", function (evt){
             if (evt.detail.sameHost === false) {

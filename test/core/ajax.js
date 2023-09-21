@@ -969,15 +969,15 @@ describe("Core htmx AJAX Tests", function(){
     it('scripts w/ src attribute are properly loaded', function(done)
     {
         try {
-            this.server.respondWith("GET", "/test", "<script src='setGlobal.js'></script>");
+            this.server.respondWith("GET", "/test", "<script id='setGlobalScript' src='setGlobal.js'></script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
-            setTimeout(function () {
+            byId("setGlobalScript").addEventListener("load", function () {
                 window.globalWasCalled.should.equal(true);
                 delete window.globalWasCalled;
                 done();
-            }, 400);
+            })
         } finally {
             delete window.globalWasCalled;
         }
