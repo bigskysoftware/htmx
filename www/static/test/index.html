@@ -14,6 +14,7 @@
 <body style="padding:20px;font-family: sans-serif">
 
 <h1 style="margin-top: 40px">htmx.js test suite</h1>
+<p id="version-number">Version:&nbsp;</p>
 
 <h2>Scratch Page</h2>
 <ul>
@@ -40,6 +41,9 @@
   if (navigator.webdriver) {
     htmx.logAll = function () { }
   }
+
+  // Add the version number to the top
+  document.getElementById('version-number').innerText += htmx.version
 </script>
 
 <script class="mocha-init">
