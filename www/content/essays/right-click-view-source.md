@@ -1,5 +1,5 @@
 +++
-title = "The #RightClick Affordance"
+title = "The #ViewSource Affordance"
 date = 2023-09-21
 updated = 2023-09-21
 [taxonomies]
