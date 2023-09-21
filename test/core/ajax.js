@@ -969,15 +969,15 @@ describe("Core htmx AJAX Tests", function(){
     it('scripts w/ src attribute are properly loaded', function(done)
     {
         try {
-            this.server.respondWith("GET", "/test", "<script src='setGlobal.js'></script>");
+            this.server.respondWith("GET", "/test", "<script id='setGlobalScript' src='setGlobal.js'></script>");
             var div = make("<div hx-get='/test'></div>");
             div.click();
             this.server.respond();
-            setTimeout(function () {
+            byId("setGlobalScript").addEventListener("load", function () {
                 window.globalWasCalled.should.equal(true);
                 delete window.globalWasCalled;
                 done();
-            }, 400);
+            })
         } finally {
             delete window.globalWasCalled;
         }
@@ -1207,5 +1207,27 @@ describe("Core htmx AJAX Tests", function(){
         byId("submit").click();
         this.server.respond();
         values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue']});
+    })
+
+    it('properly handles inputs external to form', function () {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        make('<form id="externalForm" hx-post="/test">' +
+            '   <input type="hidden" name="b1" value="inputValue">' +
+            '</form>' +
+            '<input type="text" name="t1" value="textValue" form="externalForm">' +
+            '<select name="s1" form="externalForm">' +
+            '   <option value="someValue"></option>' +
+            '   <option value="selectValue" selected></option>' +
+            '</select>' +
+            '<button id="submit" form="externalForm" type="submit" name="b1" value="buttonValue">button</button>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue'], s1: "selectValue"});
     })
 })

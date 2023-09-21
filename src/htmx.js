@@ -306,6 +306,7 @@ return (function () {
                     case "th":
                         return parseHTML("<table><tbody><tr>" + resp + "</tr></tbody></table>", 3);
                     case "script":
+                    case "style":
                         return parseHTML("<div>" + resp + "</div>", 1);
                     default:
                         return parseHTML(resp, 0);
@@ -2148,7 +2149,7 @@ return (function () {
                 eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
             }
             withExtensions(elt, function (extension) {
-                eventResult = eventResult && (extension.onEvent(eventName, event) !== false)
+                eventResult = eventResult && (extension.onEvent(eventName, event) !== false && !event.defaultPrevented)
             });
             return eventResult;
         }

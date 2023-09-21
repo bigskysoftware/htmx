@@ -49,7 +49,24 @@ htmx.defineExtension('client-side-templates', {
             } else {
                 return nunjucks.render(templateName, data);
             }
-          }
+        }
+        
+        var xsltTemplate = htmx.closest(elt, "[xslt-template]");
+        if (xsltTemplate) {
+            var templateId = xsltTemplate.getAttribute('xslt-template');
+            var template = htmx.find("#" + templateId);
+            if (template) {
+              var content = template.innerHTML ? new DOMParser().parseFromString(template.innerHTML, 'application/xml')
+                                               : template.contentDocument;
+              var processor = new XSLTProcessor();
+              processor.importStylesheet(content);
+              var data = new DOMParser().parseFromString(text, "application/xml");
+              var frag = processor.transformToFragment(data, document);
+              return new XMLSerializer().serializeToString(frag);
+            } else {
+              throw "Unknown XSLT template: " + templateId;
+            }
+        }
 
           var nunjucksArrayTemplate = htmx.closest(elt, "[nunjucks-array-template]");
           if (nunjucksArrayTemplate) {
