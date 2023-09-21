@@ -49,7 +49,7 @@ by the free software movement.
 
 The [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance available in browsers allowed people 
 to understand and "own", at least in an informal way, the web in a way that even most FSF-conforming applications could 
-not: you had direct access to the "source", or at least _part_ of the source, of the application available, from 
+not: you had direct access to the "source", or at least _part_ of the source, of the application available from 
 _within_ the application itself.  
 
 You could copy-and-paste (or save) the "source" (HTML, JavaScript & CSS) and start modifying it, without a complicated
@@ -77,24 +77,29 @@ previously [commons](https://en.wikipedia.org/wiki/Commons) were privatized.
 This was a traumatic event in English history, as evidenced by this poem by an 18th century anon:
 
 > The law locks up the man or woman
-> Who steals the goose from off the common,
-> But lets the greater felon loose
-> Who steals the common from the goose.
 > 
-> 18th century anon
+> Who steals the goose from off the common,
+> 
+> But lets the greater felon loose
+> 
+> Who steals the common from the goose.
+>
+> --18th century anon
 
 In the last decade, the web has gone through a period of "Digital Enclosure", where ["Walled Gardens"](https://en.wikipedia.org/wiki/Closed_platform),
 such as Facebook & Twitter, have replaced the earlier, more open and more chaotic blogs and internet forums.
 
 ### Technical Enclosure
 
-Many (most?) developers have decried this trend.  However, despite recognizing the danger of an increasingly closed internet,
-many web developers don't consider their own technical decisions and how those decisions can also contribute to the
-disappearance of web's _culture_ of openness.
+Many (most?) web developers have decried this trend.  
 
-Inadvertently, for the most part, technical trends and decisions in web development in the last two decades has lead
+However, despite recognizing the danger of an increasingly closed internet, many web developers don't consider their own
+technical decisions and how those decisions can also contribute to the disappearance of web's _culture_ of openness.
+
+Inadvertently (for the most part) technical trends and decisions in web development in the last two decades have lead
 to what we term a "Technical Enclosure" of the web, a processes whereby technical decisions chip away at the #ViewSource
-affordance that Cory Doctrow discusses in the opening quote of this article.
+affordance that Cory Doctrow discusses in the opening quote of this article, an affordance that existed as a commons
+for early web developers.
 
 To see a stark example of the decline of the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance
 in web development and Technical Enclosure in action, we can look at what is perhaps the most popular web page on the 
