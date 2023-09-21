@@ -66,7 +66,6 @@ See the individual extension documentation for more details.
 | [`class-tools`](@/extensions/class-tools.md)                     | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`client-side-templates`](@/extensions/client-side-templates.md) | support for client side template processing of JSON/XML responses
 | [`debug`](@/extensions/debug.md)                                 | an extension for debugging of a particular element using htmx
-| [`disable-element`](@/extensions/disable-element.md)             | an extension for disabling an element during an htmx request
 | [`event-header`](@/extensions/event-header.md)                   | includes a JSON serialized version of the triggering event, if any
 | [`head-support`](@/extensions/head-support.md)                   | support for merging the `head` tag from responses into the existing documents `head`
 | [`include-vals`](@/extensions/include-vals.md)                   | allows you to include additional values in a request
