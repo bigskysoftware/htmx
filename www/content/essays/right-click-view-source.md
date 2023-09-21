@@ -151,8 +151,9 @@ Consider [Hyperwordle](https://arhamjain.com/hyperwordle/), a hyperscript-based 
 [Wordle](https://www.nytimes.com/games/wordle/index.html) game, now owned by the New York Times.
 
 You can visit Hyperwordle, right click and view the source of it, and you will be presented with some HTML and hyperscript,
-all of which is, with a bit of effort, understandable.  The  [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme)
-affordance is effective in this case.
+all of which is, with a bit of effort, understandable.
+
+The  [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance is effective in this case.
 
 Contrast this with the view-source experience of the Wordle implementation at the New York Times.
 
