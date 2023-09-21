@@ -109,12 +109,12 @@ Here is the nearly complete source of that page from the year 2000, taken from
 [the wayback machine](http://web.archive.org/web/20000229040250/http://www.google.com/):
 
 ### Google in 2000
-![Google Source Code in 2000](/img/google-2000.png)
+<img src="/img/google-2000.png" alt="Google Source Code in 2000" style="border-radius: 12px; margin: 12px">
 
 In contrast, here is a random snapshot of roughly 1/100th of the current source code for the website:
 
 ### Google in 2023
-![Google Source Code in 2000](/img/google-2023.png)
+<img src="/img/google-2023.png" alt="Google Source Code in 2023" style="border-radius: 12px; margin: 12px">
 
 These two screenshots dramatically demonstrate the decline in the effectiveness of the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance over time:
 yes, you can still right-click the page and view its underlying source, but making sense of the latter code would be
@@ -177,4 +177,4 @@ But if we don't stand up for [#ViewSource](https://en.wikipedia.org/wiki/View-so
 
 <br/>
 
-![View Source Extremism](/img/memes/viewsource.png)
+<img src="/img/memes/viewsource.png" alt="Right Click View Source Guy" style="border-radius: 12px; margin: 12px">
