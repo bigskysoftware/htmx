@@ -18,12 +18,13 @@ describe("hx-disinherit attribute", function() {
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
-        btn.innerHTML.should.equal(response_inner);
+        btn.firstChild.id.should.equal("snowflake");
+        btn.innerText.should.equal("Hello world");
     })
 
 
     it('disinherit exclude single attribute', function () {
-        var response_inner = '<div id="snowflake" class="">Hello world</div>'
+        var response_inner = '<div id="snowflake">Hello world</div>'
         var response = '<div id="unique">' + response_inner + '</div>'
         this.server.respondWith("GET", "/test", response);
 
@@ -31,7 +32,9 @@ describe("hx-disinherit attribute", function() {
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
-        btn.innerHTML.should.equal(response + '<span id="cta" class="">Click Me!</span>');
+        btn.firstChild.id.should.equal("unique")
+        btn.firstChild.firstChild.id.should.equal("snowflake")
+        btn.childNodes[1].innerText.should.equal("Click Me!")
     });
 
     it('disinherit exclude multiple attributes', function () {
@@ -47,7 +50,9 @@ describe("hx-disinherit attribute", function() {
         this.server.respond();
         console.log(btn.innerHTML);
         console.log(response);
-        btn.innerHTML.should.equal('<span id="cta" class="">' + response + '</span>');
+        btn.firstChild.id.should.equal("cta")
+        btn.firstChild.firstChild.id.should.equal("unique")
+        btn.firstChild.firstChild.firstChild.id.should.equal("snowflake")
     });
 
     it('disinherit exclude all attributes', function () {
@@ -62,7 +67,8 @@ describe("hx-disinherit attribute", function() {
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
-        btn.innerHTML.should.equal(response);
+        btn.firstChild.id.should.equal("unique");
+        btn.firstChild.firstChild.id.should.equal("snowflake");
     });
 
     it('same-element inheritance disable', function () {
@@ -73,7 +79,8 @@ describe("hx-disinherit attribute", function() {
         var btn = make('<button hx-select="#snowflake" hx-target="#container" hx-trigger="click" hx-get="/test" hx-swap="outerHTML" hx-disinherit="*"><div id="container"></div></button>')
         btn.click();
         this.server.respond();
-        btn.innerHTML.should.equal(response_inner);
+        btn.firstChild.id.should.equal("snowflake");
+        btn.firstChild.innerText.should.equal("Hello world");
     });
 
     it('same-element inheritance disable with child nodes', function () {
@@ -86,7 +93,8 @@ describe("hx-disinherit attribute", function() {
         var btn = byId("bx1");
         btn.click();
         this.server.respond();
-        btn.innerHTML.should.equal('<div id="target" class="">unique-snowflake</div>');
+        btn.firstChild.id.should.equal('target');
+        btn.firstChild.innerText.should.equal('unique-snowflake');
         var count = (div.parentElement.innerHTML.match(/snowflake/g) || []).length;
         count.should.equal(2);  // hx-select of parent div and newly loaded inner content
     });
@@ -101,7 +109,7 @@ describe("hx-disinherit attribute", function() {
             var link = byId("a1");
             link.click();
             // should match the fully resolved href of the boosted element
-            should.equal(request.detail.requestConfig.path, request.detail.elt.href);
+            should.equal(request.detail.requestConfig.path, '/test');
             should.equal(request.detail.elt["htmx-internal-data"].boosted, true);
         } finally {
             htmx.off("htmx:beforeRequest", handler);

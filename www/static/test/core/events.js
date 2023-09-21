@@ -116,8 +116,14 @@ describe("Core htmx Events", function() {
     });
 
     it("htmx:configRequest on form gives access to submit event", function () {
+        var skip = false
         var submitterId;
         var handler = htmx.on("htmx:configRequest", function (evt) {
+            // submitter may be null, but undefined means the browser doesn't support it
+            if (typeof evt.detail.triggeringEvent.submitter === "undefined") {
+                skip = true
+                return
+            }
             evt.detail.headers['X-Submitter-Id'] = evt.detail.triggeringEvent.submitter.id;
         });
         try {
@@ -129,6 +135,10 @@ describe("Core htmx Events", function() {
             var btn = byId('b1');
             btn.click();
             this.server.respond();
+            if (skip) {
+                this._runnable.title += " - Skipped as IE11 doesn't support submitter"
+                this.skip()
+            }
             should.equal(submitterId, "b1")
         } finally {
             htmx.off("htmx:configRequest", handler);
@@ -379,6 +389,12 @@ describe("Core htmx Events", function() {
     });
 
     it("htmx:sendError is called after a failed request", function (done) {
+        if (IsIE11()) {
+            // IE will throw an exception on xhr.open with the URL below, xhr.send won't even be called
+            this._runnable.title += " - Skipped on IE11 as xhr.send won't even be called with a file URL"
+            this.skip()
+            return
+        }
         var called = false;
         var handler = htmx.on("htmx:sendError", function (evt) {
             called = true;

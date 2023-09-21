@@ -58,6 +58,7 @@
 <script src="core/internals.js"></script>
 <script src="core/api.js"></script>
 <script src="core/ajax.js"></script>
+<script src="core/extensions.js"></script>
 <script src="core/verbs.js"></script>
 <script src="core/parameters.js"></script>
 <script src="core/headers.js"></script>
@@ -76,6 +77,7 @@
 <script src="attributes/hx-history.js"></script>
 <script src="attributes/hx-include.js"></script>
 <script src="attributes/hx-indicator.js"></script>
+<script src="attributes/hx-disabled-elt.js"></script>
 <script src="attributes/hx-disinherit.js"></script>
 <script src="attributes/hx-on.js"></script>
 <script src="attributes/hx-on-wildcard.js"></script>
@@ -164,7 +166,10 @@
 <div id="mocha"></div>
 
 <script class="mocha-exec">
-    mocha.run();
+    document.addEventListener("DOMContentLoaded", function () {
+        mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame']}); <!-- IE11 -->
+        mocha.run();
+    })
 </script>
 <em>Work Area</em>
 <hr/>

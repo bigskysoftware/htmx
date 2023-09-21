@@ -28,6 +28,24 @@ describe("hx-boost attribute", function() {
         div.innerHTML.should.equal("Boosted");
     })
 
+    it('handles basic form post with button formaction properly', function () {
+        this.server.respondWith("POST", "/test", "Boosted");
+        var div = make('<div hx-target="this" hx-boost="true"><form id="f1" method="post"><button id="b1" formaction="/test">Submit</button></form></div>');
+        var btn = byId('b1');
+        btn.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Boosted");
+    })
+
+    it('handles basic form post with button formmethod properly', function () {
+        this.server.respondWith("POST", "/test", "Boosted");
+        var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test"><button id="b1" formmethod="post">Submit</button></form></div>');
+        var btn = byId('b1');
+        btn.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Boosted");
+    })
+
     it('handles basic form post properly w/ explicit action', function () {
         this.server.respondWith("POST", "/test", "Boosted");
         var div = make('<div hx-target="this"><form id="f1" action="/test" method="post"  hx-trigger="click" hx-boost="true"></form></div>');

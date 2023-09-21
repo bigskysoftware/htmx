@@ -13,11 +13,30 @@ htmx.defineExtension('client-side-templates', {
             }
         }
 
+        var mustacheArrayTemplate = htmx.closest(elt, "[mustache-array-template]");
+        if (mustacheArrayTemplate) {
+            var data = JSON.parse(text);
+            var templateId = mustacheArrayTemplate.getAttribute('mustache-array-template');
+            var template = htmx.find("#" + templateId);
+            if (template) {
+                return Mustache.render(template.innerHTML, {"data": data });
+            } else {
+                throw "Unknown mustache template: " + templateId;
+            }
+        }
+
         var handlebarsTemplate = htmx.closest(elt, "[handlebars-template]");
         if (handlebarsTemplate) {
             var data = JSON.parse(text);
             var templateName = handlebarsTemplate.getAttribute('handlebars-template');
             return Handlebars.partials[templateName](data);
+        }
+
+        var handlebarsArrayTemplate = htmx.closest(elt, "[handlebars-array-template]");
+        if (handlebarsArrayTemplate) {
+            var data = JSON.parse(text);
+            var templateName = handlebarsArrayTemplate.getAttribute('handlebars-array-template');
+            return Handlebars.partials[templateName]({"data": data});
         }
 
         var nunjucksTemplate = htmx.closest(elt, "[nunjucks-template]");
@@ -30,8 +49,36 @@ htmx.defineExtension('client-side-templates', {
             } else {
                 return nunjucks.render(templateName, data);
             }
-          }
+        }
+        
+        var xsltTemplate = htmx.closest(elt, "[xslt-template]");
+        if (xsltTemplate) {
+            var templateId = xsltTemplate.getAttribute('xslt-template');
+            var template = htmx.find("#" + templateId);
+            if (template) {
+              var content = template.innerHTML ? new DOMParser().parseFromString(template.innerHTML, 'application/xml')
+                                               : template.contentDocument;
+              var processor = new XSLTProcessor();
+              processor.importStylesheet(content);
+              var data = new DOMParser().parseFromString(text, "application/xml");
+              var frag = processor.transformToFragment(data, document);
+              return new XMLSerializer().serializeToString(frag);
+            } else {
+              throw "Unknown XSLT template: " + templateId;
+            }
+        }
 
+          var nunjucksArrayTemplate = htmx.closest(elt, "[nunjucks-array-template]");
+          if (nunjucksArrayTemplate) {
+              var data = JSON.parse(text);
+              var templateName = nunjucksArrayTemplate.getAttribute('nunjucks-array-template');
+              var template = htmx.find('#' + templateName);
+              if (template) {
+                  return nunjucks.renderString(template.innerHTML, {"data": data});
+              } else {
+                  return nunjucks.render(templateName, {"data": data});
+              }
+            }
         return text;
     }
 });

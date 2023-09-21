@@ -1,7 +1,84 @@
 describe("web-sockets extension", function () {
+    // mock-socket isn't IE11 compatible, thus this handmade one
+    // Using the same syntax as the library, so the initial tests didn't require changes to work
+    // TODO when we get rid of IE11 for htmx2, replace this by mock-socket since it ofc doesn't implement every feature
+    function mockWebsocket() {
+        var mockSocketClient = {
+            addEventListener: function (event, handler) {
+                var handlers = this._listeners[event] || []
+                handlers.push(handler)
+                this._listeners[event] = handlers
+            },
+            on: function (event, handler) {
+                this.addEventListener(event, handler)
+            },
+            send: function (data) {
+                mockSocketServer._fireEvent("message", data)
+            },
+            connect: function () {
+                this._open = true
+                mockSocketServer._fireEvent("connection", mockSocketServer)
+                setTimeout(function () {
+                    this._fireEvent("open", {type: "open"})
+                }.bind(this), 2)
+            },
+            close: function () {
+                if (this._open) {
+                    this._open = false
+                    this._fireEvent("close", {type: "close", code: 0})
+                }
+            },
+            _listeners: {},
+            _fireEvent: function (event, data) {
+                var handlers = this._listeners[event] || []
+                if (typeof this["on" + event] === "function") {
+                    handlers.push(this["on" + event])
+                }
+                for (var i = 0; i < handlers.length; i++) {
+                    handlers[i](data)
+                }
+            },
+            _open: false,
+        }
+        var mockSocketServer = {
+            addEventListener: function (event, handler) {
+                var handlers = this._listeners[event] || []
+                handlers.push(handler)
+                this._listeners[event] = handlers
+            },
+            on: function (event, handler) {
+                this.addEventListener(event, handler)
+            },
+            close: function () {
+                mockSocketClient.close()
+            },
+            stop: function () {
+            },
+            emit: function (event, data) {
+                mockSocketClient._fireEvent(event, {data: data})
+            },
+            clients: function () { // Replicate old mock-socket syntax to avoid huge file diff to merge
+                return mockSocketClient._open ? [1] : []
+            },
+            _listeners: {},
+            _fireEvent: function (event, data) {
+                var handlers = this._listeners[event] || []
+                for (var i = 0; i < handlers.length; i++) {
+                    handlers[i](data)
+                }
+            },
+        }
+        return {
+            client: mockSocketClient,
+            server: mockSocketServer,
+        }
+    }
+
     beforeEach(function () {
         this.server = makeServer();
-        this.socketServer = new Mock.Server('ws://localhost:8080');
+        // this.socketServer = new Mock.Server('ws://localhost:8080');
+        var mockedSocket = mockWebsocket();
+        this.socketServer = mockedSocket.server;
         this.messages = [];
         this.clock = sinon.useFakeTimers();
 
@@ -19,12 +96,19 @@ describe("web-sockets extension", function () {
         }
 
         clearWorkArea();
+        this.oldCreateWebSocket = htmx.createWebSocket;
+        htmx.createWebSocket = function () {
+            mockedSocket.client.connect()
+            return mockedSocket.client
+        };
     });
     afterEach(function () {
+        this.server.restore();
         clearWorkArea();
         this.socketServer.close();
         this.socketServer.stop();
         this.clock.restore();
+        htmx.createWebSocket = this.oldCreateWebSocket;
     });
 
     it('can establish connection with the server', function () {
@@ -454,6 +538,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit button & value', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +
@@ -481,6 +571,12 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit input & value', function () {
+        if (!supportsFormAttribute()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+            this.skip()
+            return
+        }
+
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +

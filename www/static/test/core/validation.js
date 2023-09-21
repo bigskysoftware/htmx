@@ -110,6 +110,12 @@ describe("Core htmx client side validation tests", function(){
 
     it('hyperscript validation error prevents request', function()
     {
+        if (IsIE11()) {
+            this._runnable.title += " - Skipped as hyperscript isn't IE11 compatible"
+            this.skip()
+            return
+        }
+
         this.server.respondWith("POST", "/test", "Clicked!");
 
         var form = make('<form hx-post="/test" hx-trigger="click">' +
