@@ -15,6 +15,7 @@ page_template = "essay.html"
 * [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
 * [REST Copypasta](@/essays/rest-copypasta.md)
+* [The #ViewSource Affordance](@/essays/right-click-view-source.md)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
@@ -25,6 +26,7 @@ page_template = "essay.html"
 
 ### Building Hypermedia Applications
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
+* [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
 * [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
 * [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
