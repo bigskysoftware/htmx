@@ -147,4 +147,32 @@ describe("hx-on:* attribute", function() {
         }
         calledEvent.should.equal(true);
     });
+
+    it("can handle being swapped using innerHTML", function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            xhr.respond(200, {}, '<button id="bar" hx-on:click="window.bar = true">Bar</button>');
+        });
+
+        make(
+            '<div>'
+            + '<button id="swap" hx-get="/test" hx-target="#baz" hx-swap="innerHTML">Swap</button>'
+            + '<div id="baz"><button id="foo" hx-on:click="window.foo = true">Foo</button></div>'
+            + '</div>'
+        );
+
+        var fooBtn = byId("foo");
+        fooBtn.click();
+        window.foo.should.equal(true);
+
+        var swapBtn = byId("swap");
+        swapBtn.click();
+        this.server.respond();
+
+        var barBtn = byId("bar");
+        barBtn.click();
+        window.bar.should.equal(true);
+
+        delete window.foo;
+        delete window.bar;
+    });
 });
