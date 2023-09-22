@@ -76,6 +76,7 @@ See the individual extension documentation for more details.
 | [`morphdom-swap`](@/extensions/morphdom-swap.md)                 | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
 | [`multi-swap`](@/extensions/multi-swap.md)                       | allows to swap multiple elements with different swap methods
 | [`path-deps`](@/extensions/path-deps.md)                         | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
+| [`path-vars`](@/extensions/path-vars.md)                         | replaces variables in request-path with data from the triggering event 
 | [`preload`](@/extensions/preload.md)                             | preloads selected `href` and `hx-get` targets based on rules you control.
 | [`remove-me`](@/extensions/remove-me.md)                         | allows you to remove an element after a given amount of time
 | [`response-targets`](@/extensions/response-targets.md)           | allows to specify different target elements to be swapped when different HTTP response codes are received
