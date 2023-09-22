@@ -1912,32 +1912,32 @@ return (function () {
             }
         }
 
-        function initButtonTracking(elt) {
-            // Handle submit buttons/inputs that have the form attribute set
-            // see https://developer.mozilla.org/docs/Web/HTML/Element/button
-            var form = resolveTarget("#" + getRawAttribute(elt, "form")) || closest(elt, "form")
+        // Handle submit buttons/inputs that have the form attribute set
+        // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+         function maybeSetLastButtonClicked(evt) {
+            var elt = closest(evt.target, "button, input[type='submit']");
+            var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
             if (!form) {
-                return
+                return;
             }
-
-            var maybeSetLastButtonClicked = function (evt) {
-                var elt = closest(evt.target, "button, input[type='submit']");
-                if (elt !== null) {
-                    var internalData = getInternalData(form);
-                    internalData.lastButtonClicked = elt;
-                }
-            };
-
+            if (elt !== null) {
+                var internalData = getInternalData(form);
+                internalData.lastButtonClicked = elt;
+            }
+        };
+        function maybeUnsetLastButtonClicked(evt){
+            var elt = closest(evt.target, "button, input[type='submit']");
+            var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
+            var internalData = getInternalData(form);
+            internalData.lastButtonClicked = null;
+        }
+        function initButtonTracking(elt) {
             // need to handle both click and focus in:
             //   focusin - in case someone tabs in to a button and hits the space bar
             //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
-
             elt.addEventListener('click', maybeSetLastButtonClicked)
             elt.addEventListener('focusin', maybeSetLastButtonClicked)
-            elt.addEventListener('focusout', function(evt){
-                var internalData = getInternalData(form);
-                internalData.lastButtonClicked = null;
-            })
+            elt.addEventListener('focusout', maybeUnsetLastButtonClicked)
         }
 
         function countCurlies(line) {
