@@ -1230,4 +1230,33 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue'], s1: "selectValue"});
     })
+
+    it("can associate submit buttons from outside a form with the current version of the form after swap", function(){
+        const template = '<form ' +
+              'id="hello" ' + 
+              'hx-target="#hello" ' +
+              'hx-select="#hello" ' +       
+              'hx-swap="outerHTML" ' +
+              'hx-post="/test">\n' +
+              '<input id="input" type="text" name="name" />\n' +
+              '<button name="value" type="submit">Submit</button>\n' +
+              '</form>\n' +
+              '<button id="outside" name="outside" form="hello" type="submit">Outside</button>';
+
+        var values
+        this.server.respondWith("/test", function (xhr) {
+          values = getParameters(xhr);
+          xhr.respond(200, {}, template);
+        });
+        make(template);
+        const button = byId("outside");
+        button.focus();
+        button.click();
+        this.server.respond();
+        values.should.deep.equal({name: "", outside: ""});
+        button.focus();
+        button.click();
+        this.server.respond();
+        values.should.deep.equal({name: "", outside: ""});
+    })
 })
