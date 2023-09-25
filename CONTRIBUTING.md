@@ -16,6 +16,7 @@ Want to contribute but don't know where to start? Look for issues with the "help
 ## Pull Requests
 1. Open PRs represent issues that we're actively thinking working on merging (at a pace we can manage). If we think a proposal needs more discussion, or that the existing code would require a lot of back-and-forth to merge, we might close it and suggest you make an issue.
 1. All PRs should be made against the `dev` branch, except documentation PRs (`www/` directory) which can be made against `master`.
+1. Please avoid sending the `dist` files along your PR, only include the `src` ones
 1. Code, including tests, must be written in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11).
 1. Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www).
 1. Refactors that do not make functional changes will be automatically closed, unless explicitly solicited. Imagine someone came into your house unannounced, rearranged a bunch of furniture, and left.
