@@ -131,7 +131,7 @@ return (function () {
 
         function parseInterval(str) {
             if (str == undefined)  {
-                return undefined
+                return undefined;
             }
 
             let interval = NaN;
