@@ -197,27 +197,43 @@ describe("hx-swap attribute", function(){
         swapSpec(make("<div hx-swap='innerHTML'/>")).swapDelay.should.equal(0)
         swapSpec(make("<div hx-swap='innerHTML'/>")).settleDelay.should.equal(0) // set to 0 in tests
         swapSpec(make("<div hx-swap='innerHTML swap:10'/>")).swapDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='innerHTML swap:0'/>")).swapDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='innerHTML swap:0ms'/>")).swapDelay.should.equal(0)
         swapSpec(make("<div hx-swap='innerHTML settle:10'/>")).settleDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='innerHTML settle:0'/>")).settleDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='innerHTML settle:0s'/>")).settleDelay.should.equal(0)
         swapSpec(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).swapDelay.should.equal(10)
         swapSpec(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).settleDelay.should.equal(11)
         swapSpec(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).swapDelay.should.equal(10)
         swapSpec(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).settleDelay.should.equal(11)
+        swapSpec(make("<div hx-swap='innerHTML settle:0 swap:0'/>")).settleDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='innerHTML settle:0 swap:0'/>")).settleDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='innerHTML settle:0s swap:0ms'/>")).settleDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='innerHTML settle:0s swap:0ms'/>")).settleDelay.should.equal(0)
         swapSpec(make("<div hx-swap='innerHTML nonsense settle:11 swap:10'/>")).settleDelay.should.equal(11)
         swapSpec(make("<div hx-swap='innerHTML   nonsense   settle:11   swap:10  '/>")).settleDelay.should.equal(11)
-        
+
         swapSpec(make("<div hx-swap='swap:10'/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='swap:10'/>")).swapDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='swap:0'/>")).swapDelay.should.equal(0);
+        swapSpec(make("<div hx-swap='swap:0s'/>")).swapDelay.should.equal(0);
 
         swapSpec(make("<div hx-swap='settle:10'/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='settle:10'/>")).settleDelay.should.equal(10)
-        
+        swapSpec(make("<div hx-swap='settle:0'/>")).settleDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='settle:0s'/>")).settleDelay.should.equal(0)
+
         swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapDelay.should.equal(10)
         swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).settleDelay.should.equal(11)
+        swapSpec(make("<div hx-swap='swap:0s settle:0'/>")).swapDelay.should.equal(0)
+        swapSpec(make("<div hx-swap='swap:0s settle:0'/>")).settleDelay.should.equal(0)
 
         swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapStyle.should.equal("innerHTML")
         swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapDelay.should.equal(10)
         swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).settleDelay.should.equal(11)
+        swapSpec(make("<div hx-swap='settle:0s swap:10'/>")).swapDelay.should.equal(10)
+        swapSpec(make("<div hx-swap='settle:0s swap:10'/>")).settleDelay.should.equal(0)
 
         swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal("customstyle")
     })
@@ -234,6 +250,17 @@ describe("hx-swap attribute", function(){
         }, 30);
     });
 
+    it("works immediately with no swap delay", function (done) {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make(
+            "<div hx-get='/test' hx-swap='innerHTML swap:0ms'></div>"
+        );
+        div.click();
+        this.server.respond();
+        div.innerText.should.equal("Clicked!");
+        done();
+    });
+
     it('works with a settle delay', function(done) {
         this.server.respondWith("GET", "/test", "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>");
         var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>");
@@ -242,6 +269,24 @@ describe("hx-swap attribute", function(){
         div.classList.contains('foo').should.equal(false);
         setTimeout(function () {
             byId('d1').classList.contains('foo').should.equal(true);
+            done();
+        }, 30);
+    });
+
+    it("works with no settle delay", function (done) {
+        this.server.respondWith(
+            "GET",
+            "/test",
+            "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:0ms'></div>"
+        );
+        var div = make(
+            "<div id='d1' hx-get='/test' hx-swap='outerHTML settle:0ms'></div>"
+        );
+        div.click();
+        this.server.respond();
+        div.classList.contains("foo").should.equal(false);
+        setTimeout(function () {
+            byId("d1").classList.contains("foo").should.equal(true);
             done();
         }, 30);
     });

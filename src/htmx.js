@@ -1827,7 +1827,7 @@ return (function () {
                 if (!maybeFilterEvent(triggerSpec, elt, makeEvent("load", {elt: elt}))) {
                                 loadImmediately(elt, handler, nodeData, triggerSpec.delay);
                             }
-            } else if (triggerSpec.pollInterval) {
+            } else if (triggerSpec.pollInterval !== undefined) {
                 nodeData.polling = true;
                 processPolling(elt, handler, triggerSpec);
             } else {
