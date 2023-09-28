@@ -58,6 +58,26 @@ describe("hx-target attribute", function(){
         div1.innerHTML.should.equal("Clicked!");
     });
 
+    it('targets an ancestor defined `closest` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div1 = make('<div hx-target="closest div"><div><p><i><button id="b1" hx-get="/test">Click Me!</button></i></p></div></div>')
+        var btn = byId("b1")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+    });
+
+    it('targets an ancestor defined `closest` element properly w/ hyperscript syntax', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div1 = make('<div hx-target="closest <div/>"><div><p><i><button id="b1" hx-get="/test">Click Me!</button></i></p></div></div>')
+        var btn = byId("b1")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("Clicked!");
+    });
+
     it('targets a `find` element properly', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
@@ -78,6 +98,32 @@ describe("hx-target attribute", function(){
         this.server.respond();
         var span1 = byId("s1")
         var span2 = byId("s2")
+        span1.innerHTML.should.equal("Clicked!");
+        span2.innerHTML.should.equal("");
+    });
+
+    it('targets an ancestor defined `find` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div hx-target="find span"><span id="s1"></span><button id="b1" hx-get="/test">Click Me!</button><span id="s2"></span></div>')
+        var btn = byId("b1")
+        var span1 = byId("s1")
+        var span2 = byId("s2")
+        btn.click();
+        this.server.respond();
+        span1.innerHTML.should.equal("Clicked!");
+        span2.innerHTML.should.equal("");
+    });
+
+    it('targets an ancestor defined `find` element properly w/ hyperscript syntax', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div hx-target="find <span/>"><span id="s1"></span><button id="b1" hx-get="/test">Click Me!</button><span id="s2"></span></div>')
+        var btn = byId("b1")
+        var span1 = byId("s1")
+        var span2 = byId("s2")
+        btn.click();
+        this.server.respond();
         span1.innerHTML.should.equal("Clicked!");
         span2.innerHTML.should.equal("");
     });
@@ -162,6 +208,46 @@ describe("hx-target attribute", function(){
         div3.innerHTML.should.equal("");
     });
 
+    it('targets an ancestor defined `next` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div hx-target="next div">' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("Clicked!");
+    });
+
+    it('targets an ancestor defined `next` element properly w/ hyperscript syntax', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div hx-target="next <div/>">' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("Clicked!");
+    });
+
     it('targets a `previous` element properly', function()
     {
         this.server.respondWith("GET", "/test", "Clicked!");
@@ -202,4 +288,49 @@ describe("hx-target attribute", function(){
         div3.innerHTML.should.equal("Clicked!");
     });
 
+    it('targets an ancestor defined `previous` element properly', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div id="d4"></div>' +
+            '<div hx-target="previous div">' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        var div4 = byId("d4")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("");
+        div4.innerHTML.should.equal("Clicked!");
+    });
+
+    it('targets an ancestor `previous` element properly w/ hyperscript syntax', function()
+    {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        make('<div id="d4"></div>' +
+            '<div hx-target="previous <div/>">' +
+            '  <div id="d3"></div>' +
+            '  <button id="b1" hx-get="/test">Click Me!</button>' +
+            '  <div id="d1"></div>' +
+            '  <div id="d2"></div>' +
+            '</div>')
+        var btn = byId("b1")
+        var div1 = byId("d1")
+        var div2 = byId("d2")
+        var div3 = byId("d3")
+        var div4 = byId("d4")
+        btn.click();
+        this.server.respond();
+        div1.innerHTML.should.equal("");
+        div2.innerHTML.should.equal("");
+        div3.innerHTML.should.equal("");
+        div4.innerHTML.should.equal("Clicked!");
+    });
 })

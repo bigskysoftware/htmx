@@ -615,7 +615,7 @@ return (function () {
             var results = getDocument().querySelectorAll(match);
             for (var i = 0; i < results.length; i++) {
                 var elt = results[i];
-                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
+                if (elt.compareDocumentPosition(start) & Node.DOCUMENT_POSITION_PRECEDING) {
                     return elt;
                 }
             }
@@ -625,7 +625,7 @@ return (function () {
             var results = getDocument().querySelectorAll(match);
             for (var i = results.length - 1; i >= 0; i--) {
                 var elt = results[i];
-                if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
+                if (elt.compareDocumentPosition(start) & Node.DOCUMENT_POSITION_FOLLOWING) {
                     return elt;
                 }
             }
@@ -712,10 +712,11 @@ return (function () {
         function getTarget(elt) {
             var targetStr = getClosestAttributeValue(elt, "hx-target");
             if (targetStr) {
+                var thisHxTarget = findThisElement(elt,'hx-target');
                 if (targetStr === "this") {
-                    return findThisElement(elt,'hx-target');
+                    return thisHxTarget;
                 } else {
-                    return querySelectorExt(elt, targetStr)
+                    return querySelectorExt(thisHxTarget, targetStr)
                 }
             } else {
                 var data = getInternalData(elt);
