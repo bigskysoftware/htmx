@@ -23,4 +23,4 @@ which will prevent further clicks from occurring.
 
 ## Notes
 
-* `hx-disable-elts` is inherited and can be placed on a parent element
+* `hx-disable-elt` is inherited and can be placed on a parent element
