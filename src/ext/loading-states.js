@@ -20,6 +20,15 @@
 		return pathElt.getAttribute('data-loading-path') === requestPath
 	}
 
+	function mayProcessLoadingStateByMethod(elt, requestMethod) {
+    const methodElt = htmx.closest(elt, "[data-loading-method]")
+    if (!methodElt) {
+      return true
+    }
+
+    return methodElt.getAttribute("data-loading-method") === requestMethod
+  }
+
 	function queueLoadingState(sourceElt, targetElt, doCallback, undoCallback) {
 		const delayElt = htmx.closest(sourceElt, '[data-loading-delay]')
 		if (delayElt) {
@@ -46,7 +55,7 @@
 
 	function getLoadingStateElts(loadingScope, type, path) {
 		return Array.from(htmx.findAll(loadingScope, "[" + type + "]")).filter(
-			function (elt) { return mayProcessLoadingStateByPath(elt, path) }
+			function (elt) { return mayProcessLoadingStateByPath(elt, path) && mayProcessLoadingStateByMethod(elt, method) }
 		)
 	}
 
