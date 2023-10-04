@@ -22,7 +22,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
 
 ```html
 <form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
-  <div>
+  <div class="form-group">
     <label>First Name</label>
     <input type="text" name="firstName" value="Joe">
   </div>
