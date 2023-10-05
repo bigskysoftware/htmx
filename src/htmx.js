@@ -1950,7 +1950,9 @@ return (function () {
 
         function addHxOnEventHandler(elt, eventName, code) {
             var nodeData = getInternalData(elt);
-            nodeData.onHandlers ||= [];
+            if (!Array.isArray(nodeData.onHandlers)) {
+                nodeData.onHandlers = [];
+            }
             var func;
             var listener = function (e) {
                 return maybeEval(elt, function() {
