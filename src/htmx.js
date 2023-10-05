@@ -1484,14 +1484,14 @@ return (function () {
                             return;
                         }
 
-                        if (triggerSpec.throttle) {
+                        if (triggerSpec.throttle > 0) {
                             if (!elementData.throttle) {
                                 handler(elt, evt);
                                 elementData.throttle = setTimeout(function () {
                                     elementData.throttle = null;
                                 }, triggerSpec.throttle);
                             }
-                        } else if (triggerSpec.delay) {
+                        } else if (triggerSpec.delay > 0) {
                             elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
                         } else {
                             triggerEvent(elt, 'htmx:trigger')
@@ -1768,7 +1768,7 @@ return (function () {
                     handler(elt);
                 }
             }
-            if (delay) {
+            if (delay > 0) {
                 setTimeout(load, delay);
             } else {
                 load();
