@@ -5,17 +5,17 @@ page_template = "essay.html"
 +++
 
 ### Hypermedia and REST
-* [HATEOAS](@/essays/hateoas.md)
-* [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
-* [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
-* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
-* [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
-* [Hypermedia Clients](@/essays/hypermedia-clients.md)
-* [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
-* [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
-* [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
-* [REST Copypasta](@/essays/rest-copypasta.md)
-* [The #ViewSource Affordance](@/essays/right-click-view-source.md)
+* January 18, 2016 - [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
+* May 8, 2016 - [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
+* January 14, 2020 - [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
+* July 17, 2021 - [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
+* September 16, 2021 - [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
+* October 16, 2021 - [HATEOAS](@/essays/hateoas.md)
+* May 1, 2022 - [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
+* July 18, 2022 - [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
+* January 28, 2023 - [Hypermedia Clients](@/essays/hypermedia-clients.md)
+* June 26, 2023 - [REST Copypasta](@/essays/rest-copypasta.md)
+* September 21, 2023 - [The #ViewSource Affordance](@/essays/right-click-view-source.md)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
