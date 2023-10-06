@@ -64,7 +64,7 @@ That's it!
     var listItems = [1, 2, 3, 4, 5]
     // routes
     init("/demo", function(request, params){
-      return '<form id=example1" class="list-group col sortable" hx-post="/items" hx-trigger="end">' +
+      return '<form id="example1" class="list-group col sortable" hx-post="/items" hx-trigger="end">' +
       listContents()
       + "\n</form>";
     });
