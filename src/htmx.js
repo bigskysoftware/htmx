@@ -773,7 +773,7 @@ return (function () {
          * @returns
          */
         function oobSwap(oobValue, oobElement, settleInfo) {
-            var selector = "#" + getRawAttribute(oobElement, "id");
+            var selector = "#" + CSS.escape(getRawAttribute(oobElement, "id"));
             var swapStyle = "outerHTML";
             if (oobValue === "true") {
                 // do nothing

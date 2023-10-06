@@ -18,6 +18,16 @@ describe("hx-swap-oob attribute", function () {
         byId("d1").innerHTML.should.equal("Swapped0");
     })
 
+    it('handles special characters in id properly', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='special-chars/.:,!' hx-swap-oob='true'>SwappedSpecialChars</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        make('<div id="special-chars/.:,!"></div>');
+        div.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked");
+        byId("special-chars/.:,!").innerHTML.should.equal("SwappedSpecialChars");
+    })
+
     it('handles more than one oob swap properly', function () {
         this.server.respondWith("GET", "/test", "Clicked<div id='d1' hx-swap-oob='true'>Swapped1</div><div id='d2' hx-swap-oob='true'>Swapped2</div>");
         var div = make('<div hx-get="/test">click me</div>');
