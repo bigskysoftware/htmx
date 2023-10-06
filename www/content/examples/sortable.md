@@ -57,14 +57,20 @@ That's it!
     htmx.onLoad(function(content) {
         var sortables = content.querySelectorAll(".sortable");
         for (var i = 0; i < sortables.length; i++) {
-          var sortable = sortables[i];
-          new Sortable(sortable, {
+          var sortableList = sortables[i];
+          sortable = new Sortable(sortableList, {
               animation: 150,
               ghostClass: 'blue-background-class',
               filter: ".htmx-indicator",
               onMove: function (evt) {
                 return evt.related.className.indexOf('htmx-indicator') === -1;
+              },
+              onEnd: function (evt) {
+                this.option("disabled", true);
               }
+          });
+          sortableList.addEventListener("htmx:afterSwap", function() {
+            sortable.option("disabled", false);
           });
         }
     })
