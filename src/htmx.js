@@ -2959,7 +2959,10 @@ return (function () {
 
                 var buttonVerb = getRawAttribute(submitter, "formmethod")
                 if (buttonVerb != null) {
-                    verb = buttonVerb;
+                    // ignore buttons with formmethod="dialog"
+                    if (buttonVerb.toLowerCase() !== "dialog") {
+                        verb = buttonVerb;
+                    }
                 }
             }
 

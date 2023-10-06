@@ -1230,4 +1230,32 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         values.should.deep.equal({t1: 'textValue', b1: ['inputValue', 'buttonValue'], s1: "selectValue"});
     })
+
+    it('handles form post with button formmethod dialog properly', function () {
+        var values;
+        this.server.respondWith("POST", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(200, {}, "");
+        });
+
+        make('<dialog><form hx-post="/test"><button id="submit" formmethod="dialog" name="foo" value="bar">submit</button></form></dialog>');
+
+        byId("submit").click();
+        this.server.respond();
+        values.should.deep.equal({ foo: 'bar' });
+    })
+
+    it('handles form get with button formmethod dialog properly', function () {
+        var responded = false;
+        this.server.respondWith("GET", "/test", function (xhr) {
+            responded = true;
+            xhr.respond(200, {}, "");
+        });
+
+        make('<dialog><form hx-get="/test"><button id="submit" formmethod="dialog">submit</button></form></dialog>');
+
+        byId("submit").click();
+        this.server.respond();
+        responded.should.equal(true);
+    })
 })
