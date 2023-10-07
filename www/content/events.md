@@ -344,6 +344,19 @@ attribute.  If this event is cancelled, the AJAX request will not occur.
 * `detail.target` - the target of the request
 * `detail.prompt` - the user response to the prompt
 
+### Event - `htmx:beforeHistoryUpdate` {#htmx:beforeHistoryUpdate}
+
+This event is triggered before a history update is performed. It can be
+used to modify the `path` or `type` used to update the history.
+
+##### Details
+
+* `detail.history` - the `path` and `type` (push, replace) for the history update
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
 ### Event - `htmx:pushedIntoHistory` {#htmx:pushedIntoHistory}
 
 This event is triggered after a URL has been pushed into history.
@@ -351,6 +364,14 @@ This event is triggered after a URL has been pushed into history.
 ##### Details
 
 * `detail.path` - the path and query of the URL that has been pushed into history
+
+### Event - `htmx:replacedInHistory` {#htmx:replacedInHistory}
+
+This event is triggered after a URL has been replaced in history.
+
+##### Details
+
+* `detail.path` - the path and query of the URL that has been replaced in history
 
 ### Event - `htmx:responseError` {#htmx:responseError}
 
