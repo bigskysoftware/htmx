@@ -172,7 +172,6 @@ describe("hx-on attribute", function() {
         delete window.bar;
     });
 
-
     it("cleans up all handlers when the DOM updates", function () {
         // setup
         window.foo = 0;
