@@ -180,7 +180,7 @@ describe("hx-on attribute", function() {
         var div = make("<div hx-on='increment-foo: window.foo++\nincrement-bar: window.bar++'>Foo</div>");
         make("<div>Another Div</div>"); // sole purpose is to update the DOM
 
-        // check there is just one listener against each event
+        // check there is just one handler against each event
         htmx.trigger(div, "increment-foo");
         htmx.trigger(div, "increment-bar");        
         window.foo.should.equal(1);
