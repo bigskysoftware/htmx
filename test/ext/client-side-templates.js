@@ -29,16 +29,16 @@ describe("client-side-templates extension", function() {
     it('works on basic handlebars template', function () {
         this.server.respondWith("GET", "/test", '{"foo":"bar"}');
         var btn = make('<button hx-get="/test" hx-ext="client-side-templates" handlebars-template="hb1">Click Me!</button>')
-        Handlebars.partials["hb1"] = Handlebars.compile("*{{foo}}*");
+        make('<script id="hb1" type="text/x-handlebars-template">*{{foo}}*</script>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("*bar*");
     });
 
     it('works on handlebars array template', function () {
-        this.server.respondWith("GET", "/test", '{"foo":"bar"}');
+        this.server.respondWith("GET", "/test", '[{"foo":"bar"}]');
         var btn = make('<button hx-get="/test" hx-ext="client-side-templates" handlebars-array-template="hb1">Click Me!</button>')
-        Handlebars.partials["hb1"] = Handlebars.compile("*{{data.foo}}*");
+        make('<script id="hb1" type="text/x-handlebars-template">*{{#.}}{{foo}}{{/.}}*</script>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("*bar*");
