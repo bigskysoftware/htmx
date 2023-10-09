@@ -90,11 +90,10 @@ function createWebSocket (connectionFunc, closeFunc) {
 }
 
 async function serveFileFromStatic (req, res) {
+  // For the root, serve the static index.html file
   const resource = req.url === '/' ? '/index.html' : req.url
 
   let fp = path.join('./static/', resource)
-  // For the root, serve the static index.html file
-
   let lstat = await fs.lstat(fp)
 
   // If it's a directory, re-set the fp to be the index.html of that directory
@@ -163,7 +162,7 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
       res.write(event)
       i++
     } catch (error) {
-      // Stop the interval if it errors for any reason (likely beacuse end of the array way reached)
+      // Stop the interval if it errors for any reason
       clearInterval(interval)
     }
   }, intervalLength)
