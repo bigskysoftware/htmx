@@ -1,8 +1,9 @@
+<main>
 <h1>Simple Test</h1>
 
 <div role="tablist" hx-target="#page" hx-push-url="false">
-	<a role="tab" hx-get="/static/sse-simple.html">Legacy Style</a>
-	<a role="tab" hx-get="/static/sse-simple-ext.html" aria-selected="true">New Style</a>
+	<a role="tab" href="/sse-simple.html">Legacy Style</a>
+	<a role="tab" href="/sse-simple-ext.html" aria-selected="true">New Style</a>
 </div>
 
 <h3>Description</h3>
@@ -24,3 +25,4 @@
 	<div class="container" hx-ext="sse" sse-connect="/todos.html" sse-swap="message">Waiting for ToDos...</div>
 	<div class="container" hx-ext="sse" sse-connect="/users.html" sse-swap="message">Waiting for Users...</div>
 </div>
+</main>

@@ -1,13 +1,14 @@
+<main>
 <h1>Settling Test</h1>
 
 <div role="tablist" hx-target="#page" hx-push-url="false">
-	<a role="tab" hx-get="/sse-settle.html">Legacy Style</a>
-	<a role="tab" hx-get="/sse-settle-ext.html" aria-selected="true">New Style</a>
+	<a role="tab" href="/sse-settle.html">Legacy Style</a>
+	<a role="tab" href="/sse-settle-ext.html" aria-selected="true">New Style</a>
 </div>
 
 <h3>Description</h3>
 <p>
-	This page connects to a single different Server Sent Event (SSE) stream.  
+	This page connects to a single different Server Sent Event (SSE) stream.
 	Multiple containers all listen for the same default "message" event name, but using different values for hx-swap.
 </p>
 <h3>Example HTML</h3>
@@ -26,3 +27,4 @@
 	<div class="container" sse-swap="message" hx-swap="innerHTML settle:250ms">Waiting for Comments...</div>
 </div>
 </div>
+</main>

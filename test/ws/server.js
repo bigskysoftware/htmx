@@ -8,14 +8,19 @@ const hostname = '127.0.0.1';
 const port = 8080;
 
 const DATA = JSON.parse(await fs.readFile('./static/data.json'))
+const SITE_BASE = (await fs.readFile('./static/site-base.html')).toString()
 
 const server = http.createServer(async (req, res) => {
-  // For the root, serve the static index.html file
-  if (req.url === '/' || req.url === '/index.html') return serveFile(res, './static/index.html')
+  try {
+    await handleRequest(req, res)
+  } catch (error) {
+    console.error(`Error serving ${req.url}`)
+    console.error(req.body)
+    console.error(error)
+  }
+})
 
-  // If the url starts with static, serve the file from the static folder
-  if (req.url.startsWith('/static')) return serveFileFromStatic(req, res)
-
+async function handleRequest (req, res) {
   // If the URL starts with htmx, serve the src/ root version of htmx
   if (req.url.startsWith('/htmx')) {
     const resource = req.url.substring(6)
@@ -30,9 +35,14 @@ const server = http.createServer(async (req, res) => {
   if (req.url === "/todos.html") return makeStream(req, res, DATA.todos, formatTodo)
   if (req.url === "/users.html") return makeStream(req, res, DATA.users, formatUser)
 
-  sendNotFound(res)
-})
-
+  // Otherwise, attempt to serve the file from static
+  // This will return a 404 if it fails
+  try {
+    await serveFileFromStatic(req, res)
+  } catch (error) {
+    sendNotFound(res)
+  }
+}
 const echo = new WebSocketServer({ noServer: true })
 echo.on('connection', (ws) => {
   ws.on('message', (message) => {
@@ -71,9 +81,11 @@ server.listen(port, hostname, () => {
 })
 
 async function serveFileFromStatic (req, res) {
-  const resource = req.url.substring(8)
+  const resource = req.url === '/' ? '/index.html' : req.url
 
   let fp = path.join('./static/', resource)
+  // For the root, serve the static index.html file
+
   let lstat = await fs.lstat(fp)
 
   // If it's a directory, re-set the fp to be the index.html of that directory
@@ -83,13 +95,16 @@ async function serveFileFromStatic (req, res) {
   }
 
   if (!lstat.isFile) return sendNotFound(res)
-  return serveFile(res, fp)
+
+  const withBase = fp.endsWith('.html')
+  return serveFile(res, fp, withBase)
 }
 
-async function serveFile (res, fp) {
+async function serveFile (res, fp, withBase) {
   try {
     const file = await fs.readFile(fp)
-    const text = file.toString()
+    let text = file.toString()
+    if (withBase) text = SITE_BASE + text
     res.end(text)
   } catch (error) {
     console.error(error)
