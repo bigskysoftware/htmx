@@ -18,11 +18,11 @@
 &lt;/div&gt;
 </pre>
 
-<div hx-sse="connect:http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
+<div hx-sse="connect:/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
 	<h3>Test Cases</h3>
-	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event1">Waiting for Posts in Event1 channel...</div>
-	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event2">Waiting for Posts in Event2 channel...</div>
-	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event3">Waiting for Posts in Event3 channel...</div>
-	<div class="container" hx-get="http://localhost/page/random" hx-trigger="sse:Event4">Waiting for Posts in Event4 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event1">Waiting for Posts in Event1 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event2">Waiting for Posts in Event2 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event3">Waiting for Posts in Event3 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event4">Waiting for Posts in Event4 channel...</div>
 </div>
 </main>

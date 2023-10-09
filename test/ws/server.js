@@ -4,19 +4,19 @@ import * as fs from 'node:fs/promises'
 
 import { WebSocketServer } from 'ws'
 
-const hostname = '127.0.0.1';
-const port = 8080;
-
+// Define some string and number constants
+const HOSTNAME = '127.0.0.1';
+const PORT = 8080;
 const DATA = JSON.parse(await fs.readFile('./static/data.json'))
 const SITE_BASE = (await fs.readFile('./static/site-base.html')).toString()
 
+// Define the websockets
 const ECHO_WS = createWebSocket((ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message.toString())
     ws.send(`<div id=idMessage>${data.message}</div>`)
   })
 })
-
 const HEARTBEAT_WS = createWebSocket((ws) => {
   ws.interval = setInterval(() => {
     const num = Math.trunc(Math.random() * 10**10)
@@ -25,6 +25,7 @@ const HEARTBEAT_WS = createWebSocket((ws) => {
 }, (ws) => clearInterval(ws.interval))
 
 
+// Define the server
 const server = http.createServer(async (req, res) => {
   try {
     await handleRequest(req, res)
@@ -35,6 +36,7 @@ const server = http.createServer(async (req, res) => {
   }
 })
 
+// This handles all the non-websocket requests
 async function handleRequest (req, res) {
   // If the URL starts with htmx, serve the src/ root version of htmx
   if (req.url.startsWith('/htmx')) {
@@ -44,15 +46,17 @@ async function handleRequest (req, res) {
     return serveFile(res, fp)
   }
 
-  // These are event streams
+  // If the URL matches one of these, it's an event stream
   if (req.url.startsWith("/posts.html")) return servePosts(req, res)
   if (req.url === "/comments.html") return makeStream(req, res, DATA.comments, formatComment)
   if (req.url === "/albums.html") return makeStream(req, res, DATA.albums, formatAlbum)
   if (req.url === "/todos.html") return makeStream(req, res, DATA.todos, formatTodo)
   if (req.url === "/users.html") return makeStream(req, res, DATA.users, formatUser)
 
-  // Otherwise, attempt to serve the file from static
-  // This will return a 404 if it fails
+  // Randomly-generated HTML
+  if (req.url === "/page/random") return serveRandomHtml(req, res)
+
+  // Otherwise, attempt to serve the file from ./static and return a 404 on failure
   try {
     await serveFileFromStatic(req, res)
   } catch (error) {
@@ -60,13 +64,16 @@ async function handleRequest (req, res) {
   }
 }
 
+// Attach the websockets
 server.on('upgrade', (request, socket, head) => {
   if (request.url === '/echo') ECHO_WS.handle(request, socket, head)
   if (request.url === '/heartbeat') HEARTBEAT_WS.handle(request, socket, head)
 })
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+// Start listening
+server.listen(PORT, HOSTNAME, () => {
+  console.log('Loading the WebSocket / Server-Side Event Tests...');
+  console.log(`You can run them at http://${HOSTNAME}:${PORT}/`);
 })
 
 function createWebSocket (connectionFunc, closeFunc) {
@@ -121,8 +128,6 @@ function servePosts (req, res) {
   const types = url.searchParams?.get('types')
 
   const numEvents = types ? types.split(',').length : 0
-
-  // TODO make these send off-cylce
   makeStream(req, res, DATA.posts, formatPost, numEvents)
 }
 
@@ -157,12 +162,27 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
       // Stop the interval if it errors for any reason (likely beacuse end of the array way reached)
       clearInterval(interval)
     }
-  }, 500)
+  }, 300)
 
   req.on('close', () => {
     res.end('OK')
     clearInterval(interval)
   })
+}
+
+function serveRandomHtml(_req, res) {
+  const page_num = Math.trunc(Math.random() * 10**10)
+  const html_num = Math.trunc(Math.random() * 10**10)
+  const html = `
+    <div>
+      This is page ${page_num}
+      <br><br>
+      Randomly generated <b>HTML</b> ${html_num}
+      <br><br>
+      I wish I were a haiku.
+    </div>
+  `
+  res.end(html)
 }
 
 function formatPost (post) {
