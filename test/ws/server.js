@@ -10,6 +10,21 @@ const port = 8080;
 const DATA = JSON.parse(await fs.readFile('./static/data.json'))
 const SITE_BASE = (await fs.readFile('./static/site-base.html')).toString()
 
+const ECHO_WS = createWebSocket((ws) => {
+  ws.on('message', (message) => {
+    const data = JSON.parse(message.toString())
+    ws.send(`<div id=idMessage>${data.message}</div>`)
+  })
+})
+
+const HEARTBEAT_WS = createWebSocket((ws) => {
+  ws.interval = setInterval(() => {
+    const num = Math.trunc(Math.random() * 10**10)
+    ws.send(`<div id=idMessage>${num}</div>`)
+  }, 1000)
+}, (ws) => clearInterval(ws.interval))
+
+
 const server = http.createServer(async (req, res) => {
   try {
     await handleRequest(req, res)
@@ -29,6 +44,7 @@ async function handleRequest (req, res) {
     return serveFile(res, fp)
   }
 
+  // These are event streams
   if (req.url.startsWith("/posts.html")) return servePosts(req, res)
   if (req.url === "/comments.html") return makeStream(req, res, DATA.comments, formatComment)
   if (req.url === "/albums.html") return makeStream(req, res, DATA.albums, formatAlbum)
@@ -43,42 +59,28 @@ async function handleRequest (req, res) {
     sendNotFound(res)
   }
 }
-const echo = new WebSocketServer({ noServer: true })
-echo.on('connection', (ws) => {
-  ws.on('message', (message) => {
-    const data = JSON.parse(message.toString())
-    ws.send(`<div id=idMessage>${data.message}</div>`)
-  })
-})
-
-const heartbeat = new WebSocketServer({ noServer: true })
-heartbeat.on('connection', (ws) => {
-  ws.interval = setInterval(() => {
-    const num = Math.trunc(Math.random() * 10**10)
-    ws.send(`<div id=idMessage>${num}</div>`)
-  }, 1000)
-})
-heartbeat.on('close', (ws) => {
-  console.log('closing socket')
-  clearInterval(ws.interval)
-})
 
 server.on('upgrade', (request, socket, head) => {
-  if (request.url === '/echo') {
-    echo.handleUpgrade(request, socket, head, (ws) => {
-      echo.emit('connection', ws, request)
-    })
-  }
-  if (request.url === '/heartbeat') {
-    heartbeat.handleUpgrade(request, socket, head, (ws) => {
-      heartbeat.emit('connection', ws, request)
-    })
-  }
+  if (request.url === '/echo') ECHO_WS.handle(request, socket, head)
+  if (request.url === '/heartbeat') HEARTBEAT_WS.handle(request, socket, head)
 })
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 })
+
+function createWebSocket (connectionFunc, closeFunc) {
+  const server = new WebSocketServer({ noServer: true })
+  server.on('connection', connectionFunc)
+  if (closeFunc) server.on('close', closeFunc)
+
+  const handle = (request, socket, head) => {
+    server.handleUpgrade(request, socket, head, (ws) => {
+      server.emit('connection', ws, request)
+    })
+  }
+  return { handle }
+}
 
 async function serveFileFromStatic (req, res) {
   const resource = req.url === '/' ? '/index.html' : req.url
@@ -216,13 +218,4 @@ function formatUser (user) {
   </div>
   `
 }
-
-// function streamToString (stream) {
-//   const chunks = []
-//   return new Promise((resolve, reject) => {
-//     stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)))
-//     stream.on('error', (err) => reject(err))
-//     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')))
-//   })
-// }
 
