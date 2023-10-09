@@ -26,3 +26,11 @@
     <a href="/sse-settle.html">Settling</a>
   </div>
 </div>
+
+<script>
+  // Obviously you could do this with a template engine instead but I'm not using a template engine
+  const navlinks = document.querySelectorAll('#navigation a')
+  navlinks.forEach(link => {
+    if (link.href === window.location.toString()) link.classList.add('selected')
+  })
+</script>
