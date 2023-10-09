@@ -146,9 +146,9 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
       const evenNum = Math.floor(Math.random() * numEvents) + 1
       const eventName = numEvents > 0 ? `Event${evenNum}` : '(none)'
       item.event = eventName
+
       const formattedData = formatFunc(item).replace(/\n/g, ' ')
       const event = `${numEvents > 0 ? `event: ${eventName}\n` : ''}data: ${formattedData}\n\n`
-      console.log(event)
       res.write(event)
       i++
     } catch (error) {

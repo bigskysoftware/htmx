@@ -5,7 +5,6 @@
 <script src="/htmx/ext/sse.js"></script>
 <script src="/htmx/ext/ws.js"></script>
 
-
 <div id="header"></div>
 <div id="navigation">
   <a href="/">Introduction</a>
@@ -28,9 +27,11 @@
 </div>
 
 <script>
+  // This is a tiny hack because I'm simply prepending this file to every page
   // Obviously you could do this with a template engine instead but I'm not using a template engine
   const navlinks = document.querySelectorAll('#navigation a')
   navlinks.forEach(link => {
-    if (link.href === window.location.toString()) link.classList.add('selected')
+    const locWithoutExt = window.location.toString().replace('-ext', '')
+    if (link.href === locWithoutExt) link.classList.add('selected')
   })
 </script>
