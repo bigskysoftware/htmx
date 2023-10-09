@@ -144,6 +144,10 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
     'Cache-Control': 'no-cache'
   })
 
+  // Make the intervals somewhat random, between 200 and 400ms
+  // We have some tests that create multiple streams at once, so this ensures they're all visibile
+  const intervalLength = Math.floor(Math.random() * 200) + 200
+
   let i = 0
   const interval = setInterval(() => {
     if (i == arr.length) i = 0
@@ -162,7 +166,7 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
       // Stop the interval if it errors for any reason (likely beacuse end of the array way reached)
       clearInterval(interval)
     }
-  }, 300)
+  }, intervalLength)
 
   req.on('close', () => {
     res.end('OK')
