@@ -117,20 +117,11 @@ function servePosts (req, res) {
   // Maddening discussion here: https://github.com/whatwg/url/issues/531
   const url = new URL(req.url, "thismessage:/")
   const types = url.searchParams?.get('types')
-  console.log(url.searchParams)
-  if (!types) return makeStream(req, res, DATA.posts, formatPost)
 
-  const eventNames = types.split(',')
-  // Spllit the posts into X arrays of posts, where X is the number of events specificed
-  const arrOfEvents = eventNames.map((name, i) => {
-    const posts = DATA.posts.filter((_, j) => { return j % (i+1) === 0 })
-    return { posts, name }
-  })
+  const numEvents = types ? types.split(',').length : 0
 
   // TODO make these send off-cylce
-  arrOfEvents.map(event => {
-    makeStream(req, res, event.posts, formatPost, event.name)
-  })
+  makeStream(req, res, DATA.posts, formatPost, numEvents)
 }
 
 function sendNotFound(res) {
@@ -139,7 +130,7 @@ function sendNotFound(res) {
   res.end('404 NOT FOUND')
 }
 
-function makeStream(req, res, arr, formatFunc, eventName) {
+function makeStream(req, res, arr, formatFunc, numEvents = 0) {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     Connection: 'keep-alive',
@@ -152,9 +143,12 @@ function makeStream(req, res, arr, formatFunc, eventName) {
 
     const item = arr[i]
     try {
+      const evenNum = Math.floor(Math.random() * numEvents) + 1
+      const eventName = numEvents > 0 ? `Event${evenNum}` : '(none)'
       item.event = eventName
       const formattedData = formatFunc(item).replace(/\n/g, ' ')
-      const event = `${eventName ? `event: ${eventName}\n` : ''}data: ${formattedData}\n\n`
+      const event = `${numEvents > 0 ? `event: ${eventName}\n` : ''}data: ${formattedData}\n\n`
+      console.log(event)
       res.write(event)
       i++
     } catch (error) {
