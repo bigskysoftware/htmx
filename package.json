@@ -23,11 +23,13 @@
   "main": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
+  "type": "module",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
     "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
+    "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh",
     "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
   },
@@ -45,6 +47,7 @@
     "mock-socket": "^9.2.1",
     "sinon": "^9.2.4",
     "typescript": "^4.9.5",
-    "uglify-js": "^3.17.4"
+    "uglify-js": "^3.17.4",
+    "ws": "^8.14.2"
   }
 }
