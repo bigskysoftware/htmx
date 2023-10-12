@@ -1,0 +1,28 @@
+<main>
+<h1>Event Trigger Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" href="/sse-triggers.html" aria-selected="true">Legacy Style</a>
+	<a role="tab" href="/sse-triggers-ext.html">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>
+	This page connects to a single different Server Sent Event (SSE) streams, listening on events named "Event1", "Event2", "Event3", and "Event4".
+	Each event is used as a trigger for hx-get to load a random page from the server.
+</p>
+<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-sse="connect:http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4"&gt;
+	&lt;div hx-get="http://localhost/page/random" hx-trigger="sse:Event1"&gt;Waiting for Posts...&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<div hx-sse="connect:/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
+	<h3>Test Cases</h3>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event1">Waiting for Posts in Event1 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event2">Waiting for Posts in Event2 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event3">Waiting for Posts in Event3 channel...</div>
+	<div class="container" hx-get="/page/random" hx-trigger="sse:Event4">Waiting for Posts in Event4 channel...</div>
+</div>
+</main>
