@@ -26,6 +26,8 @@ After:
 </form>
 ```
 
-1. Form Restructuring: Move the binary file input outside the main form element in the HTML structure.
-
-2. Using the form Attribute: Enhance the binary file input by adding the form attribute and setting its value to the ID of the main form. This linkage associates the binary file input with the form, even when it resides outside the form element.
+1. Restructure the form.  
+   Move the binary file `input` outside the main `form` element in the HTML structure.
+2. Use the `form` attribute.  
+   Enhance the binary file `input` by adding the `form` attribute and setting its value to the ID of the main form.  
+   This linkage associates the binary file input with the form, even when it resides outside the form element.
