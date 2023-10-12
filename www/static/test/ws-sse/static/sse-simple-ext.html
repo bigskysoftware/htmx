@@ -1,0 +1,28 @@
+<main>
+<h1>Simple Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" href="/sse-simple.html">Legacy Style</a>
+	<a role="tab" href="/sse-simple-ext.html" aria-selected="true">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>
+	This page connects to several different Server Sent Event (SSE) streams, listening on the default event name "message".
+	Each stream should populate its own container.
+</p>
+<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-ext="sse" sse-connect="http://localhost/posts.html" sse-swap="message"&gt;Waiting for Posts...&lt;/div&gt;
+</pre>
+
+<h3>Test Cases</h3>
+
+<div>
+	<div class="container" hx-ext="sse" sse-connect="/posts.html" sse-swap="message">Waiting for Posts...</div>
+	<div class="container" hx-ext="sse" sse-connect="/comments.html" sse-swap="message">Waiting for Comments...</div>
+	<div class="container" hx-ext="sse" sse-connect="/albums.html" sse-swap="message">Waiting for Albums...</div>
+	<div class="container" hx-ext="sse" sse-connect="/todos.html" sse-swap="message">Waiting for ToDos...</div>
+	<div class="container" hx-ext="sse" sse-connect="/users.html" sse-swap="message">Waiting for Users...</div>
+</div>
+</main>
