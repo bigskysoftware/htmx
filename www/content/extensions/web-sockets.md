@@ -237,9 +237,9 @@ specified element, namely `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when
 
 ### Testing with the Demo Server
 
-Htmx includes a demo WebSockets server written in Go that will help you to see WebSockets in action, and begin
-bootstrapping your own WebSockets code. It is located in the /test/servers/ws folder of the htmx distribution. Look at
-/test/servers/ws/README.md for instructions on running and using the test server.
+Htmx includes a demo WebSockets server written in Node.js that will help you to see WebSockets in action, and begin
+bootstrapping your own WebSockets code. It is located in the /test/ws-sse folder of the htmx distribution. Look at
+/test/ws-sse/README.md for instructions on running and using the test server.
 
 ### Migrating from Previous Versions
 
