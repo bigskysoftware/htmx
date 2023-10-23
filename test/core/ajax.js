@@ -481,6 +481,33 @@ describe("Core htmx AJAX Tests", function(){
         values.should.deep.equal({multiSelect:["m1", "m3", "m7", "m8"]});
     });
 
+    it('properly handles multiple email input', function()
+    {
+        var values;
+        this.server.respondWith("Post", "/test", function (xhr) {
+            values = getParameters(xhr);
+            xhr.respond(204, {}, "");
+        });
+
+        var form = make('<form hx-post="/test" hx-trigger="click">' +
+            '<input id="multiEmail" name="multiEmail" multiple>'+
+            '</form>');
+
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiEmail: ''});
+
+        byId("multiEmail").value = 'foo@example.com';
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiEmail:"foo@example.com"});
+
+        byId("multiEmail").value = 'foo@example.com,bar@example.com';
+        form.click();
+        this.server.respond();
+        values.should.deep.equal({multiEmail:"foo@example.com,bar@example.com"});
+    });
+
     it('properly handles checkbox inputs', function()
     {
         var values;
