@@ -20,7 +20,7 @@ You can trigger the demo below by either clicking on the button, or by hitting a
 
 You can find out the conditions needed for a given keyboard shortcut here:
 
-https://javascript.info/keyboard-events
+[https://javascript.info/keyboard-events](https://javascript.info/keyboard-events)
 
 {{ demoenv() }}
 
