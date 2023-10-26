@@ -2175,6 +2175,12 @@ return (function () {
                 return;
             }
 
+            if (htmx.config.historyCacheSize <= 0) {
+                // make sure that an eventually already existing cache is purged
+                localStorage.removeItem("htmx-history-cache");
+                return;
+            }
+
             url = normalizePath(url);
 
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
@@ -2199,7 +2205,6 @@ return (function () {
                     historyCache.shift(); // shrink the cache and retry
                 }
             }
-            if (historyCache.length === 0) localStorage.removeItem("htmx-history-cache");
         }
 
         function getCachedHistory(url) {
