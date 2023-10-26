@@ -2975,12 +2975,13 @@ return (function () {
                 }
             }
 
+            var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
             // allow event-based confirmation w/ a callback
-            if (!confirmed) {
-                var issueRequest = function() {
-                    return issueAjaxRequest(verb, path, elt, event, etc, true);
+            if (confirmed === undefined) {
+                var issueRequest = function(skipConfirmation) {
+                    return issueAjaxRequest(verb, path, elt, event, etc, !!skipConfirmation);
                 }
-                var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest};
+                var confirmDetails = {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest, question: confirmQuestion};
                 if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
                     maybeCall(resolve);
                     return promise;
@@ -3081,8 +3082,7 @@ return (function () {
                 }
             }
 
-            var confirmQuestion = getClosestAttributeValue(elt, "hx-confirm");
-            if (confirmQuestion) {
+            if (confirmQuestion && !confirmed) {
                 if(!confirm(confirmQuestion)) {
                     maybeCall(resolve);
                     endRequestLock()
