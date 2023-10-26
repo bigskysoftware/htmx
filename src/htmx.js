@@ -2177,6 +2177,12 @@ return (function () {
                 return;
             }
 
+            if (htmx.config.historyCacheSize <= 0) {
+                // make sure that an eventually already existing cache is purged
+                localStorage.removeItem("htmx-history-cache");
+                return;
+            }
+
             url = normalizePath(url);
 
             var historyCache = parseJSON(localStorage.getItem("htmx-history-cache")) || [];
