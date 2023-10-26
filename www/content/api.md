@@ -121,8 +121,6 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `wsReconnectDelay:full-jitter` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
 * `scrollBehavior:smooth` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
-* `defaultErrorSwapStyle:'none'` - string: the default swap style to use if [`hx-error-swap`](@/attributes/hx-error-swap.md) is omitted
-* `defaultErrorTarget:'mirror'` - string: the default target strategy to use if [`hx-error-target`](@/attributes/hx-error-target.md) is omitted
 
 ##### Example
 

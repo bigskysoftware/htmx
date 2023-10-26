@@ -1,5 +1,4 @@
 describe("hx-error-target attribute", function () {
-    var initialErrorSwapStyle = htmx.config.defaultErrorSwapStyle
     beforeEach(function () {
         this.server = sinon.fakeServer.create();
         var server = this.server
@@ -11,10 +10,8 @@ describe("hx-error-target attribute", function () {
             })
         }
         clearWorkArea();
-        htmx.config.defaultErrorSwapStyle = "innerHTML"
     });
     afterEach(function () {
-        htmx.config.defaultErrorSwapStyle = initialErrorSwapStyle
         this.server.restore();
         clearWorkArea();
     });
@@ -213,34 +210,5 @@ describe("hx-error-target attribute", function () {
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
-    });
-
-    it('default "mirror" error-target strategy works properly along hx-target', function () {
-        var defaultErrorTarget = htmx.config.defaultErrorTarget
-        htmx.config.defaultErrorTarget = "mirror"
-        try {
-            this.server.respondWithRandomError("GET", "/test", "Clicked!");
-            var btn = make('<button hx-target="#d1" hx-get="/test">Click Me!</button>')
-            var div1 = make('<div id="d1"></div>')
-            btn.click();
-            this.server.respond();
-            div1.innerHTML.should.equal("Clicked!");
-        } finally {
-            htmx.config.defaultErrorTarget = defaultErrorTarget
-        }
-    });
-
-    it('default "mirror" error-target strategy works properly along default target', function () {
-        var defaultErrorTarget = htmx.config.defaultErrorTarget
-        htmx.config.defaultErrorTarget = "mirror"
-        try {
-            this.server.respondWithRandomError("GET", "/test", "Clicked!");
-            var btn = make('<button hx-get="/test">Click Me!</button>')
-            btn.click();
-            this.server.respond();
-            btn.innerHTML.should.equal("Clicked!");
-        } finally {
-            htmx.config.defaultErrorTarget = defaultErrorTarget
-        }
     });
 })

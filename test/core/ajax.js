@@ -1285,19 +1285,6 @@ describe("Core htmx AJAX Tests", function(){
         this.server.respond();
         responded.should.equal(true);
     })
-    
-    it('400 content can be swapped if configured to do so in htmx.config', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(400, {}, "Clicked!");
-        });
-        var initialConfig = htmx.config.defaultErrorSwapStyle
-        htmx.config.defaultErrorSwapStyle = "innerHTML"
-        var btn = make('<button hx-get="/test">Click Me!</button>')
-        btn.click();
-        this.server.respond();
-        btn.innerText.should.equal("Clicked!");
-        htmx.config.defaultErrorSwapStyle = initialConfig
-    });
 
     it('400 content can be swapped with hx-error-target and hx-error-swap', function () {
         this.server.respondWith("GET", "/test", function (xhr) {

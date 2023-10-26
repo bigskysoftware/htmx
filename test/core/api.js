@@ -351,54 +351,6 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal('<p class="test">foo!</p>');
     });
 
-    it('ajax api works with default error-swap method', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(400, {}, "<p class='test'>foo!</p>")
-        });
-        var div = make("<div><div id='target'></div></div>");
-        var defaultErrorSwapStyle = htmx.config.defaultErrorSwapStyle
-        try {
-            htmx.config.defaultErrorSwapStyle = "outerHTML"
-            htmx.ajax("GET", "/test", {target: "#target", swap: "innerHTML"});
-            this.server.respond();
-            div.innerHTML.should.equal('<p class="test">foo!</p>');
-        } finally {
-            htmx.config.defaultErrorSwapStyle = defaultErrorSwapStyle
-        }
-    });
-
-    it('ajax api works with default error target from source', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(400, {}, "<p class='test'>foo!</p>")
-        });
-        var div = make("<div id='target'><div id='child'></div></div>");
-        var defaultErrorTarget = htmx.config.defaultErrorTarget
-        try {
-            htmx.config.defaultErrorTarget = "find div"
-            htmx.ajax("GET", "/test", {target: "#target", source: "#target", swap: "innerHTML", errorSwap: "outerHTML"});
-            this.server.respond();
-            div.innerHTML.should.equal('<p class="test">foo!</p>');
-        } finally {
-            htmx.config.defaultErrorTarget = defaultErrorTarget
-        }
-    });
-
-    it('ajax api works with default error target', function () {
-        this.server.respondWith("GET", "/test", function (xhr) {
-            xhr.respond(400, {}, "<p class='test'>foo!</p>")
-        });
-        var div = make("<div id='target'><div id='child'></div></div>");
-        var defaultErrorTarget = htmx.config.defaultErrorTarget
-        try {
-            htmx.config.defaultErrorTarget = "#child"
-            htmx.ajax("GET", "/test", {target: "#target", swap: "none", errorSwap: "outerHTML"});
-            this.server.respond();
-            div.innerHTML.should.equal('<p class="test">foo!</p>');
-        } finally {
-            htmx.config.defaultErrorTarget = defaultErrorTarget
-        }
-    });
-
     it('ajax api works with errorSwap mirror', function () {
         this.server.respondWith("GET", "/test", function (xhr) {
             xhr.respond(400, {}, "<p class='test'>foo!</p>")

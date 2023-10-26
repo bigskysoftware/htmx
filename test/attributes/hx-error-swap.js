@@ -274,22 +274,6 @@ describe("hx-error-swap attribute", function () {
         should.equal(byId("d1"), null);
     });
 
-    it('in presence of bad swap spec, it uses the default error-swap strategy', function () {
-        var defaultErrorSwapStyle = htmx.config.defaultErrorSwapStyle;
-        htmx.config.defaultErrorSwapStyle = "outerHTML";
-        try {
-            this.server.respondWithRandomError("GET", "/test", "Clicked!");
-
-            var div = make('<div><button id="b1" hx-error-swap="foo" hx-get="/test">Initial</button></div>')
-            var b1 = byId("b1");
-            b1.click();
-            this.server.respond();
-            div.innerHTML.should.equal('Clicked!');
-        } finally {
-            htmx.config.defaultErrorSwapStyle = defaultErrorSwapStyle;
-        }
-    });
-
     it('error-swap mirror with swap outerHTML works properly', function () {
         this.server.respondWithRandomError("GET", "/test", '<a id="a1" hx-get="/test2">Click Me</a>');
         this.server.respondWith("GET", "/test2", "Clicked!");
@@ -334,40 +318,5 @@ describe("hx-error-swap attribute", function () {
         div.click();
         this.server.respond();
         div.innerHTML.should.equal('Clicked!');
-    });
-
-    it('default "mirror" error-swap strategy works properly along hx-swap', function () {
-        var defaultErrorSwapStyle = htmx.config.defaultErrorSwapStyle;
-        htmx.config.defaultErrorSwapStyle = "mirror";
-        try {
-            this.server.respondWithRandomError("GET", "/test", "Clicked!");
-
-            var div = make('<div><button id="b1" hx-swap="outerHTML" hx-get="/test">Initial</button></div>')
-            var b1 = byId("b1");
-            b1.click();
-            this.server.respond();
-            div.innerHTML.should.equal('Clicked!');
-        } finally {
-            htmx.config.defaultErrorSwapStyle = defaultErrorSwapStyle;
-        }
-    });
-
-    it('default "mirror" error-swap strategy works properly along default swap strategy', function () {
-        var defaultErrorSwapStyle = htmx.config.defaultErrorSwapStyle;
-        var defaultSwapStyle = htmx.config.defaultSwapStyle;
-        htmx.config.defaultSwapStyle = "outerHTML";
-        htmx.config.defaultErrorSwapStyle = "mirror";
-        try {
-            this.server.respondWithRandomError("GET", "/test", "Clicked!");
-
-            var div = make('<div><button id="b1" hx-get="/test">Initial</button></div>')
-            var b1 = byId("b1");
-            b1.click();
-            this.server.respond();
-            div.innerHTML.should.equal('Clicked!');
-        } finally {
-            htmx.config.defaultErrorSwapStyle = defaultErrorSwapStyle;
-            htmx.config.defaultSwapStyle = defaultSwapStyle;
-        }
     });
 })

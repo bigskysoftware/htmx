@@ -74,9 +74,7 @@ return (function () {
                 getCacheBusterParam: false,
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
-                selfRequestsOnly: false,
-                defaultErrorSwapStyle: "none",
-                defaultErrorTarget: "mirror",
+                selfRequestsOnly: false
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -740,9 +738,9 @@ return (function () {
          * @returns {{shouldSwap: boolean, target: (HTMLElement|null), targetStr: string}}
          */
         function getErrorTargetSpec(elt, initialTarget, swapOverride) {
-            var targetStr = getClosestAttributeValue(elt, "hx-error-target") || htmx.config.defaultErrorTarget
-            var swapStr = swapOverride || getClosestAttributeValue(elt, "hx-error-swap") || htmx.config.defaultErrorSwapStyle
-            if (!swapStr || swapStr === "none") {
+            var targetStr = getClosestAttributeValue(elt, "hx-error-target")
+            var swapStr = swapOverride || getClosestAttributeValue(elt, "hx-error-swap")
+            if ((!targetStr && !swapStr) || swapStr === "none") {
                 return {
                     shouldSwap: false,
                     target: null,
@@ -847,7 +845,7 @@ return (function () {
 
                         target = beforeSwapDetails.target; // allow re-targeting
                         if (beforeSwapDetails['shouldSwap']){
-                            swap(swapStyle, target, target, fragment, settleInfo, htmx.config.defaultSwapStyle);
+                            swap(swapStyle, target, target, fragment, settleInfo);
                         }
                         forEach(settleInfo.elts, function (elt) {
                             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails);
@@ -1084,7 +1082,7 @@ return (function () {
             return fragment;
         }
 
-        function swap(swapStyle, elt, target, fragment, settleInfo, defaultSwapStyle) {
+        function swap(swapStyle, elt, target, fragment, settleInfo) {
             switch (swapStyle) {
                 case "none":
                     return;
@@ -1131,7 +1129,7 @@ return (function () {
                     if (swapStyle === "innerHTML") {
                         swapInnerHTML(target, fragment, settleInfo);
                     } else {
-                        swap(defaultSwapStyle, elt, target, fragment, settleInfo, defaultSwapStyle);
+                        swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo);
                     }
             }
         }
@@ -1147,14 +1145,14 @@ return (function () {
             }
         }
 
-        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride, defaultSwapStyle) {
+        function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride) {
             settleInfo.title = findTitle(responseText);
             var fragment = makeFragment(responseText);
             if (fragment) {
                 handleOutOfBandSwaps(elt, fragment, settleInfo);
                 fragment = maybeSelectFromResponse(elt, fragment, selectOverride);
                 handlePreservedElements(fragment);
-                return swap(swapStyle, elt, target, fragment, settleInfo, defaultSwapStyle);
+                return swap(swapStyle, elt, target, fragment, settleInfo);
             }
         }
 
@@ -1761,7 +1759,7 @@ return (function () {
                     var target = getTarget(elt)
                     var settleInfo = makeSettleInfo(elt);
 
-                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo, null, htmx.config.defaultSwapStyle)
+                    selectAndSwap(swapSpec.swapStyle, target, elt, response, settleInfo)
                     settleImmediately(settleInfo.tasks)
                     triggerEvent(elt, "htmx:sseMessage", event)
                 };
@@ -2695,23 +2693,22 @@ return (function () {
          */
         function getSwapSpecification(elt, swapInfoOverride, isStandardErrorSwap) {
             var swapInfo
-            var defaultSwapStyle = htmx.config.defaultSwapStyle
             if (swapInfoOverride) {
                 swapInfo = swapInfoOverride
             } else if (isStandardErrorSwap) {
-                if (htmx.config.defaultErrorSwapStyle !== "mirror") {
-                    defaultSwapStyle = htmx.config.defaultErrorSwapStyle
-                }
                 swapInfo = getClosestAttributeValue(elt, "hx-error-swap")
-                if ((swapInfo && swapInfo === "mirror") || (!swapInfo && htmx.config.defaultErrorSwapStyle === "mirror")) {
+                if (!swapInfo && !getClosestAttributeValue(elt, "hx-error-target")) {
+                    // If neither hx-error-swap nor hx-error-target are defined, set swap strategy to none
+                    swapInfo = "none"
+                } else if (!swapInfo || swapInfo === "mirror") {
+                    // If hx-error-swap isn't defined but hx-error-target is, use the standard swap strategy
                     swapInfo = getClosestAttributeValue(elt, "hx-swap") || htmx.config.defaultSwapStyle
                 }
             } else {
                 swapInfo = getClosestAttributeValue(elt, "hx-swap")
             }
             var swapSpec = {
-                "defaultSwapStyle": defaultSwapStyle,
-                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : defaultSwapStyle,
+                "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
                 "settleDelay" : htmx.config.defaultSettleDelay
             }
@@ -3583,7 +3580,7 @@ return (function () {
                         }
 
                         var settleInfo = makeSettleInfo(target);
-                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride, swapSpec.defaultSwapStyle);
+                        selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride);
 
                         if (selectionInfo.elt &&
                             !bodyContains(selectionInfo.elt) &&
