@@ -3551,7 +3551,7 @@ return (function () {
                                 }
                             }
                             if (responseInfo.pathInfo.anchor) {
-                                var anchorTarget = find("#" + responseInfo.pathInfo.anchor);
+                                var anchorTarget = getDocument().getElementById(responseInfo.pathInfo.anchor);
                                 if(anchorTarget) {
                                     anchorTarget.scrollIntoView({block:'start', behavior: "auto"});
                                 }
