@@ -1915,6 +1915,7 @@ return (function () {
         // Handle submit buttons/inputs that have the form attribute set
         // see https://developer.mozilla.org/docs/Web/HTML/Element/button
          function maybeSetLastButtonClicked(evt) {
+            var elt = closest(evt.target, "button, input[type='submit']");
             var internalData = getRelatedFormData(evt)
             if (internalData) {
               internalData.lastButtonClicked = elt;
@@ -1938,10 +1939,6 @@ return (function () {
            return getInternalData(form);
         }
         function initButtonTracking(elt) {
-            var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
-            if (!form) {
-              return;
-            }
             // need to handle both click and focus in:
             //   focusin - in case someone tabs in to a button and hits the space bar
             //   click - on OSX buttons do not focus on click see https://bugs.webkit.org/show_bug.cgi?id=13724
