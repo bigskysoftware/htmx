@@ -1915,30 +1915,27 @@ return (function () {
         // Handle submit buttons/inputs that have the form attribute set
         // see https://developer.mozilla.org/docs/Web/HTML/Element/button
          function maybeSetLastButtonClicked(evt) {
-            var elt = closest(evt.target, "button, input[type='submit']");
-            if (!elt) {
-              return;
-            }
-            var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
-            if (!form) {
-                return;
-            }
-            if (elt !== null) {
-                var internalData = getInternalData(form);
-                internalData.lastButtonClicked = elt;
+            var internalData = getRelatedFormData(evt)
+            if (internalData) {
+              internalData.lastButtonClicked = elt;
             }
         };
         function maybeUnsetLastButtonClicked(evt){
-            var elt = closest(evt.target, "button, input[type='submit']");
-            if (!elt) {
-              return;
+            var internalData = getRelatedFormData(evt)
+            if (internalData) {
+              internalData.lastButtonClicked = null;
             }
-            var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
-            if (!form) {
-              return;
-            }
-            var internalData = getInternalData(form);
-            internalData.lastButtonClicked = null;
+        }
+        function getRelatedFormData(evt) {
+           var elt = closest(evt.target, "button, input[type='submit']");
+           if (!elt) {
+             return;
+           }
+           var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
+           if (!form) {
+             return;
+           }
+           return getInternalData(form);
         }
         function initButtonTracking(elt) {
             var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
