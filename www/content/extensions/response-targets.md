@@ -6,7 +6,8 @@ This extension allows you to specify different target elements to be swapped whe
 different HTTP response codes are received.
 
 It uses attribute names in a form of ``hx-target-[CODE]`` where `[CODE]` is a numeric
-HTTP response code with the optional wildcard character at its end.
+HTTP response code with the optional wildcard character at its end. You can also use
+`hx-target-error`, which handles both 4xx and 5xx response codes.
 
 The value of each attribute can be:
 
@@ -83,8 +84,27 @@ for 404 (not found) response, and yet another for all 5xx response codes:
 * The response from the `/register` URL will replace contents of the `div` with the `id`
   `serious-errors` when response code begins with a digit 5 (server errors).
 
-* The response from the `/register` URL will will replace contents of the `div` with
+* The response from the `/register` URL will replace contents of the `div` with
   the `id` `not-found` when response code is 404 (Not Found).
+
+Sometimes you may not want to handle 5xx and 4xx errors separately, in which case you
+can use `hx-target-error`:
+
+```html
+<div hx-ext="response-targets">
+    <div id="response-div"></div>
+    <button hx-post="/register"
+            hx-target="#response-div"
+            hx-target-error="#any-errors">
+        Register!
+    </button>
+    <div id="any-errors"></div>
+</div>
+```
+
+2xx codes will be handled as in the previous example. However, when the response code is 5xx
+or 4xx, the response from `/register` will replace the contents of the `div` with the `id`
+`any-errors`.
 
 ## Wildcard resolution
 
