@@ -38,6 +38,9 @@
             '***',
             'xxx',
         ];
+        if (respCode.startsWith('4') || respCode.startsWith('5')) {
+            attrPossibilities.push('error');
+        }
 
         for (var i = 0; i < attrPossibilities.length; i++) {
             var attr = attrPrefix + attrPossibilities[i];
