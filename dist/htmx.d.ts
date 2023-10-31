@@ -385,6 +385,16 @@ export interface HtmxConfig {
     disableSelector?: "[hx-disable], [data-hx-disable]" | string;
     /** @default "smooth" */
     scrollBehavior?: "smooth" | "auto";
+    /**
+     * If set to false, disables the interpretation of script tags.
+     * @default true
+     */
+    allowScriptTags?: boolean;
+    /**
+     * If set to true, disables htmx-based requests to non-origin hosts.
+     * @default false
+     */
+    selfRequestsOnly?: boolean;
 }
 
 /**
