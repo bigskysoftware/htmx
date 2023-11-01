@@ -33,11 +33,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Django
 
-- <https://www.photondesigner.com/articles/submit-async-django-form-with-htmx>
 - <https://github.com/adamchainz/django-htmx>
 - <https://github.com/spookylukey/django-htmx-patterns/>
 - <https://github.com/idlesign/django-siteajax>
 - <https://github.com/guettli/django-htmx-fun/>
+- <https://www.photondesigner.com/articles/submit-async-django-form-with-htmx>
 
 ### FastAPI
 
