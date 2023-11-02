@@ -29,6 +29,11 @@ describe('Core htmx extension tests', function() {
             onEvent: function(name, evt) {
                 if (name === 'htmx:beforeRequest') {
                     evt.preventDefault();
+                    if (IsIE11()) {
+                        // IE11 doesn't set defaultPrevented to true on custom events it seems, so use a
+                        // return false instead to cancel the event
+                        return false
+                    }
                 }
             }
         });
