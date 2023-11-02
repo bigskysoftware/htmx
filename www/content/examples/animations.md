@@ -179,8 +179,9 @@ is a form that on submit will change its look to indicate that a request is bein
   }
 </style>
 <form hx-post="/name" hx-swap="outerHTML">
-<label>Name:</label><input name="name"><br/>
-<button>Submit</button>
+  <label>Name:</label><input name="name">
+  <br/>
+  <button>Submit</button>
 </form>
 ```
 
@@ -194,10 +195,11 @@ is a form that on submit will change its look to indicate that a request is bein
 </style>
 
 <div aria-live="polite">
-<form hx-post="/name" hx-swap="outerHTML">
-<label>Name:</label><input name="name"><br/>
-<button>Submit</button>
-</form>
+  <form hx-post="/name" hx-swap="outerHTML">
+    <label>Name:</label><input name="name">
+    <br/>
+    <button>Submit</button>
+  </form>
 </div>
 
 <script>
