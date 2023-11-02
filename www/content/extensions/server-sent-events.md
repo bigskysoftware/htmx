@@ -103,7 +103,7 @@ If the SSE Event Stream is closed unexpectedly, browsers are supposed to attempt
 
 ### Testing SSE Connections with the Demo Server
 
-Htmx includes a demo SSE server written in Go that will help you to see SSE in action, and begin bootstrapping your own SSE code.  It is located in the /test/servers/sse folder of the htmx distribution.  Look at /test/servers/ws/README.md for instructions on running and using the test server.
+Htmx includes a demo SSE server written in Node.js that will help you to see SSE in action, and begin bootstrapping your own SSE code.  It is located in the /test/ws-sse folder of the htmx distribution.  Look at /test/ws-sse/README.md for instructions on running and using the test server.
 
 ### Migrating from Previous Versions
 

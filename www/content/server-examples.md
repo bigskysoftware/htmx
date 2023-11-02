@@ -96,12 +96,15 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/whamtet/ctmx>
 - <https://github.com/jcpsantiago/htmx-clj-dashboard>
 - <https://github.com/prestancedesign/babashka-htmx-todoapp>
+- <https://github.com/dharrigan/startrek>
 
 ## Ruby
 
+- <https://alchemists.io/projects/htmx>
+
 ### Rails
 
-<https://github.com/rootstrap/htmx-rails>
+- <https://github.com/rootstrap/htmx-rails>
 
 ### Sinatra
 
@@ -139,9 +142,19 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/hungle00/todo-htmx>
 
+### Bandit with Plug Application
+
+- <https://github.com/lorantkurthy/todo-htmex>
+
 ## Go
 
 ### templ
 
 - <https://templ.guide/server-side-rendering/htmx>
 - <https://github.com/jritsema/go-htmx-tailwind-example>
+
+## Delphi
+
+### DelphiMVCFramework
+- <https://github.com/danieleteti/delphi-dmvcframework-htmx-todo>
+- <https://github.com/danieleteti/delphimvcframework/tree/master/samples/htmx>

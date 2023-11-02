@@ -1,0 +1,27 @@
+<main>
+<h1>Multi-Channel Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" href="/sse-multichannel.html" aria-selected="true">Legacy Style</a>
+	<a role="tab" href="/sse-multichannel-ext.html">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>
+	This page connects to a single different Server Sent Event (SSE) stream, listening on events named "Event1", "Event2", "Event3", and "Event4".
+	Each separate kind of event should swap into a different container.
+</p>
+<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-sse="connect:http://localhost/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4"&gt;
+	&lt;div hx-sse="swap:Event1"&gt;Waiting for Posts in Event1 channel...&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+<div hx-sse="connect:/posts.html?types=Event1%2cEvent2%2cEvent3%2cEvent4">
+	<h3>Test Cases</h3>
+	<div class="container" hx-sse="swap:Event1">Waiting for Posts in Event1 channel...</div>
+	<div class="container" hx-sse="swap:Event2">Waiting for Posts in Event2 channel...</div>
+	<div class="container" hx-sse="swap:Event3">Waiting for Posts in Event3 channel...</div>
+	<div class="container" hx-sse="swap:Event4">Waiting for Posts in Event4 channel...</div>
+</div>
+</main>

@@ -102,6 +102,8 @@ At this point you can modify `/src/htmx.js` to add features, and then add tests 
 htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework
 and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
 
+You can also run live tests and demo of the WebSockets and Server-Side Events extensions with `npm run ws-tests`
+
 ## haiku
 
 *javascript fatigue:<br/>

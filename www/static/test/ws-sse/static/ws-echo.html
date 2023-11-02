@@ -1,0 +1,41 @@
+<main>
+<h1>Echo Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" href="/ws-echo.html" aria-selected="true">Legacy Style</a>
+	<a role="tab" href="/ws-echo-ext.html">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>This test lets you send and receive data to and from the WebSocket server.  Every message that you send to the server will be "echoed"
+back to you in a separate message</p>
+
+<h3>Example HTML</h3>
+
+<pre class="code">
+&lt;div hx-ws="connect:ws://localhost/echo"&gt;
+
+    &lt;form hx-ws="send"&gt;
+        &lt;input type="text" name="message" style="width:500px;" value="This Is The Message" /&gt;
+        &lt;input type="submit"/&gt;
+    &lt;/form&gt;
+
+    &lt;div id="idMessage"&gt;&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<div class="elastic container" hx-ws="connect:/echo">
+
+    <form hx-ws="send">
+        <h3>Send a Message</h3>
+        <div>
+            <input type="text" name="message" style="width:500px;" value="This Is The Message" />
+            <input type="submit" value="Send" class="btn primary"/>
+        </div>
+    </form>
+
+    <br>
+    <h3>Receive a Message</h3>
+    <div id="idMessage"></div>
+</div>
+</main/>

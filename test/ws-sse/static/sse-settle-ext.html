@@ -1,0 +1,30 @@
+<main>
+<h1>Settling Test</h1>
+
+<div role="tablist" hx-target="#page" hx-push-url="false">
+	<a role="tab" href="/sse-settle.html">Legacy Style</a>
+	<a role="tab" href="/sse-settle-ext.html" aria-selected="true">New Style</a>
+</div>
+
+<h3>Description</h3>
+<p>
+	This page connects to a single different Server Sent Event (SSE) stream.
+	Multiple containers all listen for the same default "message" event name, but using different values for hx-swap.
+</p>
+<h3>Example HTML</h3>
+<pre class="code">
+&lt;div hx-ext="sse" sse-connect="http://localhost/comments.html"&gt;
+	&lt;div sse-swap="message" hx-swap="settle:100ms"&gt;Waiting for Comments...&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<h3>Test Cases</h3>
+<div hx-ext="sse" sse-connect="/comments.html">
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:50ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:100ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:150ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:200ms">Waiting for Comments...</div>
+	<div class="container" sse-swap="message" hx-swap="innerHTML settle:250ms">Waiting for Comments...</div>
+</div>
+</div>
+</main>

@@ -13,7 +13,7 @@ First the pure javascript version.
 * We have a form of type `multipart/form-data` so that the file will be properly encoded
 * We post the form to `/upload`
 * We have a `progress` element
-* We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the even detail.
+* We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the event detail.
 
 ```html
     <form id='form' hx-encoding='multipart/form-data' hx-post='/upload'>

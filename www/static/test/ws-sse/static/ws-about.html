@@ -1,0 +1,36 @@
+<main>
+<h1>WebSockets</h1>
+
+<p>WebSockets create a fast, bi-directional connection between your server and a client's web browser.</p>
+<p>As of version 1.7, WebSocket support has been moved into a new extension, and the existing <b>hx-ws</b> tag has been deprecated.  All future development will occur in the extension code, and the deprecated tag will be removed in htmx version 2.0</p>
+
+<h3>Required Attributes</h3>
+<table>
+<tr>
+	<td class="bold nowrap">hx-ext</td>
+	<td>Make sure the WS extension is initialized on every page or page fragment where you use WebSockets.</td>
+</tr>
+<tr>
+	<td class="bold nowrap">ws-connect</td>
+	<td>Connects to a WebSocket.  All received messages parsed as OOB Swaps.</td>
+</tr>
+<tr>
+	<td class="bold nowrap">ws-send</td>
+	<td>Marks a form that, when submitted, will have its contents serialized and sent to the connected WebSocket server</td>
+</tr>
+</table>
+
+<h3>Example Code</h3>
+
+<pre class="code">
+&lt;body&gt;
+    &lt;div hx-ext="ws" ws-connect="https://my.websocket.server.com"&gt;&lt;/div&gt;
+&lt;/body&gt;
+</pre>
+<h3>WebSocket Resources</h3>
+<ul>
+	<li><a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank">Wikipedia</a></li>
+	<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket" target="_blank">MDN Web Docs</a></li>
+	<li><a href="https://caniuse.com/websocket" target="_blank">Can I Use?</a></li>
+</ul>
+</main>
