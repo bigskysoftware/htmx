@@ -12,10 +12,14 @@ function make(htmlStr) {
         var wa = getWorkArea();
         var child = null;
         var children = fragment.children || fragment.childNodes; // IE
+        var appendedChildren = []
         while(children.length > 0) {
             child = children[0];
             wa.appendChild(child);
-            htmx.process(child);
+            appendedChildren.push(child)
+        }
+        for (var i = 0; i < appendedChildren.length; i++) {
+            htmx.process(appendedChildren[i]);
         }
         return child; // return last added element
     };
