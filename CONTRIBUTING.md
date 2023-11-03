@@ -20,7 +20,7 @@ Thank you for your interest in contributing! Because we're a small team, we have
 
 ### Review Guidelines
 1. Open PRs represent issues that we're actively thinking working on merging (at a pace we can manage). If we think a proposal needs more discussion, or that the existing code would require a lot of back-and-forth to merge, we might close it and suggest you make an issue.
-1. Smaller PRs are easier and quicker to review. If we feel that the scope of your changes is too large, we will close the PR and try to suggest ways that the change could broken down.
+1. Smaller PRs are easier and quicker to review. If we feel that the scope of your changes is too large, we will close the PR and try to suggest ways that the change could be broken down.
 1. Likewise, PRs that fix behavior that htmx already guarantees (i.e. bugs) are much more likely to be merged quickly than PRs that add new features. We welcome new features, but those require us to consider not just whether the code works, but whether htmx should support that behavior with exactly that API. This is another reason to keep PRs small: the more limited the scope of your addition, the easier it is to make a decision about it.
 1. Refactors that do not make functional changes will be automatically closed, unless explicitly solicited. Imagine someone came into your house unannounced, rearranged a bunch of furniture, and left.
 1. Typo fixes in the documentation (not the code comments) are welcome, but formatting or debatable grammar changes will be automatically closed.
