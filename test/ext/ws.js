@@ -749,6 +749,24 @@ describe("web-sockets extension", function () {
                 window.document.removeEventListener("htmx:wsOpen", handler)
             }
         })
+        it('sends message if no sending element is provided', function (done) {
+            var message = '{"a":"b"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                socketWrapper.sendImmediately(message)
+                this.tickMock();
+                this.messages.should.eql([message])
+                done()
+            }.bind(this)
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        })
         it('does not send message if beforeSend is prevented', function (done) {
             var message = '{"a":"b"}';
             var eventPrevented = function(e) {e.preventDefault()}
