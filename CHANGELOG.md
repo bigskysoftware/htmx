@@ -10,6 +10,8 @@
 * `next` and `previous` are now valid _extended CSS_ symbols in htmx
 * The `htmx:beforeHistoryUpdate` event was added
 * Properly ignore the `dialog` formmethod on buttons when resolving the HTTP method to use
+* Added a `htmx.config.scrollIntoViewOnBoost` option that may be set to `false` to disable scrolling the top of the
+  body into view for boosted elements
 
 ## [1.9.6] - 2023-09-22
 
