@@ -7,7 +7,7 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-The [Mother of All htmx Demos](@/essays/a-real-world-react-to-htmx-port.md) you can see the real world results of a
+The [Mother of All htmx Demos](@/essays/a-real-world-react-to-htmx-port.md), you can see the real-world results of a
 port from a React-based front end to an htmx-powered front end.  The results are very good, although we qualify the
 experience with the following:
 
@@ -47,8 +47,8 @@ Here is a high-level summary of the port
 
 ## Analysis
 
-Once again we have some eye-popping results.  This is because the OpenUnited application is extremely 
+Once again, we have some eye-popping results.  This is because the OpenUnited application is highly 
 amenable to hypermedia: like Contexte, it is a content-focused application that shows lots of text and images.  
 
-This experience again demonstrates that, for at least a certain class of web applications, htmx and the hypermedia 
+This experience again demonstrates that, for at least a particular class of web applications, htmx and the hypermedia 
 architecture can be an excellent choice.
