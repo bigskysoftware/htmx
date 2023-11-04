@@ -1,5 +1,5 @@
 +++
-title = "Another Real World React -> htmx Port"
+title = "Another Real World React → htmx Port"
 date = 2023-09-20
 updated = 2023-09-20
 [taxonomies]
