@@ -1261,12 +1261,12 @@ return (function () {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
             var shouldEvaluateTrigger = !!explicitTrigger
+            // If an explicit trigger attribute is set, check if it has already been computed & cached
             if (shouldEvaluateTrigger) {
                 var cachedTriggerSpecs = triggerSpecsCache[explicitTrigger]
                 if (cachedTriggerSpecs) {
-                    cachedTriggerSpecs.forEach(function(cachedTriggerSpec) {
-                        triggerSpecs.push(cachedTriggerSpec)
-                    })
+                    triggerSpecs = cachedTriggerSpecs
+                    // If it had already been cached, we don't need to evaluate the trigger expression anymore
                     shouldEvaluateTrigger = false
                 }
             }
@@ -1350,10 +1350,7 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
-                triggerSpecsCache[explicitTrigger] = []
-                triggerSpecs.forEach(function (triggerSpec) {
-                    triggerSpecsCache[explicitTrigger].push(triggerSpec)
-                })
+                triggerSpecsCache[explicitTrigger] = triggerSpecs
             }
 
             if (triggerSpecs.length > 0) {
