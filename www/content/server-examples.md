@@ -155,7 +155,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://templ.guide/server-side-rendering/htmx>
 - <https://github.com/jritsema/go-htmx-tailwind-example>
 
-## elem-go
+### elem-go
 
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
