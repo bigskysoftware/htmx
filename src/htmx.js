@@ -3506,6 +3506,18 @@ return (function () {
                             selectOverride = xhr.getResponseHeader("HX-Reselect");
                         }
 
+                        // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+                        if (historyUpdate.type) {
+                            triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo));
+                            if (historyUpdate.type === "push") {
+                                pushUrlIntoHistory(historyUpdate.path);
+                                triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
+                            } else {
+                                replaceUrlInHistory(historyUpdate.path);
+                                triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                            }
+                        }
+
                         var settleInfo = makeSettleInfo(target);
                         selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride);
 
@@ -3555,17 +3567,6 @@ return (function () {
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
 
-                            // if we need to save history, do so
-                            if (historyUpdate.type) {
-                                triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo));
-                                if (historyUpdate.type === "push") {
-                                    pushUrlIntoHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
-                                } else {
-                                    replaceUrlInHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
-                                }
-                            }
                             if (responseInfo.pathInfo.anchor) {
                                 var anchorTarget = getDocument().getElementById(responseInfo.pathInfo.anchor);
                                 if(anchorTarget) {
