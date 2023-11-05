@@ -29,6 +29,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/DamianStanger/hapi-htmx>
 
 ## Python
+
 - <https://github.com/PyHAT-stack/awesome-python-htmx>
 
 ### Django
@@ -149,6 +150,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## Go
 
+## elem-go
+
+- <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
+- <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
+
 ### templ
 
 - <https://templ.guide/server-side-rendering/htmx>
@@ -157,5 +163,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ## Delphi
 
 ### DelphiMVCFramework
+
 - <https://github.com/danieleteti/delphi-dmvcframework-htmx-todo>
 - <https://github.com/danieleteti/delphimvcframework/tree/master/samples/htmx>
