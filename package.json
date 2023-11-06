@@ -23,7 +23,6 @@
   "main": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
-  "type": "module",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
     "test": "mocha-chrome test/index.html",
