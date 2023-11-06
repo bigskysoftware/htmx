@@ -3093,7 +3093,9 @@ return (function () {
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
 
-            if (verb !== 'get' && !usesFormData(elt)) {
+            var userSetContentType = (etc.headers && etc.headers['Content-Type']);
+
+            if (!userSetContentType && verb !== 'get' && !usesFormData(elt)) {
                 headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
 
@@ -3273,7 +3275,7 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
+            var params = useUrlParams ? null : !userSetContentType ? encodeParamsForBody(xhr, elt, filteredParameters) : etc.values;
             xhr.send(params);
             return promise;
         }
