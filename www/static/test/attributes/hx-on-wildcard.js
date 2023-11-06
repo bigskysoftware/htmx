@@ -175,4 +175,22 @@ describe("hx-on:* attribute", function() {
         delete window.foo;
         delete window.bar;
     });
+
+    it("cleans up all handlers when the DOM updates", function () {
+        // setup
+        window.foo = 0;
+        window.bar = 0;
+        var div = make("<div hx-on:increment-foo='window.foo++' hx-on:increment-bar='window.bar++'>Foo</div>");
+        make("<div>Another Div</div>"); // sole purpose is to update the DOM
+
+        // check there is just one handler against each event
+        htmx.trigger(div, "increment-foo");
+        htmx.trigger(div, "increment-bar");        
+        window.foo.should.equal(1);
+        window.bar.should.equal(1);
+
+        // teardown
+        delete window.foo;
+        delete window.bar;
+    });
 });

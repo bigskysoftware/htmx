@@ -5,6 +5,11 @@
 
     var attrPrefix = 'hx-target-';
 
+    // IE11 doesn't support string.startsWith
+    function startsWith(str, prefix) {
+        return str.substring(0, prefix.length) === prefix
+    }
+
     /**
      * @param {HTMLElement} elt
      * @param {number} respCode
@@ -38,6 +43,9 @@
             '***',
             'xxx',
         ];
+        if (startsWith(respCode, '4') || startsWith(respCode, '5')) {
+            attrPossibilities.push('error');
+        }
 
         for (var i = 0; i < attrPossibilities.length; i++) {
             var attr = attrPrefix + attrPossibilities[i];

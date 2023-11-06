@@ -172,6 +172,18 @@ describe("web-sockets extension", function () {
         this.messages.length.should.equal(1);
     })
 
+    it('sends data to the server with polling trigger', function () {
+        var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div hx-trigger="every 1s" ws-send id="d1">div1</div></div>');
+        this.tickMock();
+        this.clock.tick(2000);
+
+        byId("d1").click();
+
+        this.tickMock();
+
+        this.messages.length.should.equal(2);
+    })
+
     it('sends expected headers to the server', function () {
         var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><button hx-trigger="click" hx-target="#target" ws-send id="d1" name="d1-name">div1</button><output id="target"></output></div>');
         this.tickMock();

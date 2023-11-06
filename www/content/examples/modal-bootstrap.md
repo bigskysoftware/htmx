@@ -11,12 +11,12 @@ markup where the dialog will be loaded:
 
 ```html
 <button 
-	hx-get="/modal" 
-	hx-target="#modals-here" 
-	hx-trigger="click"
-    data-bs-toggle="modal"
+    hx-get="/modal" 
+    hx-target="#modals-here" 
+    hx-trigger="click" 
+    data-bs-toggle="modal" 
     data-bs-target="#modals-here"
-	class="btn btn-primary">Open Modal</button>
+    class="btn btn-primary">Open Modal</button>
 
 <div id="modals-here"
     class="modal modal-blur fade"

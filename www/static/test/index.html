@@ -70,6 +70,7 @@
 
 <!-- attribute tests -->
 <script src="attributes/hx-boost.js"></script>
+<script src="attributes/hx-confirm.js"></script>
 <script src="attributes/hx-delete.js"></script>
 <script src="attributes/hx-ext.js"></script>
 <script src="attributes/hx-get.js"></script>
@@ -167,7 +168,7 @@
 
 <script class="mocha-exec">
     document.addEventListener("DOMContentLoaded", function () {
-        mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame']}); <!-- IE11 -->
+        mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame', 'confirm']}); <!-- IE11 -->
         mocha.run();
     })
 </script>

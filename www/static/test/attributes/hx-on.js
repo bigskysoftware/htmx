@@ -139,7 +139,8 @@ describe("hx-on attribute", function() {
 
     it("can handle event types with dots", function () {
         var btn = make("<button hx-on='my.custom.event: window.foo = true'>Foo</button>");
-        btn.dispatchEvent(new CustomEvent('my.custom.event'));
+        // IE11 doesn't support `new CustomEvent()` so call htmx' internal utility function
+        btn.dispatchEvent(htmx._("makeEvent")('my.custom.event'));
         window.foo.should.equal(true);
         delete window.foo;
     });
@@ -168,6 +169,24 @@ describe("hx-on attribute", function() {
         barBtn.click();
         window.bar.should.equal(true);
 
+        delete window.foo;
+        delete window.bar;
+    });
+
+    it("cleans up all handlers when the DOM updates", function () {
+        // setup
+        window.foo = 0;
+        window.bar = 0;
+        var div = make("<div hx-on='increment-foo: window.foo++\nincrement-bar: window.bar++'>Foo</div>");
+        make("<div>Another Div</div>"); // sole purpose is to update the DOM
+
+        // check there is just one handler against each event
+        htmx.trigger(div, "increment-foo");
+        htmx.trigger(div, "increment-bar");        
+        window.foo.should.equal(1);
+        window.bar.should.equal(1);
+
+        // teardown
         delete window.foo;
         delete window.bar;
     });
