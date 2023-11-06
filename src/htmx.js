@@ -2906,6 +2906,7 @@ return (function () {
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
                             swapOverride: context.swap,
+                            select: context.select,
                             returnPromise: true
                         });
                 }
@@ -2960,6 +2961,7 @@ return (function () {
                 elt = getDocument().body;
             }
             var responseHandler = etc.handler || handleAjaxResponse;
+            var select = etc.select || null;
 
             if (!bodyContains(elt)) {
                 // do not issue requests for elements removed from the DOM
@@ -3222,7 +3224,7 @@ return (function () {
             }
 
             var responseInfo = {
-                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
+                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted, select: select,
                 pathInfo: {
                     requestPath: path,
                     finalRequestPath: finalPath,
@@ -3393,6 +3395,7 @@ return (function () {
             var target = responseInfo.target;
             var etc = responseInfo.etc;
             var requestConfig = responseInfo.requestConfig;
+            var select = responseInfo.select;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -3502,6 +3505,10 @@ return (function () {
                         }
 
                         var selectOverride;
+                        if (select) {
+                            selectOverride = select;
+                        }
+
                         if (hasHeader(xhr, /HX-Reselect:/i)) {
                             selectOverride = xhr.getResponseHeader("HX-Reselect");
                         }
