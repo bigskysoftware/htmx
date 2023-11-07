@@ -3742,7 +3742,7 @@ return (function () {
             if (isReady || getDocument().readyState === 'complete') {
                 fn();
             } else {
-                getDocument().addEventListener('DOMContentLoaded', fn);
+                getDocument().addEventListener('readystatechange', () => ready(fn), {once:true});
             }
         }
 
