@@ -87,7 +87,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.7"
+            version: "1.9.8"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */

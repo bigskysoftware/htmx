@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.8] - 2023-11-06
+
+* Fixed a few npm & build related issues
+
 ## [1.9.7] - 2023-11-03
 
 * Fixed a bug where a button associated with a form that is swapped out of the DOM caused errors
