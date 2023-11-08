@@ -22,6 +22,7 @@ page_template = "essay.html"
 * [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
 * [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
+* [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
 
 ### Building Hypermedia Applications
