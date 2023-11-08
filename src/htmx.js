@@ -3302,7 +3302,7 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters);
+            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
             xhr.send(params);
             return promise;
         }
