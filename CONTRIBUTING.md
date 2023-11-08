@@ -3,7 +3,7 @@ Thank you for your interest in contributing! Because we're a small team, we have
 
 ## Issues
 1. Issues are the best place to propose a new feature. Keep in mind that htmx is a small library, so there are lots of great ideas that don't fit in the core; it's always best to check in about an idea before doing a bunch of work on it.
-1. Unless explicitly solicited, new features should be implemented as [extensions](https://htmx.org/extensions). Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
+1. When proposing a new features, we will often suggest that you implement it as an [extension](https://htmx.org/extensions), so try that first. Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
 1. Search the issues before proposing a feature to see if it is already under discussion. Referencing existing issues is a good way to increase the priority of your own.
 1. We don't have an issue template yet, but the more detailed your description of the issue, the more quickly we'll be able to evaluate it.
 1. See an issue that you also have? Give it a reaction (and comment, if you have something to add). We note that!
@@ -21,7 +21,8 @@ Thank you for your interest in contributing! Because we're a small team, we have
 ### Review Guidelines
 1. Open PRs represent issues that we're actively thinking working on merging (at a pace we can manage). If we think a proposal needs more discussion, or that the existing code would require a lot of back-and-forth to merge, we might close it and suggest you make an issue.
 1. Smaller PRs are easier and quicker to review. If we feel that the scope of your changes is too large, we will close the PR and try to suggest ways that the change could be broken down.
-1. Likewise, PRs that fix behavior that htmx already guarantees (i.e. bugs) are much more likely to be merged quickly than PRs that add new features. We welcome new features, but those require us to consider not just whether the code works, but whether htmx should support that behavior with exactly that API. This is another reason to keep PRs small: the more limited the scope of your addition, the easier it is to make a decision about it.
+1. Please do not PR new features unless you have already made an issue proposing the feature, and had it accepted by a core maintainer. This helps us triage the features we can support before you put a lot of work into them.
+1. Correspondingly, it is fine to directly PR bugfixes for behavior that htmx already guarantees, but please check if there's an issue first, and if you're not sure whether this *is* a bug, make an issue where we can hash it out..
 1. Refactors that do not make functional changes will be automatically closed, unless explicitly solicited. Imagine someone came into your house unannounced, rearranged a bunch of furniture, and left.
 1. Typo fixes in the documentation (not the code comments) are welcome, but formatting or debatable grammar changes will be automatically closed.
 
