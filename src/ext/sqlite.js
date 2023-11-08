@@ -1,6 +1,11 @@
 /*
 
-Extension to use SQLite database over HTTP as a backend for Htmx.
+Extension to use SQLite database backend for Htmx over:
+- HTTP as a range requests (used when hx-db starts with http:)
+- OPFS
+
+Specify databases with hx-db attributes.
+Specify queries with hx-sql attributes (will use closest hx-db).
 
 Requires sqlite-wasm-http bundled and served from same host where your application is,
 since Web Workers don't work with cross-domain requests.
@@ -42,6 +47,7 @@ And include in your HTML:
 
 (function(){
     var api;
+    var httpBackendConfig;
 
     // lot's of copying from htmx source. It should probably export some of this stuff as functions in internal API?
     var getParameters = function (elt) {
@@ -178,6 +184,11 @@ And include in your HTML:
     htmx.defineExtension('sqlite', {
         init: function (internalAPI) {
             api = internalAPI;
+            httpBackendConfig = {
+                maxPageSize: 4096,    // this is the current default SQLite page size
+                timeout: 10000,       // 10s
+                cacheSize: 4096       // 4 MB
+            };
         },
         onEvent: function (name, evt) {
             if (name === "htmx:afterProcessNode") {
@@ -203,18 +214,35 @@ And include in your HTML:
                             if (sql == "") {
                                 sql = elt.value;
                             }
-                            
-                            let db = htmx.closest(elt, '[hx-sqlite]').getAttribute('hx-sqlite');
-                            createSQLiteHTTPPool({ workers: 1 })
-                                .then(pool => pool.open(db).then(() => pool))
-                                .then(pool => pool.exec(sql, binds, { rowMode: "object" }).finally(() => pool.close()))
-                                .then(data => data.map(x => x.row))
-                                .then(data => {
-                                    var responseInfo = { elt: elt, xhr: { response: data }, target: api.getTarget(elt) };
-                                    if (!api.triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
-                                    swapAndSettle(data, elt, responseInfo);
-                                });
+                            let dbURI = htmx.closest(elt, '[hx-db]').getAttribute('hx-db');
+                            let isHttp = dbURI.startsWith('http:');
+
+                            const httpBackend = sqliteWasmHttp.createHttpBackend(httpBackendConfig);
+                            var result = [];
+                            sqliteWasmHttp.createSQLiteThread(isHttp ? { http: httpBackend } : {})
+                                .then(db => { db('open', {
+                                    filename: encodeURI(dbURI.replace(/^http:/, 'file:')),
+                                    vfs: isHttp ? 'http' : 'opfs'
+                                }); return db; } )
+                                .then(db => db('exec', {
+                                    sql: sql,
+                                    bind: binds,
+                                    rowMode: "object",
+                                    callback: data => {
+                                        if (data.row) {
+                                            result.push(data.row);
+                                        } else {
+                                            var responseInfo = { elt: elt, xhr: { response: result }, target: api.getTarget(elt) };
+                                            if (!api.triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
+
+                                            db('close', {})
+                                                .then(() => db.close())
+                                                .then(() => httpBackend.close());
+
+                                            swapAndSettle(result, elt, responseInfo);
+                                        }
+                                    }}));
                         })
                     });
                 }
