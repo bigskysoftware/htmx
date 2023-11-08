@@ -272,9 +272,9 @@ describe("Core htmx API test", function(){
     it('ajax api Content-Type header override to application/json', function(){
 
         this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
             xhr.requestHeaders['Content-Type'].should.equal('application/json;charset=utf-8');
-            const requestBody = JSON.parse(xhr.requestBody);
-            chai.expect(requestBody.grug).to.be.equal("brain");
+            params['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!");
         });
 
@@ -285,7 +285,7 @@ describe("Core htmx API test", function(){
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                values: '{"grug":"brain"}'
+                values:{i1: 'test'}
         })
 
         this.server.respond();

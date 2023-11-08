@@ -3302,8 +3302,7 @@ return (function () {
                 });
             });
             triggerEvent(elt, 'htmx:beforeSend', responseInfo);
-            var userSetContentType = (etc.headers && etc.headers['Content-Type']);
-            var params = useUrlParams ? null : !userSetContentType ? encodeParamsForBody(xhr, elt, filteredParameters) : etc.values;
+            var params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters);
             xhr.send(params);
             return promise;
         }
