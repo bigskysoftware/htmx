@@ -143,6 +143,7 @@ Here are some known implementations of the fragment concept:
 * PHP
   * [Latte](https://latte.nette.org/en/template-inheritance#toc-blocks) - Use the 3rd parameter to only render 1 block from the template -  `$Latte_Engine->render('path/to/template.latte', [ 'foo' => 'bar' ], 'content');`
   * [Laravel Blade](https://laravel.com/docs/10.x/blade#rendering-blade-fragments) - includes built-in support for template fragments as of v9.x
+  * [Twig](https://twig.symfony.com/doc/3.x/api.html#rendering-templates) - `$template->renderBlock('block_name', ['the' => 'variables', 'go' => 'here']);`
 * Python
   * [Django Render Block Extension](https://pypi.org/project/django-render-block/) - see [example code for htmx](https://github.com/spookylukey/django-htmx-patterns/blob/master/inline_partials.rst)
   * [jinja2-fragments package](https://github.com/sponsfreixes/jinja2-fragments)
