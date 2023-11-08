@@ -3724,26 +3724,50 @@ return (function () {
         //====================================================================
         // Initialization
         //====================================================================
-        var isReady = false
-        getDocument().addEventListener('DOMContentLoaded', function() {
-            isReady = true
-        })
+        /**
+         * We want to initialize the page elements after DOMContentLoaded
+         * fires, but there isn't always a good way to tell whether
+         * it has already fired or not.
+         */
+        var isReady = false;
+        if ( getDocument().readyState === "complete" ) {
+            // DOMContentLoaded definitely already fired
+            isReady = true;
+        } else {
+            // DOMContentLoaded *maybe* already fired, so we'll
+            // watch for a DOM or a readystate event
+            getDocument().addEventListener('DOMContentLoaded', function() {
+                isReady = true;
+                readyComplete();
+            });
+            getDocument().addEventListener('readystatechange', function() {
+                if ( getDocument().readyState !== 'complete' ) return;
+
+                isReady = true;
+                readyComplete();
+            });
+        }
 
         /**
-         * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
-         *
-         * This function uses isReady because there is no realiable way to ask the browswer whether
-         * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
-         * firing and readystate=complete.
+         * Execute a function now if DOMContentLoaded
+         * has fired, otherwise wait for it to happen.
          */
+        var pendingCalls = [];
         function ready(fn) {
-            // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
-            // some means other than the initial page load.
-            if (isReady || getDocument().readyState === 'complete') {
+            if ( isReady ) {
                 fn();
             } else {
-                getDocument().addEventListener('readystatechange', function() {ready(fn)}, {once:true});
+                pendingCalls.push( fn );
             }
+        }
+
+        /**
+         * Execute the function calls which were queued up
+         * by ready() before the page had loaded.
+         */
+        function readyComplete() {
+            forEach( pendingCalls, function(fn) { fn() });
+            pendingCalls = [];
         }
 
         function insertIndicatorStyles() {
