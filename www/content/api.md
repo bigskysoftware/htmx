@@ -58,7 +58,7 @@ or
     * `handler` - a callback that will handle the response HTML
     * `target` - the target to swap the response into
     * `swap` - how the response will be swapped in relative to the target
-    * `values` - values to submit with the request
+    * `values` - values to submit with the request (json object, not an array)
     * `headers` - headers to submit with the request
 
 ##### Example
