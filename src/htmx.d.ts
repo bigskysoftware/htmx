@@ -395,6 +395,11 @@ export interface HtmxConfig {
      * @default false
      */
     selfRequestsOnly?: boolean;
+    /**
+     * Whether or not the target of a boosted element is scrolled into the viewport.
+     * @default true
+     */
+    scrollIntoViewOnBoost?: boolean;
 }
 
 /**
