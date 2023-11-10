@@ -59,7 +59,7 @@ describe("hx-push-url attribute", function() {
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
 
         cache.length.should.equal(2);
-        htmx._('restoreHistory')("/test1")
+        htmx.internalAPI.restoreHistory("/test1")
         getWorkArea().textContent.should.equal("test1")
     });
 
@@ -78,7 +78,7 @@ describe("hx-push-url attribute", function() {
         this.server.respond();
         workArea.textContent.should.equal("test2")
 
-        htmx._('restoreHistory')("/test1")
+        htmx.internalAPI.restoreHistory("/test1")
         getWorkArea().getElementsByClassName("htmx-request").length.should.equal(0);
     });
 
@@ -117,7 +117,7 @@ describe("hx-push-url attribute", function() {
 
         cache.length.should.equal(2);
         localStorage.removeItem(HTMX_HISTORY_CACHE_NAME); // clear cache
-        htmx._('restoreHistory')("/test1")
+        htmx.internalAPI.restoreHistory("/test1")
         this.server.respond();
         getWorkArea().textContent.should.equal("test1")
     });
@@ -135,32 +135,32 @@ describe("hx-push-url attribute", function() {
 
     it("deals with malformed JSON in history cache when getting", function () {
         localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
-        var history = htmx._('getCachedHistory')('url');
+        var history = htmx.internalAPI.getCachedHistory('url');
         should.equal(history, null);
     });
 
     it("deals with malformed JSON in history cache when saving", function () {
         localStorage.setItem(HTMX_HISTORY_CACHE_NAME, "Invalid JSON");
-        htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(1);
     });
 
     it("does not blow out cache when saving a URL twice", function () {
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url1', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url2', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url3', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url2', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(3);
     });
 
     it("history cache is LRU", function () {
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll');
-        htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url1', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url2', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url3', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url2', 'content', 'title', 'scroll');
+        htmx.internalAPI.saveToHistoryCache('url1', 'content', 'title', 'scroll');
         var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME));
         cache.length.should.equal(3);
         cache[0].url.should.equal("url3");
@@ -212,7 +212,7 @@ describe("hx-push-url attribute", function() {
         }
         try {
             localStorage.removeItem("htmx-history-cache");
-            htmx._("saveToHistoryCache")("/dummy", bigContent, "Foo", 0);
+            htmx.internalAPI.saveToHistoryCache("/dummy", bigContent, "Foo", 0);
             should.equal(localStorage.getItem("htmx-history-cache"), null);
         } finally {
             // clear history cache afterwards

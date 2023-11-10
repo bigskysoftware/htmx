@@ -38,7 +38,7 @@ describe("hx-history attribute", function() {
         cache.length.should.equal(2);
 
         // on history navigation, embargoed content is retrieved from server
-        htmx._('restoreHistory')("/test2");
+        htmx.internalAPI.restoreHistory("/test2");
         this.server.respond();
         getWorkArea().textContent.should.equal("test2");
     });

@@ -59,7 +59,7 @@ describe("Core htmx perf Tests", function() {
         html = stringRepeat(html, size);
         workArea.insertAdjacentHTML("beforeend", html)
         var start = performance.now();
-        htmx._("cleanInnerHtmlForHistory")(workArea);
+        htmx.internalAPI.cleanInnerHtmlForHistory(workArea);
         var end = performance.now();
         var timeInMs = end - start;
         chai.assert(timeInMs < 50, "Should take less than 50ms on most platforms");

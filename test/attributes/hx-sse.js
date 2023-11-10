@@ -13,7 +13,7 @@ describe("hx-sse attribute", function() {
             sendEvent: function (eventName, data) {
                 var listener = listeners[eventName];
                 if (listener) {
-                    var event = htmx._("makeEvent")(eventName);
+                    var event = htmx.internalAPI.makeEvent(eventName);
                     event.data = data;
                     listener(event);
                 }

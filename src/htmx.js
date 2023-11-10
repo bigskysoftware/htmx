@@ -78,7 +78,6 @@ return (function () {
                 scrollIntoViewOnBoost: true
             },
             parseInterval:parseInterval,
-            _:internalEval,
             createEventSource: function(url){
                 return new EventSource(url, {withCredentials:true})
             },
@@ -95,10 +94,13 @@ return (function () {
             addTriggerHandler: addTriggerHandler,
             bodyContains: bodyContains,
             canAccessLocalStorage: canAccessLocalStorage,
+            cleanInnerHtmlForHistory: cleanInnerHtmlForHistory,
+            encodeParamsForBody: encodeParamsForBody,
             findThisElement: findThisElement,
             filterValues: filterValues,
             hasAttribute: hasAttribute,
             getAttributeValue: getAttributeValue,
+            getCachedHistory: getCachedHistory,
             getClosestAttributeValue: getClosestAttributeValue,
             getClosestMatch: getClosestMatch,
             getExpressionVars: getExpressionVars,
@@ -108,16 +110,24 @@ return (function () {
             getSwapSpecification: getSwapSpecification,
             getTriggerSpecs: getTriggerSpecs,
             getTarget: getTarget,
+            maybeEval: maybeEval,
+            maybeGenerateConditional: maybeGenerateConditional,
+            makeEvent: makeEvent,
             makeFragment: makeFragment,
             mergeObjects: mergeObjects,
             makeSettleInfo: makeSettleInfo,
             oobSwap: oobSwap,
             querySelectorExt: querySelectorExt,
+            restoreHistory: restoreHistory,
+            safelySetHeaderValue: safelySetHeaderValue,
+            saveToHistoryCache: saveToHistoryCache,
             selectAndSwap: selectAndSwap,
             settleImmediately: settleImmediately,
             shouldCancel: shouldCancel,
+            tokenizeString: tokenizeString,
             triggerEvent: triggerEvent,
             triggerErrorEvent: triggerErrorEvent,
+            urlEncode: urlEncode,
             withExtensions: withExtensions,
         }
 
@@ -462,12 +472,6 @@ return (function () {
         //==========================================================================================
         // public API
         //==========================================================================================
-
-        function internalEval(str){
-            return maybeEval(getDocument().body, function () {
-                return eval(str);
-            });
-        }
 
         function onLoadHelper(callback) {
             var value = htmx.on("htmx:load", function(evt) {

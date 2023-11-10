@@ -98,7 +98,7 @@ describe("hx-boost attribute", function() {
 
     it('anchors w/ explicit targets are not boosted', function () {
         var a = make('<a hx-target="this" hx-boost="true" id="a1" href="/test" target="_blank">Foo</a>');
-        var internalData = htmx._("getInternalData")(a);
+        var internalData = htmx.internalAPI.getInternalData(a);
         should.equal(undefined, internalData.boosted);
     })
 

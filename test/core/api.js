@@ -190,7 +190,7 @@ describe("Core htmx API test", function(){
         });
         try {
             htmx.config.allowEval = false;
-            should.equal(htmx._("tokenizeString"), undefined);
+            should.equal(htmx.internalAPI.maybeEval(document.body, function() { return 'eval'; }), undefined);
         } finally {
             htmx.config.allowEval = true;
             htmx.off("htmx:evalDisallowedError", handler);

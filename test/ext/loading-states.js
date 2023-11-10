@@ -159,7 +159,7 @@ describe("loading states extension", function () {
         this.server.respond();
         workArea.textContent.should.equal("test2")
 
-        htmx._('restoreHistory')("/test1")
+        htmx.internalAPI.restoreHistory("/test1")
 
         var el = byId("d2");
         el.disabled.should.be.false;

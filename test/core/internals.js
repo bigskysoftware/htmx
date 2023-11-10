@@ -10,15 +10,15 @@ describe("Core htmx internals Tests", function() {
     });
 
     it("makeFragment works with janky stuff", function(){
-        htmx._("makeFragment")("<html></html>").tagName.should.equal("BODY");
-        htmx._("makeFragment")("<html><body></body></html>").tagName.should.equal("BODY");
+        htmx.internalAPI.makeFragment("<html></html>").tagName.should.equal("BODY");
+        htmx.internalAPI.makeFragment("<html><body></body></html>").tagName.should.equal("BODY");
 
         //NB - the tag name should be the *parent* element hosting the HTML since we use the fragment children
         // for the swap
-        htmx._("makeFragment")("<td></td>").tagName.should.equal("TR");
-        htmx._("makeFragment")("<thead></thead>").tagName.should.equal("TABLE");
-        htmx._("makeFragment")("<col></col>").tagName.should.equal("COLGROUP");
-        htmx._("makeFragment")("<tr></tr>").tagName.should.equal("TBODY");
+        htmx.internalAPI.makeFragment("<td></td>").tagName.should.equal("TR");
+        htmx.internalAPI.makeFragment("<thead></thead>").tagName.should.equal("TABLE");
+        htmx.internalAPI.makeFragment("<col></col>").tagName.should.equal("COLGROUP");
+        htmx.internalAPI.makeFragment("<tr></tr>").tagName.should.equal("TBODY");
     })
 
     it("makeFragment works with template wrapping", function(){
@@ -28,19 +28,19 @@ describe("Core htmx internals Tests", function() {
             return
         }
         try {
-            htmx._("makeFragment")("<html></html>").children.length.should.equal(0);
-            htmx._("makeFragment")("<html><body></body></html>").children.length.should.equal(0);
+            htmx.internalAPI.makeFragment("<html></html>").children.length.should.equal(0);
+            htmx.internalAPI.makeFragment("<html><body></body></html>").children.length.should.equal(0);
 
-            var fragment = htmx._("makeFragment")("<td></td>");
+            var fragment = htmx.internalAPI.makeFragment("<td></td>");
             fragment.firstElementChild.tagName.should.equal("TD");
 
-            fragment = htmx._("makeFragment")("<thead></thead>");
+            fragment = htmx.internalAPI.makeFragment("<thead></thead>");
             fragment.firstElementChild.tagName.should.equal("THEAD");
 
-            fragment = htmx._("makeFragment")("<col></col>");
+            fragment = htmx.internalAPI.makeFragment("<col></col>");
             fragment.firstElementChild.tagName.should.equal("COL");
 
-            fragment = htmx._("makeFragment")("<tr></tr>");
+            fragment = htmx.internalAPI.makeFragment("<tr></tr>");
             fragment.firstElementChild.tagName.should.equal("TR");
 
         } finally {
@@ -57,7 +57,7 @@ describe("Core htmx internals Tests", function() {
         }
         htmx.config.useTemplateFragments = true;
         try {
-            var fragment = htmx._("makeFragment")("<td></td><div></div>");
+            var fragment = htmx.internalAPI.makeFragment("<td></td><div></div>");
             fragment.children[0].tagName.should.equal("TD");
             fragment.children[1].tagName.should.equal("DIV");
         } finally {
@@ -68,7 +68,7 @@ describe("Core htmx internals Tests", function() {
     it("set header works with non-ASCII values", function(){
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/dummy");
-        htmx._("safelySetHeaderValue")(xhr, "Example", "привет");
+        htmx.internalAPI.safelySetHeaderValue(xhr, "Example", "привет");
         // unfortunately I can't test the value :/
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
     })
@@ -88,56 +88,56 @@ describe("Core htmx internals Tests", function() {
     })
 
     it("tokenizes correctly", function() {
-        chai.expect(htmx._("tokenizeString")("a,")).to.be.deep.equal(['a', ',']);
-        chai.expect(htmx._("tokenizeString")("aa,")).to.be.deep.equal(['aa', ',']);
-        chai.expect(htmx._("tokenizeString")("aa,aa")).to.be.deep.equal(['aa', ',', 'aa']);
-        chai.expect(htmx._("tokenizeString")("aa.aa")).to.be.deep.equal(['aa', '.', 'aa']);
+        chai.expect(htmx.internalAPI.tokenizeString("a,")).to.be.deep.equal(['a', ',']);
+        chai.expect(htmx.internalAPI.tokenizeString("aa,")).to.be.deep.equal(['aa', ',']);
+        chai.expect(htmx.internalAPI.tokenizeString("aa,aa")).to.be.deep.equal(['aa', ',', 'aa']);
+        chai.expect(htmx.internalAPI.tokenizeString("aa.aa")).to.be.deep.equal(['aa', '.', 'aa']);
     })
 
     it("tags respond correctly to shouldCancel", function() {
         var anchorThatShouldCancel = make("<a href='/foo'></a>");
-        htmx._("shouldCancel")({type:'click'}, anchorThatShouldCancel).should.equal(true);
+        htmx.internalAPI.shouldCancel({type:'click'}, anchorThatShouldCancel).should.equal(true);
 
         var anchorThatShouldCancel = make("<a href='#'></a>");
-        htmx._("shouldCancel")({type:'click'}, anchorThatShouldCancel).should.equal(true);
+        htmx.internalAPI.shouldCancel({type:'click'}, anchorThatShouldCancel).should.equal(true);
 
         var anchorThatShouldNotCancel = make("<a href='#foo'></a>");
-        htmx._("shouldCancel")({type:'click'}, anchorThatShouldNotCancel).should.equal(false);
+        htmx.internalAPI.shouldCancel({type:'click'}, anchorThatShouldNotCancel).should.equal(false);
 
         var form = make("<form></form>");
-        htmx._("shouldCancel")({type:'submit'}, form).should.equal(true);
+        htmx.internalAPI.shouldCancel({type:'submit'}, form).should.equal(true);
 
         var form = make("<form><input id='i1' type='submit'></form>");
         var input = byId("i1");
-        htmx._("shouldCancel")({type:'click'}, input).should.equal(true);
+        htmx.internalAPI.shouldCancel({type:'click'}, input).should.equal(true);
 
         var form = make("<form><button id='b1' type='submit'></form>");
         var button = byId("b1");
-        htmx._("shouldCancel")({type:'click'}, button).should.equal(true);
+        htmx.internalAPI.shouldCancel({type:'click'}, button).should.equal(true);
 
     })
 
     it("unset properly unsets a given attribute", function(){
         make("<div foo='1'><div foo='2'><div foo='unset' id='d1'></div></div></div>");
         var div = byId("d1");
-        should.equal(undefined, htmx._("getClosestAttributeValue")(div, "foo"));
+        should.equal(undefined, htmx.internalAPI.getClosestAttributeValue(div, "foo"));
     })
 
     it("unset properly unsets a given attribute on a parent", function(){
         make("<div foo='1'><div foo='unset'><div id='d1'></div></div></div>");
         var div = byId("d1");
-        should.equal(undefined, htmx._("getClosestAttributeValue")(div, "foo"));
+        should.equal(undefined, htmx.internalAPI.getClosestAttributeValue(div, "foo"));
     })
 
     it("unset does not unset a value below it in the hierarchy", function(){
         make("<div foo='unset'><div foo='2'><div id='d1'></div></div></div>");
         var div = byId("d1");
-        should.equal("2", htmx._("getClosestAttributeValue")(div, "foo"));
+        should.equal("2", htmx.internalAPI.getClosestAttributeValue(div, "foo"));
     })
 
     it("encoding values respects enctype on forms", function(){
         var form = make("<form enctype='multipart/form-data'></form>");
-        var value = htmx._("encodeParamsForBody")(null, form, {});
+        var value = htmx.internalAPI.encodeParamsForBody(null, form, {});
         (value instanceof FormData).should.equal(true);
     })
 

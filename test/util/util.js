@@ -1,5 +1,12 @@
 /* Test Utilities */
 
+// expose internal api
+htmx.defineExtension('expose-internal-api', {
+    init: function (api) {
+        htmx.internalAPI = api;
+    }
+});
+
 function byId(id) {
     return document.getElementById(id);
 }

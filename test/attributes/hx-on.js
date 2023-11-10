@@ -140,7 +140,7 @@ describe("hx-on attribute", function() {
     it("can handle event types with dots", function () {
         var btn = make("<button hx-on='my.custom.event: window.foo = true'>Foo</button>");
         // IE11 doesn't support `new CustomEvent()` so call htmx' internal utility function
-        btn.dispatchEvent(htmx._("makeEvent")('my.custom.event'));
+        btn.dispatchEvent(htmx.internalAPI.makeEvent('my.custom.event'));
         window.foo.should.equal(true);
         delete window.foo;
     });

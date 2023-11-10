@@ -191,35 +191,34 @@ describe("hx-swap attribute", function(){
     });
 
     it('properly parses various swap specifications', function(){
-        var swapSpec = htmx._("getSwapSpecification"); // internal function for swap spec
-        swapSpec(make("<div/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='innerHTML'/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='innerHTML'/>")).swapDelay.should.equal(0)
-        swapSpec(make("<div hx-swap='innerHTML'/>")).settleDelay.should.equal(0) // set to 0 in tests
-        swapSpec(make("<div hx-swap='innerHTML swap:10'/>")).swapDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='innerHTML settle:10'/>")).settleDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).swapDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).settleDelay.should.equal(11)
-        swapSpec(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).swapDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).settleDelay.should.equal(11)
-        swapSpec(make("<div hx-swap='innerHTML nonsense settle:11 swap:10'/>")).settleDelay.should.equal(11)
-        swapSpec(make("<div hx-swap='innerHTML   nonsense   settle:11   swap:10  '/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML'/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML'/>")).swapDelay.should.equal(0)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML'/>")).settleDelay.should.equal(0) // set to 0 in tests
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML swap:10'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML settle:10'/>")).settleDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML swap:10 settle:11'/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML settle:11 swap:10'/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML nonsense settle:11 swap:10'/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='innerHTML   nonsense   settle:11   swap:10  '/>")).settleDelay.should.equal(11)
         
-        swapSpec(make("<div hx-swap='swap:10'/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='swap:10'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='swap:10'/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='swap:10'/>")).swapDelay.should.equal(10)
 
-        swapSpec(make("<div hx-swap='settle:10'/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='settle:10'/>")).settleDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='settle:10'/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='settle:10'/>")).settleDelay.should.equal(10)
         
-        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).swapDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='swap:10 settle:11'/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='swap:10 settle:11'/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='swap:10 settle:11'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='swap:10 settle:11'/>")).settleDelay.should.equal(11)
 
-        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapStyle.should.equal("innerHTML")
-        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).swapDelay.should.equal(10)
-        swapSpec(make("<div hx-swap='settle:11 swap:10'/>")).settleDelay.should.equal(11)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='settle:11 swap:10'/>")).swapStyle.should.equal("innerHTML")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='settle:11 swap:10'/>")).swapDelay.should.equal(10)
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='settle:11 swap:10'/>")).settleDelay.should.equal(11)
 
-        swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal("customstyle")
+        htmx.internalAPI.getSwapSpecification(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal("customstyle")
     })
 
     it('works with a swap delay', function(done) {
