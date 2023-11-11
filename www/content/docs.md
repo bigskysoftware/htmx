@@ -944,7 +944,7 @@ For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/head
 
 Submitting a form via htmx has the benefit of no longer needing the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
 After successfully processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
- 
+
 ### Request Order of Operations {#request-operations}
 
 The order of operations in a htmx request are:
@@ -1498,7 +1498,7 @@ to generate a different `ETag` for each content.
 
 ## Security
 
-htmx allows you to define logic directly in your DOM.  This has a number of advantages, the largest being 
+htmx allows you to define logic directly in your DOM.  This has a number of advantages, the largest being
 [Locality of Behavior](@/essays/locality-of-behaviour.md), which makes your system easier to understand and
 maintain.
 
@@ -1508,8 +1508,8 @@ ends.
 
 ### Rule 1: Escape All User Content
 
-The first rule of HTML-based web development has always been: *do not trust input from the user*.  You should escape all 
-3rd party, untrusted content that is injected into your site.  This is to prevent, among other issues, 
+The first rule of HTML-based web development has always been: *do not trust input from the user*.  You should escape all
+3rd party, untrusted content that is injected into your site.  This is to prevent, among other issues,
 [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting).
 
 There is extensive documentation on XSS and how to prevent it on the excellent [OWASP Website](https://owasp.org/www-community/attacks/xss/),
@@ -1524,21 +1524,21 @@ mechanism in their templating language.  This can be done for good reasons, but 
 from a 3rd party then it _must_ be scrubbed, including removing attributes starting with `hx-` and `data-hx`, as well as
 inline `<script>` tags, etc.
 
-If you are injecting raw HTML and doing your own escaping, a best practice is to *whitelist* the attributes and tags you 
-allow, rather than to blacklist the ones you disallow. 
+If you are injecting raw HTML and doing your own escaping, a best practice is to *whitelist* the attributes and tags you
+allow, rather than to blacklist the ones you disallow.
 
 ### htmx Security Tools
 
 Of course, bugs happen and developers are not perfect, so it is good to have a layered approach to security for
-your web application, and htmx provides tools to help secure your application as well. 
+your web application, and htmx provides tools to help secure your application as well.
 
 Let's take a look at them.
 
 #### `hx-disable`
 
-The first tool htmx provides to help further secure your application is the [`hx-disable`](/attributes/hx-disable) 
+The first tool htmx provides to help further secure your application is the [`hx-disable`](/attributes/hx-disable)
 attribute.  This attribute will prevent processing of all htmx attributes on a given element, and on all elements within
-it.  So, for example, if you were including raw HTML content in a template (again, this is not recommended!) then you 
+it.  So, for example, if you were including raw HTML content in a template (again, this is not recommended!) then you
 could place a div around the content with the `hx-disable` attribute on it:
 
 ```html
@@ -1554,15 +1554,15 @@ element, it will not be processed by htmx.
 #### `hx-history`
 
 Another security consideration is htmx history cache.  You may have pages that have sensitive data that you do not
-want stored in the users `localStorage` cache.  You can omit a given page from the history cache by including the 
-[`hx-history`](/attributes/hx-history) attribute anywhere on the page, and setting its value to `false`.  
+want stored in the users `localStorage` cache.  You can omit a given page from the history cache by including the
+[`hx-history`](/attributes/hx-history) attribute anywhere on the page, and setting its value to `false`.
 
 #### Configuration Options
 
 htmx also provides configuration options related to security:
 
 * `htmx.config.selfRequestsOnly` - if set to `true`, only requests to the same domain as the current document will be allowed
-* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable 
+* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable
    this behavior you can set this configuration variable to `false`
 * `htmx.config.historyCacheSize` - can be set to `0` to avoid storing any HTML in the `localStorage` cache
 * `htmx.config.allowEval` - can be set to `false` to disable all features of htmx that rely on eval:
@@ -1594,7 +1594,7 @@ document.body.addEventListener('htmx:validateUrl', function (evt) {
 
 ### CSP Options
 
-Browsers also provide tools for further securing your web application.  The most powerful tool available is a 
+Browsers also provide tools for further securing your web application.  The most powerful tool available is a
 [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP).  Using a CSP you can tell the
 browser to, for example, not issue requests to non-origin hosts, to not evaluate inline script tags, etc.
 
@@ -1613,51 +1613,7 @@ for exploring this topic.
 
 ## Configuring htmx {#config}
 
-Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
-listed below:
-
-<div class="info-table">
-
-| Config Variable                       | Info                                                                                                                                                                       |
-|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `htmx.config.historyEnabled`          | defaults to `true`, really only useful for testing                                                                                                                         |
-| `htmx.config.historyCacheSize`        | defaults to 10                                                                                                                                                             |
-| `htmx.config.refreshOnHistoryMiss`    | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request                                                |
-| `htmx.config.defaultSwapStyle`        | defaults to `innerHTML`                                                                                                                                                    |
-| `htmx.config.defaultSwapDelay`        | defaults to 0                                                                                                                                                              |
-| `htmx.config.defaultSettleDelay`      | defaults to 20                                                                                                                                                             |
-| `htmx.config.includeIndicatorStyles`  | defaults to `true` (determines if the indicator styles are loaded)                                                                                                         |
-| `htmx.config.indicatorClass`          | defaults to `htmx-indicator`                                                                                                                                               |
-| `htmx.config.requestClass`            | defaults to `htmx-request`                                                                                                                                                 |
-| `htmx.config.addedClass`              | defaults to `htmx-added`                                                                                                                                                   |
-| `htmx.config.settlingClass`           | defaults to `htmx-settling`                                                                                                                                                |
-| `htmx.config.swappingClass`           | defaults to `htmx-swapping`                                                                                                                                                |
-| `htmx.config.allowEval`               | defaults to `true`, can be used to disable htmx's use of eval for certain features (e.g. trigger filters)                                                                  |
-| `htmx.config.allowScriptTags`         | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
-| `htmx.config.inlineScriptNonce`       | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
-| `htmx.config.attributesToSettle`      | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
-| `htmx.config.useTemplateFragments`    | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                         |
-| `htmx.config.wsReconnectDelay`        | defaults to `full-jitter`                                                                                                                                                  |
-| `htmx.config.wsBinaryType`            | defaults to `blob`, the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection            |
-| `htmx.config.disableSelector`         | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
-| `htmx.config.withCredentials`         | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                          |
-| `htmx.config.timeout`                 | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
-| `htmx.config.scrollBehavior`          | defaults to 'smooth', the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.      |
-| `htmx.config.defaultFocusScroll`      | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
-| `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                          |
-| `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.             |
-| `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                          |
-| `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
-| `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
-| `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top. |
-
-</div>
-
-You can set them directly in javascript, or you can use a `meta` tag:
-
-```html
-<meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
-```
+Htmx has some configuration options to customize defaults and to support compatibility between versions. See [Configuration Reference](@/reference.md#config).
 
 ## Conclusion
 
