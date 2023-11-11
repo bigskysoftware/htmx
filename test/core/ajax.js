@@ -1284,6 +1284,8 @@ describe("Core htmx AJAX Tests", function(){
         byId("submit").click();
         this.server.respond();
         responded.should.equal(true);
+    })
+
     it("can associate submit buttons from outside a form with the current version of the form after swap", function(){
         const template = '<form ' +
               'id="hello" ' +
