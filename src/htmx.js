@@ -1310,14 +1310,17 @@ return (function () {
                                     triggerSpec.from = from_arg;
                                 } else if (token === "target" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    triggerSpec.target = consumeCSSSelector(tokens);
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "queue" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                } else if ((token === "root" || token === "threshold") && tokens[0] === ":") {
+                                } else if (token === "root" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec[token] = consumeCSSSelector(tokens);
+                                } else if (token === "threshold" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else {
