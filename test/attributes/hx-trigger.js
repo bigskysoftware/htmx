@@ -899,7 +899,7 @@ describe("hx-trigger attribute", function(){
         this.server.respondWith("GET", "/test", "Clicked!");
 
         var outer = make("<div id='outer'><div id='inner'></div><div id='other' hx-get='/test' hx-trigger='click from:previous (#outer div)'>Unclicked.</div></div>");
-        var inner = byId("inner")
+        var inner = byId("inner");
         var other = byId("other");
 
         other.innerHTML.should.equal("Unclicked.");
