@@ -1235,13 +1235,13 @@ return (function () {
         }
 
         function consumeCSSSelector(tokens) {
-            var result = "";
-            if (tokens.length > 0 && tokens[0].match(COMBINED_SELECTOR_START)) {
+            var result;
+            if (tokens.length > 0 && COMBINED_SELECTOR_START.test(tokens[0])) {
                 tokens.shift();
-                result += consumeUntil(tokens, COMBINED_SELECTOR_END).trim();
+                result = consumeUntil(tokens, COMBINED_SELECTOR_END).trim();
                 tokens.shift();
             } else {
-                result += consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                result = consumeUntil(tokens, WHITESPACE_OR_COMMA);
             }
             return result;
         }
@@ -1294,7 +1294,7 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    if (tokens[0].match(COMBINED_SELECTOR_START)) {
+                                    if (COMBINED_SELECTOR_START.test(tokens[0])) {
                                         var from_arg = consumeCSSSelector(tokens);
                                     } else {
                                         var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
