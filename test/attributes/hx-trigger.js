@@ -898,13 +898,29 @@ describe("hx-trigger attribute", function(){
     it("correctly handles CSS descendant combinators", function(){
         this.server.respondWith("GET", "/test", "Clicked!");
 
-        var outer = make("<div id='outer'><div id='inner'></div><div id='other' hx-get='/test' hx-trigger='click from:previous (#outer div)'>Unclicked.</div></div>");
+        var outer = make(`
+        <div>
+            <div id='outer'>
+                <div id='first'>
+                    <div id='inner'></div>
+                </div>
+                <div id='second' hx-get='/test' hx-trigger='click from:previous (#outer div)'>Unclicked.</div>
+            </div>
+            <div id='other' hx-get='/test' hx-trigger='click from:(div #inner)'>Unclicked.</div>
+        </div>
+        `);
+
         var inner = byId("inner");
+        var second = byId("second");
         var other = byId("other");
 
+        second.innerHTML.should.equal("Unclicked.");
         other.innerHTML.should.equal("Unclicked.");
+
         inner.click();
         this.server.respond();
+
+        second.innerHTML.should.equal("Clicked!");
         other.innerHTML.should.equal("Clicked!");
     })
 
