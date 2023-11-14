@@ -72,6 +72,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 #sponsor-table td {
   text-align: center;
   padding: 16px;
+  min-height: 100px;
 }
 
 @media only screen and (max-width: 760px)  {
@@ -91,23 +92,25 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <td>
-        <a href="https://www.nuclei.ai/"><img src="/img/nuclei_logo_with_text.svg" style="max-width:50%;min-width:200px;"></a>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
 </td>
 <tr>
 <td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
+        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:400px"></a>
 </td>
 <td>
-        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:600px"></a>
+        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
 </td>
 </tr>
 <tr>
 <td>
-        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
-</td>
-<td>
         <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
           <img src="/img/butter-cms.svg" style="width:100%;max-width:200px">
+        </a>
+</td>
+<td>
+        <a href="https://black.host/">
+          <img src="/img/blackhost-logo.svg" style="width:100%;max-width:200px">
         </a>
 </td>
 </tr>
