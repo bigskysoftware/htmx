@@ -75,7 +75,12 @@ return (function () {
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                responseHandling: [
+                    {code:"203", swap: false},
+                    {code:"[23]..", swap: true},
+                    {code:"[45]..", swap: false, error:true},
+                ]
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -3388,6 +3393,24 @@ return (function () {
             }
         }
 
+        function codeMatches(responseHandlingConfig, status) {
+            var regExp = new RegExp(responseHandlingConfig.code);
+            return regExp.test(status);
+        }
+
+        function resolveResponseHandling(xhr) {
+            for (var i = 0; i < htmx.config.responseHandling.length; i++) {
+                var responseHandlingElement = htmx.config.responseHandling[i];
+                if (codeMatches(responseHandlingElement, xhr.status)) {
+                    return responseHandlingElement;
+                }
+            }
+            // no matches, return no swap
+            return {
+                swap: false
+            }
+        }
+
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
@@ -3429,27 +3452,45 @@ return (function () {
                 return;
             }
 
-            if (hasHeader(xhr,/HX-Retarget:/i)) {
-                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
-            }
-
             var historyUpdate = determineHistoryUpdates(elt, responseInfo);
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
             // this can be ovverriden by responding to the htmx:beforeSwap event and
             // overriding the detail.shouldSwap property
-            var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
+            var responseHandling = resolveResponseHandling(xhr);
+            var shouldSwap = responseHandling.swap;
+            var isError = !!responseHandling.error;
+            var ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
+            var selectOverride = responseHandling.select;
+            if (responseHandling.target) {
+                responseInfo.target = querySelectorExt(elt, responseHandling.target);
+            }
+            var swapOverride = etc.swapOverride;
+            if (swapOverride == null && responseHandling.swapOverride) {
+                swapOverride = responseHandling.swapOverride;
+            }
+
+            // response headers override response handling config
+            if (hasHeader(xhr,/HX-Retarget:/i)) {
+                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+            }
+            if (hasHeader(xhr,/HX-Reswap:/i)) {
+                swapOverride = xhr.getResponseHeader("HX-Reswap");
+            }
+
             var serverResponse = xhr.response;
-            var isError = xhr.status >= 400;
-            var ignoreTitle = htmx.config.ignoreTitle
-            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle }, responseInfo);
+            var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle, selectOverride:selectOverride }, responseInfo);
+
+            if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return;
+
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting
             serverResponse = beforeSwapDetails.serverResponse; // allow updating content
             isError = beforeSwapDetails.isError; // allow updating error
             ignoreTitle = beforeSwapDetails.ignoreTitle; // allow updating ignoring title
+            selectOverride = beforeSwapDetails.selectOverride; //allow updating select override
 
             responseInfo.target = target; // Make updated target available to response events
             responseInfo.failed = isError; // Make failed property available to response events
@@ -3469,10 +3510,6 @@ return (function () {
                     saveCurrentPageToHistory();
                 }
 
-                var swapOverride = etc.swapOverride;
-                if (hasHeader(xhr,/HX-Reswap:/i)) {
-                    swapOverride = xhr.getResponseHeader("HX-Reswap");
-                }
                 var swapSpec = getSwapSpecification(elt, swapOverride);
 
                 if (swapSpec.hasOwnProperty('ignoreTitle')) {
@@ -3501,7 +3538,6 @@ return (function () {
                             // safari issue - see https://github.com/microsoft/playwright/issues/5894
                         }
 
-                        var selectOverride;
                         if (hasHeader(xhr, /HX-Reselect:/i)) {
                             selectOverride = xhr.getResponseHeader("HX-Reselect");
                         }
