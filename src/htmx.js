@@ -75,7 +75,8 @@ return (function () {
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                disableInheritance: false
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -202,11 +203,20 @@ return (function () {
         function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName){
             var attributeValue = getAttributeValue(ancestor, attributeName);
             var disinherit = getAttributeValue(ancestor, "hx-disinherit");
-            if (initialElement !== ancestor && disinherit && (disinherit === "*" || disinherit.split(" ").indexOf(attributeName) >= 0)) {
-                return "unset";
-            } else {
-                return attributeValue
+            var inherit = getAttributeValue(ancestor, "hx-inherit");
+            if (initialElement !== ancestor) {
+                if (htmx.config.disableInheritance) {
+                    if (inherit && (inherit === "*" || inherit.split(" ").indexOf(attributeName) >= 0)) {
+                        return attributeValue;
+                    } else {
+                        return null;
+                    }
+                }
+                if (disinherit && (disinherit === "*" || disinherit.split(" ").indexOf(attributeName) >= 0)) {
+                    return "unset";
+                }
             }
+            return attributeValue;
         }
 
         /**
