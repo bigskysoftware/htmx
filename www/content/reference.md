@@ -12,6 +12,7 @@ title = "Reference"
 * [htmx Events](#events)
 * [htmx Extensions](/extensions#included)
 * [JavaScript API](#api)
+* [Configuration Options](#config)
 
 ## Core Attribute Reference {#attributes}
 
@@ -207,3 +208,51 @@ The table below lists all other attributes available in htmx.
 
 </div>
 
+
+## Configuration Reference {#config}
+
+Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
+listed below:
+
+<div class="info-table">
+
+| Config Variable                       | Info                                                                                                                                                                       |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `htmx.config.historyEnabled`          | defaults to `true`, really only useful for testing                                                                                                                         |
+| `htmx.config.historyCacheSize`        | defaults to 10                                                                                                                                                             |
+| `htmx.config.refreshOnHistoryMiss`    | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request                                                |
+| `htmx.config.defaultSwapStyle`        | defaults to `innerHTML`                                                                                                                                                    |
+| `htmx.config.defaultSwapDelay`        | defaults to 0                                                                                                                                                              |
+| `htmx.config.defaultSettleDelay`      | defaults to 20                                                                                                                                                             |
+| `htmx.config.includeIndicatorStyles`  | defaults to `true` (determines if the indicator styles are loaded)                                                                                                         |
+| `htmx.config.indicatorClass`          | defaults to `htmx-indicator`                                                                                                                                               |
+| `htmx.config.requestClass`            | defaults to `htmx-request`                                                                                                                                                 |
+| `htmx.config.addedClass`              | defaults to `htmx-added`                                                                                                                                                   |
+| `htmx.config.settlingClass`           | defaults to `htmx-settling`                                                                                                                                                |
+| `htmx.config.swappingClass`           | defaults to `htmx-swapping`                                                                                                                                                |
+| `htmx.config.allowEval`               | defaults to `true`, can be used to disable htmx's use of eval for certain features (e.g. trigger filters)                                                                  |
+| `htmx.config.allowScriptTags`         | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
+| `htmx.config.inlineScriptNonce`       | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
+| `htmx.config.attributesToSettle`      | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
+| `htmx.config.useTemplateFragments`    | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                         |
+| `htmx.config.wsReconnectDelay`        | defaults to `full-jitter`                                                                                                                                                  |
+| `htmx.config.wsBinaryType`            | defaults to `blob`, the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection            |
+| `htmx.config.disableSelector`         | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
+| `htmx.config.withCredentials`         | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                          |
+| `htmx.config.timeout`                 | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
+| `htmx.config.scrollBehavior`          | defaults to 'smooth', the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.      |
+| `htmx.config.defaultFocusScroll`      | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
+| `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                          |
+| `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.             |
+| `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                          |
+| `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
+| `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
+| `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top. |
+
+</div>
+
+You can set them directly in javascript, or you can use a `meta` tag:
+
+```html
+<meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
+```

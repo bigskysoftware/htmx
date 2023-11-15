@@ -17,7 +17,7 @@ We start with a search input and an empty table:
 <input class="form-control" type="search" 
        name="search" placeholder="Begin Typing To Search Users..." 
        hx-post="/search" 
-       hx-trigger="keyup changed delay:500ms, search" 
+       hx-trigger="input changed delay:500ms, search" 
        hx-target="#search-results" 
        hx-indicator=".htmx-indicator">
 
@@ -34,16 +34,16 @@ We start with a search input and an empty table:
 </table>
 ```
 
-The input issues a `POST` to `/search` on the `keyup` event and sets the body of the table to be the resulting content.
+The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the body of the table to be the resulting content. Note that the `keyup` event could be used as well, but would not fire if the user pasted text with their mouse (or any other non-keyboard method).
 
 We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
-value of the input (e.g. they hit an arrow key).  
+value of the input (e.g. they hit an arrow key, or pasted the same value).  
 
 Since we use a `search` type input we will get an `x` in the input field to clear the input. 
 To make this trigger a new `POST` we have to specify another trigger. We specify another trigger by using a comma to 
 separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override 
-the 500 ms delay on `keyup` by just pressing enter.
+the 500 ms `input` event delay by just pressing enter.
 
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
 
@@ -78,7 +78,7 @@ Search Contacts
 <input class="form-control" type="search" 
        name="search" placeholder="Begin Typing To Search Users..." 
        hx-post="/search" 
-       hx-trigger="keyup changed delay:500ms, search" 
+       hx-trigger="input changed delay:500ms, search" 
        hx-target="#search-results" 
        hx-indicator=".htmx-indicator">
 
