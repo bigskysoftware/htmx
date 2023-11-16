@@ -273,6 +273,44 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal("Clicked!");
     });
 
+    it('ajax api Content-Type header is application/x-www-form-urlencoded', function(){
+
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            xhr.requestHeaders['Content-Type'].should.equal('application/x-www-form-urlencoded;charset=utf-8');
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("POST", "/test", {target:"#d1", values:{i1: 'test'}})
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('ajax api Content-Type header override to application/json', function(){
+
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            xhr.requestHeaders['Content-Type'].should.equal('application/json;charset=utf-8');
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!");
+        });
+
+        var div = make("<div id='d1'></div>");
+        htmx.ajax('POST',"/test", {
+                target:'#d1',
+                swap:'innerHTML',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                values:{i1: 'test'}
+        })
+
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+
     it('can re-init with new attributes', function () {
         this.server.respondWith("PATCH", "/test", "patch");
         this.server.respondWith("DELETE", "/test", "delete");

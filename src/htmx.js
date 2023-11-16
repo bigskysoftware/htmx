@@ -3111,6 +3111,11 @@ return (function () {
 
 
             var headers = getHeaders(elt, target, promptResponse);
+
+            if (verb !== 'get' && !usesFormData(elt)) {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+
             if (etc.headers) {
                 headers = mergeObjects(headers, etc.headers);
             }
@@ -3123,10 +3128,6 @@ return (function () {
             var expressionVars = getExpressionVars(elt);
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
-
-            if (verb !== 'get' && !usesFormData(elt)) {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            }
 
             if (htmx.config.getCacheBusterParam && verb === 'get') {
                 filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, "id") || "true";
