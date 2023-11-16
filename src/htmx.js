@@ -75,6 +75,7 @@ return (function () {
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
+                ignoreTitle: false,
                 scrollIntoViewOnBoost: true
             },
             parseInterval:parseInterval,
