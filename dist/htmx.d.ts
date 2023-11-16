@@ -395,6 +395,11 @@ export interface HtmxConfig {
      * @default false
      */
     selfRequestsOnly?: boolean;
+    /**
+     * if set to true, htmx will not update the title of the document when a `title` tag is found in new content
+     * @default false
+     */
+    ignoreTitle?: boolean;
 }
 
 /**
