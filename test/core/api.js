@@ -225,6 +225,24 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal('<p class="test">foo!</p>');
     });
 
+    it('ajax api works with select', function()
+    {
+        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        var div = make("<div id='target'></div>");
+        htmx.ajax("GET", "/test", {target: "#target", select: "#d2"});
+        this.server.respond();
+        div.innerHTML.should.equal('<div id="d2">bar</div>');
+    });
+
+    it('ajax api works with Hx-Select overrides select', function()
+    {
+        this.server.respondWith("GET", "/test", [200, {"HX-Reselect": "#d2"}, "<div id='d1'>foo</div><div id='d2'>bar</div>"]);
+        var div = make("<div id='target'></div>");
+        htmx.ajax("GET", "/test", {target: "#target", select: "#d1"});
+        this.server.respond();
+        div.innerHTML.should.equal('<div id="d2">bar</div>');
+    });
+
     it('ajax returns a promise', function(done)
     {
         // in IE we do not return a promise
