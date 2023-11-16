@@ -138,9 +138,14 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/michalsn/codeigniter-htmx-demo>
 
+
 ### Laravel
 
 - <https://spirofloropoulos.com/laravel-htmx-hard-mode-1.html>
+
+### Symfony
+
+- <https://github.com/tomcri/htmxfony>
 
 ## Elixir
 

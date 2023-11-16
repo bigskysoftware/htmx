@@ -12,7 +12,7 @@ One objection that we sometimes hear to htmx and hypermedia is some variation of
 > Well, it might work well for something small, but it won't scale.
  
 It is always dangerous to provoke us with essay-fodder and so lets dig into this claim a bit and see if we can
-shed some light on whether [Hypermedia-Driven Applications]((@/essays/hypermedia-driven-applications.md)) (HDAs) can scale.
+shed some light on whether [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) (HDAs) can scale.
 
 ## Scaling
 
