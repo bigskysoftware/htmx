@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.9] - ????-??-??
+
 ## [1.9.8] - 2023-11-06
 
 * Fixed a few npm & build related issues
