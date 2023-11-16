@@ -3777,9 +3777,9 @@ return (function () {
             if (htmx.config.includeIndicatorStyles !== false) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>\
-                      ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
-                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
-                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.indicatorClass + "{opacity:0}\
+                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}\
+                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}\
                     </style>");
             }
         }
