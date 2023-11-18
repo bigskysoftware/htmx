@@ -136,7 +136,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		internalData.sseEventSource = source;
 
     // Don't forget to disconnect the EventSource on page unload
-    window.addEventListener("beforeunload", () => {
+    window.addEventListener("beforeunload", function () {
       var source = api.getInternalData(elt).sseEventSource;
       if (source != undefined) {
         source.close();
