@@ -30,7 +30,7 @@ etc. will often jump in and say something like
 
 > "Oh, it's easy, you just use _content negotiation_, it's baked into HTTP!"
 
-Not being content with alienating only the general purpose JSON API enthusiasts, let me know proceed to also alienate
+Not being content with alienating only the general purpose JSON API enthusiasts, let me now proceed to also alienate
 my erstwhile hypermedia enthusiast allies by saying: 
 
 *I don't think content negotiation is typically the right approach to
