@@ -136,12 +136,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		internalData.sseEventSource = source;
 
     // Don't forget to disconnect the EventSource on page unload
-    window.addEventListener("beforeunload", function () {
-      var source = api.getInternalData(elt).sseEventSource;
-      if (source != undefined) {
-        source.close();
-      }
-    });
+    window.addEventListener("beforeunload", closeSSESourceBeforePageUnload);
 
 		// Create event handlers
 		source.onerror = function (err) {
@@ -232,6 +227,16 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	}
 
 	/**
+	 * closeSSESourceBeforePageUnload close any associated SSE source if present.
+	 */
+	function closeSSESourceBeforePageUnload() {
+      var source = api.getInternalData(elt).sseEventSource;
+      if (source != undefined) {
+        source.close();
+      }
+	}
+
+	/**
 	 * maybeCloseSSESource confirms that the parent element still exists.
 	 * If not, then any associated SSE source is closed and the function returns true.
 	 * 
@@ -240,6 +245,8 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	 */
 	function maybeCloseSSESource(elt) {
 		if (!api.bodyContains(elt)) {
+      // We don't need anymore to disconnect the EventSource on page unload when disconnecting
+      removeEventListener("beforeunload", closeSSESourceBeforePageUnload)
 			var source = api.getInternalData(elt).sseEventSource;
 			if (source != undefined) {
 				source.close();
