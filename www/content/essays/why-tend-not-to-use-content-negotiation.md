@@ -23,7 +23,7 @@ The last point often strikes people who are used to a single, general purpose JS
 can have a single API that can satisfy any number of types of clients?  I tried to answer that question as best I can in the essay
 above, but it is certainly a reasonable one to ask.
 
-It seems like (and it is) extra work in some ways when compared to have that one, general API and the associated logic.
+It seems like (and it is) extra work in some ways when compared to having one general API.
 
 At this point in a conversation, someone who agrees broadly with my take on REST, [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md),
 etc. will often jump in and say something like
