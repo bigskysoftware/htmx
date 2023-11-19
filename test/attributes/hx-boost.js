@@ -116,4 +116,3 @@ describe("hx-boost attribute", function() {
     });
 
 });
-
