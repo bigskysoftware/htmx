@@ -3727,47 +3727,32 @@ return (function () {
         /**
          * We want to initialize the page elements after DOMContentLoaded
          * fires, but there isn't always a good way to tell whether
-         * it has already fired or not.
+         * it has already fired when we get here or not.
          */
-        var isReady = false;
-        if ( getDocument().readyState === "complete" ) {
-            // DOMContentLoaded definitely already fired
-            isReady = true;
-        } else {
-            // DOMContentLoaded *maybe* already fired, so we'll
-            // watch for a DOM or a readystate event
-            getDocument().addEventListener('DOMContentLoaded', function() {
-                isReady = true;
-                readyComplete();
-            });
-            getDocument().addEventListener('readystatechange', function() {
-                if ( getDocument().readyState !== 'complete' ) return;
+        function ready(functionToCall) {
+            // call the function exactly once no matter how many times this is called
+            var callReadyFunction = function() {
+                if (!functionToCall) return;
+                functionToCall();
+                functionToCall = null;
+            };
 
-                isReady = true;
-                readyComplete();
-            });
-        }
-
-        /**
-         * Execute a function now if DOMContentLoaded
-         * has fired, otherwise wait for it to happen.
-         */
-        var pendingCalls = [];
-        function ready(fn) {
-            if ( isReady ) {
-                fn();
-            } else {
-                pendingCalls.push( fn );
+            if (getDocument().readyState === "complete") {
+                // DOMContentLoaded definitely fired, we can initialize the page
+                callReadyFunction();
             }
-        }
-
-        /**
-         * Execute the function calls which were queued up
-         * by ready() before the page had loaded.
-         */
-        function readyComplete() {
-            forEach( pendingCalls, function(fn) { fn() });
-            pendingCalls = [];
+            else {
+                /* DOMContentLoaded *maybe* already fired, wait for
+                 * the next DOMContentLoaded or readystatechange event
+                 */
+                getDocument().addEventListener("DOMContentLoaded", function() {
+                    callReadyFunction();
+                });
+                getDocument().addEventListener("readystatechange", function() {
+                    if (getDocument().readyState !== "complete") return;
+                    callReadyFunction();
+                });
+            }
         }
 
         function insertIndicatorStyles() {
