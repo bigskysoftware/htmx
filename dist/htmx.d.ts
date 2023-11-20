@@ -48,7 +48,7 @@ export function ajax(verb: string, path: string, selector: string): Promise<void
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any; select: any }>
 ): Promise<void>;
 
 /**
@@ -396,10 +396,10 @@ export interface HtmxConfig {
      */
     selfRequestsOnly?: boolean;
     /**
-     * if set to true, htmx will not update the title of the document when a `title` tag is found in new content
-     * @default false
+     * Whether or not the target of a boosted element is scrolled into the viewport.
+     * @default true
      */
-    ignoreTitle?: boolean;
+    scrollIntoViewOnBoost?: boolean;
 }
 
 /**
