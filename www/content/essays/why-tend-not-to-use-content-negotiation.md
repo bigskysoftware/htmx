@@ -153,7 +153,7 @@ is making a SoC argument.)
 
 ## So What's The Alternative?
 
-The alternative is to, as I advocate in [Splitting Your APIs](@/essays/splitting-your-apis.md), erm, splitting your
+The alternative is, as I advocate in [Splitting Your APIs](@/essays/splitting-your-apis.md), er, well, splitting your
 APIs.  This means providing different paths (or sub-domains, or whatever) for your JSON API and your hypermedia (HTML)
 API.
 
