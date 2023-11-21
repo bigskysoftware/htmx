@@ -38,7 +38,7 @@ custom_classes = "wide-content"
 * [events & logging](#events)
 * [debugging](#debugging)
 * [scripting](#scripting)
-  * [hx-on attribute](#hx-on)
+  * [hx-on attribute](#the-hx-on-attribute)
   * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
@@ -1259,7 +1259,7 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
-### The `hx-on` Attribute{#hx-on}
+### <a name="hx-on"></a>The `hx-on` Attribute{#the-hx-on-attribute}
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
 such as `onClick`:
