@@ -171,6 +171,28 @@ window.htmx = require('htmx.org');
 
 * Finally, rebuild your bundle
 
+### htmx 1.x to 2.x Upgrade Guide
+
+To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
+
+* If you are still using the legacy `hx-ws` and `hx-sse` attributes, please upgrade to the extension versions (available in 1.x)
+  of those features
+* Default Changes
+  * If you want to retain the 1.0 behavior of "smooth scrolling" by default, revert `htmx.config.scrollBehavior` to `'smooth'`
+  * If you want `DELETE` requests to use a form-encoded body rather than parameters, revert
+    `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
+     use request parameters.)
+  * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
+
+here is a meta tag to revert to htmx 1.x defaults:
+
+```html
+<meta name="htmx-config" content='{"scrollBehavior":"smooth", "methodsThatUseUrlParams":["get"], "selfRequestsOnly": false}'>
+```
+
+IE is no longer supported in htmx 2.0, but htmx 1.x continues to support IE and will be supported for the foreseeable 
+future.
+
 ## AJAX
 
 The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:

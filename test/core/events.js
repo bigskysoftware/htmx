@@ -395,6 +395,7 @@ describe("Core htmx Events", function() {
             this.skip()
             return
         }
+        htmx.config.selfRequestsOnly = false; // turn off self requests only
         var called = false;
         var handler = htmx.on("htmx:sendError", function (evt) {
             called = true;
@@ -405,6 +406,7 @@ describe("Core htmx Events", function() {
         setTimeout(function () {
             htmx.off("htmx:sendError", handler);
             should.equal(called, true);
+            htmx.config.selfRequestsOnly = true; // restore self requests only
             done();
         }, 30);
     });
