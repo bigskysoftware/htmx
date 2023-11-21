@@ -38,6 +38,7 @@ custom_classes = "wide-content"
 * [events & logging](#events)
 * [debugging](#debugging)
 * [scripting](#scripting)
+  * [hx-on attribute](#hx-on)
   * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
