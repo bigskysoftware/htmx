@@ -1258,7 +1258,7 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
-### <a name="hx-on"></a>[The `hx-on` Attribute](#hyperscript)
+### The `hx-on` Attribute{#hx-on}
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
 such as `onClick`:
