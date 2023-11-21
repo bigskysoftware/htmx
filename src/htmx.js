@@ -75,6 +75,7 @@ return (function () {
                 globalViewTransitions: false,
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
+                ignoreTitle: false,
                 scrollIntoViewOnBoost: true
             },
             parseInterval:parseInterval,
@@ -87,7 +88,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.8"
+            version: "1.9.9"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -1145,6 +1146,8 @@ return (function () {
         var SYMBOL_CONT = /[_$a-zA-Z0-9]/;
         var STRINGISH_START = ['"', "'", "/"];
         var NOT_WHITESPACE = /[^\s]/;
+        var COMBINED_SELECTOR_START = /[{(]/;
+        var COMBINED_SELECTOR_END = /[})]/;
         function tokenizeString(str) {
             var tokens = [];
             var position = 0;
@@ -1233,6 +1236,18 @@ return (function () {
             return result;
         }
 
+        function consumeCSSSelector(tokens) {
+            var result;
+            if (tokens.length > 0 && COMBINED_SELECTOR_START.test(tokens[0])) {
+                tokens.shift();
+                result = consumeUntil(tokens, COMBINED_SELECTOR_END).trim();
+                tokens.shift();
+            } else {
+                result = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+            }
+            return result;
+        }
+
         var INPUT_SELECTOR = 'input, textarea, select';
 
         /**
@@ -1281,29 +1296,33 @@ return (function () {
                                     triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "from" && tokens[0] === ":") {
                                     tokens.shift();
-                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                    if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
-                                        tokens.shift();
-                                        var selector = consumeUntil(
-                                            tokens,
-                                            WHITESPACE_OR_COMMA
-                                        )
-                                        // `next` and `previous` allow a selector-less syntax
-                                        if (selector.length > 0) {
-                                            from_arg += " " + selector;
+                                    if (COMBINED_SELECTOR_START.test(tokens[0])) {
+                                        var from_arg = consumeCSSSelector(tokens);
+                                    } else {
+                                        var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                        if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
+                                            tokens.shift();
+                                            var selector = consumeCSSSelector(tokens);
+                                            // `next` and `previous` allow a selector-less syntax
+                                            if (selector.length > 0) {
+                                                from_arg += " " + selector;
+                                            }
                                         }
                                     }
                                     triggerSpec.from = from_arg;
                                 } else if (token === "target" && tokens[0] === ":") {
                                     tokens.shift();
-                                    triggerSpec.target = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    triggerSpec.target = consumeCSSSelector(tokens);
                                 } else if (token === "throttle" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
                                 } else if (token === "queue" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                } else if ((token === "root" || token === "threshold") && tokens[0] === ":") {
+                                } else if (token === "root" && tokens[0] === ":") {
+                                    tokens.shift();
+                                    triggerSpec[token] = consumeCSSSelector(tokens);
+                                } else if (token === "threshold" && tokens[0] === ":") {
                                     tokens.shift();
                                     triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
                                 } else {
@@ -2906,6 +2925,7 @@ return (function () {
                             values : context.values,
                             targetOverride: resolveTarget(context.target),
                             swapOverride: context.swap,
+                            select: context.select,
                             returnPromise: true
                         });
                 }
@@ -2960,6 +2980,7 @@ return (function () {
                 elt = getDocument().body;
             }
             var responseHandler = etc.handler || handleAjaxResponse;
+            var select = etc.select || null;
 
             if (!bodyContains(elt)) {
                 // do not issue requests for elements removed from the DOM
@@ -3108,6 +3129,11 @@ return (function () {
 
 
             var headers = getHeaders(elt, target, promptResponse);
+
+            if (verb !== 'get' && !usesFormData(elt)) {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+
             if (etc.headers) {
                 headers = mergeObjects(headers, etc.headers);
             }
@@ -3120,10 +3146,6 @@ return (function () {
             var expressionVars = getExpressionVars(elt);
             var allParameters = mergeObjects(rawParameters, expressionVars);
             var filteredParameters = filterValues(allParameters, elt);
-
-            if (verb !== 'get' && !usesFormData(elt)) {
-                headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            }
 
             if (htmx.config.getCacheBusterParam && verb === 'get') {
                 filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, "id") || "true";
@@ -3222,7 +3244,7 @@ return (function () {
             }
 
             var responseInfo = {
-                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted,
+                xhr: xhr, target: target, requestConfig: requestConfig, etc: etc, boosted: eltIsBoosted, select: select,
                 pathInfo: {
                     requestPath: path,
                     finalRequestPath: finalPath,
@@ -3393,6 +3415,7 @@ return (function () {
             var target = responseInfo.target;
             var etc = responseInfo.etc;
             var requestConfig = responseInfo.requestConfig;
+            var select = responseInfo.select;
 
             if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return;
 
@@ -3502,8 +3525,24 @@ return (function () {
                         }
 
                         var selectOverride;
+                        if (select) {
+                            selectOverride = select;
+                        }
+
                         if (hasHeader(xhr, /HX-Reselect:/i)) {
                             selectOverride = xhr.getResponseHeader("HX-Reselect");
+                        }
+
+                        // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+                        if (historyUpdate.type) {
+                            triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo));
+                            if (historyUpdate.type === "push") {
+                                pushUrlIntoHistory(historyUpdate.path);
+                                triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
+                            } else {
+                                replaceUrlInHistory(historyUpdate.path);
+                                triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
+                            }
                         }
 
                         var settleInfo = makeSettleInfo(target);
@@ -3555,17 +3594,6 @@ return (function () {
                                 triggerEvent(elt, 'htmx:afterSettle', responseInfo);
                             });
 
-                            // if we need to save history, do so
-                            if (historyUpdate.type) {
-                                triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo));
-                                if (historyUpdate.type === "push") {
-                                    pushUrlIntoHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path});
-                                } else {
-                                    replaceUrlInHistory(historyUpdate.path);
-                                    triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path});
-                                }
-                            }
                             if (responseInfo.pathInfo.anchor) {
                                 var anchorTarget = getDocument().getElementById(responseInfo.pathInfo.anchor);
                                 if(anchorTarget) {
@@ -3724,25 +3752,34 @@ return (function () {
         //====================================================================
         // Initialization
         //====================================================================
-        var isReady = false
-        getDocument().addEventListener('DOMContentLoaded', function() {
-            isReady = true
-        })
-
         /**
-         * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
-         *
-         * This function uses isReady because there is no realiable way to ask the browswer whether
-         * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
-         * firing and readystate=complete.
+         * We want to initialize the page elements after DOMContentLoaded
+         * fires, but there isn't always a good way to tell whether
+         * it has already fired when we get here or not.
          */
-        function ready(fn) {
-            // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
-            // some means other than the initial page load.
-            if (isReady || getDocument().readyState === 'complete') {
-                fn();
-            } else {
-                getDocument().addEventListener('DOMContentLoaded', fn);
+        function ready(functionToCall) {
+            // call the function exactly once no matter how many times this is called
+            var callReadyFunction = function() {
+                if (!functionToCall) return;
+                functionToCall();
+                functionToCall = null;
+            };
+
+            if (getDocument().readyState === "complete") {
+                // DOMContentLoaded definitely fired, we can initialize the page
+                callReadyFunction();
+            }
+            else {
+                /* DOMContentLoaded *maybe* already fired, wait for
+                 * the next DOMContentLoaded or readystatechange event
+                 */
+                getDocument().addEventListener("DOMContentLoaded", function() {
+                    callReadyFunction();
+                });
+                getDocument().addEventListener("readystatechange", function() {
+                    if (getDocument().readyState !== "complete") return;
+                    callReadyFunction();
+                });
             }
         }
 
@@ -3750,9 +3787,9 @@ return (function () {
             if (htmx.config.includeIndicatorStyles !== false) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>\
-                      ." + htmx.config.indicatorClass + "{opacity:0;transition: opacity 200ms ease-in;}\
-                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1}\
-                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1}\
+                      ." + htmx.config.indicatorClass + "{opacity:0}\
+                      ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}\
+                      ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}\
                     </style>");
             }
         }

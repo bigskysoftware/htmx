@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.9] - 2023-11-21
+
+* Allow CSS selectors with whitespace in attributes like `hx-target` by using parens or curly-braces
+* Properly allow users to override the `Content-Type` request header
+* Added the `select` option to `htmx.ajax()`
+* Fixed a race condition in readystate detection that lead to htmx not being initialized in some scenarios with 3rd
+  party script loaders
+* Fixed a bug that caused relative resources to resolve against the wrong base URL when a new URL is pushed
+* Fixed a UI issue that could cause indicators to briefly flash
+
 ## [1.9.8] - 2023-11-06
 
 * Fixed a few npm & build related issues

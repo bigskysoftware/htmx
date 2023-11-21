@@ -614,4 +614,205 @@ describe("web-sockets extension", function () {
         this.messages[1].should.contains('"foo":"bar"')
         this.messages[1].should.contains('"action":"B"')
     })
+
+    describe("Send immediately", function() {
+        function checkCallForWsBeforeSend(spy, wrapper, message, target) {
+            // Utility function to always check the same for htmx:wsBeforeSend caught by a spy
+            spy.calledOnce.should.be.true;
+            var call = spy.getCall(0);
+            call.args.length.should.equal(1);
+            var arg = call.args[0];
+            arg.target.should.equal(target);
+            arg.detail.socketWrapper.should.equal(wrapper);
+            arg.detail.message.should.equal(message);
+        }
+        it('triggers wsBeforeSend on body if provided to sendImmediately', function (done) {
+            var myEventCalled = sinon.spy();
+            var message = '{"foo":"bar"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                window.document.body.addEventListener("htmx:wsBeforeSend", myEventCalled)
+                try {
+                    socketWrapper.sendImmediately(message, window.document.body)
+                    checkCallForWsBeforeSend(myEventCalled, socketWrapper, message, window.document.body)
+                } finally {
+                    window.document.body.removeEventListener("htmx:wsBeforeSend", myEventCalled)
+                }
+                done()
+            }
+            try {
+                window.document.addEventListener("htmx:wsOpen", handler)
+                
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+            
+        })
+        it('triggers wsBeforeSend on any send element provided to sendImmediately', function (done) {
+            var myEventCalled = sinon.spy();
+            var message = '{"a":"b"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                var id1 = byId("d1");
+                id1.addEventListener("htmx:wsBeforeSend", myEventCalled)
+                try {
+                    socketWrapper.sendImmediately(message, d1)
+                    checkCallForWsBeforeSend(myEventCalled, socketWrapper, message, d1)
+                } finally {
+                    id1.removeEventListener("htmx:wsBeforeSend", myEventCalled)
+                }
+                done()
+            }
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        
+        })
+        it('triggers wsAfterSend on body if provided to sendImmediately', function (done) {
+            var myEventCalled = sinon.spy();
+            var message = '{"foo":"bar"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                window.document.body.addEventListener("htmx:wsAfterSend", myEventCalled)
+                try {
+                    socketWrapper.sendImmediately(message, window.document.body)
+                    checkCallForWsBeforeSend(myEventCalled, socketWrapper, message, window.document.body)
+                } finally {
+                    window.document.body.removeEventListener("htmx:wsAfterSend", myEventCalled)
+                }
+                done()
+            }
+            try {
+                window.document.addEventListener("htmx:wsOpen", handler)
+                
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+            
+        })
+        it('triggers wsAfterSend on any send element provided to sendImmediately', function (done) {
+            var myEventCalled = sinon.spy();
+            var message = '{"a":"b"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                var id1 = byId("d1");
+                id1.addEventListener("htmx:wsAfterSend", myEventCalled)
+                try {
+                    socketWrapper.sendImmediately(message, d1)
+                    checkCallForWsBeforeSend(myEventCalled, socketWrapper, message, d1)
+                } finally {
+                    id1.removeEventListener("htmx:wsAfterSend", myEventCalled)
+                }
+                done()
+            }
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        
+        })
+        it('sends message if event is not prevented', function (done) {
+            var message = '{"a":"b"}';
+            var noop = function() {}
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                var id1 = byId("d1");
+                id1.addEventListener("htmx:wsBeforeSend", noop)
+                try {
+                    socketWrapper.sendImmediately(message, d1)
+                    this.tickMock();
+                    this.messages.should.eql([message])
+                } finally {
+                    id1.removeEventListener("htmx:wsBeforeSend", noop)
+                }
+                done()
+            }.bind(this)
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        })
+        it('sends message if no sending element is provided', function (done) {
+            var message = '{"a":"b"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                socketWrapper.sendImmediately(message)
+                this.tickMock();
+                this.messages.should.eql([message])
+                done()
+            }.bind(this)
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        })
+        it('sends message if sending element has no event listener for beforeSend', function (done) {
+            var message = '{"a":"b"}';
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                var d1 = byId("d1");
+                socketWrapper.sendImmediately(message, d1)
+                this.tickMock();
+                this.messages.should.eql([message])
+                done()
+            }.bind(this)
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        })
+        it('does not send message if beforeSend is prevented', function (done) {
+            var message = '{"a":"b"}';
+            var eventPrevented = function(e) {e.preventDefault()}
+            var handler = function(e){
+                var socketWrapper = e.detail.socketWrapper;
+                var id1 = byId("d1");
+                id1.addEventListener("htmx:wsBeforeSend", eventPrevented)
+                try {
+                    socketWrapper.sendImmediately(message, d1)
+                    this.tickMock();
+                    this.messages.should.eql([])
+                } finally {
+                    id1.removeEventListener("htmx:wsBeforeSend", eventPrevented)
+                }
+                done()
+            }.bind(this)
+
+            window.document.addEventListener("htmx:wsOpen", handler)
+            try {
+                var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080"><div id="d1">div1</div></div>');
+                this.tickMock();
+            } finally {
+                window.document.removeEventListener("htmx:wsOpen", handler)
+            }
+        
+        })
+    })
+
+    
 });
