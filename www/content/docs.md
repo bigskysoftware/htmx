@@ -346,10 +346,10 @@ you can create your own CSS transition like so:
 .htmx-indicator{
     display:none;
 }
-.htmx-request .my-indicator{
+.htmx-request .htmx-indicator{
     display:inline;
 }
-.htmx-request.my-indicator{
+.htmx-request.htmx-indicator{
     display:inline;
 }
 ```
