@@ -119,52 +119,52 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		// get URL from element's attribute
 		var sseURL = api.getAttributeValue(elt, "sse-connect") || getLegacySSEURL(elt);
 
-        var source; // event source for this element
-        var internalData; // internal data for the element the event source is attached to 
+		var internalData; // internal data for the element the event source is attached to 
+		var source; // event source for this element
 		if (sseURL) {
-            // Create event new event source first
-		    internalData = api.getInternalData(elt);
-            // Connect to the EventSource
-            source = htmx.createEventSource(sseURL);
-            internalData.sseEventSource = source;
+			// Create event new event source first
+			internalData = api.getInternalData(elt);
+			// Connect to the EventSource
+			source = htmx.createEventSource(sseURL);
+			internalData.sseEventSource = source;
 
-            // Create event handlers
-            source.onerror = function (err) {
+			// Create event handlers
+			source.onerror = function (err) {
 
-                // Log an error event
-                api.triggerErrorEvent(elt, "htmx:sseError", {error:err, source:source});
+				// Log an error event
+				api.triggerErrorEvent(elt, "htmx:sseError", {error:err, source:source});
 
-                // If parent no longer exists in the document, then clean up this EventSource
-                if (maybeCloseSSESource(elt)) {
-                    return;
-                }
+				// If parent no longer exists in the document, then clean up this EventSource
+				if (maybeCloseSSESource(elt)) {
+					return;
+				}
 
-                // Otherwise, try to reconnect the EventSource
-                if (source.readyState === EventSource.CLOSED) {
-                    retryCount = retryCount || 0;
-                    var timeout = Math.random() * (2 ^ retryCount) * 500;
-                    window.setTimeout(function() {
-                        createEventSourceOnElement(elt, Math.min(7, retryCount+1));
-                    }, timeout);
-                }			
-            };
+				// Otherwise, try to reconnect the EventSource
+				if (source.readyState === EventSource.CLOSED) {
+					retryCount = retryCount || 0;
+					var timeout = Math.random() * (2 ^ retryCount) * 500;
+					window.setTimeout(function() {
+						createEventSourceOnElement(elt, Math.min(7, retryCount+1));
+					}, timeout);
+				}
+			};
 
-            source.onopen = function (evt) {
-                api.triggerEvent(elt, "htmx:sseOpen", {source: source});
-            }
+			source.onopen = function (evt) {
+				api.triggerEvent(elt, "htmx:sseOpen", {source: source});
+			}
 		} else {
 			// Find closest existing event source
-            var sseSourceElt = api.getClosestMatch(elt, function(node){
-                return api.getInternalData(node).sseEventSource != null;
-            })
-            if (sseSourceElt == null) {
-                return null; // no eventsource in parentage, orphaned element
-            }
-            
-            // Set internalData and source
-            internalData = api.getInternalData(sseSourceElt);
-            source = internalData.sseEventSource;
-	    }	
+			var sseSourceElt = api.getClosestMatch(elt, function(node){
+				return api.getInternalData(node).sseEventSource != null;
+			})
+			if (sseSourceElt == null) {
+				return null; // no eventsource in parentage, orphaned element
+			}
+
+			// Set internalData and source
+			internalData = api.getInternalData(sseSourceElt);
+			source = internalData.sseEventSource;
+	    }
 
 		// Add message handlers for every `sse-swap` attribute
 		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
