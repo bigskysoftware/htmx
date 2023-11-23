@@ -136,5 +136,16 @@ describe("sse extension", function() {
         byId("d2").innerText.should.equal("Event 2")
     })
 
+    it('swaps swapped in content', function() {
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream">\n' +
+            '<div id="d1" sse-swap="e1" hx-swap="outerHTML"></div>\n' +
+            '</div>\n'
+        )
+
+        this.eventSource.sendEvent("e1", '<div id="d2" sse-swap="e2"></div>')
+        this.eventSource.sendEvent("e2", 'Event 2')
+        byId("d2").innerText.should.equal("Event 2")
+    })
+
 });
 
