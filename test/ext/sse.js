@@ -112,12 +112,22 @@ describe("sse extension", function() {
         this.eventSource.wasClosed().should.equal(true)
     })
 
-    it('is closed after removal with no close and activity', function() {
+    it('is closed after removal with no close and activity, hx-trigger', function() {
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="sse" sse-connect="/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
             '</div>');
         div.parentElement.removeChild(div);
         this.eventSource.sendEvent("e1")
+        this.eventSource.wasClosed().should.equal(true)
+    })
+
+    // sse and hx-trigger handlers are distinct
+    it('is closed after removal with no close and activity, sse-swap', function() {
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="sse" sse-connect="/foo">' +
+            '<div id="d1" sse-swap="e1" hx-get="/d1">div1</div>' +
+            '</div>');
+        div.parentElement.removeChild(div);
+        this.eventSource.sendEvent("e1", "div1.2")
         this.eventSource.wasClosed().should.equal(true)
     })
 
