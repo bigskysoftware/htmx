@@ -116,30 +116,14 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			return null;
 		}
 
-		var internalData = api.getInternalData(elt);
-
 		// get URL from element's attribute
-		var sseURL = api.getAttributeValue(elt, "sse-connect");
+		var sseURL = api.getAttributeValue(elt, "sse-connect") || getLegacySSEURL(elt);
 
-        var source;
-		if (sseURL == undefined) {
-			var legacyURL = getLegacySSEURL(elt)
-			if (legacyURL) {
-				sseURL = legacyURL;
-			} else {
-                // Find closest event source
-				var sseSourceElt = api.getClosestMatch(elt, function(node){
-                    return api.getInternalData(node).sseEventSource != null;
-                })
-                if (sseSourceElt == null) {
-                    return null;
-                }
-                
-                // Set internalData and source
-                internalData = api.getInternalData(sseSourceElt);
-                source = internalData.sseEventSource;
-			}
-		} else {
+        var source; // event source for this element
+        var internalData; // internal data for the element the event source is attached to 
+		if (sseURL) {
+            // Create event new event source first
+		    internalData = api.getInternalData(elt);
             // Connect to the EventSource
             source = htmx.createEventSource(sseURL);
             internalData.sseEventSource = source;
@@ -168,7 +152,20 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
             source.onopen = function (evt) {
                 api.triggerEvent(elt, "htmx:sseOpen", {source: source});
             }
+		} else {
+			// Find closest existing event source
+            var sseSourceElt = api.getClosestMatch(elt, function(node){
+                return api.getInternalData(node).sseEventSource != null;
+            })
+            if (sseSourceElt == null) {
+                return null; // no eventsource in parentage, orphaned element
+            }
+            
+            // Set internalData and source
+            internalData = api.getInternalData(sseSourceElt);
+            source = internalData.sseEventSource;
 	    }	
+
 		// Add message handlers for every `sse-swap` attribute
 		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
 
