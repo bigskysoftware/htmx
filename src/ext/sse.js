@@ -209,23 +209,8 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			if (sseEventName.slice(0, 4) != "sse:") {
 				return;
 			}
-
-			var listener = function(event) {
-
-				// If parent is missing, then close SSE and remove listener
-				if (maybeCloseSSESource(elt)) {
-					source.removeEventListener(sseEventName, listener);
-					return;
-				}
-
-				// Trigger events to be handled by the rest of htmx
-				htmx.trigger(child, sseEventName, event);
-				htmx.trigger(child, "htmx:sseMessage", event);
-			}
-
-			// Register the new listener
-			api.getInternalData(elt).sseEventListener = listener;
-			source.addEventListener(sseEventName.slice(4), listener);
+            
+            api.addTriggerHandler(child, {trigger:'sse', sseEvent: trigger.substr(4)}, api.getInternalData(child), function() {});
 		});
 	}
 
