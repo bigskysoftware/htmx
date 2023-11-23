@@ -550,12 +550,6 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit button & value', function () {
-        if (!supportsFormAttribute()) {
-            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-            this.skip()
-            return
-        }
-
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +
@@ -583,12 +577,6 @@ describe("web-sockets extension", function () {
     })
 
     it('sends data to the server with external non-htmx form + submit input & value', function () {
-        if (!supportsFormAttribute()) {
-            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-            this.skip()
-            return
-        }
-
         make('<div hx-ext="ws" ws-connect="ws://localhost:8080">' +
             '<form ws-send id="form">' +
             '<input type="hidden" name="foo" value="bar">' +
