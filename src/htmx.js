@@ -3752,15 +3752,22 @@ return (function () {
         //====================================================================
         // Initialization
         //====================================================================
+        var isReady = false
         /**
          * We want to initialize the page elements after DOMContentLoaded
          * fires, but there isn't always a good way to tell whether
          * it has already fired when we get here or not.
          */
         function ready(functionToCall) {
+            if (isReady) {
+                functionToCall()
+                return
+            }
+
             // call the function exactly once no matter how many times this is called
             var callReadyFunction = function() {
                 if (!functionToCall) return;
+                isReady = true
                 functionToCall();
                 functionToCall = null;
             };
