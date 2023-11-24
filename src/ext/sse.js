@@ -118,10 +118,11 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 		// get URL from element's attribute
 		var sseURL = api.getAttributeValue(elt, "sse-connect") || getLegacySSEURL(elt);
-
-		var internalData; // internal data for the element the event source is attached to 
-		var source; // event source for this element
+        var sourceElement; // elt is not always the element with the "sse-connect" attribute
+		var internalData; // internal data for the sourceElement 
+		var source; // event source
 		if (sseURL) {
+            sourceElement = elt; // set sourceElement to elt when it has the "sse-connect" attribute
 			// Create event new event source first
 			internalData = api.getInternalData(elt);
 			// Connect to the EventSource
@@ -154,15 +155,15 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			}
 		} else {
 			// Find closest existing event source
-			var sseSourceElt = api.getClosestMatch(elt, function(node){
+			sourceElement = api.getClosestMatch(elt, function(node){
 				return api.getInternalData(node).sseEventSource != null;
 			})
-			if (sseSourceElt == null) {
+			if (sourceElement == null) {
 				return null; // no eventsource in parentage, orphaned element
 			}
 
 			// Set internalData and source
-			internalData = api.getInternalData(sseSourceElt);
+			internalData = api.getInternalData(sourceElement);
 			source = internalData.sseEventSource;
 	    }
 
@@ -181,7 +182,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				var listener = function(event) {
 
 					// If the parent is missing then close SSE and remove listener
-					if (maybeCloseSSESource(elt)) {
+					if (maybeCloseSSESource(sourceElement)) {
 						source.removeEventListener(sseEventName, listener);
 						return;
 					}
@@ -210,6 +211,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				return;
 			}
             
+            // Revisit with htmx2
             api.addTriggerHandler(child, {trigger:'sse', sseEvent: trigger.substr(4)}, api.getInternalData(child), function() {});
 		});
 	}

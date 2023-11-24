@@ -3,6 +3,7 @@ describe("sse extension", function() {
     function mockEventSource() {
         var listeners = {};
         var wasClosed = false;
+        var url;
         var mockEventSource = {
             removeEventListener: function(name) {
                 delete listeners[name];
@@ -23,6 +24,9 @@ describe("sse extension", function() {
             },
             wasClosed: function() {
                 return wasClosed;
+            },
+            connect: function(url) {
+                this.url = url
             }
         };
         return mockEventSource;
@@ -33,7 +37,10 @@ describe("sse extension", function() {
         var eventSource = mockEventSource();
         this.eventSource = eventSource;
         clearWorkArea();
-        htmx.createEventSource = function() { return eventSource };
+        htmx.createEventSource = function(url) { 
+            eventSource.connect(url);
+            return eventSource;
+        };
     });
     afterEach(function() {
         this.server.restore();
@@ -102,10 +109,20 @@ describe("sse extension", function() {
         byId("d1").innerHTML.should.equal("div1");
     })
 
-    it('is closed after removal', function() {
+    it('is closed after removal, hx-trigger', function() {
         this.server.respondWith("GET", "/test", "Clicked!");
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="sse" sse-connect="/foo">' +
             '<div id="d1" hx-trigger="sse:e1" hx-get="/d1">div1</div>' +
+            '</div>');
+        div.click();
+        this.server.respond();
+        this.eventSource.wasClosed().should.equal(true)
+    })
+
+    it('is closed after removal, hx-swap', function() {
+        this.server.respondWith("GET", "/test", "Clicked!");
+        var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="sse" sse-connect="/foo">' +
+            '<div id="d1" hx-swap="e1" hx-get="/d1">div1</div>' +
             '</div>');
         div.click();
         this.server.respond();
@@ -127,7 +144,7 @@ describe("sse extension", function() {
             '<div id="d1" sse-swap="e1" hx-get="/d1">div1</div>' +
             '</div>');
         div.parentElement.removeChild(div);
-        this.eventSource.sendEvent("e1", "div1.2")
+        this.eventSource.sendEvent("e1")
         this.eventSource.wasClosed().should.equal(true)
     })
 
@@ -157,5 +174,13 @@ describe("sse extension", function() {
         byId("d2").innerText.should.equal("Event 2")
     })
 
+    it('works in a child of an hx-ext="sse" element', function(){
+        var div = make('<div hx-ext="sse">\n'+
+            '<div id="d1" sse-connect="/event_stream" sse-swap="e1">div1</div>\n'+
+            '</div>\n'
+        )
+        this.eventSource.url="/event_stream"
+    })
+    
 });
 
