@@ -50,10 +50,6 @@ describe("Core htmx perf Tests", function() {
 
     it("history snapshot cleaning should be fast", function(){
         var size = 5 * 1024 // ~350K in size, about the size of CNN's body tag :p
-        if (IsIE11()) {
-            // So slow in IE11 it freezes the browser and blocks other tests, pretty annoying
-            size = 5 * 100 // Seriously this already takes ~1.5 SECOND to run, more simply makes it crash
-        }
         var workArea = getWorkArea();
         var html = "<div class='foo bar'>Yay, really large HTML documents are fun!</div>\n";
         html = stringRepeat(html, size);
