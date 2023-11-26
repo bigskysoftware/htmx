@@ -1894,7 +1894,7 @@ return (function () {
             });
         }
 
-        function hasChanceOfBeingBoosted() {
+        function getBoostedWrappers() {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
@@ -1934,10 +1934,17 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = hasChanceOfBeingBoosted() ? ", a" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedWrappers = getBoostedWrappers();
+                var boostedElts = [];
+                boostedWrappers.forEach(boostWrapper => {
+                    boostedElts.push(...boostWrapper.querySelectorAll('a'))
+                });
+                var results = elt.querySelectorAll(VERB_SELECTOR + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
-                return results;
+                return [
+                    ...results,
+                    ...boostedElts,
+                ];
             } else {
                 return [];
             }
