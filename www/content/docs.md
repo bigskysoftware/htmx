@@ -1039,6 +1039,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 | [`path-deps`](@/extensions/path-deps.md) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](@/extensions/class-tools.md) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`multi-swap`](@/extensions/multi-swap.md) | allows to swap multiple elements with different swap methods
+| [`response-targets`](@/extensions/response-targets.md) | allows to swap elements for responses with HTTP codes beyond `200`
 
 See the [extensions page](@/extensions/_index.md#included) for a complete list.
 
