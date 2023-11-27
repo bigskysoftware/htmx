@@ -1934,13 +1934,10 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = document.querySelectorAll("[hx-boost] a, [data-hx-boost] a");
+                var boostedElts = document.querySelectorAll("[hx-boost] a, [data-hx-boost] a, [hx-boost]a, [data-hx-boost]a");
                 var results = elt.querySelectorAll(VERB_SELECTOR + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
-                return [
-                    ...results,
-                    ...boostedElts,
-                ];
+                return toArray(results).concat(toArray(boostedElts));
             } else {
                 return [];
             }
