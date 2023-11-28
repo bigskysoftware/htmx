@@ -274,7 +274,7 @@ return (function () {
         }
 
         function aFullPageResponse(resp) {
-            return resp.match(/<body/);
+            return /<body/.test(resp)
         }
 
         /**
@@ -448,7 +448,7 @@ return (function () {
                     path = url.pathname + url.search;
                 }
                 // remove trailing slash, unless index page
-                if (!path.match('^/$')) {
+                if (!(/^\/$/.test(path))) {
                     path = path.replace(/\/+$/, '');
                 }
                 return path;
@@ -1226,7 +1226,7 @@ return (function () {
 
         function consumeUntil(tokens, match) {
             var result = "";
-            while (tokens.length > 0 && !tokens[0].match(match)) {
+            while (tokens.length > 0 && !match.test(tokens[0])) {
                 result += tokens.shift();
             }
             return result;
@@ -2871,7 +2871,7 @@ return (function () {
         }
 
         function hasHeader(xhr, regexp) {
-            return xhr.getAllResponseHeaders().match(regexp);
+            return regexp.test(xhr.getAllResponseHeaders())
         }
 
         function ajaxHelper(verb, path, context) {
