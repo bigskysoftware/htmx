@@ -76,7 +76,11 @@ return (function () {
                 methodsThatUseUrlParams: ["get", "delete"],
                 selfRequestsOnly: true,
                 ignoreTitle: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                responseTargetUnsetsError: true,
+                responseTargetSetsError: false,
+                responseTargetPrefersExisting: false,
+                responseTargetPrefersRetargetHeader: true,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -730,6 +734,68 @@ return (function () {
                 } else {
                     return elt;
                 }
+            }
+        }
+
+        /**
+         * @param {HTMLElement} elt
+         * @param {number} respCodeNumber
+         * @returns {HTMLElement | null}
+         */
+        function getRespCodeTarget(elt, respCodeNumber) {
+            if (!elt || !respCodeNumber) return null;
+
+            var respCode = respCodeNumber.toString();
+
+            // '*' is the original syntax, as the obvious character for a wildcard.
+            // The 'x' alternative was added for maximum compatibility with HTML
+            // templating engines, due to ambiguity around which characters are
+            // supported in HTML attributes.
+            //
+            // Start with the most specific possible attribute and generalize from
+            // there.
+            var attrPossibilities = [
+                respCode,
+
+                respCode.substr(0, 2) + '*',
+                respCode.substr(0, 2) + 'x',
+
+                respCode.substr(0, 1) + '*',
+                respCode.substr(0, 1) + 'x',
+                respCode.substr(0, 1) + '**',
+                respCode.substr(0, 1) + 'xx',
+
+                '*',
+                'x',
+                '***',
+                'xxx',
+            ];
+            if (startsWith(respCode, '4') || startsWith(respCode, '5')) {
+                attrPossibilities.push('error');
+            }
+
+            for (var i = 0; i < attrPossibilities.length; i++) {
+                var attr = "hx-target-" + attrPossibilities[i];
+                var attrValue = getClosestAttributeValue(elt, attr);
+                if (attrValue) {
+                    if (attrValue === "this") {
+                        return findThisElement(elt, attr);
+                    } else {
+                        return querySelectorExt(elt, attrValue);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function handleErrorFlag(beforeSwapDetails) {
+            if (beforeSwapDetails.isError) {
+                if (htmx.config.responseTargetUnsetsError) {
+                    beforeSwapDetails.isError = false;
+                }
+            } else if (htmx.config.responseTargetSetsError) {
+                beforeSwapDetails.isError = true;
             }
         }
 
@@ -3410,6 +3476,32 @@ return (function () {
             }
         }
 
+        function handleResponseTargets(beforeSwapDetails) {
+            if (beforeSwapDetails.target) {
+                if (htmx.config.responseTargetPrefersExisting) {
+                    beforeSwapDetails.shouldSwap = true;
+                    handleErrorFlag(beforeSwapDetails);
+                    return;
+                }
+                if (htmx.config.responseTargetPrefersRetargetHeader &&
+                    beforeSwapDetails.xhr.getAllResponseHeaders().match(/HX-Retarget:/i)) {
+                    beforeSwapDetails.shouldSwap = true;
+                    handleErrorFlag(beforeSwapDetails);
+                    return;
+                }
+            }
+            if (!beforeSwapDetails.requestConfig) {
+                return;
+            }
+            var target = getRespCodeTarget(beforeSwapDetails.requestConfig.elt, beforeSwapDetails.xhr.status);
+            if (target) {
+                handleErrorFlag(beforeSwapDetails);
+                beforeSwapDetails.shouldSwap = true;
+                beforeSwapDetails.target = target;
+            }
+            return;
+        }
+
         function handleAjaxResponse(elt, responseInfo) {
             var xhr = responseInfo.xhr;
             var target = responseInfo.target;
@@ -3467,6 +3559,7 @@ return (function () {
             var isError = xhr.status >= 400;
             var ignoreTitle = htmx.config.ignoreTitle
             var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle }, responseInfo);
+            handleResponseTargets(beforeSwapDetails)
             if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
             target = beforeSwapDetails.target; // allow re-targeting

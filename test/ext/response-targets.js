@@ -11,7 +11,7 @@ describe("response-targets extension", function() {
     it('targets an adjacent element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+        var btn = make('<button hx-target-404="#d1" hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         btn.click();
         this.server.respond();
@@ -21,7 +21,7 @@ describe("response-targets extension", function() {
     it('targets an adjacent element properly with wildcard', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-4*="#d1" hx-get="/test">Click Me!</button>')
+        var btn = make('<button hx-target-4*="#d1" hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         btn.click();
         this.server.respond();
@@ -31,7 +31,7 @@ describe("response-targets extension", function() {
     it('targets a parent element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var div1 = make('<div hx-ext="response-targets" id="d1"><button id="b1" hx-target-404="#d1" hx-get="/test">Click Me!</button></div>')
+        var div1 = make('<div id="d1"><button id="b1" hx-target-404="#d1" hx-get="/test">Click Me!</button></div>')
         var btn = byId("b1")
         btn.click();
         this.server.respond();
@@ -41,7 +41,7 @@ describe("response-targets extension", function() {
     it('targets a parent element properly with wildcard', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var div1 = make('<div hx-ext="response-targets" id="d1"><button id="b1" hx-target-*="#d1" hx-get="/test">Click Me!</button></div>')
+        var div1 = make('<div id="d1"><button id="b1" hx-target-*="#d1" hx-get="/test">Click Me!</button></div>')
         var btn = byId("b1")
         btn.click();
         this.server.respond();
@@ -51,7 +51,7 @@ describe("response-targets extension", function() {
     it('targets a `this` element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var div1 = make('<div hx-ext="response-targets" hx-target-404="this"><button id="b1" hx-get="/test">Click Me!</button></div>')
+        var div1 = make('<div hx-target-404="this"><button id="b1" hx-get="/test">Click Me!</button></div>')
         var btn = byId("b1")
         btn.click();
         this.server.respond();
@@ -81,7 +81,7 @@ describe("response-targets extension", function() {
     it('targets a `find` element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var div1 = make('<div hx-ext="response-targets" hx-target-404="find span" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
+        var div1 = make('<div hx-target-404="find span" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
         div1.click();
         this.server.respond();
         var span1 = byId("s1")
@@ -93,7 +93,7 @@ describe("response-targets extension", function() {
     it('targets a `find` element properly w/ hyperscript syntax', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var div1 = make('<div hx-ext="response-targets" hx-target-404="find <span/>" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
+        var div1 = make('<div hx-target-404="find <span/>" hx-get="/test">Click Me! <div><span id="s1"></span><span id="s2"></span></div></div>')
         div1.click();
         this.server.respond();
         var span1 = byId("s1")
@@ -105,7 +105,7 @@ describe("response-targets extension", function() {
     it('targets an inner element properly', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!<div id="d1"></div></button>')
+        var btn = make('<button hx-target-404="#d1" hx-get="/test">Click Me!<div id="d1"></div></button>')
         var div1 = byId("d1")
         btn.click();
         this.server.respond();
@@ -115,7 +115,7 @@ describe("response-targets extension", function() {
     it('targets an inner element properly w/ hyperscript syntax', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-404="<#d1/>" hx-get="/test">Click Me!<div id="d1"></div></button>')
+        var btn = make('<button hx-target-404="<#d1/>" hx-get="/test">Click Me!<div id="d1"></div></button>')
         var div1 = byId("d1")
         btn.click();
         this.server.respond();
@@ -125,7 +125,7 @@ describe("response-targets extension", function() {
     it('handles bad target gracefully', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-404="bad" hx-get="/test">Click Me!</button>')
+        var btn = make('<button hx-target-404="bad" hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();
         btn.innerHTML.should.equal("Click Me!");
@@ -135,7 +135,7 @@ describe("response-targets extension", function() {
     it('targets an adjacent element properly w/ data-* prefix', function()
     {
         this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" data-hx-target-404="#d1" data-hx-get="/test">Click Me!</button>')
+        var btn = make('<button data-hx-target-404="#d1" data-hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         btn.click();
         this.server.respond();
@@ -224,7 +224,7 @@ describe("response-targets extension", function() {
 
     it('targets the element specified in headers if configured to prefer it (default)', function () {
         this.server.respondWith("GET", "/test", [404, { "HX-Retarget": "#d2" }, "Not found!"]);
-        var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+        var btn = make('<button hx-target-404="#d1" hx-get="/test">Click Me!</button>')
         var div1 = make('<div id="d1"></div>')
         var div2 = make('<div id="d2"></div>')
         btn.click();
@@ -237,7 +237,7 @@ describe("response-targets extension", function() {
         htmx.config.responseTargetPrefersRetargetHeader = false;
         try {
             this.server.respondWith("GET", "/test", [404, { "HX-Retarget": "#d2" }, "Not found!"]);
-            var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+            var btn = make('<button hx-target-404="#d1" hx-get="/test">Click Me!</button>')
             var div1 = make('<div id="d1"></div>')
             var div2 = make('<div id="d2"></div>')
             btn.click();
@@ -253,7 +253,7 @@ describe("response-targets extension", function() {
         htmx.config.responseTargetPrefersExisting = true;
         try {
             this.server.respondWith("GET", "/test", [404, {}, "Not found!"]);
-            var btn = make('<button hx-ext="response-targets" hx-target-404="#d1" hx-get="/test">Click Me!</button>')
+            var btn = make('<button hx-target-404="#d1" hx-get="/test">Click Me!</button>')
             var div1 = make('<div id="d1"></div>')
             btn.click();
             this.server.respond();
@@ -284,7 +284,7 @@ describe("response-targets extension", function() {
         ];
 
         // String replacement because IE11 doesn't support template literals
-        var btnMarkup = '<button hx-ext="response-targets" HX_TARGET="#d1" hx-get="/test">Click Me!</button>';
+        var btnMarkup = '<button HX_TARGET="#d1" hx-get="/test">Click Me!</button>';
         // forEach because IE11 doesn't play nice with closures inside for loops
         attributes.forEach(function(attribute) {
             it('supports ' + attribute, function() {
