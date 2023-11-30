@@ -60,7 +60,7 @@ This allows to use `hx-confirm`'s value in the prompt which is convenient
 when the question depends on the element e.g. a django list:
 
 ```html
-{% for row in clients %}
+{% for client in clients %}
 <button hx-post="/delete/{{client.pk}}" hx-confirm="Delete {{client.name}}??">Delete</button>
 {% endfor %}
 ```
