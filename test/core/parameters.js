@@ -239,5 +239,12 @@ describe("Core htmx Parameter Handling", function() {
         }
     });
 
+    it('Input within disabled fieldset is excluded', function () {
+        var input = make('<form><input name="foo" value="bar"/><fieldset disabled><input name="do" value="rey"/></fieldset></form>');
+        var vals = htmx._('getInputValues')(input, "get").values;
+        vals['foo'].should.equal('bar');
+        should.equal(vals["do"], undefined);
+    })
+
 });
 
