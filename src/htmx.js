@@ -1898,22 +1898,33 @@ return (function () {
             return document.querySelector("[hx-boost], [data-hx-boost]");
         }
 
+        function shouldProcessHxOn(elt) {
+            var attributes = elt.attributes
+            for (var j = 0; j < attributes.length; j++) {
+                var attrName = attributes[j].name
+                if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:")) {
+                    return true
+                }
+            }
+            return false
+        }
+
         function findHxOnWildcardElements(elt) {
             var node = null
             var elements = []
 
+            if (shouldProcessHxOn(elt)) {
+                elements.push(elt)
+            }
+
             if (document.evaluate) {
-                var iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+                var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
                 while (node = iter.iterateNext()) elements.push(node)
             } else {
-                var allElements = document.getElementsByTagName("*")
+                var allElements = elt.getElementsByTagName("*")
                 for (var i = 0; i < allElements.length; i++) {
-                    var attributes = allElements[i].attributes
-                    for (var j = 0; j < attributes.length; j++) {
-                        var attrName = attributes[j].name
-                        if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:")) {
-                            elements.push(allElements[i])
-                        }
+                    if (shouldProcessHxOn(allElements[i])) {
+                        elements.push(allElements[i])
                     }
                 }
             }
