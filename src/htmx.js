@@ -1255,22 +1255,11 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
+         * @param {string} explicitTrigger
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
          */
-        function getTriggerSpecs(elt) {
-            var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+        function parseAndCacheTrigger(elt, explicitTrigger) {
             var triggerSpecs = [];
-            var shouldEvaluateTrigger = !!explicitTrigger
-            // If an explicit trigger attribute is set, check if it has already been computed & cached
-            if (shouldEvaluateTrigger) {
-                var cachedTriggerSpecs = triggerSpecsCache[explicitTrigger]
-                if (cachedTriggerSpecs) {
-                    triggerSpecs = cachedTriggerSpecs
-                    // If it had already been cached, we don't need to evaluate the trigger expression anymore
-                    shouldEvaluateTrigger = false
-                }
-            }
-            if (shouldEvaluateTrigger) {
                 var tokens = tokenizeString(explicitTrigger);
                 do {
                     consumeUntil(tokens, NOT_WHITESPACE);
@@ -1351,6 +1340,18 @@ return (function () {
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
                 triggerSpecsCache[explicitTrigger] = triggerSpecs
+                return triggerSpecs
+        }
+
+        /**
+         * @param {HTMLElement} elt
+         * @returns {import("./htmx").HtmxTriggerSpecification[]}
+         */
+        function getTriggerSpecs(elt) {
+            var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+            var triggerSpecs = [];
+            if (explicitTrigger) {
+                triggerSpecs = triggerSpecsCache[explicitTrigger] || parseAndCacheTrigger(elt, explicitTrigger)
             }
 
             if (triggerSpecs.length > 0) {
