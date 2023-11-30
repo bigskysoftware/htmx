@@ -1442,6 +1442,10 @@ return (function () {
             return false;
         }
 
+        function uniqueId(length = 16){
+            return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(length).toString().replace(".", ""));
+        }
+
         function addEventListener(elt, handler, nodeData, triggerSpec, explicitCancel) {
             var elementData = getInternalData(elt);
             var eltsToListenOn;
@@ -1454,7 +1458,18 @@ return (function () {
             if (triggerSpec.changed) {
                 eltsToListenOn.forEach(function (eltToListenOn) {
                     var eltToListenOnData = getInternalData(eltToListenOn);
-                    eltToListenOnData.lastValue = eltToListenOn.value;
+                  
+                    //give each target element a unique ID
+                    if(!eltToListenOnData.id){
+                        eltToListenOnData.id = uniqueId();
+                    }
+
+                    if(!elementData[eltToListenOnData.id]){
+                        elementData[eltToListenOnData.id] = {};
+                    }
+
+                    //save the target elements value against the source element
+                    elementData[eltToListenOnData.id].lastValue = eltToListenOn.value;
                 })
             }
             forEach(eltsToListenOn, function (eltToListenOn) {
@@ -1495,11 +1510,14 @@ return (function () {
                             }
                         }
                         if (triggerSpec.changed) {
-                            var eltToListenOnData = getInternalData(eltToListenOn)
-                            if (eltToListenOnData.lastValue === eltToListenOn.value) {
-                                return;
-                            }
-                            eltToListenOnData.lastValue = eltToListenOn.value
+                           //compare the new target element value against the value the source element last recorded.                        
+                           var eltToListenOnData = getInternalData(eltToListenOn);
+
+                           if (elementData[eltToListenOnData.id].lastValue === eltToListenOn.value) {
+                               return;
+                           }
+
+                           elementData[eltToListenOnData.id].lastValue = eltToListenOn.value;
                         }
                         if (elementData.delayed) {
                             clearTimeout(elementData.delayed);
