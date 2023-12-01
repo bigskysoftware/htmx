@@ -991,12 +991,15 @@ Here is an example of an input that uses the `htmx:validation:validate` event to
 `foo`, using hyperscript:
 
 ```html
-<form hx-post="/test">
+<form id="foo-form" hx-post="/test">
     <input _="on htmx:validation:validate
                 if my.value != 'foo'
                     call me.setCustomValidity('Please enter the value foo')
-                else
-                    call me.setCustomValidity('')"
+                    call #foo-form.reportValidity()
+                end
+                
+                on keyup
+                call me.setCustomValidity('')"
         name="example"
     >
 </form>
