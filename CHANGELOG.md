@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.10] - 2023-12-??
+
 ## [1.9.9] - 2023-11-21
 
 * Allow CSS selectors with whitespace in attributes like `hx-target` by using parens or curly-braces

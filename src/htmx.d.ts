@@ -407,9 +407,9 @@ export interface HtmxConfig {
     inlineScriptNonce?: string;
     /**
      * The type of binary data being received over the WebSocket connection
-     * @default blob
+     * @default 'blob'
      */
-    wsBinaryType?: Blob; 
+    wsBinaryType?: 'blob' | 'arraybuffer'; 
     /**
      * If set to true htmx will include a cache-busting parameter in GET requests to avoid caching partial responses by the browser
      * @default false 
@@ -424,7 +424,7 @@ export interface HtmxConfig {
      * htmx will format requests with these methods by encoding their parameters in the URL, not the request body
      * @default ["get"] 
      */
-    methodsThatUseUrlParams?: string[];
+    methodsThatUseUrlParams?: ('get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch' )[];
     /**
      * If set to true htmx will not update the title of the document when a title tag is found in new content
      * @default false 
