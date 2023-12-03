@@ -114,7 +114,7 @@ htmx.defineExtension("preload", {
 					// Mirror `touchstart` events (fires immediately)
 					node.addEventListener("touchstart", load(node));
 
-					// WHhen the mouse leaves, immediately disable the preload
+					// When the mouse leaves, immediately disable the preload
 					node.addEventListener("mouseout", function(evt) {
 						if ((evt.target === node) && (node.preloadState === "READY")) {
 							node.preloadState = "PAUSE";
