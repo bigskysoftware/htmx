@@ -81,7 +81,7 @@
                     }
                 }
 
-                // Push the tremaining new head elements in the Map into the
+                // Push the remaining new head elements in the Map into the
                 // nodes to append to the head tag
                 nodesToAppend.push(...srcToNewHeadNodes.values());
                 log("to append: ", nodesToAppend);
