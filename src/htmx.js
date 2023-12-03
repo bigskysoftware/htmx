@@ -3854,7 +3854,7 @@ return (function () {
                     });
                 } else {
                     if (originalPopstate) {
-                        originalPopstate(event);
+                        originalPopstate.call(window, event);
                     }
                 }
             };
