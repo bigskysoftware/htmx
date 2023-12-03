@@ -2115,7 +2115,7 @@ return (function () {
             }
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
-            // Because it happens second, the new way of adding onHandlers superseeds the old one
+            // Because it happens second, the new way of adding onHandlers supersedes the old one
             // i.e. if there are any hx-on:eventName attributes, the hx-on attribute will be ignored
             forEach(findHxOnWildcardElements(elt), processHxOnWildcard);
         }
@@ -3473,7 +3473,7 @@ return (function () {
 
             // by default htmx only swaps on 200 return codes and does not swap
             // on 204 'No Content'
-            // this can be ovverriden by responding to the htmx:beforeSwap event and
+            // this can be overridden by responding to the htmx:beforeSwap event and
             // overriding the detail.shouldSwap property
             var shouldSwap = xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
             var serverResponse = xhr.response;
