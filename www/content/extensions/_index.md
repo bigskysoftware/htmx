@@ -82,6 +82,7 @@ See the individual extension documentation for more details.
 | [`restored`](@/extensions/restored.md)                           | allows you to trigger events when the back button has been pressed
 | [`server-sent-events`](@/extensions/server-sent-events.md)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
 | [`web-sockets`](@/extensions/web-sockets.md)                     | bi-directional connection to WebSocket servers
+| [`path-params`](@/extensions/path-params.md)                     | allows to use parameters for path variables instead of sending them in query or body
 
 </div>
 

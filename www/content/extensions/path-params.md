@@ -1,19 +1,16 @@
----
-layout: layout.njk
-title: </> htmx - high power tools for html
----
-
-## The `path-params` Extension
++++
+title = path-params
++++
 
 This extension uses request parameters to populate path variables. Used parameters are removed so they won't be sent in the query string or body anymore.
 
-### Install
+## Install
 
 ```html
 <script src="https://unpkg.com/htmx.org/dist/ext/path-params.js">
 ```
 
-### Usage
+## Usage
 
 This would invoke URL `/items/42?foo=bar`
 
