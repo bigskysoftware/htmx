@@ -40,6 +40,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Sortable](@/examples/sortable.md) | Demonstrates how to use htmx with the Sortable.js plugin to implement drag-and-drop reordering
 | [Updating Other Content](@/examples/update-other-content.md) | Demonstrates how to update content beyond just the target elements
 | [Confirm](@/examples/confirm.md) | Demonstrates how to implement a custom confirmation dialog with htmx
+| [Responsive Layout](@/examples/responsive-layout.md) | Demonstrates how to serve distinct mobile/desktop layouts without css trickery
 
 ## Migrating from Hotwire / Turbo ?
 
