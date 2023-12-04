@@ -73,82 +73,77 @@ Works best if you already lazy-load your partial content or poll for periodic up
 {{ demoenv() }}
 
 <script>
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
+  //=========================================================================
+  // Fake Server Side Code
+  //=========================================================================
 
-    var contacts = [
-      { name: "Joe Smith", email: "joe@smith.org", status: "Active" },
-      { name: "Angie MacDowell", email: "angie@macdowell.org", status: "Active" },
-      { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
-      { name: "Kim Yee", email: "kim@yee.org", status: "Inactive" }
-    ];
+  var contacts = [
+    { name: 'Joe Smith', email: 'joe@smith.org', status: 'Active' },
+    { name: 'Angie MacDowell', email: 'angie@macdowell.org', status: 'Active' },
+    { name: 'Fuqua Tarkenton', email: 'fuqua@tarkenton.org', status: 'Active' },
+    { name: 'Kim Yee', email: 'kim@yee.org', status: 'Inactive' },
+  ];
 
-    init("/init", function(request, params){
-        return '<div hx-get="/content" hx-trigger="load" hx-vals="js:{width: window.innerWidth}"></div>'
-    });
+  init('/init', function (request, params) {
+    return '<div hx-get="/content" hx-trigger="load" hx-vals="js:{width: window.innerWidth}"></div>';
+  });
 
-    onGet(/\/content.*/, function(request, params){
-      var width = parseInt(params['width']);
+  onGet(/\/content.*/, function (request, params) {
+    var width = parseInt(params['width']);
 
-      if (width <= 720) {
-        return renderList();
-      } else {
-        return renderTable();
-      }
-    });
+    if (width <= 720) {
+      return renderList();
+    } else {
+      return renderTable();
+    }
+  });
 
-    function rowTemplate(contact) {
-      return `<tr>
-      <td>${contact.name}</td>
-      <td>${contact.email}</td>
-      <td>${contact.status}</td>
-      </tr>`;
+  function rowTemplate(contact) {
+    return `<tr>
+        <td>${contact.name}</td>
+        <td>${contact.email}</td>
+        <td>${contact.status}</td>
+        </tr>`;
+  }
+
+  function renderTable() {
+    var rows = '';
+    for (var i = 0; i < contacts.length; i++) {
+      rows += rowTemplate(contacts[i]);
     }
 
-    function renderTable() {
-      var rows = "";
-      for (var i = 0; i < contacts.length; i++) {
-        rows += rowTemplate(contacts[i]);
-      }
-
-      return `
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${rows}
-  </tbody>
-</table>`;
-    }
-
-    function cardTemplate(contact) {
     return `
-  <li>
-    <div class="demo-card">
-      <p><b>${contact.name}</b></p>
-      <p>${contact.email}</p>
-      <p><i>${contact.status}</i></p>
-    </div>
-  </li>`;
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+    </tbody>
+  </table>`;
+  }
+
+  function cardTemplate(contact) {
+    return `
+    <li>
+      <div class="demo-card">
+        <p><b>${contact.name}</b></p>
+        <p>${contact.email}</p>
+        <p><i>${contact.status}</i></p>
+      </div>
+    </li>`;
+  }
+
+  function renderList() {
+    var rows = '';
+    for (var i = 0; i < contacts.length; i++) {
+      rows += cardTemplate(contacts[i]);
     }
 
-function renderList() {
-      var rows = "";
-      for (var i = 0; i < contacts.length; i++) {
-        rows += cardTemplate(contacts[i]);
-      }
-
-      return `
-  <ul>${rows}</ul>
-      `;
-
-
-    }
-
+    return `<ul>${rows}</ul>`;
+  }
 </script>
