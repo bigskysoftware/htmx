@@ -96,7 +96,7 @@ within the [original web programming model](https://www.ics.uci.edu/~fielding/pu
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
-It's worth mentioning that, if you prefer, you can use the `data-` prefix when using htmx:
+It's worth mentioning that, if you prefer, you can use the [`data-`](https://html.spec.whatwg.org/multipage/dom.html#attr-data-*) prefix when using htmx:
 
 ```html
 <a data-hx-post="/click">Click Me!</a>
