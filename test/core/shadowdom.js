@@ -1,4 +1,4 @@
-describe("Core HTMX shadow DOM Tests", function() {
+describe("Core htmx Shadow DOM Tests", function() {
     //Skip these tests if browser doesn't support shadow DOM
     if(typeof window.ShadowRoot === 'undefined') return;
 
@@ -42,6 +42,24 @@ describe("Core HTMX shadow DOM Tests", function() {
           ready(makeFn);
       }
     }
+
+    // special target selector extensions
+    it('properly retrieves shadow root for extended selector', function() {
+        var div = make('<div hx-target="root"></div>')
+        htmx.defineExtension('test/shadowdom.js', {
+            init: function(api) {
+                api.getTarget(div).should.equal(getWorkArea().shadowRoot)
+            }
+        })
+    })
+    it('properly escapes shadow root for extended selector', function() {
+        var div = make('<div hx-target="global #work-area"></div>')
+        htmx.defineExtension('test/shadowdom.js', {
+            init: function(api) {
+                api.getTarget(div).should.equal(getWorkArea())
+            }
+        })
+    })
 
     // bootstrap test
     it('issues a GET request on click and swaps content', function()
