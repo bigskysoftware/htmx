@@ -76,7 +76,8 @@ return (function () {
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
                 ignoreTitle: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                triggerSpecsCache: null,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -1250,9 +1251,6 @@ return (function () {
 
         var INPUT_SELECTOR = 'input, textarea, select';
 
-        /** @type {Object<string, import("./htmx").HtmxTriggerSpecification[]>} */
-        let triggerSpecsCache = {}
-
         /**
          * @param {HTMLElement} elt
          * @param {string} explicitTrigger
@@ -1339,7 +1337,9 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
-                triggerSpecsCache[explicitTrigger] = triggerSpecs
+                if (htmx.config.triggerSpecsCache) {
+                    htmx.config.triggerSpecsCache[explicitTrigger] = triggerSpecs
+                }
                 return triggerSpecs
         }
 
@@ -1351,7 +1351,8 @@ return (function () {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
             if (explicitTrigger) {
-                triggerSpecs = triggerSpecsCache[explicitTrigger] || parseAndCacheTrigger(elt, explicitTrigger)
+                triggerSpecs = (htmx.config.triggerSpecsCache && htmx.config.triggerSpecsCache[explicitTrigger])
+                    || parseAndCacheTrigger(elt, explicitTrigger)
             }
 
             if (triggerSpecs.length > 0) {
