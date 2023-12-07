@@ -93,7 +93,8 @@ describe("Core HTMX shadow DOM Tests", function() {
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div hx-get="/test" hx-swap="beforebegin">*</div>')
+        // extra wrapping div here because `ShadowRoot` doesn't support `innerText` or `child.parentElement`
+        var div = make('<div><div hx-get="/test" hx-swap="beforebegin">*</div></div>').children[0]
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -169,7 +170,8 @@ describe("Core HTMX shadow DOM Tests", function() {
         });
         this.server.respondWith("GET", "/test2", "*");
 
-        var div = make('<div hx-get="/test" hx-swap="afterend">*</div>')
+        // extra wrapping div here because `ShadowRoot` doesn't support `innerText` or `child.parentElement`
+        var div = make('<div><div hx-get="/test" hx-swap="afterend">*</div></div>').children[0]
         var parent = div.parentElement;
         div.click();
         this.server.respond();
@@ -821,10 +823,10 @@ describe("Core HTMX shadow DOM Tests", function() {
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
-        document.activeElement.should.equal(input);
+        getWorkArea().shadowRoot.activeElement.should.equal(input);
         this.server.respond();
         var input2 = byId('i2');
-        document.activeElement.should.equal(input2);
+        getWorkArea().shadowRoot.activeElement.should.equal(input2);
     });
 
     it('autofocus attribute works properly w/ child', function()
@@ -833,10 +835,10 @@ describe("Core HTMX shadow DOM Tests", function() {
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
-        document.activeElement.should.equal(input);
+        getWorkArea().shadowRoot.activeElement.should.equal(input);
         this.server.respond();
         var input2 = byId('i2');
-        document.activeElement.should.equal(input2);
+        getWorkArea().shadowRoot.activeElement.should.equal(input2);
     });
 
     it('autofocus attribute works properly w/ true value', function()
@@ -845,10 +847,10 @@ describe("Core HTMX shadow DOM Tests", function() {
         var input = make("<input id='i1' hx-get='/test' value='foo' hx-swap='afterend' hx-trigger='click'/>");
         input.focus();
         input.click();
-        document.activeElement.should.equal(input);
+        getWorkArea().shadowRoot.activeElement.should.equal(input);
         this.server.respond();
         var input2 = byId('i2');
-        document.activeElement.should.equal(input2);
+        getWorkArea().shadowRoot.activeElement.should.equal(input2);
     });
 
    it('multipart/form-data encoding works', function()

@@ -174,10 +174,12 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
-         * @returns {HTMLElement | null}
+         * @returns {HTMLElement | ShadowRoot | null}
          */
         function parentElt(elt) {
-            return elt.parentElement;
+            var parent = elt.parentElement;
+            if(!parent && elt.parentNode instanceof ShadowRoot) return elt.parentNode
+            return parent;
         }
 
         /**
@@ -520,7 +522,7 @@ return (function () {
                     elt = null;
                 }, delay);
             } else {
-                elt.parentElement.removeChild(elt);
+                parentElt(elt).removeChild(elt);
             }
         }
 
@@ -656,9 +658,9 @@ return (function () {
             }
         }
 
-        function resolveTarget(arg2) {
+        function resolveTarget(arg2, context) {
             if (isType(arg2, 'String')) {
-                return find(arg2);
+                return find(context || document, arg2);
             } else {
                 return arg2;
             }
@@ -1963,7 +1965,7 @@ return (function () {
            if (!elt) {
              return;
            }
-           var form = resolveTarget('#' + getRawAttribute(elt, 'form')) || closest(elt, 'form');
+           var form = resolveTarget('#' + getRawAttribute(elt, 'form'), elt.getRootNode()) || closest(elt, 'form');
            if (!form) {
              return;
            }
@@ -2131,7 +2133,9 @@ return (function () {
         function makeEvent(eventName, detail) {
             var evt;
             if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-                evt = new CustomEvent(eventName, {bubbles: true, cancelable: true, detail: detail});
+                // TODO: `composed: true` here is a hack to make global event handlers work with events in shadow DOM
+                // This breaks expected encapsulation but needs to be here until decided otherwise by core devs
+                evt = new CustomEvent(eventName, {bubbles: true, cancelable: true, composed: true, detail: detail});
             } else {
                 evt = getDocument().createEvent('CustomEvent');
                 evt.initCustomEvent(eventName, true, true, detail);
