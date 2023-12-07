@@ -114,3 +114,4 @@ Extensions can override the following default extension points to add or change 
     encodeParameters : function(xhr, parameters, elt) {return null;}
 }
 ```
+`handleSwap` will only work if it is not explicitly set in the element where the extension is loaded. 
