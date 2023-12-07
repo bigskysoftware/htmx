@@ -186,6 +186,13 @@ return (function () {
         function getDocument() {
             return document;
         }
+        
+        /**
+         * @returns {Document | ShadowRoot}
+         */
+        function getRootNode(elt, global) {
+            return elt.getRootNode ? elt.getRootNode({ composed: global }) : getDocument();
+        }
 
         /**
          * @param {HTMLElement} elt
@@ -593,7 +600,7 @@ return (function () {
             }
         }
 
-        function querySelectorAllExt(elt, selector) {
+        function querySelectorAllExt(elt, selector, global) {
             if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, normalizeSelector(selector.substr(8)))];
             } else if (selector.indexOf("find ") === 0) {
@@ -601,24 +608,28 @@ return (function () {
             } else if (selector === "next") {
                 return [elt.nextElementSibling]
             } else if (selector.indexOf("next ") === 0) {
-                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)))];
+                return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)];
             } else if (selector === "previous") {
                 return [elt.previousElementSibling]
             } else if (selector.indexOf("previous ") === 0) {
-                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)))];
+                return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)];
             } else if (selector === 'document') {
                 return [document];
             } else if (selector === 'window') {
                 return [window];
             } else if (selector === 'body') {
                 return [document.body];
+            } else if (selector === 'root') {
+                return [getRootNode(elt, !!global)];
+            } else if (selector.indexOf('global ') === 0) {
+                return querySelectorAllExt(elt, selector.slice(7), true)
             } else {
-                return getDocument().querySelectorAll(normalizeSelector(selector));
+                return getRootNode(elt, !!global).querySelectorAll(normalizeSelector(selector));
             }
         }
 
-        var scanForwardQuery = function(start, match) {
-            var results = getDocument().querySelectorAll(match);
+        var scanForwardQuery = function(start, match, global) {
+            var results = getRootNode(start, global).querySelectorAll(match);
             for (var i = 0; i < results.length; i++) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
@@ -627,8 +638,8 @@ return (function () {
             }
         }
 
-        var scanBackwardsQuery = function(start, match) {
-            var results = getDocument().querySelectorAll(match);
+        var scanBackwardsQuery = function(start, match, global) {
+            var results = getRootNode(start, global).querySelectorAll(match);
             for (var i = results.length - 1; i >= 0; i--) {
                 var elt = results[i];
                 if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -1902,11 +1913,11 @@ return (function () {
             var node = null
             var elements = []
 
-            if (document.evaluate) {
-                var iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+            if (document.evaluate && !(elt instanceof ShadowRoot)) {
+                var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
                 while (node = iter.iterateNext()) elements.push(node)
             } else {
-                var allElements = document.getElementsByTagName("*")
+                var allElements = elt.querySelectorAll("*")
                 for (var i = 0; i < allElements.length; i++) {
                     var attributes = allElements[i].attributes
                     for (var j = 0; j < attributes.length; j++) {
