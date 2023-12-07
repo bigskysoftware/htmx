@@ -1258,7 +1258,7 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
-### <a name="hx-on"></a>[The `hx-on` Attribute](#hyperscript)
+### <a name="hx-on:*"></a>[The `hx-on*` Attributes](#hyperscript)
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
 such as `onClick`:
@@ -1271,32 +1271,36 @@ such as `onClick`:
 
 This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
 [Locality of Behaviour (LoB)](/essays/locality-of-behaviour).  Unfortunately, HTML only allows `on*` attributes for a fixed
-number of specific DOM events (e.g. `onclick`) and doesn't offer a way to respond generally to events in this embedded
-manner.
+number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and 
+doesn't offer a generalized mechanism for responding to arbitrary events on elements.
 
-In order to address this shortcoming, htmx offers the [`hx-on`](/attributes/hx-on) attribute.  This attribute allows
-you to respond to any event in a manner that preserves the LoB of the `on*` properties:
+In order to address this shortcoming, htmx offers the [`hx-on*`](/attributes/hx-on) attributes.  These attributes allow
+you to respond to any event in a manner that preserves the LoB of the standard `on*` properties.
+
+If we wanted to respond to the `click` event using an `hx-on` attribute, we would write this:
 
 ```html
-<button hx-on="click: alert('You clicked me!')">
+<button hx-on:click="alert('You clicked me!')">
     Click Me!
 </button>
 ```
 
-For a `click` event, we would recommend sticking with the standard `onclick` attribute.  However, consider an htmx-powered
-button that wishes to add an attribute to a request using the `htmx:configRequest` event.  This would not be possible
-with an `on*` property, but can be done using the `hx-on` attribute:
+So, the string `hx-on`, followed by a colon, then by the name of the event.
+
+For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an 
+htmx-powered button that wishes to add an attribute to a request using the `htmx:config-request` event.  This would not 
+be possible with an `on*` property, but can be done using the `hx-on:htmx:config-request` attribute:
 
 ```html
 <button hx-post="/example"
-        hx-on="htmx:configRequest: event.detail.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config-request=": event.detail.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-The `hx-on` attribute is a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
+The `hx-on*` attributes are a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
 fully developed front-end scripting solutions such as AlpineJS or hyperscript.  It can, however, augment a VanillaJS-based
 approach to scripting in your htmx-powered application.
 

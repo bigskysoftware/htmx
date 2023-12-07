@@ -1898,7 +1898,8 @@ return (function () {
             var attributes = elt.attributes
             for (var j = 0; j < attributes.length; j++) {
                 var attrName = attributes[j].name
-                if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:")) {
+                if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:") ||
+                    startsWith(attrName, "hx-on-") || startsWith(attrName, "data-hx-on-")) {
                     return true
                 }
             }
@@ -1914,7 +1915,8 @@ return (function () {
             }
 
             if (document.evaluate) {
-                var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+                var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
+                                                                           ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
                 while (node = iter.iterateNext()) elements.push(node)
             } else {
                 var allElements = elt.getElementsByTagName("*")
@@ -2039,12 +2041,22 @@ return (function () {
             for (var i = 0; i < elt.attributes.length; i++) {
                 var name = elt.attributes[i].name
                 var value = elt.attributes[i].value
-                if (startsWith(name, "hx-on:") || startsWith(name, "data-hx-on:")) {
-                    let eventName = name.slice(name.indexOf(":") + 1)
-                    // if the eventName starts with a colon, prepend "htmx" for shorthand support
-                    if (startsWith(eventName, ":")) eventName = "htmx" + eventName
+                if (startsWith(name, "hx-on") || startsWith(name, "data-hx-on")) {
+                    var afterOnPosition = name.indexOf("-on") + 3;
+                    var nextChar = name.slice(afterOnPosition, afterOnPosition + 1);
+                    if (nextChar === "-" || nextChar === ":") {
+                        let eventName = name.slice(afterOnPosition + 1);
+                        // if the eventName starts with a colon or dash, prepend "htmx" for shorthand support
+                        if (startsWith(eventName, ":")) {
+                            eventName = "htmx" + eventName
+                        } else if (startsWith(eventName, "-")) {
+                            eventName = "htmx:" + eventName.slice(1);
+                        } else if (startsWith(eventName, "htmx-")) {
+                            eventName = "htmx:" + eventName.slice(5);
+                        }
 
-                    addHxOnEventHandler(elt, eventName, value)
+                        addHxOnEventHandler(elt, eventName, value)
+                    }
                 }
             }
         }
