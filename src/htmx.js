@@ -1337,8 +1337,9 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
-                if (htmx.config.triggerSpecsCache) {
-                    htmx.config.triggerSpecsCache[explicitTrigger] = triggerSpecs
+                var cache = htmx.config.triggerSpecsCache
+                if (cache) {
+                    cache[explicitTrigger] = triggerSpecs
                 }
                 return triggerSpecs
         }
@@ -1351,8 +1352,8 @@ return (function () {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
             if (explicitTrigger) {
-                triggerSpecs = (htmx.config.triggerSpecsCache && htmx.config.triggerSpecsCache[explicitTrigger])
-                    || parseAndCacheTrigger(elt, explicitTrigger)
+                var cache = htmx.config.triggerSpecsCache
+                triggerSpecs = (cache && cache[explicitTrigger]) || parseAndCacheTrigger(elt, explicitTrigger)
             }
 
             if (triggerSpecs.length > 0) {
