@@ -2104,7 +2104,7 @@ return (function () {
             }
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
-            // Because it happens second, the new way of adding onHandlers superseeds the old one
+            // Because it happens second, the new way of adding onHandlers supersedes the old one
             // i.e. if there are any hx-on:eventName attributes, the hx-on attribute will be ignored
             forEach(findHxOnWildcardElements(elt), processHxOnWildcard);
         }
