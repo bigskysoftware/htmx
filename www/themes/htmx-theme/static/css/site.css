@@ -104,7 +104,7 @@ code:not(code[class*="language-"]) {
   .dark-hero .logo {
       font-size: 100px;
   }
-  .dark-hero a {
+  .dark-hero .blue {
       color: var(--lightBlue);
   }
 

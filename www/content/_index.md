@@ -3,7 +3,7 @@ insert_anchor_links = "left"
 +++
 
 <div class="dark-hero full-width" classes="add appear">
-  <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">htm<a>x</a></span></span>
+  <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
