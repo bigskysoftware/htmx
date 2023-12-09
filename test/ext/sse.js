@@ -37,7 +37,7 @@ describe("sse extension", function() {
         var eventSource = mockEventSource();
         this.eventSource = eventSource;
         clearWorkArea();
-        htmx.createEventSource = function(url) { 
+        htmx.createEventSource = function(url) {
             eventSource.connect(url);
             return eventSource;
         };
@@ -174,13 +174,47 @@ describe("sse extension", function() {
         byId("d2").innerText.should.equal("Event 2")
     })
 
-    it('works in a child of an hx-ext="sse" element', function(){
-        var div = make('<div hx-ext="sse">\n'+
-            '<div id="d1" sse-connect="/event_stream" sse-swap="e1">div1</div>\n'+
+    it('works in a child of an hx-ext="sse" element', function() {
+        var div = make('<div hx-ext="sse">\n' +
+            '<div id="d1" sse-connect="/event_stream" sse-swap="e1">div1</div>\n' +
             '</div>\n'
         )
-        this.eventSource.url="/event_stream"
+        this.eventSource.url = "/event_stream"
     })
-    
+
+    it('only adds sseEventSource to elements with sse-connect', function() {
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" >\n' +
+            '<div id="d1" sse-swap="e1"></div>\n' +
+            '</div>');
+
+        (byId('d1')["htmx-internal-data"].sseEventSource == undefined).should.be.true
+
+        // Even when content is swapped in	
+        this.eventSource.sendEvent("e1", '<div id="d2" sse-swap="e2"></div>');
+
+        (byId('d2')["htmx-internal-data"].sseEventSource == undefined).should.be.true
+    })
+
+    it('initializes connections in swapped content', function() {
+        this.server.respondWith("GET", "/d1", '<div><div sse-connect="/foo"><div id="d2" hx-trigger="sse:e2" hx-get="/d2">div2</div></div></div>');
+        this.server.respondWith("GET", "/d2", "div2 updated");
+
+        var div = make('<div hx-ext="sse" hx-get="/d1"></div>');
+        div.click();
+
+        this.server.respond();
+        this.eventSource.sendEvent("e2");
+        this.server.respond();
+
+        byId("d2").innerHTML.should.equal("div2 updated");
+    })
+
+    it('creates an eventsource on elements with sse-connect', function() {
+        var div = make('<div hx-ext="sse"><div id="d1"sse-connect="/event_stream"></div></div>');
+
+        (byId("d1")['htmx-internal-data'].sseEventSource == undefined).should.be.false;
+
+    })
+
 });
 
