@@ -1,3 +1,5 @@
+const { assert } = require("chai");
+
 describe("sse extension", function() {
 
     function mockEventSource() {
@@ -5,18 +7,28 @@ describe("sse extension", function() {
         var wasClosed = false;
         var url;
         var mockEventSource = {
-            removeEventListener: function(name) {
-                delete listeners[name];
+            removeEventListener: function(name, l) {
+                listeners[name] = listeners[name].filter(function(elt, idx, arr) {
+                    if (arr[idx] === l) {
+                        return false;
+                    }
+                    return true;
+                })
             },
             addEventListener: function(message, l) {
-                listeners[message] = l;
+                if (listeners == undefined) {
+                    listeners[message] = [];
+                }
+                listeners[message].push(l)
             },
             sendEvent: function(eventName, data) {
-                var listener = listeners[eventName];
-                if (listener) {
-                    var event = htmx._("makeEvent")(eventName);
-                    event.data = data;
-                    listener(event);
+                var listeners = listeners[eventName];
+                if (listeners) {
+                    listeners.forEach(function(listener) {
+                        var event = htmx._("makeEvent")(eventName);
+                        event.data = data;
+                        listener(event);
+                    }
                 }
             },
             close: function() {
