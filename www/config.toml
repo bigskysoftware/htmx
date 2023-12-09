@@ -13,7 +13,8 @@ taxonomies = [
 
 [markdown]
 highlight_code = true
-highlight_theme = "two-dark"
+highlight_theme = "two-dark-edited"
+extra_syntaxes_and_themes = ["themes/htmx-theme/highlighting"]
 external_links_target_blank = true
 smart_punctuation = true
 
