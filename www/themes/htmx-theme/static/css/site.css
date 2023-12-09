@@ -70,7 +70,7 @@ body .content code {
 }
 
 code:not(code[class*="language-"]) {
-  background: #3465a424;
+  background: #3465a41f;
   border-radius: 2px;
   padding: 2px 5px;
 }
