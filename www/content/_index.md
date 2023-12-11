@@ -3,7 +3,7 @@ insert_anchor_links = "left"
 +++
 
 <div class="dark-hero full-width" classes="add appear">
-  <span class="logo dark">&lt;<a>/</a>&gt; <span class="no-mobile">htm<a>x</a></span></span>
+  <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
@@ -57,7 +57,7 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
 
 <div style="text-align: center;padding: 24px">
-<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png"></a>
+<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="hypermedia systems"></a>
 </div>
 
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
@@ -89,39 +89,39 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <table id="sponsor-table">
 <tr>
 <td>
-        <a href="https://www.jetbrains.com//"><img src="/img/jetbrains.png" style="max-width:30%;min-width:200px;"></a>
+        <a href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:200px;"></a>
 </td>
 <td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next//"><img src="/img/Github_Logo.png" style="max-width:30%;min-width:200px;"></a>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:200px;"></a>
 </td>
 <tr>
 <td>
-        <a href="https://www.commspace.co.za/"><img src="/img/commspace.svg" style="width:100%;max-width:400px"></a>
+        <a href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="width:100%;max-width:400px"></a>
 </td>
 <td>
-        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" style="width:90%;max-width:200px"></a>
+        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
 </td>
 </tr>
 <tr>
 <td>
         <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
-          <img src="/img/butter-cms.svg" style="width:100%;max-width:200px">
+          <img src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
-        <a href="https://black.host/">
-          <img src="/img/blackhost-logo.svg" style="width:100%;max-width:200px">
+        <a href="https://black.host">
+          <img src="/img/blackhost-logo.svg" alt="Black Host" style="width:100%;max-width:200px">
         </a>
 </td>
 </tr>
 <tr>
 <td>
-        <a href="https://www.peakcrypto.com/">
+        <a href="https://www.peakcrypto.com">
           <img alt="Peak Crypto" src="/img/peakcrypto.png" style="width:100%;max-width:65px">
         </a>
 </td>
 <td>
-      <a href="https://bigsky.software"><img src="/img/bss.png" style="width:100%;max-width:150px"></a>
+      <a href="https://bigsky.software"><img src="/img/bss.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
 </td>
 </tr>
 </table>
