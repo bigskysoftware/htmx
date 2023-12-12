@@ -972,6 +972,9 @@ return (function () {
             if (element.children) { // IE
                 forEach(element.children, function(child) { cleanUpElement(child) });
             }
+            if (element.hasOwnProperty('htmx-internal-data')) {
+                delete element['htmx-internal-data'];
+            }
         }
 
         function swapOuterHTML(target, fragment, settleInfo) {
@@ -987,7 +990,6 @@ return (function () {
                 } else {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
-                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
