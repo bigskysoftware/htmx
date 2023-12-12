@@ -829,7 +829,7 @@ server and the browser than websockets.
 If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
 
 1. Define an SSE source.  To do this, add a [hx-sse](@/attributes/hx-sse.md) attribute on a parent element with
-a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
+a `connect:<url>` declaration that specifies the URL from which Server Sent Events will be received.
 
 2. Define elements that are descendents of this element that are triggered by server sent events using the
 `hx-trigger="sse:<event_name>"` syntax
