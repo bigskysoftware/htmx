@@ -88,7 +88,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.9"
+            version: "1.9.10"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -276,7 +276,7 @@ return (function () {
         }
 
         function aFullPageResponse(resp) {
-            return resp.match(/<body/);
+            return /<body/.test(resp)
         }
 
         /**
@@ -450,7 +450,7 @@ return (function () {
                     path = url.pathname + url.search;
                 }
                 // remove trailing slash, unless index page
-                if (!path.match('^/$')) {
+                if (!(/^\/$/.test(path))) {
                     path = path.replace(/\/+$/, '');
                 }
                 return path;
@@ -1230,7 +1230,7 @@ return (function () {
 
         function consumeUntil(tokens, match) {
             var result = "";
-            while (tokens.length > 0 && !tokens[0].match(match)) {
+            while (tokens.length > 0 && !match.test(tokens[0])) {
                 result += tokens.shift();
             }
             return result;
@@ -1894,26 +1894,35 @@ return (function () {
             });
         }
 
-        function hasChanceOfBeingBoosted() {
-            return document.querySelector("[hx-boost], [data-hx-boost]");
+        function shouldProcessHxOn(elt) {
+            var attributes = elt.attributes
+            for (var j = 0; j < attributes.length; j++) {
+                var attrName = attributes[j].name
+                if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:") ||
+                    startsWith(attrName, "hx-on-") || startsWith(attrName, "data-hx-on-")) {
+                    return true
+                }
+            }
+            return false
         }
 
         function findHxOnWildcardElements(elt) {
             var node = null
             var elements = []
 
+            if (shouldProcessHxOn(elt)) {
+                elements.push(elt)
+            }
+
             if (document.evaluate) {
-                var iter = document.evaluate('//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") ]]', elt)
+                var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
+                                                                           ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
                 while (node = iter.iterateNext()) elements.push(node)
             } else {
-                var allElements = document.getElementsByTagName("*")
+                var allElements = elt.getElementsByTagName("*")
                 for (var i = 0; i < allElements.length; i++) {
-                    var attributes = allElements[i].attributes
-                    for (var j = 0; j < attributes.length; j++) {
-                        var attrName = attributes[j].name
-                        if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:")) {
-                            elements.push(allElements[i])
-                        }
+                    if (shouldProcessHxOn(allElements[i])) {
+                        elements.push(allElements[i])
                     }
                 }
             }
@@ -1923,8 +1932,8 @@ return (function () {
 
         function findElementsToProcess(elt) {
             if (elt.querySelectorAll) {
-                var boostedElts = hasChanceOfBeingBoosted() ? ", a" : "";
-                var results = elt.querySelectorAll(VERB_SELECTOR + boostedElts + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
+                var boostedSelector = ", [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]";
+                var results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
                     " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
                 return results;
             } else {
@@ -2032,12 +2041,22 @@ return (function () {
             for (var i = 0; i < elt.attributes.length; i++) {
                 var name = elt.attributes[i].name
                 var value = elt.attributes[i].value
-                if (startsWith(name, "hx-on:") || startsWith(name, "data-hx-on:")) {
-                    let eventName = name.slice(name.indexOf(":") + 1)
-                    // if the eventName starts with a colon, prepend "htmx" for shorthand support
-                    if (startsWith(eventName, ":")) eventName = "htmx" + eventName
+                if (startsWith(name, "hx-on") || startsWith(name, "data-hx-on")) {
+                    var afterOnPosition = name.indexOf("-on") + 3;
+                    var nextChar = name.slice(afterOnPosition, afterOnPosition + 1);
+                    if (nextChar === "-" || nextChar === ":") {
+                        let eventName = name.slice(afterOnPosition + 1);
+                        // if the eventName starts with a colon or dash, prepend "htmx" for shorthand support
+                        if (startsWith(eventName, ":")) {
+                            eventName = "htmx" + eventName
+                        } else if (startsWith(eventName, "-")) {
+                            eventName = "htmx:" + eventName.slice(1);
+                        } else if (startsWith(eventName, "htmx-")) {
+                            eventName = "htmx:" + eventName.slice(5);
+                        }
 
-                    addHxOnEventHandler(elt, eventName, value)
+                        addHxOnEventHandler(elt, eventName, value)
+                    }
                 }
             }
         }
@@ -2315,7 +2334,9 @@ return (function () {
             var details = {path: path, xhr:request};
             triggerEvent(getDocument().body, "htmx:historyCacheMiss", details);
             request.open('GET', path, true);
+            request.setRequestHeader("HX-Request", "true");
             request.setRequestHeader("HX-History-Restore-Request", "true");
+            request.setRequestHeader("HX-Current-URL", getDocument().location.href);
             request.onload = function () {
                 if (this.status >= 200 && this.status < 400) {
                     triggerEvent(getDocument().body, "htmx:historyCacheMissLoad", details);
@@ -2906,7 +2927,7 @@ return (function () {
         }
 
         function hasHeader(xhr, regexp) {
-            return xhr.getAllResponseHeaders().match(regexp);
+            return regexp.test(xhr.getAllResponseHeaders())
         }
 
         function ajaxHelper(verb, path, context) {
@@ -3827,7 +3848,9 @@ return (function () {
                     internalData.xhr.abort();
                 }
             });
-            var originalPopstate = window.onpopstate;
+            /** @type {(ev: PopStateEvent) => any} */
+            const originalPopstate = window.onpopstate ? window.onpopstate.bind(window) : null;
+            /** @type {(ev: PopStateEvent) => any} */
             window.onpopstate = function (event) {
                 if (event.state && event.state.htmx) {
                     restoreHistory();
