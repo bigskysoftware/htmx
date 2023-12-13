@@ -827,7 +827,7 @@ return (function () {
             var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
             if (oobSelects) {
                 var oobSelectValues = oobSelects.split(",");
-                for (let i = 0; i < oobSelectValues.length; i++) {
+                for (var i = 0; i < oobSelectValues.length; i++) {
                     var oobSelectValue = oobSelectValues[i].split(":", 2);
                     var id = oobSelectValue[0].trim();
                     if (id.indexOf("#") === 0) {
@@ -934,7 +934,7 @@ return (function () {
         function deInitOnHandlers(elt) {
             var internalData = getInternalData(elt);
             if (internalData.onHandlers) {
-                for (let i = 0; i < internalData.onHandlers.length; i++) {
+                for (var i = 0; i < internalData.onHandlers.length; i++) {
                     const handlerInfo = internalData.onHandlers[i];
                     elt.removeEventListener(handlerInfo.event, handlerInfo.listener);
                 }
@@ -1979,7 +1979,7 @@ return (function () {
         function countCurlies(line) {
             var tokens = tokenizeString(line);
             var netCurlies = 0;
-            for (let i = 0; i < tokens.length; i++) {
+            for (var i = 0; i < tokens.length; i++) {
                 const token = tokens[i];
                 if (token === "{") {
                     netCurlies++;
@@ -2019,7 +2019,7 @@ return (function () {
                     var afterOnPosition = name.indexOf("-on") + 3;
                     var nextChar = name.slice(afterOnPosition, afterOnPosition + 1);
                     if (nextChar === "-" || nextChar === ":") {
-                        let eventName = name.slice(afterOnPosition + 1);
+                        var eventName = name.slice(afterOnPosition + 1);
                         // if the eventName starts with a colon or dash, prepend "htmx" for shorthand support
                         if (startsWith(eventName, ":")) {
                             eventName = "htmx" + eventName
