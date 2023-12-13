@@ -183,6 +183,21 @@ To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
     `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
      use request parameters.)
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
+* Convert any `hx-on` attributes to their `hx-on:` equivalent:
+  ```html
+     <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
+                                   htmx:afterRequest: alert('Done making a request!')">
+      Get Info!
+     </button>
+  ```
+  becomes:
+  ```html
+     <button hx-get="/info" hx-on:htmx:before-request="alert('Making a request!')"
+                            hx-on:htmx:after-request="alert('Done making a request!')">
+      Get Info!
+     </button>
+  Note that you must use the kebab-case of the event name due to the fact that attributes are case-insensitive in HTML.
+  ```
 
 here is a meta tag to revert to htmx 1.x defaults:
 

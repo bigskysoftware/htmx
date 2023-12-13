@@ -9,23 +9,15 @@ The `hx-on*` attributes improve upon `onevent` by enabling the handling of any a
 for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/) even when dealing with non-standard DOM events. For example, these
 attributes allow you to handle [htmx events](/reference#events).
 
-There are two forms of `hx-on` attributes:
-
-* In the primary form, you specify the event name as part of the attribute name, after a colon.  So, for example, if
-  you want to respond to a `click` event, you would use the attribute `hx-on:click`.
-
-* The second, deprecated form, uses the `hx-on` attribute directly. This latter form should only be used if IE11 support
-  is required, and will be removed in htmx 2.0
-
-### hx-on:* (recommended)
-
-In this form, the event name follows a colon `:` in the attribute, and the attribute value is the script to be executed:
+With `hx-on` attributes, you specify the event name as part of the attribute name, after a colon.  So, for example, if
+you want to respond to a `click` event, you would use the attribute `hx-on:click`:
 
 ```html
 <div hx-on:click="alert('Clicked!')">Click</div>
 ```
 
-Note that, in addition to the standard DOM events, all htmx and other custom events can be captured, too! 
+Note that this syntax can be used to capture all htmx events, as well as most other custom events, in addition to the
+standard DOM events.
 
 One gotcha to note is that DOM attributes do not preserve case. This means, unfortunately, an attribute like
 `hx-on:htmx:beforeRequest` **will not work**, because the DOM lowercases the attribute names.  Fortunately, htmx supports

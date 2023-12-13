@@ -1934,7 +1934,7 @@ return (function () {
             if (elt.querySelectorAll) {
                 var boostedSelector = ", [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]";
                 var results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit'], [hx-sse], [data-hx-sse], [hx-ws]," +
-                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger], [hx-on], [data-hx-on]");
+                    " [data-hx-ws], [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]");
                 return results;
             } else {
                 return [];
@@ -2008,32 +2008,6 @@ return (function () {
             nodeData.onHandlers.push({event:eventName, listener:listener});
         }
 
-        function processHxOn(elt) {
-            var hxOnValue = getAttributeValue(elt, 'hx-on');
-            if (hxOnValue) {
-                var handlers = {}
-                var lines = hxOnValue.split("\n");
-                var currentEvent = null;
-                var curlyCount = 0;
-                while (lines.length > 0) {
-                    var line = lines.shift();
-                    var match = line.match(/^\s*([a-zA-Z:\-\.]+:)(.*)/);
-                    if (curlyCount === 0 && match) {
-                        line.split(":")
-                        currentEvent = match[1].slice(0, -1); // strip last colon
-                        handlers[currentEvent] = match[2];
-                    } else {
-                        handlers[currentEvent] += line;
-                    }
-                    curlyCount += countCurlies(line);
-                }
-
-                for (var eventName in handlers) {
-                    addHxOnEventHandler(elt, eventName, handlers[eventName]);
-                }
-            }
-        }
-
         function processHxOnWildcard(elt) {
             // wipe any previous on handlers so that this function takes precedence
             deInitOnHandlers(elt)
@@ -2072,8 +2046,6 @@ return (function () {
                 deInitNode(elt);
 
                 nodeData.initHash = attributeHash(elt);
-
-                processHxOn(elt);
 
                 triggerEvent(elt, "htmx:beforeProcessNode")
 
@@ -2123,8 +2095,6 @@ return (function () {
             }
             initNode(elt);
             forEach(findElementsToProcess(elt), function(child) { initNode(child) });
-            // Because it happens second, the new way of adding onHandlers superseeds the old one
-            // i.e. if there are any hx-on:eventName attributes, the hx-on attribute will be ignored
             forEach(findHxOnWildcardElements(elt), processHxOnWildcard);
         }
 
