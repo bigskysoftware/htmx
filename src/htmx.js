@@ -960,10 +960,8 @@ return (function () {
                     }
                 });
             }
-            if (internalData.initHash) {
-                internalData.initHash = null
-            }
             deInitOnHandlers(element);
+            forEach(Object.keys(internalData), function(key) { delete internalData[key] });
         }
 
         function cleanUpElement(element) {
@@ -971,9 +969,6 @@ return (function () {
             deInitNode(element);
             if (element.children) { // IE
                 forEach(element.children, function(child) { cleanUpElement(child) });
-            }
-            if (element.hasOwnProperty('htmx-internal-data')) {
-                delete element['htmx-internal-data'];
             }
         }
 
