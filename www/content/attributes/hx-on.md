@@ -55,7 +55,7 @@ If you wish to handle multiple different events, you can simply add multiple att
 </button>
 ```
 
-Finally, in order to make this feature compatible with some templating languages that do not like having a colon (`:`)
+Finally, in order to make this feature compatible with some templating languages (e.g. [JSX](https://react.dev/learn/writing-markup-with-jsx)) that do not like having a colon (`:`)
 in HTML attributes, you may use dashes in the place of colons for both the long form and the shorthand form:
 
 ```html
