@@ -50,7 +50,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 				// Try to create EventSources when elements are processed
 				case "htmx:afterProcessNode":
-					createEventSourceOnElement(evt.target);
+					ensureEventSourceOnElement(evt.target);
 					registerSSE(evt.target);
 			}
 		}
@@ -187,14 +187,14 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	}
 
 	/**
-	 * createEventSourceOnElement creates a new EventSource connection on the provided element.
+	 * ensureEventSourceOnElement creates a new EventSource connection on the provided element.
 	 * If a usable EventSource already exists, then it is returned.  If not, then a new EventSource
 	 * is created and stored in the element's internalData.
 	 * @param {HTMLElement} elt
 	 * @param {number} retryCount
 	 * @returns {EventSource | null}
 	 */
-	function createEventSourceOnElement(elt, retryCount) {
+	function ensureEventSourceOnElement(elt, retryCount) {
 
 		if (elt == null) {
 			return null;
@@ -207,7 +207,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				return;
 			}
 
-			createEventSource(child, sseURL, retryCount);
+			ensureEventSource(child, sseURL, retryCount);
 		});
 
 		// handle legacy sse, remove for HTMX2
@@ -217,12 +217,12 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				return;
 			}
 
-			createEventSource(child, sseURL, retryCount);
+			ensureEventSource(child, sseURL, retryCount);
 		});
 
 	}
 
-	function createEventSource(elt, url, retryCount) {
+	function ensureEventSource(elt, url, retryCount) {
 		var source = htmx.createEventSource(url);
 
 		source.onerror = function(err) {
@@ -240,7 +240,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				retryCount = retryCount || 0;
 				var timeout = Math.random() * (2 ^ retryCount) * 500;
 				window.setTimeout(function() {
-					createEventSourceOnElement(elt, Math.min(7, retryCount + 1));
+					ensureEventSourceOnElement(elt, Math.min(7, retryCount + 1));
 				}, timeout);
 			}
 		};
