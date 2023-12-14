@@ -430,6 +430,12 @@ export interface HtmxConfig {
      * @default false 
      */
     ignoreTitle:? boolean;
+    /**
+     * The cache to store evaluated trigger specifications into.
+     * You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+     * @default null
+     */
+    triggerSpecsCache?: {[trigger: string]: HtmxTriggerSpecification[]};
 }
 
 /**
