@@ -76,7 +76,8 @@ return (function () {
                 methodsThatUseUrlParams: ["get", "delete"],
                 selfRequestsOnly: true,
                 ignoreTitle: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                triggerSpecsCache: null,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -946,10 +947,8 @@ return (function () {
                     }
                 });
             }
-            if (internalData.initHash) {
-                internalData.initHash = null
-            }
             deInitOnHandlers(element);
+            forEach(Object.keys(internalData), function(key) { delete internalData[key] });
         }
 
         function cleanUpElement(element) {
@@ -973,7 +972,6 @@ return (function () {
                 } else {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
-                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
@@ -1238,89 +1236,107 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
+         * @param {string} explicitTrigger
+         * @param {cache} cache for trigger specs
+         * @returns {import("./htmx").HtmxTriggerSpecification[]}
+         */
+        function parseAndCacheTrigger(elt, explicitTrigger, cache) {
+            var triggerSpecs = [];
+            var tokens = tokenizeString(explicitTrigger);
+            do {
+                consumeUntil(tokens, NOT_WHITESPACE);
+                var initialLength = tokens.length;
+                var trigger = consumeUntil(tokens, /[,\[\s]/);
+                if (trigger !== "") {
+                    if (trigger === "every") {
+                        var every = {trigger: 'every'};
+                        consumeUntil(tokens, NOT_WHITESPACE);
+                        every.pollInterval = parseInterval(consumeUntil(tokens, /[,\[\s]/));
+                        consumeUntil(tokens, NOT_WHITESPACE);
+                        var eventFilter = maybeGenerateConditional(elt, tokens, "event");
+                        if (eventFilter) {
+                            every.eventFilter = eventFilter;
+                        }
+                        triggerSpecs.push(every);
+                    } else if (trigger.indexOf("sse:") === 0) {
+                        triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
+                    } else {
+                        var triggerSpec = {trigger: trigger};
+                        var eventFilter = maybeGenerateConditional(elt, tokens, "event");
+                        if (eventFilter) {
+                            triggerSpec.eventFilter = eventFilter;
+                        }
+                        while (tokens.length > 0 && tokens[0] !== ",") {
+                            consumeUntil(tokens, NOT_WHITESPACE)
+                            var token = tokens.shift();
+                            if (token === "changed") {
+                                triggerSpec.changed = true;
+                            } else if (token === "once") {
+                                triggerSpec.once = true;
+                            } else if (token === "consume") {
+                                triggerSpec.consume = true;
+                            } else if (token === "delay" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                            } else if (token === "from" && tokens[0] === ":") {
+                                tokens.shift();
+                                if (COMBINED_SELECTOR_START.test(tokens[0])) {
+                                    var from_arg = consumeCSSSelector(tokens);
+                                } else {
+                                    var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                                    if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
+                                        tokens.shift();
+                                        var selector = consumeCSSSelector(tokens);
+                                        // `next` and `previous` allow a selector-less syntax
+                                        if (selector.length > 0) {
+                                            from_arg += " " + selector;
+                                        }
+                                    }
+                                }
+                                triggerSpec.from = from_arg;
+                            } else if (token === "target" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec.target = consumeCSSSelector(tokens);
+                            } else if (token === "throttle" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
+                            } else if (token === "queue" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                            } else if (token === "root" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec[token] = consumeCSSSelector(tokens);
+                            } else if (token === "threshold" && tokens[0] === ":") {
+                                tokens.shift();
+                                triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                            } else {
+                                triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                            }
+                        }
+                        triggerSpecs.push(triggerSpec);
+                    }
+                }
+                if (tokens.length === initialLength) {
+                    triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
+                }
+                consumeUntil(tokens, NOT_WHITESPACE);
+            } while (tokens[0] === "," && tokens.shift())
+            if (cache) {
+                cache[explicitTrigger] = triggerSpecs
+            }
+            return triggerSpecs
+        }
+
+        /**
+         * @param {HTMLElement} elt
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
          */
         function getTriggerSpecs(elt) {
             var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
             var triggerSpecs = [];
             if (explicitTrigger) {
-                var tokens = tokenizeString(explicitTrigger);
-                do {
-                    consumeUntil(tokens, NOT_WHITESPACE);
-                    var initialLength = tokens.length;
-                    var trigger = consumeUntil(tokens, /[,\[\s]/);
-                    if (trigger !== "") {
-                        if (trigger === "every") {
-                            var every = {trigger: 'every'};
-                            consumeUntil(tokens, NOT_WHITESPACE);
-                            every.pollInterval = parseInterval(consumeUntil(tokens, /[,\[\s]/));
-                            consumeUntil(tokens, NOT_WHITESPACE);
-                            var eventFilter = maybeGenerateConditional(elt, tokens, "event");
-                            if (eventFilter) {
-                                every.eventFilter = eventFilter;
-                            }
-                            triggerSpecs.push(every);
-                        } else {
-                            var triggerSpec = {trigger: trigger};
-                            var eventFilter = maybeGenerateConditional(elt, tokens, "event");
-                            if (eventFilter) {
-                                triggerSpec.eventFilter = eventFilter;
-                            }
-                            while (tokens.length > 0 && tokens[0] !== ",") {
-                                consumeUntil(tokens, NOT_WHITESPACE)
-                                var token = tokens.shift();
-                                if (token === "changed") {
-                                    triggerSpec.changed = true;
-                                } else if (token === "once") {
-                                    triggerSpec.once = true;
-                                } else if (token === "consume") {
-                                    triggerSpec.consume = true;
-                                } else if (token === "delay" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec.delay = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
-                                } else if (token === "from" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    if (COMBINED_SELECTOR_START.test(tokens[0])) {
-                                        var from_arg = consumeCSSSelector(tokens);
-                                    } else {
-                                        var from_arg = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                        if (from_arg === "closest" || from_arg === "find" || from_arg === "next" || from_arg === "previous") {
-                                            tokens.shift();
-                                            var selector = consumeCSSSelector(tokens);
-                                            // `next` and `previous` allow a selector-less syntax
-                                            if (selector.length > 0) {
-                                                from_arg += " " + selector;
-                                            }
-                                        }
-                                    }
-                                    triggerSpec.from = from_arg;
-                                } else if (token === "target" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec.target = consumeCSSSelector(tokens);
-                                } else if (token === "throttle" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA));
-                                } else if (token === "queue" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                } else if (token === "root" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec[token] = consumeCSSSelector(tokens);
-                                } else if (token === "threshold" && tokens[0] === ":") {
-                                    tokens.shift();
-                                    triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA);
-                                } else {
-                                    triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
-                                }
-                            }
-                            triggerSpecs.push(triggerSpec);
-                        }
-                    }
-                    if (tokens.length === initialLength) {
-                        triggerErrorEvent(elt, "htmx:syntax:error", {token:tokens.shift()});
-                    }
-                    consumeUntil(tokens, NOT_WHITESPACE);
-                } while (tokens[0] === "," && tokens.shift())
+                var cache = htmx.config.triggerSpecsCache
+                triggerSpecs = (cache && cache[explicitTrigger]) || parseAndCacheTrigger(elt, explicitTrigger, cache)
             }
 
             if (triggerSpecs.length > 0) {
