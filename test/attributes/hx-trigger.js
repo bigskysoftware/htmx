@@ -954,5 +954,56 @@ describe("hx-trigger attribute", function(){
         make('<div hx-trigger="intersect root:{form input}" hx-get="/test">Not Called</div>');
     });
 
+    it("uses trigger specs cache if defined", function () {
+        var initialCacheConfig = htmx.config.triggerSpecsCache
+        htmx.config.triggerSpecsCache = {}
 
+        var specExamples = {
+            "every 1s": [{trigger: 'every', pollInterval: 1000}],
+            "click": [{trigger: 'click'}],
+            "customEvent": [{trigger: 'customEvent'}],
+            "event changed": [{trigger: 'event', changed: true}],
+            "event once": [{trigger: 'event', once: true}],
+            "event delay:1s": [{trigger: 'event', delay: 1000}],
+            "event throttle:1s": [{trigger: 'event', throttle: 1000}],
+            "event delay:1s, foo": [{trigger: 'event', delay: 1000}, {trigger: 'foo'}],
+            "event throttle:1s, foo": [{trigger: 'event', throttle: 1000}, {trigger: 'foo'}],
+            "event changed once delay:1s": [{trigger: 'event', changed: true, once: true, delay: 1000}],
+            "event1,event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+            "event1, event2": [{trigger: 'event1'}, {trigger: 'event2'}],
+            "event1 once, event2 changed": [{trigger: 'event1', once: true}, {trigger: 'event2', changed: true}],
+        }
+
+        for (var specString in specExamples) {
+            var div = make("<div hx-trigger='" + specString + "'></div>");
+            var spec = htmx._('getTriggerSpecs')(div);
+            spec.should.deep.equal(specExamples[specString], "Found : " + JSON.stringify(spec) + ", expected : " + JSON.stringify(specExamples[specString]) + " for spec: " + specString);
+        }
+
+        Object.keys(htmx.config.triggerSpecsCache).length.should.greaterThan(0)
+        Object.keys(htmx.config.triggerSpecsCache).length.should.equal(Object.keys(specExamples).length)
+
+        htmx.config.triggerSpecsCache = initialCacheConfig
+    })
+
+    it("correctly reuses trigger specs from the cache if defined", function () {
+        var initialCacheConfig = htmx.config.triggerSpecsCache
+        htmx.config.triggerSpecsCache = {}
+
+        var triggerStr = "event changed once delay:1s"
+        var expectedSpec = [{trigger: 'event', changed: true, once: true, delay: 1000}]
+
+        var div = make("<div hx-trigger='event changed once delay:1s'></div>");
+        var spec = htmx._('getTriggerSpecs')(div);
+        spec.should.deep.equal(expectedSpec, "Found : " + JSON.stringify(spec) + ", expected : " + JSON.stringify(expectedSpec) + " for spec: " + triggerStr);
+        spec.push("This should be carried to further identical specs thanks to the cache")
+
+        var div2 = make("<div hx-trigger='event changed once delay:1s'></div>");
+        var spec2 = htmx._('getTriggerSpecs')(div2);
+        spec2.should.deep.equal(spec, "Found : " + JSON.stringify(spec) + ", expected : " + JSON.stringify(spec2) + " for cached spec: " + triggerStr);
+
+        Object.keys(htmx.config.triggerSpecsCache).length.should.equal(1)
+
+        htmx.config.triggerSpecsCache = initialCacheConfig
+    })
 })
