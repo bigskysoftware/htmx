@@ -76,7 +76,8 @@ return (function () {
                 methodsThatUseUrlParams: ["get"],
                 selfRequestsOnly: false,
                 ignoreTitle: false,
-                scrollIntoViewOnBoost: true
+                scrollIntoViewOnBoost: true,
+                triggerSpecsCache: null,
             },
             parseInterval:parseInterval,
             _:internalEval,
@@ -1252,12 +1253,11 @@ return (function () {
 
         /**
          * @param {HTMLElement} elt
+         * @param {string} explicitTrigger
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
          */
-        function getTriggerSpecs(elt) {
-            var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+        function parseAndCacheTrigger(elt, explicitTrigger) {
             var triggerSpecs = [];
-            if (explicitTrigger) {
                 var tokens = tokenizeString(explicitTrigger);
                 do {
                     consumeUntil(tokens, NOT_WHITESPACE);
@@ -1337,6 +1337,23 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
+                var cache = htmx.config.triggerSpecsCache
+                if (cache) {
+                    cache[explicitTrigger] = triggerSpecs
+                }
+                return triggerSpecs
+        }
+
+        /**
+         * @param {HTMLElement} elt
+         * @returns {import("./htmx").HtmxTriggerSpecification[]}
+         */
+        function getTriggerSpecs(elt) {
+            var explicitTrigger = getAttributeValue(elt, 'hx-trigger');
+            var triggerSpecs = [];
+            if (explicitTrigger) {
+                var cache = htmx.config.triggerSpecsCache
+                triggerSpecs = (cache && cache[explicitTrigger]) || parseAndCacheTrigger(elt, explicitTrigger)
             }
 
             if (triggerSpecs.length > 0) {
