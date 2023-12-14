@@ -153,3 +153,4 @@ The AJAX request can be triggered via JavaScript [`htmx.trigger()`](@/api.md#tri
 
 * `hx-trigger` is not inherited
 * `hx-trigger` can be used without an AJAX request, in which case it will only fire the `htmx:trigger` event
+* In order to pass a CSS selector that contains whitespace (e.g. `form input`) to the `from`- or `target`-modifier, surround the selector in parentheses or curly brackets (e.g. `from:(form input)` or `from:nearest (form input)`)
