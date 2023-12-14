@@ -1254,9 +1254,10 @@ return (function () {
         /**
          * @param {HTMLElement} elt
          * @param {string} explicitTrigger
+         * @param {cache} cache for trigger specs
          * @returns {import("./htmx").HtmxTriggerSpecification[]}
          */
-        function parseAndCacheTrigger(elt, explicitTrigger) {
+        function parseAndCacheTrigger(elt, explicitTrigger, cache) {
             var triggerSpecs = [];
                 var tokens = tokenizeString(explicitTrigger);
                 do {
@@ -1337,7 +1338,6 @@ return (function () {
                     }
                     consumeUntil(tokens, NOT_WHITESPACE);
                 } while (tokens[0] === "," && tokens.shift())
-                var cache = htmx.config.triggerSpecsCache
                 if (cache) {
                     cache[explicitTrigger] = triggerSpecs
                 }
@@ -1353,7 +1353,7 @@ return (function () {
             var triggerSpecs = [];
             if (explicitTrigger) {
                 var cache = htmx.config.triggerSpecsCache
-                triggerSpecs = (cache && cache[explicitTrigger]) || parseAndCacheTrigger(elt, explicitTrigger)
+                triggerSpecs = (cache && cache[explicitTrigger]) || parseAndCacheTrigger(elt, explicitTrigger, cache)
             }
 
             if (triggerSpecs.length > 0) {
