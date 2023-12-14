@@ -1260,8 +1260,6 @@ return (function () {
                                 every.eventFilter = eventFilter;
                             }
                             triggerSpecs.push(every);
-                        } else if (trigger.indexOf("sse:") === 0) {
-                            triggerSpecs.push({trigger: 'sse', sseEvent: trigger.substr(4)});
                         } else {
                             var triggerSpec = {trigger: trigger};
                             var eventFilter = maybeGenerateConditional(elt, tokens, "event");
