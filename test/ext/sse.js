@@ -1,5 +1,3 @@
-const { assert } = require("chai");
-
 describe("sse extension", function() {
 
     function mockEventSource() {
@@ -16,19 +14,19 @@ describe("sse extension", function() {
                 })
             },
             addEventListener: function(message, l) {
-                if (listeners == undefined) {
+                if (!listeners[message]) {
                     listeners[message] = [];
                 }
                 listeners[message].push(l)
             },
             sendEvent: function(eventName, data) {
-                var listeners = listeners[eventName];
-                if (listeners) {
-                    listeners.forEach(function(listener) {
+                var eventListeners = listeners[eventName];
+                if (eventListeners) {
+                    eventListeners.forEach(function(listener) {
                         var event = htmx._("makeEvent")(eventName);
                         event.data = data;
                         listener(event);
-                    }
+                    })
                 }
             },
             close: function() {
