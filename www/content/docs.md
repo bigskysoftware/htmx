@@ -752,7 +752,12 @@ be confirmed.  We could add an `unset` directive on it like so:
 
 The top two buttons would then show a confirm dialog, but the bottom cancel button would not.
 
-Automatic inheritance can be disabled using the [`hx-disinherit`](@/attributes/hx-disinherit.md) attribute.
+Inheritance can be disabled on a per-element and per-attribute basis using the 
+[`hx-disinherit`](@/attributes/hx-disinherit.md) attribute.
+
+If you wish to disable attribute inheritance entirely, you can set the `htmx.config.disableInheritance` configuration
+variable to `true`.   This will disable inheritance as a default, and allow you to specify inheritance explicitly
+with the [`hx-inherit`](@/attributes/hx-inherit.md) attribute.
 
 ## Boosting
 
@@ -1692,6 +1697,7 @@ listed below:
 | `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with this method by encoding their parameters in the URL, not the request body                                            |
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
+| `htmx.config.disableInheritance`      | disables attribute inheritance in htmx, which can then be overridden by the [`hx-inherit`](@/attributes/hx-inherit.md) attribute                                           |
 
 </div>
 
