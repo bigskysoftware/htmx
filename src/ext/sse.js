@@ -187,7 +187,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 	}
 
 	/**
-	 * createEventSourceOnElement creates a new EventSource connection on the provided element.
+	 * ensureEventSourceOnElement creates a new EventSource connection on the provided element.
 	 * If a usable EventSource already exists, then it is returned.  If not, then a new EventSource
 	 * is created and stored in the element's internalData.
 	 * @param {HTMLElement} elt
