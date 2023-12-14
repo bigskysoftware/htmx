@@ -389,12 +389,7 @@ describe("Core htmx Events", function() {
     });
 
     it("htmx:sendError is called after a failed request", function (done) {
-        if (IsIE11()) {
-            // IE will throw an exception on xhr.open with the URL below, xhr.send won't even be called
-            this._runnable.title += " - Skipped on IE11 as xhr.send won't even be called with a file URL"
-            this.skip()
-            return
-        }
+        htmx.config.selfRequestsOnly = false; // turn off self requests only
         var called = false;
         var handler = htmx.on("htmx:sendError", function (evt) {
             called = true;
@@ -405,6 +400,7 @@ describe("Core htmx Events", function() {
         setTimeout(function () {
             htmx.off("htmx:sendError", handler);
             should.equal(called, true);
+            htmx.config.selfRequestsOnly = true; // restore self requests only
             done();
         }, 30);
     });

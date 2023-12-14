@@ -48,7 +48,7 @@ export function ajax(verb: string, path: string, selector: string): Promise<void
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any; select: any }>
 ): Promise<void>;
 
 /**
@@ -395,6 +395,41 @@ export interface HtmxConfig {
      * @default false
      */
     selfRequestsOnly?: boolean;
+    /**
+     * Whether or not the target of a boosted element is scrolled into the viewport.
+     * @default true
+     */
+    scrollIntoViewOnBoost?: boolean;
+    /**
+     * If set, the nonce will be added to inline scripts.
+     * @default ''
+     */
+    inlineScriptNonce?: string;
+    /**
+     * The type of binary data being received over the WebSocket connection
+     * @default 'blob'
+     */
+    wsBinaryType?: 'blob' | 'arraybuffer'; 
+    /**
+     * If set to true htmx will include a cache-busting parameter in GET requests to avoid caching partial responses by the browser
+     * @default false 
+     */
+    getCacheBusterParam?: boolean;
+    /**
+     * If set to true, htmx will use the View Transition API when swapping in new content.
+     * @default false 
+     */
+    globalViewTransitions?: boolean;
+    /**
+     * htmx will format requests with these methods by encoding their parameters in the URL, not the request body
+     * @default ["get"] 
+     */
+    methodsThatUseUrlParams?: ('get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch' )[];
+    /**
+     * If set to true htmx will not update the title of the document when a title tag is found in new content
+     * @default false 
+     */
+    ignoreTitle:? boolean;
 }
 
 /**

@@ -28,8 +28,8 @@ function parseParams(str) {
             str = str.substr(1);
         }
         while (e = re.exec(str)) {
-            var k = decode(e[1]);
-            var v = decode(e[2]);
+            var k = encodeHTML(decode(e[1]));
+            var v = encodeHTML(decode(e[2]));
             if (params[k] !== undefined) {
                 if (!Array.isArray(params[k])) {
                     params[k] = [params[k]];
@@ -50,6 +50,10 @@ function getQuery(url) {
     if (hash == -1) hash = url.length;
     return question == -1 || hash == question + 1 ? url.substring(hash) :
         url.substring(question + 1, hash);
+}
+
+function encodeHTML(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
 function params(request) {

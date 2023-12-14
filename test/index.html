@@ -81,7 +81,6 @@
 <script src="attributes/hx-disabled-elt.js"></script>
 <script src="attributes/hx-inherit.js"></script>
 <script src="attributes/hx-disinherit.js"></script>
-<script src="attributes/hx-on.js"></script>
 <script src="attributes/hx-on-wildcard.js"></script>
 <script src="attributes/hx-params.js"></script>
 <script src="attributes/hx-patch.js"></script>
@@ -169,7 +168,6 @@
 
 <script class="mocha-exec">
     document.addEventListener("DOMContentLoaded", function () {
-        mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame', 'confirm']}); <!-- IE11 -->
         mocha.run();
     })
 </script>

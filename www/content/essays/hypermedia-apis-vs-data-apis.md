@@ -24,7 +24,7 @@ Hypermedia APIs:
 Data APIs, on the other hand:
  
 * Will not benefit dramatically from REST-fulness, beyond perhaps [Level 2 of the Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model)
-* Should strive for both regularity and expressivity due to the arbitrary data needs of consumers
+* Should strive for both regularity and expressiveness due to the arbitrary data needs of consumers
 * Should be versioned and should be very stable within a particular version of the API
 * Should be consumed by code, processed and then potentially presented to a human
  
