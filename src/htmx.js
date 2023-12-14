@@ -961,10 +961,8 @@ return (function () {
                     }
                 });
             }
-            if (internalData.initHash) {
-                internalData.initHash = null
-            }
             deInitOnHandlers(element);
+            forEach(Object.keys(internalData), function(key) { delete internalData[key] });
         }
 
         function cleanUpElement(element) {
@@ -988,7 +986,6 @@ return (function () {
                 } else {
                     newElt = eltBeforeNewContent.nextSibling;
                 }
-                getInternalData(target).replacedWith = newElt; // tuck away so we can fire events on it later
                 settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target });
                 while(newElt && newElt !== target) {
                     if (newElt.nodeType === Node.ELEMENT_NODE) {
