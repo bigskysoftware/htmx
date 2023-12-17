@@ -3015,6 +3015,7 @@ return (function () {
                 elt = getDocument().body;
             }
             var responseHandler = etc.handler || handleAjaxResponse;
+            var processHandler = etc.process || processAjaxResponse;
             var select = etc.select || null;
 
             if (!bodyContains(elt)) {
@@ -3442,6 +3443,235 @@ return (function () {
                 }
             } else {
                 return {};
+            }
+        }
+
+        function processAjaxResponse(elt, responseInfo) {
+            var xhr = responseInfo.xhr;
+            var target = responseInfo.target;
+            var etc = responseInfo.etc;
+            var requestConfig = responseInfo.requestConfig;
+            var select = responseInfo.select;
+
+            if (!triggerEvent(elt, "htmx:beforeOnLoad", responseInfo)) return;
+
+            if (hasHeader(xhr, /HX-Retarget:/i)) {
+                responseInfo.target = getDocument().querySelector(
+                    xhr.getResponseHeader("HX-Retarget")
+                );
+            }
+
+            // by default htmx only swaps on 200 return codes and does not swap
+            // on 204 'No Content'
+            // this can be ovverriden by responding to the htmx:beforeSwap event and
+            // overriding the detail.shouldSwap property
+            var shouldSwap =
+            xhr.status >= 200 && xhr.status < 400 && xhr.status !== 204;
+            var serverResponse = xhr.response;
+            var isError = xhr.status >= 400;
+            var ignoreTitle = htmx.config.ignoreTitle;
+            var beforeSwapDetails = mergeObjects(
+                {
+                    shouldSwap: shouldSwap,
+                    serverResponse: serverResponse,
+                    isError: isError,
+                    ignoreTitle: ignoreTitle,
+                },
+                responseInfo
+            );
+            if (!triggerEvent(target, "htmx:beforeSwap", beforeSwapDetails)) return;
+
+            target = beforeSwapDetails.target; // allow re-targeting
+            serverResponse = beforeSwapDetails.serverResponse; // allow updating content
+            isError = beforeSwapDetails.isError; // allow updating error
+            ignoreTitle = beforeSwapDetails.ignoreTitle; // allow updating ignoring title
+
+            responseInfo.target = target; // Make updated target available to response events
+            responseInfo.failed = isError; // Make failed property available to response events
+            responseInfo.successful = !isError; // Make successful property available to response events
+
+            if (beforeSwapDetails.shouldSwap) {
+
+                if (xhr.status === 286) {
+                    cancelPolling(elt);
+                }
+
+                withExtensions(elt, function (extension) {
+                    serverResponse = extension.transformResponse(
+                    serverResponse,
+                    xhr,
+                    elt
+                    );
+                });
+
+                var swapOverride = etc.swapOverride;
+                if (hasHeader(xhr, /HX-Reswap:/i)) {
+                    swapOverride = xhr.getResponseHeader("HX-Reswap");
+                }
+                var swapSpec = getSwapSpecification(elt, swapOverride);
+
+                if (swapSpec.hasOwnProperty("ignoreTitle")) {
+                    ignoreTitle = swapSpec.ignoreTitle;
+                }
+
+                target.classList.add(htmx.config.swappingClass);
+
+                // optional transition API promise callbacks
+                var settleResolve = null;
+                var settleReject = null;
+
+                var doSwap = function () {
+                    try {
+                        var activeElt = document.activeElement;
+                        var selectionInfo = {};
+                        try {
+                            selectionInfo = {
+                                elt: activeElt,
+                                // @ts-ignore
+                                start: activeElt ? activeElt.selectionStart : null,
+                                // @ts-ignore
+                                end: activeElt ? activeElt.selectionEnd : null,
+                            };
+                        } catch (e) {
+                            // safari issue - see https://github.com/microsoft/playwright/issues/5894
+                        }
+
+                        var selectOverride;
+                        if (select) {
+                            selectOverride = select;
+                        }
+
+                        if (hasHeader(xhr, /HX-Reselect:/i)) {
+                            selectOverride = xhr.getResponseHeader("HX-Reselect");
+                        }
+
+                        var settleInfo = makeSettleInfo(target);
+                        selectAndSwap(
+                            swapSpec.swapStyle,
+                            target,
+                            elt,
+                            serverResponse,
+                            settleInfo,
+                            selectOverride
+                        );
+
+                        if (
+                            selectionInfo.elt &&
+                            !bodyContains(selectionInfo.elt) &&
+                            getRawAttribute(selectionInfo.elt, "id")
+                        ) {
+                            var newActiveElt = document.getElementById(
+                                getRawAttribute(selectionInfo.elt, "id")
+                            );
+                            var focusOptions = {
+                            preventScroll:
+                                swapSpec.focusScroll !== undefined
+                                ? !swapSpec.focusScroll
+                                : !htmx.config.defaultFocusScroll,
+                            };
+                            if (newActiveElt) {
+                            // @ts-ignore
+                            if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                                // @ts-ignore
+                                try {
+                                newActiveElt.setSelectionRange(
+                                    selectionInfo.start,
+                                    selectionInfo.end
+                                );
+                                } catch (e) {
+                                // the setSelectionRange method is present on fields that don't support it, so just let this fail
+                                }
+                            }
+                            newActiveElt.focus(focusOptions);
+                            }
+                        }
+
+                        target.classList.remove(htmx.config.swappingClass);
+                        forEach(settleInfo.elts, function (elt) {
+                            if (elt.classList) {
+                                elt.classList.add(htmx.config.settlingClass);
+                            }
+                            triggerEvent(elt, "htmx:afterSwap", responseInfo);
+                        });
+
+                        if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                            var finalElt = elt;
+                            if (!bodyContains(elt)) {
+                                finalElt = getDocument().body;
+                            }
+                            handleTrigger(xhr, "HX-Trigger-After-Swap", finalElt);
+                        }
+
+                        var doSettle = function () {
+                            forEach(settleInfo.tasks, function (task) {
+                                task.call();
+                            });
+                            forEach(settleInfo.elts, function (elt) {
+                                if (elt.classList) {
+                                    elt.classList.remove(htmx.config.settlingClass);
+                                }
+                                triggerEvent(elt, "htmx:afterSettle", responseInfo);
+                            });
+
+                            if (responseInfo.pathInfo.anchor) {
+                                var anchorTarget = getDocument().getElementById(
+                                    responseInfo.pathInfo.anchor
+                                );
+                                if (anchorTarget) {
+                                    anchorTarget.scrollIntoView({
+                                    block: "start",
+                                    behavior: "auto",
+                                    });
+                                }
+                            }
+
+                            if (settleInfo.title && !ignoreTitle) {
+                                var titleElt = find("title");
+                                if (titleElt) {
+                                    titleElt.innerHTML = settleInfo.title;
+                                } else {
+                                    window.document.title = settleInfo.title;
+                                }
+                            }
+
+                            updateScrollState(settleInfo.elts, swapSpec);
+
+                            if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+                                var finalElt = elt;
+                                if (!bodyContains(elt)) {
+                                    finalElt = getDocument().body;
+                                }
+                                handleTrigger(xhr, "HX-Trigger-After-Settle", finalElt);
+                            }
+                            maybeCall(settleResolve);
+                        };
+            
+                        doSettle();
+                    } catch (e) {
+                        triggerErrorEvent(elt, "htmx:swapError", responseInfo);
+                        maybeCall(settleReject);
+                        throw e;
+                    }
+                };
+        
+                doSwap();
+            }
+
+            if (isError) {
+                triggerErrorEvent(
+                    elt,
+                    "htmx:responseError",
+                    mergeObjects(
+                        {
+                            error:
+                            "Response Status Error Code " +
+                            xhr.status +
+                            " from " +
+                            responseInfo.pathInfo.requestPath,
+                        },
+                        responseInfo
+                    )
+                );
             }
         }
 
