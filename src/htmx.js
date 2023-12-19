@@ -92,7 +92,7 @@ return (function () {
             version: "1.9.10"
         };
 
-        /** @type {import("./htmx").HtmxInternalApi} */
+        /** @type {import("./types").HtmxInternalApi} */
         var internalAPI = {
             addTriggerHandler: addTriggerHandler,
             bodyContains: bodyContains,
@@ -2547,6 +2547,7 @@ return (function () {
          */
         function getInputValues(elt, verb) {
             var processed = [];
+            /** @type {Object<string, any>} */
             var values = {};
             var formValues = {};
             var errors = [];
