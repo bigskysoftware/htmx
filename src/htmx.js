@@ -50,7 +50,7 @@ return (function () {
                 historyEnabled:true,
                 historyCacheSize:10,
                 refreshOnHistoryMiss:false,
-                defaultSwapStyle:'innerHTML',
+                defaultSwapStyle: /** @type{import("./types").SwapStyle} */('innerHTML'),
                 defaultSwapDelay:0,
                 defaultSettleDelay:20,
                 includeIndicatorStyles:true,
@@ -404,6 +404,7 @@ return (function () {
             }
         }
 
+        /** @type {import("./types").splitOnWhitespace} */
         function splitOnWhitespace(trigger) {
             return trigger.trim().split(/\s+/);
         }
@@ -2707,14 +2708,10 @@ return (function () {
           return getRawAttribute(elt, 'href') && getRawAttribute(elt, 'href').indexOf("#") >=0
         }
 
-        /**
-         *
-         * @param {HTMLElement} elt
-         * @param {string} swapInfoOverride
-         * @returns {import("./htmx").HtmxSwapSpecification}
-         */
+        /** @type {import("./types").HtmxInternalApi['getSwapSpecification']} */
         function getSwapSpecification(elt, swapInfoOverride) {
             var swapInfo = swapInfoOverride ? swapInfoOverride : getClosestAttributeValue(elt, "hx-swap");
+            /** @type {import("./types").HtmxSwapSpecification} */
             var swapSpec = {
                 "swapStyle" : getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
                 "swapDelay" : htmx.config.defaultSwapDelay,
@@ -2741,20 +2738,20 @@ return (function () {
                             var splitSpec = scrollSpec.split(":");
                             var scrollVal = splitSpec.pop();
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
-                            swapSpec["scroll"] = scrollVal;
+                            swapSpec["scroll"] = /** @type {"top" | "bottom"} */(scrollVal);
                             swapSpec["scrollTarget"] = selectorVal;
                         } else if (value.indexOf("show:") === 0) {
                             var showSpec = value.substr(5);
                             var splitSpec = showSpec.split(":");
                             var showVal = splitSpec.pop();
                             var selectorVal = splitSpec.length > 0 ? splitSpec.join(":") : null;
-                            swapSpec["show"] = showVal;
+                            swapSpec["show"] = /** @type {"top" | "bottom"} */(showVal);
                             swapSpec["showTarget"] = selectorVal;
                         } else if (value.indexOf("focus-scroll:") === 0) {
                             var focusScrollVal = value.substr("focus-scroll:".length);
                             swapSpec["focusScroll"] = focusScrollVal == "true";
                         } else if (i == 0) {
-                            swapSpec["swapStyle"] = value;
+                            swapSpec["swapStyle"] = /** @type {any} */(value);
                         } else {
                             logError('Unknown modifier in hx-swap: ' + value);
                         }
@@ -2796,6 +2793,7 @@ return (function () {
             return {tasks: [], elts: [target]};
         }
 
+        /** @type {import("./types").updateScrollState} */
         function updateScrollState(content, swapSpec) {
             var first = content[0];
             var last = content[content.length - 1];
@@ -3461,6 +3459,7 @@ return (function () {
             if (hasHeader(xhr, /HX-Location:/i)) {
                 saveCurrentPageToHistory();
                 var redirectPath = xhr.getResponseHeader("HX-Location");
+                /** @type {import("./types").HtmxSwapSpecification} */
                 var swapSpec;
                 if (redirectPath.indexOf("{") === 0) {
                     swapSpec = parseJSON(redirectPath);

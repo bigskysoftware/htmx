@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Internal types used inside htmx.js but are not part of
+ * the public API. The main benefit of having this file is that you can
+ * have better DX defining types in TypeScript and then just import them
+ * into the JsDoc comments in the htmx.js file. */
+
 interface HtmxTriggerSpecification {
   sseEvent?: string;
   trigger: string;
@@ -7,10 +13,20 @@ interface HtmxTriggerSpecification {
   pollInterval?: number;
 }
 
-interface HtmxSwapSpecification {
+export interface HtmxSwapSpecification {
   swapStyle: SwapStyle;
   swapDelay: number;
   settleDelay: number;
+
+  scroll?: "top" | "bottom";
+  scrollTarget?: string | null;
+
+  show?: "top" | "bottom";
+  showTarget?: string | null;
+
+  transition?: boolean;
+  ignoreTitle?: boolean;
+  focusScroll?: boolean;
 }
 
 interface HtmxSettleInfo {
@@ -60,17 +76,17 @@ interface TriggerHandler {
   (): void;
 }
 
-type SwapStyle =
+export type SwapStyle =
   | "innerHTML"
   | "outerHTML"
-  | "afterbegin"
   | "beforebegin"
-  | "afterend"
+  | "afterbegin"
   | "beforeend"
-  | "none"
-  | "delete";
+  | "afterend"
+  | "delete"
+  | "none";
 
-interface HtmxInternalApi {
+export interface HtmxInternalApi {
   addTriggerHandler(
     elt: Element,
     triggerSpec: HtmxTriggerSpecification,
@@ -142,10 +158,17 @@ interface HtmxInternalApi {
   ): void;
   withExtensions(
     elt: HTMLElement,
-    toDo: (extension: HtmxExtension) => void
+    toDo: (extension: import("./htmx").HtmxExtension) => void
   ): void;
 }
 
 type EventDetail = {
   [key: PropertyKey]: unknown;
 };
+
+export declare function updateScrollState(
+  content,
+  swapSpec: HtmxSwapSpecification
+): void;
+
+export declare function splitOnWhitespace(trigger: string): string[];
