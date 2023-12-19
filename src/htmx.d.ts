@@ -442,6 +442,7 @@ export interface HtmxConfig {
  * https://htmx.org/extensions/#defining
  */
 export interface HtmxExtension {
+    init(apiRef: HtmxInternalApi): void;
     onEvent?: (name: string, evt: CustomEvent) => any;
     transformResponse?: (text: any, xhr: XMLHttpRequest, elt: any) => any;
     isInlineSwap?: (swapStyle: any) => any;
