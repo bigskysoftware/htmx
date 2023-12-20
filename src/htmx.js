@@ -128,9 +128,9 @@ return (function () {
             return "[hx-" + verb + "], [data-hx-" + verb + "]"
         }).join(", ");
 
-        var HEAD_TAG_REGEX = newTagRegex('head'),
-            TITLE_TAG_REGEX = newTagRegex('title'),
-            SVG_TAGS_REGEX = newTagRegex('svg', true);
+        var HEAD_TAG_REGEX = makeTagRegEx('head'),
+            TITLE_TAG_REGEX = makeTagRegEx('title'),
+            SVG_TAGS_REGEX = makeTagRegEx('svg', true);
 
         //====================================================================
         // Utilities
@@ -141,7 +141,7 @@ return (function () {
          * @param {boolean} global
          * @returns {RegExp}
          */
-        function newTagRegex(tag, global = false) {
+        function makeTagRegEx(tag, global = false) {
             return new RegExp(`<${tag}(\\s[^>]*>|>)([\\s\\S]*?)<\\/${tag}>`,
                 global ? 'gim' : 'im');
         }
