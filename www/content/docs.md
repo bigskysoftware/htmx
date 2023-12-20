@@ -114,7 +114,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-TODO" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -183,6 +183,21 @@ To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
     `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
      use request parameters.)
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
+* Convert any `hx-on` attributes to their `hx-on:` equivalent:
+  ```html
+     <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
+                                   htmx:afterRequest: alert('Done making a request!')">
+      Get Info!
+     </button>
+  ```
+  becomes:
+  ```html
+     <button hx-get="/info" hx-on:htmx:before-request="alert('Making a request!')"
+                            hx-on:htmx:after-request="alert('Done making a request!')">
+      Get Info!
+     </button>
+  Note that you must use the kebab-case of the event name due to the fact that attributes are case-insensitive in HTML.
+  ```
 
 here is a meta tag to revert to htmx 1.x defaults:
 
@@ -1280,7 +1295,7 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
-### <a name="hx-on"></a>[The `hx-on` Attribute](#hyperscript)
+### <a name="hx-on"></a>[The `hx-on*` Attributes](#hx-on)
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
 such as `onClick`:
@@ -1293,34 +1308,44 @@ such as `onClick`:
 
 This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
 [Locality of Behaviour (LoB)](/essays/locality-of-behaviour).  Unfortunately, HTML only allows `on*` attributes for a fixed
-number of specific DOM events (e.g. `onclick`) and doesn't offer a way to respond generally to events in this embedded
-manner.
+number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and 
+doesn't provide a generalized mechanism for responding to arbitrary events on elements.
 
-In order to address this shortcoming, htmx offers the [`hx-on`](/attributes/hx-on) attribute.  This attribute allows
-you to respond to any event in a manner that preserves the LoB of the `on*` properties:
+In order to address this shortcoming, htmx offers [`hx-on*`](/attributes/hx-on) attributes.  These attributes allow
+you to respond to any event in a manner that preserves the LoB of the standard `on*` properties.
+
+If we wanted to respond to the `click` event using an `hx-on` attribute, we would write this:
 
 ```html
-<button hx-on="click: alert('You clicked me!')">
+<button hx-on:click="alert('You clicked me!')">
     Click Me!
 </button>
 ```
 
-For a `click` event, we would recommend sticking with the standard `onclick` attribute.  However, consider an htmx-powered
-button that wishes to add an attribute to a request using the `htmx:configRequest` event.  This would not be possible
-with an `on*` property, but can be done using the `hx-on` attribute:
+So, the string `hx-on`, followed by a colon (or a dahs), then by the name of the event.
+
+For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an 
+htmx-powered button that wishes to add a parameter to a request using the `htmx:config-request` event.  This would not 
+be possible using a standard `on*` property, but it can be done using the `hx-on:htmx:config-request` attribute:
 
 ```html
 <button hx-post="/example"
-        hx-on="htmx:configRequest: event.detail.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config-request=": event.detail.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-The `hx-on` attribute is a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
+The `hx-on*` attributes are a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
 fully developed front-end scripting solutions such as AlpineJS or hyperscript.  It can, however, augment a VanillaJS-based
 approach to scripting in your htmx-powered application.
+
+Note that HTML attributes are *case insensitive*.  This means that, unfortunately, events that rely on capitalization/
+camel casing, cannot be responded to.  If you need to support camel case events we recommend using a more fully
+functional scripting solution such as AlpineJS or hyperscript.  htmx dispatches all its events in both camelCase and in
+kebab-case for this very reason.
+
 
 ### hyperscript
 
@@ -1667,6 +1692,7 @@ listed below:
 | `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with this method by encoding their parameters in the URL, not the request body                                            |
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
+| `htmx.config.triggerSpecsCache`       | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
 
 </div>
 

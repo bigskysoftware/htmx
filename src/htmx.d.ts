@@ -400,6 +400,42 @@ export interface HtmxConfig {
      * @default true
      */
     scrollIntoViewOnBoost?: boolean;
+    /**
+     * If set, the nonce will be added to inline scripts.
+     * @default ''
+     */
+    inlineScriptNonce?: string;
+    /**
+     * The type of binary data being received over the WebSocket connection
+     * @default 'blob'
+     */
+    wsBinaryType?: 'blob' | 'arraybuffer'; 
+    /**
+     * If set to true htmx will include a cache-busting parameter in GET requests to avoid caching partial responses by the browser
+     * @default false 
+     */
+    getCacheBusterParam?: boolean;
+    /**
+     * If set to true, htmx will use the View Transition API when swapping in new content.
+     * @default false 
+     */
+    globalViewTransitions?: boolean;
+    /**
+     * htmx will format requests with these methods by encoding their parameters in the URL, not the request body
+     * @default ["get"] 
+     */
+    methodsThatUseUrlParams?: ('get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch' )[];
+    /**
+     * If set to true htmx will not update the title of the document when a title tag is found in new content
+     * @default false 
+     */
+    ignoreTitle:? boolean;
+    /**
+     * The cache to store evaluated trigger specifications into.
+     * You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+     * @default null
+     */
+    triggerSpecsCache?: {[trigger: string]: HtmxTriggerSpecification[]};
 }
 
 /**

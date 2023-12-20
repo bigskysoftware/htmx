@@ -348,4 +348,31 @@ describe("Core htmx AJAX headers", function () {
         this.server.respond();
         div.innerHTML.should.equal('<div>Yay! Welcome</div>');
     })
+
+    it('request to restore history should include the HX-Request header', function () {
+        this.server.respondWith('GET', '/test', function (xhr) {
+            xhr.requestHeaders['HX-Request'].should.be.equal('true');
+            xhr.respond(200, {}, '');
+        });
+        htmx._('loadHistoryFromServer')('/test');
+        this.server.respond();
+    });
+
+    it('request to restore history should include the HX-History-Restore-Request header', function () {
+        this.server.respondWith('GET', '/test', function (xhr) {
+            xhr.requestHeaders['HX-History-Restore-Request'].should.be.equal('true');
+            xhr.respond(200, {}, '');
+        });
+        htmx._('loadHistoryFromServer')('/test');
+        this.server.respond();
+    });
+
+    it('request to restore history should include the HX-Current-URL header', function () {
+        this.server.respondWith('GET', '/test', function (xhr) {
+            chai.assert(typeof xhr.requestHeaders['HX-Current-URL'] !== 'undefined', 'HX-Current-URL should not be undefined');
+            xhr.respond(200, {}, '');
+        });
+        htmx._('loadHistoryFromServer')('/test');
+        this.server.respond();
+    });
 });

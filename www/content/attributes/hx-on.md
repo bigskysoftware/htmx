@@ -2,26 +2,28 @@
 title = "hx-on"
 +++
 
-The `hx-on` attribute allows you to embed scripts inline to respond to events directly on an element; similar to the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.
+The `hx-on*` attributes allow you to embed scripts inline to respond to events directly on an element; similar to the 
+[`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.
 
-`hx-on` improves upon `onevent` by enabling the handling of any event for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/). This also enables you to handle any htmx event.
+The `hx-on*` attributes improve upon `onevent` by enabling the handling of any arbitrary JavaScript event,
+for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/) even when dealing with non-standard DOM events. For example, these
+attributes allow you to handle [htmx events](/reference#events).
 
-There are two forms of this attribute, one in which you specify the event as part of the attribute name
-after a colon (`hx-on:click`, for example), and a deprecated form that uses the `hx-on` attribute directly. The
-latter should only be used if IE11 support is required.
-
-### hx-on:* (recommended)
-The event name follows a colon `:` in the attribute, and the attribute value is the script to be executed:
+With `hx-on` attributes, you specify the event name as part of the attribute name, after a colon.  So, for example, if
+you want to respond to a `click` event, you would use the attribute `hx-on:click`:
 
 ```html
 <div hx-on:click="alert('Clicked!')">Click</div>
 ```
 
-All htmx events can be captured, too! Make sure to use the [kebab-case event name](@/docs.md#events),
-because DOM attributes do not preserve casing. For instance, `hx-on::beforeRequest` **will not work:**
-use `hx-on::before-request` instead.
+Note that this syntax can be used to capture all htmx events, as well as most other custom events, in addition to the
+standard DOM events.
 
-To make writing these a little easier, you can use the shorthand double-colon `hx-on::` for htmx
+One gotcha to note is that DOM attributes do not preserve case. This means, unfortunately, an attribute like
+`hx-on:htmx:beforeRequest` **will not work**, because the DOM lowercases the attribute names.  Fortunately, htmx supports
+both camel case event names and also [kebab-case event names](@/docs.md#events), so you can use `hx-on:htmx:before-request` instead.
+
+In order to make writing htmx-based event handlers a little easier, you can use the shorthand double-colon `hx-on::` for htmx
 events, and omit the "htmx" part:
 
 ```html
@@ -36,7 +38,7 @@ events, and omit the "htmx" part:
 
 ```
 
-Adding multiple handlers is easy, you just specify additional attributes:
+If you wish to handle multiple different events, you can simply add multiple attributes to an element:
 ```html
 <button hx-get="/info"
         hx-on::before-request="alert('Making a request!')"
@@ -45,6 +47,20 @@ Adding multiple handlers is easy, you just specify additional attributes:
 </button>
 ```
 
+Finally, in order to make this feature compatible with some templating languages (e.g. [JSX](https://react.dev/learn/writing-markup-with-jsx)) that do not like having a colon (`:`)
+in HTML attributes, you may use dashes in the place of colons for both the long form and the shorthand form:
+
+```html
+<!-- These two are equivalent -->
+<button hx-get="/info" hx-on-htmx-before-request="alert('Making a request!')">
+    Get Info!
+</button>
+
+<button hx-get="/info" hx-on--before-request="alert('Making a request!')">
+    Get Info!
+</button>
+
+```
 
 ### hx-on (deprecated)
 The value is an event name, followed by a colon `:`, followed by the script:
