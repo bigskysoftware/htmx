@@ -404,18 +404,6 @@ describe("hx-trigger attribute", function(){
         }, 100);
     })
 
-    // Don't actually do this!
-    it("polling works every 0ms", function (done) {
-        this.server.respondWith("GET", "/test", "Called!");
-        var div = make('<div hx-get="/test" hx-trigger="every 0ms">Not Called</div>');
-        this.server.autoRespond = true;
-        this.server.autoRespondAfter = 0;
-        setTimeout(function () {
-            div.innerHTML.should.equal("Called!");
-            done();
-        }, 100);
-    });
-
     it('bad condition issues error', function(){
         this.server.respondWith("GET", "/test", "Called!");
         var div = make('<div hx-get="/test" hx-trigger="evt[a.b]">Not Called</div>');
