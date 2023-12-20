@@ -3504,7 +3504,11 @@ return (function () {
             }
 
             if (hasHeader(xhr,/HX-Retarget:/i)) {
-                responseInfo.target = getDocument().querySelector(xhr.getResponseHeader("HX-Retarget"));
+                if (xhr.getResponseHeader("HX-Retarget") === "this") {
+                    responseInfo.target = elt;
+                } else {
+                    responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader("HX-Retarget"));
+                }
             }
 
             var historyUpdate = determineHistoryUpdates(elt, responseInfo);
