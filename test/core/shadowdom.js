@@ -2,6 +2,13 @@ describe("Core htmx Shadow DOM Tests", function() {
     //Skip these tests if browser doesn't support shadow DOM
     if(typeof window.ShadowRoot === 'undefined') return;
 
+    before(function(){
+        this.initialWorkArea = getWorkArea().outerHTML;
+    })
+    after(function() {
+        getWorkArea().outerHTML = this.initialWorkArea;
+    })
+
     beforeEach(function() {
         this.server = makeServer();
         clearWorkArea();
@@ -14,6 +21,8 @@ describe("Core htmx Shadow DOM Tests", function() {
         clearWorkArea();
         getWorkArea().shadowRoot.innerHTML = ""
     });
+
+
 
     // Locally redefine the `byId` and `make` functions to use shadow DOM
     function byId(id) {
