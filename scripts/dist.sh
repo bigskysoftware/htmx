@@ -8,13 +8,21 @@ HTMX_SRC=src/htmx.js
 rm -rf dist/*
 
 # Regular IIFE script
-cp $HTMX_SRC dist/
+cp $HTMX_SRC dist/htmx.js
 
 # Minified script
 uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js
 
 # Gzipped script
 gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
+
+# AMD script
+cat > dist/htmx.amd.js << EOF
+define(() => {
+$(cat $HTMX_SRC)
+return htmx
+})
+EOF
 
 # CJS script
 cat > dist/htmx.cjs.js << EOF
