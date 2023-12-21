@@ -642,7 +642,7 @@ describe("Core htmx AJAX Tests", function(){
             this.server.respond();
             foo.bar().should.equal(42);
         } finally {
-            delete foo;
+            delete window.foo;
         }
     });
 

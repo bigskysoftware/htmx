@@ -26,7 +26,7 @@
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
     "dist": "./scripts/dist.sh",
-    "lint": "eslint src/htmx.js",
+    "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
@@ -55,6 +55,7 @@
       "no-unused-vars": 0,
       "no-useless-call": 0,
       "no-useless-escape": 0,
+      "no-unused-expressions": 0,
       "space-before-function-paren": [
         "error",
         "never"
