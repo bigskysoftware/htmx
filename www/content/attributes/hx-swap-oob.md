@@ -31,6 +31,22 @@ If a swap value is given, that swap strategy will be used.
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
+You should use a `template` tag to encapsulate elements that by the spec can't stand on their own in the DOM _(`tr` or `td` for example that must be children of respectively `tbody` and `tr`)_
+
+```html
+<div>
+    ...
+</div>
+<div id="alerts" hx-swap-oob="true">
+    ...
+</div>
+<template>
+    <tr id="row" hx-swap-oob="true">
+        ...
+    </tr>
+</template>
+```
+
 ## Notes
 
 * `hx-swap-oob` is not inherited
