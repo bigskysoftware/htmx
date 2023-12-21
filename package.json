@@ -26,6 +26,7 @@
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
     "dist": "./scripts/dist.sh",
+    "lint": "eslint src/htmx.js",
     "format": "eslint --fix src/htmx.js",
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
@@ -41,6 +42,19 @@
     "rules": {
       "camelcase": 0,
       "no-var": 0,
+      "no-undef": 0,
+      "eqeqeq": 0,
+      "no-multi-str": 0,
+      "no-prototype-builtins": 0,
+      "no-cond-assign": 0,
+      "no-empty": 0,
+      "no-eval": 0,
+      "no-new-func": 0,
+      "no-redeclare": 0,
+      "no-return-assign": 0,
+      "no-unused-vars": 0,
+      "no-useless-call": 0,
+      "no-useless-escape": 0,
       "space-before-function-paren": [
         "error",
         "never"
