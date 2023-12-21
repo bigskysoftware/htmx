@@ -601,8 +601,6 @@ would be swapped into the target in the normal manner.
 
 You can use this technique to "piggy-back" updates on other requests.
 
-Note that out of band elements must be in the top level of the response, and not children of the top level elements.
-
 #### Selecting Content To Swap
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
