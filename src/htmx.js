@@ -1,4 +1,4 @@
-const htmx = (function () {
+var htmx = (function () {
   'use strict'
 
   // Public API
