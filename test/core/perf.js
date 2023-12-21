@@ -1,4 +1,5 @@
 describe('Core htmx perf Tests', function() {
+  const chai = window.chai
   var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
 
   beforeEach(function() {
