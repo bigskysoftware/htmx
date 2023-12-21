@@ -1,4 +1,5 @@
 describe('Core htmx AJAX headers', function() {
+  const chai = window.chai
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()

@@ -1,4 +1,5 @@
 describe('Core htmx internals Tests', function() {
+  const chai = window.chai
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
