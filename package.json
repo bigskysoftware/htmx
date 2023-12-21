@@ -25,9 +25,10 @@
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
+    "dist": "./scripts/dist.sh",
+    "format": "eslint --fix src/htmx.js",
     "test": "mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
-    "dist": "./scripts/dist.sh",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh"
   },
@@ -35,9 +36,22 @@
     "type": "git",
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
+  "eslintConfig": {
+    "extends": "standard",
+    "rules": {
+      "camelcase": 0,
+      "no-var": 0,
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ]
+    }
+  },
   "devDependencies": {
     "chai": "^4.3.7",
     "chai-dom": "^1.11.0",
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
     "fs-extra": "^9.1.0",
     "mocha": "^9.2.2",
     "mocha-chrome": "^2.2.0",
