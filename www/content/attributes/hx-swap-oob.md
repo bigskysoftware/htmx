@@ -50,4 +50,3 @@ You should use a `template` tag to encapsulate elements that by the spec can't s
 ## Notes
 
 * `hx-swap-oob` is not inherited
-* Out of band elements must be in the top level of the response, and not children of the top level elements.
