@@ -637,6 +637,15 @@ would be swapped into the target in the normal manner.
 
 You can use this technique to "piggy-back" updates on other requests.
 
+#### Troublesome Tables
+
+Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
+their own in the DOM (e.g. `<tr>` or `<td>`).
+
+To avoid this issue you can use a `template` tag to encapsulate these elements:
+
+
+
 #### Selecting Content To Swap
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
