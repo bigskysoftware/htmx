@@ -829,6 +829,15 @@ var htmx = (function() {
     return oobValue
   }
 
+  function findAndSwapOobElements(fragment, settleInfo) {
+    forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
+      const oobValue = getAttributeValue(oobElement, "hx-swap-oob");
+      if (oobValue != null) {
+        oobSwap(oobValue, oobElement, settleInfo);
+      }
+    });
+  }
+
   function handleOutOfBandSwaps(elt, fragment, settleInfo) {
     const oobSelects = getClosestAttributeValue(elt, 'hx-select-oob')
     if (oobSelects) {
@@ -846,10 +855,12 @@ var htmx = (function() {
         }
       }
     }
-    forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
-      const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
-      if (oobValue != null) {
-        oobSwap(oobValue, oobElement, settleInfo)
+    findAndSwapOobElements(fragment, settleInfo)
+    forEach(findAll(fragment, 'template'), function (template) {
+      findAndSwapOobElements(template.content, settleInfo)
+      if (template.content.childElementCount === 0) {
+        // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
+        template.remove()
       }
     })
   }
