@@ -76,9 +76,14 @@ describe("Core htmx internals Tests", function() {
     it("handles parseInterval correctly", function() {
         chai.expect(htmx.parseInterval("1ms")).to.be.equal(1);
         chai.expect(htmx.parseInterval("300ms")).to.be.equal(300);
-        chai.expect(htmx.parseInterval("1s")).to.be.equal(1000)
-        chai.expect(htmx.parseInterval("1.5s")).to.be.equal(1500)
-        chai.expect(htmx.parseInterval("2s")).to.be.equal(2000)
+        chai.expect(htmx.parseInterval("1s")).to.be.equal(1000);
+        chai.expect(htmx.parseInterval("1.5s")).to.be.equal(1500);
+        chai.expect(htmx.parseInterval("2s")).to.be.equal(2000);
+        chai.expect(htmx.parseInterval("0ms")).to.be.equal(0);
+        chai.expect(htmx.parseInterval("0s")).to.be.equal(0);
+        chai.expect(htmx.parseInterval("0m")).to.be.equal(0);
+        chai.expect(htmx.parseInterval("0")).to.be.equal(0);
+        chai.expect(htmx.parseInterval("5")).to.be.equal(5);
 
         chai.expect(htmx.parseInterval(null)).to.be.undefined
         chai.expect(htmx.parseInterval("")).to.be.undefined
