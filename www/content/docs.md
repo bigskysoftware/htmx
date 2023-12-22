@@ -431,17 +431,17 @@ with any of the following values:
 #### Morph Swaps {#morphing}
 
 In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
-attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job
-preserving things like focus, video state, etc. by preserving nodes in-place during the swap operation.
+attempt to _merge_ new content into the existing DOM, rather than simply replacing it.  They often do a better job
+preserving things like focus, video state, etc. by mutating existing nodes in-place during the swap operation, at the
+cost of more CPU.
 
 The following extensions are available for morph-style swaps:
 
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A morphing algorithm created by the htmx developers.
 * [Morphdom Swap](@/extensions/morphdom-swap.md) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
   the original DOM morphing library.
 * [Alpine-morph](@/extensions/alpine-morph.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
   well with alpine.js
-* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators
-  of htmx.  Idiomorph will be available out of the box in htmx 2.0.
 
 #### View Transitions {#view-transitions}
 
