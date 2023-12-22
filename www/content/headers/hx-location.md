@@ -27,3 +27,4 @@ Path is required and is url to load the response from. The rest of the data mirr
 * `swap` - how the response will be swapped in relative to the target
 * `values` - values to submit with the request
 * `headers` - headers to submit with the request
+* `select` - allows you to select the content you want swapped from a response

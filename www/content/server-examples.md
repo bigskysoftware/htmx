@@ -107,6 +107,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Rails
 
 - <https://github.com/rootstrap/htmx-rails>
+- <https://github.com/guilleiguaran/rails-htmx>
 
 ### Sinatra
 

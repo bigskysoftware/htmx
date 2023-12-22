@@ -38,6 +38,7 @@ custom_classes = "wide-content"
 * [events & logging](#events)
 * [debugging](#debugging)
 * [scripting](#scripting)
+  * [hx-on attribute](#the-hx-on-attribute)
   * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
@@ -95,7 +96,7 @@ within the [original web programming model](https://www.ics.uci.edu/~fielding/pu
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
-It's worth mentioning that, if you prefer, you can use the `data-` prefix when using htmx:
+It's worth mentioning that, if you prefer, you can use the [`data-`](https://html.spec.whatwg.org/multipage/dom.html#attr-data-*) prefix when using htmx:
 
 ```html
 <a data-hx-post="/click">Click Me!</a>
@@ -345,10 +346,10 @@ you can create your own CSS transition like so:
 .htmx-indicator{
     display:none;
 }
-.htmx-request .my-indicator{
+.htmx-request .htmx-indicator{
     display:inline;
 }
-.htmx-request.my-indicator{
+.htmx-request.htmx-indicator{
     display:inline;
 }
 ```
@@ -600,8 +601,6 @@ would be swapped into the target in the normal manner.
 
 You can use this technique to "piggy-back" updates on other requests.
 
-Note that out of band elements must be in the top level of the response, and not children of the top level elements.
-
 #### Selecting Content To Swap
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
@@ -790,7 +789,7 @@ htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
+<div style="border: 1px solid whitesmoke; background-color: #e4f0ff; padding: 8px; border-radius: 8px">
 
 **Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
@@ -828,7 +827,7 @@ server and the browser than websockets.
 If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
 
 1. Define an SSE source.  To do this, add a [hx-sse](@/attributes/hx-sse.md) attribute on a parent element with
-a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
+a `connect:<url>` declaration that specifies the URL from which Server Sent Events will be received.
 
 2. Define elements that are descendents of this element that are triggered by server sent events using the
 `hx-trigger="sse:<event_name>"` syntax
@@ -990,12 +989,15 @@ Here is an example of an input that uses the `htmx:validation:validate` event to
 `foo`, using hyperscript:
 
 ```html
-<form hx-post="/test">
+<form id="foo-form" hx-post="/test">
     <input _="on htmx:validation:validate
                 if my.value != 'foo'
                     call me.setCustomValidity('Please enter the value foo')
-                else
-                    call me.setCustomValidity('')"
+                    call #foo-form.reportValidity()
+                end
+                
+                on keyup
+                call me.setCustomValidity('')"
         name="example"
     >
 </form>
@@ -1038,6 +1040,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 | [`path-deps`](@/extensions/path-deps.md) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](@/extensions/class-tools.md) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`multi-swap`](@/extensions/multi-swap.md) | allows to swap multiple elements with different swap methods
+| [`response-targets`](@/extensions/response-targets.md) | allows to swap elements for responses with HTTP codes beyond `200`
 
 See the [extensions page](@/extensions/_index.md#included) for a complete list.
 
