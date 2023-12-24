@@ -23,7 +23,7 @@ describe("htmx config test", function () {
         this.server.respond();
         btn.innerHTML.should.equal("200");
 
-        responseCode = 203; // 203 should not cause a swap by default
+        responseCode = 204; // 204 should not cause a swap by default
         var btn = make('<button hx-get="/test">Click Me!</button>')
         btn.click();
         this.server.respond();

@@ -3,7 +3,6 @@ var htmx = (function() {
 
   // Public API
   //* * @type {import("./htmx").HtmxApi} */
-  // TODO: list all methods in public API
   const htmx = {
     onLoad: onLoadHelper,
     process: processNode,
@@ -60,12 +59,12 @@ var htmx = (function() {
       ignoreTitle: false,
       scrollIntoViewOnBoost: true,
       triggerSpecsCache: null,
-        disableInheritance: false,
-        responseHandling: [
-            {code:"203", swap: false},
-            {code:"[23]..", swap: true},
-            {code:"[45]..", swap: false, error:true},
-        ]
+      disableInheritance: false,
+      responseHandling: [
+          {code:"204", swap: false},
+          {code:"[23]..", swap: true},
+          {code:"[45]..", swap: false, error:true},
+      ]
     },
     parseInterval,
     _: internalEval,
@@ -3223,292 +3222,292 @@ var htmx = (function() {
             }
         }
 
-        function handleAjaxResponse(elt, responseInfo) {
-            const xhr = responseInfo.xhr
-    let target = responseInfo.target
-    const etc = responseInfo.etc
-    const requestConfig = responseInfo.requestConfig
-    const select = responseInfo.select
+      function handleAjaxResponse(elt, responseInfo) {
+        const xhr = responseInfo.xhr
+        let target = responseInfo.target
+        const etc = responseInfo.etc
+        const select = responseInfo.select
 
-    if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return
+        if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return
 
-    if (hasHeader(xhr, /HX-Trigger:/i)) {
-      handleTrigger(xhr, 'HX-Trigger', elt)
-    }
-
-    if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory()
-      let redirectPath = xhr.getResponseHeader('HX-Location')
-      var swapSpec
-      if (redirectPath.indexOf('{') === 0) {
-        swapSpec = parseJSON(redirectPath)
-        // what's the best way to throw an error if the user didn't include this
-        redirectPath = swapSpec.path
-        delete swapSpec.path
-      }
-      ajaxHelper('GET', redirectPath, swapSpec).then(function() {
-        pushUrlIntoHistory(redirectPath)
-      })
-      return
-    }
-
-    const shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && xhr.getResponseHeader('HX-Refresh') === 'true'
-
-    if (hasHeader(xhr, /HX-Redirect:/i)) {
-      location.href = xhr.getResponseHeader('HX-Redirect')
-      shouldRefresh && location.reload()
-      return
-    }
-
-    if (shouldRefresh) {
-      location.reload()
-      return
-    }
-
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget'))
-      }
-    }
-
-    const historyUpdate = determineHistoryUpdates(elt, responseInfo)
-
-    // by default htmx only swaps on 200 return codes and does not swap
-    // on 204 'No Content'
-    // this can be ovverriden by responding to the htmx:beforeSwap event and
-    // overriding the detail.shouldSwap property
-    const responseHandling = resolveResponseHandling(xhr);
-    let shouldSwap = responseHandling.swap;
-    let isError = !!responseHandling.error;
-    let ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
-    let selectOverride = responseHandling.select;
-    if (responseHandling.target) {
-        responseInfo.target = querySelectorExt(elt, responseHandling.target);
-    }
-    var swapOverride = etc.swapOverride;
-    if (swapOverride == null && responseHandling.swapOverride) {
-        swapOverride = responseHandling.swapOverride;
-    }
-
-    // response headers override response handling config
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-        if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-            responseInfo.target = elt
-        } else {
-            responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget'))
+        if (hasHeader(xhr, /HX-Trigger:/i)) {
+          handleTrigger(xhr, 'HX-Trigger', elt)
         }
-    }
-    if (hasHeader(xhr,/HX-Reswap:/i)) {
-        swapOverride = xhr.getResponseHeader("HX-Reswap");
-    }
 
-    var serverResponse = xhr.response;
-    var beforeSwapDetails = mergeObjects({shouldSwap: shouldSwap, serverResponse:serverResponse, isError:isError, ignoreTitle:ignoreTitle, selectOverride:selectOverride }, responseInfo);
+        if (hasHeader(xhr, /HX-Location:/i)) {
+          saveCurrentPageToHistory()
+          let redirectPath = xhr.getResponseHeader('HX-Location')
+          var swapSpec
+          if (redirectPath.indexOf('{') === 0) {
+            swapSpec = parseJSON(redirectPath)
+            // what's the best way to throw an error if the user didn't include this
+            redirectPath = swapSpec.path
+            delete swapSpec.path
+          }
+          ajaxHelper('GET', redirectPath, swapSpec).then(function () {
+            pushUrlIntoHistory(redirectPath)
+          })
+          return
+        }
 
-    if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return;
+        const shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && xhr.getResponseHeader('HX-Refresh') === 'true'
 
-    if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
+        if (hasHeader(xhr, /HX-Redirect:/i)) {
+          location.href = xhr.getResponseHeader('HX-Redirect')
+          shouldRefresh && location.reload()
+          return
+        }
 
-    target = beforeSwapDetails.target // allow re-targeting
-    serverResponse = beforeSwapDetails.serverResponse // allow updating content
-    isError = beforeSwapDetails.isError // allow updating error
-    ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
-    selectOverride = beforeSwapDetails.selectOverride; //allow updating select override
+        if (shouldRefresh) {
+          location.reload()
+          return
+        }
 
-    responseInfo.target = target // Make updated target available to response events
-    responseInfo.failed = isError // Make failed property available to response events
-    responseInfo.successful = !isError // Make successful property available to response events
+        if (hasHeader(xhr, /HX-Retarget:/i)) {
+          if (xhr.getResponseHeader('HX-Retarget') === 'this') {
+            responseInfo.target = elt
+          } else {
+            responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget'))
+          }
+        }
 
-    if (beforeSwapDetails.shouldSwap) {
-      if (xhr.status === 286) {
-        cancelPolling(elt)
-      }
+        const historyUpdate = determineHistoryUpdates(elt, responseInfo)
 
-      withExtensions(elt, function(extension) {
-        serverResponse = extension.transformResponse(serverResponse, xhr, elt)
-      })
 
-      // Save current page if there will be a history update
-      if (historyUpdate.type) {
-        saveCurrentPageToHistory()
-      }
+        const responseHandling = resolveResponseHandling(xhr);
+        let shouldSwap = responseHandling.swap;
+        let isError = !!responseHandling.error;
+        let ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
+        let selectOverride = responseHandling.select;
+        if (responseHandling.target) {
+          responseInfo.target = querySelectorExt(elt, responseHandling.target);
+        }
+        var swapOverride = etc.swapOverride;
+        if (swapOverride == null && responseHandling.swapOverride) {
+          swapOverride = responseHandling.swapOverride;
+        }
 
-      let swapOverride = etc.swapOverride
-      if (hasHeader(xhr, /HX-Reswap:/i)) {
-        swapOverride = xhr.getResponseHeader('HX-Reswap')
-      }
-      var swapSpec = getSwapSpecification(elt, swapOverride)
+        // response headers override response handling config
+        if (hasHeader(xhr, /HX-Retarget:/i)) {
+          if (xhr.getResponseHeader('HX-Retarget') === 'this') {
+            responseInfo.target = elt
+          } else {
+            responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget'))
+          }
+        }
+        if (hasHeader(xhr, /HX-Reswap:/i)) {
+          swapOverride = xhr.getResponseHeader("HX-Reswap");
+        }
 
-      if (swapSpec.hasOwnProperty('ignoreTitle')) {
-        ignoreTitle = swapSpec.ignoreTitle
-      }
+        var serverResponse = xhr.response;
+        var beforeSwapDetails = mergeObjects({
+          shouldSwap: shouldSwap,
+          serverResponse: serverResponse,
+          isError: isError,
+          ignoreTitle: ignoreTitle,
+          selectOverride: selectOverride
+        }, responseInfo);
 
-      target.classList.add(htmx.config.swappingClass)
+        if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return;
 
-      // optional transition API promise callbacks
-      let settleResolve = null
-      let settleReject = null
+        if (!triggerEvent(target, 'htmx:beforeSwap', beforeSwapDetails)) return;
 
-      let doSwap = function() {
-        try {
-          const activeElt = document.activeElement
-          let selectionInfo = {}
-          try {
-            selectionInfo = {
-              elt: activeElt,
-              // @ts-ignore
-              start: activeElt ? activeElt.selectionStart : null,
-              // @ts-ignore
-              end: activeElt ? activeElt.selectionEnd : null
-            }
-          } catch (e) {
-          // safari issue - see https://github.com/microsoft/playwright/issues/5894
+        target = beforeSwapDetails.target // allow re-targeting
+        serverResponse = beforeSwapDetails.serverResponse // allow updating content
+        isError = beforeSwapDetails.isError // allow updating error
+        ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
+        selectOverride = beforeSwapDetails.selectOverride; //allow updating select override
+
+        responseInfo.target = target // Make updated target available to response events
+        responseInfo.failed = isError // Make failed property available to response events
+        responseInfo.successful = !isError // Make successful property available to response events
+
+        if (beforeSwapDetails.shouldSwap) {
+          if (xhr.status === 286) {
+            cancelPolling(elt)
           }
 
-          let selectOverride
-          if (select) {
-            selectOverride = select
-          }
+          withExtensions(elt, function (extension) {
+            serverResponse = extension.transformResponse(serverResponse, xhr, elt)
+          })
 
-          if (hasHeader(xhr, /HX-Reselect:/i)) {
-            selectOverride = xhr.getResponseHeader('HX-Reselect')
-          }
-
-          // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+          // Save current page if there will be a history update
           if (historyUpdate.type) {
-            triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
-            if (historyUpdate.type === 'push') {
-              pushUrlIntoHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', { path: historyUpdate.path })
-            } else {
-              replaceUrlInHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
-            }
+            saveCurrentPageToHistory()
           }
 
-          const settleInfo = makeSettleInfo(target)
-          selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride)
+          if (hasHeader(xhr, /HX-Reswap:/i)) {
+            swapOverride = xhr.getResponseHeader('HX-Reswap')
+          }
+          var swapSpec = getSwapSpecification(elt, swapOverride)
 
-          if (selectionInfo.elt &&
-          !bodyContains(selectionInfo.elt) &&
-          getRawAttribute(selectionInfo.elt, 'id')) {
-            const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
-            const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
-            if (newActiveElt) {
-            // @ts-ignore
-              if (selectionInfo.start && newActiveElt.setSelectionRange) {
-              // @ts-ignore
-                try {
-                  newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
-                } catch (e) {
-                // the setSelectionRange method is present on fields that don't support it, so just let this fail
+          if (swapSpec.hasOwnProperty('ignoreTitle')) {
+            ignoreTitle = swapSpec.ignoreTitle
+          }
+
+          target.classList.add(htmx.config.swappingClass)
+
+          // optional transition API promise callbacks
+          let settleResolve = null
+          let settleReject = null
+
+          let doSwap = function () {
+            try {
+              const activeElt = document.activeElement
+              let selectionInfo = {}
+              try {
+                selectionInfo = {
+                  elt: activeElt,
+                  // @ts-ignore
+                  start: activeElt ? activeElt.selectionStart : null,
+                  // @ts-ignore
+                  end: activeElt ? activeElt.selectionEnd : null
+                }
+              } catch (e) {
+                // safari issue - see https://github.com/microsoft/playwright/issues/5894
+              }
+
+              if (select) {
+                selectOverride = select
+              }
+
+              if (hasHeader(xhr, /HX-Reselect:/i)) {
+                selectOverride = xhr.getResponseHeader('HX-Reselect')
+              }
+
+              // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+              if (historyUpdate.type) {
+                triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({history: historyUpdate}, responseInfo))
+                if (historyUpdate.type === 'push') {
+                  pushUrlIntoHistory(historyUpdate.path)
+                  triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', {path: historyUpdate.path})
+                } else {
+                  replaceUrlInHistory(historyUpdate.path)
+                  triggerEvent(getDocument().body, 'htmx:replacedInHistory', {path: historyUpdate.path})
                 }
               }
-              newActiveElt.focus(focusOptions)
-            }
-          }
 
-          target.classList.remove(htmx.config.swappingClass)
-          forEach(settleInfo.elts, function(elt) {
-            if (elt.classList) {
-              elt.classList.add(htmx.config.settlingClass)
-            }
-            triggerEvent(elt, 'htmx:afterSwap', responseInfo)
-          })
+              const settleInfo = makeSettleInfo(target)
+              selectAndSwap(swapSpec.swapStyle, target, elt, serverResponse, settleInfo, selectOverride)
 
-          if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-            let finalElt = elt
-            if (!bodyContains(elt)) {
-              finalElt = getDocument().body
-            }
-            handleTrigger(xhr, 'HX-Trigger-After-Swap', finalElt)
-          }
-
-          const doSettle = function() {
-            forEach(settleInfo.tasks, function(task) {
-              task.call()
-            })
-            forEach(settleInfo.elts, function(elt) {
-              if (elt.classList) {
-                elt.classList.remove(htmx.config.settlingClass)
+              if (selectionInfo.elt &&
+                  !bodyContains(selectionInfo.elt) &&
+                  getRawAttribute(selectionInfo.elt, 'id')) {
+                const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
+                const focusOptions = {preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll}
+                if (newActiveElt) {
+                  // @ts-ignore
+                  if (selectionInfo.start && newActiveElt.setSelectionRange) {
+                    // @ts-ignore
+                    try {
+                      newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
+                    } catch (e) {
+                      // the setSelectionRange method is present on fields that don't support it, so just let this fail
+                    }
+                  }
+                  newActiveElt.focus(focusOptions)
+                }
               }
-              triggerEvent(elt, 'htmx:afterSettle', responseInfo)
-            })
 
-            if (responseInfo.pathInfo.anchor) {
-              const anchorTarget = getDocument().getElementById(responseInfo.pathInfo.anchor)
-              if (anchorTarget) {
-                anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
+              target.classList.remove(htmx.config.swappingClass)
+              forEach(settleInfo.elts, function (elt) {
+                if (elt.classList) {
+                  elt.classList.add(htmx.config.settlingClass)
+                }
+                triggerEvent(elt, 'htmx:afterSwap', responseInfo)
+              })
+
+              if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+                let finalElt = elt
+                if (!bodyContains(elt)) {
+                  finalElt = getDocument().body
+                }
+                handleTrigger(xhr, 'HX-Trigger-After-Swap', finalElt)
               }
-            }
 
-            if (settleInfo.title && !ignoreTitle) {
-              const titleElt = find('title')
-              if (titleElt) {
-                titleElt.innerHTML = settleInfo.title
+              const doSettle = function () {
+                forEach(settleInfo.tasks, function (task) {
+                  task.call()
+                })
+                forEach(settleInfo.elts, function (elt) {
+                  if (elt.classList) {
+                    elt.classList.remove(htmx.config.settlingClass)
+                  }
+                  triggerEvent(elt, 'htmx:afterSettle', responseInfo)
+                })
+
+                if (responseInfo.pathInfo.anchor) {
+                  const anchorTarget = getDocument().getElementById(responseInfo.pathInfo.anchor)
+                  if (anchorTarget) {
+                    anchorTarget.scrollIntoView({block: 'start', behavior: 'auto'})
+                  }
+                }
+
+                if (settleInfo.title && !ignoreTitle) {
+                  const titleElt = find('title')
+                  if (titleElt) {
+                    titleElt.innerHTML = settleInfo.title
+                  } else {
+                    window.document.title = settleInfo.title
+                  }
+                }
+
+                updateScrollState(settleInfo.elts, swapSpec)
+
+                if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+                  let finalElt = elt
+                  if (!bodyContains(elt)) {
+                    finalElt = getDocument().body
+                  }
+                  handleTrigger(xhr, 'HX-Trigger-After-Settle', finalElt)
+                }
+                maybeCall(settleResolve)
+              }
+
+              if (swapSpec.settleDelay > 0) {
+                setTimeout(doSettle, swapSpec.settleDelay)
               } else {
-                window.document.title = settleInfo.title
+                doSettle()
               }
+            } catch (e) {
+              triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
+              maybeCall(settleReject)
+              throw e
             }
-
-            updateScrollState(settleInfo.elts, swapSpec)
-
-            if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-              let finalElt = elt
-              if (!bodyContains(elt)) {
-                finalElt = getDocument().body
-              }
-              handleTrigger(xhr, 'HX-Trigger-After-Settle', finalElt)
-            }
-            maybeCall(settleResolve)
           }
 
-          if (swapSpec.settleDelay > 0) {
-            setTimeout(doSettle, swapSpec.settleDelay)
+          let shouldTransition = htmx.config.globalViewTransitions
+          if (swapSpec.hasOwnProperty('transition')) {
+            shouldTransition = swapSpec.transition
+          }
+
+          if (shouldTransition &&
+              triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
+              typeof Promise !== 'undefined' && document.startViewTransition) {
+            const settlePromise = new Promise(function (_resolve, _reject) {
+              settleResolve = _resolve
+              settleReject = _reject
+            })
+            // wrap the original doSwap() in a call to startViewTransition()
+            const innerDoSwap = doSwap
+            doSwap = function () {
+              document.startViewTransition(function () {
+                innerDoSwap()
+                return settlePromise
+              })
+            }
+          }
+
+          if (swapSpec.swapDelay > 0) {
+            setTimeout(doSwap, swapSpec.swapDelay)
           } else {
-            doSettle()
+            doSwap()
           }
-        } catch (e) {
-          triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
-          maybeCall(settleReject)
-          throw e
+        }
+        if (isError) {
+          triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath}, responseInfo))
         }
       }
-
-      let shouldTransition = htmx.config.globalViewTransitions
-      if (swapSpec.hasOwnProperty('transition')) {
-        shouldTransition = swapSpec.transition
-      }
-
-      if (shouldTransition &&
-      triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
-      typeof Promise !== 'undefined' && document.startViewTransition) {
-        const settlePromise = new Promise(function(_resolve, _reject) {
-          settleResolve = _resolve
-          settleReject = _reject
-        })
-        // wrap the original doSwap() in a call to startViewTransition()
-        const innerDoSwap = doSwap
-        doSwap = function() {
-          document.startViewTransition(function() {
-            innerDoSwap()
-            return settlePromise
-          })
-        }
-      }
-
-      if (swapSpec.swapDelay > 0) {
-        setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
-    }
-    if (isError) {
-      triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
-    }
-  }
 
   //= ===================================================================
   // Extensions API
@@ -3692,5 +3691,4 @@ var htmx = (function() {
   })
 
   return htmx
-}
-)()
+})()
