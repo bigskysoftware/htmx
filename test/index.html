@@ -32,7 +32,7 @@
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/chai-dom/chai-dom.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/mocha-webdriver-runner/dist/mocha-webdriver-client.js"></script>
+<script src="../node_modules/mocha-webdriver/dist/index.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="../src/htmx.js"></script>
@@ -49,7 +49,7 @@
 <script class="mocha-init">
     mocha.setup('bdd');
     mocha.checkLeaks();
-    should = chai.should();
+    window.should = window.chai.should()
 </script>
 
 <script src="util/util.js"></script>
@@ -65,6 +65,7 @@
 <script src="core/headers.js"></script>
 <script src="core/regressions.js"></script>
 <script src="core/security.js"></script>
+<script src="core/shadowdom.js"></script>
 <script src="core/perf.js"></script>
 <script src="core/validation.js"></script>
 <script src="core/tokenizer.js"></script>
@@ -80,6 +81,7 @@
 <script src="attributes/hx-include.js"></script>
 <script src="attributes/hx-indicator.js"></script>
 <script src="attributes/hx-disabled-elt.js"></script>
+<script src="attributes/hx-inherit.js"></script>
 <script src="attributes/hx-disinherit.js"></script>
 <script src="attributes/hx-on-wildcard.js"></script>
 <script src="attributes/hx-params.js"></script>
@@ -91,7 +93,6 @@
 <script src="attributes/hx-request.js"></script>
 <script src="attributes/hx-select.js"></script>
 <script src="attributes/hx-select-oob.js"></script>
-<script src="attributes/hx-sse.js"></script>
 <script src="attributes/hx-swap-oob.js"></script>
 <script src="attributes/hx-swap.js"></script>
 <script src="attributes/hx-sync.js"></script>
@@ -99,7 +100,6 @@
 <script src="attributes/hx-trigger.js"></script>
 <script src="attributes/hx-vals.js"></script>
 <script src="attributes/hx-vars.js"></script>
-<script src="attributes/hx-ws.js"></script>
 
 <!-- hyperscript integration -->
 <script src="lib/_hyperscript.js"></script>
@@ -158,8 +158,14 @@
 <script src="../src/ext/ws.js"></script>
 <script src="ext/ws.js"></script>
 
+<script src="../src/ext/sse.js"></script>
+<script src="ext/sse.js"></script>
+
 <script src="../src/ext/response-targets.js"></script>
 <script src="ext/response-targets.js"></script>
+
+<script src="../src/ext/path-params.js"></script>
+<script src="ext/path-params.js"></script>
 
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>
@@ -173,7 +179,7 @@
 </script>
 <em>Work Area</em>
 <hr/>
-<div id="work-area" hx-history-elt hx-ext="sse">
+<div id="work-area" hx-history-elt>
 </div>
 </body>
 </html>
