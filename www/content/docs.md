@@ -637,7 +637,14 @@ would be swapped into the target in the normal manner.
 
 You can use this technique to "piggy-back" updates on other requests.
 
-Note that out of band elements must be in the top level of the response, and not children of the top level elements.
+#### Troublesome Tables
+
+Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
+their own in the DOM (e.g. `<tr>` or `<td>`).
+
+To avoid this issue you can use a `template` tag to encapsulate these elements:
+
+
 
 #### Selecting Content To Swap
 
@@ -1698,6 +1705,7 @@ listed below:
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
 | `htmx.config.disableInheritance`      | disables attribute inheritance in htmx, which can then be overridden by the [`hx-inherit`](@/attributes/hx-inherit.md) attribute                                           |
+| `htmx.config.triggerSpecsCache`       | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
 
 </div>
 

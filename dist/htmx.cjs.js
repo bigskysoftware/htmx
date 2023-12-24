@@ -3624,3 +3624,4 @@ const htmx = (function () {
   return htmx
 }
 )()
+module.exports = htmx;

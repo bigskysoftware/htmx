@@ -1,3 +1,4 @@
+define(() => {
 const htmx = (function () {
   'use strict'
 
@@ -3624,3 +3625,5 @@ const htmx = (function () {
   return htmx
 }
 )()
+return htmx
+})

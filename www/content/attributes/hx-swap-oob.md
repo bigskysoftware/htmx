@@ -31,7 +31,26 @@ If a swap value is given, that swap strategy will be used.
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
+### Troublesome Tables
+
+Note that you can use a `template` tag to encapsulate types of elements that, by the HTML spec, can't stand on their own in the 
+DOM (`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>` & `<col>`).
+
+Here is an example with an out of band swap of a table row being encapsulated in this way:
+
+```html
+<div>
+    ...
+</div>
+<template>
+    <tr id="row" hx-swap-oob="true">
+        ...
+    </tr>
+</template>
+```
+
+Note that these template tags will be removed from the final content of the page.
+
 ## Notes
 
 * `hx-swap-oob` is not inherited
-* Out of band elements must be in the top level of the response, and not children of the top level elements.
