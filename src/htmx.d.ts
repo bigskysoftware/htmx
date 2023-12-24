@@ -21,7 +21,7 @@ export function addClass(elt: Element, clazz: string, delay?: number): void;
  * @param element the element to target (defaults to the **body**)
  * @returns Promise that resolves immediately if no request is sent, or when the request is complete
  */
-export function ajax(verb: string, path: string, element: Element): Promise<void>;
+export function ajax(verb: string, path: string, element?: Element): Promise<void>;
 
 /**
  * Issues an htmx-style AJAX request
