@@ -128,8 +128,8 @@ describe('hx-swap-oob attribute', function() {
     should.equal(byId('d1'), null)
   })
 
-  it("oob swap supports table row in fragment along other oob swap elements", function () {
-    this.server.respondWith("GET", "/test",
+  it('oob swap supports table row in fragment along other oob swap elements', function() {
+    this.server.respondWith('GET', '/test',
       `Clicked
       <div hx-swap-oob="innerHTML" id="d1">Test</div>
       <button type="button" hx-swap-oob="true" id="b2">Another button</button>
@@ -156,10 +156,10 @@ describe('hx-swap-oob attribute', function() {
     var btn = make('<button id="b1" type="button" hx-get="/test">Click me</button>')
     btn.click()
     this.server.respond()
-    btn.innerText.should.equal("Clicked")
-    byId("r1").innerHTML.should.equal(`<td>bar</td>`)
-    byId("b2").innerHTML.should.equal(`Another button`)
-    byId("d1").innerHTML.should.equal(`Test`)
-    byId("td1").innerHTML.should.equal(`hey`)
+    btn.innerText.should.equal('Clicked')
+    byId('r1').innerHTML.should.equal('<td>bar</td>')
+    byId('b2').innerHTML.should.equal('Another button')
+    byId('d1').innerHTML.should.equal('Test')
+    byId('td1').innerHTML.should.equal('hey')
   })
 })
