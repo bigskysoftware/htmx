@@ -639,7 +639,7 @@ You can use this technique to "piggy-back" updates on other requests.
 
 #### Troublesome Tables
 
-Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
+20Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
 their own in the DOM (e.g. `<tr>` or `<td>`).
 
 To avoid this issue you can use a `template` tag to encapsulate these elements:
@@ -940,12 +940,53 @@ document, matched with a [hx-select](@/attributes/hx-select.md) tag can be usefu
 HTML into the document at the target specified and with the swap strategy specified.
 
 Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side event ([see below](#response-headers)).
-For this situation you can return a `204 - No Content` response code, and htmx will ignore the content of the response.
+
+For this situation, by default, you can return a `204 - No Content` response code, and htmx will ignore the content of 
+the response.
 
 In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](@/events.md#htmx:responseError)
 event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
+
+### Configuring Response Handling
+
+You can configure the above behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
+object is a collection of JavaScript objects defined like so:
+
+```js
+    responseHandling: [
+        {code:"204", swap: false},   // 204 by default does nothing, but is not an error
+        {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
+        {code:"[45]..", swap: false, error:true}, // 400 & 500 responses are not swapped and are errors
+    ]
+```
+
+When htmx receives a response it will iterate in order over the `htmx.config.responseHandling` array and test if the
+`code` property of a given object, when treated as a Regular Expression, matches the current response.  If an entry
+does match the current response code, it will be used to determine if and how the response will be processed.
+
+The fields available for response handling configuration on entries in this array are:
+
+* `code` - a String representing a regular expression that will be tested against response codes.
+* `swap` - `true` if the response should be swapped into the DOM, `false` otherwise
+* `error` - `true` if htmx should treat this response as an error
+* `ignoreTitle` - `true` if htmx should ignore title tags in the response
+* `select` - A CSS selector to use to select content from the response
+* `target` - A CSS selector specifying an alternative target for the response
+* `swapOverride` - An alternative swap mechanism for the response
+
+As an example of how to use this configuration, consider a situation when a server-side framework responds with a 
+[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation
+occurs.  By default, htmx will ignore the response, since it matches the Regular Expression `[45]..`.  You can
+insert a rule at the start of the `htmx.config.responseHandling` array to override this:
+
+```js
+  // unshift to put the rule at the start and swap on 422 responses
+  htmx.config.responseHandling.unshift({code:"422", swap: true})
+```
+
+You can also completely redefine the array of handlers via the normal configuration mechanisms discussed below. 
 
 ### CORS
 
@@ -1670,7 +1711,7 @@ with application security.
 A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provide a good jumping off point
 for exploring this topic.
 
-## Configuring htmx {#config}
+## Configuring htmx
 
 Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
 listed below:

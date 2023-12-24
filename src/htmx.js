@@ -3205,22 +3205,22 @@ var htmx = (function() {
   }
 
   function codeMatches(responseHandlingConfig, status) {
-            var regExp = new RegExp(responseHandlingConfig.code);
-            return regExp.test(status);
-        }
+    var regExp = new RegExp(responseHandlingConfig.code);
+    return regExp.test(status);
+  }
 
-        function resolveResponseHandling(xhr) {
-            for (var i = 0; i < htmx.config.responseHandling.length; i++) {
-                var responseHandlingElement = htmx.config.responseHandling[i];
-                if (codeMatches(responseHandlingElement, xhr.status)) {
-                    return responseHandlingElement;
-                }
-            }
-            // no matches, return no swap
-            return {
-                swap: false
-            }
-        }
+  function resolveResponseHandling(xhr) {
+    for (var i = 0; i < htmx.config.responseHandling.length; i++) {
+      var responseHandlingElement = htmx.config.responseHandling[i];
+      if (codeMatches(responseHandlingElement, xhr.status)) {
+        return responseHandlingElement;
+      }
+    }
+    // no matches, return no swap
+    return {
+      swap: false
+    }
+  }
 
       function handleAjaxResponse(elt, responseInfo) {
         const xhr = responseInfo.xhr
