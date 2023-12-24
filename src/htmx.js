@@ -60,7 +60,7 @@ var htmx = (function() {
       ignoreTitle: false,
       scrollIntoViewOnBoost: true,
       triggerSpecsCache: null,
-      disableInheritance: false
+        disableInheritance: false
     },
     parseInterval,
     _: internalEval,
