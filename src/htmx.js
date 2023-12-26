@@ -1581,7 +1581,7 @@ var htmx = (function() {
       setInterval(function() {
         if (windowIsScrolling) {
           windowIsScrolling = false
-          forEach(getDocument().querySelectorAll("[hx-trigger='revealed'],[data-hx-trigger='revealed']"), function(elt) {
+          forEach(getDocument().querySelectorAll("[hx-trigger*='revealed'],[data-hx-trigger*='revealed']"), function(elt) {
             maybeReveal(elt)
           })
         }

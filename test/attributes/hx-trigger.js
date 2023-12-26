@@ -883,6 +883,33 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('test 1')
   })
 
+  it('revealed can be paired w/ other events', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var div = make('<div hx-get="/test" hx-trigger="revealed, click" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>')
+    div.innerHTML.should.equal('foo')
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1');
+    div.click();
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2');
+  })
+
+  it('revealed doesnt cause other events to trigger', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var div = make('<div hx-get="/test" hx-trigger="revealedToTheWorld" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>')
+    div.innerHTML.should.equal('foo')
+    this.server.respondAll()
+    div.innerHTML.should.equal('foo')
+  })
+
   it('fires the htmx:trigger event when an AJAX attribute is specified', function() {
     var param = 'foo'
     var handler = htmx.on('htmx:trigger', function(evt) {
