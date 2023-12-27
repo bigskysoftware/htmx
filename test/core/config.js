@@ -12,7 +12,7 @@ describe('htmx config test', function() {
   it('swaps normally with no config update', function() {
     var responseCode = null
     this.server.respondWith('GET', '/test', function(xhr, id) {
-      xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+      xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
     })
 
     responseCode = 200 // 200 should cause a swap by default
@@ -53,7 +53,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
       })
 
       responseCode = 200 // 200 should cause a swap by default
@@ -98,7 +98,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
       })
 
       responseCode = 444
@@ -121,7 +121,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
       })
 
       responseCode = 444
@@ -144,7 +144,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, "<div><a class='foo'>" + responseCode + '</a></div>')
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, "<div><a class='foo'>" + responseCode + '</a></div>')
       })
 
       responseCode = 444
@@ -166,7 +166,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '<title>Should Not Be Set</title>' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '<title>Should Not Be Set</title>' + responseCode)
       })
 
       responseCode = 444
@@ -192,7 +192,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
       })
 
       responseCode = 444
@@ -219,7 +219,7 @@ describe('htmx config test', function() {
 
       var responseCode = null
       this.server.respondWith('GET', '/test', function(xhr, id) {
-        xhr.respond(responseCode, { 'Content-Type': 'application/json' }, '' + responseCode)
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
       })
 
       responseCode = 444

@@ -10,36 +10,32 @@ describe('Core htmx internals Tests', function() {
   })
 
   it('makeFragment works with janky stuff', function() {
-    htmx._('makeFragment')('<html></html>').tagName.should.equal('BODY')
-    htmx._('makeFragment')('<html><body></body></html>').tagName.should.equal('BODY')
+    htmx._('makeFragment')('<html></html>').firstElementChild.tagName.should.equal('BODY')
+    htmx._('makeFragment')('<html><body></body></html>').firstElementChild.tagName.should.equal('BODY')
 
     // NB - the tag name should be the *parent* element hosting the HTML since we use the fragment children
     // for the swap
-    htmx._('makeFragment')('<td></td>').tagName.should.equal('TR')
-    htmx._('makeFragment')('<thead></thead>').tagName.should.equal('TABLE')
-    htmx._('makeFragment')('<col></col>').tagName.should.equal('COLGROUP')
-    htmx._('makeFragment')('<tr></tr>').tagName.should.equal('TBODY')
+    htmx._('makeFragment')('<td></td>').firstElementChild.tagName.should.equal('TD')
+    htmx._('makeFragment')('<thead></thead>').firstElementChild.tagName.should.equal('THEAD')
+    htmx._('makeFragment')('<col></col>').firstElementChild.tagName.should.equal('COL')
+    htmx._('makeFragment')('<tr></tr>').firstElementChild.tagName.should.equal('TR')
   })
 
   it('makeFragment works with template wrapping', function() {
-    try {
-      htmx._('makeFragment')('<html></html>').children.length.should.equal(0)
-      htmx._('makeFragment')('<html><body></body></html>').children.length.should.equal(0)
+    htmx._('makeFragment')('<html></html>').children.length.should.equal(1)
+    htmx._('makeFragment')('<html><body></body></html>').children.length.should.equal(1)
 
-      var fragment = htmx._('makeFragment')('<td></td>')
-      fragment.firstElementChild.tagName.should.equal('TD')
+    var fragment = htmx._('makeFragment')('<td></td>')
+    fragment.firstElementChild.tagName.should.equal('TD')
 
-      fragment = htmx._('makeFragment')('<thead></thead>')
-      fragment.firstElementChild.tagName.should.equal('THEAD')
+    fragment = htmx._('makeFragment')('<thead></thead>')
+    fragment.firstElementChild.tagName.should.equal('THEAD')
 
-      fragment = htmx._('makeFragment')('<col></col>')
-      fragment.firstElementChild.tagName.should.equal('COL')
+    fragment = htmx._('makeFragment')('<col></col>')
+    fragment.firstElementChild.tagName.should.equal('COL')
 
-      fragment = htmx._('makeFragment')('<tr></tr>')
-      fragment.firstElementChild.tagName.should.equal('TR')
-    } finally {
-      htmx.config.useTemplateFragments = false
-    }
+    fragment = htmx._('makeFragment')('<tr></tr>')
+    fragment.firstElementChild.tagName.should.equal('TR')
   })
 
   it('makeFragment works with template wrapping and funky combos', function() {

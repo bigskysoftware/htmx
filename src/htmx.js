@@ -49,7 +49,6 @@ var htmx = (function() {
       wsReconnectDelay: 'full-jitter',
       wsBinaryType: 'blob',
       disableSelector: '[hx-disable], [data-hx-disable]',
-      useTemplateFragments: false,
       scrollBehavior: 'instant',
       defaultFocusScroll: false,
       getCacheBusterParam: false,
@@ -108,8 +107,6 @@ var htmx = (function() {
   }).join(', ')
 
   const HEAD_TAG_REGEX = makeTagRegEx('head')
-  const TITLE_TAG_REGEX = makeTagRegEx('title')
-  const SVG_TAGS_REGEX = makeTagRegEx('svg', true)
 
   //= ===================================================================
   // Utilities
@@ -269,67 +266,52 @@ var htmx = (function() {
    *
    * @param {string} resp
    * @param {number} depth
-   * @returns {Element}
+   * @returns {Document}
    */
-  function parseHTML(resp, depth) {
+  function parseHTML(resp) {
     const parser = new DOMParser()
-    const responseDoc = parser.parseFromString(resp, 'text/html')
-
-    /** @type {Element} */
-    let responseNode = responseDoc.body
-    while (depth > 0) {
-      depth--
-      // @ts-ignore
-      responseNode = responseNode.firstChild
-    }
-    if (responseNode == null) {
-      // @ts-ignore
-      responseNode = getDocument().createDocumentFragment()
-    }
-    return responseNode
-  }
-
-  function aFullPageResponse(resp) {
-    return /<body/.test(resp)
+    return parser.parseFromString(resp, 'text/html')
   }
 
   /**
-   *
-   * @param {string} response
-   * @returns {Element}
+   * @param {string} response HTML
+   * @returns {DocumentFragment} a document fragment representing the response HTML, including
+   * a `head` property for any head content found
    */
   function makeFragment(response) {
-    const partialResponse = !aFullPageResponse(response)
-    const startTag = getStartTag(response)
-    let content = response
-    if (startTag === 'head') {
-      content = content.replace(HEAD_TAG_REGEX, '')
-    }
-    if (htmx.config.useTemplateFragments && partialResponse) {
-      const documentFragment = parseHTML('<body><template>' + content + '</template></body>', 0)
-      // @ts-ignore type mismatch between DocumentFragment and Element.
-      // TODO: Are these close enough for htmx to use interchangeably?
-      return documentFragment.querySelector('template').content
-    }
-    switch (startTag) {
-      case 'thead':
-      case 'tbody':
-      case 'tfoot':
-      case 'colgroup':
-      case 'caption':
-        return parseHTML('<table>' + content + '</table>', 1)
-      case 'col':
-        return parseHTML('<table><colgroup>' + content + '</colgroup></table>', 2)
-      case 'tr':
-        return parseHTML('<table><tbody>' + content + '</tbody></table>', 2)
-      case 'td':
-      case 'th':
-        return parseHTML('<table><tbody><tr>' + content + '</tr></tbody></table>', 3)
-      case 'script':
-      case 'style':
-        return parseHTML('<div>' + content + '</div>', 1)
-      default:
-        return parseHTML(content, 0)
+    // strip head tag to determine shape of response we are dealing with
+    let head = (HEAD_TAG_REGEX.exec(response) || [""])[0]
+    let responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
+    const startTag = getStartTag(responseWithNoHead)
+    if (startTag === 'html') {
+      // if it is a full document, parse it and return the body
+      const fragment = new DocumentFragment();
+      let doc = parseHTML(response);
+      fragment.append(doc.body);
+      fragment.head = doc.head;
+      return fragment;
+    } else if (startTag === 'body') {
+      // body w/ a potential head, parse head & body w/o wrapping in template
+      const fragment = new DocumentFragment();
+      let doc = parseHTML(head + responseWithNoHead);
+      fragment.append(doc.body);
+      fragment.head = doc.head;
+      return fragment;
+    } else {
+      // otherwise we have non-body content, so wrap it in a template and insert the head before the content
+      const doc = parseHTML(head + '<body><template>' + responseWithNoHead + '</template></body>')
+      var fragment = doc.querySelector('template').content;
+
+      // for legacy reasons we support a title tag at the root level of non-body responses, so we need to handle it
+      var rootTitleElt = fragment.querySelector(":scope title");
+      if (rootTitleElt) {
+        rootTitleElt.remove();
+        fragment.title = rootTitleElt;
+      }
+
+      // extract head into fragment for later processing
+      fragment.head = doc.head;
+      return fragment;
     }
   }
 
@@ -998,28 +980,24 @@ var htmx = (function() {
   }
 
   function swapOuterHTML(target, fragment, settleInfo) {
-    if (target.tagName === 'BODY') {
-      return swapInnerHTML(target, fragment, settleInfo)
+    // @type {HTMLElement}
+    let newElt
+    const eltBeforeNewContent = target.previousSibling
+    insertNodesBefore(parentElt(target), target, fragment, settleInfo)
+    if (eltBeforeNewContent == null) {
+      newElt = parentElt(target).firstChild
     } else {
-      // @type {HTMLElement}
-      let newElt
-      const eltBeforeNewContent = target.previousSibling
-      insertNodesBefore(parentElt(target), target, fragment, settleInfo)
-      if (eltBeforeNewContent == null) {
-        newElt = parentElt(target).firstChild
-      } else {
-        newElt = eltBeforeNewContent.nextSibling
-      }
-      settleInfo.elts = settleInfo.elts.filter(function(e) { return e != target })
-      while (newElt && newElt !== target) {
-        if (newElt.nodeType === Node.ELEMENT_NODE) {
-          settleInfo.elts.push(newElt)
-        }
-        newElt = newElt.nextElementSibling
-      }
-      cleanUpElement(target)
-      parentElt(target).removeChild(target)
+      newElt = eltBeforeNewContent.nextSibling
     }
+    settleInfo.elts = settleInfo.elts.filter(function(e) { return e !== target })
+    while (newElt && newElt !== target) {
+      if (newElt.nodeType === Node.ELEMENT_NODE) {
+        settleInfo.elts.push(newElt)
+      }
+      newElt = newElt.nextElementSibling
+    }
+    cleanUpElement(target)
+    target.remove();
   }
 
   function swapAfterBegin(target, fragment, settleInfo) {
@@ -1119,20 +1097,25 @@ var htmx = (function() {
     }
   }
 
-  function findTitle(content) {
-    if (content.indexOf('<title') > -1) {
-      const contentWithSvgsRemoved = content.replace(SVG_TAGS_REGEX, '')
-      const result = contentWithSvgsRemoved.match(TITLE_TAG_REGEX)
-      if (result) {
-        return result[2]
+  /**
+   * @param fragment {DocumentFragment}
+   * @returns String
+   */
+  function findTitle(fragment) {
+    if (fragment.title) {
+      return fragment.title.innerText;
+    } else if (fragment.head) {
+      var title = fragment.head.querySelector("title");
+      if (title) {
+        return title.innerText;
       }
     }
   }
 
   function selectAndSwap(swapStyle, target, elt, responseText, settleInfo, selectOverride) {
-    settleInfo.title = findTitle(responseText)
     let fragment = makeFragment(responseText)
     if (fragment) {
+      settleInfo.title = findTitle(fragment)
       handleOutOfBandSwaps(elt, fragment, settleInfo)
       fragment = maybeSelectFromResponse(elt, fragment, selectOverride)
       handlePreservedElements(fragment)
@@ -2117,7 +2100,7 @@ var htmx = (function() {
         fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         const historyElement = getHistoryElement()
         const settleInfo = makeSettleInfo(historyElement)
-        const title = findTitle(this.response)
+        const title = findTitle(fragment)
         if (title) {
           const titleElt = find('title')
           if (titleElt) {

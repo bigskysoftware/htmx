@@ -17,9 +17,12 @@ describe("default extensions behavior", function() {
                 // simple outerHTML replacement for tests
                 var parentEl = target.parentElement;
                 parentEl.removeChild(target);
-                return [parentEl.appendChild(fragment)];  // return the newly added element
+                let arr = [];
+                for (const child of fragment.childNodes) {
+                    arr.push(parentEl.appendChild(child));
+                }
+                return arr;  // return the newly added elements
             }
-
         });
 
     });
@@ -53,8 +56,7 @@ describe("default extensions behavior", function() {
 
         this.server.respond();  // call /test-inner via span trigger=load
         btn.textContent.should.equal("Clicked!Loaded!");
-        loadCalls.length.should.equal(2);
-        loadCalls[1].textContent.should.equal('Loaded!');  // the new span is loaded
+        loadCalls.length.should.equal(1); // text should not trigger event
     });
 
 });

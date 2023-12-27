@@ -120,7 +120,6 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility.
 * `allowScriptTags:true` - boolean: allows script tags to be evaluated in new content
 * `inlineScriptNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline scripts
-* `useTemplateFragments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `timeout:0` - int: the number of milliseconds a request can take before automatically being terminated
 * `wsReconnectDelay:'full-jitter'` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
