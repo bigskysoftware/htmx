@@ -176,13 +176,16 @@ window.htmx = require('htmx.org');
 To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
 
 * If you are still using the legacy `hx-ws` and `hx-sse` attributes, please upgrade to the extension versions (available in 1.x)
-  of those features
 * Default Changes
   * If you want to retain the 1.0 behavior of "smooth scrolling" by default, revert `htmx.config.scrollBehavior` to `'smooth'`
   * If you want `DELETE` requests to use a form-encoded body rather than parameters, revert
     `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
      use request parameters.)
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
+  * If you want to revert these to the htmx 1.x defaults, you can use the following meta tag:
+  ```html
+  <meta name="htmx-config" content='{"scrollBehavior":"smooth", "methodsThatUseUrlParams":["get"], "selfRequestsOnly": false}'>
+  ```
 * Convert any `hx-on` attributes to their `hx-on:` equivalent:
   ```html
      <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
@@ -198,12 +201,7 @@ To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
      </button>
   Note that you must use the kebab-case of the event name due to the fact that attributes are case-insensitive in HTML.
   ```
-
-here is a meta tag to revert to htmx 1.x defaults:
-
-```html
-<meta name="htmx-config" content='{"scrollBehavior":"smooth", "methodsThatUseUrlParams":["get"], "selfRequestsOnly": false}'>
-```
+* The `htmx.makeFragment()` method now **always** returns a `DocumentFragment` rather than either an `Element` or `DocumentFragment`
 
 IE is no longer supported in htmx 2.0, but htmx 1.x continues to support IE and will be supported for the foreseeable 
 future.
