@@ -10,8 +10,8 @@ describe('Core htmx internals Tests', function() {
   })
 
   it('makeFragment works with janky stuff', function() {
-    htmx._('makeFragment')('<html></html>').firstElementChild.tagName.should.equal('BODY')
-    htmx._('makeFragment')('<html><body></body></html>').firstElementChild.tagName.should.equal('BODY')
+    htmx._('makeFragment')('<html></html>').children.length.should.equal(0)
+    htmx._('makeFragment')('<html><body></body></html>').children.length.should.equal(0)
 
     // NB - the tag name should be the *parent* element hosting the HTML since we use the fragment children
     // for the swap
@@ -22,8 +22,8 @@ describe('Core htmx internals Tests', function() {
   })
 
   it('makeFragment works with template wrapping', function() {
-    htmx._('makeFragment')('<html></html>').children.length.should.equal(1)
-    htmx._('makeFragment')('<html><body></body></html>').children.length.should.equal(1)
+    htmx._('makeFragment')('<html></html>').children.length.should.equal(0)
+    htmx._('makeFragment')('<html><body></body></html>').children.length.should.equal(0)
 
     var fragment = htmx._('makeFragment')('<td></td>')
     fragment.firstElementChild.tagName.should.equal('TD')

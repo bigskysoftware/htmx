@@ -273,6 +273,12 @@ var htmx = (function() {
     return parser.parseFromString(resp, 'text/html')
   }
 
+  function takeChildren(elt, fragment) {
+    while (elt.childNodes.length > 0) {
+      fragment.append(elt.childNodes[0]);
+    }
+  }
+
   /**
    * @param {string} response HTML
    * @returns {DocumentFragment} a document fragment representing the response HTML, including
@@ -287,14 +293,15 @@ var htmx = (function() {
       // if it is a full document, parse it and return the body
       const fragment = new DocumentFragment();
       let doc = parseHTML(response);
-      fragment.append(doc.body);
+      takeChildren(doc.body, fragment)
+      forEach(doc.body.children, (elt) => fragment.append(elt));
       fragment.head = doc.head;
       return fragment;
     } else if (startTag === 'body') {
       // body w/ a potential head, parse head & body w/o wrapping in template
       const fragment = new DocumentFragment();
       let doc = parseHTML(head + responseWithNoHead);
-      fragment.append(doc.body);
+      takeChildren(doc.body, fragment)
       fragment.head = doc.head;
       return fragment;
     } else {
