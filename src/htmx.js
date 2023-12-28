@@ -273,7 +273,7 @@ var htmx = (function() {
     return parser.parseFromString(resp, 'text/html')
   }
 
-  function takeChildren(elt, fragment) {
+  function takeChildrenFor(fragment, elt) {
     while (elt.childNodes.length > 0) {
       fragment.append(elt.childNodes[0]);
     }
@@ -293,15 +293,14 @@ var htmx = (function() {
       // if it is a full document, parse it and return the body
       const fragment = new DocumentFragment();
       let doc = parseHTML(response);
-      takeChildren(doc.body, fragment)
-      forEach(doc.body.children, (elt) => fragment.append(elt));
+      takeChildrenFor(fragment, doc.body)
       fragment.head = doc.head;
       return fragment;
     } else if (startTag === 'body') {
       // body w/ a potential head, parse head & body w/o wrapping in template
       const fragment = new DocumentFragment();
       let doc = parseHTML(head + responseWithNoHead);
-      takeChildren(doc.body, fragment)
+      takeChildrenFor(fragment, doc.body)
       fragment.head = doc.head;
       return fragment;
     } else {
