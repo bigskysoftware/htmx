@@ -116,8 +116,8 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a href="https://www.peakcrypto.com">
-          <img alt="Peak Crypto" src="/img/peakcrypto.png" style="width:100%;max-width:65px">
+        <a href="https://www.v7n.com/">
+          <img alt="V7N" src="/img/v7n-logo.png" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
