@@ -1288,7 +1288,7 @@ If we wanted to respond to the `click` event using an `hx-on` attribute, we woul
 </button>
 ```
 
-So, the string `hx-on`, followed by a colon (or a dahs), then by the name of the event.
+So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
 
 For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an 
 htmx-powered button that wishes to add a parameter to a request using the `htmx:config-request` event.  This would not 
