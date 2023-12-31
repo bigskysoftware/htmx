@@ -103,7 +103,7 @@ You can see why people like the idea!
 
 So why don't I think this is a good approach to splitting your JSON and HTML APIs up?
 
-It boils down to the [differences between JSON APIs and Hypermedia (HTML) APIs](hypermedia-apis-vs-data-apis.md) I hinted
+It boils down to the [differences between JSON APIs and Hypermedia (HTML) APIs](@/essays/hypermedia-apis-vs-data-apis.md) I hinted
 at earlier.  In particular:
 
 * Data APIs should be versioned and should be very stable within a particular version of the API
