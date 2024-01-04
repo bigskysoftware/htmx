@@ -108,6 +108,7 @@ Extensions can override the following default extension points to add or change 
 
 ```javascript
 {
+    init: function(api) {return null;},
     onEvent : function(name, evt) {return true;},
     transformResponse : function(text, xhr, elt) {return text;},
     isInlineSwap : function(swapStyle) {return false;},
