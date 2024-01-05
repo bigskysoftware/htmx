@@ -121,7 +121,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-      <a href="https://bigsky.software"><img src="/img/bss.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
+      <a href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Big Sky Software" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
 </td>
 </tr>
 </table>
