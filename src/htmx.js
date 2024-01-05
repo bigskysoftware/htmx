@@ -61,7 +61,7 @@ var htmx = (function() {
       disableInheritance: false,
       head : {
         boost : "merge",
-        other: "title",
+        other: "none",
       },
       responseHandling: [
         { code: '204', swap: false },
@@ -1143,17 +1143,12 @@ var htmx = (function() {
     }
   }
 
-  function handleHeadTag(head, defaultStrategy) {
+  function handleHeadTag(head, strategy) {
 
-    if (head && htmx.config.head) {
-
-      if (defaultStrategy === "none") {
-        return
-      }
-
+    if (head && (strategy === "merge" || strategy === "append")) {
       // allow new head to override merge strategy
-      let elementMergeStrategy = getAttributeValue(head, "hx-head") || defaultStrategy;
-      if (elementMergeStrategy === "append" || elementMergeStrategy === "merge") {
+      let elementMergeStrategy = getAttributeValue(head, "hx-head") || strategy;
+      if (elementMergeStrategy === "merge" || elementMergeStrategy === "append") {
         let removed = []
         let appended = []
 
@@ -2216,7 +2211,7 @@ var htmx = (function() {
         const historyElement = getHistoryElement()
         const settleInfo = makeSettleInfo(historyElement)
         handleTitle(fragment.title);
-        handleHeadTag(fragment.head, "merge");
+        handleHeadTag(fragment.head, htmx.config.head.boost);
 
         // @ts-ignore
         swapInnerHTML(historyElement, content, settleInfo)
@@ -2239,7 +2234,7 @@ var htmx = (function() {
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
       handleTitle(fragment.title);
-      handleHeadTag(fragment.head, "merge");
+      handleHeadTag(fragment.head, htmx.config.head.boost);
       swapInnerHTML(historyElement, fragment, settleInfo)
       settleImmediately(settleInfo.tasks);
       setTimeout(function() {
@@ -2586,6 +2581,8 @@ var htmx = (function() {
             swapSpec.transition = value.substr(11) === 'true'
           } else if (value.indexOf('ignoreTitle:') === 0) {
             swapSpec.ignoreTitle = value.substr(12) === 'true'
+          } else if (value.indexOf('head:') === 0) {
+            swapSpec.head = value.substr(5)
           } else if (value.indexOf('scroll:') === 0) {
             const scrollSpec = value.substr(7)
             var splitSpec = scrollSpec.split(':')
@@ -3381,6 +3378,7 @@ var htmx = (function() {
     const shouldSwap = responseHandling.swap
     let isError = !!responseHandling.error
     let ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
+    let head = responseInfo.boosted ? htmx.config.head.boost : htmx.config.head.other
     let selectOverride = responseHandling.select
     if (responseHandling.target) {
       responseInfo.target = querySelectorExt(elt, responseHandling.target)
@@ -3408,7 +3406,8 @@ var htmx = (function() {
       serverResponse,
       isError,
       ignoreTitle,
-      selectOverride
+      selectOverride,
+      head
     }, responseInfo)
 
     if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return
@@ -3419,6 +3418,7 @@ var htmx = (function() {
     serverResponse = beforeSwapDetails.serverResponse // allow updating content
     isError = beforeSwapDetails.isError // allow updating error
     ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
+    head = beforeSwapDetails.head // allow updating head algorithm
     selectOverride = beforeSwapDetails.selectOverride // allow updating select override
 
     responseInfo.target = target // Make updated target available to response events
@@ -3446,6 +3446,9 @@ var htmx = (function() {
 
       if (swapSpec.hasOwnProperty('ignoreTitle')) {
         ignoreTitle = swapSpec.ignoreTitle
+      }
+      if (swapSpec.hasOwnProperty('head')) {
+        head = swapSpec.head
       }
 
       target.classList.add(htmx.config.swappingClass)
@@ -3524,10 +3527,10 @@ var htmx = (function() {
             handleTitle(settleInfo.title);
           }
 
+          console.log("Here", head)
           // merge in new head after swap but before settle
           if (triggerEvent(document.body, "htmx:beforeHeadMerge", {head: settleInfo.head})) {
-            handleHeadTag(settleInfo.head, responseInfo.boosted ? htmx.config.head.boost :
-                htmx.config.head.other);
+            handleHeadTag(settleInfo.head, head);
           }
 
           if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
@@ -3642,8 +3645,9 @@ var htmx = (function() {
  * @param {import("./htmx").HtmxExtension} extension
  */
   function defineExtension(name, extension) {
+    if (name === "head-support") return; // ignore the head support extension, now integrated into htmx
     if (extension.init) {
-      extension.init(internalAPI)
+      extension.init(internalAPI);
     }
     extensions[name] = mergeObjects(extensionBase(), extension)
   }

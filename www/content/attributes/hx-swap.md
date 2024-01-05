@@ -39,6 +39,15 @@ If you want to use the new [View Transitions](https://developer.mozilla.org/en-U
 when a swap occurs, you can use the `transition:true` option for your swap.  You can also enable this feature globally by
 setting the `htmx.config.globalViewTransitions` config setting to `true`.
 
+#### `head` tag handling: `head`
+
+If you want to modify how a `head` tag found in the new content is handled, you can use the `head` modifier, with one
+of the following values:
+
+* `merge` - merge the new head tag elements into the existing element
+* `append` - append the new head tag elements to the existing head tag
+* `none` - ignore any new head tag elements
+
 #### Timing: `swap` & `settle`
 
 You can modify the amount of time that htmx will wait after receiving a response to swap the content
