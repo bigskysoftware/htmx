@@ -22,7 +22,6 @@ describe('hx-push-url attribute', function() {
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
-    console.log(cache)
     cache[cache.length - 1].url.should.equal('/test')
   })
 
@@ -140,26 +139,26 @@ describe('hx-push-url attribute', function() {
 
   it('deals with malformed JSON in history cache when saving', function() {
     localStorage.setItem(HTMX_HISTORY_CACHE_NAME, 'Invalid JSON')
-    htmx._('saveToHistoryCache')('url', 'content', 'title', 'scroll')
+    htmx._('saveToHistoryCache')('url', make("<div>"))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
   })
 
   it('does not blow out cache when saving a URL twice', function() {
-    htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll')
+    htmx._('saveToHistoryCache')('url1', make("<div>"))
+    htmx._('saveToHistoryCache')('url2', make("<div>"))
+    htmx._('saveToHistoryCache')('url3', make("<div>"))
+    htmx._('saveToHistoryCache')('url2', make("<div>"))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
   })
 
   it('history cache is LRU', function() {
-    htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url3', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url2', 'content', 'title', 'scroll')
-    htmx._('saveToHistoryCache')('url1', 'content', 'title', 'scroll')
+    htmx._('saveToHistoryCache')('url1', make("<div>"))
+    htmx._('saveToHistoryCache')('url2', make("<div>"))
+    htmx._('saveToHistoryCache')('url3', make("<div>"))
+    htmx._('saveToHistoryCache')('url2', make("<div>"))
+    htmx._('saveToHistoryCache')('url1', make("<div>"))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
     cache[0].url.should.equal('url3')
@@ -211,7 +210,7 @@ describe('hx-push-url attribute', function() {
     }
     try {
       localStorage.removeItem('htmx-history-cache')
-      htmx._('saveToHistoryCache')('/dummy', bigContent, 'Foo', 0)
+      htmx._('saveToHistoryCache')('/dummy', make("<div>" + bigContent + "</div>"), 'Foo', 0)
       should.equal(localStorage.getItem('htmx-history-cache'), null)
     } finally {
       // clear history cache afterwards
