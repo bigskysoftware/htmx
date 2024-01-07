@@ -173,7 +173,7 @@
 				)
 			}
 
-			if (name === 'htmx:beforeOnLoad') {
+			if (name === 'htmx:beforeOnLoad' && !evt.detail.xhr.getResponseHeader('HX-Redirect')) {
 				while (loadingStatesUndoQueue.length > 0) {
 					loadingStatesUndoQueue.shift()()
 				}

@@ -1,3 +1,18 @@
+// Avoid redirects in the test suite
+const originalLocation = { ...window.location };
+window.location = {
+    ...originalLocation,
+    assign: function (url) {
+        console.log("Redirect to " + url + " was prevented during testing");
+    },
+    replace: function (url) {
+        console.log("Replace to " + url + " was prevented during testing");
+    },
+    reload: function () {
+        console.log("Page reload was prevented during testing");
+    }
+};
+
 describe("loading states extension", function () {
     beforeEach(function () {
         this.server = makeServer();
@@ -163,5 +178,18 @@ describe("loading states extension", function () {
 
         var el = byId("d2");
         el.disabled.should.be.false;
-    })
+    });
+
+    it('should keep loading when HX-Redirect response', function () {
+        this.server.respondWith("GET", "/test", function (xhr) {
+            let headers = { "HX-Redirect": "/someOtherUrl" };
+            xhr.respond(200, headers, "");
+        });
+        var btn = make('<button hx-get="/test" hx-ext="loading-states">Click Me!</button>');
+        var element = make('<div data-loading>');
+        btn.click();
+        element.style.display.should.be.equal("inline-block");
+        this.server.respond();
+        element.style.display.should.be.equal("inline-block");
+    });
 });
