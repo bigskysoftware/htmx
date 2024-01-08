@@ -8,7 +8,9 @@ insert_anchor_links = "left"
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> We are excited to <a href="/posts/2023-06-06-htmx-github-accelerator/">announce</a> that htmx has been accepted into the first class of the <a href="https://accelerator.github.com/">GitHub Open Source Accelerator!</a>
+<b>NEWS:</b> htmx finished 2nd in the <a hx-request="https://risingstars.js.org/2023/en#section-framework">2023 
+JavaScript Rising Stars</a> "Front-end Frameworks" category, just behind React (htmx is a library, btw) and <a hx-request="https://risingstars.js.org/2023/en#section-all">#10 overall</a>!
+Thank you to everyone who <a href="https://github.com/bigskysoftware/htmx">starred</a> us!
 </div>
 
 <h2>introduction</h2>
@@ -133,6 +135,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <td>
         <a href="https://www.dasfilter.shop/">
           <img alt="Das Filter" src="/img/das-filter.png" style="width:100%;max-width:200px">
+        </a>
+</td>
+<td>
+      <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx"><img src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px"></a>
+</td>
+</tr>
+<tr>
+<td>
+        <a href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
+          <img alt="Das Filter" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
