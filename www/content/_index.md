@@ -138,13 +138,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-      <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx"><img src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px"></a>
+      <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx">
+        <img src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px">
+      </a>
 </td>
 </tr>
 <tr>
 <td>
         <a href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
-          <img alt="Das Filter" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
+          <img alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
