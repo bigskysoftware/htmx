@@ -201,7 +201,7 @@ To upgrade to htmx 2.0 from htmx 1.0, you will need to do the following:
 * The `htmx.makeFragment()` method now **always** returns a `DocumentFragment` rather than either an `Element` or `DocumentFragment`
 * If you are using htmx in a module setting, we now provide module-type specific files for all three of the major 
   JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
-* htmx 2.0 offers [automatic head merging](#head-support) with boosted links.  If you do not want this behavior, set you can set `htmx.config.head.boosted` to `"none"`
+* htmx 2.0 offers [automatic head merging](#head) with boosted links.  If you do not want this behavior, set you can set `htmx.config.head.boosted` to `"none"`
 
 IE is no longer supported in htmx 2.0, but htmx 1.x continues to support IE and will be supported for the foreseeable 
 future.
@@ -779,7 +779,7 @@ Here is an example:
 
 The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
 
-### `head` tag support
+### `head` tag support {#head}
 
 In boosted requests, if a head tag is detected in the response, htmx will automatically synchronize the content of
 the current head tag with the new content.  This means that elements that are already found in the current head will
@@ -1749,7 +1749,7 @@ with application security.
 A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provide a good jumping off point
 for exploring this topic.
 
-## Configuring htmx
+## Configuring htmx {#config}
 
 Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
 listed below:

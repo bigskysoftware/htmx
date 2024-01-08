@@ -1,5 +1,5 @@
 +++
-title = path-params
+title = "path-params"
 +++
 
 This extension uses request parameters to populate path variables. Used parameters are removed so they won't be sent in the query string or body anymore.
