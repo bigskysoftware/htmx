@@ -91,7 +91,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <table id="sponsor-table">
 <tr>
 <td colspan="2">
-        <a href="https://hydrahost.com"><img src="/img/hydra-hosting.png" alt="The GPU Marketplace" style="max-width:100%;min-width:200px;"></a>
+        <a href="https://hydrahost.com"><img src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;"></a>
 </td>
 <tr>
 <tr>
