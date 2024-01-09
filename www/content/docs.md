@@ -39,7 +39,6 @@ custom_classes = "wide-content"
 * [debugging](#debugging)
 * [scripting](#scripting)
   * [hx-on attribute](#hx-on)
-  * [hyperscript](#hyperscript)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
 * [security](#security)
@@ -985,21 +984,17 @@ the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
 ### Validation Example
 
-Here is an example of an input that uses the `htmx:validation:validate` event to require that an input have the value
-`foo`, using hyperscript:
+Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attribute to catch the 
+`htmx:validation:validate` event and require that the input have the value `foo`:
 
 ```html
-<form id="foo-form" hx-post="/test">
-    <input _="on htmx:validation:validate
-                if my.value != 'foo'
-                    call me.setCustomValidity('Please enter the value foo')
-                    call #foo-form.reportValidity()
-                end
-                
-                on keyup
-                call me.setCustomValidity('')"
-        name="example"
-    >
+<form id="example-form" hx-post="/test">
+    <input name="example"
+           onkeyup="this.setCustomValidity('') // reset the validation on keyup"
+           hx-on:htmx:validation:validate="if(this.value != 'foo') {
+                    this.setCustomValidity('Please enter the value foo') // set the validation error
+                    htmx.find('#foo-form').reportValidity()              // report the issue
+                }">
 </form>
 ```
 
@@ -1261,6 +1256,9 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
+We have an entire chapter entitled ["Client-Side Scripting"](https://hypermedia.systems/client-side-scripting/) in [our
+book](https://hypermedia.systems) that looks at how scripting can be integrated into your htmx-based application.
+
 ### <a name="hx-on"></a>[The `hx-on*` Attributes](#hx-on)
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
@@ -1311,90 +1309,6 @@ Note that HTML attributes are *case insensitive*.  This means that, unfortunatel
 camel casing, cannot be responded to.  If you need to support camel case events we recommend using a more fully
 functional scripting solution such as AlpineJS or hyperscript.  htmx dispatches all its events in both camelCase and in
 kebab-case for this very reason.
-
-
-### hyperscript
-
-Hyperscript is an experimental front end scripting language designed to be expressive and easily embeddable directly in HTML
-for handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),
-javascript, [gosu](https://gosu-lang.github.io/) and others.
-
-You can explore the language more fully on its main website:
-
-<http://hyperscript.org>
-
-Hyperscript is *not* required when using htmx, anything you can do in hyperscript can be done in vanilla JS or with
- another javascript library like jQuery, but the two technologies were designed with one another in mind and play
- well together.
-
-#### Installing Hyperscript
-
- To use hyperscript in combination with htmx, you need to [install the hyperscript library](https://unpkg.com/browse/hyperscript.org/)
- either via a CDN or locally.  See the [hyperscript website](https://hyperscript.org) for the latest version of the
- library.
-
- When hyperscript is included, it will automatically integrate with htmx and begin processing all hyperscripts embedded
- in your HTML.
-
-#### Events & Hyperscript
-
-Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
-directly, in a more flexible and open manner.  One of its prime features is the ability to respond to arbitrary events
-on a DOM element, using the `on` syntax:
-
-```html
-<div _="on htmx:afterSettle log 'Settled!'">
-    ...
-</div>
-```
-
-This will log `Settled!` to the console when the `htmx:afterSettle` event is triggered.
-
-#### intercooler.js features & hyperscript implementations
-
-Below are some examples of intercooler features and the hyperscript equivalent.
-
-##### `ic-remove-after`
-
-Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
-for removing an element after a given amount of time.
-
-In hyperscript you can implement this, as well as fade effect, like so:
-
-```html
-<div _="on load wait 5s then transition opacity to 0 then remove me">
-    Here is a temporary message!
-</div>
-```
-
-##### `ic-post-errors-to`
-
-Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
-for posting errors that occurred during requests and responses.
-
-In hyperscript similar functionality is implemented like so:
-
-```html
-<body _="on htmx:error(errorInfo) fetch /errors {method:'POST', body:{errorInfo:errorInfo} as JSON} ">
-    ...
-</body>
-```
-
-##### `ic-switch-class`
-
-Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
-let you switch a class between siblings.
-
-In hyperscript you can implement similar functionality like so:
-
-```html
-<div hx-target="#content" _="on htmx:beforeOnLoad take .active from .tabs for event.target">
-    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
-    <a class="tabs" hx-get="/tabl2">Tab 2</a>
-    <a class="tabs" hx-get="/tabl3">Tab 3</a>
-</div>
-<div id="content">Tab 1 Content</div>
-```
 
 ### 3rd Party Javascript {#3rd-party}
 

@@ -10,7 +10,9 @@ trigger its animation styles with little or no Javascript.
 We start with a button that triggers the dialog, along with a DIV at the bottom of your 
 markup where the dialog will be loaded:
 
-This is an example of using HTMX to remotely load modal dialogs using UIKit.  
+This is an example of using HTMX to remotely load modal dialogs using UIKit.  In this example we will use
+[Hyperscript](https://hyperscript.org) to demonstrate how cleanly that scripting language allows you to
+glue htmx and other libraries together.
 
 ```html
 <button 
@@ -26,7 +28,7 @@ This is an example of using HTMX to remotely load modal dialogs using UIKit.
 This button uses a `GET` request to `/uikit-modal.html` when this button is clicked.  The
 contents of this file will be added to the DOM underneath the `#modals-here` DIV.
 
-We're replacing the standard UIKit Javascript library with a little bit of Hyperscript, 
+Rather than using the standard UIKit Javascript library we are using a bit of Hyperscript, 
 which triggers UIKit's smooth animations. It is delayed by 10ms so that UIKit's animations
 will run correctly.
 
@@ -54,11 +56,10 @@ Finally, the server responds with a slightly modified version of UIKit's standar
 ```
 
 Hyperscript on the button and the form trigger animations when this dialog is completed
-or canceled.  If you don't want to use Hyperscript, the modals will still work but UIKit's
+or canceled.  If you didn't use this Hyperscript, the modals will still work but UIKit's
 fade in animations will not be triggered.
 
-Alternatively, you can add and remove these CSS classes without Hyperscript, by using in straight Javascript.  
-It's just a lot more code:
+You can, of course, use JavaScript rather than Hyperscript for this work, it's just a lot more code:
 
 ```javascript
 
