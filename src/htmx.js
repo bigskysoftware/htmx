@@ -819,7 +819,7 @@ return (function () {
                         var oobElementClone = oobElement.cloneNode(true);
                         fragment = getDocument().createDocumentFragment();
                         fragment.appendChild(oobElementClone);
-                        if (!isInlineSwap(swapStyle, target)) {
+                        if (!isInlineSwap(swapStyle, target) || getAttributeValue(oobElement, "hx-swap-oob-source") === "firstChild") {
                             fragment = oobElementClone; // if this is not an inline swap, we use the content of the node, not the node itself
                         }
 

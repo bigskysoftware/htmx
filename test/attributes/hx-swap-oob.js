@@ -128,5 +128,16 @@ describe("hx-swap-oob attribute", function () {
         this.server.respond();
         should.equal(byId("d1"), null);
     });
+
+    it('handles hx-swap-oob-source properly', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="true" hx-swap-oob-source="firstChild" id="d1"><div id="d2">Swapped</div></div>');
+
+        var div = make('<div id="d1" hx-get="/test">Foo</div>')
+        div.click();
+        this.server.respond();
+        should.equal(byId("d1"), null);
+        byId("d2").innerHTML.should.equal("Swapped");
+    });
 });
 
