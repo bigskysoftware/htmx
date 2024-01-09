@@ -26,7 +26,7 @@ describe("hx-sse attribute", function() {
                         event.data = data;
                         listener(event);
                     }
-                )}
+                }
             },
             close: function() {
                 wasClosed = true;
