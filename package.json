@@ -26,6 +26,7 @@
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
     "test": "mocha-chrome test/index.html",
+    "lint": "eslint .",
     "test-types": "tsc --project ./jsconfig.json",
     "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
