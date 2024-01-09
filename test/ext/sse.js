@@ -29,7 +29,7 @@ describe("sse extension", function() {
                         event.data = data;
                         listener(event);
                     }
-                }
+                )}
             },
             close: function() {
                 wasClosed = true;
