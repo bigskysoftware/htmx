@@ -72,7 +72,7 @@ In this respect, htmx is much more like JQuery than React (htmx's predecessor, [
 
 In short, while htmx can be used as a framework, it's a framework that [deviates far less from the web's semantics](https://unplannedobsolescence.com/blog/custom-html-has-levels) than the JavaScript frameworks do, and will benefit from improvements in those semantics with no additional work from the user, thanks to the web's [excellent backwards compatibility guarantees](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/The_web_and_web_standards#dont_break_the_web). If you want to build a website that lasts for a long time, these qualities make htmx a substantially better bet than many of its contemporaries.
 
-*NOTE: Despite agreeing with this analysis, finding no logical flaw in the essay, and allowing me to publish it on his website, Carson irrationally insists that htmx is a library.*
+*NOTE: Despite agreeing with this analysis, finding no logical flaws in the essay, and allowing me to publish it on his website, Carson continues to insist that htmx is a library.*
 
 <div style="text-align:center; width:100%">
   <img width=500
