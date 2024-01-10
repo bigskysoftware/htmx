@@ -40,8 +40,7 @@ page_template = "essay.html"
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
-
-
+* [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 
 ## Banners
 <div style="text-align: center;margin:32px">
