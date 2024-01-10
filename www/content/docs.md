@@ -1294,7 +1294,7 @@ be possible using a standard `on*` property, but it can be done using the `hx-on
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config-request=": event.detail.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config-request="event.detail.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
