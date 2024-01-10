@@ -148,6 +148,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 					}
 
 					// swap the response into the DOM and trigger a notification
+					api.triggerEvent(elt, "htmx:sseBeforeMessage", event);
 					swap(child, event.data);
 					api.triggerEvent(elt, "htmx:sseMessage", event);
 				};
