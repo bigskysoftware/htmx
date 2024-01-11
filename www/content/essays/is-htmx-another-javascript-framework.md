@@ -35,7 +35,7 @@ So: is htmx a framework? And is it going to be fast made obsolete, leaving a tra
 
 ## htmx is (usually) a framework
 
-With apologies to our community's ongoing debate about this question—I think htmx is pretty clearly a framework, at least in the majority use-case. But it does depend on how you use itcommunity's ongoing debate about .
+With apologies to our community's ongoing debate about this question—I think htmx is pretty clearly a framework, at least in the majority use-case. But it does depend on how you use it.
 
 Wherever you make use of htmx in your project, you're including htmx attributes in your HTML (i.e. `hx-post`, `hx-target`), writing endpoints that are called with htmx-formatted data (with certain request headers), and returning data from those endpoints that is formatted in ways that htmx expects (HTML with `hx-*` controls). All of these attributes and headers and endpoints interact with each other to create a system by which elements enter and exit the DOM via network request.
 
