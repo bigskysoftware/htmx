@@ -153,6 +153,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       <a href="https://uibakery.io"><img src="/img/ui-bakery.png" alt="UI Bakery" style="width:100%;max-width:250px"></a>
 </td>
 </tr>
+<tr>
+<td>
+        <a href=" https://deepsource.com/">
+          <img alt="Deepsource" src="/img/deepsource.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+      <a href="https://bigsky.software"><img src="/img/bss.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
+</td>
+</tr>
 </table>
 </div>
 
