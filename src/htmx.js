@@ -87,6 +87,7 @@ var htmx = (function() {
     canAccessLocalStorage,
     findThisElement,
     filterValues,
+    fullSwap,
     hasAttribute,
     getAttributeValue,
     getClosestAttributeValue,
