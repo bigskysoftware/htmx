@@ -1122,12 +1122,12 @@ var htmx = (function() {
    * @property {SwapSpecification} spec
    * @property {?string} select
    * @property {?string} selectOOB
-   * @property {boolean} ignoreTitle
-   * @property {*} responseInfo
-   * @property {*} headStrategy
+   * @property {?boolean} ignoreTitle
+   * @property {?*} responseInfo
+   * @property {?*} headStrategy
    * @property {?Element} contextElement
-   * @property {swapCallback} afterSwapCallback
-   * @property {swapCallback} afterSettleCallback
+   * @property {?swapCallback} afterSwapCallback
+   * @property {?swapCallback} afterSettleCallback
    */
 
   /**
@@ -1225,7 +1225,9 @@ var htmx = (function() {
       }
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.responseInfo)
     })
-    swapOptions.afterSwapCallback();
+    if (swapOptions.afterSwapCallback) {
+      swapOptions.afterSwapCallback();
+    }
 
     // merge in new head after swap but before settle
     if (!swapOptions.ignoreTitle) {
@@ -1247,7 +1249,7 @@ var htmx = (function() {
         triggerEvent(elt, 'htmx:afterSettle', swapOptions.responseInfo)
       })
 
-      if (swapOptions.responseInfo.pathInfo.anchor) {
+      if (swapOptions.responseInfo && swapOptions.responseInfo.pathInfo.anchor) {
         const anchorTarget = getDocument().getElementById(swapOptions.responseInfo.pathInfo.anchor)
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
@@ -1255,7 +1257,9 @@ var htmx = (function() {
       }
 
       updateScrollState(settleInfo.elts, swapOptions.spec)
-      swapOptions.afterSettleCallback()
+      if (swapOptions.afterSettleCallback) {
+        swapOptions.afterSettleCallback()
+      }
     }
 
     if (swapOptions.spec.settleDelay > 0) {
