@@ -290,7 +290,7 @@ var htmx = (function() {
 
   /**
    * @param {string} response HTML
-   * @returns {DocumentFragment & {string:title, head:Element}} a document fragment representing the response HTML, including
+   * @returns {DocumentFragment & {title: string, head:Element}} a document fragment representing the response HTML, including
    * a `head` property for any head content found
    */
   function makeFragment(response) {
@@ -1114,9 +1114,6 @@ var htmx = (function() {
   }
 
   /**
-   * @typedef {'innerHTML'|'outerHTML'|'beforebegin'|'afterbegin'|'beforeend'|'afterend'|'delete'|'none'|string} SwapStyle
-   */
-  /**
    * @callback swapCallback
    */
 
@@ -1127,17 +1124,17 @@ var htmx = (function() {
    * @property {?string} selectOOB
    * @property {boolean} ignoreTitle
    * @property {*} responseInfo
+   * @property {*} headStrategy
    * @property {?Element} contextElement
-   * @property {boolean} raiseEvents
    * @property {swapCallback} afterSwapCallback
    * @property {swapCallback} afterSettleCallback
    */
 
   /**
    * Implements complete swapping pipeline, including: focus and selection preservation,
-   * title updates, scroll, OOB swapping, normal swapping and settling
+   * title updates, head merging, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
-   * @param {string|Element} content
+   * @param {string} content
    * @param {SwapOptions} swapOptions
    */
   function fullSwap(target, content, swapOptions) {
@@ -1159,10 +1156,7 @@ var htmx = (function() {
     }
     let settleInfo = makeSettleInfo(target);
 
-    let fragment = typeof content == 'string' ? makeFragment(content) : content;
-    if (!fragment) {
-      return;
-    }
+    let fragment = makeFragment(content);
 
     settleInfo.title = fragment.title
     settleInfo.head = fragment.head
@@ -1231,10 +1225,14 @@ var htmx = (function() {
       }
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.responseInfo)
     })
-
     swapOptions.afterSwapCallback();
+
+    // merge in new head after swap but before settle
+    if (!swapOptions.ignoreTitle) {
+      handleTitle(settleInfo.title);
+    }
     if (triggerEvent(document.body, "htmx:beforeHeadMerge", {head: settleInfo.head})) {
-      handleHeadTag(settleInfo.head, head);
+      handleHeadTag(settleInfo.head, swapOptions.headStrategy);
     }
 
     // settle
@@ -1253,15 +1251,6 @@ var htmx = (function() {
         const anchorTarget = getDocument().getElementById(swapOptions.responseInfo.pathInfo.anchor)
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
-        }
-      }
-
-      if (settleInfo.title && !swapOptions.ignoreTitle) {
-        const titleElt = find('title')
-        if (titleElt) {
-          titleElt.innerHTML = settleInfo.title
-        } else {
-          window.document.title = settleInfo.title
         }
       }
 
@@ -1352,7 +1341,7 @@ var htmx = (function() {
     }
   }
 
-  function handleTrigger(xhr, header, elt) {
+  function handleTriggerHeader(xhr, header, elt) {
     const triggerBody = xhr.getResponseHeader(header)
     if (triggerBody.indexOf('{') === 0) {
       const triggers = parseJSON(triggerBody)
@@ -3465,7 +3454,7 @@ var htmx = (function() {
     if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return
 
     if (hasHeader(xhr, /HX-Trigger:/i)) {
-      handleTrigger(xhr, 'HX-Trigger', elt)
+      handleTriggerHeader(xhr, 'HX-Trigger', elt)
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
@@ -3622,14 +3611,14 @@ var htmx = (function() {
             ignoreTitle,
             responseInfo,
             contextElement: elt,
-            raiseEvents: false,
+            headStrategy: head,
             afterSwapCallback: function() {
               if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                 let finalElt = elt
                 if (!bodyContains(elt)) {
                   finalElt = getDocument().body
                 }
-                handleTrigger(xhr, 'HX-Trigger-After-Swap', finalElt)
+                handleTriggerHeader(xhr, 'HX-Trigger-After-Swap', finalElt)
               }
             },
             afterSettleCallback: function() {
@@ -3638,7 +3627,7 @@ var htmx = (function() {
                 if (!bodyContains(elt)) {
                   finalElt = getDocument().body
                 }
-                handleTrigger(xhr, 'HX-Trigger-After-Settle', finalElt)
+                handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
               }
               maybeCall(settleResolve)
             },
