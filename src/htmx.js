@@ -71,7 +71,7 @@ var htmx = (function() {
     },
     parseInterval,
     _: internalEval,
-    version: '1.9.10'
+    version: '2.0a'
   }
 
   /** @type {import("./htmx").HtmxInternalApi} */
