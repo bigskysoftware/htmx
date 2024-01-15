@@ -13,15 +13,15 @@ describe("hx-sse attribute", function() {
                 })
             },
             addEventListener: function(message, l) {
-                if (listeners == undefined) {
+                if (listeners[message] === undefined) {
                     listeners[message] = [];
                 }
                 listeners[message].push(l)
             },
             sendEvent: function(eventName, data) {
-                var listeners = listeners[eventName];
-                if (listeners) {
-                    listeners.forEach(function(listener) {
+                var eventListeners = listeners[eventName];
+                if (eventListeners) {
+                    eventListeners.forEach(function(listener) {
                         var event = htmx._("makeEvent")(eventName);
                         event.data = data;
                         listener(event);
@@ -47,6 +47,7 @@ describe("hx-sse attribute", function() {
     });
     afterEach(function() {
         this.server.restore();
+        this.eventSource = mockEventSource();
         clearWorkArea();
     });
 
