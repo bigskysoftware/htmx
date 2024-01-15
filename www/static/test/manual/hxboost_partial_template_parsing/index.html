@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" hx-preserve="true">
+    <meta name="htmx-config" content='{"useTemplateFragments": true}' hx-preserve="true">
+
+    <title>Index content</title>
+
+    <style hx-preserve="true">
+        * {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+        }
+        code {
+            font-family: monospace;
+            font-size: 20px;
+        }
+        hr { border: 1px solid black; }
+    </style>
+
+    <script src="../../../src/htmx.js" hx-preserve="true"></script>
+    <script src="../../../src/ext/head-support.js" hx-preserve="true"></script>
+</head>
+<body hx-ext="head-support" hx-boost="true">
+    <header hx-push-url="false" hx-target="main" hx-swap="innerHTML">
+        <nav>
+            <ul>
+                <li><a href="./index-partial.html">Index</a></li>
+                <li><a href="./other-content.html">See other content</a></li>
+            </ul>
+        </nav><hr>
+    </header>
+    <main>
+        <h1># Index</h1>
+        <ul>
+            <li><code>&lt;title&gt;</code> <b>should not</b> spawn inside <code>&lt;main&gt;</code></li>
+            <li><code>&lt;title&gt;</code> <b>should be</b> <em>index content</em></li>
+        </ul>
+    </main>
+</body>
+</html>

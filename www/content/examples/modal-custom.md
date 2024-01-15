@@ -3,7 +3,8 @@ title = "Custom Modal Dialogs"
 template = "demo.html"
 +++
 
-While htmx works great with dialogs built into CSS frameworks (like [Bootstrap](@/examples/modal-bootstrap.md) and [UIKit](@/examples/modal-uikit.md)), htmx also makes it easy to build modal dialogs from scratch.  Here is a quick example of one way to build them.
+While htmx works great with dialogs built into CSS frameworks (like [Bootstrap](@/examples/modal-bootstrap.md) and [UIKit](@/examples/modal-uikit.md)), htmx also makes 
+it easy to build modal dialogs from scratch.  Here is a quick example of one way to build them.
 
 Click here to see a demo of the final result:
 
@@ -11,10 +12,13 @@ Click here to see a demo of the final result:
 
 ## High Level Plan
 
-We're going to make a button that loads remote content from the server, then displays it in a modal dialog.  The modal content will be added to the end of the `<body>` element, in a div named `#modal`.  
+We're going to make a button that loads remote content from the server, then displays it in a modal dialog.  The modal 
+content will be added to the end of the `<body>` element, in a div named `#modal`.  
 
-We'll define some nice animations in CSS, and use some Hyperscript events (or alternatively, Javascript) to remove the modals from the DOM when the user is done.  This requires you to add a minimal amount of extra markup around your modal HTML.
-
+In this demo we'll define some nice animations in CSS, and then use some [Hyperscript](https://hyperscript.org) to remove the 
+modals from the DOM when the user is done.  Hyperscript is *not* required with htmx, but the two were designed to be used
+together and it is much nicer for writing async & event oriented code than JavaScript, which is why we chose it for this
+example.
 
 ## Main Page HTML
 

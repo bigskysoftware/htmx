@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.9.10] - 2023-12-??
+## [1.9.10] - 2023-12-21
+
+* `hx-on*` attributes now support the form `hx-on-`, with a trailing dash, to better support template systems (such as EJS)
+  that do not like double colons in HTML attributes.
+* Added an `htmx.config.triggerSpecsCache` configuration property that can be set to an object to cache the trigger spec parsing
+* Added a `path-params.js` extension for populating request paths with variable values
+* Many smaller bug fixes & improvements
 
 ## [1.9.9] - 2023-11-21
 

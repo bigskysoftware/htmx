@@ -1,21 +1,32 @@
 +++
-title = "Tabs (Using Hyperscript)"
+title = "Tabs (Using JavaScript)"
 template = "demo.html"
 +++
 
-This example shows how to load tab contents using htmx, and to select the "active" tab using Javascript.  This reduces some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your clients' browsers.
+This example shows how to load tab contents using htmx, and to select the "active" tab using Javascript.  This reduces 
+some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your 
+clients' browsers.
 
 You may also consider [a more idiomatic approach](@/examples/tabs-hateoas.md) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
 
 ## Example Code
 
-The HTML below displays a list of tabs, with added HTMX to dynamically load each tab pane from the server.  A simple [hyperscript](https://hyperscript.org) event handler uses the [`take` command](https://hyperscript.org/commands/take/) to switch the selected tab when the content is swapped into the DOM.  Alternatively, this could be accomplished with a slightly longer Javascript event handler.
+The HTML below displays a list of tabs, with added HTMX to dynamically load each tab pane from the server.  A simple 
+JavaScript event handler uses the [`take` function](https://hyperscript.org/commands/take/) to switch the selected tab 
+when the content is swapped into the DOM.
 
 ```html
-<div id="tabs" hx-target="#tab-contents" role="tablist" _="on htmx:afterOnLoad set @aria-selected of <[aria-selected=true]/> to false tell the target take .selected set @aria-selected to true">
-	<button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
+
+<div id="tabs" hx-target="#tab-contents" role="tablist"
+     hx-on:htmx-after-on-load="let currentTab = document.querySelector('[aria-selected=true]');
+                               currentTab.setAttribute('aria-selected', 'false')
+                               currentTab.classList.remove('selected')
+                               let newTab = event.target
+                               newTab.setAttribute('aria-selected', 'true')
+                               newTab.classList.add('selected')">
+    <button role="tab" aria-controls="tab-contents" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab2">Tab 2</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
@@ -23,10 +34,17 @@ The HTML below displays a list of tabs, with added HTMX to dynamically load each
 
 {{ demoenv() }}
 
-<div id="tabs" hx-target="#tab-contents" role="tablist" _="on htmx:afterOnLoad set @aria-selected of <[aria-selected=true]/> to false tell the target take .selected set @aria-selected to true">
-	<button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
+<div id="tabs" hx-target="#tab-contents" role="tablist" 
+     hx-on:htmx-after-on-load="console.log(event)
+                               let currentTab = document.querySelector('[aria-selected=true]');
+                                          currentTab.setAttribute('aria-selected', 'false')
+                                          currentTab.classList.remove('selected')
+                                          let newTab = event.target
+                                          newTab.setAttribute('aria-selected', 'true')
+                                          newTab.classList.add('selected')">
+	<button role="tab" aria-controls="tab-contents" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+	<button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab2">Tab 2</button>
+	<button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>

@@ -2310,7 +2310,7 @@ var htmx = (function() {
   }
 
   function shouldInclude(elt) {
-    if (elt.name === '' || elt.name == null || elt.disabled) {
+    if (elt.name === '' || elt.name == null || elt.disabled || closest(elt, 'fieldset[disabled]')) {
       return false
     }
     // ignore "submitter" types (see jQuery src/serialize.js)
@@ -3697,38 +3697,30 @@ var htmx = (function() {
     return getExtensions(parentElt(elt), extensionsToReturn, extensionsToIgnore)
   }
 
-  //= ===================================================================
-  // Initialization
-  //= ===================================================================
-  /**
- * We want to initialize the page elements after DOMContentLoaded
- * fires, but there isn't always a good way to tell whether
- * it has already fired when we get here or not.
- */
-  function ready(functionToCall) {
-  // call the function exactly once no matter how many times this is called
-    const callReadyFunction = function() {
-      if (!functionToCall) return
-      functionToCall()
-      functionToCall = null
-    }
+        //====================================================================
+        // Initialization
+        //====================================================================
+        var isReady = false
+        getDocument().addEventListener('DOMContentLoaded', function() {
+            isReady = true
+        })
 
-    if (getDocument().readyState === 'complete') {
-    // DOMContentLoaded definitely fired, we can initialize the page
-      callReadyFunction()
-    } else {
-    /* DOMContentLoaded *maybe* already fired, wait for
-     * the next DOMContentLoaded or readystatechange event
-     */
-      getDocument().addEventListener('DOMContentLoaded', function() {
-        callReadyFunction()
-      })
-      getDocument().addEventListener('readystatechange', function() {
-        if (getDocument().readyState !== 'complete') return
-        callReadyFunction()
-      })
-    }
-  }
+        /**
+         * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
+         *
+         * This function uses isReady because there is no realiable way to ask the browswer whether
+         * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
+         * firing and readystate=complete.
+         */
+        function ready(fn) {
+            // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
+            // some means other than the initial page load.
+            if (isReady || getDocument().readyState === 'complete') {
+                fn();
+            } else {
+                getDocument().addEventListener('DOMContentLoaded', fn);
+            }
+        }
 
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {

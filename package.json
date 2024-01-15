@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
   },
-  "license": "BSD 2-Clause",
+  "license": "0BSD",
   "files": [
     "LICENSE",
     "README.md",

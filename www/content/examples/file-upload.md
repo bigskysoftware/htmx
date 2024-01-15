@@ -30,7 +30,7 @@ First the pure javascript version.
     </script>
 ```
 
-The hyperscript version is very similar, except:
+The Hyperscript version is very similar, except:
  
  * The script is embedded directly on the form element
  * Hyperscript offers nicer syntax (although the htmx API is pretty nice too!)

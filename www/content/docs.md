@@ -39,7 +39,7 @@ custom_classes = "wide-content"
 * [events & logging](#events)
 * [debugging](#debugging)
 * [scripting](#scripting)
-  * [hyperscript](#hyperscript)
+  * [hx-on attribute](#hx-on)
 * [3rd party integration](#3rd-party)
 * [caching](#caching)
 * [security](#security)
@@ -96,7 +96,7 @@ within the [original web programming model](https://www.ics.uci.edu/~fielding/pu
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
-It's worth mentioning that, if you prefer, you can use the `data-` prefix when using htmx:
+It's worth mentioning that, if you prefer, you can use the [`data-`](https://html.spec.whatwg.org/multipage/dom.html#attr-data-*) prefix when using htmx:
 
 ```html
 <a data-hx-post="/click">Click Me!</a>
@@ -115,7 +115,7 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-TODO" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -380,10 +380,10 @@ you can create your own CSS transition like so:
 .htmx-indicator{
     display:none;
 }
-.htmx-request .my-indicator{
+.htmx-request .htmx-indicator{
     display:inline;
 }
-.htmx-request.my-indicator{
+.htmx-request.htmx-indicator{
     display:inline;
 }
 ```
@@ -465,17 +465,17 @@ with any of the following values:
 #### Morph Swaps {#morphing}
 
 In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
-attempt to _merge_ new content into the existing DOM, rather than simply replacing it, and often do a better job
-preserving things like focus, video state, etc. by preserving nodes in-place during the swap operation.
+attempt to _merge_ new content into the existing DOM, rather than simply replacing it.  They often do a better job
+preserving things like focus, video state, etc. by mutating existing nodes in-place during the swap operation, at the
+cost of more CPU.
 
 The following extensions are available for morph-style swaps:
 
+* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A morphing algorithm created by the htmx developers.
 * [Morphdom Swap](@/extensions/morphdom-swap.md) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
   the original DOM morphing library.
 * [Alpine-morph](@/extensions/alpine-morph.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
   well with alpine.js
-* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A newer morphing algorithm developed by us, the creators
-  of htmx.  Idiomorph will be available out of the box in htmx 2.0.
 
 #### View Transitions {#view-transitions}
 
@@ -637,12 +637,16 @@ You can use this technique to "piggy-back" updates on other requests.
 
 #### Troublesome Tables
 
-20Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
+Table elements can be problematic when combined with out of band swaps, because, by the HTML spec, many can't stand on 
 their own in the DOM (e.g. `<tr>` or `<td>`).
 
 To avoid this issue you can use a `template` tag to encapsulate these elements:
 
-
+```html
+<template>
+  <tr id="message" hx-swap-oob="true"><td>Joe</td><td>Smith</td></tr>
+</template>
+```
 
 #### Selecting Content To Swap
 
@@ -877,7 +881,7 @@ htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-<div style="border: 1px solid whitesmoke; background-color: #d0dbee; padding: 8px; border-radius: 8px">
+<div style="border: 1px solid whitesmoke; background-color: #e4f0ff; padding: 8px; border-radius: 8px">
 
 **Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
@@ -915,7 +919,7 @@ server and the browser than websockets.
 If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
 
 1. Define an SSE source.  To do this, add a [hx-sse](@/attributes/hx-sse.md) attribute on a parent element with
-a `connect <url>` declaration that specifies the URL from which Server Sent Events will be received.
+a `connect:<url>` declaration that specifies the URL from which Server Sent Events will be received.
 
 2. Define elements that are descendents of this element that are triggered by server sent events using the
 `hx-trigger="sse:<event_name>"` syntax
@@ -1114,18 +1118,17 @@ the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
 ### Validation Example
 
-Here is an example of an input that uses the `htmx:validation:validate` event to require that an input have the value
-`foo`, using hyperscript:
+Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attribute to catch the 
+`htmx:validation:validate` event and require that the input have the value `foo`:
 
 ```html
-<form hx-post="/test">
-    <input _="on htmx:validation:validate
-                if my.value != 'foo'
-                    call me.setCustomValidity('Please enter the value foo')
-                else
-                    call me.setCustomValidity('')"
-        name="example"
-    >
+<form id="example-form" hx-post="/test">
+    <input name="example"
+           onkeyup="this.setCustomValidity('') // reset the validation on keyup"
+           hx-on:htmx:validation:validate="if(this.value != 'foo') {
+                    this.setCustomValidity('Please enter the value foo') // set the validation error
+                    htmx.find('#foo-form').reportValidity()              // report the issue
+                }">
 </form>
 ```
 
@@ -1166,6 +1169,7 @@ Htmx includes some extensions that are tested against the htmx code base.  Here 
 | [`path-deps`](@/extensions/path-deps.md) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
 | [`class-tools`](@/extensions/class-tools.md) | an extension for manipulating timed addition and removal of classes on HTML elements
 | [`multi-swap`](@/extensions/multi-swap.md) | allows to swap multiple elements with different swap methods
+| [`response-targets`](@/extensions/response-targets.md) | allows to swap elements for responses with HTTP codes beyond `200`
 
 See the [extensions page](@/extensions/_index.md#included) for a complete list.
 
@@ -1386,6 +1390,9 @@ Scripting solutions that pair well with htmx include:
   team that created htmx.  It is designed to embed well in HTML and both respond to and create events, and pairs very well
   with htmx.
 
+We have an entire chapter entitled ["Client-Side Scripting"](https://hypermedia.systems/client-side-scripting/) in [our
+book](https://hypermedia.systems) that looks at how scripting can be integrated into your htmx-based application.
+
 ### <a name="hx-on"></a>[The `hx-on*` Attributes](#hx-on)
 
 HTML allows the embedding of inline scripts via the [`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
@@ -1413,7 +1420,7 @@ If we wanted to respond to the `click` event using an `hx-on` attribute, we woul
 </button>
 ```
 
-So, the string `hx-on`, followed by a colon (or a dahs), then by the name of the event.
+So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
 
 For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an 
 htmx-powered button that wishes to add a parameter to a request using the `htmx:config-request` event.  This would not 
@@ -1421,7 +1428,7 @@ be possible using a standard `on*` property, but it can be done using the `hx-on
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config-request=": event.detail.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config-request="event.detail.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
@@ -1436,90 +1443,6 @@ Note that HTML attributes are *case insensitive*.  This means that, unfortunatel
 camel casing, cannot be responded to.  If you need to support camel case events we recommend using a more fully
 functional scripting solution such as AlpineJS or hyperscript.  htmx dispatches all its events in both camelCase and in
 kebab-case for this very reason.
-
-
-### hyperscript
-
-Hyperscript is an experimental front end scripting language designed to be expressive and easily embeddable directly in HTML
-for handling custom events, etc.  The language is inspired by [HyperTalk](http://hypercard.org/HyperTalk%20Reference%202.4.pdf),
-javascript, [gosu](https://gosu-lang.github.io/) and others.
-
-You can explore the language more fully on its main website:
-
-<http://hyperscript.org>
-
-Hyperscript is *not* required when using htmx, anything you can do in hyperscript can be done in vanilla JS or with
- another javascript library like jQuery, but the two technologies were designed with one another in mind and play
- well together.
-
-#### Installing Hyperscript
-
- To use hyperscript in combination with htmx, you need to [install the hyperscript library](https://unpkg.com/browse/hyperscript.org/)
- either via a CDN or locally.  See the [hyperscript website](https://hyperscript.org) for the latest version of the
- library.
-
- When hyperscript is included, it will automatically integrate with htmx and begin processing all hyperscripts embedded
- in your HTML.
-
-#### Events & Hyperscript
-
-Hyperscript was designed to help address features and functionality from intercooler.js that are not implemented in htmx
-directly, in a more flexible and open manner.  One of its prime features is the ability to respond to arbitrary events
-on a DOM element, using the `on` syntax:
-
-```html
-<div _="on htmx:afterSettle log 'Settled!'">
-    ...
-</div>
-```
-
-This will log `Settled!` to the console when the `htmx:afterSettle` event is triggered.
-
-#### intercooler.js features & hyperscript implementations
-
-Below are some examples of intercooler features and the hyperscript equivalent.
-
-##### `ic-remove-after`
-
-Intercooler provided the [`ic-remove-after`](http://intercoolerjs.org/attributes/ic-remove-after.html) attribute
-for removing an element after a given amount of time.
-
-In hyperscript you can implement this, as well as fade effect, like so:
-
-```html
-<div _="on load wait 5s then transition opacity to 0 then remove me">
-    Here is a temporary message!
-</div>
-```
-
-##### `ic-post-errors-to`
-
-Intercooler provided the [`ic-post-errors-to`](http://intercoolerjs.org/attributes/ic-post-errors-to.html) attribute
-for posting errors that occurred during requests and responses.
-
-In hyperscript similar functionality is implemented like so:
-
-```html
-<body _="on htmx:error(errorInfo) fetch /errors {method:'POST', body:{errorInfo:errorInfo} as JSON} ">
-    ...
-</body>
-```
-
-##### `ic-switch-class`
-
-Intercooler provided the [`ic-switch-class`](http://intercoolerjs.org/attributes/ic-switch-class.html) attribute, which
-let you switch a class between siblings.
-
-In hyperscript you can implement similar functionality like so:
-
-```html
-<div hx-target="#content" _="on htmx:beforeOnLoad take .active from .tabs for event.target">
-    <a class="tabs active" hx-get="/tabl1" >Tab 1</a>
-    <a class="tabs" hx-get="/tabl2">Tab 2</a>
-    <a class="tabs" hx-get="/tabl3">Tab 3</a>
-</div>
-<div id="content">Tab 1 Content</div>
-```
 
 ### 3rd Party Javascript {#3rd-party}
 
