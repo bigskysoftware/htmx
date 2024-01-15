@@ -228,5 +228,63 @@ describe("sse extension", function() {
 
     })
 
+    it('raises htmx:sseBeforeMessage when receiving message from the server', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+        }
+
+        htmx.on("htmx:sseBeforeMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1"></div>')
+
+        myEventCalled.should.be.true;
+
+        htmx.off("htmx:sseBeforeMessage", handle)
+    })
+
+    it('cancels swap when htmx:sseBeforeMessage was cancelled', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+            evt.preventDefault();
+        }
+
+        htmx.on("htmx:sseBeforeMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"><div id="d1">div1</div></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1">replaced</div>')
+
+        myEventCalled.should.be.true;
+
+        byId("d1").innerHTML.should.equal("div1");
+
+        htmx.off("htmx:sseBeforeMessage", handle)
+    })
+
+    it('raises htmx:sseMessage when message was completely processed', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+        }
+
+        htmx.on("htmx:sseMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"><div id="d1">div1</div></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1">replaced</div>')
+
+        myEventCalled.should.be.true;
+        byId("d1").innerHTML.should.equal("replaced");
+
+        htmx.off("htmx:sseMessage", handle)
+    })
+
 });
 
