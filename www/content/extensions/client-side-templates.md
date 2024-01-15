@@ -58,9 +58,6 @@ To use the client side template, you will need to include htmx, the extension, a
 Here is an example of this setup for Mustache using
 a [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).
 
-If you wish to put a template into another file, you can use a directive such as
- `<script src="my-template" id="template-id" type="text/mustache">`
-
 ```html
 <!DOCTYPE html>
 <html>

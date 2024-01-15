@@ -24,9 +24,9 @@ when the content is swapped into the DOM.
                                let newTab = event.target
                                newTab.setAttribute('aria-selected', 'true')
                                newTab.classList.add('selected')">
-    <button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
-    <button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
-    <button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab2">Tab 2</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
@@ -42,9 +42,9 @@ when the content is swapped into the DOM.
                                           let newTab = event.target
                                           newTab.setAttribute('aria-selected', 'true')
                                           newTab.classList.add('selected')">
-	<button role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab2">Tab 2</button>
-	<button role="tab" aria-controls="tab-content" aria-selected="false" hx-get="/tab3">Tab 3</button>
+	<button role="tab" aria-controls="tab-contents" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+	<button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab2">Tab 2</button>
+	<button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab3">Tab 3</button>
 </div>
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
