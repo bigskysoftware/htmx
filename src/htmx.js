@@ -375,12 +375,8 @@ return (function () {
          * @returns {*}
          */
         function getInternalData(elt) {
-            var dataProp = 'htmx-internal-data';
-            var data = elt[dataProp];
-            if (!data) {
-                data = elt[dataProp] = {};
-            }
-            return data;
+            const dataProp = 'htmx-internal-data';
+            return elt[dataProp] || (elt[dataProp] = {});
         }
 
         /**
