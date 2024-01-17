@@ -179,7 +179,9 @@ So, we get the [flexibility we want](@/essays/hypermedia-apis-vs-data-apis.md) f
 
 The most important thing to notice, in terms of MVC, is that because our domain logic has been collected in a Model, 
 we can vary these two APIs flexibly while still achieving a significant amount of code reuse.  Yes, there was a lot
-of initial similarity to the JSON and HTML controllers, but they diverged over time.  At the same time, we didn't 
+of initial similarity to the JSON and HTML controllers, but they diverged over time.
+
+At the same time, we didn't 
 duplicate our Model logic: both controllers remained relatively "thin" and delegated out to our Model object to do
 most of the work.
 
