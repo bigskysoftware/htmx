@@ -385,13 +385,7 @@ return (function () {
          * @returns {any[]}
          */
         function toArray(arr) {
-            var returnArr = [];
-            if (arr) {
-                for (var i = 0; i < arr.length; i++) {
-                    returnArr.push(arr[i]);
-                }
-            }
-            return returnArr
+            return arr ? Array.from(arr) : [];
         }
 
         function forEach(arr, func) {
