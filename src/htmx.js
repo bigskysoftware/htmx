@@ -1186,40 +1186,37 @@ return (function () {
         function maybeGenerateConditional(elt, tokens, paramName) {
             if (tokens[0] === '[') {
                 tokens.shift();
-                var bracketCount = 1;
-                var conditionalSource = " return (function(" + paramName + "){ return (";
-                var last = null;
+                let bracketCount = 1;
+                let conditionalSource = " return (function(" + paramName + "){ return (";
+                let last = null;
                 while (tokens.length > 0) {
-                    var token = tokens[0];
+                    const token = tokens.shift();
                     if (token === "]") {
                         bracketCount--;
                         if (bracketCount === 0) {
                             if (last === null) {
-                                conditionalSource = conditionalSource + "true";
+                                conditionalSource += "true";
                             }
-                            tokens.shift();
                             conditionalSource += ")})";
                             try {
-                                var conditionFunction = maybeEval(elt,function () {
-                                    return Function(conditionalSource)();
-                                    },
-                                    function(){return true})
+                                const conditionFunction = maybeEval(elt, () => Function(conditionalSource)(), () => true);
                                 conditionFunction.source = conditionalSource;
                                 return conditionFunction;
                             } catch (e) {
-                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", {error:e, source:conditionalSource})
+                                triggerErrorEvent(getDocument().body, "htmx:syntax:error", { error: e, source: conditionalSource });
                                 return null;
                             }
                         }
                     } else if (token === "[") {
                         bracketCount++;
                     }
+
                     if (isPossibleRelativeReference(token, last, paramName)) {
-                            conditionalSource += "((" + paramName + "." + token + ") ? (" + paramName + "." + token + ") : (window." + token + "))";
+                        conditionalSource += `((${paramName}.${token}) ? (${paramName}.${token}) : (window.${token}))`;
                     } else {
-                        conditionalSource = conditionalSource + token;
+                        conditionalSource += token;
                     }
-                    last = tokens.shift();
+                    last = token;
                 }
             }
         }
