@@ -448,6 +448,37 @@ Removes the given extension from htmx
   htmx.removeExtension("my-extension");
 ```
 
+### Method - `htmx.swap()` {#swap}
+
+Performs swapping (and settling) of HTML content
+
+##### Parameters
+
+* `target` - the HTML element or string selector of swap target
+* `content` - string representation of content to be swapped
+* `swapSpec` - swapping specification, representing parameters from `hx-swap`
+  * `swapStyle` (required) - swapping style (`innerHTML`, `outerHTML`, `beforebegin` etc)
+  * `swapDelay`, `settleDelay` (number) - delays before swapping and settling respectively
+  * `transition` (bool) - whether to use HTML transitions for swap
+  * `ignoreTitle` (bool) - disables page title updates
+  * `head` (string) - specifies `head` tag handling strategy (`merge` or `append`). Leave empty to disable head handling
+  * `scroll`, `scrollTarget`, `show`, `showTarget`, `focusScroll` - specifies scroll handling after swap
+* `swapOptions` - additional *optional* parameters for swapping
+  * `select` - selector for the content to be swapped (equivalent of `hx-select`)
+  * `selectOOB` - selector for the content to be swapped out-of-band (equivalent of `hx-select-oob`)
+  * `eventInfo` - an object to be attached to `htmx:afterSwap` and `htmx:afterSettle` elements
+  * `anchor` - an anchor element that triggered scroll, will be scrolled into view on settle. Provides simple alternative to full scroll handling
+  * `contextElement` - DOM element that serves as context to swapping operation. Currently used to find extensions enabled for specific element
+  * `afterSwapCallback`, `afterSettleCallback` - callback functions called after swap and settle respectively. Take no arguments
+
+
+##### Example
+
+```js
+    // swap #output element inner HTML with div element with "Swapped!" text
+    htmx.swap("#output", "<div>Swapped!</div>", {swapStyle: 'innerHTML'});
+```
+
 ### Method - `htmx.takeClass()` {#takeClass}
 
 Takes the given class from its siblings, so that among its siblings, only the given element will have the class.

@@ -25,7 +25,7 @@ var htmx = (function() {
     removeClass: removeClassFromElement,
     toggleClass: toggleClassOnElement,
     takeClass: takeClassForElement,
-    swap: fullSwap,
+    swap: swap,
     /* Extension entrypoints */
     defineExtension,
     removeExtension,
@@ -87,7 +87,7 @@ var htmx = (function() {
     canAccessLocalStorage,
     findThisElement,
     filterValues,
-    fullSwap,
+    swap,
     hasAttribute,
     getAttributeValue,
     getClosestAttributeValue,
@@ -851,7 +851,7 @@ var htmx = (function() {
 
           target = beforeSwapDetails.target // allow re-targeting
           if (beforeSwapDetails.shouldSwap) {
-            swap(swapStyle, target, target, fragment, settleInfo)
+            swapWithStyle(swapStyle, target, target, fragment, settleInfo)
           }
           forEach(settleInfo.elts, function(elt) {
             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails)
@@ -1038,7 +1038,14 @@ var htmx = (function() {
     }
   }
 
-  function swap(swapStyle, elt, target, fragment, settleInfo) {
+  /**
+   * @param {string} swapStyle
+   * @param {HTMLElement} elt
+   * @param {HTMLElement} target
+   * @param {Node} fragment
+   * @param {{ tasks: (() => void)[]; }} settleInfo
+   */
+  function swapWithStyle(swapStyle, elt, target, fragment, settleInfo) {
     switch (swapStyle) {
       case 'none':
         return
@@ -1085,7 +1092,7 @@ var htmx = (function() {
         if (swapStyle === 'innerHTML') {
           swapInnerHTML(target, fragment, settleInfo)
         } else {
-          swap(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo)
+          swapWithStyle(htmx.config.defaultSwapStyle, elt, target, fragment, settleInfo)
         }
     }
   }
@@ -1120,13 +1127,11 @@ var htmx = (function() {
 
   /**
    * @typedef {Object} SwapOptions
-   * @property {SwapSpecification} spec
    * @property {?string} select
    * @property {?string} selectOOB
-   * @property {?boolean} ignoreTitle
-   * @property {?*} responseInfo
-   * @property {?*} headStrategy
-   * @property {?Element} contextElement
+   * @property {?*} eventInfo
+   * @property {?*} anchor
+   * @property {?HTMLElement} contextElement
    * @property {?swapCallback} afterSwapCallback
    * @property {?swapCallback} afterSettleCallback
    */
@@ -1136,9 +1141,14 @@ var htmx = (function() {
    * title updates, head merging, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
    * @param {string} content
+   * @param {import("./htmx").HtmxSwapSpecification} swapSpec
    * @param {SwapOptions} swapOptions
    */
-  function fullSwap(target, content, swapOptions) {
+  function swap(target, content, swapSpec, swapOptions) {
+    if (!swapOptions) {
+      swapOptions = {}
+    }
+
     target = resolveTarget(target);
 
     // preserve focus and selection
@@ -1197,19 +1207,19 @@ var htmx = (function() {
       fragment = newFragment
     }
     handlePreservedElements(fragment);
-    swap(swapOptions.spec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo);
+    swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo);
 
     // apply saved focus and selection information to swapped content
     if (selectionInfo.elt &&
             !bodyContains(selectionInfo.elt) &&
             getRawAttribute(selectionInfo.elt, 'id')) {
       const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
-      const focusOptions = { preventScroll: swapOptions.spec.focusScroll !== undefined ? !swapOptions.spec.focusScroll : !htmx.config.defaultFocusScroll }
+      const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
       if (newActiveElt) {
         // @ts-ignore
         if (selectionInfo.start && newActiveElt.setSelectionRange) {
-          // @ts-ignore
           try {
+            // @ts-ignore
             newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
           } catch (e) {
             // the setSelectionRange method is present on fields that don't support it, so just let this fail
@@ -1224,18 +1234,18 @@ var htmx = (function() {
       if (elt.classList) {
         elt.classList.add(htmx.config.settlingClass)
       }
-      triggerEvent(elt, 'htmx:afterSwap', swapOptions.responseInfo)
+      triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
     })
     if (swapOptions.afterSwapCallback) {
       swapOptions.afterSwapCallback();
     }
 
     // merge in new head after swap but before settle
-    if (!swapOptions.ignoreTitle) {
+    if (!swapSpec.ignoreTitle) {
       handleTitle(settleInfo.title);
     }
     if (triggerEvent(document.body, "htmx:beforeHeadMerge", {head: settleInfo.head})) {
-      handleHeadTag(settleInfo.head, swapOptions.headStrategy);
+      handleHeadTag(settleInfo.head, swapSpec.head);
     }
 
     // settle
@@ -1247,24 +1257,24 @@ var htmx = (function() {
         if (elt.classList) {
           elt.classList.remove(htmx.config.settlingClass)
         }
-        triggerEvent(elt, 'htmx:afterSettle', swapOptions.responseInfo)
+        triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
       })
 
-      if (swapOptions.responseInfo && swapOptions.responseInfo.pathInfo.anchor) {
-        const anchorTarget = getDocument().getElementById(swapOptions.responseInfo.pathInfo.anchor)
+      if (swapOptions.anchor) {
+        const anchorTarget = resolveTarget(swapOptions.anchor);
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
         }
       }
 
-      updateScrollState(settleInfo.elts, swapOptions.spec)
+      updateScrollState(settleInfo.elts, swapSpec)
       if (swapOptions.afterSettleCallback) {
         swapOptions.afterSettleCallback()
       }
     }
 
-    if (swapOptions.spec.settleDelay > 0) {
-      setTimeout(doSettle, swapOptions.spec.settleDelay)
+    if (swapSpec.settleDelay > 0) {
+      setTimeout(doSettle, swapSpec.settleDelay)
     } else {
       doSettle()
     }
@@ -2682,11 +2692,12 @@ var htmx = (function() {
   /**
  *
  * @param {HTMLElement} elt
- * @param {string} swapInfoOverride
+ * @param {import("./htmx").HtmxSwapStyle} swapInfoOverride
  * @returns {import("./htmx").HtmxSwapSpecification}
  */
   function getSwapSpecification(elt, swapInfoOverride) {
     const swapInfo = swapInfoOverride || getClosestAttributeValue(elt, 'hx-swap')
+    /** @type import("./htmx").HtmxSwapSpecification */
     const swapSpec = {
       swapStyle: getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
       swapDelay: htmx.config.defaultSwapDelay,
@@ -3571,11 +3582,11 @@ var htmx = (function() {
       }
       var swapSpec = getSwapSpecification(elt, swapOverride)
 
-      if (swapSpec.hasOwnProperty('ignoreTitle')) {
-        ignoreTitle = swapSpec.ignoreTitle
+      if (!swapSpec.hasOwnProperty('ignoreTitle')) {
+        swapSpec.ignoreTitle = ignoreTitle
       }
-      if (swapSpec.hasOwnProperty('head')) {
-        head = swapSpec.head
+      if (!swapSpec.hasOwnProperty('head')) {
+        swapSpec.head = head
       }
 
       target.classList.add(htmx.config.swappingClass)
@@ -3609,14 +3620,12 @@ var htmx = (function() {
             }
           }
 
-          fullSwap(target, serverResponse, {
-            spec: swapSpec,
+          swap(target, serverResponse, swapSpec, {
             select: selectOverride || select,
             selectOOB,
-            ignoreTitle,
-            responseInfo,
+            eventInfo: responseInfo,
+            anchor: responseInfo.pathInfo.anchor,
             contextElement: elt,
-            headStrategy: head,
             afterSwapCallback: function() {
               if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
                 let finalElt = elt
