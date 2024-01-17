@@ -12,22 +12,24 @@ A common objection I see to using htmx and hypermedia is something along the lin
 > The problem with returning HTML (and not JSON) from your server is that you'd probably also like to serve mobile
 > apps and don't want to duplicate your API
 
-I have outlined in [another essay](@/essays/splitting-your-apis.md) that I think you should split your JSON API & your
+I have already outlined in [another essay](@/essays/splitting-your-apis.md) that I think you should split your JSON API & your
 hypermedia API up into separate components.
 
-In that essay I explicitly recommend duplicating your API, in order to
-disentangle your "churny" web application API endpoints (that are HTML) and your
+In that essay I explicitly recommend "duplicating" (to an extent) your API, in order to
+disentangle your "churny" web application API endpoints that return HTML from your
 stable, regular & expressive JSON Data API.
 
-I think that in my discussions so far I have failed to communicate one major background concept: the 
+In looking back at conversations I've had around this idea with people, I think that I have been assuming familiarity
+with a pattern that, perhaps, many people are as deeply familiar with as I am: the 
 [Model/View/Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (MVC) 
 pattern.
 
 ## An MVC Intro
 
 I was a little shocked to discover [in a recent podcast](https://www.youtube.com/watch?v=9H5VK9vJ-aw) that many younger 
-web developers don't have much experience with MVC, perhaps due to the Front-end/Back-end split that occurred when Single
-Page Applications became the norm.  
+web developers just don't have much experience with MVC.
+
+This is perhaps due to the Front-end/Back-end split that occurred when Single Page Applications became the norm.  
 
 MVC is a simple pattern that predates the web and can be used in programs nearly any program that offer a graphical interface.
 
