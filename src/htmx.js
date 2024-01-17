@@ -1409,17 +1409,13 @@ return (function () {
          * @returns
          */
         function shouldCancel(evt, elt) {
-            if (evt.type === "submit" || evt.type === "click") {
-                if (elt.tagName === "FORM") {
-                    return true;
-                }
-                if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
-                    return true;
-                }
-                if (elt.tagName === "A" && elt.href &&
-                    (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf("#") !== 0)) {
-                    return true;
-                }
+            const { type } = evt;
+            if ((type === "submit" || type === "click") &&
+                (elt.tagName === "FORM" ||
+                (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) ||
+                (elt.tagName === "A" && elt.href &&
+                (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf("#") !== 0)))) {
+                return true;
             }
             return false;
         }
