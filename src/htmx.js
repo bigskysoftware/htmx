@@ -702,17 +702,15 @@ return (function () {
         function findAttributeTargets(elt, attrName) {
             var attrTarget = getClosestAttributeValue(elt, attrName);
             if (attrTarget) {
-                if (attrTarget === "this") {
-                    return [findThisElement(elt, attrName)];
-                } else {
+                if (attrTarget !== "this") {
                     var result = querySelectorAllExt(elt, attrTarget);
                     if (result.length === 0) {
                         logError('The selector "' + attrTarget + '" on ' + attrName + " returned no matches!");
                         return [DUMMY_ELT]
-                    } else {
-                        return result;
                     }
+                    return result;
                 }
+                return [findThisElement(elt, attrName)];
             }
         }
 
