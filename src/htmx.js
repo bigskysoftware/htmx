@@ -1385,26 +1385,18 @@ return (function () {
         }
 
         function boostElement(elt, nodeData, triggerSpecs) {
-            if ((elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM") {
+            const tagName = elt.tagName;
+            if ((tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || tagName === "FORM") {
                 nodeData.boosted = true;
-                var verb, path;
-                if (elt.tagName === "A") {
-                    verb = "get";
-                    path = getRawAttribute(elt, 'href')
-                } else {
-                    var rawAttribute = getRawAttribute(elt, "method");
-                    verb = rawAttribute ? rawAttribute.toLowerCase() : "get";
-                    if (verb === "get") {
-                    }
-                    path = getRawAttribute(elt, 'action');
-                }
+                const verb = (tagName === "A") ? "get" : (getRawAttribute(elt, "method") || "get").toLowerCase();
+                const path = (tagName === "A") ? getRawAttribute(elt, 'href') : getRawAttribute(elt, 'action');
                 triggerSpecs.forEach(function(triggerSpec) {
                     addEventListener(elt, function(elt, evt) {
                         if (closest(elt, htmx.config.disableSelector)) {
-                            cleanUpElement(elt)
-                            return
+                            cleanUpElement(elt);
+                            return;
                         }
-                        issueAjaxRequest(verb, path, elt, evt)
+                        issueAjaxRequest(verb, path, elt, evt);
                     }, nodeData, triggerSpec, true);
                 });
             }
