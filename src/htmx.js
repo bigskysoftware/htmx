@@ -760,9 +760,8 @@ return (function () {
         function isInlineSwap(swapStyle, target) {
             var extensions = getExtensions(target);
             for (var i = 0; i < extensions.length; i++) {
-                var extension = extensions[i];
                 try {
-                    if (extension.isInlineSwap(swapStyle)) {
+                    if (extensions[i].isInlineSwap(swapStyle)) {
                         return true;
                     }
                 } catch(e) {
