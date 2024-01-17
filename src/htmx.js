@@ -722,20 +722,16 @@ return (function () {
 
         function getTarget(elt) {
             var targetStr = getClosestAttributeValue(elt, "hx-target");
+
             if (targetStr) {
                 if (targetStr === "this") {
-                    return findThisElement(elt,'hx-target');
-                } else {
-                    return querySelectorExt(elt, targetStr)
+                    return findThisElement(elt, 'hx-target');
                 }
-            } else {
-                var data = getInternalData(elt);
-                if (data.boosted) {
-                    return getDocument().body;
-                } else {
-                    return elt;
-                }
+                return querySelectorExt(elt, targetStr);
             }
+
+            var data = getInternalData(elt);
+            return data.boosted ? getDocument().body : elt;
         }
 
         function shouldSettleAttribute(name) {
