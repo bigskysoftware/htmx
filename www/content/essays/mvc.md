@@ -44,37 +44,40 @@ The rough idea is as follows:
 * Finally, a "Controller" layer, which coordinates these two layers: for example it might receive an update from a user,
   update a Model and then pass the updated model to a View to display an update user interface to the user.
 
-There are a lot of variations, but that's the rough idea.
+There are a lot of variations, but that's the idea.
 
-Nearly on in web development, a lot of server side frameworks explicitly adopted the MVC pattern.  The framework
+Early on in web development many server side frameworks explicitly adopted the MVC pattern.  The implementation
 that I'm most familiar with is [Ruby On Rails](https://rubyonrails.org/), which has documentation on each of these
 topics: [Models](https://guides.rubyonrails.org/active_record_basics.html) that are persisted to the database, 
-[Views](https://guides.rubyonrails.org/action_view_overview.html) for generating HTML views from Models, and 
-[Controllers](https://guides.rubyonrails.org/action_controller_overview.html) that coorindate between the two.
+[Views](https://guides.rubyonrails.org/action_view_overview.html) for generating HTML views, and 
+[Controllers](https://guides.rubyonrails.org/action_controller_overview.html) that coordinate between the two.
 
 The rough idea, in Rails, is:
 
 * Models collect your application logic and database accesses
-* Views take Models and generate HTML via a templating langauge (this is where HTML escaping is done, btw)
-* Controllers take HTTP Requests and typically perform some action with a Model and then pass that Model on to a 
+* Views take Models and generate HTML via a templating langauge ([ERB](https://github.com/ruby/erb), this is where [HTML sanitizing](https://en.wikipedia.org/wiki/HTML_sanitization) is done, btw)
+* Controllers take HTTP Requests and, typically, perform some action with a Model and then pass that Model on to a 
   View (or redirect, etc.)
 
-This is fairly standard, if "shallow" implementation of an Object-Oriented MVC pattern, using the underlying HTML, HTTP Request
-lifecycle.
+Rails has a fairly standard  (although somewhat "shallow" and simplified) implementation of the MVC pattern, built on 
+top of the underlying HTML, HTTP Request/Response lifecycle.
 
 ### Fat Model/Skinny Controller
 
-A concept that came up a lot in the Rails community was the notion of 
+One concept that came up a lot in the Rails community was the notion of 
 ["Fat Model, Skinny Controller"](https://riptutorial.com/ruby-on-rails/example/9609/fat-model--skinny-controller).  The
 idea here is that your Controllers should be relatively simple, only maybe invoking 
-a method on the Model and then immediately handing the result on to a View.  The Model, on the other hand, could
-be much "thicker" with lots of domain specific logic.
+a method or two on the Model and then immediately handing the result on to a View.
 
-Let's keep that idea in mind as we work through a simple example of the MVC pattern.
+The Model, on the other hand, could be much "thicker" with lots of domain specific logic.  (There are objections
+that this leads to [God Objects](https://en.wikipedia.org/wiki/God_object), but let's set that aside for now.)
+
+Let's keep this idea of fat model/skinny controller in mind as we work through a simple example of the MVC pattern and
+why it is useful.
 
 ## An MVC-Style Web Application
 
-Let's take a look at one of my favorite examples, an online Contacts application.  Here is a Controller method
+For our example, let's take a look at one of my favorites: an online Contacts application.  Here is a Controller method
 for that application that displays a given page of Contacts by generating an HTML page:
 
 ```python
@@ -88,18 +91,24 @@ Here I'm using [Python](https://www.python.org/) and Flask (https://flask.pallet
 those in my [Hypermedia Systems](https://hypermedia.systems/) book.
 
 Here you can see that the controller is very "thin": it simply looks up contacts via the `Contact` Model object, passing
-a `page` argument in.
+a `page` argument in from the request.
 
-It then hands the paged collection of contacts on to the `index.html` template to render them to 
+This is very typical: the Controllers job is to map an HTTP request into some domain logic, pulling HTTP-specific
+information out and turning it into data that the Model can understand, such as a page number.
+
+The controller then hands the paged collection of contacts on to the `index.html` template, to render them to 
 an HTML page to send back to the user.
 
-The `Contact` Model, on the other hand may be relatively "fat" internally: it could have a bunch of domain logic 
-internally that does a database lookup, pages the data somehow, maybe applies some transformations or business rules, etc.
+Now, the `Contact` Model, on the other hand, may be relatively "fat" internally: that `all()` method could have a bunch 
+of domain logic internally that does a database lookup, pages the data somehow, maybe applies some transformations or 
+business rules, etc.  And that would be fine, that logic is encapsulated within the Contact model and the Controller
+doesn't have to deal with it.
 
 ### Creating A JSON Data API Controller
 
-Now, if you have this relatively well-developed model that encapsulates your domain, you can create a _different_ API
-end point/Controller that does the same thing, but for JSON:
+So, if we have this relatively well-developed Contact model that encapsulates our domain, you can easly create a 
+_different_ API end point/Controller that does something similar, but returns a JSON document rather than an HTML 
+document:
 
 ```python
 @app.route("/api/v1/contacts")
@@ -110,16 +119,16 @@ def contacts():
 
 ### But You Are Duplicating Code!
 
-Looking at these two controller functions, you may think "This is stupid, the methods are nearly identical".
+At this point, looking at these two controller functions, you may think "This is stupid, the methods are nearly identical".
 
-And you're right, at this point they are.
+And you're right, currently they are nearly identical.
 
-However, let's consider two potential additions to our system.
+But let's consider two potential additions to our system.
 
 #### Rate Limiting Our JSON API
 
-First, let's add rate limiting to the JSON API to prevent DDOS or bad clients from swamping our system.  We'll add the
-[Flask-Limiter](https://flask-limiter.readthedocs.io/en/stable/) extension and use that:
+First, let's add rate limiting to the JSON API to prevent DDOS or badly written automated clients from swamping our 
+system.  We'll add the [Flask-Limiter](https://flask-limiter.readthedocs.io/en/stable/) library:
 
 ```python
 @app.route("/api/v1/contacts")
@@ -129,16 +138,19 @@ def contacts():
     return jsonify(contacts=contacts)
 ```
 
-Now, we don't want that limit applying to our web application, we just want it for our JSON Data API.  Because we've
-split the two up, we can achieve that.
+Easy.
+
+But note: we don't want that limit applying to our web application, we just want it for our JSON Data API.  And, because 
+we've split the two up, we can achieve that.
 
 #### Adding A Graph To Our Web Application
 
-Let's consider another change: we want to add a graph to the `index.html` template above that is expensive to compute.
+Let's consider another change: we want to add a graph of the number of contacts added per day to the `index.html` 
+template in our HTML-based web application.  It turns out that this graph is expensive to compute.
 
-Because we do not want to block the rendering of the `index.html` template, we will use the 
-[Lazy Loading](@/examples/lazy-load.md) pattern and create a new endpoint, `/graph`, to generate the HTML for that
-graph:
+We do not want to block the rendering of the `index.html` template on the graph generation, so we will use the 
+[Lazy Loading](@/examples/lazy-load.md) pattern for it instead.  To do this, we need to create a new endpoint, `/graph`, 
+that returns the HTML for that lazily loaded content:
 
 ```python
 @app.route("/graph")
@@ -147,22 +159,33 @@ def graph():
     return render_template("graph.html", info=graphInfo)
 ```
 
-Here, again, our Controller delegates out to the Model and then hands the results on to a View.
+Note that here, again, our controller is still "thin": it just delegates out to the Model and then hands the results on 
+to a View.
 
-Now, the thing to note here is that we've added a new endpoint to our web application API, but _we haven't added it to our JSON Data API_.  So
-we are not committing to other clients that this (specialized) endpoint will be around.  
+What's easy to miss is that we've added a new endpoint to our web application HTML API, but _we haven't added it to 
+our JSON Data API_.  So we are **not** committing to other non-web clients that this (specialized) endpoint, which
+is being driven entirely by our UI needs, will be around forever.  
 
-And, since we are using
- [Hypermedia As The Engine of Application State](@/essays/hateoas.md), we are free, in our web app, to remove or refactor this URL
-later on.
+Since we are not committing to *all* clients that this data will be available at `/graph` forever, and since we
+are using [Hypermedia As The Engine of Application State](@/essays/hateoas.md) in our HTML-based web application, we are free to remove 
+or refactor this URL later on.
+
+Perhaps some database optimization suddenly make the graph fast to compute and we can include it inline in the
+response to `/contacts`: we can remove this end point because we have not exposed it to other clients, it's just there
+to support our web application.
 
 So, we get the [flexibility we want](@/essays/hypermedia-apis-vs-data-apis.md) for our hypermedia API, and the 
 [features](@/essays/hypermedia-apis-vs-data-apis.md) we want for our JSON Data API.
 
-And, because our domain logic has been collected in a Model, we can vary these two APIs flexibly while still achieving
-a significant amount of code reuse.  Our two APIs are decoupled, while our domain logic remains centralized.
+The most important thing to notice, in terms of MVC, is that because our domain logic has been collected in a Model, 
+we can vary these two APIs flexibly while still achieving a significant amount of code reuse.  Yes, there was a lot
+of initial similarity to the JSON and HTML controllers, but they diverged over time.  At the same time, we didn't 
+duplicate our Model logic: both controllers remained relatively "thin" and delegated out to our Model object to do
+most of the work.
 
-(This also gets at why [why I tend not to use content negotiation](@/essays/why-tend-not-to-use-content-negotiation.md) and return HTML & JSON from the same endpoint.)
+Our two APIs are decoupled, while our domain logic remains centralized.
+
+(Note that this also gets at why [why I tend not to use content negotiation](@/essays/why-tend-not-to-use-content-negotiation.md) and return HTML & JSON from the same endpoint.)
 
 ## MVC Frameworks
 
@@ -172,7 +195,8 @@ your logic out in this manner extremely effectively.
 
 Django has a variation on the idea called [MVT](https://www.askpython.com/django/django-mvt-architecture).
 
-This strong support for MVC is one reason why these frameworks pair very well with htmx.
+This strong support for MVC is one reason why these frameworks pair very well with htmx and those communities are excited
+about it.
 
 And, while the examples above are obviously biased towards [Object-Oriented](https://www.azquotes.com/picture-quotes/quote-object-oriented-programming-is-an-exceptionally-bad-idea-which-could-only-have-originated-edsger-dijkstra-7-85-25.jpg)
 programming, the same ideas can be applied in a functional context as well.
@@ -180,5 +204,5 @@ programming, the same ideas can be applied in a functional context as well.
 ## Conclusion
 
 I hope that, if it is new to you, that gives you to a good feel for the concept of MVC and shows how that, by adopting that 
-organizational principle in your web applications, you can effectively decouple your API needs while at the same time avoiding
+organizational principle in your web applications, you can effectively decouple your APIs while at the same time avoiding
 significant duplication of code.
