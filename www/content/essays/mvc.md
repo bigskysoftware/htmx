@@ -1,7 +1,7 @@
 +++
 title = "Model/View/Controller (MVC)"
-date = 2023-01-16
-updated = 2023-01-16
+date = 2024-01-16
+updated = 2024-01-16
 [taxonomies]
 author = ["Carson Gross"]
 tag = ["posts"]
