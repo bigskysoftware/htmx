@@ -275,21 +275,20 @@ return (function () {
          * @returns {Element}
          */
         function parseHTML(resp, depth) {
-            var parser = new DOMParser();
-            var responseDoc = parser.parseFromString(resp, "text/html");
+            const parser = new DOMParser();
+            const responseDoc = parser.parseFromString(resp, "text/html");
+
+            let responseNode = responseDoc.body;
 
             /** @type {Element} */
-            var responseNode = responseDoc.body;
-            while (depth > 0) {
+            while (depth > 0 && responseNode !== null) {
                 depth--;
                 // @ts-ignore
                 responseNode = responseNode.firstChild;
             }
-            if (responseNode == null) {
-                // @ts-ignore
-                responseNode = getDocument().createDocumentFragment();
-            }
-            return responseNode;
+
+            // @ts-ignore
+            return responseNode || getDocument().createDocumentFragment();
         }
 
         function aFullPageResponse(resp) {
