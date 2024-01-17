@@ -1230,15 +1230,13 @@ return (function () {
         }
 
         function consumeCSSSelector(tokens) {
-            var result;
             if (tokens.length > 0 && COMBINED_SELECTOR_START.test(tokens[0])) {
                 tokens.shift();
-                result = consumeUntil(tokens, COMBINED_SELECTOR_END).trim();
+                const result = consumeUntil(tokens, COMBINED_SELECTOR_END).trim();
                 tokens.shift();
-            } else {
-                result = consumeUntil(tokens, WHITESPACE_OR_COMMA);
+                return result;
             }
-            return result;
+            return consumeUntil(tokens, WHITESPACE_OR_COMMA);
         }
 
         var INPUT_SELECTOR = 'input, textarea, select';
