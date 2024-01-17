@@ -781,13 +781,14 @@ return (function () {
         function oobSwap(oobValue, oobElement, settleInfo) {
             var selector = "#" + getRawAttribute(oobElement, "id");
             var swapStyle = "outerHTML";
-            if (oobValue === "true") {
-                // do nothing
-            } else if (oobValue.indexOf(":") > 0) {
-                swapStyle = oobValue.substr(0, oobValue.indexOf(":"));
-                selector  = oobValue.substr(oobValue.indexOf(":") + 1, oobValue.length);
-            } else {
-                swapStyle = oobValue;
+            if (oobValue !== "true") {
+                var colonIndex = oobValue.indexOf(":");
+                if (colonIndex > 0) {
+                    swapStyle = oobValue.substr(0, colonIndex);
+                    selector = oobValue.substr(colonIndex + 1);
+                } else {
+                    swapStyle = oobValue;
+                }
             }
 
             var targets = getDocument().querySelectorAll(selector);
