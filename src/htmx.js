@@ -398,9 +398,7 @@ return (function () {
 
         function isScrolledIntoView(el) {
             var rect = el.getBoundingClientRect();
-            var elemTop = rect.top;
-            var elemBottom = rect.bottom;
-            return elemTop < window.innerHeight && elemBottom >= 0;
+            return rect.top < window.innerHeight && rect.bottom >= 0;
         }
 
         function bodyContains(elt) {
