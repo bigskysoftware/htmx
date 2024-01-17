@@ -1748,16 +1748,14 @@ return (function () {
         }
 
         function processSSETrigger(elt, handler, sseEventName) {
-            var sseSourceElt = getClosestMatch(elt, hasEventSource);
+            const sseSourceElt = getClosestMatch(elt, hasEventSource);
             if (sseSourceElt) {
-                var sseEventSource = getInternalData(sseSourceElt).sseEventSource;
-                var sseListener = function () {
-                    if (!maybeCloseSSESource(sseSourceElt)) {
-                        if (bodyContains(elt)) {
-                            handler(elt);
-                        } else {
-                            sseEventSource.removeEventListener(sseEventName, sseListener);
-                        }
+                const sseEventSource = getInternalData(sseSourceElt).sseEventSource;
+                const sseListener = function () {
+                    if (maybeCloseSSESource(sseSourceElt) || !bodyContains(elt)) {
+                        sseEventSource.removeEventListener(sseEventName, sseListener);
+                    } else {
+                        handler(elt);
                     }
                 };
                 getInternalData(elt).sseListener = sseListener;
