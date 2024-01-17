@@ -828,20 +828,19 @@ return (function () {
             var oobSelects = getClosestAttributeValue(elt, "hx-select-oob");
             if (oobSelects) {
                 var oobSelectValues = oobSelects.split(",");
-                for (var i = 0; i < oobSelectValues.length; i++) {
-                    var oobSelectValue = oobSelectValues[i].split(":", 2);
-                    var id = oobSelectValue[0].trim();
-                    if (id.indexOf("#") === 0) {
+                oobSelectValues.forEach(function (oobSelectValue) {
+                    var [id, oobValue] = oobSelectValue.split(":", 2).map(part => part.trim());
+                    if (id.startsWith("#")) {
                         id = id.substring(1);
                     }
-                    var oobValue = oobSelectValue[1] || "true";
                     var oobElement = fragment.querySelector("#" + id);
                     if (oobElement) {
-                        oobSwap(oobValue, oobElement, settleInfo);
+                        oobSwap(oobValue || "true", oobElement, settleInfo);
                     }
-                }
+                });
             }
-            forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function (oobElement) {
+            var oobElements = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]');
+            forEach(oobElements, function (oobElement) {
                 var oobValue = getAttributeValue(oobElement, "hx-swap-oob");
                 if (oobValue != null) {
                     oobSwap(oobValue, oobElement, settleInfo);
