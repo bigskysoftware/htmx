@@ -27,11 +27,10 @@ pattern.
 ## An MVC Intro
 
 I was a little shocked to discover [in a recent podcast](https://www.youtube.com/watch?v=9H5VK9vJ-aw) that many younger 
-web developers just don't have much experience with MVC.
+web developers just don't have much experience with MVC. This is perhaps due to the Front-end/Back-end split that occurred when Single Page Applications became the norm.  
 
-This is perhaps due to the Front-end/Back-end split that occurred when Single Page Applications became the norm.  
-
-MVC is a simple pattern that predates the web and can be used in programs nearly any program that offer a graphical interface.
+MVC is a simple pattern that predates the web and can be with nearly any program that offers a graphical interface
+to a user.
 
 The rough idea is as follows:
 
