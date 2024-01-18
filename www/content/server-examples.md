@@ -114,6 +114,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/libsyz/htmx-to-do-app>
 - <https://github.com/beechnut/pokebutt-htmx>
 
+## Scala
+  
+### http4s
+- <https://github.com/martinprobson/http4s-htmx-demo>
+
 ## Kotlin
 
 ### Ktor
