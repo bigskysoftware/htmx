@@ -87,7 +87,7 @@ def contacts():
     return render_template("index.html", contacts=contacts)
 ```
 
-Here I'm using [Python](https://www.python.org/) and Flask (https://flask.palletsprojects.com/en/3.0.x/), since I use
+Here I'm using [Python](https://www.python.org/) and [Flask](https://flask.palletsprojects.com/en/3.0.x/), since I use
 those in my [Hypermedia Systems](https://hypermedia.systems/) book.
 
 Here you can see that the controller is very "thin": it simply looks up contacts via the `Contact` Model object, passing
@@ -187,7 +187,7 @@ most of the work.
 
 Our two APIs are decoupled, while our domain logic remains centralized.
 
-(Note that this also gets at why [why I tend not to use content negotiation](@/essays/why-tend-not-to-use-content-negotiation.md) and return HTML & JSON from the same endpoint.)
+(Note that this also gets at [why I tend not to use content negotiation](@/essays/why-tend-not-to-use-content-negotiation.md) and return HTML & JSON from the same endpoint.)
 
 ## MVC Frameworks
 
