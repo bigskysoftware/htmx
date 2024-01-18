@@ -65,9 +65,9 @@ var htmx = (function() {
       scrollIntoViewOnBoost: true,
       triggerSpecsCache: null,
       disableInheritance: false,
-      head : {
-        boost : "merge",
-        other: "none",
+      head: {
+        boost: 'merge',
+        other: 'none'
       },
       responseHandling: [
         { code: '204', swap: false },
@@ -285,7 +285,7 @@ var htmx = (function() {
 
   function takeChildrenFor(fragment, elt) {
     while (elt.childNodes.length > 0) {
-      fragment.append(elt.childNodes[0]);
+      fragment.append(elt.childNodes[0])
     }
   }
 
@@ -296,46 +296,42 @@ var htmx = (function() {
    */
   function makeFragment(response) {
     // strip head tag to determine shape of response we are dealing with
-    let head = (HEAD_TAG_REGEX.exec(response) || [""])[0]
-    let responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
+    const head = (HEAD_TAG_REGEX.exec(response) || [''])[0]
+    const responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
     const startTag = getStartTag(responseWithNoHead)
 
     if (startTag === 'html') {
-
       // if it is a full document, parse it and return the body
-      const fragment = new DocumentFragment();
-      let doc = parseHTML(response);
+      const fragment = new DocumentFragment()
+      const doc = parseHTML(response)
       takeChildrenFor(fragment, doc.body)
-      fragment.head = doc.head;
-      fragment.title = doc.title;
-      return fragment;
+      fragment.head = doc.head
+      fragment.title = doc.title
+      return fragment
     } else if (startTag === 'body') {
-
       // body w/ a potential head, parse head & body w/o wrapping in template
-      const fragment = new DocumentFragment();
-      let doc = parseHTML(head + responseWithNoHead);
+      const fragment = new DocumentFragment()
+      const doc = parseHTML(head + responseWithNoHead)
       takeChildrenFor(fragment, doc.body)
-      fragment.head = doc.head;
-      fragment.title = doc.title;
-      return fragment;
-
+      fragment.head = doc.head
+      fragment.title = doc.title
+      return fragment
     } else {
-
       // otherwise we have non-body content, so wrap it in a template and insert the head before the content
       const doc = parseHTML(head + '<body><template>' + responseWithNoHead + '</template></body>')
-      var fragment = doc.querySelector('template').content;
+      var fragment = doc.querySelector('template').content
       // extract head into fragment for later processing
-      fragment.head = doc.head;
-      fragment.title = doc.title;
+      fragment.head = doc.head
+      fragment.title = doc.title
 
       // for legacy reasons we support a title tag at the root level of non-body responses, so we need to handle it
-      var rootTitleElt = fragment.querySelector(":scope title");
+      var rootTitleElt = fragment.querySelector(':scope title')
       if (rootTitleElt) {
-        rootTitleElt.remove();
-        fragment.title = rootTitleElt.innerText;
+        rootTitleElt.remove()
+        fragment.title = rootTitleElt.innerText
       }
 
-      return fragment;
+      return fragment
     }
   }
 
@@ -1002,7 +998,7 @@ var htmx = (function() {
       newElt = newElt.nextElementSibling
     }
     cleanUpElement(target)
-    target.remove();
+    target.remove()
   }
 
   function swapAfterBegin(target, fragment, settleInfo) {
@@ -1103,11 +1099,11 @@ var htmx = (function() {
    */
   function findTitle(fragment) {
     if (fragment.title) {
-      return fragment.title.innerText;
+      return fragment.title.innerText
     } else if (fragment.head) {
-      var title = fragment.head.querySelector("title");
+      var title = fragment.head.querySelector('title')
       if (title) {
-        return title.innerText;
+        return title.innerText
       }
     }
   }
@@ -1281,54 +1277,52 @@ var htmx = (function() {
   }
 
   function handleHeadTag(head, strategy) {
-
-    if (head && (strategy === "merge" || strategy === "append")) {
+    if (head && (strategy === 'merge' || strategy === 'append')) {
       // allow new head to override merge strategy
-      let elementMergeStrategy = getAttributeValue(head, "hx-head") || strategy;
-      if (elementMergeStrategy === "merge" || elementMergeStrategy === "append") {
-        let removed = []
-        let appended = []
+      const elementMergeStrategy = getAttributeValue(head, 'hx-head') || strategy
+      if (elementMergeStrategy === 'merge' || elementMergeStrategy === 'append') {
+        const removed = []
+        const appended = []
 
-        let currentHead = document.head;
-        let newHeadElements = Array.from(head);
+        const currentHead = document.head
+        const newHeadElements = Array.from(head)
 
-        let srcToNewHeadNodes = newHeadElements.reduce((m, elt) => m.set(elt.outerHTML, elt), new Map())
+        const srcToNewHeadNodes = newHeadElements.reduce((m, elt) => m.set(elt.outerHTML, elt), new Map())
 
         for (const currentHeadElt of currentHead.children) {
-
-          var inNewContent = srcToNewHeadNodes.has(currentHeadElt.outerHTML);
-          var isReEvaluated = getAttributeValue(currentHeadElt,"hx-head") === "re-eval";
-          var isPreserved = getAttributeValue(currentHeadElt, "hx-preserve") === "true";
+          var inNewContent = srcToNewHeadNodes.has(currentHeadElt.outerHTML)
+          var isReEvaluated = getAttributeValue(currentHeadElt, 'hx-head') === 're-eval'
+          var isPreserved = getAttributeValue(currentHeadElt, 'hx-preserve') === 'true'
 
           // If the current head element is in the map or is preserved
           if (isPreserved) {
             // remove from new content if it exists
-            srcToNewHeadNodes.delete(currentHeadElt.outerHTML);
+            srcToNewHeadNodes.delete(currentHeadElt.outerHTML)
             if (isReEvaluated) {
               // remove the current version and let the new version replace it and re-execute
-              appended.push(currentHeadElt);
+              appended.push(currentHeadElt)
             }
           } else if (inNewContent) {
             if (isReEvaluated) {
               // remove the current version and let the new version replace it and re-execute
-              removed.push(currentHeadElt);
+              removed.push(currentHeadElt)
             } else {
               // this element already exists and should not be re-appended, so remove it from
               // the new content map, preserving it in the DOM
-              srcToNewHeadNodes.delete(currentHeadElt.outerHTML);
+              srcToNewHeadNodes.delete(currentHeadElt.outerHTML)
             }
           } else {
             // the current existing head element is not in the new head
-            if (elementMergeStrategy === "append") {
+            if (elementMergeStrategy === 'append') {
               // we are appending and this existing element is not new content
               // so if and only if it is marked for re-append do we do anything
               if (isReEvaluated) {
-                appended.push(currentHeadElt);
+                appended.push(currentHeadElt)
               }
             } else {
               // if this is a merge, we remove this content since it is not in the new head
-              if (triggerEvent(document.body, "htmx:removingHeadElement", {headElement: currentHeadElt}) !== false) {
-                removed.push(currentHeadElt);
+              if (triggerEvent(document.body, 'htmx:removingHeadElement', { headElement: currentHeadElt }) !== false) {
+                removed.push(currentHeadElt)
               }
             }
           }
@@ -1336,22 +1330,22 @@ var htmx = (function() {
 
         // Push the remaining new head elements in the Map into the
         // nodes to append to the head tag
-        appended.push(...srcToNewHeadNodes.values());
+        appended.push(...srcToNewHeadNodes.values())
 
         for (const node of appended) {
-          if (triggerEvent(document.body, "htmx:addingHeadElement", {headElement: node}) !== false) {
-            currentHead.appendChild(node);
+          if (triggerEvent(document.body, 'htmx:addingHeadElement', { headElement: node }) !== false) {
+            currentHead.appendChild(node)
           }
         }
 
         // remove all removed elements, after we have appended the new elements to avoid
         // additional network requests for things like style sheets
         for (const removedElement of removed) {
-          if (triggerEvent(document.body, "htmx:removingHeadElement", {headElement: removedElement}) !== false) {
-            currentHead.removeChild(removedElement);
+          if (triggerEvent(document.body, 'htmx:removingHeadElement', { headElement: removedElement }) !== false) {
+            currentHead.removeChild(removedElement)
           }
         }
-        triggerEvent(document.body, "htmx:afterHeadMerge", {appended: appended, removed: removed})
+        triggerEvent(document.body, 'htmx:afterHeadMerge', { appended, removed })
       }
     }
   }
@@ -2207,16 +2201,15 @@ var htmx = (function() {
   }
 
   function saveToHistoryCache(url, rootElt) {
-
     if (!canAccessLocalStorage()) {
       return
     }
 
     // get state to save
-    let innerHTML = cleanInnerHtmlForHistory(rootElt)
-    let head = getDocument().head.outerHTML
-    let title = getDocument().title
-    let scroll = window.scrollY
+    const innerHTML = cleanInnerHtmlForHistory(rootElt)
+    const head = getDocument().head.outerHTML
+    const title = getDocument().title
+    const scroll = window.scrollY
 
     if (htmx.config.historyCacheSize <= 0) {
       // make sure that an eventually already existing cache is purged
@@ -2235,7 +2228,7 @@ var htmx = (function() {
     }
 
     // final content will be the head tag + the inner HTML of the current history element
-    let content = head + innerHTML;
+    const content = head + innerHTML
     const newHistoryItem = { url, content, title, scroll }
 
     triggerEvent(getDocument().body, 'htmx:historyItemCreated', { item: newHistoryItem, cache: historyCache })
@@ -2300,7 +2293,7 @@ var htmx = (function() {
     }
     if (!disableHistoryCache) {
       triggerEvent(getDocument().body, 'htmx:beforeHistorySave', { path, historyElt: elt })
-      saveToHistoryCache(path, elt);
+      saveToHistoryCache(path, elt)
     }
 
     if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, getDocument().title, window.location.href)
@@ -2342,13 +2335,13 @@ var htmx = (function() {
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
-        let fragment = makeFragment(this.response)
+        const fragment = makeFragment(this.response)
         // @ts-ignore
-        let content = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
+        const content = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         const historyElement = getHistoryElement()
         const settleInfo = makeSettleInfo(historyElement)
-        handleTitle(fragment.title);
-        handleHeadTag(fragment.head, htmx.config.head.boost);
+        handleTitle(fragment.title)
+        handleHeadTag(fragment.head, htmx.config.head.boost)
 
         // @ts-ignore
         swapInnerHTML(historyElement, content, settleInfo)
@@ -2370,10 +2363,10 @@ var htmx = (function() {
       const fragment = makeFragment(cached.content)
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
-      handleTitle(fragment.title);
-      handleHeadTag(fragment.head, htmx.config.head.boost);
+      handleTitle(fragment.title)
+      handleHeadTag(fragment.head, htmx.config.head.boost)
       swapInnerHTML(historyElement, fragment, settleInfo)
-      settleImmediately(settleInfo.tasks);
+      settleImmediately(settleInfo.tasks)
       setTimeout(function() {
         window.scrollTo(0, cached.scroll)
       }, 0) // next 'tick', so browser has time to render layout
@@ -3452,7 +3445,7 @@ var htmx = (function() {
 
   function handleTitle(title) {
     if (title) {
-      const titleElt = find('title');
+      const titleElt = find('title')
       if (titleElt) {
         titleElt.innerHTML = title
       } else {
@@ -3715,9 +3708,9 @@ var htmx = (function() {
  * @param {import("./htmx").HtmxExtension} extension
  */
   function defineExtension(name, extension) {
-    if (name === "head-support") return; // ignore the head support extension, now integrated into htmx
+    if (name === 'head-support') return // ignore the head support extension, now integrated into htmx
     if (extension.init) {
-      extension.init(internalAPI);
+      extension.init(internalAPI)
     }
     extensions[name] = mergeObjects(extensionBase(), extension)
   }

@@ -892,10 +892,10 @@ describe('hx-trigger attribute', function() {
     var div = make('<div hx-get="/test" hx-trigger="revealed, click" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>')
     div.innerHTML.should.equal('foo')
     this.server.respond()
-    div.innerHTML.should.equal('Requests: 1');
-    div.click();
+    div.innerHTML.should.equal('Requests: 1')
+    div.click()
     this.server.respond()
-    div.innerHTML.should.equal('Requests: 2');
+    div.innerHTML.should.equal('Requests: 2')
   })
 
   it('revealed doesnt cause other events to trigger', function() {
