@@ -25,7 +25,7 @@ var htmx = (function() {
     removeClass: removeClassFromElement,
     toggleClass: toggleClassOnElement,
     takeClass: takeClassForElement,
-    swap: swap,
+    swap,
     /* Extension entrypoints */
     defineExtension,
     removeExtension,
@@ -405,8 +405,8 @@ var htmx = (function() {
    */
   /**
    * @template T
-   * @param {{[index: number]: T, length: number}} arr 
-   * @param {forEachCallback<T>} func 
+   * @param {{[index: number]: T, length: number}} arr
+   * @param {forEachCallback<T>} func
    */
   function forEach(arr, func) {
     if (arr) {
@@ -1145,7 +1145,7 @@ var htmx = (function() {
       swapOptions = {}
     }
 
-    target = resolveTarget(target);
+    target = resolveTarget(target)
 
     // preserve focus and selection
     const activeElt = document.activeElement
@@ -1161,9 +1161,9 @@ var htmx = (function() {
     } catch (e) {
       // safari issue - see https://github.com/microsoft/playwright/issues/5894
     }
-    let settleInfo = makeSettleInfo(target);
+    const settleInfo = makeSettleInfo(target)
 
-    let fragment = makeFragment(content);
+    let fragment = makeFragment(content)
 
     settleInfo.title = fragment.title
     settleInfo.head = fragment.head
@@ -1202,8 +1202,8 @@ var htmx = (function() {
       })
       fragment = newFragment
     }
-    handlePreservedElements(fragment);
-    swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo);
+    handlePreservedElements(fragment)
+    swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
 
     // apply saved focus and selection information to swapped content
     if (selectionInfo.elt &&
@@ -1233,15 +1233,15 @@ var htmx = (function() {
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
     })
     if (swapOptions.afterSwapCallback) {
-      swapOptions.afterSwapCallback();
+      swapOptions.afterSwapCallback()
     }
 
     // merge in new head after swap but before settle
     if (!swapSpec.ignoreTitle) {
-      handleTitle(settleInfo.title);
+      handleTitle(settleInfo.title)
     }
-    if (triggerEvent(document.body, "htmx:beforeHeadMerge", {head: settleInfo.head})) {
-      handleHeadTag(settleInfo.head, swapSpec.head);
+    if (triggerEvent(document.body, 'htmx:beforeHeadMerge', { head: settleInfo.head })) {
+      handleHeadTag(settleInfo.head, swapSpec.head)
     }
 
     // settle
@@ -1257,7 +1257,7 @@ var htmx = (function() {
       })
 
       if (swapOptions.anchor) {
-        const anchorTarget = resolveTarget(swapOptions.anchor);
+        const anchorTarget = resolveTarget(swapOptions.anchor)
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
         }
@@ -3637,7 +3637,7 @@ var htmx = (function() {
                 handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
               }
               maybeCall(settleResolve)
-            },
+            }
           })
         } catch (e) {
           triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
