@@ -202,6 +202,7 @@ The table below lists all other attributes available in htmx.
 | [`htmx.remove()`](@/api.md#remove)  | Removes the given element
 | [`htmx.removeClass()`](@/api.md#removeClass)  | Removes a class from the given element
 | [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](@/extensions/_index.md)
+| [`htmx.swap()`](@/api.md#swap)  | Performs swapping (and settling) of HTML content
 | [`htmx.takeClass()`](@/api.md#takeClass)  | Takes a class from other elements for the given element
 | [`htmx.toggleClass()`](@/api.md#toggleClass)  | Toggles a class from the given element
 | [`htmx.trigger()`](@/api.md#trigger)  | Triggers an event on an element
