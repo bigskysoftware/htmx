@@ -1,0 +1,12 @@
+# Keep GitHub Actions up to date with Dependabot...
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    groups:
+      GitHub_Actions:
+        patterns:
+          - "*"  # Group all Actions updates into a single larger pull request
+    schedule:
+      interval: weekly
