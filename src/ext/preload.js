@@ -63,6 +63,7 @@ htmx.defineExtension("preload", {
 				if (node.getAttribute("href")) {
 					var r = new XMLHttpRequest();
 					r.open("GET", node.getAttribute("href"));
+					r.setRequestHeader("HX-Preload-Request", "true");
 					r.onload = function() {done(r.responseText);};
 					r.send();
 					return;
