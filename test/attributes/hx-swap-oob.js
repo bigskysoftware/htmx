@@ -128,5 +128,27 @@ describe("hx-swap-oob attribute", function () {
         this.server.respond();
         should.equal(byId("d1"), null);
     });
+
+    it('oob swap error handling on missing element', function()
+    {
+        this.server.respondWith("GET", "/test", '<div hx-swap-oob="d2" id="d2">new</div>');
+        var errorEvent = null;
+        var handler = htmx.on("htmx:oobErrorNoTarget", function (event) {
+            errorEvent = event;
+        });
+
+        try {
+            var div = make('<div id="d1" hx-get="/test">initial</div>')
+            div.click();
+            this.server.respond();
+
+            should.not.equal(null, errorEvent);
+            should.not.equal(null, errorEvent.detail);
+            should.not.equal(null, errorEvent.detail.content);
+            should.equal('d2', errorEvent.detail.content.id);
+        } finally {
+            htmx.off("htmx:oobErrorNoTarget", handler);
+        }
+    });
 });
 
