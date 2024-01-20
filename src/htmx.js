@@ -2561,7 +2561,7 @@ var htmx = (function() {
   function getInputValues(elt, verb) {
     /** @type HTMLElement[] */
     const processed = []
-    let formData = new FormData()
+    const formData = new FormData()
     const priorityFormData = new FormData()
     /** @type HtmxElementValidationError[] */
     const errors = []
@@ -3018,7 +3018,7 @@ var htmx = (function() {
     const formData = new FormData()
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        if (typeof obj[key].forEach === "function") {
+        if (typeof obj[key].forEach === 'function') {
           obj[key].forEach(function(v) { formData.append(key, v) })
         } else if (typeof obj[key] === 'object') {
           formData.append(key, JSON.stringify(obj[key]))
@@ -3067,7 +3067,7 @@ var htmx = (function() {
         formData.delete(name)
         target.forEach(function(v) { formData.append(name, v) })
         return true
-      },
+      }
     })
   }
 
@@ -3078,7 +3078,7 @@ var htmx = (function() {
   function formDataProxy(formData) {
     return new Proxy(formData, {
       get: function(target, name) {
-        if (typeof name === "symbol") {
+        if (typeof name === 'symbol') {
           // Forward symbol calls to the FormData itself directly
           return Reflect.get(...arguments)
         }
@@ -3099,12 +3099,12 @@ var htmx = (function() {
         } else if (array.length === 1) {
           return array[0]
         } else {
-          return formDataArrayProxy(target, name, array);
+          return formDataArrayProxy(target, name, array)
         }
       },
       set: function(target, name, value) {
         target.delete(name)
-        if (typeof value.forEach === "function") {
+        if (typeof value.forEach === 'function') {
           value.forEach(function(v) { target.append(name, v) })
         } else {
           target.append(name, value)
@@ -3114,7 +3114,7 @@ var htmx = (function() {
       deleteProperty: function(target, name) {
         target.delete(name)
         return true
-      },
+      }
     })
   }
 
@@ -3290,7 +3290,7 @@ var htmx = (function() {
     }
     const results = getInputValues(elt, verb)
     let errors = results.errors
-    let rawFormData = results.formData
+    const rawFormData = results.formData
     if (etc.values) {
       overrideFormData(rawFormData, formDataFromObject(etc.values))
     }
