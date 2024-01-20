@@ -3506,10 +3506,17 @@ return (function () {
             }
 
             if (hasHeader(xhr,/HX-Retarget:/i)) {
-                if (xhr.getResponseHeader("HX-Retarget") === "this") {
+                var targetValue = xhr.getResponseHeader("HX-Retarget");
+
+                if (targetValue === "this") {
                     responseInfo.target = elt;
                 } else {
-                    responseInfo.target = querySelectorExt(elt, xhr.getResponseHeader("HX-Retarget"));
+                    responseInfo.target = querySelectorExt(elt, targetValue);
+                }
+
+                if (responseInfo.target == null || responseInfo.target == DUMMY_ELT) {
+                    triggerErrorEvent(elt, 'htmx:targetError', {target: targetValue});
+                    return;
                 }
             }
 

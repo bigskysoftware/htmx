@@ -251,6 +251,26 @@ describe("Core htmx AJAX headers", function () {
         div2.innerHTML.should.equal("Result");
     })
 
+    it("should handle HX-Retarget that targets a non-existent element", function() {
+        this.server.respondWith('GET', '/test', [200, {'HX-Retarget': 'closest #d2'}, 'Result']);
+
+        var div1 = make('<div id="d1" hx-get="/test"></div>');
+        var invokedEventTargetError = false;
+        var eventTargetErrorDetails = {};
+        div1.addEventListener('htmx:targetError', function(evt) {
+            console.error(evt);
+            invokedEventTargetError = true;
+            eventTargetErrorDetails = evt.detail;
+        });
+
+        div1.click();
+        this.server.respond();
+
+        invokedEventTargetError.should.equal(true);
+        eventTargetErrorDetails.error.should.equal('htmx:targetError');
+        eventTargetErrorDetails.target.should.equal('closest #d2');
+    })
+
     it("should handle HX-Reswap", function () {
         this.server.respondWith("GET", "/test", [200, {"HX-Reswap": "innerHTML"}, "Result"]);
 
