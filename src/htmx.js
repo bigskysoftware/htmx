@@ -2471,6 +2471,22 @@ var htmx = (function() {
     }
   }
 
+  /** @param {string} name
+   * @param {string|Array} value
+   * @param {FormData} formData */
+  function removeValueFromFormData(name, value, formData) {
+    if (name != null && value != null) {
+      let values = formData.getAll(name)
+      if (Array.isArray(value)) {
+        values = values.filter(v => value.indexOf(v) < 0)
+      } else {
+        values = values.filter(v => v !== value)
+      }
+      formData.delete(name)
+      forEach(values, v => formData.append(name, v))
+    }
+  }
+
   /**
    * @param {HTMLElement[]} processed
    * @param {FormData} formData
@@ -2500,21 +2516,22 @@ var htmx = (function() {
       }
     }
     if (matches(elt, 'form')) {
-      // TODO(Telroshan): previously we were looping through form.elements and calling processInputValue recursively
-      //  This was adding individual inputs to the processed array, making sure they would get processed only once
-      //  Now that we're using FormData, we're adding all input's values to the FormData but we don't add the elements to the
-      //  queue anymore. The input could be processed before the form here (see the last failing test with double hx-inclusion),
-      //  so we need to find a way to exclude the form data of already processed inputs + add the processed inputs to the queue
-      //  (for the latter, we can loop through form.elements again?). Should we implement a loop that splices individual
-      //  values from the form data for every input in form.elements that is already in the processed array?
+      forEach(elt.elements, function(input) {
+        if (processed.indexOf(input) >= 0) {
+          // The input has already been processed and added to the values, but the FormData that will be
+          //  constructed right after on the form, will include it once again. So remove that input's value
+          //  now to avoid duplicates
+          removeValueFromFormData(input.name, input.value, formData)
+        } else {
+          processed.push(input)
+        }
+        if (validate) {
+          validateElement(input, errors)
+        }
+      })
       new FormData(elt).forEach(function(value, name) {
         addValueToFormData(name, value, formData)
       })
-      if (validate) {
-        forEach(elt.elements, function(input) {
-          validateElement(input, errors)
-        })
-      }
     }
   }
 

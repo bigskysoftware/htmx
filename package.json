@@ -27,6 +27,7 @@
   "scripts": {
     "dist": "./scripts/dist.sh",
     "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
+    "lint-fix": "eslint src/htmx.js test/attributes/ test/core/ test/util/ --fix",
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
     "test": "npm run lint && mocha-chrome test/index.html",
     "test-types": "tsc --project ./jsconfig.json",
