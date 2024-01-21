@@ -5,7 +5,7 @@ template = "demo.html"
 
 This example actively searches a contacts database as the user enters text.
 
-We start with a text input and an empty table:
+We start with a search input and an empty table:
 
 ```html
 <h3>
@@ -14,7 +14,7 @@ We start with a text input and an empty table:
     <img src="/img/bars.svg"/> Searching...
    </span>
 </h3>
-<input class="form-control" type="text"
+<input class="form-control" type="search"
        name="search" placeholder="Begin Typing To Search Users..."
        hx-post="/search"
        hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
@@ -74,7 +74,7 @@ Search Contacts
 </span>
 </h3>
 
-<input class="form-control" type="text"
+<input class="form-control" type="search"
        name="search" placeholder="Begin Typing To Search Users..."
        hx-post="/search"
        hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
