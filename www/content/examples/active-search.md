@@ -41,7 +41,7 @@ we add the `changed` modifier to the trigger to ensure we don't send new queries
 value of the input (e.g. they hit an arrow key, or pasted the same value).
 
 We can use multiple triggers by separating them with a comma, this way we add 2 more triggers:
-- `keyup[key=='Enter']` triggers once enter is pressed. We use [event filters](/attributes/hx-trigger#standard-event-filters) here to check for [key property in the KeyboardEvent object](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key).
+- `keyup[key=='Enter']` triggers once enter is pressed. We use [event filters](/attributes/hx-trigger#standard-event-filters) here to check for [the key property in the KeyboardEvent object](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key).
 - `load` in order to show all results initially on load.
 
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute.
