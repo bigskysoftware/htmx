@@ -7,7 +7,7 @@ insert_anchor_links = "left"
   <sub class="no-mobile"><i>high power tools for HTML</i></sub>
 </div>
 
-<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
+<div class="note" >
 <b>NEWS:</b> htmx finished 2nd in the <a href="https://risingstars.js.org/2023/en#section-framework">2023 
 JavaScript Rising Stars</a> "Front-end Frameworks" category, just behind React (htmx is a library, btw) and <a href="https://risingstars.js.org/2023/en#section-all">#10 overall</a>!
 Thank you to everyone who <a href="https://github.com/bigskysoftware/htmx">starred</a> us!
@@ -62,7 +62,7 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 <a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="hypermedia systems"></a>
 </div>
 
-<h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
+<h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid rgba(var(--fg-color),0.7); border-radius: 12px; float:right"></iframe></h2>
 
 
 htmx development can be supported via [GitHub Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
@@ -128,7 +128,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-      <a href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
+      <a href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid rgba(var(--bg-color), 0.25); border-radius:20px; width:100%;max-width:150px"></a>
 </td>
 <td>
         <a href="https://www.dasfilter.shop/">

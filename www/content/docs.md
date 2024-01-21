@@ -788,7 +788,7 @@ htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-<div style="border: 1px solid whitesmoke; background-color: #e4f0ff; padding: 8px; border-radius: 8px">
+<div class="note">
 
 **Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for

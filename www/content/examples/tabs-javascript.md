@@ -101,11 +101,11 @@ when the content is swapped into the DOM.
 	}
 
 	#tabs > button:hover {
-		color: var(--midBlue);
+		color: rgb(var(--accent-color));
 	}
 
 	#tabs > button.selected {
-		background-color: #eee;
+		background-color: rgba(var(--bg-color),0.05);
 	}
 
 	#tab-contents {

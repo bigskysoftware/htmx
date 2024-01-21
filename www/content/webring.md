@@ -22,20 +22,20 @@ title = "htmx webring"
 
 <div id="webring-div">
 
-<table id="nav-table" style="border: black 4px double; text-align: center">
+<table id="nav-table" style="border: rgb(var(--bg-alt)) 4px double; text-align: center">
 <tr>
-  <td class="built-with-tds" style="border: 1px black solid">
+  <td class="built-with-tds" style="border: 1px rgb(var(--bg-alt)) solid">
     <img width="200px" src="/img/createdwith.jpeg">
   </td>
-  <td  width="70%" style="text-align: center; font-size: 20px; border: 1px black solid">
+  <td  width="70%" style="text-align: center; font-size: 20px; border: 1px rgb(var(--bg-alt)) solid">
      This Great <a href="https://htmx.org">htmx</a> Webring site is owned by <a href="https://bigsky.software">Your Name Here</a>.
   </td>
-  <td class="built-with-tds" style="; border: 1px black solid"">
+  <td class="built-with-tds" style="; border: 1px rgb(var(--bg-alt)) solid"">
     <img width="200px" src="/img/createdwith.jpeg">
   </td>
 </tr>
 <tr>
-<td colspan="3" style="text-align: center; ; border: 1px black solid; position: relative">
+<td colspan="3" style="text-align: center; ; border: 1px rgb(var(--bg-alt)) solid; position: relative">
     [<a
          class="nav-link"
          href="#" 

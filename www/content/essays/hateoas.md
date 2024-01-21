@@ -226,7 +226,7 @@ necessity for building RESTful systems.
     display: block;
     margin-bottom: 32px;
     text-align: center;
-    color: #aaa;
+    color: rgba(var(--bg-color),0.33);
     font-weight: bold;
     letter-spacing: .5em;
   }

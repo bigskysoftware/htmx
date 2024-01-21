@@ -124,11 +124,11 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 	}
 
 	#tabs > .tab-list button:hover {
-		color: var(--midBlue);
+		color: rgb(var(--accent-color));
 	}
 
 	#tabs > .tab-list button.selected {
-		background-color: #eee;
+		background-color: rgba(var(--bg-color),0.05);
 	}
 
 	#tabs > .tab-content {
