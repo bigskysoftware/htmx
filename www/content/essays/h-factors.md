@@ -100,3 +100,7 @@ This is the ability to describe the semantic relationship between the linking an
 ## Aside: Transclusion-Navigation
 
 The Presentation aspect of H-Factors suggests a strict binary of transclusion and navigation, whereas even the simplest example of htmx in use (click button, data is fetched and swapped into the document) demonstrates a hybrid of the two. This transclusive navigation is an extremely common pattern in web applications, but perhaps hasn't been analyzed sufficiently from a hypermedia lens as it is not present in HTML and is (without htmx) usually implemented through frameworks that imitate traditional UI toolkits rather than hypermedia.
+
+## The (htm) X Factor
+
+The H-Factors are a map of the hypermedia design space, and let us analyze to what degree a hypermedia system empowers authors to create versatile applications. We looked at how htmx completes HTML as a hypermedia from the lens of the Factors. At the same time, htmx and other hypermedia oriented libraries can let us explore corners of hypermedia yet uncharted by the Factors.
