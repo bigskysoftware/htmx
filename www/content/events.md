@@ -38,8 +38,8 @@ This event is triggered after htmx has initialized a DOM node.  It can be useful
 
 ### Event - `htmx:afterRequest` {#htmx:afterRequest}
 
-This event is triggered after an AJAX request has finished either in the case of a successful request (although
-one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
+This event is triggered after an AJAX request has finished — either in the case of a completed request (regardless
+of the HTTP status code such as 200 or 400) or in a network error situation.  This event
 can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.
 
 ##### Details
