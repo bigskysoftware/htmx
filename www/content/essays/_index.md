@@ -16,6 +16,7 @@ page_template = "essay.html"
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
 * [REST Copypasta](@/essays/rest-copypasta.md)
 * [The #ViewSource Affordance](@/essays/right-click-view-source.md)
+* [How HTML with htmx Satisfies All Nine H-Factors](@/essays/h-factors.md)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)

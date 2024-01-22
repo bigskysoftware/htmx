@@ -186,6 +186,14 @@ ol li {
     padding: 4px;
 }
 
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 12px;
+}
+
 @media(max-width:45rem) {
   #nav {
       height: 0px;
