@@ -178,6 +178,14 @@ ul li {
     padding: 4px;
 }
 
+ol {
+    margin-left: 12px;
+}
+
+ol li {
+    padding: 4px;
+}
+
 @media(max-width:45rem) {
   #nav {
       height: 0px;

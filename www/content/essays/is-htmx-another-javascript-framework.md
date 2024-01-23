@@ -10,7 +10,7 @@ One of the most common criticisms of htmx, usually from people hearing about it 
 
 >You're complaining about the complexity of modern frontend frameworks, but your solution is just another complex frontend framework.
 
-This is an excellent objection! It's the right to question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
+This is an excellent objection! It's the right question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
 
 Let's break this criticism down into its constituent parts, and determine exactly how much htmx indulges in the harms it claims to solve.
 
