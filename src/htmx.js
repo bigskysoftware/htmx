@@ -299,7 +299,7 @@ var htmx = (function() {
     const head = (HEAD_TAG_REGEX.exec(response) || [''])[0]
     const responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
     const startTag = getStartTag(responseWithNoHead)
-    let fragment = null;
+    let fragment = null
     if (startTag === 'html') {
       // if it is a full document, parse it and return the body
       fragment = new DocumentFragment()
@@ -333,14 +333,14 @@ var htmx = (function() {
       if (htmx.config.allowScriptTags) {
         // if there is a nonce set up, set it on the new script tags
         if (htmx.config.inlineScriptNonce) {
-          fragment.querySelectorAll("script").forEach((script) => script.nonce = htmx.config.inlineScriptNonce);
+          fragment.querySelectorAll('script').forEach((script) => script.nonce = htmx.config.inlineScriptNonce)
         }
       } else {
         // remove all script tags if scripts are disabled
-        fragment.querySelectorAll("script").forEach((script) => script.remove());
+        fragment.querySelectorAll('script').forEach((script) => script.remove())
       }
     }
-    return fragment;
+    return fragment
   }
 
   /**
@@ -919,7 +919,7 @@ var htmx = (function() {
     handleAttributes(parentNode, fragment, settleInfo)
     while (fragment.childNodes.length > 0) {
       const child = fragment.firstChild
-      addClassToElement(child, htmx.config.addedClass);
+      addClassToElement(child, htmx.config.addedClass)
       parentNode.insertBefore(child, insertBefore)
       if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
         settleInfo.tasks.push(makeAjaxLoadTask(child))
@@ -3890,30 +3890,30 @@ var htmx = (function() {
     return getExtensions(parentElt(elt), extensionsToReturn, extensionsToIgnore)
   }
 
-        //====================================================================
-        // Initialization
-        //====================================================================
-        var isReady = false
-        getDocument().addEventListener('DOMContentLoaded', function() {
-            isReady = true
-        })
+  //= ===================================================================
+  // Initialization
+  //= ===================================================================
+  var isReady = false
+  getDocument().addEventListener('DOMContentLoaded', function() {
+    isReady = true
+  })
 
-        /**
+  /**
          * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
          *
          * This function uses isReady because there is no realiable way to ask the browswer whether
          * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
          * firing and readystate=complete.
          */
-        function ready(fn) {
-            // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
-            // some means other than the initial page load.
-            if (isReady || getDocument().readyState === 'complete') {
-                fn();
-            } else {
-                getDocument().addEventListener('DOMContentLoaded', fn);
-            }
-        }
+  function ready(fn) {
+    // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
+    // some means other than the initial page load.
+    if (isReady || getDocument().readyState === 'complete') {
+      fn()
+    } else {
+      getDocument().addEventListener('DOMContentLoaded', fn)
+    }
+  }
 
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {

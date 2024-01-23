@@ -5,7 +5,7 @@ describe('Core htmx Regression Tests', function() {
   })
   afterEach(function() {
     this.server.restore()
-    //clearWorkArea()
+    clearWorkArea()
   })
 
   it('SVGs process properly in IE11', function() {
@@ -203,71 +203,71 @@ describe('Core htmx Regression Tests', function() {
     input.value.should.equal('supertest@test.com')
   })
 
-  it("script tags only execute once", function(done) {
-    window.i = 0;                // set count to 0
+  it('script tags only execute once', function(done) {
+    window.i = 0 // set count to 0
     this.server.respondWith('GET', '/test', '<script>console.trace(); window.i++</script>') // increment the count by 1
 
     // make a div w/ a short settle delay to make the problem more obvious
-    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
-    div.click();
+    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>')
+    div.click()
     this.server.respond()
 
-    setTimeout(function(){
-      window.i.should.equal(1);
-      delete window.i;
-      done();
+    setTimeout(function() {
+      window.i.should.equal(1)
+      delete window.i
+      done()
     }, 50)
   })
 
-  it("script tags only execute once when nested", function(done) {
-    window.i = 0;                // set count to 0
+  it('script tags only execute once when nested', function(done) {
+    window.i = 0 // set count to 0
     this.server.respondWith('GET', '/test', '<p>foo</p><div><script>console.trace(); window.i++</script></div>') // increment the count by 1
 
     // make a div w/ a short settle delay to make the problem more obvious
-    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
-    div.click();
+    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>')
+    div.click()
     this.server.respond()
 
-    setTimeout(function(){
-      window.i.should.equal(1);
-      delete window.i;
-      done();
+    setTimeout(function() {
+      window.i.should.equal(1)
+      delete window.i
+      done()
     }, 50)
   })
 
-  it("htmx.config.allowScriptTags properly disables script tags", function(done) {
-    htmx.config.allowScriptTags = false;
-    window.i = 0;                // set count to 0
+  it('htmx.config.allowScriptTags properly disables script tags', function(done) {
+    htmx.config.allowScriptTags = false
+    window.i = 0 // set count to 0
     this.server.respondWith('GET', '/test', '<script>console.trace(); window.i++</script>') // increment the count by 1
 
     // make a div w/ a short settle delay to make the problem more obvious
-    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
-    div.click();
+    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>')
+    div.click()
     this.server.respond()
 
-    setTimeout(function(){
-      window.i.should.equal(0);
-      htmx.config.allowScriptTags = true;
-      delete window.i;
-      done();
+    setTimeout(function() {
+      window.i.should.equal(0)
+      htmx.config.allowScriptTags = true
+      delete window.i
+      done()
     }, 50)
   })
 
-  it("htmx.config.allowScriptTags properly disables script tags when nested", function(done) {
-    htmx.config.allowScriptTags = false;
-    window.i = 0;                // set count to 0
+  it('htmx.config.allowScriptTags properly disables script tags when nested', function(done) {
+    htmx.config.allowScriptTags = false
+    window.i = 0 // set count to 0
     this.server.respondWith('GET', '/test', '<div><script>console.trace(); window.i++</script></div>') // increment the count by 1
 
     // make a div w/ a short settle delay to make the problem more obvious
-    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
-    div.click();
+    var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>')
+    div.click()
     this.server.respond()
 
-    setTimeout(function(){
-      window.i.should.equal(0);
-      htmx.config.allowScriptTags = true;
-      delete window.i;
-      done();
+    setTimeout(function() {
+      window.i.should.equal(0)
+      htmx.config.allowScriptTags = true
+      delete window.i
+      done()
     }, 50)
   })
 })
