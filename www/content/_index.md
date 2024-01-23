@@ -162,7 +162,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <img src="/img/rxdb.svg" alt="RxDB JavaScript Database" style="width:100%;max-width:150px"></a>
 </td>
 <td>
-      <a href="https://bigsky.software"><img src="/img/bss.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
+      <a href="https://www.ohne-makler.net/"><img src="/img/ohne-makler.svg" alt="Ohne-Makler" style="width:100%;max-width:150px"></a>
 </td>
 </tr>
 </table>
