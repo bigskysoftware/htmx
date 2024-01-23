@@ -2429,6 +2429,11 @@ var htmx = (function() {
   // Input Value Processing
   //= ===================================================================
 
+  /**
+   * @param {HTMLElement[]} processed
+   * @param {HTMLElement} elt
+   * @returns {boolean}
+   */
   function haveSeenNode(processed, elt) {
     for (let i = 0; i < processed.length; i++) {
       const node = processed[i]
@@ -2453,30 +2458,43 @@ var htmx = (function() {
     return true
   }
 
-  function addValueToValues(name, value, values) {
-  // This is a little ugly because both the current value of the named value in the form
-  // and the new value could be arrays, so we have to handle all four cases :/
+  /** @param {string} name
+   * @param {string|Array} value
+   * @param {FormData} formData */
+  function addValueToFormData(name, value, formData) {
     if (name != null && value != null) {
-      const current = values[name]
-      if (current === undefined) {
-        values[name] = value
-      } else if (Array.isArray(current)) {
-        if (Array.isArray(value)) {
-          values[name] = current.concat(value)
-        } else {
-          current.push(value)
-        }
+      if (Array.isArray(value)) {
+        value.forEach(function(v) { formData.append(name, v) })
       } else {
-        if (Array.isArray(value)) {
-          values[name] = [current].concat(value)
-        } else {
-          values[name] = [current, value]
-        }
+        formData.append(name, value)
       }
     }
   }
 
-  function processInputValue(processed, values, errors, elt, validate) {
+  /** @param {string} name
+   * @param {string|Array} value
+   * @param {FormData} formData */
+  function removeValueFromFormData(name, value, formData) {
+    if (name != null && value != null) {
+      let values = formData.getAll(name)
+      if (Array.isArray(value)) {
+        values = values.filter(v => value.indexOf(v) < 0)
+      } else {
+        values = values.filter(v => v !== value)
+      }
+      formData.delete(name)
+      forEach(values, v => formData.append(name, v))
+    }
+  }
+
+  /**
+   * @param {HTMLElement[]} processed
+   * @param {FormData} formData
+   * @param {HtmxElementValidationError[]} errors
+   * @param {HTMLElement|HTMLInputElement|HTMLFormElement} elt
+   * @param {boolean} validate
+   */
+  function processInputValue(processed, formData, errors, elt, validate) {
     if (elt == null || haveSeenNode(processed, elt)) {
       return
     } else {
@@ -2492,19 +2510,40 @@ var htmx = (function() {
       if (elt.files) {
         value = toArray(elt.files)
       }
-      addValueToValues(name, value, values)
+      addValueToFormData(name, value, formData)
       if (validate) {
         validateElement(elt, errors)
       }
     }
     if (matches(elt, 'form')) {
-      const inputs = elt.elements
-      forEach(inputs, function(input) {
-        processInputValue(processed, values, errors, input, validate)
+      forEach(elt.elements, function(input) {
+        if (processed.indexOf(input) >= 0) {
+          // The input has already been processed and added to the values, but the FormData that will be
+          //  constructed right after on the form, will include it once again. So remove that input's value
+          //  now to avoid duplicates
+          removeValueFromFormData(input.name, input.value, formData)
+        } else {
+          processed.push(input)
+        }
+        if (validate) {
+          validateElement(input, errors)
+        }
+      })
+      new FormData(elt).forEach(function(value, name) {
+        addValueToFormData(name, value, formData)
       })
     }
   }
 
+  /**
+   * @typedef {{elt: HTMLElement, message: string, validity: ValidityState}} HtmxElementValidationError
+   */
+
+  /**
+   *
+   * @param {HTMLElement|HTMLObjectElement} element
+   * @param {HtmxElementValidationError[]} errors
+   */
   function validateElement(element, errors) {
     if (element.willValidate) {
       triggerEvent(element, 'htmx:validation:validate')
@@ -2516,13 +2555,32 @@ var htmx = (function() {
   }
 
   /**
- * @param {HTMLElement} elt
+   * Override values in the one FormData with those from another.
+   * @param {FormData} receiver the formdata that will be mutated
+   * @param {FormData} donor the formdata that will provide the overriding values
+   * @returns {FormData} the {@linkcode receiver}
+   */
+  function overrideFormData(receiver, donor) {
+    for (const key of donor.keys()) {
+      receiver.delete(key)
+      donor.getAll(key).forEach(function(value) {
+        receiver.append(key, value)
+      })
+    }
+    return receiver
+  }
+
+  /**
+ * @param {HTMLElement|HTMLFormElement} elt
  * @param {string} verb
+ * @returns {{errors: HtmxElementValidationError[], formData: FormData, values: Object}}
  */
   function getInputValues(elt, verb) {
+    /** @type HTMLElement[] */
     const processed = []
-    let values = {}
-    const formValues = {}
+    const formData = new FormData()
+    const priorityFormData = new FormData()
+    /** @type HtmxElementValidationError[] */
     const errors = []
     const internalData = getInternalData(elt)
     if (internalData.lastButtonClicked && !bodyContains(internalData.lastButtonClicked)) {
@@ -2538,38 +2596,44 @@ var htmx = (function() {
 
     // for a non-GET include the closest form
     if (verb !== 'get') {
-      processInputValue(processed, formValues, errors, closest(elt, 'form'), validate)
+      processInputValue(processed, priorityFormData, errors, closest(elt, 'form'), validate)
     }
 
     // include the element itself
-    processInputValue(processed, values, errors, elt, validate)
+    processInputValue(processed, formData, errors, elt, validate)
 
     // if a button or submit was clicked last, include its value
     if (internalData.lastButtonClicked || elt.tagName === 'BUTTON' ||
     (elt.tagName === 'INPUT' && getRawAttribute(elt, 'type') === 'submit')) {
       const button = internalData.lastButtonClicked || elt
       const name = getRawAttribute(button, 'name')
-      addValueToValues(name, button.value, formValues)
+      addValueToFormData(name, button.value, priorityFormData)
     }
 
     // include any explicit includes
     const includes = findAttributeTargets(elt, 'hx-include')
     forEach(includes, function(node) {
-      processInputValue(processed, values, errors, node, validate)
+      processInputValue(processed, formData, errors, node, validate)
       // if a non-form is included, include any input values within it
       if (!matches(node, 'form')) {
         forEach(node.querySelectorAll(INPUT_SELECTOR), function(descendant) {
-          processInputValue(processed, values, errors, descendant, validate)
+          processInputValue(processed, formData, errors, descendant, validate)
         })
       }
     })
 
-    // form values take precedence, overriding the regular values
-    values = mergeObjects(values, formValues)
+    // values from a <form> take precedence, overriding the regular values
+    overrideFormData(formData, priorityFormData)
 
-    return { errors, values }
+    return { errors, formData, values: formDataProxy(formData) }
   }
 
+  /**
+   * @param {string} returnStr
+   * @param {string} name
+   * @param {any} realValue
+   * @returns {string}
+   */
   function appendParam(returnStr, name, realValue) {
     if (returnStr !== '') {
       returnStr += '&'
@@ -2582,38 +2646,17 @@ var htmx = (function() {
     return returnStr
   }
 
+  /**
+   * @param {FormData|Object} values
+   * @returns string
+   */
   function urlEncode(values) {
+    values = formDataFromObject(values)
     let returnStr = ''
-    for (var name in values) {
-      if (values.hasOwnProperty(name)) {
-        const value = values[name]
-        if (Array.isArray(value)) {
-          forEach(value, function(v) {
-            returnStr = appendParam(returnStr, name, v)
-          })
-        } else {
-          returnStr = appendParam(returnStr, name, value)
-        }
-      }
-    }
+    values.forEach(function(value, key) {
+      returnStr = appendParam(returnStr, key, value)
+    })
     return returnStr
-  }
-
-  function makeFormData(values) {
-    const formData = new FormData()
-    for (var name in values) {
-      if (values.hasOwnProperty(name)) {
-        const value = values[name]
-        if (Array.isArray(value)) {
-          forEach(value, function(v) {
-            formData.append(name, v)
-          })
-        } else {
-          formData.append(name, value)
-        }
-      }
-    }
-    return formData
   }
 
   //= ===================================================================
@@ -2648,28 +2691,30 @@ var htmx = (function() {
  * filterValues takes an object containing form input values
  * and returns a new object that only contains keys that are
  * specified by the closest "hx-params" attribute
- * @param {Object} inputValues
+ * @param {FormData} inputValues
  * @param {HTMLElement} elt
- * @returns {Object}
+ * @returns {FormData}
  */
   function filterValues(inputValues, elt) {
     const paramsValue = getClosestAttributeValue(elt, 'hx-params')
     if (paramsValue) {
       if (paramsValue === 'none') {
-        return {}
+        return new FormData()
       } else if (paramsValue === '*') {
         return inputValues
       } else if (paramsValue.indexOf('not ') === 0) {
         forEach(paramsValue.substr(4).split(','), function(name) {
           name = name.trim()
-          delete inputValues[name]
+          inputValues.delete(name)
         })
         return inputValues
       } else {
-        const newValues = {}
+        const newValues = new FormData()
         forEach(paramsValue.split(','), function(name) {
           name = name.trim()
-          newValues[name] = inputValues[name]
+          if (inputValues.has(name)) {
+            inputValues.getAll(name).forEach(function(value) { newValues.append(name, value) })
+          }
         })
         return newValues
       }
@@ -2747,6 +2792,12 @@ var htmx = (function() {
     (matches(elt, 'form') && getRawAttribute(elt, 'enctype') === 'multipart/form-data')
   }
 
+  /**
+   * @param {XMLHttpRequest} xhr
+   * @param {HTMLElement} elt
+   * @param {FormData} filteredParameters
+   * @returns {*|string|null}
+   */
   function encodeParamsForBody(xhr, elt, filteredParameters) {
     let encodedParameters = null
     withExtensions(elt, function(extension) {
@@ -2758,7 +2809,7 @@ var htmx = (function() {
       return encodedParameters
     } else {
       if (usesFormData(elt)) {
-        return makeFormData(filteredParameters)
+        return formDataFromObject(filteredParameters)
       } else {
         return urlEncode(filteredParameters)
       }
@@ -2870,7 +2921,7 @@ var htmx = (function() {
 
   /**
  * @param {HTMLElement} elt
- * @param {*} expressionVars
+ * @param {*?} expressionVars
  * @returns
  */
   function getHXVarsForElement(elt, expressionVars) {
@@ -2879,7 +2930,7 @@ var htmx = (function() {
 
   /**
  * @param {HTMLElement} elt
- * @param {*} expressionVars
+ * @param {*?} expressionVars
  * @returns
  */
   function getHXValsForElement(elt, expressionVars) {
@@ -2888,10 +2939,10 @@ var htmx = (function() {
 
   /**
  * @param {HTMLElement} elt
- * @returns {Object}
+ * @returns {FormData}
  */
   function getExpressionVars(elt) {
-    return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt))
+    return formDataFromObject(mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt)))
   }
 
   function safelySetHeaderValue(xhr, header, headerValue) {
@@ -2977,6 +3028,111 @@ var htmx = (function() {
       }
     }
     return triggerEvent(elt, 'htmx:validateUrl', mergeObjects({ url, sameHost }, requestConfig))
+  }
+
+  function formDataFromObject(obj) {
+    if (obj instanceof FormData) return obj
+    const formData = new FormData()
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key].forEach === 'function') {
+          obj[key].forEach(function(v) { formData.append(key, v) })
+        } else if (typeof obj[key] === 'object') {
+          formData.append(key, JSON.stringify(obj[key]))
+        } else {
+          formData.append(key, obj[key])
+        }
+      }
+    }
+    return formData
+  }
+
+  /**
+   * @param {FormData} formData
+   * @param {string|Symbol} name
+   * @param {Array} array
+   * @returns {Array}
+   */
+  function formDataArrayProxy(formData, name, array) {
+    // mutating the array should mutate the underlying form data
+    return new Proxy(array, {
+      get: function(target, key) {
+        if (typeof key === 'number') return target[key]
+        if (key === 'length') return target.length
+        if (key === 'push') {
+          return function(value) {
+            target.push(value)
+            formData.append(name, value)
+          }
+        }
+        if (typeof target[key] === 'function') {
+          return function() {
+            target[key].apply(target, arguments)
+            formData.delete(name)
+            target.forEach(function(v) { formData.append(name, v) })
+          }
+        }
+
+        if (target[key] && target[key].length === 1) {
+          return target[key][0]
+        } else {
+          return target[key]
+        }
+      },
+      set: function(target, index, value) {
+        target[index] = value
+        formData.delete(name)
+        target.forEach(function(v) { formData.append(name, v) })
+        return true
+      }
+    })
+  }
+
+  /**
+   * @param {FormData} formData
+   * @returns {Object}
+   */
+  function formDataProxy(formData) {
+    return new Proxy(formData, {
+      get: function(target, name) {
+        if (typeof name === 'symbol') {
+          // Forward symbol calls to the FormData itself directly
+          return Reflect.get(...arguments)
+        }
+        if (name in target) {
+          // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
+          if (typeof target[name] === 'function') {
+            return function() {
+              return formData[name].apply(formData, arguments)
+            }
+          } else {
+            return target[name]
+          }
+        }
+        const array = formData.getAll(name)
+        // Those 2 undefined & single value returns are for retro-compatibility as we weren't using FormData before
+        if (array.length === 0) {
+          return undefined
+        } else if (array.length === 1) {
+          return array[0]
+        } else {
+          return formDataArrayProxy(target, name, array)
+        }
+      },
+      set: function(target, name, value) {
+        target.delete(name)
+        if (typeof value.forEach === 'function') {
+          value.forEach(function(v) { target.append(name, v) })
+        } else {
+          target.append(name, value)
+        }
+        return true
+      },
+      deleteProperty: function(target, name) {
+        target.delete(name)
+        return true
+      }
+    })
   }
 
   function issueAjaxRequest(verb, path, elt, event, etc, confirmed) {
@@ -3151,16 +3307,16 @@ var htmx = (function() {
     }
     const results = getInputValues(elt, verb)
     let errors = results.errors
-    let rawParameters = results.values
+    const rawFormData = results.formData
     if (etc.values) {
-      rawParameters = mergeObjects(rawParameters, etc.values)
+      overrideFormData(rawFormData, formDataFromObject(etc.values))
     }
     const expressionVars = getExpressionVars(elt)
-    const allParameters = mergeObjects(rawParameters, expressionVars)
-    let filteredParameters = filterValues(allParameters, elt)
+    const allFormData = overrideFormData(rawFormData, expressionVars)
+    let filteredFormData = filterValues(allFormData, elt)
 
     if (htmx.config.getCacheBusterParam && verb === 'get') {
-      filteredParameters['org.htmx.cache-buster'] = getRawAttribute(target, 'id') || 'true'
+      filteredFormData.set('org.htmx.cache-buster', getRawAttribute(target, 'id') || 'true')
     }
 
     // behavior of anchors w/ empty href is to use the current URL
@@ -3177,8 +3333,10 @@ var htmx = (function() {
     const requestConfig = {
       boosted: eltIsBoosted,
       useUrlParams,
-      parameters: filteredParameters,
-      unfilteredParameters: allParameters,
+      formData: filteredFormData,
+      parameters: formDataProxy(filteredFormData),
+      unfilteredFormData: allFormData,
+      unfilteredParameters: formDataProxy(allFormData),
       headers,
       target,
       verb,
@@ -3199,7 +3357,7 @@ var htmx = (function() {
     path = requestConfig.path
     verb = requestConfig.verb
     headers = requestConfig.headers
-    filteredParameters = requestConfig.parameters
+    filteredFormData = formDataFromObject(requestConfig.parameters)
     errors = requestConfig.errors
     useUrlParams = requestConfig.useUrlParams
 
@@ -3217,14 +3375,14 @@ var htmx = (function() {
     let finalPath = path
     if (useUrlParams) {
       finalPath = pathNoAnchor
-      const values = Object.keys(filteredParameters).length !== 0
-      if (values) {
+      const hasValues = !filteredFormData.keys().next().done
+      if (hasValues) {
         if (finalPath.indexOf('?') < 0) {
           finalPath += '?'
         } else {
           finalPath += '&'
         }
-        finalPath += urlEncode(filteredParameters)
+        finalPath += urlEncode(filteredFormData)
         if (anchor) {
           finalPath += '#' + anchor
         }
@@ -3339,7 +3497,7 @@ var htmx = (function() {
       })
     })
     triggerEvent(elt, 'htmx:beforeSend', responseInfo)
-    const params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredParameters)
+    const params = useUrlParams ? null : encodeParamsForBody(xhr, elt, filteredFormData)
     xhr.send(params)
     return promise
   }
