@@ -3148,7 +3148,7 @@ return (function () {
                 }
             }
 
-            var xhr = new XMLHttpRequest();
+            var xhr = elt['hx-use-provided-xhr'] || new XMLHttpRequest();
             eltData.xhr = xhr;
             eltData.abortable = abortable;
             var endRequestLock = function(){

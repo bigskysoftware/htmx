@@ -1,5 +1,5 @@
-// This adds the "preload" extension to htmx.  By default, this will 
-// preload the targets of any tags with `href` or `hx-get` attributes 
+// This adds the "preload" extension to htmx.  By default, this will
+// preload the targets of any tags with `href` or `hx-get` attributes
 // if they also have a `preload` attribute as well.  See documentation
 // for more details
 htmx.defineExtension("preload", {
@@ -18,8 +18,21 @@ htmx.defineExtension("preload", {
 			if (node == undefined) {return undefined;}
 			return node.getAttribute(property) || node.getAttribute("data-" + property) || attr(node.parentElement, property)
 		}
-		
-		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're 
+
+		var copyXhr = function (from, to) {
+			to.readyState = from.readyState;
+			to.response = from.response;
+			to.responseText = from.responseText;
+			to.responseType = from.responseType;
+			to.responseURL = from.responseURL;
+			to.responseXML = from.responseXML;
+			to.status = from.status;
+			to.statusText = from.statusText;
+			to.timeout = from.timeout;
+			to.withCredentials = from.withCredentials;
+		}
+
+		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're
 		// preloading an htmx resource (this sends the same HTTP headers as a regular htmx request)
 		var load = function(node) {
 
@@ -43,7 +56,7 @@ htmx.defineExtension("preload", {
 				}
 
 				// Special handling for HX-GET - use built-in htmx.ajax function
-				// so that headers match other htmx requests, then set 
+				// so that headers match other htmx requests, then set
 				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future
 				var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
@@ -57,13 +70,73 @@ htmx.defineExtension("preload", {
 					return;
 				}
 
-				// Otherwise, perform a standard xhr request, then set 
-				// node.preloadState = TRUE so that requests are not duplicated 
+				// Otherwise, perform a standard xhr request, then set
+				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future.
 				if (node.getAttribute("href")) {
+					var resolve, reject;
+					var prom = new Promise(function (_resolve, _reject) {
+						resolve = _resolve;
+						reject = _reject;
+					})
 					var r = new XMLHttpRequest();
 					r.open("GET", node.getAttribute("href"));
-					r.onload = function() {done(r.responseText);};
+					r.onload = function () {
+						if (r.status >= 200 && r.status < 300) {
+							resolve();
+						} else {
+							reject();
+						}
+						var to = attr(node, "preload-valid-seconds")
+						if (to !== undefined) {
+							setTimeout(function () {
+								node["hx-use-provided-xhr"] = false;
+								node.preloadState = "READY";
+							}, parseInt(to) * 1000);
+						}
+						done(r.responseText);
+					};
+					r.onabort = function () { reject('onabort'); };
+					r.onerror = function () { reject('onerror'); };
+					r.ontimeout = function () { reject('ontimeout'); };
+					fakexhr = {
+						open: function () { },
+						overrideMimeType: function () { },
+						send: function () {
+							prom.then(function () {
+								copyXhr(r, fakexhr);
+
+								fakexhr.onload();
+							}).catch(function (reason) {
+								copyXhr(r, fakexhr);
+
+								fakexhr[reason]();
+							});
+						},
+						setRequestHeader: function () { },
+						onload: function () { },
+						onerror: function () { },
+						onabort: function () { },
+						ontimeout: function () { },
+						addEventListener: function (name, fn) {
+							r.addEventListener(name, fn);
+						},
+						upload: {
+							addEventListener: function (name, fn) {
+								r.upload.addEventListener(name, fn);
+							},
+						},
+						getAllResponseHeaders: function () {
+							return r.getAllResponseHeaders();
+						},
+						getResponseHeader: function (name) {
+							return r.getResponseHeader(name);
+						},
+
+						withCredentials: false,
+						timeout: 0,
+					}
+					node["hx-use-provided-xhr"] = fakexhr;
 					r.send();
 					return;
 				}
@@ -83,16 +156,16 @@ htmx.defineExtension("preload", {
 			if (node.preloadState !== undefined) {
 				return;
 			}
-			
+
 			// Get event name from config.
 			var on = attr(node, "preload") || "mousedown"
 			const always = on.indexOf("always") !== -1
 			if (always) {
 				on = on.replace('always', '').trim()
 			}
-						
+
 			// FALL THROUGH to here means we need to add an EventListener
-	
+
 			// Apply the listener to the node
 			node.addEventListener(on, function(evt) {
 				if (node.preloadState === "PAUSE") { // Only add one event listener
@@ -123,7 +196,7 @@ htmx.defineExtension("preload", {
 					break;
 
 				case "mousedown":
-					 // Mirror `touchstart` events (fires immediately)
+					// Mirror `touchstart` events (fires immediately)
 					node.addEventListener("touchstart", load(node));
 					break;
 			}
