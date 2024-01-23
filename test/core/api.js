@@ -375,4 +375,32 @@ describe('Core htmx API test', function() {
     htmx.trigger(div, 'myEvent')
     myEventCalled.should.equal(true)
   })
+
+  it('swaps content properly (basic)', function() {
+    var output = make('<output id="output"/>')
+    htmx.swap('#output', '<div>Swapped!</div>', { swapStyle: 'innerHTML' })
+    output.innerHTML.should.be.equal('<div>Swapped!</div>')
+  })
+
+  it('swaps content properly (with select)', function() {
+    var output = make('<output id="output"/>')
+    htmx.swap('#output', '<div><p id="select-me">Swapped!</p></div>', { swapStyle: 'innerHTML' }, { select: '#select-me' })
+    output.innerHTML.should.be.equal('<p id="select-me">Swapped!</p>')
+  })
+
+  it('swaps content properly (with oob)', function() {
+    var output = make('<output id="output"/>')
+    var oobDiv = make('<div id="oob"/>')
+    htmx.swap('#output', '<div id="oob" hx-swap-oob="innerHTML">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' })
+    output.innerHTML.should.be.equal('<div>Swapped!</div>')
+    oobDiv.innerHTML.should.be.equal('OOB Swapped!')
+  })
+
+  it('swaps content properly (with select oob)', function() {
+    var output = make('<output id="output"/>')
+    var oobDiv = make('<div id="oob"/>')
+    htmx.swap('#output', '<div id="oob">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' }, { selectOOB: '#oob:innerHTML' })
+    output.innerHTML.should.be.equal('<div>Swapped!</div>')
+    oobDiv.innerHTML.should.be.equal('OOB Swapped!')
+  })
 })

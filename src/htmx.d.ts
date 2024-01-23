@@ -438,6 +438,22 @@ export interface HtmxConfig {
     triggerSpecsCache?: {[trigger: string]: HtmxTriggerSpecification[]};
 }
 
+type HtmxSwapStyle = "innerHTML" | "outerHTML" | "beforebegin" | "afterbegin" | "beforeend" | "afterend" | "delete" | "none" | string
+
+export interface HtmxSwapSpecification {
+    swapStyle: HtmxSwapStyle;
+    swapDelay?: number;
+    settleDelay?: number;
+    transition?: boolean;
+    ignoreTitle?: boolean;
+    head?: string;
+    scroll?: string;
+    scrollTarget?: string;
+    show?: string;
+    showTarget?: string;
+    focusScroll?: boolean;
+}
+
 /**
  * https://htmx.org/extensions/#defining
  */
