@@ -299,27 +299,25 @@ var htmx = (function() {
     const head = (HEAD_TAG_REGEX.exec(response) || [''])[0]
     const responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
     const startTag = getStartTag(responseWithNoHead)
-
+    let fragment = null;
     if (startTag === 'html') {
       // if it is a full document, parse it and return the body
-      const fragment = new DocumentFragment()
+      fragment = new DocumentFragment()
       const doc = parseHTML(response)
       takeChildrenFor(fragment, doc.body)
       fragment.head = doc.head
       fragment.title = doc.title
-      return fragment
     } else if (startTag === 'body') {
       // body w/ a potential head, parse head & body w/o wrapping in template
-      const fragment = new DocumentFragment()
+      fragment = new DocumentFragment()
       const doc = parseHTML(head + responseWithNoHead)
       takeChildrenFor(fragment, doc.body)
       fragment.head = doc.head
       fragment.title = doc.title
-      return fragment
     } else {
       // otherwise we have non-body content, so wrap it in a template and insert the head before the content
       const doc = parseHTML(head + '<body><template>' + responseWithNoHead + '</template></body>')
-      var fragment = doc.querySelector('template').content
+      fragment = doc.querySelector('template').content
       // extract head into fragment for later processing
       fragment.head = doc.head
       fragment.title = doc.title
@@ -330,9 +328,19 @@ var htmx = (function() {
         rootTitleElt.remove()
         fragment.title = rootTitleElt.innerText
       }
-
-      return fragment
     }
+    if (fragment) {
+      if (htmx.config.allowScriptTags) {
+        // if there is a nonce set up, set it on the new script tags
+        if (htmx.config.inlineScriptNonce) {
+          fragment.querySelectorAll("script").forEach((script) => script.nonce = htmx.config.inlineScriptNonce);
+        }
+      } else {
+        // remove all script tags if scripts are disabled
+        fragment.querySelectorAll("script").forEach((script) => script.remove());
+      }
+    }
+    return fragment;
   }
 
   /**
@@ -894,7 +902,6 @@ var htmx = (function() {
     return function() {
       removeClassFromElement(child, htmx.config.addedClass)
       processNode(child)
-      processScripts(child)
       processFocus(child)
       triggerEvent(child, 'htmx:load')
     }
@@ -912,7 +919,7 @@ var htmx = (function() {
     handleAttributes(parentNode, fragment, settleInfo)
     while (fragment.childNodes.length > 0) {
       const child = fragment.firstChild
-      addClassToElement(child, htmx.config.addedClass)
+      addClassToElement(child, htmx.config.addedClass);
       parentNode.insertBefore(child, insertBefore)
       if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.COMMENT_NODE) {
         settleInfo.tasks.push(makeAjaxLoadTask(child))
@@ -1884,41 +1891,6 @@ var htmx = (function() {
     } else {
       addEventListener(elt, handler, nodeData, triggerSpec)
     }
-  }
-
-  function evalScript(script) {
-    if (htmx.config.allowScriptTags && (script.type === 'text/javascript' || script.type === 'module' || script.type === '')) {
-      const newScript = getDocument().createElement('script')
-      forEach(script.attributes, function(attr) {
-        newScript.setAttribute(attr.name, attr.value)
-      })
-      newScript.textContent = script.textContent
-      newScript.async = false
-      if (htmx.config.inlineScriptNonce) {
-        newScript.nonce = htmx.config.inlineScriptNonce
-      }
-      const parent = script.parentElement
-
-      try {
-        parent.insertBefore(newScript, script)
-      } catch (e) {
-        logError(e)
-      } finally {
-        // remove old script element, but only if it is still in DOM
-        if (script.parentElement) {
-          script.parentElement.removeChild(script)
-        }
-      }
-    }
-  }
-
-  function processScripts(elt) {
-    if (matches(elt, 'script')) {
-      evalScript(elt)
-    }
-    forEach(findAll(elt, 'script'), function(script) {
-      evalScript(script)
-    })
   }
 
   function shouldProcessHxOn(elt) {
