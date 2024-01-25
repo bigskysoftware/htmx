@@ -107,7 +107,7 @@ It's worth mentioning that, if you prefer, you can use the [`data-`](https://htm
 Htmx is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>`
 tag to your document head.  No need for complicated build steps or systems.
 
-If you are migrating to htmx from intercoolen.js, please see the [intercooler migration guide](@/migration-guide-intercooler.md).
+If you are migrating to htmx from intercooler.js, please see the [intercooler migration guide](@/migration-guide-intercooler.md).
 
 If you are migrating to htmx 2.x from htmx 1.x, please see the [htmx 1.x migration guide](@/migration-guide-htmx-1.md).
 
