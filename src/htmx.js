@@ -1292,7 +1292,7 @@ var htmx = (function() {
         const appended = []
 
         const currentHead = document.head
-        const newHeadElements = Array.from(head)
+        const newHeadElements = Array.from(head.children)
 
         const srcToNewHeadNodes = newHeadElements.reduce((m, elt) => m.set(elt.outerHTML, elt), new Map())
 
