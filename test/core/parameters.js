@@ -245,4 +245,52 @@ describe('Core htmx Parameter Handling', function() {
     vals.foo.should.equal('bar')
     should.equal(vals.do, undefined)
   })
+
+  it('formdata works along web components', function() {
+    // See https://web.dev/articles/more-capable-form-controls
+    class TestElement extends HTMLElement {
+      static formAssociated = true
+      constructor() {
+        super()
+        this._form = null
+      }
+
+      formAssociatedCallback(form) {
+        if (this._form) {
+          this._form.removeEventListener('formdata', this.handleFormData)
+        }
+        this._form = form
+        this._form.addEventListener('formdata', this.handleFormData)
+      }
+
+      handleFormData({
+        formData
+      }) {
+        formData.append('foo', 'bar')
+      }
+    }
+    customElements.define('test-element', TestElement)
+
+    var form = make('<form hx-post="/test"><test-element></test-element></form>')
+    var vals = htmx._('getInputValues')(form, 'get').values
+    vals.foo.should.equal('bar')
+  })
+
+  it('order of parameters follows order of input elements', function() {
+    this.server.respondWith('GET', '/test?foo=bar&bar=foo&foo=bar&foo2=bar2', function(xhr) {
+      xhr.respond(200, {}, 'Clicked!')
+    })
+
+    var form = make('<form hx-get="/test">' +
+      '<input name="foo" value="bar">' +
+      '<input name="bar" value="foo">' +
+      '<input name="foo" value="bar">' +
+      '<input name="foo2" value="bar2">' +
+      '<button id="b1">Click Me!</button>' +
+      '</form>')
+
+    byId('b1').click()
+    this.server.respond()
+    form.innerHTML.should.equal('Clicked!')
+  })
 })
