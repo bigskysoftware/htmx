@@ -47,3 +47,10 @@ We place a very high value on backwards compatibility, so in most cases this mig
 
 IE is no longer supported in htmx 2.0, but htmx 1.x continues to support IE and will be supported for the foreseeable future.
 
+## Upgrade Music
+
+This is the official htmx 1.x -> 2.x upgrade music:
+
+<iframe width="640" height="360" src="https://www.youtube.com/embed/YDkD-N5goMg" title="PYLOT - Upgrades (Visualizer)" 
+        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
