@@ -1,5 +1,6 @@
 +++
 title = "intercooler.js &rarr; htmx Migration Guide"
+aliases = ['/migration-guide']
 +++
 
 The purpose of this guide is to:
@@ -13,12 +14,12 @@ It is worth noting the difference in approach between what Intercooler set out t
 
 **Intercooler** tried to provide custom html attributes for most of it's functionality. This is evident in it's longer list of attributes, many of which could be described as convenience or client-side-focused in nature.
 
-**htmx** follows the approach of trying to keep the core small, with a smaller set of available attributes that are mostly focused on content loading and swapping. 
+**htmx** follows the approach of trying to keep the core small, with a smaller set of available attributes that are mostly focused on content loading and swapping.
 
 This capability is augmented in primarily 2 ways:
 
 1. [Extensions](@/extensions/_index.md#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](@/extensions/path-deps.md). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](@/extensions/preload.md)
-  
+
 2. Using the htmx events system with vanilla javascript, [alpine.js](https://github.com/alpinejs/alpine/) or [hyperscript](https://hyperscript.org).  Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
 
 htmx also contains functionality which is not present in Intercooler. That is outside of the scope of this guide.<br>
