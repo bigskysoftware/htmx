@@ -311,10 +311,7 @@ var htmx = (function() {
         } catch (e) {
           logError(e)
         } finally {
-          // remove old script element, but only if it is still in DOM
-          if (script.parentElement) {
-            script.remove()
-          }
+          script.remove()
         }
       }
     })
