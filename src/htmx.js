@@ -289,6 +289,37 @@ var htmx = (function() {
     }
   }
 
+  // we have to make new copies of script tags that we are going to insert because
+  // SOME browsers (not saying who, but it involves an element and an animal) don't
+  // execute scripts created in <template> tags when they are inserted into the DOM
+  // and all the others do lmao
+  function normaliseScriptTags(fragment) {
+    Array.from(fragment.querySelectorAll('script')).forEach((script) => {
+      if (script.type === 'text/javascript' || script.type === 'module' || script.type === '') {
+        const newScript = getDocument().createElement('script')
+        forEach(script.attributes, function (attr) {
+          newScript.setAttribute(attr.name, attr.value)
+        })
+        newScript.textContent = script.textContent
+        newScript.async = false
+        if (htmx.config.inlineScriptNonce) {
+          newScript.nonce = htmx.config.inlineScriptNonce
+        }
+        const parent = script.parentNode
+        try {
+          parent.insertBefore(newScript, script)
+        } catch (e) {
+          logError(e)
+        } finally {
+          // remove old script element, but only if it is still in DOM
+          if (script.parentElement) {
+            script.remove()
+          }
+        }
+      }
+    });
+  }
+
   /**
    * @param {string} response HTML
    * @returns {DocumentFragment & {title: string, head:Element}} a document fragment representing the response HTML, including
@@ -316,25 +347,22 @@ var htmx = (function() {
       fragment.title = doc.title
     } else {
       // otherwise we have non-body content, so wrap it in a template and insert the head before the content
-      const doc = parseHTML(head + '<body><template>' + responseWithNoHead + '</template></body>')
+      const doc = parseHTML(head + '<body><template class="internal-htmx-wrapper">' + responseWithNoHead + '</template></body>')
       fragment = doc.querySelector('template').content
       // extract head into fragment for later processing
       fragment.head = doc.head
       fragment.title = doc.title
 
       // for legacy reasons we support a title tag at the root level of non-body responses, so we need to handle it
-      var rootTitleElt = fragment.querySelector(':scope title')
-      if (rootTitleElt) {
-        rootTitleElt.remove()
-        fragment.title = rootTitleElt.innerText
+      var titleElement = fragment.querySelector('title')
+      if (titleElement && titleElement.parentNode === fragment) {
+        titleElement.remove()
+        fragment.title = titleElement.innerText
       }
     }
     if (fragment) {
       if (htmx.config.allowScriptTags) {
-        // if there is a nonce set up, set it on the new script tags
-        if (htmx.config.inlineScriptNonce) {
-          fragment.querySelectorAll('script').forEach((script) => script.nonce = htmx.config.inlineScriptNonce)
-        }
+        normaliseScriptTags(fragment);
       } else {
         // remove all script tags if scripts are disabled
         fragment.querySelectorAll('script').forEach((script) => script.remove())
