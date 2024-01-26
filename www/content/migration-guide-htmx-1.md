@@ -12,6 +12,11 @@ We place a very high value on backwards compatibility, so in most cases this mig
     `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
      use request parameters.)
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
+* If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
+  JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
+* htmx 2.0 offers automatic head merging with boosted links.  If you do not want this behavior, you can set `htmx.config.head.boosted` to `"none"`
+* all extensions have been removed from the core htmx distribution and are distributed separately on 
+  [their own website](https://extensions.htmx.org)
 * Convert any `hx-on` attributes to their `hx-on:` equivalent:
   ```html
      <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
@@ -28,9 +33,6 @@ We place a very high value on backwards compatibility, so in most cases this mig
   Note that you must use the kebab-case of the event name due to the fact that attributes are case-insensitive in HTML.
   ```
 * The `htmx.makeFragment()` method now **always** returns a `DocumentFragment` rather than either an `Element` or `DocumentFragment`
-* If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
-  JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
-* htmx 2.0 offers automatic head merging with boosted links.  If you do not want this behavior, you can set `htmx.config.head.boosted` to `"none"`
 * If you are an extension author and your extension was using `selectAndSwap` method from internal API, it was removed and replaced with `swap` method,
   which is available from both internal and public htmx APIs
 
