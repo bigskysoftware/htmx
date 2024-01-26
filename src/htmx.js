@@ -1289,7 +1289,7 @@ var htmx = (function() {
       })
 
       if (swapOptions.anchor) {
-        const anchorTarget = resolveTarget(swapOptions.anchor)
+        const anchorTarget = resolveTarget("#" + swapOptions.anchor)
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
         }
@@ -3566,8 +3566,7 @@ var htmx = (function() {
       }
 
       // restore any anchor associated with the request
-      if (responseInfo.pathInfo.anchor &&
-      path.indexOf('#') === -1) {
+      if (responseInfo.pathInfo.anchor && path.indexOf('#') === -1) {
         path = path + '#' + responseInfo.pathInfo.anchor
       }
 
