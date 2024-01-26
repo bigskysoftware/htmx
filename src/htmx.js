@@ -297,7 +297,7 @@ var htmx = (function() {
     Array.from(fragment.querySelectorAll('script')).forEach((script) => {
       if (script.type === 'text/javascript' || script.type === 'module' || script.type === '') {
         const newScript = getDocument().createElement('script')
-        forEach(script.attributes, function (attr) {
+        forEach(script.attributes, function(attr) {
           newScript.setAttribute(attr.name, attr.value)
         })
         newScript.textContent = script.textContent
@@ -317,7 +317,7 @@ var htmx = (function() {
           }
         }
       }
-    });
+    })
   }
 
   /**
@@ -362,7 +362,7 @@ var htmx = (function() {
     }
     if (fragment) {
       if (htmx.config.allowScriptTags) {
-        normaliseScriptTags(fragment);
+        normaliseScriptTags(fragment)
       } else {
         // remove all script tags if scripts are disabled
         fragment.querySelectorAll('script').forEach((script) => script.remove())
