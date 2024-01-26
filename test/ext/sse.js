@@ -5,6 +5,7 @@ describe("sse extension", function() {
         var wasClosed = false;
         var url;
         var mockEventSource = {
+            _listeners: listeners,
             removeEventListener: function(name, l) {
                 listeners[name] = listeners[name].filter(function(elt, idx, arr) {
                     if (arr[idx] === l) {
@@ -147,6 +148,16 @@ describe("sse extension", function() {
         div.parentElement.removeChild(div);
         this.eventSource.sendEvent("e1")
         this.eventSource.wasClosed().should.equal(true)
+    })
+
+    it('is not listening for events after hx-swap element removed', function() {
+        var div = make('<div hx-ext="sse" sse-connect="/foo">' +
+            '<div id="d1" hx-swap="outerHTML" sse-swap="e1">div1</div>' +
+            '</div>');
+        this.eventSource._listeners["e1"].should.be.lengthOf(1)
+        div.removeChild(byId("d1"));
+        this.eventSource.sendEvent("e1", "Test")
+        this.eventSource._listeners["e1"].should.be.empty
     })
 
     // sse and hx-trigger handlers are distinct
