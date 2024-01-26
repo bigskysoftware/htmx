@@ -289,22 +289,31 @@ var htmx = (function() {
     }
   }
 
+  function duplicateScript(script) {
+    const newScript = getDocument().createElement('script')
+    forEach(script.attributes, function (attr) {
+      newScript.setAttribute(attr.name, attr.value)
+    })
+    newScript.textContent = script.textContent
+    newScript.async = false
+    if (htmx.config.inlineScriptNonce) {
+      newScript.nonce = htmx.config.inlineScriptNonce
+    }
+    return newScript;
+  }
+
+  function isJavaScriptScriptNode(script) {
+    return script.matches('script') && (script.type === 'text/javascript' || script.type === 'module' || script.type === '');
+  }
+
   // we have to make new copies of script tags that we are going to insert because
   // SOME browsers (not saying who, but it involves an element and an animal) don't
   // execute scripts created in <template> tags when they are inserted into the DOM
-  // and all the others do lmao
-  function normaliseScriptTags(fragment) {
+// and all the others do lmao
+  function normalizeScriptTags(fragment) {
     Array.from(fragment.querySelectorAll('script')).forEach((script) => {
-      if (script.type === 'text/javascript' || script.type === 'module' || script.type === '') {
-        const newScript = getDocument().createElement('script')
-        forEach(script.attributes, function(attr) {
-          newScript.setAttribute(attr.name, attr.value)
-        })
-        newScript.textContent = script.textContent
-        newScript.async = false
-        if (htmx.config.inlineScriptNonce) {
-          newScript.nonce = htmx.config.inlineScriptNonce
-        }
+      if (isJavaScriptScriptNode(script)) {
+        const newScript = duplicateScript(script);
         const parent = script.parentNode
         try {
           parent.insertBefore(newScript, script)
@@ -359,10 +368,13 @@ var htmx = (function() {
     }
     if (fragment) {
       if (htmx.config.allowScriptTags) {
-        normaliseScriptTags(fragment)
+        normalizeScriptTags(fragment)
       } else {
         // remove all script tags if scripts are disabled
         fragment.querySelectorAll('script').forEach((script) => script.remove())
+        if (fragment.head) {
+          fragment.head.querySelectorAll('script').forEach((script) => script.remove())
+        }
       }
     }
     return fragment
@@ -1364,9 +1376,13 @@ var htmx = (function() {
         // nodes to append to the head tag
         appended.push(...srcToNewHeadNodes.values())
 
-        for (const node of appended) {
+        for (let node of appended) {
           if (triggerEvent(document.body, 'htmx:addingHeadElement', { headElement: node }) !== false) {
-            currentHead.appendChild(node)
+            // make a copy of script nodes so they will execute properly
+            if (isJavaScriptScriptNode(node)) {
+              node = duplicateScript(node);
+            }
+            currentHead.appendChild(node);
           }
         }
 
