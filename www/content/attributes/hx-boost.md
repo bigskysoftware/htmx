@@ -44,3 +44,4 @@ This form will issue an ajax `POST` to the given URL and replace the body's inne
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
 * To find out if the request results from a boosted anchor or form, look for [`HX-Boosted`](@/reference.md#request_headers) in the request header
 * Selectively disable boost on child elements with `hx-boost="false"`
+* Disable the replacement of elements via boost, and their children, with [`hx-preserve="true"`](@/attributes/hx-preserve.md)
