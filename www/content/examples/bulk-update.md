@@ -136,7 +136,7 @@ You can see a working example of this code below.
         }
       }
 
-      return `<span id="toast" aria-live="polite">Activated ${activated} and deactivated ${deactivated} user(s)</span>`;
+      return `<span id="toast" aria-live="polite">Activated ${activated} and deactivated ${deactivated} users</span>`;
     });
 
     // templates
