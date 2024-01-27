@@ -55,7 +55,7 @@ topics: [Models](https://guides.rubyonrails.org/active_record_basics.html) that 
 The rough idea, in Rails, is:
 
 * Models collect your application logic and database accesses
-* Views take Models and generate HTML via a templating langauge ([ERB](https://github.com/ruby/erb), this is where [HTML sanitizing](https://en.wikipedia.org/wiki/HTML_sanitization) is done, btw)
+* Views take Models and generate HTML via a templating language ([ERB](https://github.com/ruby/erb), this is where [HTML sanitizing](https://en.wikipedia.org/wiki/HTML_sanitization) is done, btw)
 * Controllers take HTTP Requests and, typically, perform some action with a Model and then pass that Model on to a 
   View (or redirect, etc.)
 
@@ -106,7 +106,7 @@ doesn't have to deal with it.
 
 ### Creating A JSON Data API Controller
 
-So, if we have this relatively well-developed Contact model that encapsulates our domain, you can easly create a 
+So, if we have this relatively well-developed Contact model that encapsulates our domain, you can easily create a 
 _different_ API end point/Controller that does something similar, but returns a JSON document rather than an HTML 
 document:
 
