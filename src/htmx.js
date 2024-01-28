@@ -275,7 +275,6 @@ var htmx = (function() {
   /**
    *
    * @param {string} resp
-   * @param {number} depth
    * @returns {Document}
    */
   function parseHTML(resp) {
