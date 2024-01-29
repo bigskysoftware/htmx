@@ -165,6 +165,18 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       <a href="https://www.ohne-makler.net/"><img src="/img/ohne-makler.svg" alt="Ohne-Makler" style="width:100%;max-width:150px"></a>
 </td>
 </tr>
+<tr>
+<td>
+        <a href=" https://www.codacy.com//">
+          <img alt="Deepsource" src="/img/codacy.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+      <a href="https://bigsky.software"><img src="/img/bss-logo.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
+</td>
+<td>
+</td>
+</tr>
 </table>
 </div>
 
