@@ -167,8 +167,13 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a href=" https://www.codacy.com//">
+        <a href="https://www.codacy.com//">
           <img alt="Deepsource" src="/img/codacy.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a href="https://codereviewbot.ai/">
+          <img alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
