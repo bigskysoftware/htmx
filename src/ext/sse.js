@@ -51,7 +51,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				// Try to create EventSources when elements are processed
 				case "htmx:afterProcessNode":
 					ensureEventSourceOnElement(evt.target);
-					registerSSE(evt.target);
 			}
 		}
 	});
@@ -223,6 +222,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			ensureEventSource(child, sseURL, retryCount);
 		});
 
+		registerSSE(elt);
 	}
 
 	function ensureEventSource(elt, url, retryCount) {
