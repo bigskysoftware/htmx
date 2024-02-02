@@ -50,6 +50,6 @@ Next we will add some scripting to work with an `auth` promise (returned by a li
 ```
 
 Here we use a global variable, but you could use `localStorage` or whatever preferred mechanism
-want to communicate the authentication token to the `htmx:configRequest` event.
+you want to communicate the authentication token to the `htmx:configRequest` event.
 
 With this code in place, htmx will not issue requests until the `auth` promise has been resolved.
