@@ -3112,6 +3112,10 @@ var htmx = (function() {
           // Forward symbol calls to the FormData itself directly
           return Reflect.get(...arguments)
         }
+        if (name === 'toJSON') {
+          // Support JSON.stringify call on proxy
+          return () => Object.fromEntries(formData)
+        }
         if (name in target) {
           // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
           if (typeof target[name] === 'function') {
@@ -3144,6 +3148,13 @@ var htmx = (function() {
       deleteProperty: function(target, name) {
         target.delete(name)
         return true
+      },
+      // Support Object.assign call from proxy
+      ownKeys: function(target) {
+        return Reflect.ownKeys(Object.fromEntries(target))
+      },
+      getOwnPropertyDescriptor: function(target, prop) {
+        return Reflect.getOwnPropertyDescriptor(Object.fromEntries(target), prop)
       }
     })
   }
