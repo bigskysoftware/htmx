@@ -14,7 +14,7 @@ We place a very high value on backwards compatibility, so in most cases this mig
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
 * If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
   JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
-* htmx 2.0 offers automatic head merging with boosted links.  If you do not want this behavior, you can set `htmx.config.head.boosted` to `"none"`
+* htmx 2.0 offers automatic head merging with boosted links.  If you do not want this behavior, you can set `htmx.config.head.boost` to `"none"`
 * all extensions have been removed from the core htmx distribution and are distributed separately on 
   [their own website](https://extensions.htmx.org)
 * Convert any `hx-on` attributes to their `hx-on:` equivalent:
