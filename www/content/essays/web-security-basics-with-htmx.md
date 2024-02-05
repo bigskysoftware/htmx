@@ -232,7 +232,7 @@ Some web applications demand more complicated functionality, with more user cust
 
 Calling untrusted HTML APIs is lunacy. Never do this.
 
-There are cases where might want to call someone else's JSON API from the client, and that's fine, because JSON cannot execute arbitrary scripts. In that case, you'll probably want to do something with that data to turn it into HTML. Don't use htmx to do that—use `fetch` and `JSON.parse()`; if the untrusted API pulls a fast one and returns HTML instead of JSON, `JSON.parse()` will just fail harmlessly.
+There are cases where you might want to call someone else's JSON API from the client, and that's fine, because JSON cannot execute arbitrary scripts. In that case, you'll probably want to do something with that data to turn it into HTML. Don't use htmx to do that—use `fetch` and `JSON.parse()`; if the untrusted API pulls a fast one and returns HTML instead of JSON, `JSON.parse()` will just fail harmlessly.
 
 Keep in mind that the JSON you parse might have a *property* that is formatted as HTML, so you have to be careful to insert that properly.
 
@@ -246,7 +246,7 @@ The 2.0 version of htmx will include an `innerText` swap, if you want to call so
 
 ### Custom HTML controls
 
-Unlike calling untrusted HTML routes, there are a lot of good reason to let users do dynamic HTML-formatted content.
+Unlike calling untrusted HTML routes, there are a lot of good reasons to let users do dynamic HTML-formatted content.
 
 What if, say, you want to let users link to an image?
 
