@@ -29,7 +29,7 @@ Follow these four simple rules, and you'll be following the client security best
 
 In the following section, I'll discuss what each of these rules does, and what kinds of attack they protect against. The vast majority of htmx users—those using htmx to build a website that allows users to login, view some data, and update that data—should never have any reason to break them.
 
-Later on I will discuss how to break some of these rules. Many use applications can be built under these constraints, but if you do need more advanced behavior, you'll be doing so with the full knowledge that you're increasing the conceptual burden of securing your application. And you'll have learned a lot about web security in the process.
+Later on I will discuss how to break some of these rules. Many useful applications can be built under these constraints, but if you do need more advanced behavior, you'll be doing so with the full knowledge that you're increasing the conceptual burden of securing your application. And you'll have learned a lot about web security in the process.
 
 ## Understanding the Rules
 
@@ -71,6 +71,7 @@ Fortunately, all template engines support escaping HTML, and most of them enable
 | JavaScript | EJS | Yes, with `<%= %>` |
 | JavaScript | Handlebars | Yes, with `{{ }}` |
 | Python | Jinja | **No** |
+| Ruby | ERB | Yes, with `<%= %>` |
 | PHP | Blade | Yes |
 | Go | html/template | Yes |
 | Java | Thymeleaf | Yes |
