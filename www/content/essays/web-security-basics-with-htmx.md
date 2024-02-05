@@ -142,7 +142,7 @@ This is an addendum to the template engine rule, but it's important enough to ca
 ```html
 <!-- Don't include inside script tags -->
 <script>
-  const user = {{ user.id }}
+  const userName = {{ user.name }}
 </script>
 
 <!-- Don't include inside CSS tags -->
