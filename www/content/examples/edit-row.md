@@ -42,8 +42,8 @@ Here is the HTML for a row:
                            .then((result) => {
                                 if(result.isConfirmed) {
                                    htmx.trigger(editing, 'cancel')
+                                   htmx.trigger(this, 'edit')
                                 }
-                                htmx.trigger(this, 'edit')
                             })
                          } else {
                             htmx.trigger(this, 'edit')
@@ -169,8 +169,8 @@ this makes things a bit nicer to deal with.
                            .then((result) => {
                                 if(result.isConfirmed) {
                                    htmx.trigger(editing, 'cancel')
+                                   htmx.trigger(this, 'edit')
                                 }
-                                htmx.trigger(this, 'edit')
                             })
                          } else {
                             htmx.trigger(this, 'edit')
