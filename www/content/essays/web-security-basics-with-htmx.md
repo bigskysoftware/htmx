@@ -53,9 +53,9 @@ The reason for this is simple: htmx inserts the response from that route directl
 
 Fortunately, this is a very easy rule to follow. Hypermedia APIs (i.e. HTML) are [specific to the layout of your application](https://htmx.org/essays/hypermedia-apis-vs-data-apis/), so there is almost never any reason you'd *want* to insert someone else's HTML into your page. All you have to do is make sure you only call your own routes.
 
-Though it's not quite as popular these days, a common SPA pattern was to separate the frontend and backend into different repositories, and sometimes even to serve them from different URLs. This would require using absolute URLs in the frontend, and often, [disabling CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+Though it's not quite as popular these days, a common SPA pattern was to separate the frontend and backend into different repositories, and sometimes even to serve them from different URLs. This would require using absolute URLs in the frontend, and often, [disabling CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). With htmx (and, to be fair, modern React with NextJS) this is an anti-pattern.
 
-With htmx (and, to be fair, modern React with NextJS) this is an anti-pattern. Instead, you simply serve your HTML frontend from the same server (or at least the same domain) as your backend, and everything else falls into place: you can use relative URLs, you'll never have trouble with CORS, and you'll never call anyone else's backend.
+Instead, you simply serve your HTML frontend from the same server (or at least the same domain) as your backend, and everything else falls into place: you can use relative URLs, you'll never have trouble with CORS, and you'll never call anyone else's backend.
 
 htmx executes HTML; HTML is code; never execute untrusted code.
 
@@ -167,7 +167,7 @@ And, don't use user-defined attributes or tag names either:
 <a>{{ user.name }}</a>
 ```
 
-CSS, JavaScript, and HTML attributes are ["dangerous contexts,"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#dangerous-contexts) places where it's not safe to allow arbitrary user input, even if it's escaped. Escaping will protect you from some vulnerabilities here, but not all of them; the vulnerabilities are varied enough that you default to not doing *any* of these.
+CSS, JavaScript, and HTML attributes are ["dangerous contexts,"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#dangerous-contexts) places where it's not safe to allow arbitrary user input, even if it's escaped. Escaping will protect you from some vulnerabilities here, but not all of them; the vulnerabilities are varied enough that it's safest to default to not doing *any* of these.
 
 Inserting user-generated text directly into a script tag should never be necessary, but there *are* some situations where you might let users customize their CSS or customize HTML attributes. Handling those properly will be discussed down below.
 
