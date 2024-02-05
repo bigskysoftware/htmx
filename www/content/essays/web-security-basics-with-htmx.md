@@ -235,7 +235,7 @@ Calling untrusted HTML APIs is lunacy. Never do this.
 
 There are cases where you might want to call someone else's JSON API from the client, and that's fine, because JSON cannot execute arbitrary scripts. In that case, you'll probably want to do something with that data to turn it into HTML. Don't use htmx to do that—use `fetch` and `JSON.parse()`; if the untrusted API pulls a fast one and returns HTML instead of JSON, `JSON.parse()` will just fail harmlessly.
 
-Keep in mind that the JSON you parse might have a *property* that is formatted as HTML, so you have to be careful to insert that properly.
+Keep in mind that the JSON you parse might have a *property* that is formatted as HTML, though:
 
 ```json
 { "name": "<script>alert('Hahaha I am a script')</script>" }
