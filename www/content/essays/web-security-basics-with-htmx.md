@@ -281,7 +281,7 @@ h1 { color: 'blue'; }
 
 In that example, the user can set `favorite_color` to whatever they like, but it's never going to be anything but red or blue. A less trivial example might ensure that only properly-formatted hex codes can be entered, using a regex. You get the idea.
 
-Depending on what kind of customization you're supporting, securing it might be relatively easy, or quite difficult. Some attributes are ["safe sinks,"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#safe-sinks) which means that their values will never be interpreted as code; these are quite easy to secure. If you're going to include dynamic input in ["dangerous contexts"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#dangerous-contexts), you need to research *what* is dangerous about those contexts, and ensure that that kind of input won't make it into the document.
+Depending on what kind of customization you're supporting, securing it might be relatively easy, or quite difficult. Some attributes are ["safe sinks,"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#safe-sinks) which means that their values will never be interpreted as code; these are quite easy to secure. If you're going to include dynamic input in ["dangerous contexts,"](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#dangerous-contexts) you need to research *what* is dangerous about those contexts, and ensure that that kind of input won't make it into the document.
 
 If you want to let users link to arbitrary websites or images, for instance, that's a lot more complicated. First, make sure to put the attributes inside quotes (most people do this anyway). Then you will need to do something like write a custom escaping function that escapes everything *but* forward slashes (and possibly ampersands), so the link will work properly.
 
@@ -289,7 +289,7 @@ But even if you do that correctly, you are introducing some new security challen
 
 ### Non-cookie authentication
 
-JavaScript SPAs sometimes authenticate by saving a token in the client's local storage, and then adding that to the [`Authorization` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization) of each request. Unfortunately, there's no way to set the `Authroization` header without using JavaScript, which not as secure; if it's available to your trusted JavaScript, it's available to attackers if they manage to get a malicious script onto your page. Instead, use a cookie (with the above attributes), which can be set and secured without touching JavaScript at all.
+JavaScript SPAs sometimes authenticate by saving a token in the client's local storage, and then adding that to the [`Authorization` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization) of each request. Unfortunately, there's no way to set the `Authorization` header without using JavaScript, which is not as secure; if it's available to your trusted JavaScript, it's available to attackers if they manage to get a malicious script onto your page. Instead, use a cookie (with the above attributes), which can be set and secured without touching JavaScript at all.
 
 Why is there an `Authorization` header but no way to set it with hypermedia controls? Well, that's just one of WHATWG's ~~outrageous omissions~~ little mysteries.
 
