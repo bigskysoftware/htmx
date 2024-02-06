@@ -63,14 +63,14 @@ htmx executes HTML; HTML is code; never execute untrusted code.
 
 When you send HTML to the user, all dynamic content must be escaped. Use a template engine to construct your responses, and make sure that auto-escaping is on.
 
-Fortunately, all template engines support escaping HTML, and most of them enable it by default (Jinja is a notable exception). Below are just a few examples.
+Fortunately, all template engines support escaping HTML, and most of them enable it by default. Below are just a few examples.
 
 | Language | Template Engine | Escapes HTML by default? |
 | ---- | ---- | ---- |
 | JavaScript | Nunjucks | Yes |
 | JavaScript | EJS | Yes, with `<%= %>` |
-| JavaScript | Handlebars | Yes, with `{{ }}` |
-| Python | Jinja | **No** |
+| Python | DTL | Yes |
+| Python | Jinja | **Sometimes** (Yes, in Flask)|
 | Ruby | ERB | Yes, with `<%= %>` |
 | PHP | Blade | Yes |
 | Go | html/template | Yes |
@@ -183,7 +183,7 @@ To understand what these protect you against, let's go over the basics. If you c
 
 If your users log in with a `<form>`, their browser will send your server an HTTP request, and your server will send back a response that looks something like this:
 
-```http
+```
 HTTP/2.0 200 OK
 Content-Type: text/html
 Set-Cookie: token=asd8234nsdfp982
@@ -193,7 +193,7 @@ Set-Cookie: token=asd8234nsdfp982
 
 That token corresponds to the user's current login session. From now on, every time that user makes a request to any route at `yourdomain.com`, the browser will include that cookie from `Set-Cookie` in the HTTP request.
 
-```http
+```
 GET /users HTTP/1.1
 Host: yourdomain.com
 Cookie: token=asd8234nsdfp982
@@ -203,7 +203,7 @@ Each time someone makes a request to your server, it needs to parse out that tok
 
 You can also set options on that cookie, like the ones I recommended above. How to do this differs depending on the programming language, but the outcome is always an HTTP request that looks like this:
 
-```http
+```
 HTTP/2.0 200 OK
 Content-Type: text/html
 Set-Cookie: token=asd8234nsdfp982; Secure; HttpOnly; SameSite=Lax
