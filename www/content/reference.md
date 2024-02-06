@@ -29,7 +29,7 @@ The most common attributes when using htmx.
 | [`hx-select`](@/attributes/hx-select.md)         | select content to swap in from a response                                                                          |
 | [`hx-select-oob`](@/attributes/hx-select-oob.md) | select content to swap in from a response, somewhere other than the target (out of band)                           |
 | [`hx-swap`](@/attributes/hx-swap.md)             | controls how content will swap in (`outerHTML`, `beforeend`, `afterend`, ...)                                      |
-| [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | mark element to swap in from a response, somewhere other than the target (out of band)                             |
+| [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | mark element to swap in from a response (out of band)                                                              |
 | [`hx-target`](@/attributes/hx-target.md)         | specifies the target element to be swapped                                                                         |
 | [`hx-trigger`](@/attributes/hx-trigger.md)       | specifies the event that triggers the request                                                                      |
 | [`hx-vals`](@/attributes/hx-vals.md)             | add values to submit with the request (JSON format)                                                                |
