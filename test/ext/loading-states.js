@@ -129,6 +129,20 @@ describe("loading states extension", function () {
         btn.innerHTML.should.equal("Clicked!");
     });
 
+    it('works with verb filters', function () {
+        this.server.respondWith("POST", "/test", "Clicked!");
+        var btn = make('<button hx-post="/test" hx-ext="loading-states" >Click Me!</button>');
+        var matchingRequestElement = make('<div data-loading-class="test" data-loading-verb="post">');
+        var nonMatchingPathElement = make('<div data-loading-class="test" data-loading-verb="get">');
+        btn.click();
+        matchingRequestElement.should.have.class("test");
+        nonMatchingPathElement.should.not.have.class("test");
+        this.server.respond();
+        matchingRequestElement.should.not.have.class("test");
+        nonMatchingPathElement.should.not.have.class("test");
+        btn.innerHTML.should.equal("Clicked!");
+    });
+
     it('works with scopes', function () {
         this.server.respondWith("GET", "/test", "Clicked!");
         var btn = make('<div data-loading-states><button hx-get="/test" hx-ext="loading-states" >Click Me!</button></div>');

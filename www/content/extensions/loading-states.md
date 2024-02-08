@@ -99,7 +99,8 @@ Add the following class to your stylesheet to make sure elements are hidden by d
 
 - `data-loading-path`
 
-  Allows filtering the processing of loading states only for specific requests based on the request path.
+  Allows filtering the processing of loading states only for specific requests based on the request path. Can be
+  combined with `data-loading-verb` to additionally filter based on the request verb.
 
   ```html
   <form hx-post="/save">
@@ -111,6 +112,27 @@ Add the following class to your stylesheet to make sure elements are hidden by d
 
   ```html
   <form hx-post="/save" data-loading-path="/save">
+    <button type="submit" data-loading-disable>Submit</button>
+  </form>
+  ```
+
+- `data-loading-verb`
+
+  Allows filtering the processing of loading states only for specific requests based on the request verb ('get', 'post', 'put', 'delete', 'patch').
+
+  ```html
+  <form hx-post="/user">
+    <button type="submit" data-loading-disable data-loading-verb="post">Create</button>
+  </form>
+  <form hx-delete="/user">
+    <button type="submit" data-loading-disable data-loading-verb="delete">Delete</button>
+  </form>
+  ```
+
+   You can place the `data-loading-verb` attribute directly on the loading state element, or in any parent element.
+
+  ```html
+  <form hx-post="/save" data-loading-path="/save" data-loading-verb="post">
     <button type="submit" data-loading-disable>Submit</button>
   </form>
   ```

@@ -20,6 +20,15 @@
 		return pathElt.getAttribute('data-loading-path') === requestPath
 	}
 
+	function mayProcessLoadingStateByVerb(elt, verb) {
+		const verbElt = htmx.closest(elt, '[data-loading-verb]')
+		if (!verbElt) {
+			return true
+		}
+
+		return verbElt.getAttribute('data-loading-verb') === verb
+	}
+
 	function queueLoadingState(sourceElt, targetElt, doCallback, undoCallback) {
 		const delayElt = htmx.closest(sourceElt, '[data-loading-delay]')
 		if (delayElt) {
@@ -44,9 +53,11 @@
 		}
 	}
 
-	function getLoadingStateElts(loadingScope, type, path) {
+	function getLoadingStateElts(loadingScope, type, path, verb) {
 		return Array.from(htmx.findAll(loadingScope, "[" + type + "]")).filter(
-			function (elt) { return mayProcessLoadingStateByPath(elt, path) }
+			function (elt) {
+				return mayProcessLoadingStateByPath(elt, path) && mayProcessLoadingStateByVerb(elt, verb)
+			}
 		)
 	}
 
@@ -78,7 +89,8 @@
 					loadingStateEltsByType[type] = getLoadingStateElts(
 						container,
 						type,
-						evt.detail.pathInfo.requestPath
+						evt.detail.pathInfo.requestPath,
+						evt.detail.requestConfig.verb
 					)
 				})
 
