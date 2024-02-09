@@ -637,8 +637,9 @@ return (function () {
                 var attrTarget = getAttributeValue(elt, 'hx-indicator') || getAttributeValue(elt, 'hx-include')
                 if (attrTarget){
                     result.push(...Array.prototype.slice.call(querySelectorAllExt(elt.parentNode, attrTarget)))
+                    result.filter((value, index, array) => array.indexOf(value) === index)
                 }
-                return result.filter((value, index, array) => array.indexOf(value) === index);
+                return result;
             } else {
                 return getDocument().querySelectorAll(normalizeSelector(selector));
             }
