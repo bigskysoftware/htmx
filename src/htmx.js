@@ -291,7 +291,7 @@ var htmx = (function() {
 
   function duplicateScript(script) {
     const newScript = getDocument().createElement('script')
-    forEach(script.attributes, function (attr) {
+    forEach(script.attributes, function(attr) {
       newScript.setAttribute(attr.name, attr.value)
     })
     newScript.textContent = script.textContent
@@ -299,21 +299,21 @@ var htmx = (function() {
     if (htmx.config.inlineScriptNonce) {
       newScript.nonce = htmx.config.inlineScriptNonce
     }
-    return newScript;
+    return newScript
   }
 
   function isJavaScriptScriptNode(script) {
-    return script.matches('script') && (script.type === 'text/javascript' || script.type === 'module' || script.type === '');
+    return script.matches('script') && (script.type === 'text/javascript' || script.type === 'module' || script.type === '')
   }
 
   // we have to make new copies of script tags that we are going to insert because
   // SOME browsers (not saying who, but it involves an element and an animal) don't
   // execute scripts created in <template> tags when they are inserted into the DOM
-// and all the others do lmao
+  // and all the others do lmao
   function normalizeScriptTags(fragment) {
     Array.from(fragment.querySelectorAll('script')).forEach((script) => {
       if (isJavaScriptScriptNode(script)) {
-        const newScript = duplicateScript(script);
+        const newScript = duplicateScript(script)
         const parent = script.parentNode
         try {
           parent.insertBefore(newScript, script)
@@ -1301,7 +1301,7 @@ var htmx = (function() {
       })
 
       if (swapOptions.anchor) {
-        const anchorTarget = resolveTarget("#" + swapOptions.anchor)
+        const anchorTarget = resolveTarget('#' + swapOptions.anchor)
         if (anchorTarget) {
           anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
         }
@@ -1380,9 +1380,9 @@ var htmx = (function() {
           if (triggerEvent(document.body, 'htmx:addingHeadElement', { headElement: node }) !== false) {
             // make a copy of script nodes so they will execute properly
             if (isJavaScriptScriptNode(node)) {
-              node = duplicateScript(node);
+              node = duplicateScript(node)
             }
-            currentHead.appendChild(node);
+            currentHead.appendChild(node)
           }
         }
 
@@ -3112,6 +3112,10 @@ var htmx = (function() {
           // Forward symbol calls to the FormData itself directly
           return Reflect.get(...arguments)
         }
+        if (name === 'toJSON') {
+          // Support JSON.stringify call on proxy
+          return () => Object.fromEntries(formData)
+        }
         if (name in target) {
           // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
           if (typeof target[name] === 'function') {
@@ -3144,6 +3148,13 @@ var htmx = (function() {
       deleteProperty: function(target, name) {
         target.delete(name)
         return true
+      },
+      // Support Object.assign call from proxy
+      ownKeys: function(target) {
+        return Reflect.ownKeys(Object.fromEntries(target))
+      },
+      getOwnPropertyDescriptor: function(target, prop) {
+        return Reflect.getOwnPropertyDescriptor(Object.fromEntries(target), prop)
       }
     })
   }
