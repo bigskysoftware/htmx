@@ -72,38 +72,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		return new EventSource(url, { withCredentials: true });
 	}
 
-	function splitOnWhitespace(trigger) {
-		return trigger.trim().split(/\s+/);
-	}
-
-	function getLegacySSEURL(elt) {
-		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
-		if (legacySSEValue) {
-			var values = splitOnWhitespace(legacySSEValue);
-			for (var i = 0; i < values.length; i++) {
-				var value = values[i].split(/:(.+)/);
-				if (value[0] === "connect") {
-					return value[1];
-				}
-			}
-		}
-	}
-
-	function getLegacySSESwaps(elt) {
-		var legacySSEValue = api.getAttributeValue(elt, "hx-sse");
-		var returnArr = [];
-		if (legacySSEValue != null) {
-			var values = splitOnWhitespace(legacySSEValue);
-			for (var i = 0; i < values.length; i++) {
-				var value = values[i].split(/:(.+)/);
-				if (value[0] === "swap") {
-					returnArr.push(value[1]);
-				}
-			}
-		}
-		return returnArr;
-	}
-
 	/**
 	 * registerSSE looks for attributes that can contain sse events, right 
 	 * now hx-trigger and sse-swap and adds listeners based on these attributes too
@@ -127,11 +95,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		queryAttributeOnThisOrChildren(elt, "sse-swap").forEach(function(child) {
 
 			var sseSwapAttr = api.getAttributeValue(child, "sse-swap");
-			if (sseSwapAttr) {
-				var sseEventNames = sseSwapAttr.split(",");
-			} else {
-				var sseEventNames = getLegacySSESwaps(child);
-			}
+			var sseEventNames = sseSwapAttr.split(",");
 
 			for (var i = 0; i < sseEventNames.length; i++) {
 				var sseEventName = sseEventNames[i].trim();
@@ -170,11 +134,8 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 			if (sseEventName.slice(0, 4) != "sse:") {
 				return;
 			}
-			
-			// remove the sse: prefix from here on out
-			sseEventName = sseEventName.substr(4);
 
-			var listener = function() {
+			var listener = function(event) {
 				if (maybeCloseSSESource(sourceElement)) {
 					return
 				}
@@ -182,7 +143,15 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 				if (!api.bodyContains(child)) {
 					source.removeEventListener(sseEventName, listener);
 				}
+
+				// Trigger events to be handled by the rest of htmx
+				htmx.trigger(child, sseEventName, event);
+				htmx.trigger(child, "htmx:sseMessage", event);
 			}
+
+			// Register the new listener
+			api.getInternalData(elt).sseEventListener = listener;
+			source.addEventListener(sseEventName.slice(4), listener);
 		});
 	}
 
@@ -209,17 +178,6 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 			ensureEventSource(child, sseURL, retryCount);
 		});
-
-		// handle legacy sse, remove for HTMX2
-		queryAttributeOnThisOrChildren(elt, "hx-sse").forEach(function(child) {
-			var sseURL = getLegacySSEURL(child);
-			if (sseURL == null) {
-				return;
-			}
-
-			ensureEventSource(child, sseURL, retryCount);
-		});
-
 	}
 
 	function ensureEventSource(elt, url, retryCount) {

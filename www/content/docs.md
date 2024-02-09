@@ -29,7 +29,6 @@ custom_classes = "wide-content"
   * [confirming](#confirming)
 * [inheritance](#inheritance)
 * [boosting](#boosting)
-  * [head tag handling](#head)
 * [websockets & SSE](#websockets-and-sse)
 * [history](#history)
 * [requests & responses](#requests)
@@ -753,46 +752,6 @@ Here is an example:
 ```
 
 The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
-
-### `head` tag support {#head}
-
-In boosted requests, if a head tag is detected in the response, htmx will automatically synchronize the content of
-the current head tag with the new content.  This means that elements that are already found in the current head will
-be left alone (and, therefore, not trigger another request), but new elements found in the new header will be added
-to the existing header tag.  Elements that are not found in the new head will be removed from the existing head tag.
-
-This allows you to include page-specific header related elements and have them added or removed via boosted requests.
-
-htmx also supports an "append" mode, that will simply append the content of the new head tag to the current head, if
- the new content is not already in it.  You can control the mode that htmx will use with the `hx-head` attribute on
-the head tag in the *new* content:
-
-* `merge` - follow the merging algorithm outlined above
-* `append` - append elements that do not exist in it to the existing head, but don't remove any elements
-
-#### Controlling Merge Behavior Per Element
-
-You may also control merging behavior of individual elements with the following attributes:
-
-* If you place `hx-head="re-eval"` on a head element, it will be re-added (removed and appended) to the head tag on every
-  request, even if it already exists.  This can be useful to execute a script on every htmx request, for example.
-* If you place `hx-preserve="true"` on an element, it will never be removed from the head, regardless
-
-#### Configuring Boost & Non-Boost `head` behavior
-
-You can configure the default head behavior by setting the `boost` and `other` attributes in the `htmx.config.head` object,
-using the following values:
-
-* `merge` - merge the new head tag elements into the existing element
-* `append` - append the new head tag elements to the existing head tag
-* `none` - ignore any new head tag elements
-
-By default, `htmx.config.head.boost` is `merge` and will apply to boosted links and forms.
-
-`htmx.config.head.other` will apply to non-boosted requests, and defaults to `none` (that is, new head information) will
-be ignored.
-
-You can also configure the head behavior using the [`hx-swap`](/attributes/hx-swap) attribute's `head` option.
 
 ### Progressive Enhancement {#progressive_enhancement}
 

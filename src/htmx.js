@@ -65,10 +65,6 @@ var htmx = (function() {
       scrollIntoViewOnBoost: true,
       triggerSpecsCache: null,
       disableInheritance: false,
-      head: {
-        boost: 'merge',
-        other: 'none'
-      },
       responseHandling: [
         { code: '204', swap: false },
         { code: '[23]..', swap: true },
@@ -328,12 +324,11 @@ var htmx = (function() {
 
   /**
    * @param {string} response HTML
-   * @returns {DocumentFragment & {title: string, head:Element}} a document fragment representing the response HTML, including
-   * a `head` property for any head content found
+   * @returns {DocumentFragment & {title: string}} a document fragment representing the response HTML, including
+   * a `title` property for any title information found
    */
   function makeFragment(response) {
     // strip head tag to determine shape of response we are dealing with
-    const head = (HEAD_TAG_REGEX.exec(response) || [''])[0]
     const responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
     const startTag = getStartTag(responseWithNoHead)
     let fragment = null
@@ -342,21 +337,18 @@ var htmx = (function() {
       fragment = new DocumentFragment()
       const doc = parseHTML(response)
       takeChildrenFor(fragment, doc.body)
-      fragment.head = doc.head
       fragment.title = doc.title
     } else if (startTag === 'body') {
-      // body w/ a potential head, parse head & body w/o wrapping in template
+      // parse body w/o wrapping in template
       fragment = new DocumentFragment()
-      const doc = parseHTML(head + responseWithNoHead)
+      const doc = parseHTML(responseWithNoHead)
       takeChildrenFor(fragment, doc.body)
-      fragment.head = doc.head
       fragment.title = doc.title
     } else {
-      // otherwise we have non-body content, so wrap it in a template and insert the head before the content
-      const doc = parseHTML(head + '<body><template class="internal-htmx-wrapper">' + responseWithNoHead + '</template></body>')
+      // otherwise we have non-body partial HTML content, so wrap it in a template to maximize parsing flexibility
+      const doc = parseHTML('<body><template class="internal-htmx-wrapper">' + responseWithNoHead + '</template></body>')
       fragment = doc.querySelector('template').content
-      // extract head into fragment for later processing
-      fragment.head = doc.head
+      // extract title into fragment for later processing
       fragment.title = doc.title
 
       // for legacy reasons we support a title tag at the root level of non-body responses, so we need to handle it
@@ -372,9 +364,6 @@ var htmx = (function() {
       } else {
         // remove all script tags if scripts are disabled
         fragment.querySelectorAll('script').forEach((script) => script.remove())
-        if (fragment.head) {
-          fragment.head.querySelectorAll('script').forEach((script) => script.remove())
-        }
       }
     }
     return fragment
@@ -1137,21 +1126,6 @@ var htmx = (function() {
     }
   }
 
-  /**
-   * @param fragment {DocumentFragment}
-   * @returns String
-   */
-  function findTitle(fragment) {
-    if (fragment.title) {
-      return fragment.title.innerText
-    } else if (fragment.head) {
-      var title = fragment.head.querySelector('title')
-      if (title) {
-        return title.innerText
-      }
-    }
-  }
-
   function findAndSwapOobElements(fragment, settleInfo) {
     forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
       const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
@@ -1178,7 +1152,7 @@ var htmx = (function() {
 
   /**
    * Implements complete swapping pipeline, including: focus and selection preservation,
-   * title updates, head merging, scroll, OOB swapping, normal swapping and settling
+   * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
    * @param {string} content
    * @param {import("./htmx").HtmxSwapSpecification} swapSpec
@@ -1210,7 +1184,6 @@ var htmx = (function() {
     let fragment = makeFragment(content)
 
     settleInfo.title = fragment.title
-    settleInfo.head = fragment.head
 
     // select-oob swaps
     if (swapOptions.selectOOB) {
@@ -1280,12 +1253,9 @@ var htmx = (function() {
       swapOptions.afterSwapCallback()
     }
 
-    // merge in new head after swap but before settle
+    // merge in new title after swap but before settle
     if (!swapSpec.ignoreTitle) {
       handleTitle(settleInfo.title)
-    }
-    if (triggerEvent(document.body, 'htmx:beforeHeadMerge', { head: settleInfo.head })) {
-      handleHeadTag(settleInfo.head, swapSpec.head)
     }
 
     // settle
@@ -1317,84 +1287,6 @@ var htmx = (function() {
       setTimeout(doSettle, swapSpec.settleDelay)
     } else {
       doSettle()
-    }
-  }
-
-  function handleHeadTag(head, strategy) {
-    if (head && (strategy === 'merge' || strategy === 'append')) {
-      // allow new head to override merge strategy
-      const elementMergeStrategy = getAttributeValue(head, 'hx-head') || strategy
-      if (elementMergeStrategy === 'merge' || elementMergeStrategy === 'append') {
-        const removed = []
-        const appended = []
-
-        const currentHead = document.head
-        const newHeadElements = Array.from(head.children)
-
-        const srcToNewHeadNodes = newHeadElements.reduce((m, elt) => m.set(elt.outerHTML, elt), new Map())
-
-        for (const currentHeadElt of currentHead.children) {
-          var inNewContent = srcToNewHeadNodes.has(currentHeadElt.outerHTML)
-          var isReEvaluated = getAttributeValue(currentHeadElt, 'hx-head') === 're-eval'
-          var isPreserved = getAttributeValue(currentHeadElt, 'hx-preserve') === 'true'
-
-          // If the current head element is in the map or is preserved
-          if (isPreserved) {
-            // remove from new content if it exists
-            srcToNewHeadNodes.delete(currentHeadElt.outerHTML)
-            if (isReEvaluated) {
-              // remove the current version and let the new version replace it and re-execute
-              appended.push(currentHeadElt)
-            }
-          } else if (inNewContent) {
-            if (isReEvaluated) {
-              // remove the current version and let the new version replace it and re-execute
-              removed.push(currentHeadElt)
-            } else {
-              // this element already exists and should not be re-appended, so remove it from
-              // the new content map, preserving it in the DOM
-              srcToNewHeadNodes.delete(currentHeadElt.outerHTML)
-            }
-          } else {
-            // the current existing head element is not in the new head
-            if (elementMergeStrategy === 'append') {
-              // we are appending and this existing element is not new content
-              // so if and only if it is marked for re-append do we do anything
-              if (isReEvaluated) {
-                appended.push(currentHeadElt)
-              }
-            } else {
-              // if this is a merge, we remove this content since it is not in the new head
-              if (triggerEvent(document.body, 'htmx:removingHeadElement', { headElement: currentHeadElt }) !== false) {
-                removed.push(currentHeadElt)
-              }
-            }
-          }
-        }
-
-        // Push the remaining new head elements in the Map into the
-        // nodes to append to the head tag
-        appended.push(...srcToNewHeadNodes.values())
-
-        for (let node of appended) {
-          if (triggerEvent(document.body, 'htmx:addingHeadElement', { headElement: node }) !== false) {
-            // make a copy of script nodes so they will execute properly
-            if (isJavaScriptScriptNode(node)) {
-              node = duplicateScript(node)
-            }
-            currentHead.appendChild(node)
-          }
-        }
-
-        // remove all removed elements, after we have appended the new elements to avoid
-        // additional network requests for things like style sheets
-        for (const removedElement of removed) {
-          if (triggerEvent(document.body, 'htmx:removingHeadElement', { headElement: removedElement }) !== false) {
-            currentHead.removeChild(removedElement)
-          }
-        }
-        triggerEvent(document.body, 'htmx:afterHeadMerge', { appended, removed })
-      }
     }
   }
 
@@ -2220,7 +2112,6 @@ var htmx = (function() {
 
     // get state to save
     const innerHTML = cleanInnerHtmlForHistory(rootElt)
-    const head = getDocument().head.outerHTML
     const title = getDocument().title
     const scroll = window.scrollY
 
@@ -2240,9 +2131,7 @@ var htmx = (function() {
       }
     }
 
-    // final content will be the head tag + the inner HTML of the current history element
-    const content = head + innerHTML
-    const newHistoryItem = { url, content, title, scroll }
+    const newHistoryItem = { url, content: innerHTML, title, scroll }
 
     triggerEvent(getDocument().body, 'htmx:historyItemCreated', { item: newHistoryItem, cache: historyCache })
 
@@ -2354,7 +2243,6 @@ var htmx = (function() {
         const historyElement = getHistoryElement()
         const settleInfo = makeSettleInfo(historyElement)
         handleTitle(fragment.title)
-        handleHeadTag(fragment.head, htmx.config.head.boost)
 
         // @ts-ignore
         swapInnerHTML(historyElement, content, settleInfo)
@@ -2377,7 +2265,6 @@ var htmx = (function() {
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
       handleTitle(fragment.title)
-      handleHeadTag(fragment.head, htmx.config.head.boost)
       swapInnerHTML(historyElement, fragment, settleInfo)
       settleImmediately(settleInfo.tasks)
       setTimeout(function() {
@@ -2770,8 +2657,6 @@ var htmx = (function() {
             swapSpec.transition = value.substr(11) === 'true'
           } else if (value.indexOf('ignoreTitle:') === 0) {
             swapSpec.ignoreTitle = value.substr(12) === 'true'
-          } else if (value.indexOf('head:') === 0) {
-            swapSpec.head = value.substr(5)
           } else if (value.indexOf('scroll:') === 0) {
             const scrollSpec = value.substr(7)
             var splitSpec = scrollSpec.split(':')
@@ -3690,7 +3575,6 @@ var htmx = (function() {
     const shouldSwap = responseHandling.swap
     let isError = !!responseHandling.error
     let ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
-    let head = responseInfo.boosted ? htmx.config.head.boost : htmx.config.head.other
     let selectOverride = responseHandling.select
     if (responseHandling.target) {
       responseInfo.target = querySelectorExt(elt, responseHandling.target)
@@ -3718,8 +3602,7 @@ var htmx = (function() {
       serverResponse,
       isError,
       ignoreTitle,
-      selectOverride,
-      head
+      selectOverride
     }, responseInfo)
 
     if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return
@@ -3730,7 +3613,6 @@ var htmx = (function() {
     serverResponse = beforeSwapDetails.serverResponse // allow updating content
     isError = beforeSwapDetails.isError // allow updating error
     ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
-    head = beforeSwapDetails.head // allow updating head algorithm
     selectOverride = beforeSwapDetails.selectOverride // allow updating select override
 
     responseInfo.target = target // Make updated target available to response events
@@ -3758,9 +3640,6 @@ var htmx = (function() {
 
       if (!swapSpec.hasOwnProperty('ignoreTitle')) {
         swapSpec.ignoreTitle = ignoreTitle
-      }
-      if (!swapSpec.hasOwnProperty('head')) {
-        swapSpec.head = head
       }
 
       target.classList.add(htmx.config.swappingClass)
@@ -3889,7 +3768,6 @@ var htmx = (function() {
  * @param {import("./htmx").HtmxExtension} extension
  */
   function defineExtension(name, extension) {
-    if (name === 'head-support') return // ignore the head support extension, now integrated into htmx
     if (extension.init) {
       extension.init(internalAPI)
     }
