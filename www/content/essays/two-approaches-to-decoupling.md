@@ -39,7 +39,7 @@ Broadly, experienced developers strive for decoupled and cohesive systems.
 
 A common approach to building web applications today is to create a JSON Data API and then consume that JSON API using
 a JavaScript framework such as React.  This application-level architectural decision decouples the front-end code
-from the back-end code, and allows the re-use of the JSON API in other contexts, such as a mobile applications, 3rd 
+from the back-end code, and allows the reuse of the JSON API in other contexts, such as a mobile applications, 3rd 
 party client integrations, etc.
 
 This is an _application-level_ decoupling because the decision and implementation of the decoupling is done by the

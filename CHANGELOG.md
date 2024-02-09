@@ -38,7 +38,7 @@
 ## [1.9.6] - 2023-09-22
 
 * IE support has been restored (thank you @telroshan!)
-* Introduced the `hx-disabled-elt` attribute to allow specifing elements to disable during a request
+* Introduced the `hx-disabled-elt` attribute to allow specifying elements to disable during a request
 * You can now explicitly decide to ignore `title` tags found in new content via the `ignoreTitle` option in `hx-swap` and the `htmx.config.ignoreTitle` configuration variable.
 * `hx-swap` modifiers may be used without explicitly specifying the swap mechanism
 * Arrays are now supported in the `client-side-templates` extension
