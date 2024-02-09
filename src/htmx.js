@@ -632,6 +632,13 @@ return (function () {
                 return [window];
             } else if (selector === 'body') {
                 return [document.body];
+            } else if (selector.indexOf("inherit") === 0) {
+                var result = [...Array.prototype.slice.call(getDocument().querySelectorAll(normalizeSelector(selector)))]
+                var attrTarget = getAttributeValue(elt, 'hx-indicator') || getAttributeValue(elt, 'hx-include')
+                if (attrTarget){
+                    result.push(...Array.prototype.slice.call(querySelectorAllExt(elt.parentNode, attrTarget)))
+                }
+                return result.filter((value, index, array) => array.indexOf(value) === index);
             } else {
                 return getDocument().querySelectorAll(normalizeSelector(selector));
             }
