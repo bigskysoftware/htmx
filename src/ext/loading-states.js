@@ -5,8 +5,8 @@
 		return htmx.closest(target, '[data-loading-states]') || document.body
 	}
 
-	function mayProcessUndoCallback(target, callback) {
-		if (document.body.contains(target)) {
+	function mayProcessUndoCallback(target, requestPath, callback) {
+		if (document.body.contains(target) && mayProcessLoadingStateByPath(target, requestPath)) {
 			callback()
 		}
 	}
@@ -28,18 +28,18 @@
 			const timeout = setTimeout(function () {
 				doCallback()
 
-				loadingStatesUndoQueue.push(function () {
-					mayProcessUndoCallback(targetElt, undoCallback)
+				loadingStatesUndoQueue.push(function (requestPath) {
+					mayProcessUndoCallback(targetElt, requestPath, undoCallback)
 				})
 			}, delayInMilliseconds)
 
-			loadingStatesUndoQueue.push(function () {
-				mayProcessUndoCallback(targetElt, function () { clearTimeout(timeout) })
+			loadingStatesUndoQueue.push(function (requestPath) {
+				mayProcessUndoCallback(targetElt, requestPath, function () { clearTimeout(timeout) })
 			})
 		} else {
 			doCallback()
-			loadingStatesUndoQueue.push(function () {
-				mayProcessUndoCallback(targetElt, undoCallback)
+			loadingStatesUndoQueue.push(function (requestPath) {
+				mayProcessUndoCallback(targetElt, requestPath, undoCallback)
 			})
 		}
 	}
@@ -174,9 +174,9 @@
 			}
 
 			if (name === 'htmx:beforeOnLoad') {
-				while (loadingStatesUndoQueue.length > 0) {
-					loadingStatesUndoQueue.shift()()
-				}
+				loadingStatesUndoQueue = loadingStatesUndoQueue.filter(function (item) {
+					return (!item(evt.detail.pathInfo.requestPath));
+				});
 			}
 		},
 	})
