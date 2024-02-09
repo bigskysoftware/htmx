@@ -9,6 +9,10 @@
     {# This block should set html_title appropriately -#}
     {% block title %} {% endblock title -%}
     <title>{{ html_title | default(value=config.title) | safe }}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="canonical" href="{{ current_url | safe }}">
     {#TODO: only generate this for the home page #}
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
