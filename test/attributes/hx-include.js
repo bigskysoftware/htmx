@@ -209,7 +209,23 @@ describe("hx-include attribute", function() {
         this.server.respond();
         btn.innerHTML.should.equal("Clicked!");
     })
-
+    it('The `inherit` modifier can be used in the hx-include selector', function () {
+        this.server.respondWith("POST", "/include", function (xhr) {
+            var params = getParameters(xhr);
+            console.log('1', params)
+            params['i1'].should.equal("test");
+            params['i2'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        make('<input id="i2" name="i2" value="test"/>');
+        var div = make('<div hx-include="#i2" hx-target="this">'+
+        '<input id="i1" name="i1" value="test" hx-post="/include" hx-trigger="click" hx-include="inherit, #i1"/>'+
+        '</div>');
+        var input = byId("i1")
+        input.click();
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    })
     it('The `this` modifier can be used in the hx-include selector', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
             var params = getParameters(xhr);
