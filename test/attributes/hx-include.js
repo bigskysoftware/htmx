@@ -212,7 +212,6 @@ describe("hx-include attribute", function() {
     it('The `inherit` modifier can be used in the hx-include selector', function () {
         this.server.respondWith("POST", "/include", function (xhr) {
             var params = getParameters(xhr);
-            console.log('1', params)
             params['i1'].should.equal("test");
             params['i2'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
