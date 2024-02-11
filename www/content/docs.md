@@ -1227,11 +1227,7 @@ Here is an example of the code in action:
 
 ## Scripting {#scripting}
 
-While htmx encourages a hypermedia-based approach to building web applications, it does not preclude scripting and
-offers a few mechanisms for integrating scripting into your web application.  Scripting was explicitly included in
-the REST-ful description of the web architecture in the [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
-section.  As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach
-to scripting in your htmx-based web application:
+While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting. Scripting is included in the REST-ful description of web architecture, see: [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web application:
 
 * [Respect HATEOAS](/essays/hypermedia-friendly-scripting#prime_directive)
 * [Use events to communicate between components](/essays/hypermedia-friendly-scripting#events)
