@@ -10,7 +10,7 @@ The purpose of this guide is to provide common practices for "Hotwire Equivalent
 ## Turbo Drive
 
 * `<body hx-boost="true">` to enable a Turbo Drive-like experience. See: [hx-boost](@/attributes/hx-boost.md)
-* As with Turbo Drive, if the user does not have javascript enabled, `hx-boost` will continue to work. See: [Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement)
+* As with Turbo Drive, if the user has javascript disabled, `hx-boost` will continue to work. See: [Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement)
 * `hx-boost="false"` is equivalent to `data-turbo="false"` and used to disable boost on specific links or forms. See: [Handbook](https://turbo.hotwired.dev/handbook/drive#disabling-turbo-drive-on-specific-links-or-forms)
 * Redirect after form submission (302, 303, 307, 3xx) `hx-target="body" hx-swap="outerHTML" hx-push-url="true"` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#redirecting-after-a-form-submission)
 * Disable buttons on form submission See: [Handbook](https://turbo.hotwired.dev/handbook/drive#form-submissions)
