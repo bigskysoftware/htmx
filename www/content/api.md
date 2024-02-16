@@ -60,6 +60,7 @@ or
     * `swap` - how the response will be swapped in relative to the target
     * `values` - values to submit with the request
     * `headers` - headers to submit with the request
+    * `select` - allows you to select the content you want swapped from a response
 
 ##### Example
 
@@ -104,9 +105,10 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 ##### Properties
 
 * `attributesToSettle:["class", "style", "width", "height"]` - array of strings: the attributes to settle during the settling phase
+* `refreshOnHistoryMiss:false` - boolean: if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request
 * `defaultSettleDelay:20` - int: the default delay between completing the content swap and settling attributes
 * `defaultSwapDelay:0` - int: the default delay between receiving a response from the server and doing the swap
-* `defaultSwapStyle:'innerHtml'` - string: the default swap style to use if [`hx-swap`](@/attributes/hx-swap.md) is omitted
+* `defaultSwapStyle:'innerHTML'` - string: the default swap style to use if [`hx-swap`](@/attributes/hx-swap.md) is omitted
 * `historyCacheSize:10` - int: the number of pages to keep in `localStorage` for history support
 * `historyEnabled:true` - boolean: whether or not to use history
 * `includeIndicatorStyles:true` - boolean: if true, htmx will inject a small amount of CSS into the page to make indicators invisible unless the `htmx-indicator` class is present
@@ -117,11 +119,22 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `swappingClass:'htmx-swapping'` - string: the class to place on target elements when htmx is in the swapping phase
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility.
 * `allowScriptTags:true` - boolean: allows script tags to be evaluated in new content
+* `inlineScriptNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline scripts
 * `useTemplateFragments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
-* `wsReconnectDelay:full-jitter` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
-* `scrollBehavior:smooth` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
+* `timeout:0` - int: the number of milliseconds a request can take before automatically being terminated
+* `wsReconnectDelay:'full-jitter'` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
+* `wsBinaryType:'blob'` - string: the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection
+* `disableSelector:"[hx-disable], [data-hx-disable]"` - array of strings: htmx will not process elements with this attribute on it or a parent
+* `scrollBehavior:'smooth'` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
+* `defaultFocusScroll:false` - boolean: if the focused element should be scrolled into view, can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier
+* `getCacheBusterParam:false` - boolean: if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser
+* `globalViewTransitions:false` - boolean: if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.
+* `methodsThatUseUrlParams:["get"]` - array of strings: htmx will format requests with these methods by encoding their parameters in the URL, not the request body
+* `selfRequestsOnly:false` - boolean: if set to `true` will only allow AJAX requests to the same domain as the current document
+* `ignoreTitle:false` - boolean: if set to `true` htmx will not update the title of the document when a `title` tag is found in new content
 * `scrollIntoViewOnBoost:true` - boolean: whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.
+* `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
 
 ##### Example
 

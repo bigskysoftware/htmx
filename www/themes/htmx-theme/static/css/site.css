@@ -1,5 +1,5 @@
 :root {
-  --midBlue: #3465a4;
+  --midBlue: #3366cc;
   --lightBlue: #3d72d7;
 }
 
@@ -8,7 +8,7 @@ body {
   margin: 0px;
   line-height: 1.5em;
   font-size: 16px;
-  color: #333;
+  color: #111;
   background-color: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
@@ -70,7 +70,7 @@ body .content code {
 }
 
 code:not(code[class*="language-"]) {
-  background: #3465a424;
+  background: #3465a41f;
   border-radius: 2px;
   padding: 2px 5px;
 }
@@ -104,7 +104,7 @@ code:not(code[class*="language-"]) {
   .dark-hero .logo {
       font-size: 100px;
   }
-  .dark-hero a {
+  .dark-hero .blue {
       color: var(--lightBlue);
   }
 

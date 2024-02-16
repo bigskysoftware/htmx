@@ -22,6 +22,7 @@ page_template = "essay.html"
 * [A Response To "Have SPAs Ruined The Web"](@/essays/a-response-to-rich-harris.md)
 * [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
+* [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
 
 ### Building Hypermedia Applications
@@ -30,6 +31,7 @@ page_template = "essay.html"
 * [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
 * [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
+* [Why I Tend Not To Use Content Negotiation](@/essays/why-tend-not-to-use-content-negotiation.md)
 * [Template Fragments](@/essays/template-fragments.md)
 * [View Transitions](@/essays/view-transitions.md)
 

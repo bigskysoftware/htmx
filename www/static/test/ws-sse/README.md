@@ -2,10 +2,10 @@
 This package implements a realtime server for testing WebSockets and Server Sent Events (SSE) in htmx.
 
 ## How to Use This Server
-From this directory, run `node server.js`.
+From this directory, run `node server.mjs`.
 
 If you want to hotreload, I recommend using `nodemon`, which you can install with `npm install -g
-nodemon`, and then run `nodemon -e js,html server.js`.
+nodemon`, and then run `nodemon -e js,html server.mjs`.
 
 ## Web Sockets
 When htmx receives messages from any WebSocket client, it responds with that same content in a way that htmx can process. This means, that the response message will look like this: `<div id="idMessage" hx-swap-oob="true">{your message here}</div>`

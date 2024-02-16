@@ -48,7 +48,7 @@ export function ajax(verb: string, path: string, selector: string): Promise<void
 export function ajax(
     verb: string,
     path: string,
-    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any }>
+    context: Partial<{ source: any; event: any; handler: any; target: any; swap: any; values: any; headers: any; select: any }>
 ): Promise<void>;
 
 /**
@@ -343,7 +343,7 @@ export interface HtmxConfig {
     requestClass?: "htmx-request" | string;
     /**
      * The class to temporarily place on elements that htmx has added to the DOM.
-     * @default "htmx-added" 
+     * @default "htmx-added"
      */
     addedClass?: "htmx-added" | string;
     /**
@@ -385,6 +385,57 @@ export interface HtmxConfig {
     disableSelector?: "[hx-disable], [data-hx-disable]" | string;
     /** @default "smooth" */
     scrollBehavior?: "smooth" | "auto";
+    /**
+     * If set to false, disables the interpretation of script tags.
+     * @default true
+     */
+    allowScriptTags?: boolean;
+    /**
+     * If set to true, disables htmx-based requests to non-origin hosts.
+     * @default false
+     */
+    selfRequestsOnly?: boolean;
+    /**
+     * Whether or not the target of a boosted element is scrolled into the viewport.
+     * @default true
+     */
+    scrollIntoViewOnBoost?: boolean;
+    /**
+     * If set, the nonce will be added to inline scripts.
+     * @default ''
+     */
+    inlineScriptNonce?: string;
+    /**
+     * The type of binary data being received over the WebSocket connection
+     * @default 'blob'
+     */
+    wsBinaryType?: 'blob' | 'arraybuffer'; 
+    /**
+     * If set to true htmx will include a cache-busting parameter in GET requests to avoid caching partial responses by the browser
+     * @default false 
+     */
+    getCacheBusterParam?: boolean;
+    /**
+     * If set to true, htmx will use the View Transition API when swapping in new content.
+     * @default false 
+     */
+    globalViewTransitions?: boolean;
+    /**
+     * htmx will format requests with these methods by encoding their parameters in the URL, not the request body
+     * @default ["get"] 
+     */
+    methodsThatUseUrlParams?: ('get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch' )[];
+    /**
+     * If set to true htmx will not update the title of the document when a title tag is found in new content
+     * @default false 
+     */
+    ignoreTitle:? boolean;
+    /**
+     * The cache to store evaluated trigger specifications into.
+     * You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+     * @default null
+     */
+    triggerSpecsCache?: {[trigger: string]: HtmxTriggerSpecification[]};
 }
 
 /**

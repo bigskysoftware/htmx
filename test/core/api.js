@@ -225,6 +225,24 @@ describe("Core htmx API test", function(){
         div.innerHTML.should.equal('<p class="test">foo!</p>');
     });
 
+    it('ajax api works with select', function()
+    {
+        this.server.respondWith("GET", "/test", "<div id='d1'>foo</div><div id='d2'>bar</div>");
+        var div = make("<div id='target'></div>");
+        htmx.ajax("GET", "/test", {target: "#target", select: "#d2"});
+        this.server.respond();
+        div.innerHTML.should.equal('<div id="d2">bar</div>');
+    });
+
+    it('ajax api works with Hx-Select overrides select', function()
+    {
+        this.server.respondWith("GET", "/test", [200, {"HX-Reselect": "#d2"}, "<div id='d1'>foo</div><div id='d2'>bar</div>"]);
+        var div = make("<div id='target'></div>");
+        htmx.ajax("GET", "/test", {target: "#target", select: "#d1"});
+        this.server.respond();
+        div.innerHTML.should.equal('<div id="d2">bar</div>');
+    });
+
     it('ajax returns a promise', function(done)
     {
         // in IE we do not return a promise
@@ -254,6 +272,44 @@ describe("Core htmx API test", function(){
         this.server.respond();
         div.innerHTML.should.equal("Clicked!");
     });
+
+    it('ajax api Content-Type header is application/x-www-form-urlencoded', function(){
+
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            xhr.requestHeaders['Content-Type'].should.equal('application/x-www-form-urlencoded;charset=utf-8');
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!")
+        });
+        var div = make("<div id='d1'></div>");
+        htmx.ajax("POST", "/test", {target:"#d1", values:{i1: 'test'}})
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
+    it('ajax api Content-Type header override to application/json', function(){
+
+        this.server.respondWith("POST", "/test", function (xhr) {
+            var params = getParameters(xhr);
+            xhr.requestHeaders['Content-Type'].should.equal('application/json;charset=utf-8');
+            params['i1'].should.equal("test");
+            xhr.respond(200, {}, "Clicked!");
+        });
+
+        var div = make("<div id='d1'></div>");
+        htmx.ajax('POST',"/test", {
+                target:'#d1',
+                swap:'innerHTML',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                values:{i1: 'test'}
+        })
+
+        this.server.respond();
+        div.innerHTML.should.equal("Clicked!");
+    });
+
 
     it('can re-init with new attributes', function () {
         this.server.respondWith("PATCH", "/test", "patch");
