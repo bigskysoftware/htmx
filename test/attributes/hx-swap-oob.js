@@ -140,7 +140,7 @@ describe("hx-swap-oob attribute", function () {
     })
     
     it('handles one swap into multiple elements with the same ID properly', function () {
-        this.server.respondWith("GET", "/test", "<div id='foo-/bar/' hx-swap-oob='innerHTML'>Swapped11</div><div id='foo-/bar/' hx-swap-oob='innerHTML'>Swapped11</div>");
+        this.server.respondWith("GET", "/test", "<div id='foo-/bar/' hx-swap-oob='innerHTML'>Swapped11</div>");
         var div = make('<div hx-get="/test">click me</div>');
         make('<div id="foo-/bar/">Existing Content 1</div>');
         make('<div id="foo-/bar/">Existing Content 2</div>');
