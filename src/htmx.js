@@ -894,7 +894,7 @@ var htmx = (function() {
    *
    * @see https://htmx.org/api/#find
    *
-   * @param {Queryable|string} eltOrSelector  the root element to find the matching element in, inclusive | the selector to match
+   * @param {ParentNode|string} eltOrSelector  the root element to find the matching element in, inclusive | the selector to match
    * @param {string} [selector] the selector to match
    * @returns {Element|null}
    */
@@ -911,7 +911,7 @@ var htmx = (function() {
    *
    * @see https://htmx.org/api/#findAll
    *
-   * @param {Queryable|string} eltOrSelector the root element to find the matching elements in, inclusive | the selector to match
+   * @param {ParentNode|string} eltOrSelector the root element to find the matching elements in, inclusive | the selector to match
    * @param {string} [selector] the selector to match
    * @returns {NodeListOf<Element>}
    */
@@ -975,14 +975,10 @@ var htmx = (function() {
   }
 
   /**
-   * @typedef {Element|Document|DocumentFragment} Queryable
-   */
-
-  /**
    * @param {EventTarget} elt
-   * @return {Queryable|null}
+   * @return {ParentNode|null}
    */
-  function asQueryable(elt) {
+  function asParentNode(elt) {
     return elt instanceof Element || elt instanceof Document || elt instanceof DocumentFragment ? elt : null
   }
 
@@ -1136,7 +1132,7 @@ var htmx = (function() {
     if (selector.indexOf('closest ') === 0) {
       return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
     } else if (selector.indexOf('find ') === 0) {
-      return [find(asQueryable(elt), normalizeSelector(selector.substr(5)))]
+      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
     } else if (selector === 'next') {
       return [asElement(elt).nextElementSibling]
     } else if (selector.indexOf('next ') === 0) {
@@ -1156,7 +1152,7 @@ var htmx = (function() {
     } else if (selector.indexOf('global ') === 0) {
       return querySelectorAllExt(elt, selector.slice(7), true)
     } else {
-      return toArray(asQueryable(getRootNode(elt, !!global)).querySelectorAll(normalizeSelector(selector)))
+      return toArray(asParentNode(getRootNode(elt, !!global)).querySelectorAll(normalizeSelector(selector)))
     }
   }
 
@@ -1167,7 +1163,7 @@ var htmx = (function() {
    * @returns {Element}
    */
   var scanForwardQuery = function(start, match, global) {
-    const results = asQueryable(getRootNode(start, global)).querySelectorAll(match)
+    const results = asParentNode(getRootNode(start, global)).querySelectorAll(match)
     for (let i = 0; i < results.length; i++) {
       const elt = results[i]
       if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_PRECEDING) {
@@ -1183,7 +1179,7 @@ var htmx = (function() {
    * @returns {Element}
    */
   var scanBackwardsQuery = function(start, match, global) {
-    const results = asQueryable(getRootNode(start, global)).querySelectorAll(match)
+    const results = asParentNode(getRootNode(start, global)).querySelectorAll(match)
     for (let i = results.length - 1; i >= 0; i--) {
       const elt = results[i]
       if (elt.compareDocumentPosition(start) === Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -1213,7 +1209,7 @@ var htmx = (function() {
    */
   function resolveTarget(eltOrSelector, context) {
     if (typeof eltOrSelector === 'string') {
-      return find(asQueryable(context) || document, eltOrSelector)
+      return find(asParentNode(context) || document, eltOrSelector)
     } else {
       return eltOrSelector
     }
@@ -1429,7 +1425,7 @@ var htmx = (function() {
           fragment = getDocument().createDocumentFragment()
           fragment.appendChild(oobElementClone)
           if (!isInlineSwap(swapStyle, target)) {
-            fragment = asQueryable(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
+            fragment = asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
           }
 
           const beforeSwapDetails = { shouldSwap: true, target, fragment }
@@ -1467,7 +1463,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} parentNode
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function handleAttributes(parentNode, fragment, settleInfo) {
@@ -1476,7 +1472,7 @@ var htmx = (function() {
       if (id && id.length > 0) {
         const normalizedId = id.replace("'", "\\'")
         const normalizedTag = newNode.tagName.replace(':', '\\:')
-        const parentElt = asQueryable(parentNode)
+        const parentElt = asParentNode(parentNode)
         const oldNode = parentElt && parentElt.querySelector(normalizedTag + "[id='" + normalizedId + "']")
         if (oldNode && oldNode !== parentElt) {
           const newAttributes = newNode.cloneNode()
@@ -1497,13 +1493,13 @@ var htmx = (function() {
     return function() {
       removeClassFromElement(child, htmx.config.addedClass)
       processNode(asElement(child))
-      processFocus(asQueryable(child))
+      processFocus(asParentNode(child))
       triggerEvent(child, 'htmx:load')
     }
   }
 
   /**
-   * @param {Queryable} child
+   * @param {ParentNode} child
    */
   function processFocus(child) {
     const autofocus = '[autofocus]'
@@ -1516,7 +1512,7 @@ var htmx = (function() {
   /**
    * @param {Node} parentNode
    * @param {Node} insertBefore
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function insertNodesBefore(parentNode, insertBefore, fragment, settleInfo) {
@@ -1614,7 +1610,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapOuterHTML(target, fragment, settleInfo) {
@@ -1646,7 +1642,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapAfterBegin(target, fragment, settleInfo) {
@@ -1655,7 +1651,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapBeforeBegin(target, fragment, settleInfo) {
@@ -1664,7 +1660,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapBeforeEnd(target, fragment, settleInfo) {
@@ -1673,7 +1669,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapAfterEnd(target, fragment, settleInfo) {
@@ -1690,7 +1686,7 @@ var htmx = (function() {
 
   /**
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapInnerHTML(target, fragment, settleInfo) {
@@ -1710,7 +1706,7 @@ var htmx = (function() {
    * @param {HtmxSwapStyle} swapStyle
    * @param {Element} elt
    * @param {Node} target
-   * @param {Queryable} fragment
+   * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapWithStyle(swapStyle, elt, target, fragment, settleInfo) {
@@ -3081,7 +3077,7 @@ var htmx = (function() {
       if (this.status >= 200 && this.status < 400) {
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
         const fragment = makeFragment(this.response)
-        /** @type Queryable */
+        /** @type ParentNode */
         const content = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         const historyElement = getHistoryElement()
         const settleInfo = makeSettleInfo(historyElement)
@@ -3378,7 +3374,7 @@ var htmx = (function() {
       processInputValue(processed, formData, errors, asElement(node), validate)
       // if a non-form is included, include any input values within it
       if (!matches(node, 'form')) {
-        forEach(asQueryable(node).querySelectorAll(INPUT_SELECTOR), function(descendant) {
+        forEach(asParentNode(node).querySelectorAll(INPUT_SELECTOR), function(descendant) {
           processInputValue(processed, formData, errors, descendant, validate)
         })
       }

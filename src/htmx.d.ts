@@ -5,8 +5,8 @@ declare namespace htmx {
     const off: (arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener) => EventListener;
     const trigger: (elt: string | EventTarget, eventName: string, detail?: any) => boolean;
     const ajax: (verb: HttpVerb, path: string, context: string | Element | HtmxAjaxHelperContext) => Promise<void>;
-    const find: (eltOrSelector: string | (Element | DocumentFragment | Document), selector?: string) => Element;
-    const findAll: (eltOrSelector: string | (Element | DocumentFragment | Document), selector?: string) => NodeListOf<Element>;
+    const find: (eltOrSelector: string | ParentNode, selector?: string) => Element;
+    const findAll: (eltOrSelector: string | ParentNode, selector?: string) => NodeListOf<Element>;
     const closest: (elt: string | Element, selector: string) => Element;
     function values(elt: Element, type: HttpVerb): any;
     const remove: (elt: Node, delay?: number) => void;
