@@ -1,24 +1,24 @@
 declare namespace htmx {
-    function onLoad(callback: (elt: Node) => void): EventListener;
-    function process(elt: string | Element): void;
-    function on(arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener): EventListener;
-    function off(arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener): EventListener;
-    function trigger(elt: string | EventTarget, eventName: string, detail?: any): boolean;
-    function ajax(verb: HttpVerb, path: string, context: string | Element | HtmxAjaxHelperContext): Promise<void>;
-    function find(eltOrSelector: string | (Element | Document | DocumentFragment), selector?: string): Element;
-    function findAll(eltOrSelector: string | (Element | Document | DocumentFragment), selector?: string): NodeListOf<Element>;
-    function closest(elt: string | Element, selector: string): Element;
+    const onLoad: (callback: (elt: Node) => void) => EventListener;
+    const process: (elt: string | Element) => void;
+    const on: (arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener) => EventListener;
+    const off: (arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener) => EventListener;
+    const trigger: (elt: string | EventTarget, eventName: string, detail?: any) => boolean;
+    const ajax: (verb: HttpVerb, path: string, context: string | Element | HtmxAjaxHelperContext) => Promise<void>;
+    const find: (eltOrSelector: string | (Element | DocumentFragment | Document), selector?: string) => Element;
+    const findAll: (eltOrSelector: string | (Element | DocumentFragment | Document), selector?: string) => NodeListOf<Element>;
+    const closest: (elt: string | Element, selector: string) => Element;
     function values(elt: Element, type: HttpVerb): any;
-    function remove(elt: Node, delay?: number): void;
-    function addClass(elt: string | Element, clazz: string, delay?: number): void;
-    function removeClass(node: string | Node, clazz: string, delay?: number): void;
-    function toggleClass(elt: string | Element, clazz: string): void;
-    function takeClass(elt: string | Node, clazz: string): void;
-    function swap(target: string | Element, content: string, swapSpec: HtmxSwapSpecification, swapOptions?: SwapOptions): void;
-    function defineExtension(name: string, extension: any): void;
-    function removeExtension(name: string): void;
-    function logAll(): void;
-    function logNone(): void;
+    const remove: (elt: Node, delay?: number) => void;
+    const addClass: (elt: string | Element, clazz: string, delay?: number) => void;
+    const removeClass: (node: string | Node, clazz: string, delay?: number) => void;
+    const toggleClass: (elt: string | Element, clazz: string) => void;
+    const takeClass: (elt: string | Node, clazz: string) => void;
+    const swap: (target: string | Element, content: string, swapSpec: HtmxSwapSpecification, swapOptions?: SwapOptions) => void;
+    const defineExtension: (name: string, extension: any) => void;
+    const removeExtension: (name: string) => void;
+    const logAll: () => void;
+    const logNone: () => void;
     const logger: any;
     namespace config {
         const historyEnabled: boolean;
@@ -54,8 +54,8 @@ declare namespace htmx {
         const disableInheritance: boolean;
         const responseHandling: HtmxResponseHandlingConfig[];
     }
-    function parseInterval(str: string): number;
-    function _(str: string): any;
+    const parseInterval: (str: string) => number;
+    const _: (str: string) => any;
     const version: string;
 }
 type HttpVerb = 'get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch';
