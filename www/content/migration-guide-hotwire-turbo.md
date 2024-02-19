@@ -50,7 +50,7 @@ document.body.addEventListener('htmx:configRequest', (event) => {
 ```
 
 * Or, use an [hx-trigger](@/attributes/hx-trigger.md) condition: `hx-trigger="submit[action(target)]"`
-  * Does not currently resolve await calls. See [issue](https://github.com/bigskysoftware/htmx/issues/912)
+  * Does not currently resolve async calls. See [issue](https://github.com/bigskysoftware/htmx/issues/912)
 * Or, use [hx-on](@/attributes/hx-on.md): `hx-on:click="event.preventDefault(); action(this); htmx.trigger(this, 'ready')"` `hx-trigger="ready"`
 * Or, use [hyperscript](https://hyperscript.org): `_="on submit halt the event action(target) trigger ready"` `hx-trigger="ready"`
   * Will resolve async calls such as `fetch`. See: [async transparency](https://hyperscript.org/docs/#async)
