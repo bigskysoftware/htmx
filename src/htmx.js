@@ -3817,7 +3817,7 @@ return (function () {
         /**
          * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
          *
-         * This function uses isReady because there is no realiable way to ask the browswer whether
+         * This function uses isReady because there is no reliable way to ask the browser whether
          * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
          * firing and readystate=complete.
          */

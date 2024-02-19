@@ -144,7 +144,7 @@ function makeStream(req, res, arr, formatFunc, numEvents = 0) {
   })
 
   // Make the intervals somewhat random, between 200 and 400ms
-  // We have some tests that create multiple streams at once, so this ensures they're all visibile
+  // We have some tests that create multiple streams at once, so this ensures they're all visible
   const intervalLength = Math.floor(Math.random() * 200) + 200
 
   let i = 0
