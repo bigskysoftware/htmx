@@ -8,7 +8,10 @@ accomplished by putting a form around a table, with checkboxes in the table, and
 values in the form submission (`POST` request):
 
 ```html
-<form id="checked-contacts">
+<form id="checked-contacts"
+      hx-post="/users"
+      hx-swap="outerHTML settle:3s"
+      hx-target="#toast">
     <table>
       <thead>
       <tr>
