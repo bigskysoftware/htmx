@@ -375,7 +375,7 @@ var htmx = (function() {
    * @returns {(string | null)}
    */
   function getRawAttribute(elt, name) {
-    return elt instanceof Element && elt.getAttribute && elt.getAttribute(name)
+    return elt instanceof Element && elt.getAttribute(name)
   }
 
   /**
