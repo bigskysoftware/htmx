@@ -24,8 +24,8 @@ addEventListener("htmx:afterOnLoad", (event) => {
 })
 ```
 * Or, [hx-on](@/attributes/hx-on.md) may be used:
-  * `hx-on:submit='event.target.querySelectorAll("button").forEach(node => { node.disabled = true })'`
-  * `hx-on:htmx:afterOnLoad='event.target.querySelectorAll("button").forEach(node => { node.disabled = false })'`
+  * `hx-on:submit= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = true })'`
+  * `hx-on:htmx:afterOnLoad= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = false })'`
 * Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Cookbook](https://hyperscript.org/cookbook/)
 
 ## Turbo Frames
@@ -50,13 +50,13 @@ document.body.addEventListener('htmx:configRequest', (event) => {
 ```
 
 * Or, use an [hx-trigger](@/attributes/hx-trigger.md) condition: `hx-trigger="submit[action(target)]"`
-  * Does not currently resolve async calls such as `fetch`. See: https://github.com/bigskysoftware/htmx/issues/912
+  * Does not currently resolve async calls. See [issue](https://github.com/bigskysoftware/htmx/issues/912)
 * Or, use [hx-on](@/attributes/hx-on.md): `hx-on:click="event.preventDefault(); action(this); htmx.trigger(this, 'ready')"` `hx-trigger="ready"`
 * Or, use [hyperscript](https://hyperscript.org): `_="on submit halt the event action(target) trigger ready"` `hx-trigger="ready"`
   * Will resolve async calls such as `fetch`. See: [async transparency](https://hyperscript.org/docs/#async)
 
 ## Stimulus
 
-* [hx-on](@/attributes/hx-on.md) provides a simple, inline, vanilla substitute for a wide variety of front end use cases.
+* [hx-on](@/attributes/hx-on.md) provides an inline, vanilla substitute for a wide variety of use cases.
 * [hyperscript](https://hyperscript.org) is a close analogue and an official companion project to htmx, but the two projects are entirely separated and can be used exclusively from each other or any other library.
 * For other options, see: [htmx: Scripting](/docs/#scripting)
