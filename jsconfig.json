@@ -1,14 +1,19 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "noEmit": true,
-        "checkJs": true,
-        "jsx": "react",
-        "strict": false,
-        "lib": [ "dom" ]
-    },
-    "include": [
-        "./src/htmx.js"
-    ],
-    "verbose": true
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outFile": "src/htmx.d.ts",
+    "target": "es6",
+    "checkJs": true,
+    "lib": [
+      "dom",
+      "dom.iterable"
+    ]
+  },
+  "include": [
+    "./src/htmx.js"
+  ],
+  "verbose": true
 }
