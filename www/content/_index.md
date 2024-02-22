@@ -177,8 +177,8 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-        <a href="https://llc.org/">
-          <img alt="How to start an LLC" src="/img/llc-org.svg" style="width:100%;max-width:250px">
+        <a href="https://www.llc.org/">
+          <img alt="How to start an LLC - a guide from LLC.org, proud open source sponsor" src="/img/llc-org.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
