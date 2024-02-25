@@ -145,6 +145,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 					// If the body no longer contains the element, remove the listener
 					if (!api.bodyContains(child)) {
 						source.removeEventListener(sseEventName, listener);
+						return;
 					}
 
 					// swap the response into the DOM and trigger a notification
