@@ -190,7 +190,8 @@ describe("sse extension", function() {
             '<div id="d1" sse-connect="/event_stream" sse-swap="e1">div1</div>\n' +
             '</div>\n'
         )
-        this.eventSource.url = "/event_stream"
+        this.eventSource.sendEvent("e1", "Event 1")
+        byId("d1").innerText.should.equal("Event 1")
     })
 
     it('only adds sseEventSource to elements with sse-connect', function() {
