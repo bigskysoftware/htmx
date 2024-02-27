@@ -259,7 +259,13 @@ var htmx = (function() {
         { code: '204', swap: false },
         { code: '[23]..', swap: true },
         { code: '[45]..', swap: false, error: true }
-      ]
+      ],
+      /**
+       * Whether to process OOB swaps on elements that are nested within the main response element.
+       * @type boolean
+       * @default true
+       */
+      allowNestedOobSwaps: true
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -1767,9 +1773,14 @@ var htmx = (function() {
    */
   function findAndSwapOobElements(fragment, settleInfo) {
     forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
-      const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
-      if (oobValue != null) {
-        oobSwap(oobValue, oobElement, settleInfo)
+      if (htmx.config.allowNestedOobSwaps || oobElement.parentElement.nodeName === 'BODY') {
+        var oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
+        if (oobValue != null) {
+          oobSwap(oobValue, oobElement, settleInfo)
+        }
+      } else {
+        oobElement.removeAttribute('hx-swap-oob')
+        oobElement.removeAttribute('data-hx-swap-oob')
       }
     })
   }

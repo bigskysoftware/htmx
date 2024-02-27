@@ -70,15 +70,37 @@ describe('hx-swap-oob attribute', function() {
     byId('d1').innerHTML.should.equal('Swapped5')
   })
 
-  it('oob swaps can be nested in content', function() {
-    this.server.respondWith('GET', '/test', "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>")
-    var div = make('<div hx-get="/test">click me</div>')
-    make('<div id="d1"></div>')
-    div.click()
-    this.server.respond()
-    should.equal(byId('d1').getAttribute('foo'), null)
-    div.innerHTML.should.equal('<div>Clicked</div>')
-    byId('d1').innerHTML.should.equal('Swapped6')
+  it('oob swaps can be nested in content when allowNestedOobSwaps is true', function() {
+    var before = htmx.config.allowNestedOobSwaps
+    try {
+      htmx.config.allowNestedOobSwaps = true
+      this.server.respondWith('GET', '/test', "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>")
+      var div = make('<div hx-get="/test">click me</div>')
+      make('<div id="d1"></div>')
+      div.click()
+      this.server.respond()
+      should.equal(byId('d1').getAttribute('foo'), null)
+      div.innerHTML.should.equal('<div>Clicked</div>')
+      byId('d1').innerHTML.should.equal('Swapped6')
+    } finally {
+      htmx.config.allowNestedOobSwaps = before
+    }
+  })
+
+  it('oob swaps in nested content are ignored and stripped when allowNestedOobSwaps is false', function() {
+    var before = htmx.config.allowNestedOobSwaps
+    try {
+      htmx.config.allowNestedOobSwaps = false
+      this.server.respondWith('GET', '/test', '<div>Clicked<div hx-swap-oob="innerHTML:#d1">Swapped6.1</div></div>')
+      var div = make('<div hx-get="/test">click me</div>')
+      make('<div id="d1"></div>')
+      div.click()
+      this.server.respond()
+      byId('d1').innerHTML.should.equal('')
+      div.innerHTML.should.equal('<div>Clicked<div>Swapped6.1</div></div>')
+    } finally {
+      htmx.config.allowNestedOobSwaps = before
+    }
   })
 
   it('oob swaps can use selectors to match up', function() {
