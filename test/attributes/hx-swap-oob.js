@@ -26,6 +26,32 @@ describe('hx-swap-oob attribute', function() {
   }
 
   for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
+    it('oob swap works when the response has a body tag with config ' + JSON.stringify(config), function() {
+      Object.assign(htmx.config, config)
+      this.server.respondWith('GET', '/test', "<body>Clicked<div id='d2' hx-swap-oob='true'>Swapped0</div></body>")
+      var div = make('<div hx-get="/test">click me</div>')
+      make('<div id="d2"></div>')
+      div.click()
+      this.server.respond()
+      div.innerHTML.should.equal('Clicked')
+      byId('d2').innerHTML.should.equal('Swapped0')
+    })
+  }
+
+  for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
+    it('oob swap works when the response has html and body tags with config ' + JSON.stringify(config), function() {
+      Object.assign(htmx.config, config)
+      this.server.respondWith('GET', '/test', "<html><body>Clicked<div id='d3' hx-swap-oob='true'>Swapped0</div></body></html>")
+      var div = make('<div hx-get="/test">click me</div>')
+      make('<div id="d3"></div>')
+      div.click()
+      this.server.respond()
+      div.innerHTML.should.equal('Clicked')
+      byId('d3').innerHTML.should.equal('Swapped0')
+    })
+  }
+
+  for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
     it('handles more than one oob swap properly with config ' + JSON.stringify(config), function() {
       Object.assign(htmx.config, config)
       this.server.respondWith('GET', '/test', "Clicked<div id='d1' hx-swap-oob='true'>Swapped1</div><div id='d2' hx-swap-oob='true'>Swapped2</div>")
