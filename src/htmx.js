@@ -1774,7 +1774,7 @@ var htmx = (function() {
   function findAndSwapOobElements(fragment, settleInfo) {
     forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
       if (htmx.config.allowNestedOobSwaps || oobElement.parentElement === null) {
-        var oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
+        const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
         if (oobValue != null) {
           oobSwap(oobValue, oobElement, settleInfo)
         }
