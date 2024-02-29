@@ -3832,11 +3832,12 @@ return (function () {
         }
 
         function insertIndicatorStyles() {
-            if (htmx.config.includeIndicatorStyles !== false) {
+            var transitionStyle = "{opacity:1; transition: opacity 200ms ease-in;}";
+            if (htmx.config.includeIndicatorStyles) {
                 getDocument().head.insertAdjacentHTML("beforeend",
                     "<style>." + htmx.config.indicatorClass + "{opacity:0}"
-                      + " ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}"
-                      + " ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + "{opacity:1; transition: opacity 200ms ease-in;}"
+                      + " ." + htmx.config.requestClass + " ." + htmx.config.indicatorClass + transitionStyle
+                      + " ." + htmx.config.requestClass + "." + htmx.config.indicatorClass + transitionStyle
                     + "</style>");
             }
         }
