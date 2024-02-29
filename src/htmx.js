@@ -1805,46 +1805,51 @@ var htmx = (function() {
     }
     const settleInfo = makeSettleInfo(target)
 
-    let fragment = makeFragment(content)
+    if (swapSpec.swapStyle === 'textContent') {
+      // parse only as text; don't process OOB swaps
+      target.textContent = content
+    } else {
+      let fragment = makeFragment(content)
 
-    settleInfo.title = fragment.title
+      settleInfo.title = fragment.title
 
-    // select-oob swaps
-    if (swapOptions.selectOOB) {
-      const oobSelectValues = swapOptions.selectOOB.split(',')
-      for (let i = 0; i < oobSelectValues.length; i++) {
-        const oobSelectValue = oobSelectValues[i].split(':', 2)
-        let id = oobSelectValue[0].trim()
-        if (id.indexOf('#') === 0) {
-          id = id.substring(1)
-        }
-        const oobValue = oobSelectValue[1] || 'true'
-        const oobElement = fragment.querySelector('#' + id)
-        if (oobElement) {
-          oobSwap(oobValue, oobElement, settleInfo)
+      // select-oob swaps
+      if (swapOptions.selectOOB) {
+        const oobSelectValues = swapOptions.selectOOB.split(',')
+        for (let i = 0; i < oobSelectValues.length; i++) {
+          const oobSelectValue = oobSelectValues[i].split(':', 2)
+          let id = oobSelectValue[0].trim()
+          if (id.indexOf('#') === 0) {
+            id = id.substring(1)
+          }
+          const oobValue = oobSelectValue[1] || 'true'
+          const oobElement = fragment.querySelector('#' + id)
+          if (oobElement) {
+            oobSwap(oobValue, oobElement, settleInfo)
+          }
         }
       }
-    }
-    // oob swaps
-    findAndSwapOobElements(fragment, settleInfo)
-    forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-      findAndSwapOobElements(template.content, settleInfo)
-      if (template.content.childElementCount === 0) {
+      // oob swaps
+      findAndSwapOobElements(fragment, settleInfo)
+      forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
+        findAndSwapOobElements(template.content, settleInfo)
+        if (template.content.childElementCount === 0) {
         // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
-        template.remove()
-      }
-    })
-
-    // normal swap
-    if (swapOptions.select) {
-      const newFragment = getDocument().createDocumentFragment()
-      forEach(fragment.querySelectorAll(swapOptions.select), function(node) {
-        newFragment.appendChild(node)
+          template.remove()
+        }
       })
-      fragment = newFragment
+
+      // normal swap
+      if (swapOptions.select) {
+        const newFragment = getDocument().createDocumentFragment()
+        forEach(fragment.querySelectorAll(swapOptions.select), function(node) {
+          newFragment.appendChild(node)
+        })
+        fragment = newFragment
+      }
+      handlePreservedElements(fragment)
+      swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
     }
-    handlePreservedElements(fragment)
-    swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
 
     // apply saved focus and selection information to swapped content
     if (selectionInfo.elt &&
