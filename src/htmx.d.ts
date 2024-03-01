@@ -21,7 +21,7 @@ export function addClass(elt: Element, clazz: string, delay?: number): void;
  * @param element the element to target (defaults to the **body**)
  * @returns Promise that resolves immediately if no request is sent, or when the request is complete
  */
-export function ajax(verb: string, path: string, element: Element): Promise<void>;
+export function ajax(verb: string, path: string, element?: Element): Promise<void>;
 
 /**
  * Issues an htmx-style AJAX request
@@ -438,11 +438,54 @@ export interface HtmxConfig {
     triggerSpecsCache?: {[trigger: string]: HtmxTriggerSpecification[]};
 }
 
+export type HtmxEvent = "htmx:abort"
+    | "htmx:afterOnLoad"
+    | "htmx:afterProcessNode"
+    | "htmx:afterRequest"
+    | "htmx:afterSettle"
+    | "htmx:afterSwap"
+    | "htmx:beforeCleanupElement"
+    | "htmx:beforeOnLoad"
+    | "htmx:beforeProcessNode"
+    | "htmx:beforeRequest"
+    | "htmx:beforeSwap"
+    | "htmx:beforeSend"
+    | "htmx:configRequest"
+    | "htmx:confirm"
+    | "htmx:historyCacheError"
+    | "htmx:historyCacheMiss"
+    | "htmx:historyCacheMissError"
+    | "htmx:historyCacheMissLoad"
+    | "htmx:historyRestore"
+    | "htmx:load"
+    | "htmx:noSSESourceError"
+    | "htmx:onLoadError"
+    | "htmx:oobAfterSwap"
+    | "htmx:oobBeforeSwap"
+    | "htmx:oobErrorNoTarget"
+    | "htmx:prompt"
+    | "htmx:pushedIntoHistory"
+    | "htmx:responseError"
+    | "htmx:sendError"
+    | "htmx:sseError"
+    | "htmx:sseOpen"
+    | "htmx:swapError"
+    | "htmx:targetError"
+    | "htmx:timeout"
+    | "htmx:validation:validate"
+    | "htmx:validation:failed"
+    | "htmx:validation:halted"
+    | "htmx:xhr:abort"
+    | "htmx:xhr:loadend"
+    | "htmx:xhr:loadstart"
+    | "htmx:xhr:progress"
+;
+
 /**
  * https://htmx.org/extensions/#defining
  */
 export interface HtmxExtension {
-    onEvent?: (name: string, evt: CustomEvent) => any;
+    onEvent?: (name: HtmxEvent, evt: CustomEvent) => any;
     transformResponse?: (text: any, xhr: XMLHttpRequest, elt: any) => any;
     isInlineSwap?: (swapStyle: any) => any;
     handleSwap?: (swapStyle: any, target: any, fragment: any, settleInfo: any) => any;
