@@ -164,6 +164,12 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/lorantkurthy/todo-htmex>
 
+## F#
+
+### Giraffe
+
+- <https://hamy.xyz/labs/2023-12-fsharp-htmx>
+
 ## Go
 
 ### templ
