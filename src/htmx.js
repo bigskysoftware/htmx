@@ -1400,19 +1400,20 @@ var htmx = (function() {
    * @param {string} oobValue
    * @param {Element} oobElement
    * @param {HtmxSettleInfo} settleInfo
-   * @returns
+   * @param {SwapOptions} swapOptions
    */
-  function oobSwap(oobValue, oobElement, settleInfo) {
+  function oobSwap(oobValue, oobElement, settleInfo, swapOptions) {
+    const swapSpec = getSwapSpecification(oobElement, oobValue)
+
     let selector = '#' + getRawAttribute(oobElement, 'id')
-    /** @type HtmxSwapStyle */
-    let swapStyle = 'outerHTML'
-    if (oobValue === 'true') {
-      // do nothing
-    } else if (oobValue.indexOf(':') > 0) {
-      swapStyle = oobValue.substr(0, oobValue.indexOf(':'))
-      selector = oobValue.substr(oobValue.indexOf(':') + 1, oobValue.length)
-    } else {
-      swapStyle = oobValue
+    let swapStyle = swapSpec.swapStyle
+
+    if (swapStyle.indexOf(':') > 0) {
+      selector = swapStyle.substr(swapStyle.indexOf(':') + 1, swapStyle.length)
+      swapStyle = swapStyle.substr(0, swapStyle.indexOf(':'))
+    }
+    if (swapStyle === 'true') {
+      swapStyle = 'outerHTML'
     }
 
     const targets = getDocument().querySelectorAll(selector)
@@ -1433,19 +1434,37 @@ var htmx = (function() {
 
           target = beforeSwapDetails.target // allow re-targeting
           if (beforeSwapDetails.shouldSwap) {
-            swapWithStyle(swapStyle, target, target, fragment, settleInfo)
+            let doSwap = function() {
+              const settleInfo = makeSettleInfo(target)
+              swapWithStyle(swapStyle, target, target, fragment, settleInfo)
+
+              forEach(settleInfo.elts, function(elt) {
+                triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails)
+              })
+
+              const doSettle = function() {
+                settle(settleInfo, swapSpec, swapOptions)
+              }
+
+              maybeDelay(doSettle, swapSpec.settleDelay)
+            }
+
+            doSwap = wrapWithTransition(doSwap, swapSpec)
+
+            try {
+              maybeDelay(doSwap, swapSpec.swapDelay)
+            } catch (e) {
+              triggerErrorEvent(elt, 'htmx:oobSwapError', swapOptions.eventInfo)
+            }
           }
-          forEach(settleInfo.elts, function(elt) {
-            triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails)
-          })
         }
       )
+
       oobElement.parentNode.removeChild(oobElement)
     } else {
       oobElement.parentNode.removeChild(oobElement)
       triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
     }
-    return oobValue
   }
 
   /**
@@ -1764,14 +1783,55 @@ var htmx = (function() {
   /**
    * @param {DocumentFragment} fragment
    * @param {HtmxSettleInfo} settleInfo
+   * @param {SwapOptions} swapOptions
    */
-  function findAndSwapOobElements(fragment, settleInfo) {
+  function findAndSwapOobElements(fragment, settleInfo, swapOptions) {
     forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
       const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
       if (oobValue != null) {
-        oobSwap(oobValue, oobElement, settleInfo)
+        oobSwap(oobValue, oobElement, settleInfo, swapOptions)
       }
     })
+  }
+
+  function collectSelectionInfo() {
+    // preserve focus and selection
+    const activeElt = document.activeElement
+    let selectionInfo = {}
+    try {
+      selectionInfo = {
+        elt: activeElt,
+        // @ts-ignore
+        start: activeElt ? activeElt.selectionStart : null,
+        // @ts-ignore
+        end: activeElt ? activeElt.selectionEnd : null
+      }
+    } catch (e) {
+      // safari issue - see https://github.com/microsoft/playwright/issues/5894
+    }
+
+    return selectionInfo
+  }
+
+  function applySelectionInfo(selectionInfo, swapSpec) {
+    if (selectionInfo.elt &&
+          !bodyContains(selectionInfo.elt) &&
+          getRawAttribute(selectionInfo.elt, 'id')) {
+      const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
+      const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
+      if (newActiveElt) {
+        // @ts-ignore
+        if (selectionInfo.start && newActiveElt.setSelectionRange) {
+          try {
+            // @ts-ignore
+            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
+          } catch (e) {
+            // the setSelectionRange method is present on fields that don't support it, so just let this fail
+          }
+        }
+        newActiveElt.focus(focusOptions)
+      }
+    }
   }
 
   /**
@@ -1790,19 +1850,8 @@ var htmx = (function() {
     target = resolveTarget(target)
 
     // preserve focus and selection
-    const activeElt = document.activeElement
-    let selectionInfo = {}
-    try {
-      selectionInfo = {
-        elt: activeElt,
-        // @ts-ignore
-        start: activeElt ? activeElt.selectionStart : null,
-        // @ts-ignore
-        end: activeElt ? activeElt.selectionEnd : null
-      }
-    } catch (e) {
-      // safari issue - see https://github.com/microsoft/playwright/issues/5894
-    }
+    const selectionInfo = collectSelectionInfo()
+
     const settleInfo = makeSettleInfo(target)
 
     let fragment = makeFragment(content)
@@ -1821,14 +1870,15 @@ var htmx = (function() {
         const oobValue = oobSelectValue[1] || 'true'
         const oobElement = fragment.querySelector('#' + id)
         if (oobElement) {
-          oobSwap(oobValue, oobElement, settleInfo)
+          oobSwap(oobValue, oobElement, settleInfo, swapOptions)
         }
       }
     }
+
     // oob swaps
-    findAndSwapOobElements(fragment, settleInfo)
+    findAndSwapOobElements(fragment, settleInfo, swapOptions)
     forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-      findAndSwapOobElements(template.content, settleInfo)
+      findAndSwapOobElements(template.content, settleInfo, swapOptions)
       if (template.content.childElementCount === 0) {
         // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
         template.remove()
@@ -1844,73 +1894,112 @@ var htmx = (function() {
       fragment = newFragment
     }
     handlePreservedElements(fragment)
-    swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
 
-    // apply saved focus and selection information to swapped content
-    if (selectionInfo.elt &&
-      !bodyContains(selectionInfo.elt) &&
-      getRawAttribute(selectionInfo.elt, 'id')) {
-      const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
-      const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
-      if (newActiveElt) {
-        // @ts-ignore
-        if (selectionInfo.start && newActiveElt.setSelectionRange) {
-          try {
-            // @ts-ignore
-            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
-          } catch (e) {
-            // the setSelectionRange method is present on fields that don't support it, so just let this fail
-          }
-        }
-        newActiveElt.focus(focusOptions)
-      }
-    }
+    let doSwap = function() {
+      swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
 
-    target.classList.remove(htmx.config.swappingClass)
-    forEach(settleInfo.elts, function(elt) {
-      if (elt.classList) {
-        elt.classList.add(htmx.config.settlingClass)
-      }
-      triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
-    })
-    if (swapOptions.afterSwapCallback) {
-      swapOptions.afterSwapCallback()
-    }
+      applySelectionInfo(selectionInfo, swapSpec)
 
-    // merge in new title after swap but before settle
-    if (!swapSpec.ignoreTitle) {
-      handleTitle(settleInfo.title)
-    }
-
-    // settle
-    const doSettle = function() {
-      forEach(settleInfo.tasks, function(task) {
-        task.call()
-      })
+      target.classList.remove(htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
-          elt.classList.remove(htmx.config.settlingClass)
+          elt.classList.add(htmx.config.settlingClass)
         }
-        triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
+        triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
       })
-
-      if (swapOptions.anchor) {
-        const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
-        if (anchorTarget) {
-          anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
-        }
+      if (swapOptions.afterSwapCallback) {
+        swapOptions.afterSwapCallback()
       }
 
-      updateScrollState(settleInfo.elts, swapSpec)
-      if (swapOptions.afterSettleCallback) {
-        swapOptions.afterSettleCallback()
+      // merge in new title after swap but before settle
+      if (!swapSpec.ignoreTitle) {
+        handleTitle(settleInfo.title)
+      }
+
+      const doSettle = function() {
+        settle(settleInfo, swapSpec, swapOptions)
+      }
+
+      maybeDelay(doSettle, swapSpec.settleDelay)
+    }
+
+    doSwap = wrapWithTransition(doSwap, swapSpec)
+
+    try {
+      maybeDelay(doSwap, swapSpec.swapDelay)
+    } catch (e) {
+      triggerErrorEvent(elt, 'htmx:swapError', swapOptions.eventInfo)
+      throw e
+    }
+  }
+
+  /**
+   * @param {Function} callback
+   * @param {integer} milliseconds
+   */
+  function maybeDelay(callback, milliseconds) {
+    if (milliseconds > 0) {
+      getWindow().setTimeout(callback, milliseconds)
+    } else {
+      callback()
+    }
+  }
+
+  /**
+   * @param {Function} callback
+   * @param {HtmxSwapSpecification} swapSpec
+   */
+  function wrapWithTransition(callback, swapSpec) {
+    let shouldTransition = htmx.config.globalViewTransitions
+    if (swapSpec.hasOwnProperty('transition')) {
+      shouldTransition = swapSpec.transition
+    }
+
+    if (shouldTransition &&
+          // @ts-ignore experimental feature atm
+          document.startViewTransition) {
+      triggerEvent(elt, 'htmx:beforeTransition', swapSpec.eventInfo)
+
+      // const innerCallback = callback
+
+      return function() {
+        // @ts-ignore experimental feature atm
+        document.startViewTransition(function() {
+          callback()
+        })
       }
     }
 
-    if (swapSpec.settleDelay > 0) {
-      getWindow().setTimeout(doSettle, swapSpec.settleDelay)
-    } else {
-      doSettle()
+    return callback
+  }
+
+  /**
+   * @param {HtmxSettleInfo} settleInfo
+   * @param {HtmxSwapSpecification} swapSpec
+   * @param {SwapOptions} swapOptions
+   */
+  function settle(settleInfo, swapSpec, swapOptions) {
+    forEach(settleInfo.tasks, function(task) {
+      task.call()
+    })
+    forEach(settleInfo.elts, function(elt) {
+      if (elt.classList) {
+        elt.classList.remove(htmx.config.settlingClass)
+      }
+      triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
+    })
+
+    if (swapOptions.anchor) {
+      const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
+      if (anchorTarget) {
+        anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
+      }
+    }
+
+    updateScrollState(settleInfo.elts, swapSpec)
+    if (swapOptions.afterSettleCallback) {
+      swapOptions.afterSettleCallback()
+      // maybeCall(settleResolve)
     }
   }
 
@@ -4614,10 +4703,6 @@ var htmx = (function() {
 
       target.classList.add(htmx.config.swappingClass)
 
-      // optional transition API promise callbacks
-      let settleResolve = null
-      let settleReject = null
-
       if (responseInfoSelect) {
         selectOverride = responseInfoSelect
       }
@@ -4629,83 +4714,43 @@ var htmx = (function() {
       const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
-      let doSwap = function() {
-        try {
-          // if we need to save history, do so, before swapping so that relative resources have the correct base URL
-          if (historyUpdate.type) {
-            triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
-            if (historyUpdate.type === 'push') {
-              pushUrlIntoHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', { path: historyUpdate.path })
-            } else {
-              replaceUrlInHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
+      // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+      if (historyUpdate.type) {
+        triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
+        if (historyUpdate.type === 'push') {
+          pushUrlIntoHistory(historyUpdate.path)
+          triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', { path: historyUpdate.path })
+        } else {
+          replaceUrlInHistory(historyUpdate.path)
+          triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
+        }
+      }
+
+      swap(target, serverResponse, swapSpec, {
+        select: selectOverride || select,
+        selectOOB,
+        eventInfo: responseInfo,
+        anchor: responseInfo.pathInfo.anchor,
+        contextElement: elt,
+        afterSwapCallback: function() {
+          if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+            let finalElt = elt
+            if (!bodyContains(elt)) {
+              finalElt = getDocument().body
             }
+            handleTriggerHeader(xhr, 'HX-Trigger-After-Swap', finalElt)
           }
-
-          swap(target, serverResponse, swapSpec, {
-            select: selectOverride || select,
-            selectOOB,
-            eventInfo: responseInfo,
-            anchor: responseInfo.pathInfo.anchor,
-            contextElement: elt,
-            afterSwapCallback: function() {
-              if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-                let finalElt = elt
-                if (!bodyContains(elt)) {
-                  finalElt = getDocument().body
-                }
-                handleTriggerHeader(xhr, 'HX-Trigger-After-Swap', finalElt)
-              }
-            },
-            afterSettleCallback: function() {
-              if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                let finalElt = elt
-                if (!bodyContains(elt)) {
-                  finalElt = getDocument().body
-                }
-                handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
-              }
-              maybeCall(settleResolve)
+        },
+        afterSettleCallback: function() {
+          if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+            let finalElt = elt
+            if (!bodyContains(elt)) {
+              finalElt = getDocument().body
             }
-          })
-        } catch (e) {
-          triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
-          maybeCall(settleReject)
-          throw e
+            handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
+          }
         }
-      }
-
-      let shouldTransition = htmx.config.globalViewTransitions
-      if (swapSpec.hasOwnProperty('transition')) {
-        shouldTransition = swapSpec.transition
-      }
-
-      if (shouldTransition &&
-              triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
-              typeof Promise !== 'undefined' &&
-              // @ts-ignore experimental feature atm
-              document.startViewTransition) {
-        const settlePromise = new Promise(function(_resolve, _reject) {
-          settleResolve = _resolve
-          settleReject = _reject
-        })
-        // wrap the original doSwap() in a call to startViewTransition()
-        const innerDoSwap = doSwap
-        doSwap = function() {
-          // @ts-ignore experimental feature atm
-          document.startViewTransition(function() {
-            innerDoSwap()
-            return settlePromise
-          })
-        }
-      }
-
-      if (swapSpec.swapDelay > 0) {
-        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
+      })
     }
     if (isError) {
       triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
@@ -4917,6 +4962,7 @@ var htmx = (function() {
 /**
  * @typedef HtmxSwapSpecification
  * @property {HtmxSwapStyle} swapStyle
+ * @property {string} swapStyleSelector
  * @property {number} swapDelay
  * @property {number} settleDelay
  * @property {boolean} [transition]
