@@ -1,6 +1,8 @@
 # Changelog
 
-## [1.9.10] - 2023-12-21
+## [1.9.12] - 2024-04-??
+
+## [1.9.12] - 2023-12-21
 
 * `hx-on*` attributes now support the form `hx-on-`, with a trailing dash, to better support template systems (such as EJS)
   that do not like double colons in HTML attributes.
