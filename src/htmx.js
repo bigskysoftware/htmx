@@ -1449,12 +1449,12 @@ var htmx = (function() {
               maybeDelay(doSettle, swapSpec.settleDelay)
             }
 
-            doSwap = wrapWithTransition(doSwap, swapSpec)
+            doSwap = wrapWithTransition(doSwap, swapSpec, swapOptions)
 
             try {
               maybeDelay(doSwap, swapSpec.swapDelay)
             } catch (e) {
-              triggerErrorEvent(elt, 'htmx:oobSwapError', swapOptions.eventInfo)
+              triggerErrorEvent(swapOptions.contextElement, 'htmx:oobSwapError', swapOptions.eventInfo)
             }
           }
         }
@@ -1846,6 +1846,10 @@ var htmx = (function() {
     if (!swapOptions) {
       swapOptions = {}
     }
+    // default contextElement for logging
+    if (!swapOptions.contextElement) {
+      swapOptions.contextElement = document.body
+    }
 
     target = resolveTarget(target)
 
@@ -1923,7 +1927,7 @@ var htmx = (function() {
       maybeDelay(doSettle, swapSpec.settleDelay)
     }
 
-    doSwap = wrapWithTransition(doSwap, swapSpec)
+    doSwap = wrapWithTransition(doSwap, swapSpec, swapOptions)
 
     try {
       maybeDelay(doSwap, swapSpec.swapDelay)
@@ -1948,8 +1952,9 @@ var htmx = (function() {
   /**
    * @param {Function} callback
    * @param {HtmxSwapSpecification} swapSpec
+   * @param {SwapOptions} swapOptions
    */
-  function wrapWithTransition(callback, swapSpec) {
+  function wrapWithTransition(callback, swapSpec, swapOptions) {
     let shouldTransition = htmx.config.globalViewTransitions
     if (swapSpec.hasOwnProperty('transition')) {
       shouldTransition = swapSpec.transition
@@ -1958,7 +1963,7 @@ var htmx = (function() {
     if (shouldTransition &&
           // @ts-ignore experimental feature atm
           document.startViewTransition) {
-      triggerEvent(elt, 'htmx:beforeTransition', swapSpec.eventInfo)
+      triggerEvent(swapOptions.contextElement, 'htmx:beforeTransition', swapSpec.eventInfo)
 
       // const innerCallback = callback
 
@@ -1999,7 +2004,6 @@ var htmx = (function() {
     updateScrollState(settleInfo.elts, swapSpec)
     if (swapOptions.afterSettleCallback) {
       swapOptions.afterSettleCallback()
-      // maybeCall(settleResolve)
     }
   }
 
