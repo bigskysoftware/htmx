@@ -176,7 +176,7 @@ Search Contacts
             { "FirstName": "Cooper", "LastName": "Pugh", "Email": "Quisque.ornare.tortor@dictum.co.uk", "City": "Delhi" },
             { "FirstName": "Paul", "LastName": "Spencer", "Email": "ac@InfaucibusMorbi.com", "City": "Biez" },
             { "FirstName": "Cassady", "LastName": "Farrell", "Email": "Suspendisse.non@venenatisa.net", "City": "New Maryland" },
-            { "FirstName": "Sydnee", "LastName": "Velazquez", "Email": "mollis@loremfringillaornare.com", "City": "Ströe" },
+            { "FirstName": "Sydnee", "LastName": "Velazquez", "Email": "mollis@loremfringillaornare.com", "City": "Strée" },
             { "FirstName": "Felix", "LastName": "Boyle", "Email": "id.libero.Donec@aauctor.org", "City": "Edinburgh" },
             { "FirstName": "Ryder", "LastName": "House", "Email": "molestie@natoquepenatibus.org", "City": "Copertino" },
             { "FirstName": "Hadley", "LastName": "Holcomb", "Email": "penatibus@nisi.ca", "City": "Avadi" },
