@@ -12,7 +12,7 @@ Use the following attributes to configure how SSE connections behave:
 
 * `sse-connect="<url>"` - The URL of the SSE server.
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
-* `hx-swap` - You can control the swap strategy by using the [hx-swap](@/attributes/hx-swap.md) attribute.
+* `hx-swap` - You can control the swap strategy by using the [hx-swap](@/attributes/hx-swap.md) attribute, though note that modifiers like `scroll` are not supported.
 * `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using the [`hx-trigger`](@/attributes/hx-trigger.md) attribute.
 
 ## Install
