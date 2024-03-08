@@ -874,6 +874,41 @@ attribute to specify a different one.
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
 
+### Undoing DOM Mutations By 3rd Party Libraries
+
+If you are using a 3rd party library and want to use the htmx history feature, you will need to clean up the DOM before
+a snapshot is taken.  Let's consider the [Tom Select](https://tom-select.js.org/) library, which makes select elements
+a much richer user experience.  Let's set up TomSelect to turn any input element with the `.tomselect` class into a rich
+select element.
+
+First we need to initialize elements that have the class in new content:
+
+```javascript
+htmx.onLoad(function (target) {
+    // find all elements in the new content that should be
+    // an editor and init w/ quill
+    var editors = target.querySelectorAll(".tomselect")
+            .forEach(elt => new TomSelect(elt))
+});
+```
+
+This will create a rich selector for all input elements that have the `.tomselect` class on it.  However, it mutates
+the DOM and we don't want that mutation saved to the history cache, since TomSelect will be reinitialized when the
+history content is loaded back into the screen.
+
+To deal with this, we need to catch the `htmx:beforeHistorySave` event and clean out the TomSelect mutations by calling
+`destroy()` on them:
+
+```javascript
+htmx.on('htmx:beforeHistorySave', function() {
+    // find all TomSelect elements
+    document.querySelectorAll('.tomSelect')
+            .forEach(elt => elt.tomselect.destroy()) // and call destroy() on them
+})
+```
+
+This will revert the DOM to the original HTML, thus allowing for a clean snapshot.
+
 ### Disabling History Snapshots
 
 History snapshotting can be disabled for a URL by setting the [hx-history](@/attributes/hx-history.md) attribute to `false`
