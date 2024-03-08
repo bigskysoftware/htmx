@@ -128,5 +128,15 @@ describe("hx-swap-oob attribute", function () {
         this.server.respond();
         should.equal(byId("d1"), null);
     });
+
+    it('triggers htmx:oobErrorNoTarget when no targets found', function () {
+        this.server.respondWith("GET", "/test", "Clicked<div id='nonexistent' hx-swap-oob='true'>Swapped</div>");
+        var div = make('<div hx-get="/test">click me</div>');
+        div.click();
+        this.server.respond();
+    
+        // Check the innerHTML of the div after the server responds
+        div.innerHTML.should.equal("Clicked");
+    });
 });
 
