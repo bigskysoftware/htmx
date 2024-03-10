@@ -150,6 +150,15 @@ describe("sse extension", function() {
         this.eventSource.wasClosed().should.equal(true)
     })
 
+    it('is closed after close message from server', function() {
+        var div = make('<div hx-ext="sse" sse-connect="/foo" sse-close="close">' +
+            '<div id="d1" sse-swap="e1"></div>' +
+            '</div>');
+        this.eventSource.wasClosed().should.equal(false);
+        this.eventSource.sendEvent("close");
+        this.eventSource.wasClosed().should.equal(true);
+    })
+
     it('is not listening for events after hx-swap element removed', function() {
         var div = make('<div hx-ext="sse" sse-connect="/foo">' +
             '<div id="d1" hx-swap="outerHTML" sse-swap="e1">div1</div>' +
