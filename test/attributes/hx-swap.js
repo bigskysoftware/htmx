@@ -22,6 +22,53 @@ describe('hx-swap attribute', function() {
     a.innerHTML.should.equal('Clicked!')
   })
 
+  it('swap textContent properly with HTML tags', function() {
+    this.server.respondWith('GET', '/test', '<a id="a1" hx-get="/test2">Click Me</a>')
+
+    var d1 = make('<div id="d1" hx-get="/test" hx-swap="textContent"></div>')
+    d1.click()
+    should.equal(byId('d1'), d1)
+    this.server.respond()
+    d1.textContent.should.equal('<a id="a1" hx-get="/test2">Click Me</a>')
+    should.equal(byId('a1'), null)
+  })
+
+  it('swap textContent properly with HTML tags and text', function() {
+    this.server.respondWith('GET', '/test', 'text content <a id="a1" hx-get="/test2">Click Me</a>')
+
+    var d1 = make('<div id="d1" hx-get="/test" hx-swap="textContent"></div>')
+    d1.click()
+    should.equal(byId('d1'), d1)
+    this.server.respond()
+    d1.textContent.should.equal('text content <a id="a1" hx-get="/test2">Click Me</a>')
+    should.equal(byId('a1'), null)
+  })
+
+  it('swap textContent ignores OOB swaps', function() {
+    this.server.respondWith('GET', '/test', '<span id="d2" hx-swap-oob="true">hi</span> <a id="a1" hx-get="/test2">Click Me</a>')
+
+    var d1 = make('<div id="d1" hx-get="/test" hx-swap="textContent"></div>')
+    var d2 = make('<div id="d2">some text</div>')
+    d1.click()
+    should.equal(byId('d1'), d1)
+    should.equal(byId('d2'), d2)
+    this.server.respond()
+    d1.textContent.should.equal('<span id="d2" hx-swap-oob="true">hi</span> <a id="a1" hx-get="/test2">Click Me</a>')
+    d2.outerHTML.should.equal('<div id="d2">some text</div>')
+    should.equal(byId('a1'), null)
+  })
+
+  it('swap textContent properly with text', function() {
+    this.server.respondWith('GET', '/test', 'plain text')
+
+    var div = make('<div id="d1" hx-get="/test" hx-swap="textContent"></div>')
+    div.click()
+    should.equal(byId('d1'), div)
+    this.server.respond()
+    div.textContent.should.equal('plain text')
+    should.equal(byId('a1'), null)
+  })
+
   it('swap outerHTML properly', function() {
     this.server.respondWith('GET', '/test', '<a id="a1" hx-get="/test2">Click Me</a>')
     this.server.respondWith('GET', '/test2', 'Clicked!')
