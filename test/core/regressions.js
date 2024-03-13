@@ -245,4 +245,46 @@ describe("Core htmx Regression Tests", function(){
         }, 50)
     })
 
+    it("script tags only execute once using templates", function(done) {
+        var oldUseTemplateFragmentsValue = htmx.config.useTemplateFragments
+        htmx.config.useTemplateFragments = true
+
+        window.i = 0;                // set count to 0
+        this.server.respondWith('GET', '/test', '<script>console.trace(); window.i++</script>') // increment the count by 1
+
+        // make a div w/ a short settle delay to make the problem more obvious
+        var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
+        div.click();
+        this.server.respond()
+
+        htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
+
+        setTimeout(function(){
+            window.i.should.equal(1);
+            delete window.i;
+            done();
+        }, 50)
+    })
+
+    it("script tags only execute once when nested using templates", function(done) {
+        var oldUseTemplateFragmentsValue = htmx.config.useTemplateFragments
+        htmx.config.useTemplateFragments = true
+
+        window.i = 0;                // set count to 0
+        this.server.respondWith('GET', '/test', '<p>foo</p><div><script>console.trace(); window.i++</script></div>') // increment the count by 1
+
+        // make a div w/ a short settle delay to make the problem more obvious
+        var div = make('<div hx-get="/test" hx-swap="innerHTML settle:5ms"/>');
+        div.click();
+        this.server.respond()
+
+        htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
+
+        setTimeout(function(){
+            window.i.should.equal(1);
+            delete window.i;
+            done();
+        }, 50)
+    })
+
 });
