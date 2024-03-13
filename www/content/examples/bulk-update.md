@@ -5,65 +5,67 @@ template = "demo.html"
 
 This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is
 accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
-values in `PUT`'s to two different endpoints: `activate` and `deactivate`:
+values in the form submission (`POST` request):
 
 ```html
-<div hx-include="#checked-contacts" hx-target="#tbody">
-  <button class="btn" hx-put="/activate">Activate</button>
-  <button class="btn" hx-put="/deactivate">Deactivate</button>
-</div>
-
-<form id="checked-contacts">
+<form id="checked-contacts"
+      hx-post="/users"
+      hx-swap="outerHTML settle:3s"
+      hx-target="#toast">
     <table>
       <thead>
       <tr>
-        <th></th>
         <th>Name</th>
         <th>Email</th>
-        <th>Status</th>
+        <th>Active</th>
       </tr>
       </thead>
       <tbody id="tbody">
-        <tr class="">
-          <td><input type='checkbox' name='ids' value='0'></td>
+        <tr>
           <td>Joe Smith</td>
           <td>joe@smith.org</td>
-          <td>Active</td>
+          <td><input type="checkbox" name="active:joe@smith.org"></td>
         </tr>
         ...
       </tbody>
     </table>
+    <input type="submit" value="Bulk Update">
+    <span id="toast"></span>
 </form>
 ```
 
-The server will either activate or deactivate the checked users and then rerender the `tbody` tag with
-updated rows.  It will apply the class `activate` or `deactivate` to rows that have been mutated.  This allows
-us to use a bit of CSS to flash a color helping the user see what happened:
+The server will bulk-update the statuses based on the values of the checkboxes.
+We respond with a small toast message about the update to inform the user, and
+use ARIA to politely announce the update for accessibility.
 
 ```css
-  .htmx-settling tr.deactivate td {
-    background: lightcoral;
-  }
-  .htmx-settling tr.activate td {
-    background: darkseagreen;
-  }
-  tr td {
-    transition: all 1.2s;
-  }
+#toast.htmx-settling {
+  opacity: 100;
+}
+
+#toast {
+  background: #E1F0DA;
+  opacity: 0;
+  transition: opacity 3s ease-out;
+}
 ```
+
+The cool thing is that, because HTML form inputs already manage their own state,
+we don't need to re-render any part of the users table. The active users are
+already checked and the inactive ones unchecked!
 
 You can see a working example of this code below.
 
 <style scoped="">
-  .htmx-settling tr.deactivate td {
-    background: lightcoral;
-  }
-  .htmx-settling tr.activate td {
-    background: darkseagreen;
-  }
-  tr td {
-    transition: all 1.2s;
-  }
+#toast.htmx-settling {
+  opacity: 100;
+}
+
+#toast {
+  background: #E1F0DA;
+  opacity: 0;
+  transition: opacity 3s ease-out;
+}
 </style>
 
 {{ demoenv() }}
@@ -73,91 +75,118 @@ You can see a working example of this code below.
     // Fake Server Side Code
     //=========================================================================
 
-    // data
-    var dataStore = function(){
-      var data = [
-        { name: "Joe Smith", email: "joe@smith.org", status: "Active" },
-        { name: "Angie MacDowell", email: "angie@macdowell.org", status: "Active" },
-        { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
-        { name: "Kim Yee", email: "kim@yee.org", status: "Inactive" }
-      ];
-      return {
-        findContactById : function(id) {
-          return data[id];
-        },
-        allContacts : function() {
-          return data;
-        }
-      }
-    }()
+    const dataStore = (() => {
+      const data = {
+        "joe@smith.org": {name: 'Joe Smith', status: 'Active'},
+        "angie@macdowell.org": {name: 'Angie MacDowell', status: 'Active'},
+        "fuqua@tarkenton.org": {name: 'Fuqua Tarkenton', status: 'Active'},
+        "kim@yee.org": {name: 'Kim Yee', status: 'Inactive'},
+      };
 
-    function getIds(params) {
-      if(params['ids']) {
-        if(Array.isArray(params['ids'])) {
-          return params['ids'].map(x => parseInt(x))
-        } else {
-          return [parseInt(params['ids'])];
-        }
-      } else {
-        return [];
-      }
-    }
+      return {
+        all() {
+          return data;
+        },
+
+        activate(email) {
+          if (data[email].status === 'Active') {
+            return 0;
+          } else {
+            data[email].status = 'Active';
+            return 1;
+          }
+        },
+
+        deactivate(email) {
+          if (data[email].status === 'Inactive') {
+            return 0;
+          } else {
+            data[email].status = 'Inactive';
+            return 1;
+          }
+        },
+      };
+    })();
 
     // routes
     init("/demo", function(request){
-        return displayUI(dataStore.allContacts());
+        return displayUI(dataStore.all());
     });
 
-    onPut("/activate", function(request, params){
-        var ids = getIds(params);
-        for (var i = 0; i < ids.length; i++) {
-          dataStore.findContactById(ids[i])['status'] = 'Active';
-        }
-        return displayTable(ids, dataStore.allContacts(), 'activate');
-    });
+    /*
+    Params look like:
+    {"active:joe@smith.org":"on","active:angie@macdowell.org":"on","active:fuqua@tarkenton.org":"on"}
+    */
+    onPost("/users", function (req, params) {
+      const actives = {};
+      let activated = 0;
+      let deactivated = 0;
 
-    onPut("/deactivate", function (req, params) {
-        var ids = getIds(params);
-        for (var i = 0; i < ids.length; i++) {
-          dataStore.findContactById(ids[i])['status'] = 'Inactive';
+      // Build a set of active users for efficient lookup
+      for (const param of Object.keys(params)) {
+        const nameEmail = param.split(':');
+        if (nameEmail[0] === 'active') {
+          actives[nameEmail[1]] = true;
         }
-        return displayTable(ids, dataStore.allContacts(), 'deactivate');
+      }
+
+      // Activate or deactivate users based on the lookup
+      for (const email of Object.keys(dataStore.all())) {
+        if (actives[email]) {
+          activated += dataStore.activate(email);
+        } else {
+          deactivated += dataStore.deactivate(email);
+        }
+      }
+
+      return `<span id="toast" aria-live="polite">Activated ${activated} and deactivated ${deactivated} users</span>`;
     });
 
     // templates
     function displayUI(contacts) {
       return `<h3>Select Rows And Activate Or Deactivate Below</h3>
-               <form id="checked-contacts">
+               <form
+                id="checked-contacts"
+                hx-post="/users"
+                hx-swap="outerHTML settle:3s"
+                hx-target="#toast"
+              >
                 <table>
                   <thead>
                   <tr>
-                    <th></th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Status</th>
+                    <th>Active</th>
                   </tr>
                   </thead>
                   <tbody id="tbody">
-                    ${displayTable([], contacts, "")}
+                    ${displayTable(contacts)}
                   </tbody>
                 </table>
+                <input type="submit" value="Bulk Update">
+                <span id="toast"></span>
               </form>
-              <br/>
-              <br/>
-              <div hx-include="#checked-contacts" hx-target="#tbody">
-                <button class="btn" hx-put="/activate">Activate</button>
-                <button class="btn" hx-put="/deactivate">Deactivate</button>
-              </div>`
+              <br>`;
     }
 
-    function displayTable(ids, contacts, action) {
+    function displayTable(contacts) {
       var txt = "";
-      for (var i = 0; i < contacts.length; i++) {
-        var c = contacts[i];
-        txt += `\n<tr class="${ids.includes(i) ? action : ""}">
-                  <td><input type='checkbox' name='ids' value='${i}'></td><td>${c.name}</td><td>${c.email}</td><td>${c.status}</td>
-                </tr>`
+
+      for (email of Object.keys(contacts)) {
+        txt += `
+<tr>
+  <td>${contacts[email].name}</td>
+  <td>${email}</td>
+  <td>
+    <input
+      type="checkbox"
+      name="active:${email}"
+      ${contacts[email].status === 'Active' ? 'checked' : ''}>
+  </td>
+</tr>
+`;
       }
+
       return txt;
     }
 </script>

@@ -16,35 +16,35 @@ title = "Reference"
 
 ## Core Attribute Reference {#attributes}
 
-The following are the most common attributes when using htmx.
+The most common attributes when using htmx.
 
 <div class="info-table">
 
 | Attribute                                        | Description                                                                                                        |
 |--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| [`hx-boost`](@/attributes/hx-boost.md)           | add or remove [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms |
 | [`hx-get`](@/attributes/hx-get.md)               | issues a `GET` to the specified URL                                                                                |
 | [`hx-post`](@/attributes/hx-post.md)             | issues a `POST` to the specified URL                                                                               |
-| [`hx-on*`](@/attributes/hx-on.md)                | handle events with a inline scripts on elements                                                                    |
-| [`hx-push-url`](@/attributes/hx-push-url.md)     | pushes the URL into the browser location bar, creating a new history entry                                         |
+| [`hx-on*`](@/attributes/hx-on.md)                | handle events with inline scripts on elements                                                                      |
+| [`hx-push-url`](@/attributes/hx-push-url.md)     | push a URL into the browser location bar to create history                                                         |
 | [`hx-select`](@/attributes/hx-select.md)         | select content to swap in from a response                                                                          |
-| [`hx-select-oob`](@/attributes/hx-select-oob.md) | select content to swap in from a response, out of band (somewhere other than the target)                           |
-| [`hx-swap`](@/attributes/hx-swap.md)             | controls how content is swapped in (`outerHTML`, `beforeend`, `afterend`, ...)                                     |
-| [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | marks content in a response to be out of band (should swap in somewhere other than the target)                     |
+| [`hx-select-oob`](@/attributes/hx-select-oob.md) | select content to swap in from a response, somewhere other than the target (out of band)                           |
+| [`hx-swap`](@/attributes/hx-swap.md)             | controls how content will swap in (`outerHTML`, `beforeend`, `afterend`, ...)                                      |
+| [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | mark element to swap in from a response (out of band)                                                              |
 | [`hx-target`](@/attributes/hx-target.md)         | specifies the target element to be swapped                                                                         |
 | [`hx-trigger`](@/attributes/hx-trigger.md)       | specifies the event that triggers the request                                                                      |
-| [`hx-vals`](@/attributes/hx-vals.md)             | adds values to the parameters to submit with the request (JSON-formatted)                                          |
+| [`hx-vals`](@/attributes/hx-vals.md)             | add values to submit with the request (JSON format)                                                                |
 
 </div>
 
 ## Additional Attribute Reference {#attributes-additional}
 
-The table below lists all other attributes available in htmx.
+All other attributes available in htmx.
 
 <div class="info-table">
 
 | Attribute                                            | Description                                                                                                                        |
 |------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| [`hx-boost`](@/attributes/hx-boost.md)               | add [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms                           |
 | [`hx-confirm`](@/attributes/hx-confirm.md)           | shows a `confirm()` dialog before issuing a request                                                                                |
 | [`hx-delete`](@/attributes/hx-delete.md)             | issues a `DELETE` to the specified URL                                                                                             |
 | [`hx-disable`](@/attributes/hx-disable.md)           | disables htmx processing for the given node and any children nodes                                                                 |

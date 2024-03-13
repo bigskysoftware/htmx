@@ -37,9 +37,10 @@ You can copy and paste them and then adjust them for your needs.
 | [Tabs (Using HATEOAS)](@/examples/tabs-hateoas.md)                          | Demonstrates how to display and select tabs using HATEOAS principles                           |
 | [Tabs (Using JavaScript)](@/examples/tabs-javascript.md)                    | Demonstrates how to display and select tabs using JavaScript                                   |
 | [Keyboard Shortcuts](@/examples/keyboard-shortcuts.md)                      | Demonstrates how to create keyboard shortcuts for htmx enabled elements                        |
-| [Sortable](@/examples/sortable.md)                                          | Demonstrates how to use htmx with the Sortable.js plugin to implement drag-and-drop reordering |
+| [Drag & Drop / Sortable](@/examples/sortable.md)                            | Demonstrates how to use htmx with the Sortable.js plugin to implement drag-and-drop reordering |
 | [Updating Other Content](@/examples/update-other-content.md)                | Demonstrates how to update content beyond just the target elements                             |
 | [Confirm](@/examples/confirm.md)                                            | Demonstrates how to implement a custom confirmation dialog with htmx                           |
+| [Async Authentication](@/examples/async-auth.md)                            | Demonstrates how to handle async authentication tokens in htmx                                 |
 
 ## Migrating from Hotwire / Turbo ?
 

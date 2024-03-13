@@ -874,6 +874,41 @@ attribute to specify a different one.
 
 Careful: this element will need to be on all pages or restoring from history won't work reliably.
 
+### Undoing DOM Mutations By 3rd Party Libraries
+
+If you are using a 3rd party library and want to use the htmx history feature, you will need to clean up the DOM before
+a snapshot is taken.  Let's consider the [Tom Select](https://tom-select.js.org/) library, which makes select elements
+a much richer user experience.  Let's set up TomSelect to turn any input element with the `.tomselect` class into a rich
+select element.
+
+First we need to initialize elements that have the class in new content:
+
+```javascript
+htmx.onLoad(function (target) {
+    // find all elements in the new content that should be
+    // an editor and init w/ quill
+    var editors = target.querySelectorAll(".tomselect")
+            .forEach(elt => new TomSelect(elt))
+});
+```
+
+This will create a rich selector for all input elements that have the `.tomselect` class on it.  However, it mutates
+the DOM and we don't want that mutation saved to the history cache, since TomSelect will be reinitialized when the
+history content is loaded back into the screen.
+
+To deal with this, we need to catch the `htmx:beforeHistorySave` event and clean out the TomSelect mutations by calling
+`destroy()` on them:
+
+```javascript
+htmx.on('htmx:beforeHistorySave', function() {
+    // find all TomSelect elements
+    document.querySelectorAll('.tomSelect')
+            .forEach(elt => elt.tomselect.destroy()) // and call destroy() on them
+})
+```
+
+This will revert the DOM to the original HTML, thus allowing for a clean snapshot.
+
 ### Disabling History Snapshots
 
 History snapshotting can be disabled for a URL by setting the [hx-history](@/attributes/hx-history.md) attribute to `false`
@@ -1227,11 +1262,7 @@ Here is an example of the code in action:
 
 ## Scripting {#scripting}
 
-While htmx encourages a hypermedia-based approach to building web applications, it does not preclude scripting and
-offers a few mechanisms for integrating scripting into your web application.  Scripting was explicitly included in
-the REST-ful description of the web architecture in the [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7)
-section.  As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach
-to scripting in your htmx-based web application:
+While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting. Scripting is included in the REST-ful description of web architecture, see: [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web application:
 
 * [Respect HATEOAS](/essays/hypermedia-friendly-scripting#prime_directive)
 * [Use events to communicate between components](/essays/hypermedia-friendly-scripting#events)
@@ -1562,16 +1593,21 @@ listed below:
 | `htmx.config.allowEval`               | defaults to `true`, can be used to disable htmx's use of eval for certain features (e.g. trigger filters)                                                                  |
 | `htmx.config.allowScriptTags`         | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
 | `htmx.config.inlineScriptNonce`       | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
+| `htmx.config.attributesToSettle`      | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
 | `htmx.config.useTemplateFragments`    | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                         |
 | `htmx.config.wsReconnectDelay`        | defaults to `full-jitter`                                                                                                                                                  |
-| `htmx.config.disableSelector`         | defaults to `[disable-htmx], [data-disable-htmx]`, htmx will not process elements with this attribute on it or a parent                                                    |
-| `htmx.config.timeout`                 | defaults to 0 in milliseconds                                                                                                                                              |
+| `htmx.config.wsBinaryType`            | defaults to `blob`, the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection            |
+| `htmx.config.disableSelector`         | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
+| `htmx.config.withCredentials`         | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                          |
+| `htmx.config.timeout`                 | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
+| `htmx.config.scrollBehavior`          | defaults to 'smooth', the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.      |
 | `htmx.config.defaultFocusScroll`      | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
 | `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                          |
 | `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.             |
-| `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with this method by encoding their parameters in the URL, not the request body                                            |
+| `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                          |
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
+| `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top. |
 | `htmx.config.triggerSpecsCache`       | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
 
 </div>

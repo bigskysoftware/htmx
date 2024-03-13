@@ -10,7 +10,7 @@ One of the most common criticisms of htmx, usually from people hearing about it 
 
 >You're complaining about the complexity of modern frontend frameworks, but your solution is just another complex frontend framework.
 
-This is an excellent objection! It's the right to question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
+This is an excellent objection! It's the right question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
 
 Let's break this criticism down into its constituent parts, and determine exactly how much htmx indulges in the harms it claims to solve.
 
@@ -66,7 +66,7 @@ Pushing the user to define the behavior of their application primarily in HTML, 
 
 No matter when you wrote your htmx application, however, the behavior of an htmx form has always been defined in largely the same way a regular HTML form is: with `<form>`. With htmx adding additional network functionality, you can finally use `PUT` requests and control where the response goes, but in all other respects—validation, inputs, labels, autocomplete—you have default `<form>` element behavior.
 
-Finally, because htmx simply extends HTML in a very narrow domain (network requests and DOM replacements), most of the "htmx" you write is just plain old HTML. When you have access to complex state management mechanisms, it's incredibly easy to implement a custom collapsable div; when you don't, you might stop long enough to search up the [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element. Whenever a problem can be solved by native HTML elements, the longevity of the code improves tremendously as a result. This is a much less alienating way to learn web development, because the bulk of your knowledge will remain relevant as long as HTML does.
+Finally, because htmx simply extends HTML in a very narrow domain (network requests and DOM replacements), most of the "htmx" you write is just plain old HTML. When you have access to complex state management mechanisms, it's incredibly easy to implement a custom collapsible div; when you don't, you might stop long enough to search up the [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element. Whenever a problem can be solved by native HTML elements, the longevity of the code improves tremendously as a result. This is a much less alienating way to learn web development, because the bulk of your knowledge will remain relevant as long as HTML does.
 
 In this respect, htmx is much more like JQuery than React (htmx's predecessor, [intercooler.js](https://intercoolerjs.org/), was a JQuery extension), but it improves on JQuery by using a declarative, HTML-based interface: where JQuery made you go to the `<script>` tag to specify AJAX behavior, htmx requires only a simple `hx-post` attribute.
 

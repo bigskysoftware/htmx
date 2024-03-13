@@ -25,6 +25,7 @@ Here is the code:
       <option value="a1">A1</option>
       ...
     </select>
+    <img class="htmx-indicator" width="20" src="/img/bars.svg">
 </div>
 ```
 

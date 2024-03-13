@@ -49,6 +49,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/edmondchuc/flask-htmx>
 - <https://github.com/cscortes/htmxflask>
+- <https://github.com/Konfuzian/htmx-examples-with-flask/>
 
 ### py4web
 
@@ -114,6 +115,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/libsyz/htmx-to-do-app>
 - <https://github.com/beechnut/pokebutt-htmx>
 
+## Scala
+  
+### http4s
+- <https://github.com/martinprobson/http4s-htmx-demo>
+
 ## Kotlin
 
 ### Ktor
@@ -157,6 +163,12 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Bandit with Plug Application
 
 - <https://github.com/lorantkurthy/todo-htmex>
+
+## F#
+
+### Giraffe
+
+- <https://hamy.xyz/labs/2023-12-fsharp-htmx>
 
 ## Go
 

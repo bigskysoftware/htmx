@@ -27,12 +27,12 @@ IE11 compatible & has **reduced** code base sizes by [67% when compared with rea
 
 <h2>motivation</h2>
 
-* Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) and [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
+* Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) & [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
 * Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
 * Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
 * Why should you only be able to replace the **entire** screen?
 
-By removing these arbitrary constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
+By removing these constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext)
 
 <h2>quick start</h2>
 
@@ -75,6 +75,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
   text-align: center;
   padding: 16px;
   min-height: 100px;
+  border-bottom: none;
 }
 
 @media only screen and (max-width: 760px)  {
@@ -90,26 +91,25 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div style="overflow-x: auto">
 <table id="sponsor-table">
 <tr>
-<td colspan="2">
+<td colspan="3">
         <a href="https://hydrahost.com"><img src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;"></a>
-</td>
-<tr>
-<tr>
-<td>
-        <a href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:200px;"></a>
-</td>
-<td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:200px;"></a>
-</td>
-<tr>
-<td>
-        <a href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="width:100%;max-width:400px"></a>
-</td>
-<td>
-        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
 </td>
 </tr>
 <tr>
+<td>
+        <a href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
+</td>
+<td>
+        <a href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="min-width:200px"></a>
+</td>
+<td>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
+</td>
+</tr>
+<tr>
+<td>
+        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
+</td>
 <td>
         <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
           <img src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
@@ -130,20 +130,18 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <td>
       <a href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
 </td>
-</tr>
-<tr>
 <td>
         <a href="https://www.dasfilter.shop/">
-          <img alt="Das Filter" src="/img/das-filter.png" style="width:100%;max-width:200px">
+          <img alt="Das Filter" src="/img/das-filter.png" style="width:100%;max-width:300px">
         </a>
 </td>
+</tr>
+<tr>
 <td>
       <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx">
         <img src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px">
       </a>
 </td>
-</tr>
-<tr>
 <td>
         <a href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
           <img alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
@@ -160,7 +158,30 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-      <a href="https://bigsky.software"><img src="/img/bss.png" alt="Big Sky Software" style="width:100%;max-width:150px"></a>
+      <a href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
+        <img src="/img/rxdb.svg" alt="RxDB JavaScript Database" style="width:100%;max-width:150px"></a>
+</td>
+<td>
+      <a href="https://www.ohne-makler.net/"><img src="/img/ohne-makler.svg" alt="Ohne-Makler" style="width:100%;max-width:150px"></a>
+</td>
+</tr>
+<tr>
+<td>
+        <a href="https://www.codacy.com//">
+          <img alt="Deepsource" src="/img/codacy.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a href="https://codereviewbot.ai/">
+          <img alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a href="https://www.llc.org/">
+          <img alt="How to start an LLC - a guide from LLC.org, proud open source sponsor" src="/img/llc-org.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
 </td>
 </tr>
 </table>
