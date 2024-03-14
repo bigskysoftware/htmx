@@ -1,5 +1,3 @@
-const { assert } = require("chai");
-
 describe("sse extension", function() {
 
     function mockEventSource() {
@@ -7,6 +5,7 @@ describe("sse extension", function() {
         var wasClosed = false;
         var url;
         var mockEventSource = {
+            _listeners: listeners,
             removeEventListener: function(name, l) {
                 listeners[name] = listeners[name].filter(function(elt, idx, arr) {
                     if (arr[idx] === l) {
@@ -16,19 +15,19 @@ describe("sse extension", function() {
                 })
             },
             addEventListener: function(message, l) {
-                if (listeners == undefined) {
+                if (listeners[message] === undefined) {
                     listeners[message] = [];
                 }
                 listeners[message].push(l)
             },
             sendEvent: function(eventName, data) {
-                var listeners = listeners[eventName];
-                if (listeners) {
-                    listeners.forEach(function(listener) {
+                var eventListeners = listeners[eventName];
+                if (eventListeners) {
+                    eventListeners.forEach(function(listener) {
                         var event = htmx._("makeEvent")(eventName);
                         event.data = data;
                         listener(event);
-                    }
+                    })
                 }
             },
             close: function() {
@@ -56,6 +55,7 @@ describe("sse extension", function() {
     });
     afterEach(function() {
         this.server.restore();
+        this.eventSource = mockEventSource();
         clearWorkArea();
     });
 
@@ -150,6 +150,16 @@ describe("sse extension", function() {
         this.eventSource.wasClosed().should.equal(true)
     })
 
+    it('is not listening for events after hx-swap element removed', function() {
+        var div = make('<div hx-ext="sse" sse-connect="/foo">' +
+            '<div id="d1" hx-swap="outerHTML" sse-swap="e1">div1</div>' +
+            '</div>');
+        this.eventSource._listeners["e1"].should.be.lengthOf(1)
+        div.removeChild(byId("d1"));
+        this.eventSource.sendEvent("e1", "Test")
+        this.eventSource._listeners["e1"].should.be.empty
+    })
+
     // sse and hx-trigger handlers are distinct
     it('is closed after removal with no close and activity, sse-swap', function() {
         var div = make('<div hx-get="/test" hx-swap="outerHTML" hx-ext="sse" sse-connect="/foo">' +
@@ -191,7 +201,8 @@ describe("sse extension", function() {
             '<div id="d1" sse-connect="/event_stream" sse-swap="e1">div1</div>\n' +
             '</div>\n'
         )
-        this.eventSource.url = "/event_stream"
+        this.eventSource.sendEvent("e1", "Event 1")
+        byId("d1").innerText.should.equal("Event 1")
     })
 
     it('only adds sseEventSource to elements with sse-connect', function() {
@@ -226,6 +237,64 @@ describe("sse extension", function() {
 
         (byId("d1")['htmx-internal-data'].sseEventSource == undefined).should.be.false;
 
+    })
+
+    it('raises htmx:sseBeforeMessage when receiving message from the server', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+        }
+
+        htmx.on("htmx:sseBeforeMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1"></div>')
+
+        myEventCalled.should.be.true;
+
+        htmx.off("htmx:sseBeforeMessage", handle)
+    })
+
+    it('cancels swap when htmx:sseBeforeMessage was cancelled', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+            evt.preventDefault();
+        }
+
+        htmx.on("htmx:sseBeforeMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"><div id="d1">div1</div></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1">replaced</div>')
+
+        myEventCalled.should.be.true;
+
+        byId("d1").innerHTML.should.equal("div1");
+
+        htmx.off("htmx:sseBeforeMessage", handle)
+    })
+
+    it('raises htmx:sseMessage when message was completely processed', function () {
+        var myEventCalled = false;
+
+        function handle(evt) {
+            myEventCalled = true;
+        }
+
+        htmx.on("htmx:sseMessage", handle)
+
+        var div = make('<div hx-ext="sse" sse-connect="/event_stream" sse-swap="e1"><div id="d1">div1</div></div>');
+
+        this.eventSource.sendEvent("e1", '<div id="d1">replaced</div>')
+
+        myEventCalled.should.be.true;
+        byId("d1").innerHTML.should.equal("replaced");
+
+        htmx.off("htmx:sseMessage", handle)
     })
 
 });
