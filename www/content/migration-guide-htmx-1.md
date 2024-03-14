@@ -14,8 +14,10 @@ We place a very high value on backwards compatibility, so in most cases this mig
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
 * If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
   JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
-* all extensions have been removed from the core htmx distribution and are distributed separately on 
-  [their own website](https://extensions.htmx.org)
+* All extensions have been removed from the core htmx distribution and are distributed separately on 
+  [their own website](https://extensions.htmx.org).  While most 1.x extensions will continue to work with htmx 2, you
+  must upgrade the SSE extension to the 2.x version, and it is recommended that you upgrade all of them to the 2.x
+  versions.  
 * Convert any `hx-on` attributes to their `hx-on:` equivalent:
   ```html
      <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
