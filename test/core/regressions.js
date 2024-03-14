@@ -257,11 +257,11 @@ describe("Core htmx Regression Tests", function(){
         div.click();
         this.server.respond()
 
-        htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
 
         setTimeout(function(){
             window.i.should.equal(1);
             delete window.i;
+            htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
             done();
         }, 50)
     })
@@ -278,11 +278,10 @@ describe("Core htmx Regression Tests", function(){
         div.click();
         this.server.respond()
 
-        htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
-
         setTimeout(function(){
             window.i.should.equal(1);
             delete window.i;
+            htmx.config.useTemplateFragments = oldUseTemplateFragmentsValue
             done();
         }, 50)
     })
