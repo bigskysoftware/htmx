@@ -37,10 +37,11 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 		 */
 		onEvent: function(name, evt) {
 
+			var parent = evt.target || evt.detail.elt;
 			switch (name) {
 
 				case "htmx:beforeCleanupElement":
-					var internalData = api.getInternalData(evt.target)
+					var internalData = api.getInternalData(parent)
 					// Try to remove remove an EventSource when elements are removed
 					if (internalData.sseEventSource) {
 						internalData.sseEventSource.close();
@@ -50,7 +51,7 @@ This extension adds support for Server Sent Events to htmx.  See /www/extensions
 
 				// Try to create EventSources when elements are processed
 				case "htmx:afterProcessNode":
-					ensureEventSourceOnElement(evt.target);
+					ensureEventSourceOnElement(parent);
 			}
 		}
 	});
