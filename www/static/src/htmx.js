@@ -318,7 +318,8 @@ return (function () {
                         if (htmx.config.inlineScriptNonce) {
                             script.nonce = htmx.config.inlineScriptNonce;
                         }
-                        getInternalData(script).executed = true; // mark as executed due to template insertion semantics
+                        // mark as executed due to template insertion semantics on all browsers except firefox fml
+                        getInternalData(script).executed = navigator.userAgent.indexOf("Firefox") === -1;
                     })
                 } else {
                     forEach(fragment.querySelectorAll("script"), function (script) {
@@ -1933,14 +1934,12 @@ return (function () {
         }
 
         function processScripts(elt) {
-            if (!htmx.config.useTemplateFragments) {
-                if (matches(elt, "script")) {
-                    evalScript(elt);
-                }
-                forEach(findAll(elt, "script"), function (script) {
-                    evalScript(script);
-                });
+            if (matches(elt, "script")) {
+                evalScript(elt);
             }
+            forEach(findAll(elt, "script"), function (script) {
+                evalScript(script);
+            });
         }
 
         function shouldProcessHxOn(elt) {
