@@ -312,22 +312,23 @@ return (function () {
                 var fragment = parseHTML("<body><template>" + content + "</template></body>", 0);
                 // @ts-ignore type mismatch between DocumentFragment and Element.
                 // TODO: Are these close enough for htmx to use interchangeably?
+                var fragmentContent = fragment.querySelector('template').content;
                 if (htmx.config.allowScriptTags) {
                     // if there is a nonce set up, set it on the new script tags
-                    forEach(fragment.querySelectorAll("script"), function (script) {
+                    forEach(fragmentContent.querySelectorAll("script"), function (script) {
                         if (htmx.config.inlineScriptNonce) {
                             script.nonce = htmx.config.inlineScriptNonce;
                         }
                         // mark as executed due to template insertion semantics on all browsers except firefox fml
-                        getInternalData(script).executed = navigator.userAgent.indexOf("Firefox") === -1;
+                        script.htmxExecuted = navigator.userAgent.indexOf("Firefox") === -1;
                     })
                 } else {
-                    forEach(fragment.querySelectorAll("script"), function (script) {
+                    forEach(fragmentContent.querySelectorAll("script"), function (script) {
                         // remove all script tags if scripts are disabled
                         removeElement(script);
                     })
                 }
-                return fragment.querySelector('template').content;
+                return fragmentContent;
             }
             switch (startTag) {
                 case "thead":
@@ -1907,7 +1908,7 @@ return (function () {
         }
 
         function evalScript(script) {
-            if (!getInternalData(script).executed && htmx.config.allowScriptTags &&
+            if (!script.htmxExecuted && htmx.config.allowScriptTags &&
                 (script.type === "text/javascript" || script.type === "module" || script.type === "") ) {
                 var newScript = getDocument().createElement("script");
                 forEach(script.attributes, function (attr) {
