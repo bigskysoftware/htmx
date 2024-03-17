@@ -81,7 +81,7 @@ a [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/t
     <p id="content">Start</p>
 
     <template id="foo">
-      <p> {% raw %}{{userID}}{% endraw %} and {% raw %}{{id}}{% endraw %} and {% raw %}{{title}}{% endraw %} and {% raw %}{{completed}}{% endraw %}</p>
+      <p> {% raw %}{{userId}}{% endraw %} and {% raw %}{{id}}{% endraw %} and {% raw %}{{title}}{% endraw %} and {% raw %}{{completed}}{% endraw %}</p>
     </template>
   </div>
 </body>
