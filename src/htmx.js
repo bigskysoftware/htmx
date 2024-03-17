@@ -827,7 +827,7 @@ return (function () {
             }
 
             var targets = getDocument().querySelectorAll(selector);
-            if (targets) {
+            if (targets.length > 0) {
                 forEach(
                     targets,
                     function (target) {
