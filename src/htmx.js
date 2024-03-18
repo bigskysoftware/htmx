@@ -318,6 +318,7 @@ var htmx = (function() {
     mergeObjects,
     makeSettleInfo,
     oobSwap,
+    overrideFormData,
     querySelectorExt,
     settleImmediately,
     shouldCancel,
