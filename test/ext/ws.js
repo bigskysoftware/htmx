@@ -205,7 +205,7 @@ describe("web-sockets extension", function () {
         headers['HX-Target'].should.be.equal('target');
     })
 
-    it('sends hx-vals server', function () {
+    it('sends hx-vals to the server', function () {
         var div = make('<div hx-ext="ws" ws-connect="ws://localhost:8080" hx-vals="js:{theAnswer:42}"><button hx-trigger="click" hx-target="#target" ws-send id="d1" name="d1-name">div1</button><output id="target"></output></div>');
         this.tickMock();
 
