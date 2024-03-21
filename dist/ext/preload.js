@@ -1,5 +1,9 @@
-// This adds the "preload" extension to htmx.  By default, this will 
-// preload the targets of any tags with `href` or `hx-get` attributes 
+if (htmx.version && !htmx.version.startsWith("1.")) {
+	console.warn("WARNING: You are using an htmx 1 extension with htmx " + htmx.version +
+		".  It is recommended that you move to the version of this extension found on https://extensions.htmx.org")
+}
+// This adds the "preload" extension to htmx.  By default, this will
+// preload the targets of any tags with `href` or `hx-get` attributes
 // if they also have a `preload` attribute as well.  See documentation
 // for more details
 htmx.defineExtension("preload", {
@@ -18,8 +22,8 @@ htmx.defineExtension("preload", {
 			if (node == undefined) {return undefined;}
 			return node.getAttribute(property) || node.getAttribute("data-" + property) || attr(node.parentElement, property)
 		}
-		
-		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're 
+
+		// load handles the actual HTTP fetch, and uses htmx.ajax in cases where we're
 		// preloading an htmx resource (this sends the same HTTP headers as a regular htmx request)
 		var load = function(node) {
 
@@ -43,7 +47,7 @@ htmx.defineExtension("preload", {
 				}
 
 				// Special handling for HX-GET - use built-in htmx.ajax function
-				// so that headers match other htmx requests, then set 
+				// so that headers match other htmx requests, then set
 				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future
 				var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
@@ -57,8 +61,8 @@ htmx.defineExtension("preload", {
 					return;
 				}
 
-				// Otherwise, perform a standard xhr request, then set 
-				// node.preloadState = TRUE so that requests are not duplicated 
+				// Otherwise, perform a standard xhr request, then set
+				// node.preloadState = TRUE so that requests are not duplicated
 				// in the future.
 				if (node.getAttribute("href")) {
 					var r = new XMLHttpRequest();
@@ -83,16 +87,16 @@ htmx.defineExtension("preload", {
 			if (node.preloadState !== undefined) {
 				return;
 			}
-			
+
 			// Get event name from config.
 			var on = attr(node, "preload") || "mousedown"
 			const always = on.indexOf("always") !== -1
 			if (always) {
 				on = on.replace('always', '').trim()
 			}
-						
+
 			// FALL THROUGH to here means we need to add an EventListener
-	
+
 			// Apply the listener to the node
 			node.addEventListener(on, function(evt) {
 				if (node.preloadState === "PAUSE") { // Only add one event listener
