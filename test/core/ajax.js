@@ -1156,17 +1156,17 @@ describe('Core htmx AJAX Tests', function() {
     values.should.deep.equal({ t1: 'textValue', b1: ['inputValue', 'buttonValue'] })
   })
 
-    it('properly handles inputs external to form', function () {
-        if (!supportsFormAttribute()) {
-            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-            this.skip()
-            return
-        }
-        var values;
-        this.server.respondWith("Post", "/test", function (xhr) {
-            values = getParameters(xhr);
-            xhr.respond(204, {}, "");
-        });
+  it('properly handles inputs external to form', function() {
+    if (!supportsFormAttribute()) {
+      this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+      this.skip()
+      return
+    }
+    var values
+    this.server.respondWith('Post', '/test', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
 
     make('<form id="externalForm" hx-post="/test">' +
             '   <input type="hidden" name="b1" value="inputValue">' +
@@ -1211,13 +1211,13 @@ describe('Core htmx AJAX Tests', function() {
     responded.should.equal(true)
   })
 
-    it("can associate submit buttons from outside a form with the current version of the form after swap", function(){
-        if (!supportsFormAttribute()) {
-            this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-            this.skip()
-            return
-        }
-        const template = '<form ' +
+  it('can associate submit buttons from outside a form with the current version of the form after swap', function() {
+    if (!supportsFormAttribute()) {
+      this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
+      this.skip()
+      return
+    }
+    const template = '<form ' +
               'id="hello" ' +
               'hx-target="#hello" ' +
               'hx-select="#hello" ' +
