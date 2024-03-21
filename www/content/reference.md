@@ -57,6 +57,7 @@ All other attributes available in htmx.
 | [`hx-history-elt`](@/attributes/hx-history-elt.md)   | the element to snapshot and restore during history navigation                                                                      |
 | [`hx-include`](@/attributes/hx-include.md)           | include additional data in requests                                                                                                |
 | [`hx-indicator`](@/attributes/hx-indicator.md)       | the element to put the `htmx-request` class on during the request                                                                  |
+| [`hx-inherit`](@/attributes/hx-disinherit.md)        | control and enable automatic attribute inheritance for child nodes if it has been disabled by default                              |
 | [`hx-params`](@/attributes/hx-params.md)             | filters the parameters that will be submitted with a request                                                                       |
 | [`hx-patch`](@/attributes/hx-patch.md)               | issues a `PATCH` to the specified URL                                                                                              |
 | [`hx-preserve`](@/attributes/hx-preserve.md)         | specifies elements to keep unchanged between requests                                                                              |
@@ -201,6 +202,7 @@ All other attributes available in htmx.
 | [`htmx.remove()`](@/api.md#remove)  | Removes the given element
 | [`htmx.removeClass()`](@/api.md#removeClass)  | Removes a class from the given element
 | [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](@/extensions/_index.md)
+| [`htmx.swap()`](@/api.md#swap)  | Performs swapping (and settling) of HTML content
 | [`htmx.takeClass()`](@/api.md#takeClass)  | Takes a class from other elements for the given element
 | [`htmx.toggleClass()`](@/api.md#toggleClass)  | Toggles a class from the given element
 | [`htmx.trigger()`](@/api.md#trigger)  | Triggers an event on an element
@@ -234,7 +236,6 @@ listed below:
 | `htmx.config.allowScriptTags`         | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
 | `htmx.config.inlineScriptNonce`       | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
 | `htmx.config.attributesToSettle`      | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
-| `htmx.config.useTemplateFragments`    | defaults to `false`, HTML template tags for parsing content from the server (not IE11 compatible!)                                                                         |
 | `htmx.config.wsReconnectDelay`        | defaults to `full-jitter`                                                                                                                                                  |
 | `htmx.config.wsBinaryType`            | defaults to `blob`, the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection            |
 | `htmx.config.disableSelector`         | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
@@ -249,6 +250,7 @@ listed below:
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
 | `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top. |
 | `htmx.config.triggerSpecsCache`       | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
+| `htmx.config.allowNestedOobSwaps`     | defaults to `true`, whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps). |
 
 </div>
 

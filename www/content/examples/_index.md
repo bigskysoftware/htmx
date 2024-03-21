@@ -41,6 +41,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Updating Other Content](@/examples/update-other-content.md)                | Demonstrates how to update content beyond just the target elements                             |
 | [Confirm](@/examples/confirm.md)                                            | Demonstrates how to implement a custom confirmation dialog with htmx                           |
 | [Async Authentication](@/examples/async-auth.md)                            | Demonstrates how to handle async authentication tokens in htmx                                 |
+| [Web Components](@/examples/web-components.md)                              | Demonstrates how to integrate htmx with web components and shadow DOM                          |
 
 ## Migrating from Hotwire / Turbo ?
 
