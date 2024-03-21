@@ -3737,7 +3737,7 @@ var htmx = (function() {
  * @returns {FormData}
  */
   function getExpressionVars(elt) {
-    return formDataFromObject(mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt)))
+    return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt))
   }
 
   /**
@@ -4169,7 +4169,7 @@ var htmx = (function() {
     if (etc.values) {
       overrideFormData(rawFormData, formDataFromObject(etc.values))
     }
-    const expressionVars = getExpressionVars(elt)
+    const expressionVars = formDataFromObject(getExpressionVars(elt))
     const allFormData = overrideFormData(rawFormData, expressionVars)
     let filteredFormData = filterValues(allFormData, elt)
 
