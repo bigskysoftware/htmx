@@ -411,7 +411,7 @@ export interface HtmxConfig {
      */
     wsBinaryType?: 'blob' | 'arraybuffer'; 
     /**
-     * If set to true htmx will include a cache-busting parameter in GET requests to avoid caching partial responses by the browser
+     * If set to true htmx will append the target element to the GET request in the format org.htmx.cache-buster=targetElementId
      * @default false 
      */
     getCacheBusterParam?: boolean;
