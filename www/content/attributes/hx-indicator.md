@@ -61,7 +61,7 @@ call it out with the `hx-indicator` attribute:
 ```html
 <button hx-post="/example">
     Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg" />
+   <img class="htmx-indicator" src="/img/bars.svg" />
 </button>
 ```
 
