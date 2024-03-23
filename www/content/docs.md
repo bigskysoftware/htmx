@@ -1037,7 +1037,7 @@ Note that all client side validations must be re-done on the server side, as the
 
 ## Animations
 
-Htmx allows you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
+Htmx allows you to use [CSS transitions](#css_transitions)
 in many situations using only HTML and CSS.
 
 Please see the [Animation Guide](@/examples/animations.md) for more details on the options available.
