@@ -13,12 +13,10 @@ which will find the closest ancestor element or itself, that matches the given C
 Here is an example with a spinner adjacent to the button:
 
 ```html
-<div>
-    <button hx-post="/example" hx-indicator="#spinner">
-        Post It!
-    </button>
-    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
-</div>
+<button hx-post="/example" hx-indicator="#spinner">
+    Post It!
+</button>
+<img id="spinner" class="htmx-indicator" src="/img/bars.svg" />
 ```
 
 When a request is in flight, this will cause the `htmx-request` class to be added to the `#spinner`
@@ -26,31 +24,31 @@ image.  The image also has the `htmx-indicator` class on it, which defines an op
 that will show the spinner:
 
 ```css
-    .htmx-indicator{
-        opacity:0;
-        transition: opacity 500ms ease-in;
-    }
-    .htmx-request .htmx-indicator{
-        opacity:1
-    }
-    .htmx-request.htmx-indicator{
-        opacity:1
-    }
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
 ```
 
 If you would prefer a different effect for showing the spinner you could define and use your own indicator
 CSS.  Here is an example that uses `display` rather than opacity (Note that we use `my-indicator` instead of `htmx-indicator`):
 
 ```css
-    .my-indicator{
-        display:none;
-    }
-    .htmx-request .my-indicator{
-        display:inline;
-    }
-    .htmx-request.my-indicator{
-        display:inline;
-    }
+.my-indicator {
+    display: none;
+}
+.htmx-request .my-indicator {
+    display: inline;
+}
+.htmx-request.my-indicator {
+    display: inline;
+}
 ```
 
 Note that the target of the `hx-indicator` selector need not be the exact element that you
@@ -63,7 +61,7 @@ call it out with the `hx-indicator` attribute:
 ```html
 <button hx-post="/example">
     Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg"/>
+   <img  class="htmx-indicator" src="/img/bars.svg" />
 </button>
 ```
 
@@ -73,7 +71,7 @@ This simulates what a spinner might look like in that situation:
 
 <button class="btn" classes="toggle htmx-request:3s">
     Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg"/>
+    <img class="htmx-indicator" src="/img/bars.svg" />
 </button>
 
 ## Notes
