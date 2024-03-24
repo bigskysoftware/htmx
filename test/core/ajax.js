@@ -1157,11 +1157,6 @@ describe('Core htmx AJAX Tests', function() {
   })
 
   it('properly handles inputs external to form', function() {
-    if (!supportsFormAttribute()) {
-      this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-      this.skip()
-      return
-    }
     var values
     this.server.respondWith('Post', '/test', function(xhr) {
       values = getParameters(xhr)
@@ -1212,11 +1207,6 @@ describe('Core htmx AJAX Tests', function() {
   })
 
   it('can associate submit buttons from outside a form with the current version of the form after swap', function() {
-    if (!supportsFormAttribute()) {
-      this._runnable.title += " - Skipped as IE11 doesn't support form attribute"
-      this.skip()
-      return
-    }
     const template = '<form ' +
               'id="hello" ' +
               'hx-target="#hello" ' +
