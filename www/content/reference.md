@@ -65,11 +65,9 @@ All other attributes available in htmx.
 | [`hx-put`](@/attributes/hx-put.md)                   | issues a `PUT` to the specified URL                                                                                                |
 | [`hx-replace-url`](@/attributes/hx-replace-url.md)   | replace the URL in the browser location bar                                                                                        |
 | [`hx-request`](@/attributes/hx-request.md)           | configures various aspects of the request                                                                                          |
-| [`hx-sse`](@/extensions/server-sent-events.md)       | has been moved to an extension.  [Documentation for older versions](@/attributes/hx-sse.md)                                        |
 | [`hx-sync`](@/attributes/hx-sync.md)                 | control how requests made by different elements are synchronized                                                                   |
 | [`hx-validate`](@/attributes/hx-validate.md)         | force elements to validate themselves before a request                                                                             |
 | [`hx-vars`](@/attributes/hx-vars.md)                 | adds values dynamically to the parameters to submit with the request (deprecated, please use [`hx-vals`](@/attributes/hx-vals.md)) |
-| [`hx-ws`](@/extensions/web-sockets.md)               | has been moved to an extension.  [Documentation for older versions](@/attributes/hx-ws.md)                                         |
 
 </div>
 
@@ -189,7 +187,7 @@ All other attributes available in htmx.
 | [`htmx.config`](@/api.md#config)  | A property that holds the current htmx config object
 | [`htmx.createEventSource`](@/api.md#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
 | [`htmx.createWebSocket`](@/api.md#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
-| [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](@/extensions/_index.md)
+| [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](https://extensions.htmx.org)
 | [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector
 | [`htmx.findAll()` `htmx.findAll(elt, selector)`](@/api.md#find)  | Finds all elements matching a given selector
 | [`htmx.logAll()`](@/api.md#logAll)  | Installs a logger that will log all htmx events
@@ -201,7 +199,7 @@ All other attributes available in htmx.
 | [`htmx.process()`](@/api.md#process)  | Processes the given element and its children, hooking up any htmx behavior
 | [`htmx.remove()`](@/api.md#remove)  | Removes the given element
 | [`htmx.removeClass()`](@/api.md#removeClass)  | Removes a class from the given element
-| [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](@/extensions/_index.md)
+| [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](https://extensions.htmx.org)
 | [`htmx.swap()`](@/api.md#swap)  | Performs swapping (and settling) of HTML content
 | [`htmx.takeClass()`](@/api.md#takeClass)  | Takes a class from other elements for the given element
 | [`htmx.toggleClass()`](@/api.md#toggleClass)  | Toggles a class from the given element

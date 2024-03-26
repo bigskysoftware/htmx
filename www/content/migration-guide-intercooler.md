@@ -18,7 +18,7 @@ It is worth noting the difference in approach between what Intercooler set out t
 
 This capability is augmented in primarily 2 ways:
 
-1. [Extensions](@/extensions/_index.md#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](@/extensions/path-deps.md). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](@/extensions/preload.md)
+1. [Extensions](https://extensions.htmx.org#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md)
 
 2. Using the htmx events system with vanilla javascript, [alpine.js](https://github.com/alpinejs/alpine/) or [hyperscript](https://hyperscript.org).  Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
 
@@ -53,7 +53,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | [`ic-attr-src`](https://intercoolerjs.org/attributes/ic-attr-src.html) | None. No direct equivalent functionality exists (TBC)
 | [`ic-confirm`](https://intercoolerjs.org/attributes/ic-confirm.html) | [`hx-confirm`](@/attributes/hx-confirm.md)
 | [`ic-delete-from`](https://intercoolerjs.org/attributes/ic-delete-from.html) | [`hx-delete`](@/attributes/hx-delete.md)
-| [`ic-deps`](https://intercoolerjs.org/attributes/ic-deps.html) | `hx-trigger="path-deps"` along with `path-deps="/foo/bar"`. (Requires the [`path-deps` extension](@/extensions/path-deps.md))
+| [`ic-deps`](https://intercoolerjs.org/attributes/ic-deps.html) | `hx-trigger="path-deps"` along with `path-deps="/foo/bar"`. (Requires the [`path-deps` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md))
 | [`ic-disable-when-doc-hidden`](https://intercoolerjs.org/attributes/ic-disable-when-doc-hidden.html) | None. No direct equivalent functionality exists (TBC)
 | [`ic-disable-when-doc-inactive`](https://intercoolerjs.org/attributes/ic-disable-when-doc-inactive.html) | None. No direct equivalent functionality exists (TBC)
 | [`ic-enhance`](https://intercoolerjs.org/attributes/ic-enhance.html) | [`hx-boost`](@/attributes/hx-boost.md)
@@ -88,18 +88,18 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | [`ic-scroll-offset`](https://intercoolerjs.org/attributes/ic-scroll-offset.html) | None. No direct equivalent functionality exists
 | [`ic-scroll-to-target`](https://intercoolerjs.org/attributes/ic-scroll-to-target.html) | See the `scroll` and `show` modifiers on the [`hx-swap`](@/attributes/hx-swap.md) attribute
 | [`ic-select-from-response`](https://intercoolerjs.org/attributes/ic-select-from-response.html) | [`hx-select`](@/attributes/hx-select.md)
-| [`ic-src`](https://intercoolerjs.org/attributes/ic-src.html) | None. Use [`hx-get`](@/attributes/hx-get.md) in conjunction with triggers or the [`path-deps` extension](@/extensions/path-deps.md)
-| [`ic-sse-src`](https://intercoolerjs.org/attributes/ic-sse-src.html) | [`hx-sse`](@/attributes/hx-sse.md)
+| [`ic-src`](https://intercoolerjs.org/attributes/ic-src.html) | None. Use [`hx-get`](@/attributes/hx-get.md) in conjunction with triggers or the [`path-deps` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md)
+| [`ic-sse-src`](https://intercoolerjs.org/attributes/ic-sse-src.html) | `hx-sse`
 | [`ic-style-src`](https://intercoolerjs.org/attributes/ic-style-src.html) | None. No direct equivalent functionality exists (TBC)
 | [`ic-swap-style`](https://intercoolerjs.org/attributes/ic-swap-style.html) | [`hx-swap`](@/attributes/hx-swap.md)
 | [`ic-switch-class`](https://intercoolerjs.org/attributes/ic-switch-class.html) | None. See the [htmx documentation on _hyperscript](https://hyperscript.org) for an example on how to implement it using [_hyperscript](https://hyperscript.org) and the [`htmx:beforeOnLoad` event](https://htmx.org/events#htmx:beforeOnLoad)
 | [`ic-target`](https://intercoolerjs.org/attributes/ic-target.html) | [`hx-target`](@/attributes/hx-target.md)
-| [`ic-transform-response`](https://intercoolerjs.org/attributes/ic-transform-response.html) | None. The [`client-side-templates` extension](@/extensions/client-side-templates.md) enables JSON response transformation via templating engines like [mustache](https://github.com/janl/mustache.js), [handlebars](https://handlebarsjs.com/) or [nunjucks](https://mozilla.github.io/nunjucks/)
+| [`ic-transform-response`](https://intercoolerjs.org/attributes/ic-transform-response.html) | None. The [`client-side-templates` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/client-side-templates/README.md) enables JSON response transformation via templating engines like [mustache](https://github.com/janl/mustache.js), [handlebars](https://handlebarsjs.com/) or [nunjucks](https://mozilla.github.io/nunjucks/)
 | [`ic-transition-duration`](https://intercoolerjs.org/attributes/ic-transition-duration.html) | None. Equivalent functionality can be achieved by relying on the nature of [htmx's swapping mechanism and CSS transitions](@/docs.md#css_transitions)
 | [`ic-trigger-delay`](https://intercoolerjs.org/attributes/ic-trigger-delay.html) | Use [`hx-trigger`](@/attributes/hx-trigger.md) with [modifiers](@/docs.md#trigger-modifiers)
 | [`ic-trigger-from`](https://intercoolerjs.org/attributes/ic-trigger-from.html) | Use [`hx-trigger`](@/attributes/hx-trigger.md) with `from:` clause
 | [`ic-trigger-on`](https://intercoolerjs.org/attributes/ic-trigger-on.html) | [`hx-trigger`](@/attributes/hx-trigger.md)
-| [`ic-verb`](https://intercoolerjs.org/attributes/ic-verb.html) | None. By default htmx sends the actual http method. You can however non-`GET` verbs to `POST` via the [`method-override` extension](@/extensions/method-override.md)
+| [`ic-verb`](https://intercoolerjs.org/attributes/ic-verb.html) | None. By default htmx sends the actual http method. You can however non-`GET` verbs to `POST` via the [`method-override` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/method-override/README.md)
 
 
 #### Request parameters
@@ -107,7 +107,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | Intercooler | htmx |
 |-----------|-------------|
 | `ic-request` | None. Use `HX-Request` header
-| `_method` | None. Use [`method-override`](@/extensions/method-override.md) extension and its provided `X-HTTP-Method-Override` header
+| `_method` | None. Use [`method-override`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/method-override/README.md) extension and its provided `X-HTTP-Method-Override` header
 | `ic-element-id` | None
 | `ic-element-name` | None
 | `ic-target-id` | None. Use `HX-Target` header
@@ -166,7 +166,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 
 | Intercooler | htmx |
 |-----------|-------------|
-| `Intercooler.refresh(eltOrPath)` | `PathDeps.refresh()` (requires the [`path-deps`](@/extensions/path-deps.md) extension)
+| `Intercooler.refresh(eltOrPath)` | `PathDeps.refresh()` (requires the [`path-deps`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md) extension)
 | `Intercooler.triggerRequest(elt, handler)` | [`htmx.trigger()`](@/api.md#trigger)
 | `Intercooler.processNodes(elt)` | [`htmx.process()`](@/api.md#process)
 | `Intercooler.closestAttrValue(elt, attr)` | [`htmx.closest()`](@/api.md#closest) can be used with any selector
@@ -183,7 +183,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | Intercooler | htmx |
 |-----------|-------------|
 | `<meta name="intercoolerjs:use-data-prefix" content="true"/>` | None. You can simply use the `data-` prefix without specifying a meta tag. htmx will automatically recognize htmx attributes like this: `<a data-hx-post="/click">Click Me!</a>`
-| `<meta name="intercoolerjs:use-actual-http-method" content="true"/>` | None. By default htmx sends the actual http method. You can however change the verb for all non-GET requests to POST via the [`method-override` extension](@/extensions/method-override.md)
+| `<meta name="intercoolerjs:use-actual-http-method" content="true"/>` | None. By default htmx sends the actual http method. You can however change the verb for all non-GET requests to POST via the [`method-override` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/method-override/README.md)
 
 
 [Hyperscript]: https://hyperscript.org

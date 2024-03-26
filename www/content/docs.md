@@ -442,9 +442,9 @@ cost of more CPU.
 The following extensions are available for morph-style swaps:
 
 * [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A morphing algorithm created by the htmx developers.
-* [Morphdom Swap](@/extensions/morphdom-swap.md) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
+* [Morphdom Swap](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README.md) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
   the original DOM morphing library.
-* [Alpine-morph](@/extensions/alpine-morph.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
+* [Alpine-morph](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/alpine-morph/README.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
   well with alpine.js
 
 #### View Transitions {#view-transitions}
@@ -817,49 +817,46 @@ and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Serve
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
 both SSE and web sockets will be done in the extensions.
 
-Please visit the [SSE extension](@/extensions/server-sent-events.md) and [WebSocket extension](@/extensions/web-sockets.md)
+Please visit the [SSE extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) and [WebSocket extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md)
 pages to learn more about the new extensions.
 
 </div>
 
 ### WebSockets
 
-If you wish to establish a `WebSocket` connection in htmx, you use the [hx-ws](@/attributes/hx-ws.md) attribute:
+If you wish to establish a `WebSocket` connection in htmx, you can use the 
+[Web Socket](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws) extension:
 
 ```html
-<div hx-ws="connect:wss:/chatroom">
-    <div id="chat_room">
-        ...
-    </div>
-    <form hx-ws="send:submit">
-        <input name="chat_message">
-    </form>
+<div hx-ext="ws" ws-connect="/chatroom">
+  <div id="notifications"></div>
+  <div id="chat_room">
+    ...
+  </div>
+  <form id="form" ws-send>
+    <input name="chat_message">
+  </form>
 </div>
 ```
 
-The `connect` declaration established the connection, and the `send` declaration tells the form to submit values to the socket on `submit`.
+The `ws-connect` attribute establishes a WebSocket connection, and the `ws-send` 
+attribute tells the form to submit values to the socket on `submit`.
 
-More details can be found on the [hx-ws attribute page](@/attributes/hx-ws.md)
+More details can be found on the [extension's README.md page](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws)
 
 ### Server Sent Events {#sse}
 
 [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
 server and the browser than websockets.
 
-If you want an element to respond to a Server Sent Event via htmx, you need to do two things:
-
-1. Define an SSE source.  To do this, add a [hx-sse](@/attributes/hx-sse.md) attribute on a parent element with
-a `connect:<url>` declaration that specifies the URL from which Server Sent Events will be received.
-
-2. Define elements that are descendents of this element that are triggered by server sent events using the
-`hx-trigger="sse:<event_name>"` syntax
-
-Here is an example:
+To use SSE in htmx, you can use the
+[SSE](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws) extension:
 
 ```html
-<body hx-sse="connect:/news_updates">
-    <div hx-trigger="sse:new_news" hx-get="/news"></div>
-</body>
+<div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
+  Contents of this box will be updated in real time
+  with every SSE message received from the chatroom.
+</div>
 ```
 
 Depending on your implementation, this may be more efficient than the polling example above since the server would
@@ -1109,7 +1106,7 @@ Please see the [Animation Guide](@/examples/animations.md) for more details on t
 ## Extensions
 
 Htmx has an extension mechanism that allows you to customize the libraries' behavior.
-Extensions [are defined in javascript](@/extensions/_index.md#defining) and then used via
+Extensions [are defined in javascript](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension) and then used via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute:
 
 ```html
@@ -1119,24 +1116,7 @@ the [`hx-ext`](@/attributes/hx-ext.md) attribute:
 </div>
 ```
 
-If you are interested in adding your own extension to htmx, please [see the extension docs](@/extensions/_index.md)
-
-### Included Extensions
-
-Htmx includes some extensions that are tested against the htmx code base.  Here are a few:
-
-| Extension | Description
-|-----------|-------------
-| [`json-enc`](@/extensions/json-enc.md) | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-| [`morphdom-swap`](@/extensions/morphdom-swap.md) | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
-| [`alpine-morph`](@/extensions/alpine-morph.md) | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
-| [`client-side-templates`](@/extensions/client-side-templates.md) | support for client side template processing of JSON responses
-| [`path-deps`](@/extensions/path-deps.md) | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
-| [`class-tools`](@/extensions/class-tools.md) | an extension for manipulating timed addition and removal of classes on HTML elements
-| [`multi-swap`](@/extensions/multi-swap.md) | allows to swap multiple elements with different swap methods
-| [`response-targets`](@/extensions/response-targets.md) | allows to swap elements for responses with HTTP codes beyond `200`
-
-See the [extensions page](@/extensions/_index.md#included) for a complete list.
+If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension)
 
 ## Events & Logging {#events}
 
