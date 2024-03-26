@@ -10,7 +10,7 @@ title = "Reference"
 * [htmx Request Headers](#request_headers)
 * [htmx Response Headers](#response_headers)
 * [htmx Events](#events)
-* [htmx Extensions](/extensions#included)
+* [htmx Extensions](https://extensions.htmx.org)
 * [JavaScript API](#api)
 * [Configuration Options](#config)
 
