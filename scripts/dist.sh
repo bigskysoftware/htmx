@@ -33,5 +33,5 @@ EOF
 # ESM script
 cat > dist/htmx.esm.js << EOF
 $(cat $HTMX_SRC)
-export { htmx }
+export default htmx
 EOF
