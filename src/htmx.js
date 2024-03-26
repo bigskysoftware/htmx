@@ -764,13 +764,16 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function bodyContains(elt) {
-    // IE Fix
-    const rootNode = elt.getRootNode && elt.getRootNode()
-    if (rootNode && rootNode instanceof window.ShadowRoot) {
-      return getDocument().body.contains(rootNode.host)
-    } else {
-      return getDocument().body.contains(elt)
+    // Shortcut for older browsers missing getRootNode() to avoid checking
+    // the condition on every iteration.
+    if (!elt.getRootNode) {
+      return getDocument().body.contains(elt);
     }
+    // Escape from shadow root.
+    while (elt.getRootNode() instanceof window.ShadowRoot) {
+      elt = elt.getRootNode().host;
+    }
+    return getDocument().body.contains(elt);
   }
 
   /**
