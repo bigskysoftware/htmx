@@ -3182,14 +3182,14 @@ var htmx = (function() {
   function removeRequestIndicators(indicators, disabled) {
     forEach(indicators, function(ic) {
       const internalData = getInternalData(ic)
-      internalData.requestCount = (internalData.requestCount || 0) - 1
+      internalData.requestCount = Math.max((internalData.requestCount || 0) - 1, 0)
       if (internalData.requestCount === 0) {
         ic.classList.remove.call(ic.classList, htmx.config.requestClass)
       }
     })
     forEach(disabled, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
-      internalData.requestCount = (internalData.requestCount || 0) - 1
+      internalData.requestCount = Math.max((internalData.requestCount || 0) - 1, 0)
       if (internalData.requestCount === 0) {
         disabledElement.removeAttribute('disabled')
       }
