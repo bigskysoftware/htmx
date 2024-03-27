@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.9.11] - 2024-04-15
+## [1.9.11] - 2024-03-15
 
 * Fix for new issue w/ web sockets & SSE on iOS 17.4 (thanks apple!)
 * Fix for double script execution issue when using template parsing
