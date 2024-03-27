@@ -16,7 +16,7 @@ Thank you for your interest in contributing! Because we're a small team, we have
 1. All PRs must be made against the `dev` branch, except documentation PRs (that only modify the `www/` directory) which can be made against `master`.
 1. Please avoid sending the `dist` files along your PR, only include the `src` ones.
 1. Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www).
-1. We squash all PRs, so you're welcome to submit with as many commits are you like; they will be evaluated as a single, standalone change.
+1. We squash all PRs, so you're welcome to submit with as many commits as you like; they will be evaluated as a single, standalone change.
 
 ### Review Guidelines
 1. Open PRs represent issues that we're actively thinking working on merging (at a pace we can manage). If we think a proposal needs more discussion, or that the existing code would require a lot of back-and-forth to merge, we might close it and suggest you make an issue.
