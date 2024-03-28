@@ -1564,9 +1564,12 @@ return (function () {
                                 }, triggerSpec.throttle);
                             }
                         } else if (triggerSpec.delay > 0) {
-                            elementData.delayed = setTimeout(function() { handler(elt, evt) }, triggerSpec.delay);
+                            elementData.delayed = setTimeout(function() {
+                                triggerEvent(elt, 'htmx:trigger');
+                                handler(elt, evt);
+                            }, triggerSpec.delay);
                         } else {
-                            triggerEvent(elt, 'htmx:trigger')
+                            triggerEvent(elt, 'htmx:trigger');
                             handler(elt, evt);
                         }
                     }
