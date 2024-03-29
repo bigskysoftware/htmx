@@ -81,7 +81,7 @@ This simulates what a spinner might look like in that situation:
 * `hx-indicator` is inherited and can be placed on a parent element
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
-* If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable `includeIndicatorStyles`. See [Configuring htmx](@/docs.md#config). The easiest way is to add this the `<head>` of your HTML:
+* If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable `includeIndicatorStyles`. See [Configuring htmx](@/docs.md#config). The easiest way is to add this to the `<head>` of your HTML:
 ```html
 <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 ```
