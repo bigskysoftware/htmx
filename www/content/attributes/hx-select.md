@@ -21,3 +21,4 @@ which will replace the entire button in the DOM.
 ## Notes
 
 * `hx-select` is inherited and can be placed on a parent element
+* `hx-select="*"` will select the entire response content, which is the default behavior
