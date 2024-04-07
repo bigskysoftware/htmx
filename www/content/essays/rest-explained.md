@@ -91,7 +91,7 @@ Let's go through each of these in turn.
 #### Identification of Resources
 
 The first aspect of Rest is the idea of *resources* that are found somewhere via... well, [Universal Resource Locators](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL), or URLs.  Note that the HTML contains additional URLs for the actions that you can perform on this
-resource (`contacts/1`), following the conventional hierarchical arrangement of URL paths.
+resource (`contacts/42`), following the conventional hierarchical arrangement of URL paths.
 
 #### Manipulation of Resources Through Representations
 
