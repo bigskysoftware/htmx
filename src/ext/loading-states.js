@@ -61,8 +61,10 @@
 
 	htmx.defineExtension('loading-states', {
 		onEvent: function (name, evt) {
+            var parent = evt.target || evt.detail.elt;
+
 			if (name === 'htmx:beforeRequest') {
-				const container = loadingStateContainer(evt.target)
+				const container = loadingStateContainer(parent)
 
 				const loadingStateTypes = [
 					'data-loading',
