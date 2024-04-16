@@ -110,17 +110,17 @@ If you are migrating to htmx from intercooler.js, please see the [migration guid
 
 ### Via A CDN (e.g. unpkg.com)
 
-The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your `<head>` tag
 and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous" defer></script>
 ```
 
 Unminified version is also available
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/htmx.js" integrity="sha384-l9bYT9SL4CAW0Hl7pAOpfRc18mys1b0wK4U8UtGnWOxPVbVMgrOdB+jyz/WY8Jue" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@1.9.11/dist/htmx.js" integrity="sha384-l9bYT9SL4CAW0Hl7pAOpfRc18mys1b0wK4U8UtGnWOxPVbVMgrOdB+jyz/WY8Jue" crossorigin="anonymous" defer></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -133,7 +133,7 @@ Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org/dist/htmx.min
 and include it where necessary with a `<script>` tag:
 
 ```html
-<script src="/path/to/htmx.min.js"></script>
+<script src="/path/to/htmx.min.js" defer></script>
 ```
 
 You can also add extensions this way, by downloading them from the `ext/` directory.
@@ -1248,7 +1248,7 @@ Here is an example of the code in action:
 
 ```html
 <!-- load demo environment -->
-<script src="https://demo.htmx.org"></script>
+<script src="https://demo.htmx.org" defer></script>
 
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">
