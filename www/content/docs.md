@@ -1248,7 +1248,7 @@ Here is an example of the code in action:
 
 ```html
 <!-- load demo environment -->
-<script src="https://demo.htmx.org" defer></script>
+<script src="https://demo.htmx.org"></script>
 
 <!-- post to /foo -->
 <button hx-post="/foo" hx-target="#result">
