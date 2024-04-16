@@ -80,7 +80,14 @@
             if (name === "htmx:afterProcessNode") {
                 var elt = evt.detail.elt;
                 maybeProcessClasses(elt);
-                if (elt.querySelectorAll) {
+
+                var classList = elt.getAttribute("apply-parent-classes") || elt.getAttribute("data-apply-parent-classes");
+                if (classList) {
+                    var parent = elt.parentElement;
+                    parent.removeChild(elt);
+                    parent.setAttribute("classes", classList);
+                    maybeProcessClasses(parent);
+                } else if (elt.querySelectorAll) {
                     var children = elt.querySelectorAll("[classes], [data-classes]");
                     for (var i = 0; i < children.length; i++) {
                         maybeProcessClasses(children[i]);
