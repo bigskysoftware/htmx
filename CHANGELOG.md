@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.12] - 2024-04-17
+
+* [IE Fixes](https://github.com/bigskysoftware/htmx/commit/e64238dba3113c2eabe26b1e9e9ba7fe29ba3010)
+
 ## [1.9.11] - 2024-03-15
 
 * Fix for new issue w/ web sockets & SSE on iOS 17.4 (thanks apple!)
