@@ -70,8 +70,6 @@ No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#spon
 
 To develop htmx locally, you will need to install the development dependencies.
 
-__Requires Node 15.__
-
 Run:
 
 ```
