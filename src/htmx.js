@@ -2602,19 +2602,29 @@ var htmx = (function() {
    * @param {Node} elt
    * @returns {Element[]}
    */
+  const HX_ON_QUERY = new XPathEvaluator()
+      .createExpression('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
+      ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]');
+
+  function processHXOnRoot(elt, elements) {
+    if (shouldProcessHxOn(elt)) {
+      elements.push(asElement(elt))
+    }
+    const iter = HX_ON_QUERY.evaluate(elt)
+    let node = null;
+    while (node = iter.iterateNext()) elements.push(asElement(node))
+  }
+
   function findHxOnWildcardElements(elt) {
     let node = null
     /** @type {Element[]} */
     const elements = []
-
-    if (!(elt instanceof ShadowRoot)) {
-      if (shouldProcessHxOn(elt)) {
-        elements.push(asElement(elt))
+    if (elt instanceof DocumentFragment) {
+      for (const child of elt.childNodes) {
+        processHXOnRoot(child, elements);
       }
-
-      const iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
-        ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
-      while (node = iter.iterateNext()) elements.push(asElement(node))
+    } else {
+      processHXOnRoot(elt, elements);
     }
     return elements
   }

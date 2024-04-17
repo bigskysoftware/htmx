@@ -1298,4 +1298,20 @@ describe('Core htmx Shadow DOM Tests', function() {
     this.server.respond()
     values.should.deep.equal({ name: '', outside: '' })
   })
+
+  it('can handle basic events w/ no other attributes', function() {
+    var btn = make("<button hx-on:click='window.foo = true'>Foo</button>")
+    btn.click()
+    window.foo.should.equal(true)
+    delete window.foo
+  })
+
+  it('can handle basic events w/ no other attributes in child', function() {
+    var div = make("<div><button id='b1' hx-on:click='window.foo = true'>Foo</button></div>")
+    var btn = div.querySelector("#b1")
+    btn.click()
+    window.foo.should.equal(true)
+    delete window.foo
+  })
+
 })
