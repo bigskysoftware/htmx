@@ -3600,7 +3600,9 @@ var htmx = (function() {
       return encodedParameters
     } else {
       if (usesFormData(elt)) {
-        return formDataFromObject(filteredParameters)
+        // Force conversion to an actual FormData object in case filteredParameters is a formDataProxy
+        // See https://github.com/bigskysoftware/htmx/issues/2317
+        return overrideFormData(new FormData(), formDataFromObject(filteredParameters))
       } else {
         return urlEncode(filteredParameters)
       }
