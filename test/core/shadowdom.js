@@ -1308,10 +1308,9 @@ describe('Core htmx Shadow DOM Tests', function() {
 
   it('can handle basic events w/ no other attributes in child', function() {
     var div = make("<div><button id='b1' hx-on:click='window.foo = true'>Foo</button></div>")
-    var btn = div.querySelector("#b1")
+    var btn = div.querySelector('#b1')
     btn.click()
     window.foo.should.equal(true)
     delete window.foo
   })
-
 })
