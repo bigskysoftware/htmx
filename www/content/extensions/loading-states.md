@@ -7,7 +7,7 @@ This extension allows you to easily manage loading states while a request is in 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/loading-states.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
 ```
 
 ## Usage

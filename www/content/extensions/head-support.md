@@ -18,7 +18,7 @@ This extension addresses that shortcoming & will likely be integrated into htmx 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/head-support.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/head-support.js"></script>
 ```
 
 ## Usage

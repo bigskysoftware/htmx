@@ -8,7 +8,7 @@ actual HTTP method.  This is necessary when dealing with some firewall or proxy 
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/method-override.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/method-override.js"></script>
 ```
 
 ### Usage
