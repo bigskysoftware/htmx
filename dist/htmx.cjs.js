@@ -271,7 +271,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0a'
+    version: '2.0.0-beta3'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -2602,19 +2602,28 @@ var htmx = (function() {
    * @param {Node} elt
    * @returns {Element[]}
    */
-  function findHxOnWildcardElements(elt) {
+  const HX_ON_QUERY = new XPathEvaluator()
+    .createExpression('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
+      ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]')
+
+  function processHXOnRoot(elt, elements) {
+    if (shouldProcessHxOn(elt)) {
+      elements.push(asElement(elt))
+    }
+    const iter = HX_ON_QUERY.evaluate(elt)
     let node = null
+    while (node = iter.iterateNext()) elements.push(asElement(node))
+  }
+
+  function findHxOnWildcardElements(elt) {
     /** @type {Element[]} */
     const elements = []
-
-    if (!(elt instanceof ShadowRoot)) {
-      if (shouldProcessHxOn(elt)) {
-        elements.push(asElement(elt))
+    if (elt instanceof DocumentFragment) {
+      for (const child of elt.childNodes) {
+        processHXOnRoot(child, elements)
       }
-
-      const iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
-        ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
-      while (node = iter.iterateNext()) elements.push(asElement(node))
+    } else {
+      processHXOnRoot(elt, elements)
     }
     return elements
   }
@@ -3591,7 +3600,9 @@ var htmx = (function() {
       return encodedParameters
     } else {
       if (usesFormData(elt)) {
-        return formDataFromObject(filteredParameters)
+        // Force conversion to an actual FormData object in case filteredParameters is a formDataProxy
+        // See https://github.com/bigskysoftware/htmx/issues/2317
+        return overrideFormData(new FormData(), formDataFromObject(filteredParameters))
       } else {
         return urlEncode(filteredParameters)
       }
