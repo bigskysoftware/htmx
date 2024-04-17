@@ -50,7 +50,7 @@ against `htmx` in each distribution.
 
 ### Installing Extensions {#installing}
 
-You can find the source for the bundled extensions at `https://unpkg.com/browse/htmx.org@1.9.11/dist/ext/`.  You will need
+You can find the source for the bundled extensions at `https://unpkg.com/browse/htmx.org@1.9.12/dist/ext/`.  You will need
 to include the javascript file for the extension and then install it using the [hx-ext](@/attributes/hx-ext.md) attributes.
 
 See the individual extension documentation for more details.

@@ -89,7 +89,7 @@ return (function () {
                 sock.binaryType = htmx.config.wsBinaryType;
                 return sock;
             },
-            version: "1.9.11"
+            version: "1.9.12"
         };
 
         /** @type {import("./htmx").HtmxInternalApi} */
@@ -138,12 +138,12 @@ return (function () {
 
         /**
          * @param {string} tag
-         * @param {boolean} global
+         * @param {boolean} [global]
          * @returns {RegExp}
          */
-        function makeTagRegEx(tag, global = false) {
-            return new RegExp(`<${tag}(\\s[^>]*>|>)([\\s\\S]*?)<\\/${tag}>`,
-                global ? 'gim' : 'im');
+        function makeTagRegEx(tag, global) {
+          return new RegExp('<' + tag + '(\\s[^>]*>|>)([\\s\\S]*?)<\\/' + tag + '>',
+            !!global ? 'gim' : 'im')
         }
 
         function parseInterval(str) {
@@ -1945,6 +1945,9 @@ return (function () {
 
         function shouldProcessHxOn(elt) {
             var attributes = elt.attributes
+            if (!attributes) {
+                return false
+            }
             for (var j = 0; j < attributes.length; j++) {
                 var attrName = attributes[j].name
                 if (startsWith(attrName, "hx-on:") || startsWith(attrName, "data-hx-on:") ||
@@ -1967,11 +1970,11 @@ return (function () {
                 var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
                                                                            ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
                 while (node = iter.iterateNext()) elements.push(node)
-            } else {
+            } else if (typeof elt.getElementsByTagName === "function") {
                 var allElements = elt.getElementsByTagName("*")
                 for (var i = 0; i < allElements.length; i++) {
-                    if (shouldProcessHxOn(allElements[i])) {
-                        elements.push(allElements[i])
+                  if (shouldProcessHxOn(allElements[i])) {
+                      elements.push(allElements[i])
                     }
                 }
             }

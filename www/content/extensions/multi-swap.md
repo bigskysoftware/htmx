@@ -11,7 +11,7 @@ It is a very powerful tool in conjunction with `hx-boost` and `preload` extensio
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/multi-swap.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/multi-swap.js"></script>
 ```
 
 ## Usage
