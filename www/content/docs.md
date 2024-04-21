@@ -1034,7 +1034,7 @@ Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attrib
            onkeyup="this.setCustomValidity('') // reset the validation on keyup"
            hx-on:htmx:validation:validate="if(this.value != 'foo') {
                     this.setCustomValidity('Please enter the value foo') // set the validation error
-                    htmx.find('#foo-form').reportValidity()              // report the issue
+                    htmx.find('#example-form').reportValidity()          // report the issue
                 }">
 </form>
 ```
