@@ -8,7 +8,7 @@ or through the `console.log` function with a `DEBUG:` prefix.
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/debug.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/debug.js"></script>
 ```
 
 ## Usage

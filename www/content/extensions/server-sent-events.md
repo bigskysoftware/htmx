@@ -18,7 +18,7 @@ Use the following attributes to configure how SSE connections behave:
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/sse.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/sse.js"></script>
 ```
 
 ## Usage

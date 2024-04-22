@@ -246,6 +246,11 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it("script tags only execute once using templates", function(done) {
+        if (!supportsTemplates()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support templates"
+            this.skip()
+            return
+        }
         var oldUseTemplateFragmentsValue = htmx.config.useTemplateFragments
         htmx.config.useTemplateFragments = true
 
@@ -267,6 +272,11 @@ describe("Core htmx Regression Tests", function(){
     })
 
     it("script tags only execute once when nested using templates", function(done) {
+        if (!supportsTemplates()) {
+            this._runnable.title += " - Skipped as IE11 doesn't support templates"
+            this.skip()
+            return
+        }
         var oldUseTemplateFragmentsValue = htmx.config.useTemplateFragments
         htmx.config.useTemplateFragments = true
 
