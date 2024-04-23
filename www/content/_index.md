@@ -131,8 +131,8 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
 </td>
 <td>
-        <a href="https://www.dasfilter.shop/">
-          <img alt="Das Filter" src="/img/das-filter.png" style="width:100%;max-width:300px">
+        <a href="https://dasfilter.shop/pages/partner-program">
+          <img alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
         </a>
 </td>
 </tr>
