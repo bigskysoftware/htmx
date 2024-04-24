@@ -323,8 +323,7 @@ var htmx = (function() {
     shouldCancel,
     triggerEvent,
     triggerErrorEvent,
-    withExtensions,
-    extensionEnabled
+    withExtensions
   }
 
   const VERBS = ['get', 'post', 'put', 'delete', 'patch']
@@ -2892,42 +2891,6 @@ var htmx = (function() {
         logError(e)
       }
     })
-  }
-
-  /**
-   * `extensionEnabled` checks if an extension with given name is active on an element.
-   * This method is intended to be used in the extension API
-   *
-   * @param {Element} elt
-   * @param {string} extensionName
-   * @returns {boolean}
-   */
-  function extensionEnabled(elt, extensionName, extensionsToReturn, extensionsToIgnore) {
-    if (extensionsToReturn == undefined) {
-      extensionsToReturn = []
-    }
-    if (elt == undefined) {
-      return extensionsToReturn.indexOf(extensionName) >= 0
-    }
-    if (extensionsToIgnore == undefined) {
-      extensionsToIgnore = []
-    }
-    const extensionsForElement = getAttributeValue(elt, 'hx-ext')
-    if (extensionsForElement) {
-      forEach(extensionsForElement.split(','), function(extensionName) {
-        extensionName = extensionName.replace(/ /g, '')
-        if (extensionName.slice(0, 7) == 'ignore:') {
-          extensionsToIgnore.push(extensionName.slice(7))
-          return
-        }
-        if (extensionsToIgnore.indexOf(extensionName) < 0) {
-          if (extensionName && extensionsToReturn.indexOf(extensionName) < 0) {
-            extensionsToReturn.push(extensionName)
-          }
-        }
-      })
-    }
-    return extensionEnabled(asElement(parentElt(elt)), extensionName, extensionsToReturn, extensionsToIgnore)
   }
 
   function logError(msg) {
