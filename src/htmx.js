@@ -323,7 +323,8 @@ var htmx = (function() {
     shouldCancel,
     triggerEvent,
     triggerErrorEvent,
-    withExtensions
+    withExtensions,
+    extensionEnabled
   }
 
   const VERBS = ['get', 'post', 'put', 'delete', 'patch']
@@ -2635,8 +2636,21 @@ var htmx = (function() {
   function findElementsToProcess(elt) {
     if (elt.querySelectorAll) {
       const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
+
+      const extensionSelectors = []
+      for (const e in extensions) {
+        const extension = extensions[e]
+        if (extension.getSelectors) {
+          var selectors = extension.getSelectors()
+          if (selectors) {
+            extensionSelectors.push(selectors)
+          }
+        }
+      }
+
       const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
-        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]')
+        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
+
       return results
     } else {
       return []
@@ -2878,6 +2892,42 @@ var htmx = (function() {
         logError(e)
       }
     })
+  }
+
+  /**
+   * `extensionEnabled` checks if an extension with given name is active on an element.
+   * This method is intended to be used in the extension API
+   *
+   * @param {Element} elt
+   * @param {string} extensionName
+   * @returns {boolean}
+   */
+  function extensionEnabled(elt, extensionName, extensionsToReturn, extensionsToIgnore) {
+    if (extensionsToReturn == undefined) {
+      extensionsToReturn = []
+    }
+    if (elt == undefined) {
+      return extensionsToReturn.indexOf(extensionName) >= 0
+    }
+    if (extensionsToIgnore == undefined) {
+      extensionsToIgnore = []
+    }
+    const extensionsForElement = getAttributeValue(elt, 'hx-ext')
+    if (extensionsForElement) {
+      forEach(extensionsForElement.split(','), function(extensionName) {
+        extensionName = extensionName.replace(/ /g, '')
+        if (extensionName.slice(0, 7) == 'ignore:') {
+          extensionsToIgnore.push(extensionName.slice(7))
+          return
+        }
+        if (extensionsToIgnore.indexOf(extensionName) < 0) {
+          if (extensionName && extensionsToReturn.indexOf(extensionName) < 0) {
+            extensionsToReturn.push(extensionName)
+          }
+        }
+      })
+    }
+    return extensionEnabled(asElement(parentElt(elt)), extensionName, extensionsToReturn, extensionsToIgnore)
   }
 
   function logError(msg) {
@@ -4754,6 +4804,7 @@ var htmx = (function() {
   function extensionBase() {
     return {
       init: function(api) { return null },
+      getSelectors: function() { return null },
       onEvent: function(name, evt) { return true },
       transformResponse: function(text, xhr, elt) { return text },
       isInlineSwap: function(swapStyle) { return false },
