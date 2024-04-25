@@ -106,6 +106,51 @@ describe("security options", function() {
         btn.innerHTML.should.equal("Clicked a second time");
     })
 
+    it("can disable hx-on on a single elt", function(){
+        var btn = make("<button hx-disable hx-on:click='window.foo = true'>Foo</button>");
+        btn.click();
+        should.equal(window.foo, undefined);
+        delete window.foo;
+    })
+
+
+    it("can disable hx-on on a parent elt", function(){
+        var div = make("<div hx-disable><button id='b1' hx-on:click='window.foo = true'>Foo</button></div>");
+        var btn = byId("b1")
+        btn.click();
+        should.equal(window.foo, undefined);
+        delete window.foo;
+    })
+
+
+    it("can disable hx-on on a single elt dynamically", function(){
+        var btn = make("<button hx-on:click='window.foo = true'>Foo</button>");
+        btn.click();
+        should.equal(window.foo, true);
+        delete window.foo;
+
+        btn.setAttribute("hx-disable", "");
+
+        btn.click();
+        should.equal(window.foo, undefined);
+        delete window.foo;
+    })
+
+
+    it("can disable hx-on on a parent elt dynamically", function(){
+        var div = make("<div><button id='b1' hx-on:click='window.foo = true'>Foo</button></div>");
+        var btn = byId("b1")
+        btn.click();
+        should.equal(window.foo, true);
+        delete window.foo;
+
+        div.setAttribute("hx-disable", "");
+
+        btn.click();
+        should.equal(window.foo, undefined);
+        delete window.foo;
+    })
+
     it("can make egress cross site requests when htmx.config.selfRequestsOnly is enabled", function(done){
         this.timeout(4000)
         // should trigger send error, rather than reject

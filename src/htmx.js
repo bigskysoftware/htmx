@@ -1425,6 +1425,10 @@ return (function () {
                 getRawAttribute(elt,'href').indexOf("#") !== 0;
         }
 
+        function eltIsDisabled(elt) {
+            return closest(elt, htmx.config.disableSelector);
+        }
+
         function boostElement(elt, nodeData, triggerSpecs) {
             if ((elt.tagName === "A" && isLocalLink(elt) && (elt.target === "" || elt.target === "_self")) || elt.tagName === "FORM") {
                 nodeData.boosted = true;
@@ -1441,7 +1445,7 @@ return (function () {
                 }
                 triggerSpecs.forEach(function(triggerSpec) {
                     addEventListener(elt, function(elt, evt) {
-                        if (closest(elt, htmx.config.disableSelector)) {
+                        if (eltIsDisabled(elt)) {
                             cleanUpElement(elt)
                             return
                         }
@@ -2052,6 +2056,9 @@ return (function () {
                 return maybeEval(elt, function() {
                     if (!func) {
                         func = new Function("event", code);
+                    }
+                    if (eltIsDisabled(elt)) {
+                        return;
                     }
                     func.call(elt, e);
                 });
