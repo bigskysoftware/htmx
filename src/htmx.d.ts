@@ -53,6 +53,7 @@ declare namespace htmx {
         const triggerSpecsCache: any | null;
         const disableInheritance: boolean;
         const responseHandling: HtmxResponseHandlingConfig[];
+        const allowNestedOobSwaps: boolean;
     }
     const parseInterval: (str: string) => number;
     const _: (str: string) => any;

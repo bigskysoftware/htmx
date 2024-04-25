@@ -2635,8 +2635,21 @@ var htmx = (function() {
   function findElementsToProcess(elt) {
     if (elt.querySelectorAll) {
       const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
+
+      const extensionSelectors = []
+      for (const e in extensions) {
+        const extension = extensions[e]
+        if (extension.getSelectors) {
+          var selectors = extension.getSelectors()
+          if (selectors) {
+            extensionSelectors.push(selectors)
+          }
+        }
+      }
+
       const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
-        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]')
+        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
+
       return results
     } else {
       return []
@@ -4754,6 +4767,7 @@ var htmx = (function() {
   function extensionBase() {
     return {
       init: function(api) { return null },
+      getSelectors: function() { return null },
       onEvent: function(name, evt) { return true },
       transformResponse: function(text, xhr, elt) { return text },
       isInlineSwap: function(swapStyle) { return false },
