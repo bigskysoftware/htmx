@@ -1,8 +1,8 @@
 describe('hx-ext attribute', function() {
-  var ext1Calls, ext2Calls, ext3Calls, ext4Calls
+  var ext1Calls, ext2Calls, ext3Calls, ext4Calls, ext5Calls
 
   beforeEach(function() {
-    ext1Calls = ext2Calls = ext3Calls = ext4Calls = 0
+    ext1Calls = ext2Calls = ext3Calls = ext4Calls = ext5Calls = 0
     this.server = makeServer()
     clearWorkArea()
     htmx.defineExtension('ext-1', {
@@ -33,6 +33,14 @@ describe('hx-ext attribute', function() {
         }
       }
     })
+    htmx.defineExtension('ext-5', {
+      getSelectors: function() { return ['[foo]'] },
+      onEvent: function(name, evt) {
+        if (name === 'htmx:beforeProcessNode' && evt.target.getAttribute('foo')) {
+          ext5Calls++
+        }
+      }
+    })
   })
 
   afterEach(function() {
@@ -41,6 +49,8 @@ describe('hx-ext attribute', function() {
     htmx.removeExtension('ext-1')
     htmx.removeExtension('ext-2')
     htmx.removeExtension('ext-3')
+    htmx.removeExtension('ext-4')
+    htmx.removeExtension('ext-5')
   })
 
   it('A simple extension is invoked properly', function() {
@@ -111,11 +121,23 @@ describe('hx-ext attribute', function() {
     ext4Calls.should.equal(1)
   })
 
+  it('A simple extension is invoked properly for elements it specified in getSelectors', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Trigger': 'namespace:example' }, ''])
+    var btn = make('<div data-hx-ext="ext-5"><div foo="bar">test</div></div>')
+    btn.click()
+    this.server.respond()
+    ext1Calls.should.equal(0)
+    ext2Calls.should.equal(0)
+    ext3Calls.should.equal(0)
+    ext4Calls.should.equal(0)
+    ext5Calls.should.equal(1)
+  })
+
   it('Extensions are ignored properly', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 
-    make('<div id="div-AA" hx-ext="ext-1, ext-2"><button id="btn-AA" hx-get="/test">Click Me!</button>' +
-            '<div id="div-BB" hx-ext="ignore:ext-1"><button id="btn-BB" hx-get="/test"></div></div>')
+    make('<div id="div-AA" hx-ext="ext-1,ext-2,ext-5"><button id="btn-AA" hx-get="/test" foo="foo">Click Me!</button>' +
+            '<div id="div-BB" hx-ext="ignore:ext-1,ignore:ext-5"><button id="btn-BB" hx-get="/test" foo="foo"></button></div></div>')
 
     var btn1 = byId('btn-AA')
     var btn2 = byId('btn-BB')
@@ -131,5 +153,7 @@ describe('hx-ext attribute', function() {
     ext1Calls.should.equal(1)
     ext2Calls.should.equal(2)
     ext3Calls.should.equal(0)
+
+    ext5Calls.should.equal(1)
   })
 })
