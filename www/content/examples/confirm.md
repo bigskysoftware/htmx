@@ -9,7 +9,7 @@ applications UX.
 
 In this example we will see how to use [sweetalert2](https://sweetalert2.github.io)  to implement a custom confirmation dialog. Below are two 
 examples, one using a click+custom event method, and one using the built-in `hx-confirm` attribute and
-the and the [`htmx:confirm`](@/events.md#htmx:confirm) event.
+the [`htmx:confirm`](@/events.md#htmx:confirm) event.
 
 ## Using on click+custom event
 
