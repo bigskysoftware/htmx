@@ -427,9 +427,9 @@ with any of the following values:
 | `innerHTML` | the default, puts the content inside the target element
 | `outerHTML` | replaces the entire target element with the returned content
 | `afterbegin` | prepends the content before the first child inside the target
-| `beforebegin` | prepends the content before the target in the targets parent element
+| `beforebegin` | prepends the content before the target in the target's parent element
 | `beforeend` | appends the content after the last child inside the target
-| `afterend` | appends the content after the target in the targets parent element
+| `afterend` | appends the content after the target in the target's parent element
 | `delete` | deletes the target element regardless of the response
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
@@ -485,7 +485,7 @@ The modifiers available on `hx-swap` are:
 | `settle`      | The settle delay to use (e.g. `100ms`) between when new content is inserted and when it is settled       |
 | `ignoreTitle` | If set to `true`, any title found in the new content will be ignored and not update the document title   |
 | `scroll`      | `top` or `bottom`, will scroll the target element to its top or bottom                                   |
-| `show`        | `top` or `bottom`, will scroll the target elements top or bottom into view                               |
+| `show`        | `top` or `bottom`, will scroll the target element's top or bottom into view                               |
 
 All swap modifiers appear after the swap style is specified, and are colon-separated.
 
@@ -494,7 +494,7 @@ See the [hx-swap](@/attributes/hx-swap.md) documentation for more details on the
 ### Synchronization {#synchronization}
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
-to supersede the request of another element, or to wait until the other elements request has finished.
+to supersede the request of another element, or to wait until the other element's request has finished.
 
 htmx offers a [`hx-sync`](@/attributes/hx-sync.md) attribute to help you accomplish this.
 
@@ -741,7 +741,7 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
 to work, they simply don't use ajax requests.  This is known as
 [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
-a wider audience to use your sites functionality.
+a wider audience to use your site's functionality.
 
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
@@ -1014,7 +1014,7 @@ WebSocket sends.
 
 Htmx fires events around validation that can be used to hook in custom validation and error handling:
 
-* `htmx:validation:validate` - called before an elements `checkValidity()` method is called.  May be used to add in
+* `htmx:validation:validate` - called before an element's `checkValidity()` method is called.  May be used to add in
    custom validation logic
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
