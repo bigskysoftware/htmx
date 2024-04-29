@@ -131,7 +131,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
 </td>
 <td>
-        <a href="https://dasfilter.shop/pages/partner-program">
+        <a href="https://dasfilter.shop/pages/affiliates">
           <img alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
         </a>
 </td>
@@ -186,6 +186,11 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <td>
         <a data-github-account="VPSServerCom" href="https://www.vpsserver.com/">
           <img alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a data-github-account="appleple" href="https://www.a-blogcms.jp/">
+          <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 </tr>
