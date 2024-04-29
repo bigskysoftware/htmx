@@ -427,9 +427,9 @@ with any of the following values:
 | `innerHTML` | the default, puts the content inside the target element
 | `outerHTML` | replaces the entire target element with the returned content
 | `afterbegin` | prepends the content before the first child inside the target
-| `beforebegin` | prepends the content before the target in the targets parent element
+| `beforebegin` | prepends the content before the target in the target's parent element
 | `beforeend` | appends the content after the last child inside the target
-| `afterend` | appends the content after the target in the targets parent element
+| `afterend` | appends the content after the target in the target's parent element
 | `delete` | deletes the target element regardless of the response
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
 
@@ -485,7 +485,7 @@ The modifiers available on `hx-swap` are:
 | `settle`      | The settle delay to use (e.g. `100ms`) between when new content is inserted and when it is settled       |
 | `ignoreTitle` | If set to `true`, any title found in the new content will be ignored and not update the document title   |
 | `scroll`      | `top` or `bottom`, will scroll the target element to its top or bottom                                   |
-| `show`        | `top` or `bottom`, will scroll the target elements top or bottom into view                               |
+| `show`        | `top` or `bottom`, will scroll the target element's top or bottom into view                               |
 
 All swap modifiers appear after the swap style is specified, and are colon-separated.
 
@@ -494,7 +494,7 @@ See the [hx-swap](@/attributes/hx-swap.md) documentation for more details on the
 ### Synchronization {#synchronization}
 
 Often you want to coordinate the requests between two elements.  For example, you may want a request from one element
-to supersede the request of another element, or to wait until the other elements request has finished.
+to supersede the request of another element, or to wait until the other element's request has finished.
 
 htmx offers a [`hx-sync`](@/attributes/hx-sync.md) attribute to help you accomplish this.
 
@@ -741,7 +741,7 @@ The anchor tag in this div will issue an AJAX `GET` request to `/blog` and swap 
 A feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
 to work, they simply don't use ajax requests.  This is known as
 [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
-a wider audience to use your sites functionality.
+a wider audience to use your site's functionality.
 
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
@@ -1014,7 +1014,7 @@ WebSocket sends.
 
 Htmx fires events around validation that can be used to hook in custom validation and error handling:
 
-* `htmx:validation:validate` - called before an elements `checkValidity()` method is called.  May be used to add in
+* `htmx:validation:validate` - called before an element's `checkValidity()` method is called.  May be used to add in
    custom validation logic
 * `htmx:validation:failed` - called when `checkValidity()` returns false, indicating an invalid input
 * `htmx:validation:halted` - called when a request is not issued due to validation errors.  Specific errors may be found
@@ -1608,7 +1608,7 @@ listed below:
 | `htmx.config.timeout`                 | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
 | `htmx.config.scrollBehavior`          | defaults to 'smooth', the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.      |
 | `htmx.config.defaultFocusScroll`      | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
-| `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser                          |
+| `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`                           |
 | `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.             |
 | `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                          |
 | `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                             |
