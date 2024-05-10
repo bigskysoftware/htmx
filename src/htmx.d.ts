@@ -36,6 +36,7 @@ declare namespace htmx {
         const allowEval: boolean;
         const allowScriptTags: boolean;
         const inlineScriptNonce: string;
+        const inlineStyleNonce: string;
         const attributesToSettle: string[];
         const withCredentials: boolean;
         const timeout: number;
