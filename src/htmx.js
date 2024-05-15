@@ -165,6 +165,12 @@ var htmx = (function() {
        */
       inlineScriptNonce: '',
       /**
+       * If set, the nonce will be added to inline styles.
+       * @type string
+       * @default ''
+       */
+      inlineStyleNonce: '',
+      /**
        * The attributes to settle during the settling phase.
        * @type string[]
        * @default ['class', 'style', 'width', 'height']
@@ -4866,8 +4872,9 @@ var htmx = (function() {
 
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {
+      const nonceAttribute = htmx.config.inlineStyleNonce ? ` nonce="${htmx.config.inlineStyleNonce}"` : ''
       getDocument().head.insertAdjacentHTML('beforeend',
-        '<style>\
+        '<style' + nonceAttribute + '>\
       .' + htmx.config.indicatorClass + '{opacity:0}\
       .' + htmx.config.requestClass + ' .' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
       .' + htmx.config.requestClass + '.' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
