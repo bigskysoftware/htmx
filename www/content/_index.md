@@ -2,9 +2,32 @@
 insert_anchor_links = "left"
 +++
 
+<style type="text/css">
+body.lmao .dark-hero .main {
+    display:none;
+}
+body.lmao .dark-hero .wuw {
+    display:block;
+    padding-top: 24px;
+}
+body .dark-hero .wuw {
+    display:none;
+}
+</style>
+<script type="application/javascript">
+if(window.location.search=="?wuw=true") {
+  document.body.classList.add('lmao');
+}
+</script>
+
 <div class="dark-hero full-width" classes="add appear">
-  <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
-  <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+  <div class="main">
+      <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
+      <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+  </div>
+  <div class="wuw">
+     <img src="/img/wuw.png">
+  </div>
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
