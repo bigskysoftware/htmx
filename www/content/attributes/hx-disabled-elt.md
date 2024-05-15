@@ -3,9 +3,20 @@ title = "hx-disabled-elt"
 +++
 
 The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute
-added to them for the duration of the request.
+added to them for the duration of the request. The value of this attribute can be:
 
-The value of this attribute is a CSS query selector of the element or elements to disable, extended by keywords `closest`, `find`, `next` and `previous` (see [hx-trigger][] `from:` modifier for syntax details), or the keyword `this`.
+* A CSS query selector of the element to disable.
+* `this` to disable the element itself
+* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
+  ancestor element or itself, that matches the given CSS selector
+  (e.g. `closest fieldset` will disable the closest to the element `fieldset`).
+* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector
+* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
+* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector
+  (e.g. `next button` will disable the closest following sibling `button` element)
+* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
+* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
+  (e.g `previous input` will disable the closest previous sibling `input` element)
 
 Here is an example with a button that will disable itself during a request:
 
