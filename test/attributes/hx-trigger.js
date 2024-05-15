@@ -950,6 +950,23 @@ describe("hx-trigger attribute", function(){
         }
     });
 
+    it('fires the htmx:trigger event for delayed triggers', function (done) {
+        var param = "foo"
+        var handler = htmx.on("htmx:trigger", function (evt) {
+            param = "bar"
+        });
+        var div = make('<button hx-trigger="click delay:10ms">Submit</button>');
+        div.click();
+        setTimeout(function () {
+            try {
+                should.equal(param, "bar");
+                done();
+            } finally {
+                htmx.off("htmx:trigger", handler);
+            }
+        }, 50);
+    });
+
     it('filters support "this" reference to the current element', function(){
         this.server.respondWith("GET", "/test", "Called!");
         var form = make('<form hx-get="/test" hx-trigger="click[this.classList.contains(\'bar\')]">Not Called</form>');
