@@ -2259,10 +2259,18 @@ var htmx = (function() {
 
   /**
    * @param {Element} elt
+   */
+  function eltIsDisabled(elt) {
+    return closest(elt, htmx.config.disableSelector);
+  }
+
+  /**
+   * @param {Element} elt
    * @param {HtmxNodeInternalData} nodeData
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    */
   function boostElement(elt, nodeData, triggerSpecs) {
+
     if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || elt.tagName === 'FORM') {
       nodeData.boosted = true
       let verb, path
@@ -2279,7 +2287,7 @@ var htmx = (function() {
       triggerSpecs.forEach(function(triggerSpec) {
         addEventListener(elt, function(node, evt) {
           const elt = asElement(node)
-          if (closest(elt, htmx.config.disableSelector)) {
+          if (eltIsDisabled(elt)) {
             cleanUpElement(elt)
             return
           }
@@ -2727,10 +2735,13 @@ var htmx = (function() {
     /** @type EventListener */
     const listener = function(e) {
       maybeEval(elt, function() {
+        if (eltIsDisabled(elt)) {
+          return;
+        }
         if (!func) {
           func = new Function('event', code)
         }
-        func.call(elt, e)
+        func.call(elt, e);
       })
     }
     elt.addEventListener(eventName, listener)
