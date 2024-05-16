@@ -2261,7 +2261,7 @@ var htmx = (function() {
    * @param {Element} elt
    */
   function eltIsDisabled(elt) {
-    return closest(elt, htmx.config.disableSelector);
+    return closest(elt, htmx.config.disableSelector)
   }
 
   /**
@@ -2270,7 +2270,6 @@ var htmx = (function() {
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    */
   function boostElement(elt, nodeData, triggerSpecs) {
-
     if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || elt.tagName === 'FORM') {
       nodeData.boosted = true
       let verb, path
@@ -2736,12 +2735,12 @@ var htmx = (function() {
     const listener = function(e) {
       maybeEval(elt, function() {
         if (eltIsDisabled(elt)) {
-          return;
+          return
         }
         if (!func) {
           func = new Function('event', code)
         }
-        func.call(elt, e);
+        func.call(elt, e)
       })
     }
     elt.addEventListener(eventName, listener)
