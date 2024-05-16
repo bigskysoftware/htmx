@@ -2721,7 +2721,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {EventTarget} elt
+   * @param {Element} elt
    * @param {string} eventName
    * @param {string} code
    */
