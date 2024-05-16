@@ -179,19 +179,28 @@ than a single value.
 
 ### Event - `htmx:confirm` {#htmx:confirm}
 
-This event is triggered immediately after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
-the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail`
+This event is triggered immediately after a trigger occurs on an element. It allows you to cancel (or delay) issuing
+the AJAX request.
+
+**Every AJAX request issued by HTMX will fire this event**, including requests sent using the [Javascript API](@reference.md#api).
+To handle only events from elements with the [`hx-confirm`](@/attributes/hx-confirm.md) attribute, you may check
+for `detail.question` as shown in the example below, or attach the event listener to a more specific element.
+
+If you call `preventDefault()` on the event, it will not issue the given request.  The `detail`
 object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
 later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
 
-Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
+Here is an example using [SweetAlert](https://sweetalert.js.org):
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
+    if (!evt.detail.question)
+      return;
+
     evt.preventDefault();
     swal({
       title: "Are you sure?",
-      text: "Are you sure you are sure?",
+      text: evt.detail.question,
       icon: "warning",
       buttons: true,
       dangerMode: true,
@@ -208,6 +217,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 {target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest}
 
 * `detail.elt` - the element in question
+* `detail.question` - the confirmation prompt from the [`hx-confirm`](@/attributes/hx-confirm.md) attribute (otherwise `null`)
 * `detail.etc` - additional request information (mostly unused)
 * `detail.issueRequest` - a no argument function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!)
 * `detail.path` - the path of the request
