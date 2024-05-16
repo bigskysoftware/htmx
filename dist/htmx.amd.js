@@ -166,6 +166,12 @@ var htmx = (function() {
        */
       inlineScriptNonce: '',
       /**
+       * If set, the nonce will be added to inline styles.
+       * @type string
+       * @default ''
+       */
+      inlineStyleNonce: '',
+      /**
        * The attributes to settle during the settling phase.
        * @type string[]
        * @default ['class', 'style', 'width', 'height']
@@ -272,7 +278,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.0-beta3'
+    version: '2.0.0-beta4'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -2254,6 +2260,13 @@ var htmx = (function() {
 
   /**
    * @param {Element} elt
+   */
+  function eltIsDisabled(elt) {
+    return closest(elt, htmx.config.disableSelector)
+  }
+
+  /**
+   * @param {Element} elt
    * @param {HtmxNodeInternalData} nodeData
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    */
@@ -2274,7 +2287,7 @@ var htmx = (function() {
       triggerSpecs.forEach(function(triggerSpec) {
         addEventListener(elt, function(node, evt) {
           const elt = asElement(node)
-          if (closest(elt, htmx.config.disableSelector)) {
+          if (eltIsDisabled(elt)) {
             cleanUpElement(elt)
             return
           }
@@ -2636,8 +2649,21 @@ var htmx = (function() {
   function findElementsToProcess(elt) {
     if (elt.querySelectorAll) {
       const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
+
+      const extensionSelectors = []
+      for (const e in extensions) {
+        const extension = extensions[e]
+        if (extension.getSelectors) {
+          var selectors = extension.getSelectors()
+          if (selectors) {
+            extensionSelectors.push(selectors)
+          }
+        }
+      }
+
       const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
-        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]')
+        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
+
       return results
     } else {
       return []
@@ -2696,7 +2722,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {EventTarget} elt
+   * @param {Element} elt
    * @param {string} eventName
    * @param {string} code
    */
@@ -2709,6 +2735,9 @@ var htmx = (function() {
     /** @type EventListener */
     const listener = function(e) {
       maybeEval(elt, function() {
+        if (eltIsDisabled(elt)) {
+          return
+        }
         if (!func) {
           func = new Function('event', code)
         }
@@ -4755,6 +4784,7 @@ var htmx = (function() {
   function extensionBase() {
     return {
       init: function(api) { return null },
+      getSelectors: function() { return null },
       onEvent: function(name, evt) { return true },
       transformResponse: function(text, xhr, elt) { return text },
       isInlineSwap: function(swapStyle) { return false },
@@ -4853,8 +4883,9 @@ var htmx = (function() {
 
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {
+      const nonceAttribute = htmx.config.inlineStyleNonce ? ` nonce="${htmx.config.inlineStyleNonce}"` : ''
       getDocument().head.insertAdjacentHTML('beforeend',
-        '<style>\
+        '<style' + nonceAttribute + '>\
       .' + htmx.config.indicatorClass + '{opacity:0}\
       .' + htmx.config.requestClass + ' .' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
       .' + htmx.config.requestClass + '.' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\

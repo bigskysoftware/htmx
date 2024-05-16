@@ -36,6 +36,7 @@ declare namespace htmx {
         const allowEval: boolean;
         const allowScriptTags: boolean;
         const inlineScriptNonce: string;
+        const inlineStyleNonce: string;
         const attributesToSettle: string[];
         const withCredentials: boolean;
         const timeout: number;
@@ -53,6 +54,7 @@ declare namespace htmx {
         const triggerSpecsCache: any | null;
         const disableInheritance: boolean;
         const responseHandling: HtmxResponseHandlingConfig[];
+        const allowNestedOobSwaps: boolean;
     }
     const parseInterval: (str: string) => number;
     const _: (str: string) => any;

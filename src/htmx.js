@@ -277,7 +277,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.0-beta3'
+    version: '2.0.0-beta4'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
