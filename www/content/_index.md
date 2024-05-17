@@ -3,6 +3,12 @@ insert_anchor_links = "left"
 +++
 
 <style type="text/css">
+.wuw {
+  display:none;
+}
+.uwu {
+  display:none;
+}
 body.lmao .dark-hero .main {
     display:none;
 }
@@ -10,13 +16,26 @@ body.lmao .dark-hero .wuw {
     display:block;
     padding-top: 24px;
 }
-body .dark-hero .wuw {
+body.lmao .dark-hero .uwu {
     display:none;
+}
+body.kawaii .dark-hero .main {
+    display:none;
+}
+body.kawaii .dark-hero .wuw {
+    display:none;
+}
+body.kawaii .dark-hero .uwu {
+    display:block;
+    padding-top: 24px;
 }
 </style>
 <script type="application/javascript">
 if(window.location.search=="?wuw=true") {
   document.body.classList.add('lmao');
+}
+if(window.location.search=="?uwu=true") {
+  document.body.classList.add('kawaii');
 }
 </script>
 
@@ -28,6 +47,11 @@ if(window.location.search=="?wuw=true") {
   <div class="wuw">
      <a href="https://swag.htmx.org/products/shut-up-warren-tee">
        <img src="/img/wuw.png">
+     </a>
+  </div>
+  <div class="uwu">
+     <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
+       <img src="/img/kawaii.png">
      </a>
   </div>
 </div>
