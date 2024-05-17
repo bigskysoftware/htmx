@@ -26,7 +26,9 @@ if(window.location.search=="?wuw=true") {
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
   </div>
   <div class="wuw">
-     <img src="/img/wuw.png">
+     <a href="https://swag.htmx.org/products/shut-up-warren-tee">
+       <img src="/img/wuw.png">
+     </a>
   </div>
 </div>
 
