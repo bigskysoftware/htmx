@@ -31,7 +31,7 @@ body.kawaii .dark-hero .uwu {
 }
 </style>
 <script type="application/javascript">
-if(window.location.search=="?wuw=true") {
+if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
   document.body.classList.add('lmao');
 }
 if(window.location.search=="?uwu=true") {
