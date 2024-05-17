@@ -1,4 +1,4 @@
-base_url = "https://v1.htmx.org"
+base_url = "https://htmx.org"
 title = "</> htmx - high power tools for html"
 theme = "htmx-theme"
 

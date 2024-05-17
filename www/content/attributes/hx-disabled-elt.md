@@ -21,6 +21,15 @@ Here is an example with a button that will disable itself during a request:
 When a request is in flight, this will cause the button to be marked with [the `disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled), 
 which will prevent further clicks from occurring.  
 
+The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors separated by commas to disable multiple elements during the request. Here is an example that disables a button and a text input field during the request:
+
+```html
+<form hx-post="/example" hx-disabled-elt="input[type='text'], button">
+    <input type="text" placeholder="Type here...">
+    <button type="submit">Send</button>
+</form>
+```
+
 ## Notes
 
 * `hx-disable-elt` is inherited and can be placed on a parent element

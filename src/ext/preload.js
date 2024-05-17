@@ -135,7 +135,8 @@ htmx.defineExtension("preload", {
 		}
 
 		// Search for all child nodes that have a "preload" attribute
-		event.target.querySelectorAll("[preload]").forEach(function(node) {
+		const parent = event.target || event.detail.elt;
+		parent.querySelectorAll("[preload]").forEach(function(node) {
 
 			// Initialize the node with the "preload" attribute
 			init(node)

@@ -117,6 +117,12 @@ and get going:
 <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 ```
 
+Unminified version is also available
+
+```html
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.js" integrity="sha384-qbtR4rS9RrUMECUWDWM2+YGgN3U4V4ZncZ0BvUcg9FGct0jqXz3PUdVpU1p0yrXS" crossorigin="anonymous"></script>
+```
+
 While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
 ### Download a copy
@@ -1037,7 +1043,7 @@ Note that all client side validations must be re-done on the server side, as the
 
 ## Animations
 
-Htmx allows you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
+Htmx allows you to use [CSS transitions](#css_transitions)
 in many situations using only HTML and CSS.
 
 Please see the [Animation Guide](@/examples/animations.md) for more details on the options available.

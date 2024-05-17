@@ -92,15 +92,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <table id="sponsor-table">
 <tr>
 <td colspan="3">
-        <a href="https://hydrahost.com"><img src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;"></a>
+        <a data-github-account="NotASithLord" href="https://hydrahost.com"><img src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;"></a>
 </td>
 </tr>
 <tr>
 <td>
-        <a href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
 </td>
 <td>
-        <a href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="min-width:200px"></a>
+        <a data-github-account="commspace" href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="min-width:200px"></a>
 </td>
 <td>
         <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
@@ -108,15 +108,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
+        <a data-github-account="craftcms" href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
 </td>
 <td>
-        <a href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
+        <a data-github-account="ButterCMS" href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
           <img src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
-        <a href="https://black.host">
+        <a data-github-account="Black-HOST" href="https://black.host">
           <img src="/img/blackhost-logo.svg" alt="Black Host" style="width:100%;max-width:200px">
         </a>
 </td>
@@ -128,11 +128,11 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-      <a href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
+      <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
 </td>
 <td>
-        <a href="https://www.dasfilter.shop/">
-          <img alt="Das Filter" src="/img/das-filter.png" style="width:100%;max-width:300px">
+        <a href="https://dasfilter.shop/pages/partner-program">
+          <img alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
         </a>
 </td>
 </tr>
@@ -143,22 +143,22 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       </a>
 </td>
 <td>
-        <a href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
+        <a data-github-account="transloadit" href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
           <img alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
-      <a href="https://uibakery.io"><img src="/img/ui-bakery.png" alt="UI Bakery" style="width:100%;max-width:250px"></a>
+      <a data-github-account="uibakery" href="https://uibakery.io"><img src="/img/ui-bakery.png" alt="UI Bakery" style="width:100%;max-width:250px"></a>
 </td>
 </tr>
 <tr>
 <td>
-        <a href=" https://deepsource.com/">
+        <a data-github-account="jai-deepsource" href=" https://deepsource.com/">
           <img alt="Deepsource" src="/img/deepsource.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
-      <a href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
+      <a data-github-account="pubkey" href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
         <img src="/img/rxdb.svg" alt="RxDB JavaScript Database" style="width:100%;max-width:150px"></a>
 </td>
 <td>
@@ -167,21 +167,26 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a href="https://www.codacy.com//">
+        <a data-github-account="codacy" href="https://www.codacy.com//">
           <img alt="Deepsource" src="/img/codacy.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
-        <a href="https://codereviewbot.ai/">
+        <a data-github-account="apesternikov" href="https://codereviewbot.ai/">
           <img alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
-        <a href="https://www.llc.org/">
+        <a data-github-account="llcorg" href="https://www.llc.org/">
           <img alt="How to start an LLC - a guide from LLC.org, proud open source sponsor" src="/img/llc-org.svg" style="width:100%;max-width:250px">
         </a>
 </td>
+</tr>
+<tr>
 <td>
+        <a data-github-account="VPSServerCom" href="https://www.vpsserver.com/">
+          <img alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo.svg" style="width:100%;max-width:250px">
+        </a>
 </td>
 </tr>
 </table>
