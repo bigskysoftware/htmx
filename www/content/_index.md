@@ -29,6 +29,22 @@ body.kawaii .dark-hero .uwu {
     display:block;
     padding-top: 24px;
 }
+
+body.ads .ad {
+  display: block;
+  text-align: center;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+body.ads .ad a:hover {
+  opacity: 100%;
+}
+
+body .ad {
+  display: none;
+}
+
 </style>
 <script type="application/javascript">
 if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
@@ -37,7 +53,16 @@ if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
 if(window.location.search=="?uwu=true") {
   document.body.classList.add('kawaii');
 }
+if(window.location.search=="?ads=true") {
+  document.body.classList.add('ads');
+}
 </script>
+
+<div class="ad" style="margin-bottom: 30px">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_top.png"/>
+</a>
+</div>
 
 <div class="dark-hero full-width" classes="add appear">
   <div class="main">
@@ -54,6 +79,11 @@ if(window.location.search=="?uwu=true") {
        <img src="/img/kawaii.png">
      </a>
   </div>
+</div>
+<div class="ad">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_bottom.png"/>
+</a>
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
