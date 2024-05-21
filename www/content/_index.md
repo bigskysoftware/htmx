@@ -45,6 +45,10 @@ body .ad {
   display: none;
 }
 
+body.ads .ad img {
+  max-width: 90vw;
+}
+
 </style>
 <script type="application/javascript">
 if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
