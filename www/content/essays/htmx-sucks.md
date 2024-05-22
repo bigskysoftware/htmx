@@ -122,7 +122,7 @@ off-the-shelf components you can just use without any fuss.
 ## No Front-End/Back-End Split
 
 Another major reason to avoid htmx is that it eliminates the split between the Back-End & Front-End teams.  They even
-have a page with a team [bragging about it as a virtue](@/essays/a-real-world-react-to-htmx-port.md) when a company (foolishly) 
+have a page with a team [bragging about it as a virtue](@/essays/a-real-world-react-to-htmx-port.md) when their company (foolishly) 
 moved from React to htmx.
 
 The Front-End/Back-End split has been extremely successful for many companies, allowing the Front-End engineers
