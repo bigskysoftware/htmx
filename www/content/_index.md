@@ -3,6 +3,12 @@ insert_anchor_links = "left"
 +++
 
 <style type="text/css">
+.wuw {
+  display:none;
+}
+.uwu {
+  display:none;
+}
 body.lmao .dark-hero .main {
     display:none;
 }
@@ -10,15 +16,57 @@ body.lmao .dark-hero .wuw {
     display:block;
     padding-top: 24px;
 }
-body .dark-hero .wuw {
+body.lmao .dark-hero .uwu {
     display:none;
 }
+body.kawaii .dark-hero .main {
+    display:none;
+}
+body.kawaii .dark-hero .wuw {
+    display:none;
+}
+body.kawaii .dark-hero .uwu {
+    display:block;
+    padding-top: 24px;
+}
+
+body.ads .ad {
+  display: block;
+  text-align: center;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+body.ads .ad a:hover {
+  opacity: 100%;
+}
+
+body .ad {
+  display: none;
+}
+
+body.ads .ad img {
+  max-width: 90vw;
+}
+
 </style>
 <script type="application/javascript">
-if(window.location.search=="?wuw=true") {
+if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
   document.body.classList.add('lmao');
 }
+if(window.location.search=="?uwu=true") {
+  document.body.classList.add('kawaii');
+}
+if(window.location.search=="?ads=true") {
+  document.body.classList.add('ads');
+}
 </script>
+
+<div class="ad" style="margin-bottom: 30px">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_top.png"/>
+</a>
+</div>
 
 <div class="dark-hero full-width" classes="add appear">
   <div class="main">
@@ -26,8 +74,20 @@ if(window.location.search=="?wuw=true") {
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
   </div>
   <div class="wuw">
-     <img src="/img/wuw.png">
+     <a href="https://swag.htmx.org/products/shut-up-warren-tee">
+       <img src="/img/wuw.png">
+     </a>
   </div>
+  <div class="uwu">
+     <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
+       <img src="/img/kawaii.png">
+     </a>
+  </div>
+</div>
+<div class="ad">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_bottom.png"/>
+</a>
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">

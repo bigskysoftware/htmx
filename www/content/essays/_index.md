@@ -24,6 +24,7 @@ page_template = "essay.html"
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
+* [htmx sucks](@/essays/htmx-sucks.md)
 
 ### Building Hypermedia Applications
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
