@@ -66,8 +66,9 @@ commitment to "shipping debuggable source code".  Of course, as any JavaScript d
 TypeScript supports [Source Maps](https://www.typescriptlang.org/tsconfig#sourceMap) that make it perfectly debuggable.  Despite this fact, the authors continue to 
 insist on using an antiquated version of JavaScript for development.
 
-Beyond that, but they are only belatedly adding [JSDoc](https://jsdoc.app/) annotations to the codebase to make up
-for the fact that they didn't do the right thing initially and simply write the whole project in modular TypeScript.
+In a tacit admission that they screwed up, they are now belatedly adding [JSDoc](https://jsdoc.app/) annotations 
+to their codebase (I use the word loosely here).  All this to make up for the fact that they didn't do the obvious,
+correct thing initially and simply write the whole project in modern, modular TypeScript.
 
 The only good news here is that at least they have a halfway-decent [test suite](https://github.com/bigskysoftware/htmx/blob/master/test/index.html), and given the state of the codebase, they 
 better damned well!
