@@ -221,7 +221,7 @@ Or consider the fact that he posts [essays he]((@/essays/is-htmx-another-javascr
 his own site.
 
 The essays tab [has a section for memes](https://htmx.org/essays/#memes), most of which are cringe-worthy and all 
-of which have no business being on a website of a front end library that expect to be taken seriously.
+of which have no business being on a website of a front end library that expects to be taken seriously.
 
 Apparently he allows [anyone to be the CEO of htmx](https://htmx.ceo) and make one of those super-cringey
 job announcements on LinkedIn.
