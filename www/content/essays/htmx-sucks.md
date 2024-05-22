@@ -112,20 +112,20 @@ It would be funny if it weren't so infuriating.
 The next reason to consider not using htmx is that there aren't any components available for it.  If you go with 
 react you get things like [MUI](https://mui.com/), [NextUI](https://nextui.org/) & [Chakra](https://chakra-ui.com/).
 
-With htmx, you get nothing.  You have to figure out what components you want to use and then how to integrate them 
-with htmx.
+With htmx, you get... nothing.  You have to figure out what components you want to use and then how to integrate them 
+with htmx using events and so forth.
 
 Do you really want to spend time figuring out how things like [lit](https://lit.dev/) work and then _also_ how to
-integrate them with htmx?  It doesn't make sense.  Far better to go with a front end library with off-the-shelf components
-you can just use without much fuss.
+integrate them with htmx?  That doesn't make any sense.  Far better to go with a front end library with integrated, 
+off-the-shelf components you can just use without any fuss.
 
 ## No Front-End/Back-End Split
 
 Another major reason to avoid htmx is that it eliminates the split between the Back-End & Front-End teams.  They even
-have a page with a team [bragging about it](@/essays/a-real-world-react-to-htmx-port.md) when someone (foolishly) 
+have a page with a team [bragging about it as a virtue](@/essays/a-real-world-react-to-htmx-port.md) when a company (foolishly) 
 moved from React to htmx.
 
-Now, the Front-End/Back-End split has been extremely successful for many companies, allowing the Front-End engineers
+The Front-End/Back-End split has been extremely successful for many companies, allowing the Front-End engineers
 to focus on building a good user experience, and the Back-End engineers to focus on getting the data access layer
 right.
 
@@ -164,7 +164,7 @@ web application if you don't [sanitize your HTML](https://cheatsheetseries.owasp
 properly.
 
 Sometimes the htmx author will make a smart-alec comment like "Well, how do you feel about the 
-[href](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href) attribute", but that's different, obviously.
+[href](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href) attribute?", but that's different, obviously.
 
 ## No Jobs
 
@@ -175,15 +175,17 @@ National Labratory.
 
 A search for "react", on the other hand, gives 13,758 jobs.
 
-So, seriously, which of these two technologies do you want to hitch your career to?
+Seriously, developer, which of these two technologies do you want to hitch your career to?
 
 ## No One To Hire
 
-The flip side of the above is, if you are a company, there are, rounding off, zero htmx developers.
+The flip side of the above problem is that, if you are a company, there are, rounding off, zero htmx developers.
 
-Everyone goes to bootcamps and learns React.  If you want to have a large potential employee pool, maybe you have
-high turnover, maybe you want to keep wages down, it makes a ton more sense to go with The Big Dog in front end development,
-and that dog is React.
+Everyone goes to bootcamps and learns React.  If you want to have a large potential employee pool (maybe your company
+has high turnover for some reason, maybe you want to keep employee wages down, maybe a small team of full stack engineers
+would get in the way of your kingdom building) it makes a ton more sense to go with The Big Dog in front end development.
+
+Today, that dog is React.
 
 ## Duplicating (Or More!) Your APIs
 
@@ -193,16 +195,18 @@ API for 3rd parties to use, you will need to create that API entirely separately
 Here, again, we find that, incredibly, the [htmx people brag about this fact](@/essays/splitting-your-apis.md), completely
 ignoring the duplication of work involved here.
 
-It makes a ton more sense to have a single API maintained by a single, Back-End team that can flexibly serve all your
-needs.  This is obvious and, frankly, not worth even arguing about.
+It makes far more sense to have a single API maintained by a single, Back-End team that can flexibly serve all your
+needs.
+
+This is obvious and, frankly, not worth even arguing about.
 
 ## It Won't Scale
 
 Another technical issue with htmx is that it just won't scale.  It may work for small applications, but as applications
-get larger, the htmx model breaks down and becomes a mess.  The component model of React and other front-end tools keeps
+get larger the htmx model breaks down and becomes a mess.  The component model of React and other front-end tools keeps
 everything compartmentalized and testable.  This makes it much easier to keep large codebases clean.
 
-As an example, consider [Github](https://github.com/), which started out using a model a lot like htmx.  It has
+As an example, consider [Github](https://github.com/), which started out using technology a lot like htmx.  It has
 recently started adopting React and is now much more stable than it was previously.  They would have been better off
 if they had just started with React and built the whole thing in a modern, component-based way, but at least they
 are making the right move now.  Better late than never.
@@ -213,10 +217,10 @@ Finally, and maybe the most important reason not to use htmx: the creator is obv
 
 Just look at the [twitter feed](https://twitter.com/htmx_org): unprofessional, childish, intentionally provocative.
 
-Or consider the fact that he [posts essays he doesn't agree with](@/essays/is-htmx-another-javascript-framework.md) to 
+Or consider the fact that he posts [essays he]((@/essays/is-htmx-another-javascript-framework.md)) [doesn't agree with](@/essays/htmx-sucks.md) to 
 his own site.
 
-His own essays tab [has a section for memes](https://htmx.org/essays/#memes), most of which are cringe-worthy and all 
+The essays tab [has a section for memes](https://htmx.org/essays/#memes), most of which are cringe-worthy and all 
 of which have no business being on a website of a front end library that expect to be taken seriously.
 
 Apparently he allows [anyone to be the CEO of htmx](https://htmx.ceo) and make one of those super-cringey
@@ -224,12 +228,12 @@ job announcements on LinkedIn.
 
 Wanton buffoonery.
 
-When you pick a front-end library, you are, to an extent, picking the author of that library as a co-worker.  Do you
-really want to work this guy?
+When you pick a front-end library you are, to an extent, picking the author of that library as a co-worker.  Do you
+really want to work this guy?  I certainly don't.
 
 ## Conclusion
 
-I hope this has convinced you that choosing htmx & hypermedia for your web application is an exceptionally bad idea that could only
+I hope this has convinced you that choosing htmx & hypermedia for your web application is an [exceptionally bad idea](https://www.reddit.com/r/ProgrammerHumor/comments/zmyug8/edsger_dijkstra_math_and_memes/) that could only
 have originated in [Montana](https://bigsky.software).  Don't listen to the fanboys and fangirls with their "It's so over",
 "We're so back" nonsense, CEO profiles and childish memes.
 
@@ -238,4 +242,4 @@ like law & politics, two other extremely serious and productive activities.  We 
 innovation & sophistication, not broken, backwards-looking libraries whose creator spends most of his time posting
 ridiculous things on twitter.
 
-It's just common sense.
+It's just common sense: htmx sucks.
