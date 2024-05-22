@@ -3347,6 +3347,9 @@ var htmx = (function() {
         }
       })
       new FormData(elt).forEach(function(value, name) {
+        if (value instanceof File && value.name === '') {
+          return // ignore no-name files
+        }
         addValueToFormData(name, value, formData)
       })
     }
