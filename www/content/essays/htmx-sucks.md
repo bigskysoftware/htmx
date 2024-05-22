@@ -217,7 +217,7 @@ Finally, and maybe the most important reason not to use htmx: the creator is obv
 
 Just look at the [twitter feed](https://twitter.com/htmx_org): unprofessional, childish, intentionally provocative.
 
-Or consider the fact that he posts [essays he]((@/essays/is-htmx-another-javascript-framework.md)) [doesn't agree with](@/essays/htmx-sucks.md) to 
+Or consider the fact that he posts [essays he](@/essays/is-htmx-another-javascript-framework.md)) [doesn't agree with](@/essays/htmx-sucks.md) to 
 his own site.
 
 The essays tab [has a section for memes](https://htmx.org/essays/#memes), most of which are cringe-worthy and all 
