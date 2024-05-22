@@ -52,7 +52,7 @@ WebSockets extension support two configuration options:
 The example above establishes a WebSocket to the `/chatroom` end point. Content that is sent down from the websocket
 will
 be parsed as HTML and swapped in by the `id` property, using the same logic
-as [Out of Band Swaps](@/attributes/hx-swap-oob.md).
+as [Out of Band Swaps](@/attributes/hx-swap-oob.md). (Note: This is **important** otherwise your events won't be rendered in the rendered html.)
 
 As such, if you want to change the swapping method (e.g., append content at the end of an element or delegate swapping
 to an extension),
