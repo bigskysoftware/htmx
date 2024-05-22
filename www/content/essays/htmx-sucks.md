@@ -1,7 +1,7 @@
 +++
 title = "htmx sucks"
 date = 2024-02-01
-updated = 2024-02-01
+updated = 2024-04-01
 [taxonomies]
 author = ["Carson Gross"]
 tag = ["posts"]
@@ -171,7 +171,7 @@ National Labratory.
 
 A search for "react", on the other hand, gives 13,758 jobs.
 
-So, seriously, which of these two technologies do you want to hitch your career ot?
+So, seriously, which of these two technologies do you want to hitch your career to?
 
 ## No One To Hire
 
