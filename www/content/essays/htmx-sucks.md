@@ -94,11 +94,11 @@ Look at this jQuery code from 2008:
 $( "#result" ).load( "ajax/test.html" );
 ```
 
-And look at this super innovative stuff the htmx folks give us:
+And now look at the super innovative stuff the htmx folks give us:
 
 ```html
 <button hx-get="/ajax/test.html"
-        hx-target=""#result"">
+        hx-target="#result">
     Load
 </button>
 ```
