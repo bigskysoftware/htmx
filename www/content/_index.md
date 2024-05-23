@@ -90,22 +90,22 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> htmx finished 2nd in the <a href="https://risingstars.js.org/2023/en#section-framework">2023 
+<div class="alert">
+<b>NEWS:</b> htmx finished 2nd in the <a href="https://risingstars.js.org/2023/en#section-framework">2023
 JavaScript Rising Stars</a> "Front-end Frameworks" category, just behind React (htmx is a library, btw) and <a href="https://risingstars.js.org/2023/en#section-all">#10 overall</a>!
 Thank you to everyone who <a href="https://github.com/bigskysoftware/htmx">starred</a> us!
 </div>
 
 <h2>introduction</h2>
 
-htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets) and [Server Sent Events](@/docs.md#sse) 
-directly in HTML, using [attributes](@/reference.md#attributes), so you can build 
-[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets) and [Server Sent Events](@/docs.md#sse)
+directly in HTML, using [attributes](@/reference.md#attributes), so you can build
+[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](@/extensions/_index.md), 
+[extendable](@/extensions/_index.md),
 IE11 compatible & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
@@ -138,7 +138,7 @@ Read the [docs introduction](@/docs.md#introduction) for a more in-depth... intr
 
 <h2><a name='book'></a>book</h2>
 
-We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build 
+We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build
 [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
 
 <div style="text-align: center;padding: 24px">
@@ -164,8 +164,8 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 @media only screen and (max-width: 760px)  {
 
 	/* Force table to not be like tables anymore */
-	table, thead, tbody, th, td, tr { 
-		display: block; 
+	table, thead, tbody, th, td, tr {
+		display: block;
 	}
 
 }

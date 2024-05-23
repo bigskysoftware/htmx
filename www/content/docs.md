@@ -794,7 +794,7 @@ htmx has experimental support for declarative use of both
 [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-<div style="border: 1px solid whitesmoke; background-color: #e4f0ff; padding: 8px; border-radius: 8px">
+<div class="alert">
 
 **Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
 htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
@@ -983,7 +983,7 @@ For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/head
 
 Submitting a form via htmx has the benefit of no longer needing the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
 After successfully processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
- 
+
 ### Request Order of Operations {#request-operations}
 
 The order of operations in a htmx request are:
@@ -1025,7 +1025,7 @@ the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
 ### Validation Example
 
-Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attribute to catch the 
+Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attribute to catch the
 `htmx:validation:validate` event and require that the input have the value `foo`:
 
 ```html
@@ -1309,7 +1309,7 @@ such as `onClick`:
 
 This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
 [Locality of Behaviour (LoB)](/essays/locality-of-behaviour).  Unfortunately, HTML only allows `on*` attributes for a fixed
-number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and 
+number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and
 doesn't provide a generalized mechanism for responding to arbitrary events on elements.
 
 In order to address this shortcoming, htmx offers [`hx-on*`](/attributes/hx-on) attributes.  These attributes allow
@@ -1325,8 +1325,8 @@ If we wanted to respond to the `click` event using an `hx-on` attribute, we woul
 
 So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
 
-For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an 
-htmx-powered button that wishes to add a parameter to a request using the `htmx:config-request` event.  This would not 
+For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an
+htmx-powered button that wishes to add a parameter to a request using the `htmx:config-request` event.  This would not
 be possible using a standard `on*` property, but it can be done using the `hx-on:htmx:config-request` attribute:
 
 ```html
@@ -1462,7 +1462,7 @@ to generate a different `ETag` for each content.
 
 ## Security
 
-htmx allows you to define logic directly in your DOM.  This has a number of advantages, the largest being 
+htmx allows you to define logic directly in your DOM.  This has a number of advantages, the largest being
 [Locality of Behavior](@/essays/locality-of-behaviour.md), which makes your system easier to understand and
 maintain.
 
@@ -1472,8 +1472,8 @@ ends.
 
 ### Rule 1: Escape All User Content
 
-The first rule of HTML-based web development has always been: *do not trust input from the user*.  You should escape all 
-3rd party, untrusted content that is injected into your site.  This is to prevent, among other issues, 
+The first rule of HTML-based web development has always been: *do not trust input from the user*.  You should escape all
+3rd party, untrusted content that is injected into your site.  This is to prevent, among other issues,
 [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting).
 
 There is extensive documentation on XSS and how to prevent it on the excellent [OWASP Website](https://owasp.org/www-community/attacks/xss/),
@@ -1488,21 +1488,21 @@ mechanism in their templating language.  This can be done for good reasons, but 
 from a 3rd party then it _must_ be scrubbed, including removing attributes starting with `hx-` and `data-hx`, as well as
 inline `<script>` tags, etc.
 
-If you are injecting raw HTML and doing your own escaping, a best practice is to *whitelist* the attributes and tags you 
-allow, rather than to blacklist the ones you disallow. 
+If you are injecting raw HTML and doing your own escaping, a best practice is to *whitelist* the attributes and tags you
+allow, rather than to blacklist the ones you disallow.
 
 ### htmx Security Tools
 
 Of course, bugs happen and developers are not perfect, so it is good to have a layered approach to security for
-your web application, and htmx provides tools to help secure your application as well. 
+your web application, and htmx provides tools to help secure your application as well.
 
 Let's take a look at them.
 
 #### `hx-disable`
 
-The first tool htmx provides to help further secure your application is the [`hx-disable`](/attributes/hx-disable) 
+The first tool htmx provides to help further secure your application is the [`hx-disable`](/attributes/hx-disable)
 attribute.  This attribute will prevent processing of all htmx attributes on a given element, and on all elements within
-it.  So, for example, if you were including raw HTML content in a template (again, this is not recommended!) then you 
+it.  So, for example, if you were including raw HTML content in a template (again, this is not recommended!) then you
 could place a div around the content with the `hx-disable` attribute on it:
 
 ```html
@@ -1518,15 +1518,15 @@ element, it will not be processed by htmx.
 #### `hx-history`
 
 Another security consideration is htmx history cache.  You may have pages that have sensitive data that you do not
-want stored in the users `localStorage` cache.  You can omit a given page from the history cache by including the 
-[`hx-history`](/attributes/hx-history) attribute anywhere on the page, and setting its value to `false`.  
+want stored in the users `localStorage` cache.  You can omit a given page from the history cache by including the
+[`hx-history`](/attributes/hx-history) attribute anywhere on the page, and setting its value to `false`.
 
 #### Configuration Options
 
 htmx also provides configuration options related to security:
 
 * `htmx.config.selfRequestsOnly` - if set to `true`, only requests to the same domain as the current document will be allowed
-* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable 
+* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable
    this behavior you can set this configuration variable to `false`
 * `htmx.config.historyCacheSize` - can be set to `0` to avoid storing any HTML in the `localStorage` cache
 * `htmx.config.allowEval` - can be set to `false` to disable all features of htmx that rely on eval:
@@ -1558,7 +1558,7 @@ document.body.addEventListener('htmx:validateUrl', function (evt) {
 
 ### CSP Options
 
-Browsers also provide tools for further securing your web application.  The most powerful tool available is a 
+Browsers also provide tools for further securing your web application.  The most powerful tool available is a
 [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP).  Using a CSP you can tell the
 browser to, for example, not issue requests to non-origin hosts, to not evaluate inline script tags, etc.
 
