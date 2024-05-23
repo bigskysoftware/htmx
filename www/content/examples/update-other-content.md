@@ -120,10 +120,12 @@ Using this approach, the HTML doesn't need to change from the original setup at 
 Instead of modifying something on the front end, in your response to the `POST` to `/contacts` you would include some additional content:
 
 ```html
-<tr hx-swap-oob="beforeend:#contacts-table">
-    <td>Joe Smith</td>
-    <td>joe@smith.com</td>
-</tr>
+<tbody hx-swap-oob="beforeend:#contacts-table">
+    <tr>
+        <td>Joe Smith</td>
+        <td>joe@smith.com</td>
+    </tr>
+</tbody>
 <form hx-post="/contacts">
   <label>
     Name
