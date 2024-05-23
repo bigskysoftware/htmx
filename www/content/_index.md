@@ -91,9 +91,8 @@ if(window.location.search=="?ads=true") {
 </div>
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> htmx finished 2nd in the <a href="https://risingstars.js.org/2023/en#section-framework">2023 
-JavaScript Rising Stars</a> "Front-end Frameworks" category, just behind React (htmx is a library, btw) and <a href="https://risingstars.js.org/2023/en#section-all">#10 overall</a>!
-Thank you to everyone who <a href="https://github.com/bigskysoftware/htmx">starred</a> us!
+<b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <code>latest</code> in NPM so that people using 
+the 1.x line are not accidentally upgraded.  We will mark it <code>latest</code> at some point in 2025.
 </div>
 
 <h2>introduction</h2>
@@ -104,9 +103,8 @@ directly in HTML, using [attributes](@/reference.md#attributes), so you can buil
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
-[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://extensions.htmx.org), 
-IE11 compatible & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
+[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
+[extendable](https://extensions.htmx.org) & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
 
@@ -120,7 +118,7 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://unpkg.com/htmx.org@2.0.0-beta4"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.0"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -135,6 +133,9 @@ this button tell htmx:
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
+
+Note that htmx 2.x has dropped IE support.  If you require IE support you can use the [1.x](https://v1.htmx.org)
+code-line, which will be supported in perpetuity.
 
 <h2><a name='book'></a>book</h2>
 
