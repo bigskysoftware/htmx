@@ -29,6 +29,19 @@
     --topNavBackground: linear-gradient(#161718, #1b1d1f);
     --topNavBorder: #41464b;
     --topNavShadow: #2d2d2d;
+  }
+
+  .dark-invert {
+    filter: invert(1);
+  }
+
+  .dark-visible {
+    display: block;
+  }
+
+  .dark-hidden {
+    display: none;
+  }
 }
 
 body {
@@ -40,6 +53,12 @@ body {
   background-color: var(--bodyBackground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .dark-visible {
+    display: none;
+  }
 }
 
 table {
