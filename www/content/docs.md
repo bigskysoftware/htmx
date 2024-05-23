@@ -101,11 +101,13 @@ It's worth mentioning that, if you prefer, you can use the [`data-`](https://htm
 <a data-hx-post="/click">Click Me!</a>
 ```
 
+Finally, [Version 1](https://v1.htmx.org) of htmx is still supported and supports IE11.
+
 ## Migration Guides (intercooler.js & htmx 1.x)
 
 If you are migrating to htmx from intercooler.js, please see the [intercooler migration guide](@/migration-guide-intercooler.md).
 
-If you are migrating to htmx 2.x from htmx 1.x, please see the [htmx 1.x migration guide](@/migration-guide-htmx-1.md).
+If you are migrating to htmx 2.x from [htmx 1.x](https://v1.htmx.org), please see the [htmx 1.x migration guide](@/migration-guide-htmx-1.md).
 
 ## Installing
 
