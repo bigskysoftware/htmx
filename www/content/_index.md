@@ -105,7 +105,7 @@ directly in HTML, using [attributes](@/reference.md#attributes), so you can buil
 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](@/extensions/_index.md),
+[extendable](https://extensions.htmx.org), 
 IE11 compatible & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
@@ -120,7 +120,7 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.0-beta4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
