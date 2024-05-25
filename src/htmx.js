@@ -1835,13 +1835,12 @@ var htmx = (function() {
       if (swapOptions.selectOOB) {
         const oobSelectValues = swapOptions.selectOOB.split(',')
         for (let i = 0; i < oobSelectValues.length; i++) {
-          const oobSelectValue = oobSelectValues[i].split(':', 2)
-          let id = oobSelectValue[0].trim()
-          if (id.indexOf('#') === 0) {
-            id = id.substring(1)
-          }
-          const oobValue = oobSelectValue[1] || 'true'
-          const oobElement = fragment.querySelector('#' + id)
+          const oobSelectValue = oobSelectValues[i]
+          // Support colon in css selectors
+          const colon = oobSelectValue.lastIndexOf(':')
+          const split_at = colon == -1 ? oobSelectValue.length : colon
+          const oobValue = oobSelectValue.substring(split_at + 1) || 'true'
+          const oobElement = fragment.querySelector(oobSelectValue.substring(0, split_at))
           if (oobElement) {
             oobSwap(oobValue, oobElement, settleInfo)
           }
