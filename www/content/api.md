@@ -135,6 +135,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `ignoreTitle:false` - boolean: if set to `true` htmx will not update the title of the document when a `title` tag is found in new content
 * `scrollIntoViewOnBoost:true` - boolean: whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.
 * `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
+* `cancelPollingOnError:false` - boolean: if set to `true` an hx-trigger polling would be cancelled if a response error (status not 200) occurs.
 
 ##### Example
 

@@ -980,9 +980,7 @@ return (function () {
 
         function deInitNode(element) {
             var internalData = getInternalData(element);
-            if (internalData.timeout) {
-                clearTimeout(internalData.timeout);
-            }
+            cancelPolling(element);
             if (internalData.webSocket) {
                 internalData.webSocket.close();
             }
@@ -1401,13 +1399,24 @@ return (function () {
         }
 
         function cancelPolling(elt) {
-            getInternalData(elt).cancelled = true;
+            var internalData = getInternalData(elt);
+            if (internalData.timeout) {
+              clearTimeout(internalData.timeout);
+            }
+            internalData.timeout = -1;
+        }
+
+        /**
+         * Returns true if the element has a polling, otherwise false.
+         */
+        function hasPolling(elt) {
+            return getInternalData(elt).timeout > -1
         }
 
         function processPolling(elt, handler, spec) {
             var nodeData = getInternalData(elt);
             nodeData.timeout = setTimeout(function () {
-                if (bodyContains(elt) && nodeData.cancelled !== true) {
+                if (bodyContains(elt)) {
                     if (!maybeFilterEvent(spec, elt, makeEvent('hx:poll:trigger', {
                         triggerSpec: spec,
                         target: elt
@@ -3555,11 +3564,16 @@ return (function () {
             responseInfo.failed = isError; // Make failed property available to response events
             responseInfo.successful = !isError; // Make successful property available to response events
 
-            if (beforeSwapDetails.shouldSwap) {
-                if (xhr.status === 286) {
-                    cancelPolling(elt);
-                }
+            // check if polling should be cancelled
+            if (hasPolling(elt) &&
+                (xhr.status === 286 ||
+                (hasHeader(xhr, /HX-Cancel-Polling:/i) && xhr.getResponseHeader('HX-Cancel-Polling') === 'true') ||
+                !triggerEvent(elt, 'htmx:cancelPolling', responseInfo) ||
+                (xhr.status !== 200 && htmx.config.cancelPollingOnError))) {
+                cancelPolling(elt)
+            }
 
+            if (beforeSwapDetails.shouldSwap) {
                 withExtensions(elt, function (extension) {
                     serverResponse = extension.transformResponse(serverResponse, xhr, elt);
                 });
