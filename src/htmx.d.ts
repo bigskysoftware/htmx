@@ -55,6 +55,7 @@ declare namespace htmx {
         const disableInheritance: boolean;
         const responseHandling: HtmxResponseHandlingConfig[];
         const allowNestedOobSwaps: boolean;
+        const cancelPollingOnError: boolean;
     }
     const parseInterval: (str: string) => number;
     const _: (str: string) => any;
