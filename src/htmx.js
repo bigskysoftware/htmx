@@ -271,7 +271,13 @@ var htmx = (function() {
        * @type boolean
        * @default true
        */
-      allowNestedOobSwaps: true
+      allowNestedOobSwaps: true,
+      /**
+       * Whether to cancel polling on elements when an error occurs.
+       * @type boolean
+       * @default false
+       */
+      cancelPollingOnError: false
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -691,7 +697,6 @@ var htmx = (function() {
    * @property {OnHandler[]} [onHandlers]
    * @property {number} [timeout]
    * @property {ListenerInfo[]} [listenerInfos]
-   * @property {boolean} [cancelled]
    * @property {boolean} [triggeredOnce]
    * @property {number} [delayed]
    * @property {number|null} [throttle]
@@ -1592,9 +1597,7 @@ var htmx = (function() {
    */
   function deInitNode(element) {
     const internalData = getInternalData(element)
-    if (internalData.timeout) {
-      clearTimeout(internalData.timeout)
-    }
+    cancelPolling(element)
     if (internalData.listenerInfos) {
       forEach(internalData.listenerInfos, function(info) {
         if (info.on) {
@@ -2228,21 +2231,35 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Element} elt
+   * @param {Node} elt
    */
   function cancelPolling(elt) {
-    getInternalData(elt).cancelled = true
+    const internalData = getInternalData(elt)
+    if (internalData.timeout) {
+      clearTimeout(internalData.timeout)
+    }
+    internalData.timeout = -1
   }
 
   /**
-   * @param {Element} elt
+   * Returns true if the element has a polling, otherwise false.
+   *
+   * @param {Node} elt
+   * @returns {boolean}
+   */
+  function hasPolling(elt) {
+    return getInternalData(elt).timeout > -1
+  }
+
+  /**
+   * @param {Node} elt
    * @param {TriggerHandler} handler
    * @param {HtmxTriggerSpecification} spec
    */
   function processPolling(elt, handler, spec) {
     const nodeData = getInternalData(elt)
     nodeData.timeout = getWindow().setTimeout(function() {
-      if (bodyContains(elt) && nodeData.cancelled !== true) {
+      if (bodyContains(elt)) {
         if (!maybeFilterEvent(spec, elt, makeEvent('hx:poll:trigger', {
           triggerSpec: spec,
           target: elt
@@ -4672,11 +4689,16 @@ var htmx = (function() {
     responseInfo.failed = isError // Make failed property available to response events
     responseInfo.successful = !isError // Make successful property available to response events
 
-    if (beforeSwapDetails.shouldSwap) {
-      if (xhr.status === 286) {
-        cancelPolling(elt)
-      }
+    // check if polling should be cancelled
+    if (hasPolling(elt) &&
+        (xhr.status === 286 ||
+        (hasHeader(xhr, /HX-Cancel-Polling:/i) && xhr.getResponseHeader('HX-Cancel-Polling') === 'true') ||
+        !triggerEvent(elt, 'htmx:cancelPolling', responseInfo) ||
+        (xhr.status !== 200 && htmx.config.cancelPollingOnError))) {
+      cancelPolling(elt)
+    }
 
+    if (beforeSwapDetails.shouldSwap) {
       withExtensions(elt, function(extension) {
         serverResponse = extension.transformResponse(serverResponse, xhr, elt)
       })
