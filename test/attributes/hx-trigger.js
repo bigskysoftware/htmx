@@ -179,6 +179,77 @@ describe("hx-trigger attribute", function(){
         make('<div hx-trigger="every 10ms" hx-get="/test"/>');
     });
 
+    it('polling should be cancelled on error', function(complete) {
+        this.timeout(2000)
+        var completeTimeout = setTimeout(complete, 1000)
+    
+        htmx.config.cancelPollingOnError = true
+        var requests = 0
+        this.server.autoRespond = true
+        this.server.respondWith('GET', '/test', function(xhr) {
+          requests++
+          var status = requests > 1 ? 500 : 200
+          xhr.respond(status, {}, 'Requests: ' + requests)
+        })
+    
+        document.addEventListener('htmx:afterRequest', function(evt) {
+          if (requests > 2) {
+            clearTimeout(completeTimeout)
+            chai.assert.fail('Polling should have been cancelled')
+          }
+        })
+    
+        make('<div hx-trigger="every 250ms" hx-get="/test"></div>')
+      })
+
+      it('polling should be cancelled by response header', function(complete) {
+        this.timeout(2000)
+        var completeTimeout = setTimeout(complete, 1000)
+    
+        var requests = 0
+        this.server.autoRespond = true
+        this.server.respondWith('GET', '/test', function(xhr) {
+          requests++
+          xhr.respond(200, { 'HX-Cancel-Polling': 'true' }, 'Requests: ' + requests)
+        })
+    
+        document.addEventListener('htmx:afterRequest', function(evt) {
+          if (requests > 2) {
+            clearTimeout(completeTimeout)
+            chai.assert.fail('Polling should have been cancelled')
+          }
+        })
+    
+        make('<div hx-trigger="every 250ms" hx-get="/test"></div>')
+      })
+    
+      it('polling should be cancelled by event', function(complete) {
+        this.timeout(2000)
+        var completeTimeout = setTimeout(complete, 1000)
+    
+        var requests = 0
+        this.server.autoRespond = true
+        this.server.respondWith('GET', '/test', function(xhr) {
+          requests++
+          xhr.respond(200, {}, 'Requests: ' + requests)
+        })
+    
+        document.addEventListener('htmx:cancelPolling', function(evt) {
+          if (requests > 1) {
+            evt.preventDefault()
+          }
+        })
+    
+        document.addEventListener('htmx:afterRequest', function(evt) {
+          if (requests > 2) {
+            clearTimeout(completeTimeout)
+            chai.assert.fail('Polling should have been cancelled')
+          }
+        })
+    
+        make('<div hx-trigger="every 250ms" hx-get="/test"></div>')
+      })
+
 
     it('non-default value works w/ data-* prefix', function()
     {
