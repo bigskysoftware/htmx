@@ -179,6 +179,11 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </td>
 </tr>
 <tr>
+<td colspan="3">
+        <a data-github-account="deco-cx" href="https://deco.cx/"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
+</td>
+</tr>
+<tr>
 <td>
         <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
 </td>
