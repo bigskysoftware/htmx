@@ -92,12 +92,12 @@ if(window.location.search=="?ads=true") {
 
 <div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
 <b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <code>latest</code> in NPM so that people using 
-the 1.x line are not accidentally upgraded.  We will mark it <code>latest</code> at some point in 2025.
+the <a href="https://v1.htmx.org">1.x line</a> are not accidentally upgraded.  We will mark 2.0 as <code>latest</code> at some point in 2025.
 </div>
 
 <h2>introduction</h2>
 
-htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets) and [Server Sent Events](@/docs.md#sse) 
+htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets-and-sse) and [Server Sent Events](@/docs.md#websockets-and-sse) 
 directly in HTML, using [attributes](@/reference.md#attributes), so you can build 
 [modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext

@@ -145,7 +145,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 
 ### Property - `htmx.createEventSource` {#createEventSource}
 
-A property used to create new [Server Sent Event](@/docs.md#sse) sources.  This can be updated
+A property used to create new [Server Sent Event](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) sources.  This can be updated
 to provide custom SSE setup.
 
 ##### Value
@@ -163,7 +163,7 @@ to provide custom SSE setup.
 
 ### Property - `htmx.createWebSocket` {#createWebSocket}
 
-A property used to create new [WebSocket](@/docs.md#websockets).  This can be updated
+A property used to create new [WebSocket](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md).  This can be updated
 to provide custom WebSocket setup.
 
 ##### Value

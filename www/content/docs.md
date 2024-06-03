@@ -40,6 +40,7 @@ custom_classes = "wide-content"
 * [scripting](#scripting)
   * [hx-on attribute](#hx-on)
 * [3rd party integration](#3rd-party)
+  * [Web Components](#web-components)
 * [caching](#caching)
 * [security](#security)
 * [configuring](#config)
@@ -103,34 +104,34 @@ It's worth mentioning that, if you prefer, you can use the [`data-`](https://htm
 
 Finally, [Version 1](https://v1.htmx.org) of htmx is still supported and supports IE11.
 
-## Migration Guides (intercooler.js & htmx 1.x)
-
-If you are migrating to htmx from intercooler.js, please see the [intercooler migration guide](@/migration-guide-intercooler.md).
+## 1.x to 2.x Migration Guide
 
 If you are migrating to htmx 2.x from [htmx 1.x](https://v1.htmx.org), please see the [htmx 1.x migration guide](@/migration-guide-htmx-1.md).
+
+If you are migrating to htmx from intercooler.js, please see the [intercooler migration guide](@/migration-guide-intercooler.md).
 
 ## Installing
 
 Htmx is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>`
-tag to your document head.  No need for complicated build steps or systems.
-
+tag to your document head.  There is no need for a build system to use it.
 
 ### Via A CDN (e.g. unpkg.com)
 
-The fastest way to get going with htmx is to load it via a CDN. You can simply add this to your head tag
-and get going:
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to 
+your head tag and get going:
 
 ```html
 <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
 ```
 
-Unminified version is also available
+An unminified version is also available for debugging as well:
 
 ```html
 <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js" integrity="sha384-n/Xh+GLLi0SMFPwtHQjT72aPG19QvKB8grnyRbYBNIdHWc2NkCrz65jlU7YrzO6qRp" crossorigin="anonymous"></script>
 ```
 
-While the CDN approach is extremely simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
+While the CDN approach is extremely simple, you may want to consider 
+[not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
 ### Download a copy
 
@@ -142,8 +143,6 @@ and include it where necessary with a `<script>` tag:
 ```html
 <script src="/path/to/htmx.min.js"></script>
 ```
-
-You can also add extensions this way, by downloading them from the `ext/` directory.
 
 ### npm
 
@@ -188,26 +187,26 @@ window.htmx = require('htmx.org');
 
 The core of htmx is a set of attributes that allow you to issue AJAX requests directly from HTML:
 
-| Attribute | Description |
-|-----------|-------------|
-| [hx-get](@/attributes/hx-get.md) | Issues a `GET` request to the given URL|
-| [hx-post](@/attributes/hx-post.md) | Issues a `POST` request to the given URL
-| [hx-put](@/attributes/hx-put.md) | Issues a `PUT` request to the given URL
-| [hx-patch](@/attributes/hx-patch.md) | Issues a `PATCH` request to the given URL
-| [hx-delete](@/attributes/hx-delete.md) | Issues a `DELETE` request to the given URL
+| Attribute                              | Description                                |
+|----------------------------------------|--------------------------------------------|
+| [hx-get](@/attributes/hx-get.md)       | Issues a `GET` request to the given URL    |
+| [hx-post](@/attributes/hx-post.md)     | Issues a `POST` request to the given URL   |
+| [hx-put](@/attributes/hx-put.md)       | Issues a `PUT` request to the given URL    |
+| [hx-patch](@/attributes/hx-patch.md)   | Issues a `PATCH` request to the given URL  |
+| [hx-delete](@/attributes/hx-delete.md) | Issues a `DELETE` request to the given URL |
 
 Each of these attributes takes a URL to issue an AJAX request to.  The element will issue a request of the specified
 type to the given URL when the element is [triggered](#triggers):
 
 ```html
-<div hx-put="/messages">
+<button hx-put="/messages">
     Put To Messages
-</div>
+</button>
 ```
 
 This tells the browser:
 
-> When a user clicks on this div, issue a PUT request to the URL /messages and load the response into the div
+> When a user clicks on this button, issue a PUT request to the URL /messages and load the response into the button
 
 ### Triggering Requests {#triggers}
 
@@ -279,7 +278,7 @@ Here is an example that triggers only on a Control-Click of the element
 </div>
 ```
 
-Properties like `ctrlKey` will be resolved against the triggering event first, then the global scope.  The
+Properties like `ctrlKey` will be resolved against the triggering event first, then against the global scope.  The
 `this` symbol will be set to the current element.
 
 #### Special Events
@@ -419,7 +418,7 @@ input tag.
 In addition, a CSS selector may be wrapped in `<` and `/>` characters, mimicking the
 [query literal](https://hyperscript.org/expressions/query-reference/) syntax of hyperscript.
 
-Relative targets like this can be useful for creating flexible user interfaces without peppering your DOM with loads
+Relative targets like this can be useful for creating flexible user interfaces without peppering your DOM with lots
 of `id` attributes.
 
 
@@ -511,8 +510,7 @@ Consider a race condition between a form submission and an individual input's va
 <form hx-post="/store">
     <input id="title" name="title" type="text"
         hx-post="/validate"
-        hx-trigger="change"
-    >
+        hx-trigger="change">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -528,8 +526,7 @@ a form request is present or starts while the input request is in flight:
     <input id="title" name="title" type="text"
         hx-post="/validate"
         hx-trigger="change"
-        hx-sync="closest form:abort"
-    >
+        hx-sync="closest form:abort">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -691,6 +688,34 @@ attribute, which allows you to confirm an action using a simple javascript dialo
 Using events you can implement more sophisticated confirmation dialogs.  The [confirm example](@/examples/confirm.md)
 shows how to use [sweetalert2](https://sweetalert2.github.io/) library for confirmation of htmx actions.
 
+#### Confirming Requests Using Events
+
+Another option to do confirmation with is via the [`htmx:confirm` event](@/events.md#htmx:confirm) event.  This event
+is fired on *every* trigger for a request (not just on elements that have a `hx-confirm` attribute) and can be used
+to implement asynchronous confirmation of the request.
+
+Here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert='true'` attribute on it:
+
+```javascript
+document.body.addEventListener('htmx:confirm', function(evt) {
+  if (evt.target.matches("[confirm-with-sweet-alert='true']")) {
+    evt.preventDefault();
+    swal({
+      title: "Are you sure?",
+      text: "Are you sure you are sure?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((confirmed) => {
+      if (confirmed) {
+        evt.detail.issueRequest();
+      }
+    });     
+  }
+});
+```
+
+
 ## Attribute Inheritance {#inheritance}
 
 Most attributes in htmx are inherited: they apply to the element they are on as well as any children elements.  This
@@ -815,60 +840,9 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 
 ## Web Sockets & SSE {#websockets-and-sse}
 
-htmx has experimental support for declarative use of both
-[WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
-and  [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
-
-<div style="border: 1px solid whitesmoke; background-color: #e4f0ff; padding: 8px; border-radius: 8px">
-
-**Note:** In htmx 2.0, these features will be migrated to extensions.  These new extensions are already available in
-htmx 1.7+ and, if you are writing new code, you are encouraged to use the extensions instead.  All new feature work for
-both SSE and web sockets will be done in the extensions.
-
-Please visit the [SSE extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) and [WebSocket extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md)
-pages to learn more about the new extensions.
-
-</div>
-
-### WebSockets
-
-If you wish to establish a `WebSocket` connection in htmx, you can use the 
-[Web Socket](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws) extension:
-
-```html
-<div hx-ext="ws" ws-connect="/chatroom">
-  <div id="notifications"></div>
-  <div id="chat_room">
-    ...
-  </div>
-  <form id="form" ws-send>
-    <input name="chat_message">
-  </form>
-</div>
-```
-
-The `ws-connect` attribute establishes a WebSocket connection, and the `ws-send` 
-attribute tells the form to submit values to the socket on `submit`.
-
-More details can be found on the [extension's README.md page](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws)
-
-### Server Sent Events {#sse}
-
-[Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) are a way for servers to send events to browsers.  It provides a higher-level mechanism for communication between the
-server and the browser than websockets.
-
-To use SSE in htmx, you can use the
-[SSE](https://github.com/bigskysoftware/htmx-extensions/tree/main/src/ws) extension:
-
-```html
-<div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
-  Contents of this box will be updated in real time
-  with every SSE message received from the chatroom.
-</div>
-```
-
-Depending on your implementation, this may be more efficient than the polling example above since the server would
-notify the div if there was new news to get, rather than the steady requests that a poll causes.
+Web Sockets and Server Sent Events (SSE) are supported via extensions.  Please see
+the [SSE extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) and [WebSocket extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md)
+pages to learn more.
 
 ## History Support {#history}
 
@@ -961,14 +935,14 @@ event, which you can handle.
 
 In the event of a connection error, the `htmx:sendError` event will be triggered.
 
-### Configuring Response Handling
+### Configuring Response Handling {#response-handling}
 
 You can configure the above behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
 object is a collection of JavaScript objects defined like so:
 
 ```js
     responseHandling: [
-        {code:"204", swap: false},   // 204 by default does nothing, but is not an error
+        {code:"204", swap: false},   // 204 - No Content by default does nothing, but is not an error
         {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
         {code:"[45]..", swap: false, error:true}, // 400 & 500 responses are not swapped and are errors
     ]
@@ -988,17 +962,30 @@ The fields available for response handling configuration on entries in this arra
 * `target` - A CSS selector specifying an alternative target for the response
 * `swapOverride` - An alternative swap mechanism for the response
 
-As an example of how to use this configuration, consider a situation when a server-side framework responds with a
-[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation
-occurs.  By default, htmx will ignore the response, since it matches the Regular Expression `[45]..`.  You can
-insert a rule at the start of the `htmx.config.responseHandling` array to override this:
+#### Configuring Response Handling Examples {#response-handling}
 
-```js
-  // unshift to put the rule at the start and swap on 422 responses
-  htmx.config.responseHandling.unshift({code:"422", swap: true})
+As an example of how to use this configuration, consider a situation when a server-side framework responds with a
+[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response, 
+since it matches the Regular Expression `[45]..`. 
+
+Using the [meta config](#configuration-options) mechanism for configuring responseHandling, we could add the following
+config:
+
+```html
+<meta name="htmx-config" content='{code:"204", swap: false},   // 204 - No Content by default does nothing, but is not an error
+                                  {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
+                                  {code:"422", swap: true}, // 422 responses are swapped
+                                  {code:"[45]..", swap: false, error:true}, // 400 & 500 responses are not swapped and are errors'>
 ```
 
-You can also completely redefine the array of handlers via the normal configuration mechanisms discussed below.
+If you wanted to swap everything, regardless of HTTP response code, you could use this configuration:
+
+```html
+<meta name="htmx-config" content='{code:".*", swap: true}, // all responses are swapped'>
+```
+
+Finally, it is worth considering using the [Response Targets](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md)
+extension, which allows you to configure the behavior of response codes declaratively via attributes.
 
 ### CORS
 
@@ -1477,6 +1464,11 @@ example uses Alpine's `$watch` function to look for a change of value that would
     </template>
 </div>
 ```
+
+#### Web Components {#web-components}
+
+Please see the [Web Components Examples](@/examples/web-components.md) page for examples on how to integrate htmx
+with web components.
 
 ## Caching
 
