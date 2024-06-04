@@ -1968,7 +1968,7 @@ return (function () {
 
             if (document.evaluate) {
                 var iter = document.evaluate('.//*[@*[ starts-with(name(), "hx-on:") or starts-with(name(), "data-hx-on:") or' +
-                                                                           ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt)
+                                                                           ' starts-with(name(), "hx-on-") or starts-with(name(), "data-hx-on-") ]]', elt, null, 0, null)
                 while (node = iter.iterateNext()) elements.push(node)
             } else if (typeof elt.getElementsByTagName === "function") {
                 var allElements = elt.getElementsByTagName("*")
