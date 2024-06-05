@@ -281,6 +281,11 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
           <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
         </a>
 </td>
+<td>
+        <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
+          <img src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
+        </a>
+</td>
 </tr>
 </table>
 </div>
