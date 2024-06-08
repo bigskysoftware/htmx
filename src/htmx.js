@@ -1129,7 +1129,7 @@ var htmx = (function() {
     if (startsWith(trimmedSelector, '<') && endsWith(trimmedSelector, '/>')) {
       return trimmedSelector.substring(1, trimmedSelector.length - 2)
     } else {
-      return trimmedSelector.replaceAll(':', '\\:').replaceAll('.', '\\.'); // Issue 2601: colons and dots are valid id characters but need to be escaped
+      return trimmedSelector.replace(/\:/g, '\\:').replace(/\./g, '\\.')
     }
   }
 
