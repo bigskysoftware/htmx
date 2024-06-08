@@ -1128,8 +1128,10 @@ var htmx = (function() {
     const trimmedSelector = selector.trim()
     if (startsWith(trimmedSelector, '<') && endsWith(trimmedSelector, '/>')) {
       return trimmedSelector.substring(1, trimmedSelector.length - 2)
-    } else {
+    } else if (startsWith(trimmedSelector, '#')) {
       return trimmedSelector.replace(/\:/g, '\\:').replace(/\./g, '\\.')
+    } else {
+      return trimmedSelector
     }
   }
 
