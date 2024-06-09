@@ -202,6 +202,8 @@ This tells the browser:
 
 > When a user clicks on this div, issue a PUT request to the URL /messages and load the response into the div
 
+Note: Although not officially supported, adding multiple AJAX attributes on an element is possible, though only one request will be made. The priority for which request is issued is as follows, from highest to lowest: `['get', 'post', 'put', 'delete', 'patch']`.
+
 ### Triggering Requests {#triggers}
 
 By default, AJAX requests are triggered by the "natural" event of an element:
