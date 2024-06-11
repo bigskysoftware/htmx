@@ -41,7 +41,7 @@ style attribute into its new value.  This, when coupled with CSS transitions, ma
 rather than jumpy.
 
 Finally, when the process is complete, a server returns `HX-Trigger: done` header, which triggers an update of the UI to "Complete" state
-with a restart button added to the UI (we are using the [`class-tools`](@/extensions/class-tools.md) extension in this example to add fade-in effect on the button):
+with a restart button added to the UI (we are using the [`class-tools`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/class-tools/README.md) extension in this example to add fade-in effect on the button):
 
 ```html
 <div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">

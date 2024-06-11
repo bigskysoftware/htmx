@@ -87,8 +87,8 @@
         , 'expected ' + elToString(el) + ' not to have class matching #{exp}'
         , className
       )
-    } 
-    
+    }
+
     this.assert(
       el.classList.contains(className)
       , 'expected ' + elToString(el) + ' to have class #{exp}'
@@ -350,7 +350,7 @@
 
   chai.Assertion.addProperty('displayed', function() {
     var el = flag(this, 'object'),
-        actual = document.body.contains(el) ? window.getComputedStyle(el).display : el.style.display
+        actual = el.getRootNode({ composed: true }) === document ? window.getComputedStyle(el).display : el.style.display
 
     this.assert(
       actual !== 'none'

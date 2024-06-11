@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.12] - 2024-04-17
+
+* [IE Fixes](https://github.com/bigskysoftware/htmx/commit/e64238dba3113c2eabe26b1e9e9ba7fe29ba3010)
+
+## [1.9.11] - 2024-03-15
+
+* Fix for new issue w/ web sockets & SSE on iOS 17.4 (thanks apple!)
+* Fix for double script execution issue when using template parsing
+* Fix TypeScript types file
+* Fix SSE Ext: reinstantiate EventSource listeners upon reconnection logic (#2272)
+    
 ## [1.9.10] - 2023-12-21
 
 * `hx-on*` attributes now support the form `hx-on-`, with a trailing dash, to better support template systems (such as EJS)
@@ -38,7 +49,7 @@
 ## [1.9.6] - 2023-09-22
 
 * IE support has been restored (thank you @telroshan!)
-* Introduced the `hx-disabled-elt` attribute to allow specifing elements to disable during a request
+* Introduced the `hx-disabled-elt` attribute to allow specifying elements to disable during a request
 * You can now explicitly decide to ignore `title` tags found in new content via the `ignoreTitle` option in `hx-swap` and the `htmx.config.ignoreTitle` configuration variable.
 * `hx-swap` modifiers may be used without explicitly specifying the swap mechanism
 * Arrays are now supported in the `client-side-templates` extension

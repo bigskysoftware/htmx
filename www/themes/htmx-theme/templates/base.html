@@ -52,9 +52,11 @@
                             </label>
                         </form>
                     </div>
-                </div>
-                <div class="github-stars">
-                    <iframe style="margin:auto;" src="https://ghbtns.com/github-btn.html?user=bigskysoftware&repo=htmx&type=star&count=true" frameborder="0" scrolling="0" width="150" height="20" title="Star htmx on GitHub"></iframe>
+                    <div>
+                        <div class="github-stars" hx-preserve="true" id="github-stars">
+                            <a class="github-button" href="https://github.com/bigskysoftware/htmx" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">Star</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,6 +100,6 @@
         </div>
     </div>
 </footer>
-
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>

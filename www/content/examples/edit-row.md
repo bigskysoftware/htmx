@@ -33,25 +33,28 @@ Here is the HTML for a row:
         <button class="btn btn-danger"
                 hx-get="/contact/${contact.id}/edit"
                 hx-trigger="edit"
-                _="on click
-                     if .editing is not empty
-                       Swal.fire({title: 'Already Editing',
-                                  showCancelButton: true,
-                                  confirmButtonText: 'Yep, Edit This Row!',
-                                  text:'Hey!  You are already editing a row!  Do you want to cancel that edit and continue?'})
-                       if the result's isConfirmed is false
-                         halt
-                       end
-                       send cancel to .editing
-                     end
-                     trigger edit">
+                onClick="let editing = document.querySelector('.editing')
+                         if(editing) {
+                           Swal.fire({title: 'Already Editing',
+                                      showCancelButton: true,
+                                      confirmButtonText: 'Yep, Edit This Row!',
+                                      text:'Hey!  You are already editing a row!  Do you want to cancel that edit and continue?'})
+                           .then((result) => {
+                                if(result.isConfirmed) {
+                                   htmx.trigger(editing, 'cancel')
+                                   htmx.trigger(this, 'edit')
+                                }
+                            })
+                         } else {
+                            htmx.trigger(this, 'edit')
+                         }">
           Edit
         </button>
       </td>
     </tr>
 ```
 
-Here we are getting a bit fancy and only allowing one row at a time to be edited, using [hyperscript](http://hyperscript.org).
+Here we are getting a bit fancy and only allowing one row at a time to be edited, using some JavaScript.
 We check to see if there is a row with the `.editing` class on it and confirm that the user wants to edit this row
 and dismiss the other one.  If so, we send a cancel event to the other row so it will issue a request to go back to
 its initial state.
@@ -61,7 +64,7 @@ of the row.
 
 Note that if you didn't care if a user was editing multiple rows, you could omit the hyperscript and custom `hx-trigger`,
 and just let the normal click handling work with htmx.  You could also implement mutual exclusivity by simply targeting the
-entire table when the Edit button was clicked.  Here we wanted to show how to integrate htmx and hyperscript to solve
+entire table when the Edit button was clicked.  Here we wanted to show how to integrate htmx and JavaScript to solve
 the problem and narrow down the server interactions a bit, plus we get to use a nice SweetAlert confirm dialog.
 
 Finally, here is what the row looks like when the data is being edited:
@@ -82,7 +85,7 @@ Finally, here is what the row looks like when the data is being edited:
 ```
 
 Here we have a few things going on:  First off the row itself can respond to the `cancel` event, which will bring
-back the read-only version of the row.  This is used by the hyperscript above.  There is a cancel button that allows
+back the read-only version of the row.  There is a cancel button that allows
 cancelling the current edit.  Finally, there is a save button that issues a `PUT` to update the contact.  Note that
 there is an [`hx-include`](@/attributes/hx-include.md) that includes all the inputs in the closest row.  Tables rows are
 notoriously difficult to use with forms due to HTML constraints (you can't put a `form` directly inside a `tr`) so
@@ -157,18 +160,21 @@ this makes things a bit nicer to deal with.
         <button class="btn btn-danger"
                 hx-get="/contact/${contact.id}/edit"
                 hx-trigger="edit"
-                _="on click
-                     if .editing is not empty
-                       Swal.fire({title: 'Already Editing',
-                                  showCancelButton: true,
-                                  confirmButtonText: 'Yep, Edit This Row!',
-                                  text:'Hey!  You are already editing a row!  Do you want to cancel that edit and continue?'})
-                       if the result's isConfirmed is false
-                         halt
-                       end
-                       send cancel to .editing
-                     end
-                     trigger edit">
+                onClick="let editing = document.querySelector('.editing')
+                         if(editing) {
+                           Swal.fire({title: 'Already Editing',
+                                      showCancelButton: true,
+                                      confirmButtonText: 'Yep, Edit This Row!',
+                                      text:'Hey!  You are already editing a row!  Do you want to cancel that edit and continue?'})
+                           .then((result) => {
+                                if(result.isConfirmed) {
+                                   htmx.trigger(editing, 'cancel')
+                                   htmx.trigger(this, 'edit')
+                                }
+                            })
+                         } else {
+                            htmx.trigger(this, 'edit')
+                         }">
           Edit
         </button>
       </td>

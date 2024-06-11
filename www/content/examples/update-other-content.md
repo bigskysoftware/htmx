@@ -139,12 +139,6 @@ Instead of modifying something on the front end, in your response to the `POST` 
 This content uses the [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute to append itself to the `#contacts-table`, updating
 the table after a contact is added successfully.
 
-Note that because we are using table rows here, we must enable template fragment parsing (thus sacrificing IE11 compatibility)
-
-```javascript
-  htmx.config.useTemplateFragments = true;
-```
-
 ## Solution 3: Triggering Events {#events}
 
 An even more sophisticated approach would be to trigger a client side event when a successful contact is created and
@@ -199,7 +193,7 @@ A final approach is to use REST-ful path dependencies to refresh the table.  Int
 to htmx, had [path-based dependencies](https://intercoolerjs.org/docs.html#dependencies) integrated into the 
 library.  
  
-htmx dropped this as a core feature, but supports an extension, [path deps](@/extensions/path-deps.md), that gives you 
+htmx dropped this as a core feature, but supports an extension, [path deps](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md), that gives you 
 similar functionality.
  
 Updating our example to use the extension would involve loading the extension javascript and then

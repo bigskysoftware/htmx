@@ -1,9 +1,12 @@
 (function(undefined){
     'use strict';
-
+    if (htmx.version && !htmx.version.startsWith("1.")) {
+        console.warn("WARNING: You are using an htmx 1 extension with htmx " + htmx.version +
+            ".  It is recommended that you move to the version of this extension found on https://extensions.htmx.org")
+    }
     // Save a reference to the global object (window in the browser)
     var _root = this;
-  
+
     function dependsOn(pathSpec, url) {
         if (pathSpec === "ignore") {
             return false;
@@ -30,8 +33,8 @@
             if (dependsOn(elt.getAttribute('path-deps'), path)) {
                 htmx.trigger(elt, "path-deps");
             }
-        }      
-    }    
+        }
+    }
 
     htmx.defineExtension('path-deps', {
         onEvent: function (name, evt) {
@@ -41,7 +44,7 @@
                 if (config.verb !== "get" && evt.target.getAttribute('path-deps') !== 'ignore') {
                     refreshPath(config.path);
                 }
-            } 
+            }
         }
     });
 
@@ -49,12 +52,12 @@
      *  ********************
      *  Expose functionality
      *  ********************
-     */    
+     */
 
     _root.PathDeps = {
         refresh: function(path) {
             refreshPath(path);
         }
     };
-            
+
 }).call(this);

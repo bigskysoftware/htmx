@@ -24,24 +24,35 @@ page_template = "essay.html"
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
+* [htmx sucks](@/essays/htmx-sucks.md)
 
 ### Building Hypermedia Applications
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
 * [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
+* [Web Security Basics (with htmx)](@/essays/web-security-basics-with-htmx.md)
 * [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
 * [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
 * [Why I Tend Not To Use Content Negotiation](@/essays/why-tend-not-to-use-content-negotiation.md)
 * [Template Fragments](@/essays/template-fragments.md)
 * [View Transitions](@/essays/view-transitions.md)
+* [Model/View/Controller](@/essays/mvc.md)
 
 ### Complexity Very Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
+* [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
+* [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
 
+### Hypermedia History
 
+* [A File Structure For The Complex, The Changing and the Indeterminate (Ted Nelson, 1965)](https://dl.acm.org/doi/pdf/10.1145/800197.806036)
+* [The Mother Of All Demos (Doug Englebart, 1968)](https://www.youtube.com/watch?v=B6rKUf9DWRI)
+* [The First Web Page (1991)](http://info.cern.ch/hypertext/WWW/TheProject.html)
+* [Architectural Styles and the Design of Network-based Software Architectures (Roy Fielding, 2000)](https://ics.uci.edu/~fielding/pubs/dissertation/top.htm)
+* [State of the Art Review on Hypermedia Issues and Applications (2006)](https://paul.luon.net/hypermedia/index.html) [[archive]](https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html)
 
 ## Banners
 <div style="text-align: center;margin:32px">
