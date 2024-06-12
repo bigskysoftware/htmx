@@ -180,7 +180,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td colspan="3">
-        <a data-github-account="deco-cx" href="https://deco.cx/"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
+        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
 </td>
 </tr>
 <tr>
