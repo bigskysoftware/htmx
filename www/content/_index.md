@@ -287,6 +287,14 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 </tr>
+<tr>
+<td></td>
+<td>
+        <a data-github-account="sanjananb" href="https://insfollowpro.com/">
+          <img src="/img/ins-follow-pro.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+</tr>
 </table>
 </div>
 
