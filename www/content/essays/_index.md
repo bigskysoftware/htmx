@@ -37,6 +37,8 @@ page_template = "essay.html"
 * [Template Fragments](@/essays/template-fragments.md)
 * [View Transitions](@/essays/view-transitions.md)
 * [Model/View/Controller](@/essays/mvc.md)
+* [Is Rendering JSON More Efficient Than Rendering HTML?](https://github.com/1cg/html-json-speed-comparison)
+* [Is JSON Smaller Than HTML?](https://github.com/1cg/html-json-size-comparison)
 
 ### Complexity Very Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
