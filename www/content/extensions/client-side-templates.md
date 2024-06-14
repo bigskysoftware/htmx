@@ -123,6 +123,79 @@ Here's a working example using the `mustache-array-template` working against an 
 </html>
 ```
 
+
+### Full Handlebars HTML Example
+
+To use the client side template, you will need to include htmx, the extension, and the rendering engine.
+Here is an example of this setup for Mustache using
+a [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+  <script src="https://unpkg.com/handlebars@latest/dist/handlebars.min.js"></script>
+</head>
+<body>
+  <div hx-ext="client-side-templates">
+    <button hx-get="https://jsonplaceholder.typicode.com/todos/1"
+            hx-swap="innerHTML"
+            hx-target="#content"
+            handlebars-template="foo">
+      Click Me
+    </button>
+
+    <p id="content">Start</p>
+
+    <template id="foo">
+      <p> {{{userID}}} and {{{id}}} and {{{title}}} and {{{completed}}}</p>
+    </template>
+  </div>
+</body>
+</html>
+```
+
+<!-- Here is a [jsbin](https://jsbin.com/qonutovico/edit?html,output) playground to try this out. -->
+
+Here's a working example using the `handlebars-array-template` working against an API that returns an array:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+  <script src="https://unpkg.com/handlebars@latest/dist/handlebars.min.js"></script>
+</head>
+<body>
+  <div hx-ext="client-side-templates">
+    <button hx-get="https://jsonplaceholder.typicode.com/users"
+            hx-swap="innerHTML"
+            hx-target="#content"
+            handlebars-array-template="foo">
+      Click Me
+    </button>
+
+    <p id="content">Start</p>
+
+    <template id="foo">
+      {{#each this}}
+      <p> {{name}} at {{email}} is with {{company.name}}</p>
+      {{/each}}
+    </template>
+  </div>
+</body>
+</html>
+```
+
+
 ### Full XSLT HTML Example
 
 To use the client side template, you will need to include htmx and the extension.
