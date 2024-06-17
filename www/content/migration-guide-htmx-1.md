@@ -5,19 +5,23 @@ title = "htmx 1.x &rarr; htmx 2.x Migration Guide"
 The purpose of this guide is to provide instructions for migrations from htmx 1.x to htmx 2.x.
 We place a very high value on backwards compatibility, so in most cases this migrations should require very little, if any, work.
 
-* If you are still using the legacy `hx-ws` and `hx-sse` attributes, please upgrade to the extension versions (available in 1.x)
+* If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
+  JavaScript module types
+  * ESM Modules: `/dist/htmx.esm.js`
+  * UMD Modules: `/dist/htmx.umd.js`
+  * AMD Modules: `/dist/htmx.amd.js`
+  * The `/dist/htmx.js` file continues to be browser-loadable
+* All extensions have been removed from the core htmx distribution and are distributed separately on
+  [their own website](https://extensions.htmx.org).  While many 1.x extensions will continue to work with htmx 2, you
+  must upgrade the SSE extension to the 2.x version, and it is recommended that you upgrade all of them to the 2.x
+  versions.
+* If you are still using the legacy `hx-ws` and `hx-sse` attributes, please upgrade to the extension versions 
 * Default Changes
   * If you want to retain the 1.0 behavior of "smooth scrolling" by default, revert `htmx.config.scrollBehavior` to `'smooth'`
   * If you want `DELETE` requests to use a form-encoded body rather than parameters, revert
     `htmx.config.methodsThatUseUrlParams` to `["get"]` (it's a little crazy, but `DELETE`, according to the spec, should
-     use request parameters.)
+     use request parameters like `GET`.)
   * If you want to make cross-domain requests with htmx, revert `htmx.config.selfRequestsOnly` to `false`
-* If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
-  JavaScript module types: `/dist/htmx.esm.js`, `/dist/htmx.umd.js` & `/dist/htmx.amd.js`
-* All extensions have been removed from the core htmx distribution and are distributed separately on 
-  [their own website](https://extensions.htmx.org).  While many 1.x extensions will continue to work with htmx 2, you
-  must upgrade the SSE extension to the 2.x version, and it is recommended that you upgrade all of them to the 2.x
-  versions.  
 * Convert any `hx-on` attributes to their `hx-on:` equivalent:
   ```html
      <button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
@@ -37,7 +41,7 @@ We place a very high value on backwards compatibility, so in most cases this mig
 * If you are an extension author and your extension was using `selectAndSwap` method from internal API, it was removed and replaced with `swap` method,
   which is available from both internal and public htmx APIs
 
-  To do swap using new method, you need to simply use
+To do a swap using new method, you need to simply use
 
   ```js
   let content = "<div>Hello world</div>"; // this is HTML that will be swapped into target
@@ -46,9 +50,10 @@ We place a very high value on backwards compatibility, so in most cases this mig
   api.swap(target, content, swapSpec);
   ```
 
- `swap` method documentation is available on [JS API Reference](/api/#swap)
+`swap` method documentation is available on [JS API Reference](/api/#swap)
 
-IE is no longer supported in htmx 2.0, but htmx 1.x continues to support IE and will be supported for the foreseeable future.
+IE is no longer supported in htmx 2.0, but [htmx 1.x](https://v1.htmx.org) continues to support IE and will be supported 
+for the foreseeable future.
 
 ## Upgrade Music
 
