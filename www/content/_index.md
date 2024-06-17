@@ -91,7 +91,7 @@ if(window.location.search=="?ads=true") {
 </div>
 
 <div class="alert">
-<b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as [<code>latest</code>](https://docs.npmjs.com/cli/v10/commands/npm-dist-tag#purpose) 
+<b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <a href="https://docs.npmjs.com/cli/v10/commands/npm-dist-tag#purpose"><code>latest</code></a> 
 in NPM so that people using the <a href="https://v1.htmx.org">1.x line</a> are not accidentally upgraded.  We will mark 
 2.0 as <code>latest</code> at some point in 2025.
 </div>
