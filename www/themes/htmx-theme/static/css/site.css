@@ -69,7 +69,6 @@ table {
   border: 1px solid var(--alertBorder);
   margin: 24px 8px;
   padding: 12px;
-  border-radius: 8px;
   background-color: var(--alertBackground);
   filter: drop-shadow(3px 3px var(--alertShadow));
 }
