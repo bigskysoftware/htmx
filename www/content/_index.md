@@ -185,7 +185,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td colspan="3">
-        <a data-github-account="deco-cx" href="https://deco.cx/"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
+        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
 </td>
 </tr>
 <tr>
@@ -304,6 +304,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
            <img class="dark-hidden" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+</tr>
+/tr>
+<tr>
+<td></td>
+<td>
+        <a data-github-account="gitdevin99" href="https://insfollowpro.com/">
+          <img src="/img/ins-follow-pro.png" style="width:100%;max-width:250px">
         </a>
 </td>
 </tr>
