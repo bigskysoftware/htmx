@@ -57,7 +57,7 @@ All other attributes available in htmx.
 | [`hx-history-elt`](@/attributes/hx-history-elt.md)   | the element to snapshot and restore during history navigation                                                                      |
 | [`hx-include`](@/attributes/hx-include.md)           | include additional data in requests                                                                                                |
 | [`hx-indicator`](@/attributes/hx-indicator.md)       | the element to put the `htmx-request` class on during the request                                                                  |
-| [`hx-inherit`](@/attributes/hx-disinherit.md)        | control and enable automatic attribute inheritance for child nodes if it has been disabled by default                              |
+| [`hx-inherit`](@/attributes/hx-inherit.md)           | control and enable automatic attribute inheritance for child nodes if it has been disabled by default                            |
 | [`hx-params`](@/attributes/hx-params.md)             | filters the parameters that will be submitted with a request                                                                       |
 | [`hx-patch`](@/attributes/hx-patch.md)               | issues a `PATCH` to the specified URL                                                                                              |
 | [`hx-preserve`](@/attributes/hx-preserve.md)         | specifies elements to keep unchanged between requests                                                                              |
