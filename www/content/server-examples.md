@@ -115,6 +115,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/libsyz/htmx-to-do-app>
 - <https://github.com/beechnut/pokebutt-htmx>
 
+## Rust
+
+- <https://github.com/paultuckey/example-todo-app-rust-htmx>
+
 ## Scala
   
 ### http4s
