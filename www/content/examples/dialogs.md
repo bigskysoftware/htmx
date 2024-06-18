@@ -7,7 +7,7 @@ Dialogs can be triggered with the [`hx-prompt`](@/attributes/hx-prompt.md) and [
 
 ```html
 <div>
-  <button class="btn"
+  <button class="btn primary"
           hx-post="/submit"
           hx-prompt="Enter a string"
           hx-confirm="Are you sure?"
@@ -45,7 +45,7 @@ User entered <i>${response}</i>
     // templates
     function submitButton() {
       return `<div>
-  <button class="btn"
+  <button class="btn primary"
           hx-post="/submit"
           hx-prompt="Enter a string"
           hx-confirm="Are you sure?"

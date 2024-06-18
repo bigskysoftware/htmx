@@ -345,6 +345,12 @@ a[href]:hover, .btn:hover {
   border: solid var(--midBlue);
 }
 
+.btn.danger {
+  color: white;
+  background: #d9534f;
+  border: solid #d9534f;
+}
+
 td {
   padding: 0.2em 0.2em 0.2em 0;
   text-align: left;

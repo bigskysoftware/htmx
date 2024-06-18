@@ -29,7 +29,7 @@ values in the form submission (`POST` request):
         ...
       </tbody>
     </table>
-    <input type="submit" value="Bulk Update">
+    <input type="submit" value="Bulk Update" class="btn primary">
     <span id="toast"></span>
 </form>
 ```
@@ -163,7 +163,7 @@ You can see a working example of this code below.
                     ${displayTable(contacts)}
                   </tbody>
                 </table>
-                <input type="submit" value="Bulk Update">
+                <input type="submit" value="Bulk Update" class="btn primary">
                 <span id="toast"></span>
               </form>
               <br>`;

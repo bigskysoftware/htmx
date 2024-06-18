@@ -30,7 +30,7 @@ Here is the HTML for a row:
       <td>${contact.name}</td>
       <td>${contact.email}</td>
       <td>
-        <button class="btn btn-danger"
+        <button class="btn danger"
                 hx-get="/contact/${contact.id}/edit"
                 hx-trigger="edit"
                 onClick="let editing = document.querySelector('.editing')
@@ -74,10 +74,10 @@ Finally, here is what the row looks like when the data is being edited:
   <td><input name='name' value='${contact.name}'></td>
   <td><input name='email' value='${contact.email}'></td>
   <td>
-    <button class="btn btn-danger" hx-get="/contact/${contact.id}">
+    <button class="btn danger" hx-get="/contact/${contact.id}">
       Cancel
     </button>
-    <button class="btn btn-danger" hx-put="/contact/${contact.id}" hx-include="closest tr">
+    <button class="btn danger" hx-put="/contact/${contact.id}" hx-include="closest tr">
       Save
     </button>
   </td>
@@ -157,7 +157,7 @@ this makes things a bit nicer to deal with.
       <td>${contact.name}</td>
       <td>${contact.email}</td>
       <td>
-        <button class="btn btn-danger"
+        <button class="btn danger"
                 hx-get="/contact/${contact.id}/edit"
                 hx-trigger="edit"
                 onClick="let editing = document.querySelector('.editing')
@@ -186,10 +186,10 @@ this makes things a bit nicer to deal with.
       <td><input name='name' value='${contact.name}'</td>
       <td><input name='email' value='${contact.email}'</td>
       <td>
-        <button class="btn btn-danger" hx-get="/contact/${contact.id}">
+        <button class="btn danger" hx-get="/contact/${contact.id}">
           Cancel
         </button>
-        <button class="btn btn-danger" hx-put="/contact/${contact.id}" hx-include="closest tr">
+        <button class="btn danger" hx-put="/contact/${contact.id}" hx-include="closest tr">
           Save
         </button>
       </td>
