@@ -10,8 +10,8 @@
 * Module support was split into different files:
 * We now provide specific files in `/dist` for the various JavaScript module styles:
   * ESM Modules: `/dist/htmx.esm.js`
-  * UMD Modules: `/dist/htmx.umd.js`
   * AMD Modules: `/dist/htmx.amd.js`
+  * CJS Modules: `/dist/htmx.cjs.js`
   * The `/dist/htmx.js` file continues to be browser-loadable
 * The `hx-on` attribute, with its special syntax, has been removed in favor of the less-hacky `hx-on:` syntax.
 * See the [Upgrade Guide](https://htmx.org/migration-guide-htmx-1/) for more details on upgrade steps

@@ -8,8 +8,8 @@ We place a very high value on backwards compatibility, so in most cases this mig
 * If you are using htmx in a module setting, we now provide module-type specific files for all three of the major
   JavaScript module types
   * ESM Modules: `/dist/htmx.esm.js`
-  * UMD Modules: `/dist/htmx.umd.js`
   * AMD Modules: `/dist/htmx.amd.js`
+  * CJS Modules: `/dist/htmx.cjs.js`
   * The `/dist/htmx.js` file continues to be browser-loadable
 * All extensions have been removed from the core htmx distribution and are distributed separately on
   [their own website](https://extensions.htmx.org).  While many 1.x extensions will continue to work with htmx 2, you
