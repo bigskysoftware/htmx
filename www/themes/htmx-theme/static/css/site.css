@@ -1,6 +1,47 @@
 :root {
-  --midBlue: #3366cc;
+  --alertBackground: whitesmoke;
+  --alertBorder: lightgrey;
+  --alertShadow: darkgray;
+  --anchorColor: #3366cc;
+  --bodyBackground: white;
+  --footerBackground: #f6f6f6;
   --lightBlue: #3d72d7;
+  --midBlue: #3366cc;
+  --searchBorder: #eee;
+  --textColor: #111;
+  --topNavBackground: linear-gradient(#fff, #f4f5f5);
+  --topNavBorder: #d0d0d0;
+  --topNavShadow: #efefef;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --alertBackground: #161719;
+    --alertBorder: #41464b;
+    --alertShadow: rgba(0, 0, 0, 0.15);
+    --anchorColor: #e2dada;
+    --bodyBackground: #1f1f1f;
+    --footerBackground: #1a1d1e;
+    --midBlue: #5b96d5;
+    --searchBorder: #495057;
+    --textColor: #c7c4c1;
+    --topNavBackground: linear-gradient(#161718, #1b1d1f);
+    --topNavBorder: #41464b;
+    --topNavShadow: #2d2d2d;
+  }
+
+  .dark-invert {
+    filter: invert(1);
+  }
+
+  .dark-visible {
+    display: block;
+  }
+
+  .dark-hidden {
+    display: none;
+  }
 }
 
 body {
@@ -8,14 +49,28 @@ body {
   margin: 0px;
   line-height: 1.5em;
   font-size: 16px;
-  color: #111;
-  background-color: white;
+  color: var(--textColor);
+  background-color: var(--bodyBackground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif !important;
 }
 
+@media (prefers-color-scheme: light) {
+  .dark-visible {
+    display: none;
+  }
+}
+
 table {
   font-size: 16px;
+}
+
+.alert {
+  border: 1px solid var(--alertBorder);
+  margin: 24px 8px;
+  padding: 12px;
+  background-color: var(--alertBackground);
+  filter: drop-shadow(3px 3px var(--alertShadow));
 }
 
 .info-table table tbody tr td:first-of-type {
@@ -50,10 +105,10 @@ table {
 
 .top-nav {
   line-height: 30px;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1px solid var(--topNavBorder);
   margin: 0px;
-  background-image: linear-gradient(#fff, #f4f5f5);
-  box-shadow: 0px 4px 15px 0px rgb(239, 239, 239);
+  background-image: var(--topNavBackground);
+  box-shadow: 0px 4px 15px 0px var(--topNavShadow);
   margin-bottom:1em;
 }
 
@@ -86,7 +141,7 @@ code:not(code[class*="language-"]) {
   box-shadow:
           inset 0px 11px 8px -10px #262626,
           inset 0px -11px 8px -10px #262626;
-  border-bottom: 1px solid whitesmoke;
+  border-bottom: 1px solid var(--topNavBorder);
 }
   .dark-hero * {
       opacity: 0;
@@ -329,8 +384,8 @@ transition: visibility 0s 1s, opacity 1s linear;
   padding:1em 0;
 }
 
-.github-stars iframe{
-  max-width:95px
+.github-stars {
+  margin-top: 5px;
 }
 
 /* Content */
@@ -376,13 +431,6 @@ h1,h2,h3,h4{
   .navigation-items > *:not(:last-child){
       margin-right: calc(.5em + .7vw);
   }
-  .github-stars{
-      display:flex;
-      align-items:center;
-  }
-  .github-stars a{
-      margin:0 calc(.5em + .7vw);
-  }
 
   /* Content */
   .content .col:not(:nth-child(1)):not(.nav) {
@@ -415,16 +463,6 @@ h1,h2,h3,h4{
 
 }
 
-@media(max-width:45rem) {
-  .github-stars{
-      text-align:center;
-      margin-top:1em;
-  }
-  .github-stars a{
-      display:block;
-  }
-}
-
 
 .logo-wrapper {
 white-space: nowrap;
@@ -440,7 +478,7 @@ background: none;
     transition: all .2s ease-in-out;
     width: 2.5rem;
     padding: 4px 6px;
-    border: 2px solid #eee;
+    border: 2px solid var(--searchBorder);
     border-radius: 10px;
     margin-right: 10px;
     outline: 0;
@@ -462,7 +500,7 @@ footer {
 margin-top: 2em;
 padding-top: 2em;
 padding-bottom: 5em;
-background-color: #f6f6f6;
+background-color: var(--footerBackground);
 }
 
 footer .footer-menu {
@@ -491,6 +529,7 @@ pre[class|="language"] {
   margin-left: -1.3rem;
   margin-right: .3rem;
   opacity: 40%;
+  color: var(--anchorColor);
 }
 .zola-anchor:hover {
     opacity: 95%;

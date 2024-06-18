@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "1.9.12",
+  "version": "2.0.0",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
@@ -25,25 +25,55 @@
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
-    "test": "mocha-chrome test/index.html",
-    "test-types": "tsc --project ./jsconfig.json",
-    "dist": "cp -r src/* dist/ && npm run-script uglify && gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz && exit",
+    "dist": "./scripts/dist.sh",
+    "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
+    "lint-fix": "eslint src/htmx.js test/attributes/ test/core/ test/util/ --fix",
+    "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
+    "test": "npm run lint && tsc --project ./jsconfig.json --noEmit true --emitDeclarationOnly false && mocha-chrome test/index.html",
+    "type-declarations": "tsc --project ./jsconfig.json",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
-    "www": "bash ./scripts/www.sh",
-    "uglify": "uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js"
+    "www": "bash ./scripts/www.sh"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
+  "eslintConfig": {
+    "extends": "standard",
+    "rules": {
+      "camelcase": 0,
+      "no-var": 0,
+      "no-undef": 0,
+      "eqeqeq": 0,
+      "no-multi-str": 0,
+      "no-prototype-builtins": 0,
+      "no-cond-assign": 0,
+      "no-empty": 0,
+      "no-eval": 0,
+      "no-new-func": 0,
+      "no-redeclare": 0,
+      "no-return-assign": 0,
+      "no-unused-vars": 0,
+      "no-useless-call": 0,
+      "no-useless-escape": 0,
+      "no-unused-expressions": 0,
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ]
+    }
+  },
   "devDependencies": {
-    "chai": "^4.3.7",
-    "chai-dom": "^1.11.0",
+    "chai": "^4.3.10",
+    "chai-dom": "^1.12.0",
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
     "fs-extra": "^9.1.0",
-    "mocha": "^9.2.2",
-    "mocha-chrome": "^2.2.0",
-    "mocha-webdriver-runner": "^0.6.4",
-    "mock-socket": "^9.2.1",
+    "mocha": "10.1.0",
+    "mocha-chrome": "https://github.com/Telroshan/mocha-chrome",
+    "mocha-webdriver": "^0.3.2",
+    "mock-socket": "^9.3.1",
     "sinon": "^9.2.4",
     "typescript": "^4.9.5",
     "uglify-js": "^3.17.4",

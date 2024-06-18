@@ -2,7 +2,7 @@
 title = "Javascript API"
 +++
 
-While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](@/extensions/_index.md) or for working with [events](@/events.md).
+While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://extensions.htmx.org) or for working with [events](@/events.md).
 
 The [hyperscript](https://hyperscript.org) project is intended to provide more extensive scripting support
 for htmx-based applications.
@@ -120,7 +120,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility.
 * `allowScriptTags:true` - boolean: allows script tags to be evaluated in new content
 * `inlineScriptNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline scripts
-* `useTemplateFragments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
+* `inlineStyleNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline styles
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `timeout:0` - int: the number of milliseconds a request can take before automatically being terminated
 * `wsReconnectDelay:'full-jitter'` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
@@ -145,7 +145,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 
 ### Property - `htmx.createEventSource` {#createEventSource}
 
-A property used to create new [Server Sent Event](@/docs.md#sse) sources.  This can be updated
+A property used to create new [Server Sent Event](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) sources.  This can be updated
 to provide custom SSE setup.
 
 ##### Value
@@ -163,7 +163,7 @@ to provide custom SSE setup.
 
 ### Property - `htmx.createWebSocket` {#createWebSocket}
 
-A property used to create new [WebSocket](@/docs.md#websockets).  This can be updated
+A property used to create new [WebSocket](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md).  This can be updated
 to provide custom WebSocket setup.
 
 ##### Value
@@ -181,7 +181,7 @@ to provide custom WebSocket setup.
 
 ### Method - `htmx.defineExtension()` {#defineExtension}
 
-Defines a new htmx [extension](@/extensions/_index.md).
+Defines a new htmx [extension](https://extensions.htmx.org).
 
 ##### Parameters
 
@@ -447,6 +447,37 @@ Removes the given extension from htmx
 
 ```js
   htmx.removeExtension("my-extension");
+```
+
+### Method - `htmx.swap()` {#swap}
+
+Performs swapping (and settling) of HTML content
+
+##### Parameters
+
+* `target` - the HTML element or string selector of swap target
+* `content` - string representation of content to be swapped
+* `swapSpec` - swapping specification, representing parameters from `hx-swap`
+  * `swapStyle` (required) - swapping style (`innerHTML`, `outerHTML`, `beforebegin` etc)
+  * `swapDelay`, `settleDelay` (number) - delays before swapping and settling respectively
+  * `transition` (bool) - whether to use HTML transitions for swap
+  * `ignoreTitle` (bool) - disables page title updates
+  * `head` (string) - specifies `head` tag handling strategy (`merge` or `append`). Leave empty to disable head handling
+  * `scroll`, `scrollTarget`, `show`, `showTarget`, `focusScroll` - specifies scroll handling after swap
+* `swapOptions` - additional *optional* parameters for swapping
+  * `select` - selector for the content to be swapped (equivalent of `hx-select`)
+  * `selectOOB` - selector for the content to be swapped out-of-band (equivalent of `hx-select-oob`)
+  * `eventInfo` - an object to be attached to `htmx:afterSwap` and `htmx:afterSettle` elements
+  * `anchor` - an anchor element that triggered scroll, will be scrolled into view on settle. Provides simple alternative to full scroll handling
+  * `contextElement` - DOM element that serves as context to swapping operation. Currently used to find extensions enabled for specific element
+  * `afterSwapCallback`, `afterSettleCallback` - callback functions called after swap and settle respectively. Take no arguments
+
+
+##### Example
+
+```js
+    // swap #output element inner HTML with div element with "Swapped!" text
+    htmx.swap("#output", "<div>Swapped!</div>", {swapStyle: 'innerHTML'});
 ```
 
 ### Method - `htmx.takeClass()` {#takeClass}

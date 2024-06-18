@@ -184,10 +184,11 @@ the AJAX request.  If you call `preventDefault()` on the event, it will not issu
 object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
 later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
 
-Here is an example using [sweet alert](https://sweetalert.js.org/guides/):
+Here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert='true'` attribute on it:
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
+  if (evt.target.matches("[confirm-with-sweet-alert='true']")) {
     evt.preventDefault();
     swal({
       title: "Are you sure?",
@@ -199,7 +200,8 @@ document.body.addEventListener('htmx:confirm', function(evt) {
       if (confirmed) {
         evt.detail.issueRequest();
       }
-   });
+    });
+  }
 });
 ```
 

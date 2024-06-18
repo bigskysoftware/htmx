@@ -33,7 +33,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.0"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -69,8 +69,6 @@ No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#spon
 ### hacking guide
 
 To develop htmx locally, you will need to install the development dependencies.
-
-__Requires Node 15.__
 
 Run:
 

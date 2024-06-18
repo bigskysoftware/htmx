@@ -206,7 +206,7 @@ is a form that on submit will change its look to indicate that a request is bein
 
 ## Using the htmx `class-tools` Extension
 
-Many interesting animations can be created by using the [`class-tools`](@/extensions/class-tools.md) extension.
+Many interesting animations can be created by using the [`class-tools`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/class-tools/README.md) extension.
 
 Here is an example that toggles the opacity of a div.  Note that we set the toggle time to be a bit longer than
 the transition time.  This avoids flickering that can happen if the transition is interrupted by a class change.

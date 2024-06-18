@@ -241,9 +241,9 @@ Keep in mind that the JSON you parse might have a *property* that is formatted a
 { "name": "<script>alert('Hahaha I am a script')</script>" }
 ```
 
-Therefore, don't insert JSON values as HTML either—use `innerText` if you're doing something like that. This is well outside the realm of htmx-controlled UI though.
+Therefore, don't insert JSON values as HTML either—use `textContent` if you're doing something like that. This is well outside the realm of htmx-controlled UI though.
 
-The 2.0 version of htmx will include an `innerText` swap, if you want to call someone else's API directly from the client and just put that text into the page.
+The 2.0 version of htmx will include a `textContent` swap, if you want to call someone else's API directly from the client and just put that text into the page.
 
 ### Custom HTML controls
 
