@@ -888,7 +888,7 @@ First we need to initialize elements that have the class in new content:
 ```javascript
 htmx.onLoad(function (target) {
     // find all elements in the new content that should be
-    // an editor and init w/ quill
+    // an editor and init w/ TomSelect
     var editors = target.querySelectorAll(".tomselect")
             .forEach(elt => new TomSelect(elt))
 });
