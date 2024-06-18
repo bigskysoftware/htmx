@@ -16,9 +16,8 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
-[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://htmx.org/extensions) &
-IE11 compatible
+[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
+[extendable](https://htmx.org/extensions)
 
 ## motivation
 
