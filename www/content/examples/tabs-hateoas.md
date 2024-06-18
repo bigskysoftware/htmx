@@ -111,16 +111,15 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 		display:none;
 	}
 
-	#tabs > .tab-list {
-		border-bottom: solid 3px #eee;
-	}
-
 	#tabs > .tab-list button {
 		border: none;
 		display: inline-block;
 		padding: 5px 10px;
 		cursor:pointer;
 		background-color: transparent;
+		color: var(--textColor);
+		border: solid 3px rgba(0,0,0,0);
+		border-bottom: solid 3px #eee;
 	}
 
 	#tabs > .tab-list button:hover {
@@ -128,7 +127,7 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 	}
 
 	#tabs > .tab-list button.selected {
-		background-color: #eee;
+		border: solid 3px var(--midBlue);
 	}
 
 	#tabs > .tab-content {
