@@ -12,7 +12,7 @@ Thank you for your interest in contributing! Because we're a small team, we have
 
 ## Pull Requests
 ### Technical Requirements
-1. Code, including tests, must be written in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11).
+1. Please lint all proposed changes with the `npm lint-fix` command
 1. All PRs must be made against the `dev` branch, except documentation PRs (that only modify the `www/` directory) which can be made against `master`.
 1. Please avoid sending the `dist` files along your PR, only include the `src` ones.
 1. Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www).

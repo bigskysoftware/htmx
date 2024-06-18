@@ -1626,6 +1626,9 @@ var htmx = (function() {
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapOuterHTML(target, fragment, settleInfo) {
+    if (target instanceof Element && target.tagName === 'BODY') { // special case the body to innerHTML because DocumentFragments can't contain a body elt unfortunately
+      return swapInnerHTML(target, fragment, settleInfo)
+    }
     /** @type {Node} */
     let newElt
     const eltBeforeNewContent = target.previousSibling
