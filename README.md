@@ -18,7 +18,7 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](https://htmx.org/extensions) &
-IE11 compatible
+IE11 compatible _(version 1 only)_
 
 ## motivation
 
