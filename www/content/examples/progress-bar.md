@@ -10,7 +10,7 @@ We start with an initial state with a button that issues a `POST` to `/start` to
 ```html
 <div hx-target="this" hx-swap="outerHTML">
   <h3>Start Progress</h3>
-  <button class="btn" hx-post="/start">
+  <button class="btn primary" hx-post="/start">
             Start Job
   </button>
 </div>
@@ -58,7 +58,7 @@ with a restart button added to the UI (we are using the [`class-tools`](https://
     </div>
   </div>
 
-  <button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
+  <button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
     Restart Job
   </button>
 </div>
@@ -160,7 +160,7 @@ This example uses styling cribbed from the bootstrap progress bar:
     function startButton(message) {
       return `<div hx-target="this" hx-swap="outerHTML">
   <h3>${message}</h3>
-  <button class="btn" hx-post="/start">
+  <button class="btn primary" hx-post="/start">
             Start Job
   </button>
 </div>`;
@@ -190,7 +190,7 @@ This example uses styling cribbed from the bootstrap progress bar:
     function restartButton(job) {
       if(job.complete){
         return `
-<button id="restart-btn" class="btn" hx-post="/start" classes="add show:600ms">
+<button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
   Restart Job
 </button>`
       } else {

@@ -134,6 +134,7 @@ class.
 }
 </style>
 <button id="fade-me-in"
+        class="btn primary"
         hx-post="/fade_in_demo"
         hx-swap="outerHTML settle:1s">
         Fade Me In
@@ -153,6 +154,7 @@ class.
 </style>
 
 <button id="fade-me-in"
+        class="btn primary"
         hx-post="/fade_me_in"
         hx-swap="outerHTML settle:1s">
         Fade Me In
@@ -160,6 +162,7 @@ class.
 
 <script>
     onPost("/fade_me_in", function () {return "<button id=\"fade-me-in\"\n"+
+                                               "        class=\"btn primary\"\n"+
                                                "        hx-post=\"/fade_me_in\"\n"+
                                                "        hx-swap=\"outerHTML settle:1s\">\n"+
                                                "        Fade Me In\n"+
@@ -180,7 +183,7 @@ is a form that on submit will change its look to indicate that a request is bein
 </style>
 <form hx-post="/name" hx-swap="outerHTML">
 <label>Name:</label><input name="name"><br/>
-<button>Submit</button>
+<button class="btn primary">Submit</button>
 </form>
 ```
 
@@ -196,7 +199,7 @@ is a form that on submit will change its look to indicate that a request is bein
 <div aria-live="polite">
 <form hx-post="/name" hx-swap="outerHTML">
 <label>Name:</label><input name="name"><br/>
-<button>Submit</button>
+<button class="btn primary">Submit</button>
 </form>
 </div>
 
@@ -287,7 +290,7 @@ implement this feature in the near future.
 
 <div class="slide-it">
    <h1>Initial Content</h1>
-   <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+   <button class="btn primary" hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
      Swap It!
    </button>
 </div>
@@ -328,7 +331,7 @@ implement this feature in the near future.
 
 <div class="slide-it">
    <h1>Initial Content</h1>
-   <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+   <button class="btn primary" hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
      Swap It!
    </button>
 </div>
@@ -337,7 +340,7 @@ implement this feature in the near future.
     var originalContent = htmx.find(".slide-it").innerHTML;
 
     this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>New Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+        xhr.respond(200,  {}, "<h1>New Content</h1> <button class='btn danger' hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
     });
 
     this.server.respondWith("GET", "/original-content", function(xhr){

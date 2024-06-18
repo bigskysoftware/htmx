@@ -25,7 +25,7 @@ We start with this form:
     <label>Last Name</label>
     <input type="text" class="form-control" name="lastName">
   </div>
-  <button class="btn btn-default">Submit</button>
+  <button class="btn primary">Submit</button>
 </form>
 ```
 Note that the first div in the form has set itself as the target of the request and specified the `outerHTML`
@@ -125,7 +125,7 @@ Below is a working demo of this example.  The only email that will be accepted i
     <label for="lastName">Last Name</label>
     <input type="text" class="form-control" name="lastName" id="lastName">
   </div>
-  <button type='submit' class="btn btn-default" disabled>Submit</button>
+  <button type='submit' class="btn primary" disabled>Submit</button>
 </form>`;
     }
 
