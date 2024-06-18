@@ -308,7 +308,6 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 </tr>
-/tr>
 <tr>
 <td></td>
 <td>
