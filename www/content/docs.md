@@ -127,7 +127,7 @@ your head tag and get going:
 An unminified version is also available for debugging as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js" integrity="sha384-n/Xh+GLLi0SMFPwtHQjT72aPG19QvKB8grnyRbYBNIdHWc2NkCrz65jlU7YrzO6qRp" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js" integrity="sha384-Xh+GLLi0SMFPwtHQjT72aPG19QvKB8grnyRbYBNIdHWc2NkCrz65jlU7YrzO6qRp" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider 
