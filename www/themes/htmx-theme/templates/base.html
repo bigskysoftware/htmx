@@ -22,7 +22,11 @@
 <body hx-ext="class-tools, preload">
 
 <div class="top-nav">
-    <div class="c">
+    {% if page and page.path is starting_with("/docs") %}
+    <div class="c wide-content">
+    {% else %}
+    <div class="c content">
+    {% endif %}
         <div class="menu">
             <div class="logo-wrapper">
                 <a href="/" class="logo light">&lt;<b>/</b>&gt; htm<b>x</b></a>
