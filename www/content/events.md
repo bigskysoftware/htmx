@@ -297,6 +297,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
+* `detail.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 * `detail.fragment` - the response fragment
@@ -307,6 +308,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
+* `detail.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 * `detail.fragment` - the response fragment
