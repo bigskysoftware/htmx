@@ -297,10 +297,9 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
+* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
+* `detail.target` - the target of the swap
+* `detail.fragment` - the response fragment
 
 ### Event - `htmx:oobBeforeSwap` {#htmx:oobBeforeSwap}
 
@@ -308,10 +307,9 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
-* `detail.fragment` - the response fragment
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
+* `detail.fragment` - the response fragment
 
 ### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
 
