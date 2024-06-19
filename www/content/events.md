@@ -310,7 +310,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 * `detail.elt` - the element that dispatched the request
 * `detail.fragment` - the response fragment
-* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
+* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 
 ### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
