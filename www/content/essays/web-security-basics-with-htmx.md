@@ -201,7 +201,7 @@ Cookie: token=asd8234nsdfp982
 
 Each time someone makes a request to your server, it needs to parse out that token and determine if it's valid. Simple enough.
 
-You can also set options on that cookie, like the ones I recommended above. How to do this differs depending on the programming language, but the outcome is always an HTTP request that looks like this:
+You can also set options on that cookie, like the ones I recommended above. How to do this differs depending on the programming language, but the outcome is always an HTTP response that looks like this:
 
 ```
 HTTP/2.0 200 OK
