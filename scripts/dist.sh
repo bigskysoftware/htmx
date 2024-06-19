@@ -10,9 +10,6 @@ rm -rf dist/*
 # Regular IIFE script
 cp $HTMX_SRC dist/htmx.js
 
-# Generate .d.ts file
-tsc dist/htmx.js --declaration --allowJs --emitDeclarationOnly --outDir dist
-
 # Generate minified script
 uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js
 
