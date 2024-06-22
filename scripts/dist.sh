@@ -2,7 +2,7 @@
 # This script is intended to be run from npm, via `npm run dist`
 set -euo pipefail
 
-HTMX_SRC="src/htmx.js"
+readonly HTMX_SRC="src/htmx.js"
 
 # Clean the dist directory
 rm -rf dist/*

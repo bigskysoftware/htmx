@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-STATIC_ROOT="www/static"
+readonly STATIC_ROOT="www/static"
 PACKAGE_VERSION=$(cat package.json | grep version | cut -d '"' -f 4)
 
 
