@@ -2,7 +2,6 @@
 set -euo pipefail
 
 STATIC_ROOT="www/static"
-PACKAGE_VERSION=$(cat package.json | grep version | cut -d '"' -f 4)
 
 
 cp node_modules/mocha/mocha.js "$STATIC_ROOT/node_modules/mocha/mocha.js"
