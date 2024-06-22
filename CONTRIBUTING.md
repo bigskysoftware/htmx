@@ -10,6 +10,15 @@ Thank you for your interest in contributing! Because we're a small team, we have
 1. If you haven't gotten any traction on an issue, feel free to bump it in the #issues-and-pull-requests channel on our Discord.
 1. Want to contribute but don't know where to start? Look for issues with the "help wanted" tag.
 
+## Creating a Development Environment
+
+To create a development environment for htmx, you'll need the following tools on your system:
+
+- Node.js 20.x or later
+- Chrome or Chromium
+
+Additionally, the environment variable `CHROME_PATH` must contain the full path to the Chrome or Chromium binary on your system.
+
 ## Pull Requests
 ### Technical Requirements
 1. Code, including tests, must be written in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11).
