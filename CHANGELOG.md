@@ -5,7 +5,7 @@
 * Removed extensions and moved to their own repos linked off of <https://extensions.htmx.org>
 * The website now supports dark mode! (Thanks [@pokonski](https://github.com/pokonski)!)
 * The older, deprecated [SSE & WS](https://v1.htmx.org/docs/#websockets-and-sse) attributes were removed
-* Better support for [Web Components](https://htmx.org/examples/web-components/)
+* Better support for [Web Components & Shadow DOM](https://htmx.org/examples/web-components/)
 * HTTP `DELETE` requests now use parameters, rather than form encoded bodies, for their payload (This is in accordance w/ the spec.)
 * Module support was split into different files:
 * We now provide specific files in `/dist` for the various JavaScript module styles:
