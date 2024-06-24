@@ -188,47 +188,36 @@ window.htmx = htmx;
 
 If you are using [Vite](https://vitejs.dev) to manage your javascript:
 
-* Install `htmx.org` via your favourite package manager (like npm or yarn)
-* Add the import to your entrypoint(s). For example if you
-[serve the HTML using a backend](https://vitejs.dev/guide/backend-integration.html)
-and your vite.config.js looks like this:
+1. Install `htmx.org` via your favourite package manager (like npm or yarn)
 
-```js
-export default defineConfig({
-  build: {
-    manifest: true,
-    rollupOptions: {
-      input: '/path/to/main.js',
-    },
-  },
-})
-```
+2. Load htmx
 
-* then add the following import to the `/path/to/main.js`
-
-```js
-import 'htmx.org';
-```
-
-You will probably also want to use the global htmx variable so that you can access methods like
+   You will probably want to use the global htmx variable so that you can access methods like
 `htmx.onLoad` or use npm-installed plugins that expect `htmx` global to be present.
-To do this you need to inject it to the window scope:
+    
+   To achieve this you need to inject `htmx` into the window scope.
 
-* Add the following to your `vite.config.js`:
+   * Add the following to your `vite.config.js`:
 
-```js
-export default defineConfig({
-  build: {
-    plugins: [
-      inject({
-        htmx: 'htmx.org/dist/htmx.esm',
-      }),
-    ],
-  },
-})
-```
+   ```js
+   export default defineConfig({
+     build: {
+       plugins: [
+         inject({
+           htmx: 'htmx.org/dist/htmx.esm',
+         }),
+       ],
+     },
+   })
+   ```
 
-* Finally, rebuild your bundle
+   Alternatively, if you don't need the `htmx` global variable then add the following to
+   your entry point [main.js file](https://vitejs.dev/guide/backend-integration.html):
+   ```js
+   import 'htmx.org';
+   ```
+
+3. Finally, rebuild your bundle
 
 ## AJAX
 
