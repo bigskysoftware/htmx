@@ -90,7 +90,7 @@ describe("hx-headers attribute", function() {
             xhr.requestHeaders['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
-        var div = make('<div hx-post="/vars" hx-headers="javascript:i1:\'test\'"></div>')
+        var div = make('<div hx-post="/vars" hx-headers="javascript:(function(){return {i1: \'test\'}})()"></div>')
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("Clicked!");
@@ -115,7 +115,7 @@ describe("hx-headers attribute", function() {
             xhr.requestHeaders['v2'].should.equal("42");
             xhr.respond(200, {}, "Clicked!")
         });
-        var div = make('<div hx-post="/vars" hx-headers="javascript:v1:\'test\', v2:42"></div>')
+        var div = make('<div hx-post="/vars" hx-headers="javascript:{v1: (function(){return \'test\'})(), v2: (function(){return 42})()}"></div>')
         div.click();
         this.server.respond();
         div.innerHTML.should.equal("Clicked!");
@@ -127,7 +127,7 @@ describe("hx-headers attribute", function() {
             xhr.requestHeaders['i1'].should.equal("test");
             xhr.respond(200, {}, "Clicked!")
         });
-        make('<div hx-headers="javascript:i1:\'test\'"><div id="d1" hx-post="/vars"></div></div>')
+        make('<div hx-headers="javascript:{i1:\'test\'}"><div id="d1" hx-post="/vars"></div></div>')
         var div = byId("d1");
         div.click();
         this.server.respond();
@@ -140,7 +140,7 @@ describe("hx-headers attribute", function() {
             xhr.requestHeaders['i1'].should.equal("best");
             xhr.respond(200, {}, "Clicked!")
         });
-        make('<div hx-headers="javascript:i1:\'test\'"><div id="d1" hx-headers="javascript:i1:\'best\'" hx-post="/vars"></div></div>')
+        make('<div hx-headers="javascript:{i1:\'test\'}"><div id="d1" hx-headers="javascript:{i1:\'best\'}" hx-post="/vars"></div></div>')
         var div = byId("d1");
         div.click();
         this.server.respond();
@@ -153,7 +153,7 @@ describe("hx-headers attribute", function() {
             xhr.requestHeaders['i1'].should.equal("best");
             xhr.respond(200, {}, "Clicked!")
         });
-        var div = make('<div hx-target="this"><input hx-post="/include" hx-headers="javascript:i1:\'best\'" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
+        var div = make('<div hx-target="this"><input hx-post="/include" hx-headers="javascript:{i1:\'best\'}" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
         var input = byId("i1")
         input.click();
         this.server.respond();
