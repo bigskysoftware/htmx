@@ -2906,7 +2906,7 @@ return (function () {
                     str = str.substr(3);
                     evaluateValue = true;
                 }
-                if (str.indexOf('{') !== 0) {
+                if (attr === "hx-vars") {
                     str = "{" + str + "}";
                 }
                 var varsValues;
