@@ -2906,7 +2906,8 @@ return (function () {
                     str = str.substr(3);
                     evaluateValue = true;
                 }
-                if (attr === "hx-vars") {
+                var needsBraces = ((!evaluateValue || attr === "hx-vars") && str.indexOf('{') !== 0);
+                if (needsBraces) {
                     str = "{" + str + "}";
                 }
                 var varsValues;
