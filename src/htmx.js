@@ -3724,7 +3724,7 @@ var htmx = (function() {
         str = str.substr(3)
         evaluateValue = true
       }
-      var needsBraces = ((!evaluateValue || attr === "hx-vars") && str.indexOf('{') !== 0);
+      var needsBraces = ((!evaluateValue || attr === 'hx-vars') && str.indexOf('{') !== 0)
       if (needsBraces) {
         str = '{' + str + '}'
       }
