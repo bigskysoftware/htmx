@@ -10,6 +10,29 @@ Thank you for your interest in contributing! Because we're a small team, we have
 1. If you haven't gotten any traction on an issue, feel free to bump it in the #issues-and-pull-requests channel on our Discord.
 1. Want to contribute but don't know where to start? Look for issues with the "help wanted" tag.
 
+## Creating a Development Environment
+### Pre-requisites
+To create a development environment for htmx, you'll need the following tools on your system:
+
+- Node.js 20.x or later
+- Chrome or Chromium
+
+Additionally, the environment variable `CHROME_PATH` must contain the full path to the Chrome or Chromium binary on your system.
+
+### Installing Packages
+To install htmx's required packages, run the following command:
+
+```bash
+npm install
+```
+
+### Running Automated Tests
+To verify that your htmx environment is working correctly, you can run htmx's automated tests with the following command:
+
+```bash
+npm test
+```
+
 ## Pull Requests
 ### Technical Requirements
 1. Please lint all proposed changes with the `npm lint-fix` command
