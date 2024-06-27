@@ -25,11 +25,12 @@
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
-    "dist": "./scripts/dist.sh",
+    "dist": "./scripts/dist.sh && npm run types-generate",
     "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
-    "lint-fix": "eslint src/htmx.js test/attributes/ test/core/ test/util/ --fix",
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
-    "test": "npm run lint && tsc --project ./jsconfig.json --noEmit true --emitDeclarationOnly false && mocha-chrome test/index.html",
+    "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
+    "types-generate": "tsc src/htmx.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
+    "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
     "type-declarations": "tsc --project ./jsconfig.json",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh"
@@ -64,6 +65,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "20.0.0",
     "chai": "^4.3.10",
     "chai-dom": "^1.12.0",
     "eslint": "^8.56.0",
