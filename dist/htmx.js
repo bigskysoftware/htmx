@@ -1913,6 +1913,7 @@ var htmx = (function() {
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
           elt.classList.remove(htmx.config.settlingClass)
+          elt.classList.length === 0 && elt.removeAttribute('class')
         }
         triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
       })
