@@ -169,7 +169,7 @@ to achieve this.
 Create a local `htmx.js` with the following content:
 
 ```js
-import htmx from "htmx.org/dist/htmx.esm";
+import htmx from "htmx.org";
 window.htmx = htmx;
 ```
 
@@ -200,7 +200,7 @@ export default {
   //[...]
   plugins: [
     new webpack.ProvidePlugin({
-      htmx: 'htmx.org/dist/htmx.esm',
+      htmx: 'htmx.org',
     }),
   ],
 };
@@ -219,7 +219,7 @@ export default defineConfig({
    //[...]
    plugins: [
      inject({
-       htmx: 'htmx.org/dist/htmx.esm',
+       htmx: 'htmx.org',
      }),
    ],
  },
