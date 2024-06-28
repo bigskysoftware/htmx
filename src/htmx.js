@@ -1892,10 +1892,10 @@ var htmx = (function() {
       }
     }
 
-    target.classList.remove(htmx.config.swappingClass)
+    removeClassFromElement(target, htmx.config.swappingClass)
     forEach(settleInfo.elts, function(elt) {
       if (elt.classList) {
-        elt.classList.add(htmx.config.settlingClass)
+        addClassToElement(elt, htmx.config.settlingClass)
       }
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
     })
@@ -1915,7 +1915,7 @@ var htmx = (function() {
       })
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
-          elt.classList.remove(htmx.config.settlingClass)
+          removeClassFromElement(elt, htmx.config.settlingClass)
         }
         triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
       })
@@ -3194,7 +3194,7 @@ var htmx = (function() {
     forEach(indicators, function(ic) {
       const internalData = getInternalData(ic)
       internalData.requestCount = (internalData.requestCount || 0) + 1
-      ic.classList.add.call(ic.classList, htmx.config.requestClass)
+      addClassToElement(ic, htmx.config.requestClass) // not sure why original used .call
     })
     return indicators
   }
@@ -3225,7 +3225,7 @@ var htmx = (function() {
       const internalData = getInternalData(ic)
       internalData.requestCount = (internalData.requestCount || 0) - 1
       if (internalData.requestCount === 0) {
-        ic.classList.remove.call(ic.classList, htmx.config.requestClass)
+        removeClassFromElement(ic, htmx.config.requestClass) // not sure why original used .call
       }
     })
     forEach(disabled, function(disabledElement) {
@@ -4675,7 +4675,7 @@ var htmx = (function() {
         swapSpec.ignoreTitle = ignoreTitle
       }
 
-      target.classList.add(htmx.config.swappingClass)
+      addClassToElement(target, htmx.config.swappingClass)
 
       // optional transition API promise callbacks
       let settleResolve = null
