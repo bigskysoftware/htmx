@@ -20,7 +20,7 @@
     "dist/*.js.gz",
     "editors/jetbrains/htmx.web-types.json"
   ],
-  "main": "dist/htmx.min.js",
+  "main": "dist/htmx.esm.js",
   "types": "dist/htmx.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
