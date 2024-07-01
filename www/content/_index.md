@@ -190,7 +190,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
 </td>
 <td>
         <a data-github-account="commspace" href="https://www.commspace.co.za">
