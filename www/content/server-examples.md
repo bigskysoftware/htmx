@@ -64,7 +64,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Quarkus
 
-- <https://github.com/derkoe/quarkus-htmx-todos>
+- <https://github.com/ia3andy/renotes>
+- <https://github.com/ia3andy/htmx-todo>
 
 ## ColdFusion (CFML - a JVM Language)
 
