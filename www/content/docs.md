@@ -246,7 +246,7 @@ issuing the request.  If the event triggers again, the countdown is reset.
 *  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
 so the request will trigger at the end of the time period.
-*  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts.
+*  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts. Note that this CSS selector is not re-evaluated if the page changes.
 
 You can use these attributes to implement many common UX patterns, such as [Active Search](@/examples/active-search.md):
 
