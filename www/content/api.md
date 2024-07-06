@@ -53,7 +53,7 @@ or
 * `verb` - 'GET', 'POST', etc.
 * `path` - the URL path to make the AJAX
 * `context` - a context object that contains any of the following
-    * `source` - the source element of the request
+    * `source` - the source element of the request, `hx-*` attrs which affect the request will be resolved against that element and its ancestors
     * `event` - an event that "triggered" the request
     * `handler` - a callback that will handle the response HTML
     * `target` - the target to swap the response into
