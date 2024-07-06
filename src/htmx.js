@@ -5036,7 +5036,7 @@ var htmx = (function() {
  * @property {Element|string} [source]
  * @property {Event} [event]
  * @property {HtmxAjaxHandler} [handler]
- * @property {Element|string} target
+ * @property {Element|string} [target]
  * @property {HtmxSwapStyle} [swap]
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
