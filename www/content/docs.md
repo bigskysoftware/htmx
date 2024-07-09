@@ -294,8 +294,20 @@ This tells htmx
 
 > Every 2 seconds, issue a GET to /news and load the response into the div
 
-If you want to stop polling from a server response you can respond with the HTTP response code [`286`](https://en.wikipedia.org/wiki/86_(term))
-and the element will cancel the polling.
+By default htmx will not interrupt the polling in case of an error. This can be achieved with the 
+configuration option [htmx.config.cancelPollingOnError](@/reference.md#config).
+
+If you want to cancel the polling manually you can use the event [htmx:cancelPolling](@/events.md#htmx:cancelPolling),
+a magic HTTP response code [`286`](https://en.wikipedia.org/wiki/86_(term)) (deprecated) or the HTTP response header `HX-Cancel-Polling`
+with `true` and the element will cancel the polling.
+
+```javascript
+document.addEventListener('htmx:cancelPolling', function(evt) {
+    if (evt.detail.xhr.status !== 200) {
+      evt.preventDefault();
+    }
+});
+```
 
 #### Load Polling {#load_polling}
 
@@ -961,6 +973,7 @@ htmx includes a number of useful headers in requests:
 
 htmx supports some htmx-specific response headers:
 
+* `HX-Cancel-Polling` - if set to "true" the client-side will cancel the related polling
 * [`HX-Location`](@/headers/hx-location.md) - allows you to do a client-side redirect that does not do a full page reload
 * [`HX-Push-Url`](@/headers/hx-push-url.md) - pushes a new url into the history stack
 * `HX-Redirect` - can be used to do a client-side redirect to a new location
