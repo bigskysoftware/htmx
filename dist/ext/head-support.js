@@ -114,7 +114,7 @@
             // store a reference to the internal API.
             api = apiRef;
 
-            htmx.on('htmx:afterSwap', function(evt){
+            htmx.on('htmx:afterSettle', function(evt){
                 var serverResponse = evt.detail.xhr.response;
                 if (api.triggerEvent(document.body, "htmx:beforeHeadMerge", evt.detail)) {
                     mergeHead(serverResponse, evt.detail.boosted ? "merge" : "append");
