@@ -4840,7 +4840,7 @@ var htmx = (function() {
     if (extensionsToReturn == undefined) {
       extensionsToReturn = []
     }
-    if (elt == undefined || action && !extensionActions.includes(func)) {
+    if (elt == undefined || action && !extensionActions.includes(action)) {
       return extensionsToReturn
     }
     if (extensionsToIgnore == undefined) {
