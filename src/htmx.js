@@ -2884,8 +2884,8 @@ var htmx = (function() {
   /**
    * `withExtensions` locates all active extensions for a provided element, then
    * executes the provided function using each of the active extensions.  It should
-   * be called internally at every extendable execution point in htmx. Optionally 
-   * pass the extension action name you are using to improve lookup performance. 
+   * be called internally at every extendable execution point in htmx. Optionally
+   * pass the extension action name you are using to improve lookup performance.
    *
    * @param {Element} elt
    * @param {(extension:HtmxExtension) => void} toDo
@@ -4649,7 +4649,7 @@ var htmx = (function() {
 
       withExtensions(elt, function(extension) {
         serverResponse = extension.transformResponse(serverResponse, xhr, elt)
-      },'transformResponse')
+      }, 'transformResponse')
 
       // Save current page if there will be a history update
       if (historyUpdate.type) {
@@ -4840,7 +4840,7 @@ var htmx = (function() {
     if (extensionsToReturn == undefined) {
       extensionsToReturn = []
     }
-    if (elt == undefined || action && !extensionActions.includes(action)) {
+    if (elt == undefined || (action && !extensionActions.includes(action))) {
       return extensionsToReturn
     }
     if (extensionsToIgnore == undefined) {
