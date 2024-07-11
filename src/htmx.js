@@ -1394,7 +1394,7 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function isInlineSwap(swapStyle, target) {
-    const extensions = getExtensions(target)
+    const extensions = getExtensions(target, 'isInlineSwap')
     for (let i = 0; i < extensions.length; i++) {
       const extension = extensions[i]
       try {
@@ -1747,7 +1747,7 @@ var htmx = (function() {
         swapDelete(target)
         return
       default:
-        var extensions = getExtensions(elt)
+        var extensions = getExtensions(elt, 'handleSwap')
         for (let i = 0; i < extensions.length; i++) {
           const ext = extensions[i]
           try {
@@ -2651,20 +2651,8 @@ var htmx = (function() {
   function findElementsToProcess(elt) {
     if (elt.querySelectorAll) {
       const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
-
-      const extensionSelectors = []
-      for (const e in extensions) {
-        const extension = extensions[e]
-        if (extension.getSelectors) {
-          var selectors = extension.getSelectors()
-          if (selectors) {
-            extensionSelectors.push(selectors)
-          }
-        }
-      }
-
       const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
-        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
+        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors)
 
       return results
     } else {
@@ -2896,14 +2884,16 @@ var htmx = (function() {
   /**
    * `withExtensions` locates all active extensions for a provided element, then
    * executes the provided function using each of the active extensions.  It should
-   * be called internally at every extendable execution point in htmx.
+   * be called internally at every extendable execution point in htmx. Optionally 
+   * pass the extension action name you are using to improve lookup performance. 
    *
    * @param {Element} elt
    * @param {(extension:HtmxExtension) => void} toDo
+   * @param {string=} action
    * @returns void
    */
-  function withExtensions(elt, toDo) {
-    forEach(getExtensions(elt), function(extension) {
+  function withExtensions(elt, toDo, action) {
+    forEach(getExtensions(elt, action), function(extension) {
       try {
         toDo(extension)
       } catch (e) {
@@ -2952,7 +2942,7 @@ var htmx = (function() {
     }
     withExtensions(asElement(elt), function(extension) {
       eventResult = eventResult && (extension.onEvent(eventName, event) !== false && !event.defaultPrevented)
-    })
+    }, 'onEvent')
     return eventResult
   }
 
@@ -3630,7 +3620,7 @@ var htmx = (function() {
       if (encodedParameters == null) {
         encodedParameters = extension.encodeParameters(xhr, filteredParameters, elt)
       }
-    })
+    }, 'encodeParameters')
     if (encodedParameters != null) {
       return encodedParameters
     } else {
@@ -4659,7 +4649,7 @@ var htmx = (function() {
 
       withExtensions(elt, function(extension) {
         serverResponse = extension.transformResponse(serverResponse, xhr, elt)
-      })
+      },'transformResponse')
 
       // Save current page if there will be a history update
       if (historyUpdate.type) {
@@ -4782,6 +4772,12 @@ var htmx = (function() {
   /** @type {Object<string, HtmxExtension>} */
   const extensions = {}
 
+  /** @type {string[]} */
+  var extensionActions = []
+
+  /** @type {string} */
+  var extensionSelectors = ''
+
   /**
    * extensionBase defines the default functions for all extensions.
    * @returns {HtmxExtension}
@@ -4811,6 +4807,13 @@ var htmx = (function() {
       extension.init(internalAPI)
     }
     extensions[name] = mergeObjects(extensionBase(), extension)
+    extensionActions = [...new Set(extensionActions.concat(Object.keys(extension)))]
+    if (extension.getSelectors) {
+      var selectors = extension.getSelectors()
+      if (selectors) {
+        extensionSelectors = extensionSelectors + selectors.flat().map(s => ', ' + s).join('')
+      }
+    }
   }
 
   /**
@@ -4828,15 +4831,16 @@ var htmx = (function() {
    * getExtensions searches up the DOM tree to return all extensions that can be applied to a given element
    *
    * @param {Element} elt
+   * @param {string=} action
    * @param {HtmxExtension[]=} extensionsToReturn
    * @param {string[]=} extensionsToIgnore
    * @returns {HtmxExtension[]}
    */
-  function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
+  function getExtensions(elt, action, extensionsToReturn, extensionsToIgnore) {
     if (extensionsToReturn == undefined) {
       extensionsToReturn = []
     }
-    if (elt == undefined) {
+    if (elt == undefined || action && !extensionActions.includes(func)) {
       return extensionsToReturn
     }
     if (extensionsToIgnore == undefined) {
@@ -4858,7 +4862,7 @@ var htmx = (function() {
         }
       })
     }
-    return getExtensions(asElement(parentElt(elt)), extensionsToReturn, extensionsToIgnore)
+    return getExtensions(asElement(parentElt(elt)), action, extensionsToReturn, extensionsToIgnore)
   }
 
   //= ===================================================================
@@ -5124,6 +5128,7 @@ var htmx = (function() {
  * @typedef {Object} HtmxExtension
  * @see https://htmx.org/extensions/#defining
  * @property {(api: any) => void} init
+ * @property {() => string[]} getSelectors
  * @property {(name: string, event: Event|CustomEvent) => boolean} onEvent
  * @property {(text: string, xhr: XMLHttpRequest, elt: Element) => string} transformResponse
  * @property {(swapStyle: HtmxSwapStyle) => boolean} isInlineSwap
