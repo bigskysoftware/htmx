@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test if hx-swap=delete respond with re-target=body errors</title>
+    <script src="../../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="../../src/htmx.js"></script>
+    <script src="../util/util.js"></script>
+    <script>
+      server = makeServer();
+      server.autoRespond = true;
+      server.respondWith("GET", "/delete", function (xhr) {
+        xhr.respond(200, { "HX-Retarget": "body" }, "deleted?");
+      });
+    </script>
+  </head>
+  <body style="padding: 20px; font-family: sans-serif">
+    <h1>re-target errors</h1>
+    <div>
+      <h2>Unexpected TypeError: Cannot read properties of null (reading 'contains')</h2>
+      <button hx-get="/delete" hx-target="closest div" hx-swap="delete">
+        click to remove
+      </button>
+    </div>
+    <div>
+      <h2>Expected?: target error</h2>
+      <button hx-get="/delete" hx-target="self" hx-swap="delete">
+        click to remove
+      </button>
+    </div>
+  </body>
+</html>
