@@ -264,7 +264,7 @@ This event is triggered when htmx handles a history restoration action
 
 ### Event - `htmx:beforeHistorySave` {#htmx:beforeHistorySave}
 
-This event is triggered when htmx handles a history restoration action
+This event is triggered before the content is saved in the history api.
 
 ##### Details
 

@@ -44,6 +44,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/renceInbox/fastapi-todo>
 - <https://github.com/AutomationPanda/bulldoggy-reminders-app>
+- <https://github.com/volfpeter/fastapi-htmx-tailwind-example>
 
 ### Flask
 
@@ -64,7 +65,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Quarkus
 
-- <https://github.com/derkoe/quarkus-htmx-todos>
+- <https://github.com/ia3andy/renotes>
+- <https://github.com/ia3andy/htmx-todo>
 
 ## ColdFusion (CFML - a JVM Language)
 

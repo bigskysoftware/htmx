@@ -56,6 +56,7 @@ is seen again it will reset the delay.
 is seen again before the delay completes, it is ignored, the element will trigger at the end of the delay.
 * `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
   * A standard CSS selector resolves to all elements matching that selector. Thus, `from:input` would listen on every input on the page.
+  * The CSS selector is only evaluated once and is not re-evaluated when the page changes. If you need to detect dynamically added elements use an event filter, for example `click[event.target.matches('input')]`
   * The extended CSS selector here allows for the following non-standard CSS values:
     * `document` - listen for events on the document
     * `window` - listen for events on the window
