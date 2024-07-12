@@ -5,6 +5,8 @@
 * Make the `/dist/htmx.esm.js` file the `main` file in `package.json` to make installing htmx smoother
 * Update `htmx.d.ts` & include it in the distribution
 * A fix to avoid removing text-only templates on htmx cleanup
+* A fix for outerHTML swapping of the `body` tag
+* Many docs fixes
 
 ## [2.0.0] - 2024-06-17
 
