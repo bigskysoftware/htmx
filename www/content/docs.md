@@ -215,14 +215,12 @@ to add the following to your [vite.config.js](https://vitejs.dev/guide/backend-i
 import inject from '@rollup/plugin-inject';
 
 export default defineConfig({
- build: {
-   //[...]
-   plugins: [
-     inject({
-       htmx: 'htmx.org',
-     }),
-   ],
- },
+  build: {...},
+  plugins: [
+    inject({
+      htmx: 'htmx.org',
+    }),
+  ],
 })
 ```
 
