@@ -4,26 +4,7 @@
 
 * Make the `/dist/htmx.esm.js` file the `main` file in `package.json` to make installing htmx smoother
 * Update `htmx.d.ts` & include it in the distribution
-
-
-## [2.0.0] - 2024-06-17
-
-* Removed extensions and moved to their own repos linked off of <https://extensions.htmx.org>
-* The website now supports dark mode! (Thanks [@pokonski](https://github.com/pokonski)!)
-* The older, deprecated [SSE & WS](https://v1.htmx.org/docs/#websockets-and-sse) attributes were removed
-* Better support for [Web Components & Shadow DOM](https://htmx.org/examples/web-components/)
-* HTTP `DELETE` requests now use parameters, rather than form encoded bodies, for their payload (This is in accordance w/ the spec.)
-* Module support was split into different files:
-* We now provide specific files in `/dist` for the various JavaScript module styles:
-  * ESM Modules: `/dist/htmx.esm.js`
-  * AMD Modules: `/dist/htmx.amd.js`
-  * CJS Modules: `/dist/htmx.cjs.js`
-  * The `/dist/htmx.js` file continues to be browser-loadable
-* The `hx-on` attribute, with its special syntax, has been removed in favor of the less-hacky `hx-on:` syntax.
-* See the [Upgrade Guide](https://htmx.org/migration-guide-htmx-1/) for more details on upgrade steps
-* The `selectAndSwap()` internal API method was replaced with the public (and much better) [`swap()`](/api/#swap) method
-
-## [2.0.1] - 2024-06-17
+* A fix to avoid removing text-only templates on htmx cleanup
 
 ## [2.0.0] - 2024-06-17
 
