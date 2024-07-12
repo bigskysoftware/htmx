@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1] - 2024-07-12
+
+* Make the `/dist/htmx.esm.js` file the `main` file in `package.json` to make installing htmx smoother
+* Update `htmx.d.ts` & include it in the distribution
+
+
 ## [2.0.0] - 2024-06-17
 
 * Removed extensions and moved to their own repos linked off of <https://extensions.htmx.org>

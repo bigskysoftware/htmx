@@ -121,13 +121,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-Kuy3zzgrd0iLfD2M/Bid8+jwLls454XKE9xFQE7OPj4VIwd1vlTS/4oNMxjpTtOw" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available for debugging as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js" integrity="sha384-Xh+GLLi0SMFPwtHQjT72aPG19QvKB8grnyRbYBNIdHWc2NkCrz65jlU7YrzO6qRp" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.js" integrity="sha384-ELJB0CrwJPIruxvwhqogOAeh84D/QrihzCpaCO63RB/OlBPyezKvFpceNNOra4PG" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider 
@@ -149,7 +149,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org
+npm install htmx.org@2.0.1
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).

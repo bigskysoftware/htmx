@@ -5,7 +5,7 @@ set -euo pipefail
 HTMX_SRC="src/htmx.js"
 
 # Clean the dist directory
-rm -rf dist/*
+rm -rf dist/*.js  dist/*.ts  dist/*.gz
 
 # Regular IIFE script
 cp $HTMX_SRC dist/htmx.js
@@ -35,3 +35,4 @@ cat > dist/htmx.esm.js << EOF
 $(cat $HTMX_SRC)
 export default htmx
 EOF
+
