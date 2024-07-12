@@ -1854,7 +1854,7 @@ var htmx = (function() {
       findAndSwapOobElements(fragment, settleInfo)
       forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
         findAndSwapOobElements(template.content, settleInfo)
-        if (template.content.childElementCount === 0) {
+        if (template.content.childElementCount === 0 && template.content.textContent.trim() === '') {
         // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
           template.remove()
         }
