@@ -277,7 +277,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.0'
+    version: '2.0.1'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -1626,6 +1626,9 @@ var htmx = (function() {
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapOuterHTML(target, fragment, settleInfo) {
+    if (target instanceof Element && target.tagName === 'BODY') { // special case the body to innerHTML because DocumentFragments can't contain a body elt unfortunately
+      return swapInnerHTML(target, fragment, settleInfo)
+    }
     /** @type {Node} */
     let newElt
     const eltBeforeNewContent = target.previousSibling
@@ -1851,7 +1854,7 @@ var htmx = (function() {
       findAndSwapOobElements(fragment, settleInfo)
       forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
         findAndSwapOobElements(template.content, settleInfo)
-        if (template.content.childElementCount === 0) {
+        if (template.content.childElementCount === 0 && template.content.textContent.trim() === '') {
         // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
           template.remove()
         }
@@ -5033,7 +5036,7 @@ var htmx = (function() {
  * @property {Element|string} [source]
  * @property {Event} [event]
  * @property {HtmxAjaxHandler} [handler]
- * @property {Element|string} target
+ * @property {Element|string} [target]
  * @property {HtmxSwapStyle} [swap]
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]

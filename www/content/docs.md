@@ -121,13 +121,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available for debugging as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js" integrity="sha384-Xh+GLLi0SMFPwtHQjT72aPG19QvKB8grnyRbYBNIdHWc2NkCrz65jlU7YrzO6qRp" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.js" integrity="sha384-gpIh5aLQ0qmX8kZdyhsd6jA24uKLkqIr1WAGtantR4KsS97l/NRBvh8/8OYGThAf" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider 
@@ -149,7 +149,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org
+npm install htmx.org@2.0.1
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
@@ -246,7 +246,7 @@ issuing the request.  If the event triggers again, the countdown is reset.
 *  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
 so the request will trigger at the end of the time period.
-*  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts.
+*  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts. Note that this CSS selector is not re-evaluated if the page changes.
 
 You can use these attributes to implement many common UX patterns, such as [Active Search](@/examples/active-search.md):
 
@@ -1650,7 +1650,7 @@ listed below:
 | `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`                                                                                                                                                                                                  |
 | `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.                                                                                                                                                                                    |
 | `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                                                                                                                                                                                                 |
-| `htmx.config.selfRequestsOnly`        | defaults to `false`, if set to `true` will only allow AJAX requests to the same domain as the current document                                                                                                                                                                                                                                    |
+| `htmx.config.selfRequestsOnly`        | defaults to `true`, whether to only allow AJAX requests to the same domain as the current document                                                                                                                                                                                                                                     |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                                                                                                                                                                                                   |
 | `htmx.config.disableInheritance`      | disables attribute inheritance in htmx, which can then be overridden by the [`hx-inherit`](@/attributes/hx-inherit.md) attribute                                                                                                                                                                                                                  |
 | `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.                                                                                                                           |

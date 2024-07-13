@@ -119,7 +119,7 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.1"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me

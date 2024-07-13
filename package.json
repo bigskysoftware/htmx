@@ -33,7 +33,8 @@
     "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
     "type-declarations": "tsc --project ./jsconfig.json",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
-    "www": "bash ./scripts/www.sh"
+    "www": "bash ./scripts/www.sh",
+    "sha": "bash ./scripts/sha.sh"
   },
   "repository": {
     "type": "git",
