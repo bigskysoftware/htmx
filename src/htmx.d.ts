@@ -184,6 +184,7 @@ type HtmxBeforeSwapDetails = HtmxResponseInfo & {
     isError: boolean;
     ignoreTitle: boolean;
     selectOverride: string;
+    swapOverride: HtmxSwapStyle;
 };
 type HtmxAjaxHandler = (elt: Element, responseInfo: HtmxResponseInfo) => any;
 type HtmxSettleTask = (() => void);

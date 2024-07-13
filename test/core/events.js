@@ -681,4 +681,28 @@ describe('Core htmx Events', function() {
       htmx.off('htmx:afterSwap', afterSwapHandler)
     }
   })
+
+  it('htmx:beforeSwap can override swap style using evt.detail.swapOverride and has final say on it', function() {
+    var swapWasOverriden = false
+    var responseBody = 'look at me. i’m the innerHTML now.'
+
+    var beforeSwapHandler = htmx.on('htmx:beforeSwap', function(evt) {
+      evt.detail.swapOverride = 'innerHTML'
+    })
+    var afterSwapHandler = htmx.on('htmx:afterSwap', function(evt) {
+      console.log('afterSwap', byId('b').innerHTML)
+      swapWasOverriden = byId('b') !== null && byId('b').innerHTML === responseBody
+    })
+
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Reswap': 'afterbegin' }, responseBody])
+      make("<div id='a' hx-get='/test' hx-target='#b' hx-swap='beforeend'></div><div id='b'> – IF YOU CAN READ THIS, IT FAILED – </div>")
+      byId('a').click()
+      this.server.respond()
+      swapWasOverriden.should.equal(true)
+    } finally {
+      htmx.off('htmx:beforeSwap', beforeSwapHandler)
+      htmx.off('htmx:afterSwap', afterSwapHandler)
+    }
+  })
 })
