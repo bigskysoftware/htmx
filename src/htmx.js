@@ -206,7 +206,7 @@ var htmx = (function() {
       disableSelector: '[hx-disable], [data-hx-disable]',
       /**
        * @type {'auto' | 'instant' | 'smooth'}
-       * @default 'smooth'
+       * @default 'instant'
        */
       scrollBehavior: 'instant',
       /**
