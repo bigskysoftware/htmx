@@ -21,7 +21,7 @@
     "editors/jetbrains/htmx.web-types.json"
   ],
   "main": "dist/htmx.esm.js",
-  "types": "dist/htmx.d.ts",
+  "types": "dist/htmx.esm.d.ts",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
@@ -29,7 +29,7 @@
     "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
     "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
-    "types-generate": "tsc src/htmx.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
+    "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
     "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
     "type-declarations": "tsc --project ./jsconfig.json",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
