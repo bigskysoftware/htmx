@@ -779,6 +779,24 @@ return (function () {
             return false;
         }
 
+        function processHyperScript(elt) {
+            // Process hyperscript
+            if (typeof window['_hyperscript'] !== "undefined") {
+                window['_hyperscript'].processNode(elt);
+            }   
+        }
+
+        function swapAttributes(target, source) {
+            forEach(target.attributes, function (attr) {
+                target.removeAttribute(attr.name);
+            });
+            
+            // Add new attributes
+            forEach(source.attributes, function (attr) {
+                target.setAttribute(attr.name, attr.value);
+            });
+        }
+
         function cloneAttributes(mergeTo, mergeFrom) {
             forEach(mergeTo.attributes, function (attr) {
                 if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
@@ -822,7 +840,7 @@ return (function () {
             } else if (oobValue.indexOf(":") > 0) {
                 swapStyle = oobValue.substr(0, oobValue.indexOf(":"));
                 selector  = oobValue.substr(oobValue.indexOf(":") + 1, oobValue.length);
-            } else {
+            } else if (swapStyle !== 'attributes') {
                 swapStyle = oobValue;
             }
 
@@ -843,7 +861,7 @@ return (function () {
                         if (!triggerEvent(target, 'htmx:oobBeforeSwap', beforeSwapDetails)) return;
 
                         target = beforeSwapDetails.target; // allow re-targeting
-                        if (beforeSwapDetails['shouldSwap']){
+                        if (beforeSwapDetails['shouldSwap']) {
                             swap(swapStyle, target, target, fragment, settleInfo);
                         }
                         forEach(settleInfo.elts, function (elt) {
@@ -1099,6 +1117,10 @@ return (function () {
                     return;
                 case "delete":
                     swapDelete(target, fragment, settleInfo);
+                    return;
+                case "attributes":
+                    swapAttributes(target, fragment);
+                    processHyperScript(target);
                     return;
                 default:
                     var extensions = getExtensions(elt);
