@@ -3382,10 +3382,10 @@ var htmx = (function() {
   function overrideFormData(receiver, donor) {
     for (const key of donor.keys()) {
       receiver.delete(key)
-      donor.getAll(key).forEach(function(value) {
-        receiver.append(key, value)
-      })
     }
+    donor.forEach(function(value, key) {
+      receiver.append(key, value)
+    })
     return receiver
   }
 
