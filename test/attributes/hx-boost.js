@@ -72,7 +72,7 @@ describe('hx-boost attribute', function() {
   })
 
   it('does not boost forms with method="dialog"', function() {
-    make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test" method="dialog"><button id="b1">close</button></form></div>')
+    make('<div hx-boost="true"><form id="f1" action="/test" method="dialog"><button id="b1">close</button></form></div>')
     var form = byId('f1')
 
     var internalData = htmx._('getInternalData')(form)
