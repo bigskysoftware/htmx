@@ -206,7 +206,7 @@ var htmx = (function() {
       disableSelector: '[hx-disable], [data-hx-disable]',
       /**
        * @type {'auto' | 'instant' | 'smooth'}
-       * @default 'smooth'
+       * @default 'instant'
        */
       scrollBehavior: 'instant',
       /**
@@ -2273,7 +2273,7 @@ var htmx = (function() {
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    */
   function boostElement(elt, nodeData, triggerSpecs) {
-    if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || elt.tagName === 'FORM') {
+    if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || (elt.tagName === 'FORM' && String(getRawAttribute(elt, 'method')).toLowerCase() !== 'dialog')) {
       nodeData.boosted = true
       let verb, path
       if (elt.tagName === 'A') {
