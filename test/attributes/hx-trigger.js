@@ -657,7 +657,7 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
-  it('A throttle of 0 does not multiple requests from happening', function(done) {
+  it('A throttle of 0 does not prevent multiple requests from happening', function(done) {
     var requests = 0
     var server = this.server
     server.respondWith('GET', '/test', function(xhr) {
