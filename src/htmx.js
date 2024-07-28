@@ -3844,7 +3844,7 @@ var htmx = (function() {
     verb = (/** @type HttpVerb */(verb.toLowerCase()))
     if (context) {
       if (context instanceof Element || typeof context === 'string') {
-        return issueAjaxRequest(verb, path, null, null, {
+        return issueAjaxRequest(verb, path, resolveTarget(context), null, {
           targetOverride: resolveTarget(context),
           returnPromise: true
         })
