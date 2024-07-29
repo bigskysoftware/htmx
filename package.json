@@ -14,7 +14,7 @@
   "files": [
     "LICENSE",
     "README.md",
-    "dist/htmx.d.ts",
+    "dist/htmx.esm.d.ts",
     "dist/*.js",
     "dist/ext/*.js",
     "dist/*.js.gz",
