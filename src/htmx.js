@@ -1953,8 +1953,8 @@ var htmx = (function() {
         if (triggers.hasOwnProperty(eventName)) {
           let detail = triggers[eventName]
           if (!isRawObject(detail)) {
-            if (detail.elt !== undefined) {
-              elt = detail.elt
+            if (detail.target !== undefined) {
+              elt = detail.target
             }
             detail = { value: detail }
           }
