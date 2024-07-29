@@ -94,17 +94,17 @@ describe('Core htmx internals Tests', function() {
     htmx._('shouldCancel')({ type: 'click' }, anchorThatShouldNotCancel).should.equal(false)
 
     var form = make('<form></form>')
-    htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'submit', target: document.createElement('form') }, form).should.equal(true)
 
-    htmx._('shouldCancel')({ type: 'click' }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: document.createElement('form') }, form).should.equal(true)
 
     var form = make("<form><input id='i1' type='submit'></form>")
     var input = byId('i1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: document.createElement('input') }, input).should.equal(true)
 
     var form = make("<form><button id='b1' type='submit'></form>")
     var button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: document.createElement('button') }, button).should.equal(true)
   })
 
   it('unset properly unsets a given attribute', function() {
