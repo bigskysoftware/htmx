@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta name="htmx-config" content='{"historyEnabled":false,"defaultSettleDelay":0}'>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+
+<h1 style="margin-top: 40px">Working Checkbox and Datepicker</h1>
+<p>A modified click trigger on a form, doesn't prevent the default behaviour of other elements</p>
+<p>The checkbox can be checked, a click on the datepicker symbol opens the datepicker flyout</p>
+
+<script src="../src/htmx.js"></script>
+
+<input type="date">
+<input type="checkbox">
+<form hx-trigger="click from:body">
+    <input type="hidden" value="foo">
+</form>
+</div>
+</body>
+</html>

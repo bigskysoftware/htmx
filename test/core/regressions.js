@@ -109,27 +109,6 @@ describe('Core htmx Regression Tests', function() {
     defaultPrevented.should.equal(true)
   })
 
-  it('a modified click trigger on a form does not prevent the default behaviour of other elements - https://github.com/bigskysoftware/htmx/issues/2755', function(done) {
-    var defaultPrevented = 'unset'
-    make('<input type="date" id="datefield">')
-    make('<form hx-trigger="click from:body"></form>')
-
-    htmx.on('#datefield', 'click', function(evt) {
-      // we need to wait so the state of the evt is finalized
-      setTimeout(() => {
-        defaultPrevented = evt.defaultPrevented
-        try {
-          defaultPrevented.should.equal(false)
-          done()
-        } catch (err) {
-          done(err)
-        }
-      }, 0)
-    })
-
-    byId('datefield').click()
-  })
-
   it('two elements can listen for the same event on another element', function() {
     this.server.respondWith('GET', '/test', 'triggered')
 
@@ -291,4 +270,25 @@ describe('Core htmx Regression Tests', function() {
       done()
     }, 50)
   })
+})
+
+it('a modified click trigger on a form does not prevent the default behaviour of other elements - https://github.com/bigskysoftware/htmx/issues/2755', function(done) {
+  var defaultPrevented = 'unset'
+  make('<input type="date" id="datefield">')
+  make('<form hx-trigger="click from:body"></form>')
+
+  htmx.on('#datefield', 'click', function(evt) {
+    // we need to wait so the state of the evt is finalized
+    setTimeout(() => {
+      defaultPrevented = evt.defaultPrevented
+      try {
+        defaultPrevented.should.equal(false)
+        done()
+      } catch (err) {
+        done(err)
+      }
+    }, 0)
+  })
+
+  byId('datefield').click()
 })
