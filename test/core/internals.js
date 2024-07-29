@@ -96,6 +96,8 @@ describe('Core htmx internals Tests', function() {
     var form = make('<form></form>')
     htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
 
+    htmx._('shouldCancel')({ type: 'click' }, form).should.equal(true)
+
     var form = make("<form><input id='i1' type='submit'></form>")
     var input = byId('i1')
     htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
