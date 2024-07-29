@@ -98,6 +98,9 @@ describe('Core htmx internals Tests', function() {
 
     htmx._('shouldCancel')({ type: 'click', target: document.createElement('form') }, form).should.equal(true)
 
+    // function works also when target isn't an Element
+    htmx._('shouldCancel')({ type: 'click', target: null }, form).should.equal(false)
+
     var form = make("<form><input id='i1' type='submit'></form>")
     var input = byId('i1')
     htmx._('shouldCancel')({ type: 'click', target: document.createElement('input') }, input).should.equal(true)

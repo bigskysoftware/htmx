@@ -2313,7 +2313,7 @@ var htmx = (function() {
       return false
     }
     if (evt.type === 'submit' || evt.type === 'click') {
-      if (elt.tagName === 'FORM' && asElement(evt.target).tagName === 'FORM') {
+      if (elt.tagName === 'FORM' && asElement(evt.target)?.tagName === 'FORM') {
         return true
       }
       if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
