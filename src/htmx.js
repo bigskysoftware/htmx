@@ -4343,7 +4343,9 @@ var htmx = (function() {
         const hierarchy = hierarchyForElt(elt)
         responseInfo.pathInfo.responsePath = getPathFromResponse(xhr)
         responseHandler(elt, responseInfo)
-        removeRequestIndicators(indicators, disableElts)
+        if (!hasHeader(xhr, /HX-Redirect:/i)) {
+          removeRequestIndicators(indicators, disableElts);
+        }
         triggerEvent(elt, 'htmx:afterRequest', responseInfo)
         triggerEvent(elt, 'htmx:afterOnLoad', responseInfo)
         // if the body no longer contains the element, trigger the event on the closest parent
@@ -4949,6 +4951,38 @@ var htmx = (function() {
         }
       }
     }
+
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        let indicators = document.querySelectorAll("[hx-indicator]");
+
+        indicators.forEach((indicator) => {
+          let indicators = /** @type Element[] */ (
+            findAttributeTargets(indicator, "hx-indicator")
+          );
+          if (indicators == null) {
+            indicators = [];
+          }
+          forEach(indicators, function (indicator) {
+            indicator.classList.remove(htmx.config.requestClass);
+          });
+        });
+
+        let disabledElts = document.querySelectorAll("[hx-disabled-elt]");
+        disabledElts.forEach((eltTargets) => {
+          let disabledElts = /** @type Element[] */ (
+            findAttributeTargets(eltTargets, "hx-disabled-elt")
+          );
+          if (disabledElts == null) {
+            disabledElts = [];
+          }
+          forEach(disabledElts, function (disabledElement) {
+            disabledElement.removeAttribute("disabled");
+          });
+        });
+      }
+    });
+
     getWindow().setTimeout(function() {
       triggerEvent(body, 'htmx:load', {}) // give ready handlers a chance to load up before firing this event
       body = null // kill reference for gc
