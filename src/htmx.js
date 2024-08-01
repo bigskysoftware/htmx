@@ -3060,11 +3060,8 @@ var htmx = (function() {
       removeClassFromElement(child, className)
     })
     // remove the disabled attribute for any element disabled due to an htmx request
-    forEach(findAll(clone, '[disabled]'), function(child) {
-      const internalData = getInternalData(child)
-      if (internalData.requestCount > 0) {
-        child.removeAttribute('disabled');
-      }
+    forEach(findAll(clone, '[data-disabled-by-htmx]'), function(child) {
+      child.removeAttribute('disabled');
     })
     return clone.innerHTML
   }
@@ -3219,6 +3216,7 @@ var htmx = (function() {
       const internalData = getInternalData(disabledElement)
       internalData.requestCount = (internalData.requestCount || 0) + 1
       disabledElement.setAttribute('disabled', '')
+      disabledElement.setAttribute('data-disabled-by-htmx', '')
     })
     return disabledElts
   }
@@ -3240,6 +3238,7 @@ var htmx = (function() {
       internalData.requestCount = (internalData.requestCount || 0) - 1
       if (internalData.requestCount === 0) {
         disabledElement.removeAttribute('disabled')
+        disabledElement.removeAttribute('data-disabled-by-htmx')
       }
     })
   }
