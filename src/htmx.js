@@ -583,7 +583,7 @@ var htmx = (function() {
    */
   function makeFragment(response) {
     // strip head tag to determine shape of response we are dealing with
-    const responseWithNoHead = response.replace(/<head(\s[^>]*>|>)(.*?)<\/head>/ism, '')
+    const responseWithNoHead = response.replace(/<head(\s[^>]*)?>.*?<\/head>/is, '')
     const startTag = getStartTag(responseWithNoHead)
     /** @type DocumentFragmentWithTitle */
     let fragment
