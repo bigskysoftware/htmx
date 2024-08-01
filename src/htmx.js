@@ -3059,6 +3059,13 @@ var htmx = (function() {
     forEach(findAll(clone, '.' + className), function(child) {
       removeClassFromElement(child, className)
     })
+    // remove the disabled attribute for any element disabled due to an htmx request
+    forEach(findAll(clone, '[disabled]'), function(child) {
+      const internalData = getInternalData(child)
+      if (internalData.requestCount > 0) {
+        child.removeAttribute('disabled');
+      }
+    })
     return clone.innerHTML
   }
 
