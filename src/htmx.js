@@ -4343,7 +4343,9 @@ var htmx = (function() {
         const hierarchy = hierarchyForElt(elt)
         responseInfo.pathInfo.responsePath = getPathFromResponse(xhr)
         responseHandler(elt, responseInfo)
-        removeRequestIndicators(indicators, disableElts)
+        if (responseInfo.keepIndicators !== true) {
+          removeRequestIndicators(indicators, disableElts);
+        }
         triggerEvent(elt, 'htmx:afterRequest', responseInfo)
         triggerEvent(elt, 'htmx:afterOnLoad', responseInfo)
         // if the body no longer contains the element, trigger the event on the closest parent
@@ -4577,18 +4579,21 @@ var htmx = (function() {
       ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
         pushUrlIntoHistory(redirectPath)
       })
+      responseInfo.keepIndicators = true;
       return
     }
 
     const shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && xhr.getResponseHeader('HX-Refresh') === 'true'
 
     if (hasHeader(xhr, /HX-Redirect:/i)) {
+      responseInfo.keepIndicators = true;
       location.href = xhr.getResponseHeader('HX-Redirect')
       shouldRefresh && location.reload()
       return
     }
 
     if (shouldRefresh) {
+      responseInfo.keepIndicators = true;
       location.reload()
       return
     }
@@ -5072,6 +5077,7 @@ var htmx = (function() {
  * @property {{requestPath: string, finalRequestPath: string, responsePath: string|null, anchor: string}} pathInfo
  * @property {boolean} [failed]
  * @property {boolean} [successful]
+ * @property {boolean} [keepIndicators]
  */
 
 /**
