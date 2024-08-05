@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.0.2] - 2024-07-12
+
+
 ## [2.0.1] - 2024-07-12
 
 * Make the `/dist/htmx.esm.js` file the `main` file in `package.json` to make installing htmx smoother

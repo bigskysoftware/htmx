@@ -95,6 +95,7 @@ export type HtmxResponseInfo = {
     };
     failed?: boolean;
     successful?: boolean;
+    keepIndicators?: boolean;
 };
 export type HtmxAjaxEtc = {
     returnPromise?: boolean;

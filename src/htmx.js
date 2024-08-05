@@ -277,7 +277,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.1'
+    version: '2.0.2'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -1781,7 +1781,7 @@ var htmx = (function() {
    * @param {HtmxSettleInfo} settleInfo
    */
   function findAndSwapOobElements(fragment, settleInfo) {
-    var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]');
+    var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]')
     forEach(oobElts, function(oobElement) {
       if (htmx.config.allowNestedOobSwaps || oobElement.parentElement === null) {
         const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
@@ -1793,7 +1793,7 @@ var htmx = (function() {
         oobElement.removeAttribute('data-hx-swap-oob')
       }
     })
-    return oobElts.length > 0;
+    return oobElts.length > 0
   }
 
   /**
@@ -3069,7 +3069,7 @@ var htmx = (function() {
     })
     // remove the disabled attribute for any element disabled due to an htmx request
     forEach(findAll(clone, '[data-disabled-by-htmx]'), function(child) {
-      child.removeAttribute('disabled');
+      child.removeAttribute('disabled')
     })
     return clone.innerHTML
   }
@@ -4360,7 +4360,7 @@ var htmx = (function() {
         responseInfo.pathInfo.responsePath = getPathFromResponse(xhr)
         responseHandler(elt, responseInfo)
         if (responseInfo.keepIndicators !== true) {
-          removeRequestIndicators(indicators, disableElts);
+          removeRequestIndicators(indicators, disableElts)
         }
         triggerEvent(elt, 'htmx:afterRequest', responseInfo)
         triggerEvent(elt, 'htmx:afterOnLoad', responseInfo)
@@ -4601,14 +4601,14 @@ var htmx = (function() {
     const shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && xhr.getResponseHeader('HX-Refresh') === 'true'
 
     if (hasHeader(xhr, /HX-Redirect:/i)) {
-      responseInfo.keepIndicators = true;
+      responseInfo.keepIndicators = true
       location.href = xhr.getResponseHeader('HX-Redirect')
       shouldRefresh && location.reload()
       return
     }
 
     if (shouldRefresh) {
-      responseInfo.keepIndicators = true;
+      responseInfo.keepIndicators = true
       location.reload()
       return
     }
