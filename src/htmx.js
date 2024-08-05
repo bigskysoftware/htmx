@@ -1781,7 +1781,8 @@ var htmx = (function() {
    * @param {HtmxSettleInfo} settleInfo
    */
   function findAndSwapOobElements(fragment, settleInfo) {
-    forEach(findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]'), function(oobElement) {
+    var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]');
+    forEach(oobElts, function(oobElement) {
       if (htmx.config.allowNestedOobSwaps || oobElement.parentElement === null) {
         const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
         if (oobValue != null) {
@@ -1792,6 +1793,7 @@ var htmx = (function() {
         oobElement.removeAttribute('data-hx-swap-oob')
       }
     })
+    return oobElts.length > 0;
   }
 
   /**
@@ -1853,9 +1855,8 @@ var htmx = (function() {
       // oob swaps
       findAndSwapOobElements(fragment, settleInfo)
       forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-        findAndSwapOobElements(template.content, settleInfo)
-        if (template.content.childElementCount === 0 && template.content.textContent.trim() === '') {
-        // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
+        if (findAndSwapOobElements(template.content, settleInfo)) {
+          // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
           template.remove()
         }
       })
