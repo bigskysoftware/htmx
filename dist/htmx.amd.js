@@ -773,10 +773,13 @@ var htmx = (function() {
   function bodyContains(elt) {
     // IE Fix
     const rootNode = elt.getRootNode && elt.getRootNode()
+    if (getDocument().body === null) {
+      return false;
+    }
     if (rootNode && rootNode instanceof window.ShadowRoot) {
-      return getDocument().body.contains(rootNode.host)
+      return getDocument().body.contains(rootNode.host);
     } else {
-      return getDocument().body.contains(elt)
+      return getDocument().body.contains(elt);
     }
   }
 
