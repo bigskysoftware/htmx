@@ -163,6 +163,24 @@ describe('Core htmx Events', function() {
     }
   })
 
+  it('htmx:afterSwap is called when replacing outerHTML, new line content', function() {
+    var called = false
+    var handler = htmx.on('htmx:afterSwap', function(evt) {
+      called = true
+    })
+    try {
+      this.server.respondWith('POST', '/test', function(xhr) {
+        xhr.respond(200, {}, '\n<button>Bar</button>')
+      })
+      var div = make("<button hx-post='/test' hx-swap='outerHTML'>Foo</button>")
+      div.click()
+      this.server.respond()
+      should.equal(called, true)
+    } finally {
+      htmx.off('htmx:afterSwap', handler)
+    }
+  })
+
   it('htmx:oobBeforeSwap is called before swap', function() {
     var called = false
     var handler = htmx.on('htmx:oobBeforeSwap', function(evt) {

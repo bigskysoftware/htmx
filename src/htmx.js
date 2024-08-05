@@ -1639,13 +1639,13 @@ var htmx = (function() {
       newElt = eltBeforeNewContent.nextSibling
     }
     settleInfo.elts = settleInfo.elts.filter(function(e) { return e !== target })
+    // scan through all newly added content and add all elements to the settle info so we trigger
+    // events properly on them
     while (newElt && newElt !== target) {
       if (newElt instanceof Element) {
         settleInfo.elts.push(newElt)
-        newElt = newElt.nextElementSibling
-      } else {
-        newElt = null
       }
+      newElt = newElt.nextSibling
     }
     cleanUpElement(target)
     if (target instanceof Element) {
