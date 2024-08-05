@@ -2445,7 +2445,10 @@ var htmx = (function() {
               }, triggerSpec.throttle)
             }
           } else if (triggerSpec.delay > 0) {
-            elementData.delayed = getWindow().setTimeout(function() { handler(elt, evt) }, triggerSpec.delay)
+            elementData.delayed = getWindow().setTimeout(function() {
+              triggerEvent(elt, 'htmx:trigger')
+              handler(elt, evt)
+            }, triggerSpec.delay)
           } else {
             triggerEvent(elt, 'htmx:trigger')
             handler(elt, evt)
