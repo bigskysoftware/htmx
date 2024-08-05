@@ -7,7 +7,7 @@ A question that often comes up when people are first working with htmx is:
 
 > "I need to update other content on the screen.  How do I do this?" 
 
-There are multiple ways to do so, and in this example will walk you through some of them.
+There are multiple ways to do so, and in this example we will walk you through some of them.
 
 We'll use the following basic UI to discuss this concept: a simple table of contacts, and a form below it
 to add new contacts to the table using [hx-post](@/attributes/hx-post.md).

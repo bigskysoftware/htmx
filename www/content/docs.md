@@ -945,6 +945,7 @@ object is a collection of JavaScript objects defined like so:
         {code:"204", swap: false},   // 204 - No Content by default does nothing, but is not an error
         {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
         {code:"[45]..", swap: false, error:true}, // 400 & 500 responses are not swapped and are errors
+        {code:"...", swap: false}    // catch all for any other response code
     ]
 ```
 
@@ -972,10 +973,17 @@ Using the [meta config](#configuration-options) mechanism for configuring respon
 config:
 
 ```html
-<meta name="htmx-config" content='{code:"204", swap: false},   // 204 - No Content by default does nothing, but is not an error
-                                  {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
-                                  {code:"422", swap: true}, // 422 responses are swapped
-                                  {code:"[45]..", swap: false, error:true}, // 400 & 500 responses are not swapped and are errors'>
+<meta
+	name="htmx-config"
+	content='{
+        "responseHandling":[
+            {"code":"204", "swap": false},
+            {"code":"[23]..", "swap": true},
+            {"code":"422", "swap": true},
+            {"code":"[45]..", "swap": false, "error":true}
+        ]
+    }'
+/>
 ```
 
 If you wanted to swap everything, regardless of HTTP response code, you could use this configuration:
