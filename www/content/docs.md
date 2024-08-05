@@ -933,7 +933,7 @@ the response.
 In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](@/events.md#htmx:responseError)
 event, which you can handle.
 
-In the event of a connection error, the `htmx:sendError` event will be triggered.
+In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) `htmx:sendError` event will be triggered.
 
 ### Configuring Response Handling {#response-handling}
 
