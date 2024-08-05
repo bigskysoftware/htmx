@@ -2277,7 +2277,7 @@ var htmx = (function() {
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    */
   function boostElement(elt, nodeData, triggerSpecs) {
-    if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || elt.tagName === 'FORM') {
+    if ((elt instanceof HTMLAnchorElement && isLocalLink(elt) && (elt.target === '' || elt.target === '_self')) || (elt.tagName === 'FORM' && String(getRawAttribute(elt, 'method')).toLowerCase() !== 'dialog')) {
       nodeData.boosted = true
       let verb, path
       if (elt.tagName === 'A') {
@@ -3925,7 +3925,7 @@ var htmx = (function() {
       if (obj.hasOwnProperty(key)) {
         if (typeof obj[key].forEach === 'function') {
           obj[key].forEach(function(v) { formData.append(key, v) })
-        } else if (typeof obj[key] === 'object') {
+        } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Blob)) {
           formData.append(key, JSON.stringify(obj[key]))
         } else {
           formData.append(key, obj[key])

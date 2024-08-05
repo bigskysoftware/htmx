@@ -71,6 +71,14 @@ describe('hx-boost attribute', function() {
     div.innerHTML.should.equal('Boosted')
   })
 
+  it('does not boost forms with method="dialog"', function() {
+    make('<div hx-boost="true"><form id="f1" action="/test" method="dialog"><button id="b1">close</button></form></div>')
+    var form = byId('f1')
+
+    var internalData = htmx._('getInternalData')(form)
+    should.equal(undefined, internalData.boosted)
+  })
+
   it('handles basic anchor properly w/ data-* prefix', function() {
     this.server.respondWith('GET', '/test', 'Boosted')
     var div = make('<div data-hx-target="this" data-hx-boost="true"><a id="a1" href="/test">Foo</a></div>')

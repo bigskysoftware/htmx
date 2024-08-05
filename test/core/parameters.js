@@ -312,4 +312,56 @@ describe('Core htmx Parameter Handling', function() {
     this.server.respond()
     form.innerHTML.should.equal('Clicked!')
   })
+
+  it('file is correctly uploaded with file input', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['Content-Type'], undefined)
+
+      const file = xhr.requestBody.get('file')
+      file.should.instanceOf(File)
+      file.name.should.equal('test.txt')
+
+      xhr.respond(200, {}, 'OK')
+    })
+
+    const form = make('<form hx-post="/test" hx-target="#result" hx-encoding="multipart/form-data">' +
+      '<input type="file" name="file">' +
+      '<button type="submit"></button>' +
+      '</form>')
+    const input = form.querySelector('input')
+    const file = new File(['Test'], 'test.txt', { type: 'text/plain' })
+    const dataTransfer = new DataTransfer()
+    dataTransfer.items.add(file)
+    input.files = dataTransfer.files
+
+    const result = make('<div id="result"></div>')
+
+    form.querySelector('button').click()
+    this.server.respond()
+    result.innerHTML.should.equal('OK')
+  })
+
+  it('file is correctly uploaded with htmx.ajax', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['Content-Type'], undefined)
+
+      const file = xhr.requestBody.get('file')
+      file.should.instanceOf(File)
+      file.name.should.equal('test.txt')
+
+      xhr.respond(200, {}, 'OK')
+    })
+
+    const div = make('<div hx-encoding="multipart/form-data"></div>')
+
+    htmx.ajax('POST', '/test', {
+      source: div,
+      values: {
+        file: new File(['Test'], 'test.txt', { type: 'text/plain' })
+      }
+    })
+
+    this.server.respond()
+    div.innerHTML.should.equal('OK')
+  })
 })
