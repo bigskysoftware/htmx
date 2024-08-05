@@ -657,7 +657,7 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
-  it('A throttle of 0 does not multiple requests from happening', function(done) {
+  it('A throttle of 0 does not prevent multiple requests from happening', function(done) {
     var requests = 0
     var server = this.server
     server.respondWith('GET', '/test', function(xhr) {
@@ -937,6 +937,23 @@ describe('hx-trigger attribute', function() {
     } finally {
       htmx.off('htmx:trigger', handler)
     }
+  })
+
+  it('fires the htmx:trigger event for delayed triggers', function(done) {
+    var param = 'foo'
+    var handler = htmx.on('htmx:trigger', function(evt) {
+      param = 'bar'
+    })
+    var div = make('<button hx-trigger="click delay:10ms">Submit</button>')
+    div.click()
+    setTimeout(function() {
+      try {
+        should.equal(param, 'bar')
+        done()
+      } finally {
+        htmx.off('htmx:trigger', handler)
+      }
+    }, 50)
   })
 
   it('filters support "this" reference to the current element', function() {

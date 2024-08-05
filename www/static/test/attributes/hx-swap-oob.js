@@ -176,6 +176,30 @@ describe('hx-swap-oob attribute', function() {
     should.equal(byId('d1'), null)
   })
 
+  it('oob swap removes templates used for oob encapsulation only properly', function() {
+    this.server.respondWith('GET', '/test', '' +
+        'Clicked<template><div hx-swap-oob="outerHTML" id="d1">Foo</div></template>')
+    var div = make('<button hx-get="/test" id="b1">Click Me</button>' +
+        '<div id="d1" ></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    should.equal(byId('b1').innerHTML, 'Clicked')
+    should.equal(byId('d1').innerHTML, 'Foo')
+  })
+
+  it('oob swap keeps templates not used for oob swap encapsulation', function() {
+    this.server.respondWith('GET', '/test', '' +
+        'Clicked<template></template>')
+    var div = make('<button hx-get="/test" id="b1">Click Me</button>' +
+        '<div id="d1" ></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    should.equal(byId('b1').innerHTML, 'Clicked<template></template>')
+    should.equal(byId('d1').innerHTML, '')
+  })
+
   for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
     it('oob swap supports table row in fragment along other oob swap elements with config ' + JSON.stringify(config), function() {
       Object.assign(htmx.config, config)

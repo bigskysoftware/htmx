@@ -15,7 +15,7 @@ declare namespace htmx {
     const toggleClass: (elt: string | Element, clazz: string) => void;
     const takeClass: (elt: string | Node, clazz: string) => void;
     const swap: (target: string | Element, content: string, swapSpec: HtmxSwapSpecification, swapOptions?: SwapOptions) => void;
-    const defineExtension: (name: string, extension: any) => void;
+    const defineExtension: (name: string, extension: HtmxExtension) => void;
     const removeExtension: (name: string) => void;
     const logAll: () => void;
     const logNone: () => void;
@@ -192,4 +192,12 @@ type HtmxSettleInfo = {
     elts: Element[];
     title?: string;
 };
-type HtmxExtension = any;
+type HtmxExtension = {
+    init: (api: any) => void;
+    onEvent: (name: string, event: Event | CustomEvent) => boolean;
+    transformResponse: (text: string, xhr: XMLHttpRequest, elt: Element) => string;
+    isInlineSwap: (swapStyle: HtmxSwapStyle) => boolean;
+    handleSwap: (swapStyle: HtmxSwapStyle, target: Node, fragment: Node, settleInfo: HtmxSettleInfo) => boolean | Node[];
+    encodeParameters: (xhr: XMLHttpRequest, parameters: FormData, elt: Node) => any | string | null;
+    getSelectors: () => string[] | null;
+};
