@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <title>History - Index</title>
+    <script>
+        htmx.logAll();
+        htmx.onLoad(function(src){
+            var btn = src.querySelector("button");
+            btn.addEventListener("htmx:beforeOnLoad", function(evt){
+                evt.detail.keepIndicators = true;
+            })
+        })
+    </script>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<h1>Indicator Visibility Test</h1>
+<p>
+   This test marks the response as <code>keepIndicators</code>, so the indicator span should remain visible after the
+    request finishes.
+</p>
+<button hx-get="1.html" hx-indicator="#indicator">
+    Click Me
+</button>
+<span id="indicator" class="htmx-indicator">
+    Should Remain Visible...
+</span>
+</body>
+</html>

@@ -4585,7 +4585,6 @@ var htmx = (function() {
       ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
         pushUrlIntoHistory(redirectPath)
       })
-      responseInfo.keepIndicators = true;
       return
     }
 
