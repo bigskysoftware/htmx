@@ -4655,7 +4655,8 @@ var htmx = (function() {
       serverResponse,
       isError,
       ignoreTitle,
-      selectOverride
+      selectOverride,
+      swapOverride
     }, responseInfo)
 
     if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return
@@ -4667,6 +4668,7 @@ var htmx = (function() {
     isError = beforeSwapDetails.isError // allow updating error
     ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
     selectOverride = beforeSwapDetails.selectOverride // allow updating select override
+    swapOverride = beforeSwapDetails.swapOverride // allow updating swap override
 
     responseInfo.target = target // Make updated target available to response events
     responseInfo.failed = isError // Make failed property available to response events
@@ -4686,9 +4688,6 @@ var htmx = (function() {
         saveCurrentPageToHistory()
       }
 
-      if (hasHeader(xhr, /HX-Reswap:/i)) {
-        swapOverride = xhr.getResponseHeader('HX-Reswap')
-      }
       var swapSpec = getSwapSpecification(elt, swapOverride)
 
       if (!swapSpec.hasOwnProperty('ignoreTitle')) {
@@ -5121,7 +5120,7 @@ var htmx = (function() {
  */
 
 /**
- * @typedef {HtmxResponseInfo & {shouldSwap: boolean, serverResponse: any, isError: boolean, ignoreTitle: boolean, selectOverride:string}} HtmxBeforeSwapDetails
+ * @typedef {HtmxResponseInfo & {shouldSwap: boolean, serverResponse: any, isError: boolean, ignoreTitle: boolean, selectOverride:string, swapOverride:string}} HtmxBeforeSwapDetails
  */
 
 /**
