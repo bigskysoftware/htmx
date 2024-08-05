@@ -973,6 +973,11 @@ Using the [meta config](#configuration-options) mechanism for configuring respon
 config:
 
 ```html
+<!--
+  * 204 No Content by default does nothing, but is not an error
+  * 2xx, 3xx and 422 responses are non-errors and are swapped
+  * 4xx & 5xx responses are not swapped and are errors
+-->
 <meta
 	name="htmx-config"
 	content='{
