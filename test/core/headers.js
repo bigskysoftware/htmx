@@ -147,6 +147,21 @@ describe('Core htmx AJAX headers', function() {
     invokedEvent.should.equal(true)
   })
 
+  it('should handle JSON with target array arg HX-Trigger response header properly', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Trigger': '{"foo":{"target":"#testdiv"}}' }, ''])
+
+    var div = make('<div hx-get="/test"></div>')
+    var testdiv = make('<div id="testdiv"></div>')
+    var invokedEvent = false
+    testdiv.addEventListener('foo', function(evt) {
+      invokedEvent = true
+      evt.detail.elt.should.equal(testdiv)
+    })
+    div.click()
+    this.server.respond()
+    invokedEvent.should.equal(true)
+  })
+
   it('should survive malformed JSON in HX-Trigger response header', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Trigger': '{not: valid}' }, ''])
 

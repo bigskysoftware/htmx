@@ -1753,7 +1753,7 @@ var htmx = (function() {
           try {
             const newElements = ext.handleSwap(swapStyle, target, fragment, settleInfo)
             if (newElements) {
-              if (typeof newElements.length !== 'undefined') {
+              if (Array.isArray(newElements)) {
                 // if handleSwap returns an array (like) of elements, we handle them
                 for (let j = 0; j < newElements.length; j++) {
                   const child = newElements[j]
@@ -1952,7 +1952,10 @@ var htmx = (function() {
       for (const eventName in triggers) {
         if (triggers.hasOwnProperty(eventName)) {
           let detail = triggers[eventName]
-          if (!isRawObject(detail)) {
+          if (isRawObject(detail)) {
+            // @ts-ignore
+            elt = detail.target !== undefined ? detail.target : elt
+          } else {
             detail = { value: detail }
           }
           triggerEvent(elt, eventName, detail)
@@ -3388,10 +3391,10 @@ var htmx = (function() {
   function overrideFormData(receiver, donor) {
     for (const key of donor.keys()) {
       receiver.delete(key)
-      donor.getAll(key).forEach(function(value) {
-        receiver.append(key, value)
-      })
     }
+    donor.forEach(function(value, key) {
+      receiver.append(key, value)
+    })
     return receiver
   }
 
@@ -4014,6 +4017,8 @@ var htmx = (function() {
         target.delete(name)
         if (typeof value.forEach === 'function') {
           value.forEach(function(v) { target.append(name, v) })
+        } else if (typeof value === 'object' && !(value instanceof Blob)) {
+          target.append(name, JSON.stringify(value))
         } else {
           target.append(name, value)
         }
@@ -5132,12 +5137,13 @@ var htmx = (function() {
  */
 
 /**
+ * @see https://github.com/bigskysoftware/htmx-extensions/blob/main/README.md
  * @typedef {Object} HtmxExtension
- * @see https://htmx.org/extensions/#defining
  * @property {(api: any) => void} init
  * @property {(name: string, event: Event|CustomEvent) => boolean} onEvent
  * @property {(text: string, xhr: XMLHttpRequest, elt: Element) => string} transformResponse
  * @property {(swapStyle: HtmxSwapStyle) => boolean} isInlineSwap
- * @property {(swapStyle: HtmxSwapStyle, target: Element, fragment: Node, settleInfo: HtmxSettleInfo) => boolean} handleSwap
- * @property {(xhr: XMLHttpRequest, parameters: FormData, elt: Element) => *|string|null} encodeParameters
+ * @property {(swapStyle: HtmxSwapStyle, target: Node, fragment: Node, settleInfo: HtmxSettleInfo) => boolean|Node[]} handleSwap
+ * @property {(xhr: XMLHttpRequest, parameters: FormData, elt: Node) => *|string|null} encodeParameters
+ * @property {() => string[]|null} getSelectors
  */

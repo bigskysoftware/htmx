@@ -293,4 +293,23 @@ describe('Core htmx Parameter Handling', function() {
     this.server.respond()
     form.innerHTML.should.equal('Clicked!')
   })
+
+  it('order of parameters follows order of input elements with POST', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      xhr.requestBody.should.equal('foo=bar&bar=foo&foo=bar&foo2=bar2')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+
+    var form = make('<form hx-post="/test">' +
+      '<input name="foo" value="bar">' +
+      '<input name="bar" value="foo">' +
+      '<input name="foo" value="bar">' +
+      '<input name="foo2" value="bar2">' +
+      '<button id="b1">Click Me!</button>' +
+      '</form>')
+
+    byId('b1').click()
+    this.server.respond()
+    form.innerHTML.should.equal('Clicked!')
+  })
 })
