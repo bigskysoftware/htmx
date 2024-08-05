@@ -2439,6 +2439,7 @@ var htmx = (function() {
 
           if (triggerSpec.throttle > 0) {
             if (!elementData.throttle) {
+              triggerEvent(elt, 'htmx:trigger')
               handler(elt, evt)
               elementData.throttle = getWindow().setTimeout(function() {
                 elementData.throttle = null
