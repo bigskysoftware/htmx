@@ -1,7 +1,14 @@
 # Changelog
 
-## [2.0.2] - 2024-07-12
-
+## [2.0.2] - 2024-08-09
+* no longer boost forms of type `dialog`
+* properly trigger the `htmx:trigger` event when an event is delayed or throttled
+* file upload is now fixed
+* empty templates that are not used for oob swaps are no longer removed from the DOM
+* request indicators are not removed when a full page redirect or refresh occurs
+* elements that have been disabled for a request are properly re-enabled before snapshotting for history
+* you can now trigger events on other elements using the `HX-Trigger` response header
+* The `.d.ts` file should now work properly
 
 ## [2.0.1] - 2024-07-12
 
