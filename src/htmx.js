@@ -337,21 +337,9 @@ var htmx = (function() {
     return '[hx-' + verb + '], [data-hx-' + verb + ']'
   }).join(', ')
 
-  const HEAD_TAG_REGEX = makeTagRegEx('head')
-
   //= ===================================================================
   // Utilities
   //= ===================================================================
-
-  /**
-   * @param {string} tag
-   * @param {boolean} global
-   * @returns {RegExp}
-   */
-  function makeTagRegEx(tag, global = false) {
-    return new RegExp(`<${tag}(\\s[^>]*>|>)([\\s\\S]*?)<\\/${tag}>`,
-      global ? 'gim' : 'im')
-  }
 
   /**
    * Parses an interval string consistent with the way htmx does. Useful for plugins that have timing-related attributes.
@@ -595,7 +583,7 @@ var htmx = (function() {
    */
   function makeFragment(response) {
     // strip head tag to determine shape of response we are dealing with
-    const responseWithNoHead = response.replace(HEAD_TAG_REGEX, '')
+    const responseWithNoHead = response.replace(/<head(\s[^>]*)?>.*?<\/head>/is, '')
     const startTag = getStartTag(responseWithNoHead)
     /** @type DocumentFragmentWithTitle */
     let fragment
