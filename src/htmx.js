@@ -3927,7 +3927,7 @@ var htmx = (function() {
     const formData = new FormData()
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        if (typeof obj[key].forEach === 'function') {
+        if (obj[key] && typeof obj[key].forEach === 'function') {
           obj[key].forEach(function(v) { formData.append(key, v) })
         } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Blob)) {
           formData.append(key, JSON.stringify(obj[key]))
