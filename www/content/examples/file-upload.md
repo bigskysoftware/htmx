@@ -16,23 +16,19 @@ First the pure javascript version.
 * We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the event detail.
 
 ```html
-    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload'>
+    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload'
+        hx-on::xhr:progress="htmx.find('#progress').setAttribute('value',event.detail.loaded/event.detail.total * 100)"
+        >
         <input type='file' name='file'>
         <button>
             Upload
         </button>
         <progress id='progress' value='0' max='100'></progress>
     </form>
-    <script>
-        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
-          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
-        });
-    </script>
 ```
 
 The Hyperscript version is very similar, except:
  
- * The script is embedded directly on the form element
  * Hyperscript offers nicer syntax (although the htmx API is pretty nice too!)
 
 ```html
