@@ -3,10 +3,10 @@ Thank you for your interest in contributing! Because we're a small team, we have
 
 ## Issues
 1. Issues are the best place to propose a new feature. Keep in mind that htmx is a small library, so there are lots of great ideas that don't fit in the core; it's always best to check in about an idea before doing a bunch of work on it.
-1. When proposing a new features, we will often suggest that you implement it as an [extension](https://htmx.org/extensions), so try that first. Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
+1. When proposing a new features, we will often suggest that you implement it as an [extension](https://htmx.org/docs/#extensions), so try that first. Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
 1. Search the issues before proposing a feature to see if it is already under discussion. Referencing existing issues is a good way to increase the priority of your own.
 1. We don't have an issue template yet, but the more detailed your description of the issue, the more quickly we'll be able to evaluate it.
-1. See an issue that you also have? Give it a reaction (and comment, if you have something to add). We note that!
+1. Do you see an issue that you have? Give it a reaction (and comment, if you have something to add). We note that!
 1. If you haven't gotten any traction on an issue, feel free to bump it in the #issues-and-pull-requests channel on our Discord.
 1. Want to contribute but don't know where to start? Look for issues with the "help wanted" tag.
 
