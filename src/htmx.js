@@ -4239,8 +4239,9 @@ var htmx = (function() {
     }
 
     // behavior of anchors w/ empty href is to use the current URL
+    // behavior of forms w/ empty action is to use the current URL without params
     if (path == null || path === '') {
-      path = getDocument().location.href
+      path = elt.tagName === 'FORM' ? getDocument().location.href.split('?')[0] : getDocument().location.href
     }
 
     /**
