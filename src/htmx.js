@@ -864,12 +864,12 @@ return (function () {
             if (oobSelects) {
                 var oobSelectValues = oobSelects.split(",");
                 for (var i = 0; i < oobSelectValues.length; i++) {
-                    const oobSelectValue = oobSelectValues[i]
+                    var oobSelectValue = oobSelectValues[i]
                     // Support colon in css selectors
-                    const colon = oobSelectValue.lastIndexOf(':')
-                    const split_at = colon == -1 ? oobSelectValue.length : colon
-                    const oobValue = oobSelectValue.substring(split_at + 1) || 'true'
-                    const oobElement = fragment.querySelector(oobSelectValue.substring(0, split_at))
+                    var colon = oobSelectValue.lastIndexOf(':')
+                    var split_at = colon == -1 ? oobSelectValue.length : colon
+                    var oobValue = oobSelectValue.substring(split_at + 1) || 'true'
+                    var oobElement = fragment.querySelector(oobSelectValue.substring(0, split_at))
                     if (oobElement) {
                         oobSwap(oobValue, oobElement, settleInfo);
                     }
