@@ -271,7 +271,13 @@ var htmx = (function() {
        * @type boolean
        * @default true
        */
-      allowNestedOobSwaps: true
+      allowNestedOobSwaps: true,
+      /**
+       * Whether to cancel polling on elements when an error occurs.
+       * @type boolean
+       * @default false
+       */
+      cancelPollingOnError: false
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -2232,6 +2238,15 @@ var htmx = (function() {
    */
   function cancelPolling(elt) {
     getInternalData(elt).cancelled = true
+  }
+
+  /**
+   * Returns true if the element has a polling, otherwise false.
+   *
+   * @param {Element} elt
+   */
+  function hasPolling(elt) {
+    return getInternalData(elt).timeout > -1
   }
 
   /**
@@ -4672,11 +4687,15 @@ var htmx = (function() {
     responseInfo.failed = isError // Make failed property available to response events
     responseInfo.successful = !isError // Make successful property available to response events
 
-    if (beforeSwapDetails.shouldSwap) {
-      if (xhr.status === 286) {
-        cancelPolling(elt)
-      }
+    if (hasPolling(elt) &&
+        (xhr.status === 286 ||
+        (hasHeader(xhr, /HX-Cancel-Polling:/i) && xhr.getResponseHeader('HX-Cancel-Polling') === 'true') ||
+        !triggerEvent(elt, 'htmx:cancelPolling', responseInfo) ||
+        (xhr.status !== 200 && htmx.config.cancelPollingOnError))) {
+      cancelPolling(elt)
+    }
 
+    if (beforeSwapDetails.shouldSwap) {
       withExtensions(elt, function(extension) {
         serverResponse = extension.transformResponse(serverResponse, xhr, elt)
       })
