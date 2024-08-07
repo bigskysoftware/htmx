@@ -4020,7 +4020,7 @@ var htmx = (function() {
           return false
         }
         target.delete(name)
-        if (typeof value.forEach === 'function') {
+        if (value && typeof value.forEach === 'function') {
           value.forEach(function(v) { target.append(name, v) })
         } else if (typeof value === 'object' && !(value instanceof Blob)) {
           target.append(name, JSON.stringify(value))
