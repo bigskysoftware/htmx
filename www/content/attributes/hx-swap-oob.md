@@ -25,9 +25,9 @@ The value of the `hx-swap-oob` can be:
 * any valid [`hx-swap`](@/attributes/hx-swap.md) value
 * any valid [`hx-swap`](@/attributes/hx-swap.md) value, followed by a colon, followed by a CSS selector
 
-If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.
+If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline with the contents of the whole tag.
 
-If a swap value is given, that swap strategy will be used.
+If another swap value is given, that swap strategy will be used instead but note that only the inner contents of tag will be used for most non inline swap strategies
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
