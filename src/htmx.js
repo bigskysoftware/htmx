@@ -4899,7 +4899,7 @@ var htmx = (function() {
   function ready(fn) {
     // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
     // some means other than the initial page load.
-    if (isReady || getDocument().readyState === 'complete') {
+    if (isReady || getDocument().readyState === 'interactive' || getDocument().readyState === 'complete') {
       fn()
     } else {
       getDocument().addEventListener('DOMContentLoaded', fn)
