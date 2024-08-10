@@ -2286,9 +2286,10 @@ var htmx = (function() {
       } else {
         const rawAttribute = getRawAttribute(elt, 'method')
         verb = rawAttribute ? rawAttribute.toLowerCase() : 'get'
-        if (verb === 'get') {
-        }
         path = getRawAttribute(elt, 'action')
+        if (verb === 'get' && path.includes('?')) {
+          path = path.replace(/\?[^#]+/, '')
+        }
       }
       triggerSpecs.forEach(function(triggerSpec) {
         addEventListener(elt, function(node, evt) {
@@ -4239,10 +4240,8 @@ var htmx = (function() {
     }
 
     // behavior of anchors w/ empty href is to use the current URL
-    // behavior of forms w/ empty action is to use the current URL without params
     if (path == null || path === '') {
       path = getDocument().location.href
-      path = elt.tagName === 'FORM' ? path.split('?')[0] : path
     }
 
     /**
