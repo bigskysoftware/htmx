@@ -42,7 +42,7 @@ to add new contacts to the table using [hx-post](@/attributes/hx-post.md).
 The problem here is that when you submit a new contact in the form, you want the contact table above to refresh and
 include the contact that was just added by the form.
 
-What solutions to we have?
+What solutions do we have?
 
 ## Solution 1: Expand the Target {#expand}
 
