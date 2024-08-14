@@ -137,7 +137,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -149,7 +149,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@2.0.1
+npm install htmx.org@2.0.2
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
