@@ -27,9 +27,27 @@ The value of the `hx-swap-oob` can be:
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline with the contents of the whole tag.
 
-If another swap value is given, that swap strategy will be used instead but note that only the inner contents of tag will be used for most non inline swap strategies
+If another swap value is given, that swap strategy will be used instead but note that only the inner contents of tag will be used for most non inline swap strategies.
+
+```html
+<div>
+ ...
+</div>
+<div id="alerts" hx-swap-oob="beforeend">
+    <p>Saved again!</p> <!--swap inner contents to end of alters but not wraping oob div-->
+</div>
+```
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
+
+```html
+<div>
+ ...
+</div>
+<div hx-swap-oob="outerHTML:.alerts" class="alerts">
+    Replace all the alerts!
+</div>
+```
 
 ### Troublesome Tables
 
