@@ -996,7 +996,7 @@ config:
 If you wanted to swap everything, regardless of HTTP response code, you could use this configuration:
 
 ```html
-<meta name="htmx-config" content='{code:".*", swap: true}, // all responses are swapped'>
+<meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' /> <!--all responses are swapped-->
 ```
 
 Finally, it is worth considering using the [Response Targets](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md)
