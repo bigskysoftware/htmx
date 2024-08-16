@@ -806,7 +806,7 @@ However, you could wrap the htmx-enhanced input in a form element:
     <input class="form-control" type="search"
         name="search" placeholder="Begin typing to search users..."
         hx-post="/search"
-        hx-trigger="keyup changed delay:500ms, search"
+        hx-trigger="keyup changed throttle:500ms, search"
         hx-target="#search-results"
         hx-indicator=".htmx-indicator">
 </form>
