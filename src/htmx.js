@@ -1426,6 +1426,8 @@ var htmx = (function() {
     } else {
       swapStyle = oobValue
     }
+    oobElement.removeAttribute('hx-swap-oob')
+    oobElement.removeAttribute('data-hx-swap-oob')
 
     const targets = getDocument().querySelectorAll(selector)
     if (targets) {

@@ -66,6 +66,28 @@ describe('hx-swap-oob attribute', function() {
     })
   }
 
+  it('handles remvoing hx-swap-oob tag', function() {
+    this.server.respondWith('GET', '/test', "Clicked<div id='d1' data-hx-swap-oob='true'>Swapped3</div>")
+    var div = make('<div data-hx-get="/test">click me</div>')
+    make('<div id="d1"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked')
+    byId('d1').innerHTML.should.equal('Swapped3')
+    byId('d1').hasAttribute('hx-swap-oob').should.equal(false)
+  })
+
+  it('handles remvoing data-hx-swap-oob tag', function() {
+    this.server.respondWith('GET', '/test', "Clicked<div id='d1' data-hx-swap-oob='true'>Swapped3</div>")
+    var div = make('<div data-hx-get="/test">click me</div>')
+    make('<div id="d1"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked')
+    byId('d1').innerHTML.should.equal('Swapped3')
+    byId('d1').hasAttribute('data-hx-swap-oob').should.equal(false)
+  })
+
   it('handles no id match properly', function() {
     this.server.respondWith('GET', '/test', "Clicked<div id='d1' hx-swap-oob='true'>Swapped2</div>")
     var div = make('<div hx-get="/test">click me</div>')
@@ -155,6 +177,7 @@ describe('hx-swap-oob attribute', function() {
 
   it('swaps into all targets that match the selector (outerHTML)', function() {
     var oobSwapContent = '<div class="new-target" hx-swap-oob="outerHTML:.target">Swapped9</div>'
+    var finalContent = '<div class="new-target">Swapped9</div>'
     this.server.respondWith('GET', '/test', '<div>Clicked</div>' + oobSwapContent)
     var div = make('<div hx-get="/test">click me</div>')
     make('<div id="d1"><div>No swap</div></div>')
@@ -163,8 +186,8 @@ describe('hx-swap-oob attribute', function() {
     div.click()
     this.server.respond()
     byId('d1').innerHTML.should.equal('<div>No swap</div>')
-    byId('d2').innerHTML.should.equal(oobSwapContent)
-    byId('d3').innerHTML.should.equal(oobSwapContent)
+    byId('d2').innerHTML.should.equal(finalContent)
+    byId('d3').innerHTML.should.equal(finalContent)
   })
 
   it('oob swap delete works properly', function() {
