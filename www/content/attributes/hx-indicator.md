@@ -31,10 +31,10 @@ that will show the spinner:
         transition: opacity 500ms ease-in;
     }
     .htmx-request .htmx-indicator{
-        opacity:1
+        opacity:1;
     }
     .htmx-request.htmx-indicator{
-        opacity:1
+        opacity:1;
     }
 ```
 
