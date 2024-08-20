@@ -77,6 +77,21 @@ describe('Core htmx Events', function() {
     }
   })
 
+  it('events accept an options argument', function() {
+    var invoked = 0
+    var handler = htmx.on('custom', function() {
+      invoked = invoked + 1
+    }, { once: true })
+    try {
+      var div = make("<div hx-post='/test'></div>")
+      htmx.trigger(div, 'custom')
+      htmx.trigger(div, 'custom')
+      invoked.should.equal(1)
+    } finally {
+      htmx.off('custom', handler)
+    }
+  })
+
   it('htmx:configRequest allows attribute removal', function() {
     var param = 'foo'
     var handler = htmx.on('htmx:configRequest', function(evt) {
