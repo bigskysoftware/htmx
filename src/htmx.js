@@ -1242,8 +1242,8 @@ var htmx = (function() {
   /**
    * @param {EventTarget|AnyEventName} arg1
    * @param {AnyEventName|EventListener} arg2
-   * @param {EventListener|Object} [arg3]
-   * @param {Object} [arg4]
+   * @param {EventListener|Object|boolean} [arg3]
+   * @param {Object|boolean} [arg4]
    * @returns {EventArgs}
    */
   function processEventArgs(arg1, arg2, arg3, arg4) {
@@ -1274,8 +1274,8 @@ var htmx = (function() {
    *
    * @param {EventTarget|string} arg1 the element to add the listener to | the event name to add the listener for
    * @param {string|EventListener} arg2 the event name to add the listener for | the listener to add
-   * @param {EventListener|Object} [arg3] the listener to add | options to add
-   * @param {Object} [arg4] options to add
+   * @param {EventListener|Object|boolean} [arg3] the listener to add | options to add
+   * @param {Object|boolean} [arg4] options to add
    * @returns {EventListener}
    */
   function addEventListenerImpl(arg1, arg2, arg3, arg4) {
