@@ -316,14 +316,14 @@ Adds an event listener to an element
 
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
-* `options` - [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) to add to the event listener (optional)
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 or
 
 * `target` - the element to add the listener to
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
-* `options` - [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) to add to the event listener (optional)
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 ##### Example
 
