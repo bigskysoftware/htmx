@@ -117,7 +117,7 @@ tag to your document head.  There is no need for a build system to use it.
 
 ### Via A CDN (e.g. unpkg.com)
 
-The fastest way to get going with htmx is to load it via a CDN. You can simply add this to 
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to
 your head tag and get going:
 
 ```html
@@ -130,7 +130,7 @@ An unminified version is also available for debugging as well:
 <script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js" integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr" crossorigin="anonymous"></script>
 ```
 
-While the CDN approach is extremely simple, you may want to consider 
+While the CDN approach is extremely simple, you may want to consider
 [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
 ### Download a copy
@@ -710,7 +710,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
       if (confirmed) {
         evt.detail.issueRequest();
       }
-    });     
+    });
   }
 });
 ```
@@ -933,7 +933,7 @@ the response.
 In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](@/events.md#htmx:responseError)
 event, which you can handle.
 
-In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) `htmx:sendError` event will be triggered.
+In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) event will be triggered.
 
 ### Configuring Response Handling {#response-handling}
 
@@ -966,8 +966,8 @@ The fields available for response handling configuration on entries in this arra
 #### Configuring Response Handling Examples {#response-handling}
 
 As an example of how to use this configuration, consider a situation when a server-side framework responds with a
-[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response, 
-since it matches the Regular Expression `[45]..`. 
+[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response,
+since it matches the Regular Expression `[45]..`.
 
 Using the [meta config](#configuration-options) mechanism for configuring responseHandling, we could add the following
 config:
