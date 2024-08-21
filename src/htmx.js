@@ -1243,10 +1243,13 @@ var htmx = (function() {
    * @param {EventTarget|AnyEventName} arg1
    * @param {AnyEventName|EventListener} arg2
    * @param {EventListener|Object|boolean} [arg3]
-   * @param {Object|boolean} [arg4]
+   * @param {Object|boolean=} [arg4]
    * @returns {EventArgs}
    */
   function processEventArgs(arg1, arg2, arg3, arg4) {
+    if (arg4 == null) {
+      arg4 = {}
+    }
     if (isFunction(arg2)) {
       return {
         target: getDocument().body,
