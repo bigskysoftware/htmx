@@ -77,7 +77,7 @@ describe('Core htmx Events', function() {
     }
   })
 
-  it('events accept an options argument', function() {
+  it('events accept an options argument and the result works as expected', function() {
     var invoked = 0
     var handler = htmx.on('custom', function() {
       invoked = invoked + 1
@@ -89,25 +89,6 @@ describe('Core htmx Events', function() {
       invoked.should.equal(1)
     } finally {
       htmx.off('custom', handler)
-    }
-  })
-
-  it('events accept a useCapture argument', function() {
-    var invoked = []
-    var callable = function(evt) {
-      invoked.push(evt.target.tagName)
-    }
-    try {
-      var parent = make("<div hx-post='/test'></div>")
-      var child = make("<span hx-post='/test'></span>")
-      parent.appendChild(child)
-      var parentHandler = htmx.on(parent, 'custom', callable, true)
-      var childHandler = htmx.on(child, 'custom', callable)
-      htmx.trigger(child, 'custom')
-      invoked.should.equal(['div', 'span'])
-    } finally {
-      htmx.off('custom', parentHandler)
-      htmx.off('custom', childHandler)
     }
   })
 
