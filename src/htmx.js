@@ -1247,9 +1247,6 @@ var htmx = (function() {
    * @returns {EventArgs}
    */
   function processEventArgs(arg1, arg2, arg3, arg4) {
-    if (arg4 == null) {
-      arg4 = {}
-    }
     if (isFunction(arg2)) {
       return {
         target: getDocument().body,
