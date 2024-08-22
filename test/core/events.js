@@ -92,6 +92,25 @@ describe('Core htmx Events', function() {
     }
   })
 
+  it('events accept a useCapture argument', function() {
+    var invoked = [];
+    var callable = function(evt) {
+      invoked.push(evt.target.tagName);
+    }
+    try {
+      var parent = make("<div></div>")
+      var child = make("<span></span>")
+      parent.appendChild(child);
+      var parentHandler = htmx.on(parent, 'custom', callable, true)
+      var childHandler = htmx.on(child, 'custom', callable)
+      htmx.trigger(child, 'custom')
+      invoked.should.equal(['div', 'span'])
+    } finally {
+      htmx.off('custom', parentHandler)
+      htmx.off('custom', childHandler)
+    }
+  })
+
   it('htmx:configRequest allows attribute removal', function() {
     var param = 'foo'
     var handler = htmx.on('htmx:configRequest', function(evt) {
