@@ -93,14 +93,14 @@ describe('Core htmx Events', function() {
   })
 
   it('events accept a useCapture argument', function() {
-    var invoked = [];
+    var invoked = []
     var callable = function(evt) {
-      invoked.push(evt.target.tagName);
+      invoked.push(evt.target.tagName)
     }
     try {
-      var parent = make("<div></div>")
-      var child = make("<span></span>")
-      parent.appendChild(child);
+      var parent = make("<div hx-post='/test'></div>")
+      var child = make("<span hx-post='/test'></span>")
+      parent.appendChild(child)
       var parentHandler = htmx.on(parent, 'custom', callable, true)
       var childHandler = htmx.on(child, 'custom', callable)
       htmx.trigger(child, 'custom')
