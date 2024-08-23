@@ -1797,6 +1797,30 @@ var htmx = (function() {
   }
 
   /**
+   * Apply swapping class and then execute the swap with optional delay
+   * @param {string|Element} target
+   * @param {string} content
+   * @param {HtmxSwapSpecification} swapSpec
+   * @param {SwapOptions} [swapOptions]
+   */
+  function swap(target, content, swapSpec, swapOptions) {
+    if (!swapOptions) {
+      swapOptions = {}
+    }
+
+    target = resolveTarget(target)
+    target.classList.add(htmx.config.swappingClass)
+    const localSwap = function() {
+      runSwap(target, content, swapSpec, swapOptions)
+    }
+    if (swapSpec?.swapDelay && swapSpec.swapDelay > 0) {
+      getWindow().setTimeout(localSwap, swapSpec.swapDelay)
+    } else {
+      localSwap()
+    }
+  }
+
+  /**
    * Implements complete swapping pipeline, including: focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
@@ -1804,7 +1828,7 @@ var htmx = (function() {
    * @param {HtmxSwapSpecification} swapSpec
    * @param {SwapOptions} [swapOptions]
    */
-  function swap(target, content, swapSpec, swapOptions) {
+  function runSwap(target, content, swapSpec, swapOptions) {
     if (!swapOptions) {
       swapOptions = {}
     }
@@ -4695,8 +4719,6 @@ var htmx = (function() {
         swapSpec.ignoreTitle = ignoreTitle
       }
 
-      target.classList.add(htmx.config.swappingClass)
-
       // optional transition API promise callbacks
       let settleResolve = null
       let settleReject = null
@@ -4783,12 +4805,7 @@ var htmx = (function() {
           })
         }
       }
-
-      if (swapSpec.swapDelay > 0) {
-        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
+      doSwap()
     }
     if (isError) {
       triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
