@@ -251,7 +251,7 @@ describe('hx-swap-oob attribute', function() {
           htmx.process(root) // Tell HTMX about this component's shadow DOM
         }
       }
-      var elementName = "test-oobswap-" + config.allowNestedOobSwaps
+      var elementName = 'test-oobswap-' + config.allowNestedOobSwaps
       customElements.define(elementName, TestElement)
       var div = make(`<div><div id="oob-swap-target">this should not get swapped</div><${elementName}/></div>`)
       var badTarget = div.querySelector('#oob-swap-target')
