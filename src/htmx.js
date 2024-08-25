@@ -1412,6 +1412,7 @@ var htmx = (function() {
    * @param {string} oobValue
    * @param {Element} oobElement
    * @param {HtmxSettleInfo} settleInfo
+   * @param {Node|Document} rootNode
    * @returns
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
@@ -1427,7 +1428,7 @@ var htmx = (function() {
       swapStyle = oobValue
     }
 
-    const targets = rootNode.querySelectorAll(selector)
+    const targets = rootNode['querySelectorAll'] ? /**@type {Element} */(rootNode).querySelectorAll(selector) : document.querySelectorAll(selector)
     if (targets) {
       forEach(
         targets,
@@ -1803,6 +1804,7 @@ var htmx = (function() {
   /**
    * @param {DocumentFragment} fragment
    * @param {HtmxSettleInfo} settleInfo
+   * @param {Node|Document} rootNode
    */
   function findAndSwapOobElements(fragment, settleInfo, rootNode) {
     var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]')
