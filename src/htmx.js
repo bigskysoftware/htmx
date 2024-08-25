@@ -1829,12 +1829,12 @@ var htmx = (function() {
    * @param {SwapOptions} [swapOptions]
    */
   function swap(target, content, swapSpec, swapOptions) {
-    const rootNode = getRootNode(target)
     if (!swapOptions) {
       swapOptions = {}
     }
 
     target = resolveTarget(target)
+    const rootNode = getRootNode(target, false)
 
     // preserve focus and selection
     const activeElt = document.activeElement
