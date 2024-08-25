@@ -1428,7 +1428,7 @@ var htmx = (function() {
       swapStyle = oobValue
     }
 
-    const targets = rootNode['querySelectorAll'] ? /**@type {Element} */(rootNode).querySelectorAll(selector) : document.querySelectorAll(selector)
+    const targets = querySelectorAllExt(rootNode, selector, false)
     if (targets) {
       forEach(
         targets,
@@ -1836,7 +1836,7 @@ var htmx = (function() {
     }
 
     target = resolveTarget(target)
-    const rootNode = getRootNode(target, false)
+    const rootNode = getRootNode(swapOptions.contextElement, false)
 
     // preserve focus and selection
     const activeElt = document.activeElement

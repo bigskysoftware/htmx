@@ -378,20 +378,20 @@ describe('Core htmx API test', function() {
 
   it('swaps content properly (basic)', function() {
     var output = make('<output id="output"/>')
-    htmx.swap('#output', '<div>Swapped!</div>', { swapStyle: 'innerHTML' })
+    htmx.swap('#output', '<div>Swapped!</div>', { swapStyle: 'innerHTML' }, { contextElement: output })
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
   })
 
   it('swaps content properly (with select)', function() {
     var output = make('<output id="output"/>')
-    htmx.swap('#output', '<div><p id="select-me">Swapped!</p></div>', { swapStyle: 'innerHTML' }, { select: '#select-me' })
+    htmx.swap('#output', '<div><p id="select-me">Swapped!</p></div>', { swapStyle: 'innerHTML' }, { select: '#select-me', contextElement: output })
     output.innerHTML.should.be.equal('<p id="select-me">Swapped!</p>')
   })
 
   it('swaps content properly (with oob)', function() {
     var output = make('<output id="output"/>')
     var oobDiv = make('<div id="oob"/>')
-    htmx.swap('#output', '<div id="oob" hx-swap-oob="innerHTML">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' })
+    htmx.swap('#output', '<div id="oob" hx-swap-oob="innerHTML">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' }, { contextElement: output })
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
     oobDiv.innerHTML.should.be.equal('OOB Swapped!')
   })
@@ -399,7 +399,7 @@ describe('Core htmx API test', function() {
   it('swaps content properly (with select oob)', function() {
     var output = make('<output id="output"/>')
     var oobDiv = make('<div id="oob"/>')
-    htmx.swap('#output', '<div id="oob">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' }, { selectOOB: '#oob:innerHTML' })
+    htmx.swap('#output', '<div id="oob">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' }, { selectOOB: '#oob:innerHTML', contextElement: output })
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
     oobDiv.innerHTML.should.be.equal('OOB Swapped!')
   })
