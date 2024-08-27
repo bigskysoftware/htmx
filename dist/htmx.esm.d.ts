@@ -1,5 +1,5 @@
 export default htmx;
-export type HttpVerb = 'get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch';
+export type HttpVerb = "get" | "head" | "post" | "put" | "delete" | "connect" | "options" | "trace" | "patch";
 export type SwapOptions = {
     select?: string;
     selectOOB?: string;
@@ -10,7 +10,7 @@ export type SwapOptions = {
     afterSettleCallback?: swapCallback;
 };
 export type swapCallback = () => any;
-export type HtmxSwapStyle = 'innerHTML' | 'outerHTML' | 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend' | 'delete' | 'none' | string;
+export type HtmxSwapStyle = "innerHTML" | "outerHTML" | "beforebegin" | "afterbegin" | "beforeend" | "afterend" | "delete" | "none" | string;
 export type HtmxSwapSpecification = {
     swapStyle: HtmxSwapStyle;
     swapDelay: number;
@@ -18,7 +18,7 @@ export type HtmxSwapSpecification = {
     transition?: boolean;
     ignoreTitle?: boolean;
     head?: string;
-    scroll?: 'top' | 'bottom';
+    scroll?: "top" | "bottom";
     scrollTarget?: string;
     show?: string;
     showTarget?: string;
@@ -143,20 +143,20 @@ export type HtmxExtension = {
 };
 declare namespace htmx {
     let onLoad: (callback: (elt: Node) => void) => EventListener;
-    let process: (elt: string | Element) => void;
-    let on: (arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener) => EventListener;
-    let off: (arg1: string | EventTarget, arg2: string | EventListener, arg3?: EventListener) => EventListener;
-    let trigger: (elt: string | EventTarget, eventName: string, detail?: any) => boolean;
-    let ajax: (verb: HttpVerb, path: string, context: string | Element | HtmxAjaxHelperContext) => Promise<void>;
-    let find: (eltOrSelector: string | ParentNode, selector?: string) => Element;
-    let findAll: (eltOrSelector: string | ParentNode, selector?: string) => NodeListOf<Element>;
-    let closest: (elt: string | Element, selector: string) => Element;
+    let process: (elt: Element | string) => void;
+    let on: (arg1: EventTarget | string, arg2: string | EventListener, arg3?: EventListener) => EventListener;
+    let off: (arg1: EventTarget | string, arg2: string | EventListener, arg3?: EventListener) => EventListener;
+    let trigger: (elt: EventTarget | string, eventName: string, detail?: any | undefined) => boolean;
+    let ajax: (verb: HttpVerb, path: string, context: Element | string | HtmxAjaxHelperContext) => Promise<void>;
+    let find: (eltOrSelector: ParentNode | string, selector?: string) => Element | null;
+    let findAll: (eltOrSelector: ParentNode | string, selector?: string) => NodeListOf<Element>;
+    let closest: (elt: Element | string, selector: string) => Element | null;
     function values(elt: Element, type: HttpVerb): any;
     let remove: (elt: Node, delay?: number) => void;
-    let addClass: (elt: string | Element, clazz: string, delay?: number) => void;
-    let removeClass: (node: string | Node, clazz: string, delay?: number) => void;
-    let toggleClass: (elt: string | Element, clazz: string) => void;
-    let takeClass: (elt: string | Node, clazz: string) => void;
+    let addClass: (elt: Element | string, clazz: string, delay?: number) => void;
+    let removeClass: (node: Node | string, clazz: string, delay?: number) => void;
+    let toggleClass: (elt: Element | string, clazz: string) => void;
+    let takeClass: (elt: Node | string, clazz: string) => void;
     let swap: (target: string | Element, content: string, swapSpec: HtmxSwapSpecification, swapOptions?: SwapOptions) => void;
     let defineExtension: (name: string, extension: HtmxExtension) => void;
     let removeExtension: (name: string) => void;
@@ -183,10 +183,10 @@ declare namespace htmx {
         let attributesToSettle: string[];
         let withCredentials: boolean;
         let timeout: number;
-        let wsReconnectDelay: 'full-jitter' | ((retryCount: number) => number);
+        let wsReconnectDelay: "full-jitter" | ((retryCount: number) => number);
         let wsBinaryType: BinaryType;
         let disableSelector: string;
-        let scrollBehavior: 'auto' | 'instant' | 'smooth';
+        let scrollBehavior: "auto" | "instant" | "smooth";
         let defaultFocusScroll: boolean;
         let getCacheBusterParam: boolean;
         let globalViewTransitions: boolean;
@@ -199,7 +199,7 @@ declare namespace htmx {
         let responseHandling: HtmxResponseHandlingConfig[];
         let allowNestedOobSwaps: boolean;
     }
-    let parseInterval: (str: string) => number;
+    let parseInterval: (str: string) => number | undefined;
     let _: (str: string) => any;
     let version: string;
 }
