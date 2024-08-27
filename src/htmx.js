@@ -1460,16 +1460,16 @@ var htmx = (function() {
     return oobValue
   }
 
-  function restorePreservedElements(){
-    let pantry = find("#--htmx-preserve-pantry--");
+  function restorePreservedElements() {
+    const pantry = find('#--htmx-preserve-pantry--')
     if (pantry) {
       for (const preservedElt of pantry.children) {
-        let existingElement = find("#" + preservedElt.id);
+        const existingElement = find('#' + preservedElt.id)
         // @ts-ignore - use proposed moveBefore feature
-        existingElement.parentNode.moveBefore(preservedElt, existingElement);
-        existingElement.remove();
+        existingElement.parentNode.moveBefore(preservedElt, existingElement)
+        existingElement.remove()
       }
-      pantry.remove();
+      pantry.remove()
     }
   }
 
@@ -1483,13 +1483,13 @@ var htmx = (function() {
       if (existingElement != null) {
         if (preservedElt.moveBefore) { // if the moveBefore API exists, use it
           // get or create a storage spot for stuff
-          let pantry = find("#--htmx-preserve-pantry--");
+          let pantry = find('#--htmx-preserve-pantry--')
           if (pantry == null) {
-            getDocument().body.insertAdjacentHTML("afterend", "<div id='--htmx-preserve-pantry--'></div>")
-            pantry = find("#--htmx-preserve-pantry--");
+            getDocument().body.insertAdjacentHTML('afterend', "<div id='--htmx-preserve-pantry--'></div>")
+            pantry = find('#--htmx-preserve-pantry--')
           }
           // @ts-ignore - use proposed moveBefore feature
-          pantry.moveBefore(existingElement, null);
+          pantry.moveBefore(existingElement, null)
         } else {
           preservedElt.parentNode.replaceChild(existingElement, preservedElt)
         }
@@ -1895,7 +1895,7 @@ var htmx = (function() {
       }
       handlePreservedElements(fragment)
       swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
-      restorePreservedElements();
+      restorePreservedElements()
     }
 
     // apply saved focus and selection information to swapped content
@@ -3178,9 +3178,9 @@ var htmx = (function() {
         const settleInfo = makeSettleInfo(historyElement)
         handleTitle(fragment.title)
 
-        handlePreservedElements(fragment);
+        handlePreservedElements(fragment)
         swapInnerHTML(historyElement, content, settleInfo)
-        restorePreservedElements();
+        restorePreservedElements()
         settleImmediately(settleInfo.tasks)
         currentPathForHistory = path
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
@@ -3203,9 +3203,9 @@ var htmx = (function() {
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
       handleTitle(fragment.title)
-      handlePreservedElements(fragment);
+      handlePreservedElements(fragment)
       swapInnerHTML(historyElement, fragment, settleInfo)
-      restorePreservedElements();
+      restorePreservedElements()
       settleImmediately(settleInfo.tasks)
       getWindow().setTimeout(function() {
         window.scrollTo(0, cached.scroll)
