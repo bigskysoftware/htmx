@@ -153,6 +153,27 @@ happen instead.
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
+* 
+### Event - `htmx:cancelPolling` {#htmx:cancelPolling}
+
+This event can be used to programmatically cancel an [hx-trigger polling](@/attributes/hx-trigger.md#polling).
+If you want to cancel an [hx-trigger polling](@/attributes/hx-trigger.md#polling) in the case of errors only,
+consider using [htmx.config.cancelPollingOnError](@/reference.md#config) instead.
+
+```javascript
+document.addEventListener('htmx:cancelPolling', function(evt) {
+    if (evt.detail.xhr.status !== 200) {
+      evt.preventDefault();
+    }
+});
+```
+
+##### Details
+
+* `detail.elt` - the element that dispatched the request
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.requestConfig` - the configuration of the AJAX request
+* `detail.target` - the target of the swap
 
 ### Event - `htmx:configRequest` {#htmx:configRequest}
 
