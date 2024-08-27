@@ -2306,11 +2306,11 @@ var htmx = (function() {
       nodeData.boosted = true
       let verb, path
       if (elt.tagName === 'A') {
-        verb = 'get'
+        verb = (/** @type HttpVerb */('get'))
         path = getRawAttribute(elt, 'href')
       } else {
         const rawAttribute = getRawAttribute(elt, 'method')
-        verb = rawAttribute ? rawAttribute.toLowerCase() : 'get'
+        verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         if (verb === 'get') {
         }
         path = getRawAttribute(elt, 'action')

@@ -30,7 +30,6 @@ export type ConditionalFunction = ((this: Node, evt: Event) => boolean) & {
 export type HtmxTriggerSpecification = {
     trigger: string;
     pollInterval?: number;
-    pollFor?: number;
     eventFilter?: ConditionalFunction;
     changed?: boolean;
     once?: boolean;
