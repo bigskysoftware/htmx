@@ -2506,6 +2506,7 @@ var htmx = (function() {
         windowIsScrolling = true
       }
       window.addEventListener('scroll', scrollHandler)
+      window.addEventListener('resize', scrollHandler)
       setInterval(function() {
         if (windowIsScrolling) {
           windowIsScrolling = false
