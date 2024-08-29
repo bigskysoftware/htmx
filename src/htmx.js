@@ -3202,7 +3202,7 @@ var htmx = (function() {
       const fragment = makeFragment(cached.content)
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
-      handleTitle(fragment.title)
+      handleTitle(cached.title)
       handlePreservedElements(fragment)
       swapInnerHTML(historyElement, fragment, settleInfo)
       restorePreservedElements()
