@@ -1236,26 +1236,30 @@ var htmx = (function() {
    * @property {EventTarget} target
    * @property {AnyEventName} event
    * @property {EventListener} listener
+   * @property {Object|boolean} options
    */
 
   /**
    * @param {EventTarget|AnyEventName} arg1
    * @param {AnyEventName|EventListener} arg2
-   * @param {EventListener} [arg3]
+   * @param {EventListener|Object|boolean} [arg3]
+   * @param {Object|boolean} [arg4]
    * @returns {EventArgs}
    */
-  function processEventArgs(arg1, arg2, arg3) {
+  function processEventArgs(arg1, arg2, arg3, arg4) {
     if (isFunction(arg2)) {
       return {
         target: getDocument().body,
         event: asString(arg1),
-        listener: arg2
+        listener: arg2,
+        options: arg3
       }
     } else {
       return {
         target: resolveTarget(arg1),
         event: asString(arg2),
-        listener: arg3
+        listener: arg3,
+        options: arg4
       }
     }
   }
@@ -1267,13 +1271,14 @@ var htmx = (function() {
    *
    * @param {EventTarget|string} arg1 the element to add the listener to | the event name to add the listener for
    * @param {string|EventListener} arg2 the event name to add the listener for | the listener to add
-   * @param {EventListener} [arg3] the listener to add
+   * @param {EventListener|Object|boolean} [arg3] the listener to add | options to add
+   * @param {Object|boolean} [arg4] options to add
    * @returns {EventListener}
    */
-  function addEventListenerImpl(arg1, arg2, arg3) {
+  function addEventListenerImpl(arg1, arg2, arg3, arg4) {
     ready(function() {
-      const eventArgs = processEventArgs(arg1, arg2, arg3)
-      eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener)
+      const eventArgs = processEventArgs(arg1, arg2, arg3, arg4)
+      eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener, eventArgs.options)
     })
     const b = isFunction(arg2)
     return b ? arg2 : arg3
