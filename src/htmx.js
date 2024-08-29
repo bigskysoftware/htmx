@@ -1460,15 +1460,39 @@ var htmx = (function() {
     return oobValue
   }
 
+  function restorePreservedElements() {
+    const pantry = find('#--htmx-preserve-pantry--')
+    if (pantry) {
+      for (const preservedElt of pantry.children) {
+        const existingElement = find('#' + preservedElt.id)
+        // @ts-ignore - use proposed moveBefore feature
+        existingElement.parentNode.moveBefore(preservedElt, existingElement)
+        existingElement.remove()
+      }
+      pantry.remove()
+    }
+  }
+
   /**
    * @param {DocumentFragment} fragment
    */
   function handlePreservedElements(fragment) {
     forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function(preservedElt) {
       const id = getAttributeValue(preservedElt, 'id')
-      const oldElt = getDocument().getElementById(id)
-      if (oldElt != null) {
-        preservedElt.parentNode.replaceChild(oldElt, preservedElt)
+      const existingElement = getDocument().getElementById(id)
+      if (existingElement != null) {
+        if (preservedElt.moveBefore) { // if the moveBefore API exists, use it
+          // get or create a storage spot for stuff
+          let pantry = find('#--htmx-preserve-pantry--')
+          if (pantry == null) {
+            getDocument().body.insertAdjacentHTML('afterend', "<div id='--htmx-preserve-pantry--'></div>")
+            pantry = find('#--htmx-preserve-pantry--')
+          }
+          // @ts-ignore - use proposed moveBefore feature
+          pantry.moveBefore(existingElement, null)
+        } else {
+          preservedElt.parentNode.replaceChild(existingElement, preservedElt)
+        }
       }
     })
   }
@@ -1871,6 +1895,7 @@ var htmx = (function() {
       }
       handlePreservedElements(fragment)
       swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
+      restorePreservedElements()
     }
 
     // apply saved focus and selection information to swapped content
@@ -2281,11 +2306,11 @@ var htmx = (function() {
       nodeData.boosted = true
       let verb, path
       if (elt.tagName === 'A') {
-        verb = 'get'
+        verb = (/** @type HttpVerb */('get'))
         path = getRawAttribute(elt, 'href')
       } else {
         const rawAttribute = getRawAttribute(elt, 'method')
-        verb = rawAttribute ? rawAttribute.toLowerCase() : 'get'
+        verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         if (verb === 'get') {
         }
         path = getRawAttribute(elt, 'action')
@@ -3153,7 +3178,9 @@ var htmx = (function() {
         const settleInfo = makeSettleInfo(historyElement)
         handleTitle(fragment.title)
 
+        handlePreservedElements(fragment)
         swapInnerHTML(historyElement, content, settleInfo)
+        restorePreservedElements()
         settleImmediately(settleInfo.tasks)
         currentPathForHistory = path
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
@@ -3176,7 +3203,9 @@ var htmx = (function() {
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
       handleTitle(cached.title)
+      handlePreservedElements(fragment)
       swapInnerHTML(historyElement, fragment, settleInfo)
+      restorePreservedElements()
       settleImmediately(settleInfo.tasks)
       getWindow().setTimeout(function() {
         window.scrollTo(0, cached.scroll)
