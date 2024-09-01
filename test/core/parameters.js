@@ -134,8 +134,10 @@ describe('Core htmx Parameter Handling', function() {
       vals.do.should.equal('rey')
       vals.btn.should.equal('bar')
       done()
-    })
+    }, { once: true })
     button.focus()
+    // Headless / Hardly-throttled CPU might result in 'focusin' not being fired, double it just in case
+    htmx.trigger(button, 'focusin')
   })
 
   it('form includes last focused submit', function(done) {
@@ -149,8 +151,10 @@ describe('Core htmx Parameter Handling', function() {
       vals.do.should.equal('rey')
       vals.s1.should.equal('bar')
       done()
-    })
+    }, { once: true })
     button.focus()
+    // Headless / Hardly-throttled CPU might result in 'focusin' not being fired, double it just in case
+    htmx.trigger(button, 'focusin')
   })
 
   it('form does not include button when focus is lost', function() {
