@@ -3269,16 +3269,18 @@ var htmx = (function() {
    * @param {Element[]} disabled
    */
   function removeRequestIndicators(indicators, disabled) {
+    forEach(indicators.concat(disabled), function(ele) {
+      const internalData = getInternalData(ele)
+      internalData.requestCount = (internalData.requestCount || 0) - 1
+    })
     forEach(indicators, function(ic) {
       const internalData = getInternalData(ic)
-      internalData.requestCount = (internalData.requestCount || 0) - 1
       if (internalData.requestCount === 0) {
         ic.classList.remove.call(ic.classList, htmx.config.requestClass)
       }
     })
     forEach(disabled, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
-      internalData.requestCount = (internalData.requestCount || 0) - 1
       if (internalData.requestCount === 0) {
         disabledElement.removeAttribute('disabled')
         disabledElement.removeAttribute('data-disabled-by-htmx')
