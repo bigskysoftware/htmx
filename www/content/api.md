@@ -316,12 +316,14 @@ Adds an event listener to an element
 
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 or
 
 * `target` - the element to add the listener to
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 ##### Example
 
@@ -331,6 +333,9 @@ or
 
     // add a click listener to the given div
     var myEventListener = htmx.on("#my-div", "click", function(evt){ console.log(evt); });
+
+    // add a click listener to the given div that should only be invoked once
+    var myEventListener = htmx.on("#my-div", "click", function(evt){ console.log(evt); }, { once: true });
 ```
 
 ### Method - `htmx.onLoad()` {#onLoad}

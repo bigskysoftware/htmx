@@ -102,6 +102,42 @@ describe('Core htmx client side validation tests', function() {
     form.textContent.should.equal('Clicked!')
   })
 
+  it('Custom validation error prevents request for unticked checkboxes', function() {
+    this.server.respondWith('POST', '/test', 'Clicked!')
+
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+        'No Request' +
+        '<input id="i1" name="i1" type="checkbox">' +
+        '</form>')
+    byId('i1').setCustomValidity('Nope')
+    form.textContent.should.equal('No Request')
+    form.click()
+    this.server.respond()
+    form.textContent.should.equal('No Request')
+    byId('i1').setCustomValidity('')
+    form.click()
+    this.server.respond()
+    form.textContent.should.equal('Clicked!')
+  })
+
+  it('Custom validation error prevents request for unselected radiogroups', function() {
+    this.server.respondWith('POST', '/test', 'Clicked!')
+
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+        'No Request' +
+        '<input id="i1" name="i1" type="radio">' +
+        '</form>')
+    byId('i1').setCustomValidity('Nope')
+    form.textContent.should.equal('No Request')
+    form.click()
+    this.server.respond()
+    form.textContent.should.equal('No Request')
+    byId('i1').setCustomValidity('')
+    form.click()
+    this.server.respond()
+    form.textContent.should.equal('Clicked!')
+  })
+
   it('hyperscript validation error prevents request', function() {
     this.server.respondWith('POST', '/test', 'Clicked!')
 

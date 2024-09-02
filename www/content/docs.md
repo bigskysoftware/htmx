@@ -137,7 +137,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -973,6 +973,12 @@ Using the [meta config](#configuration-options) mechanism for configuring respon
 config:
 
 ```html
+<!--
+  * 204 No Content by default does nothing, but is not an error
+  * 2xx, 3xx and 422 responses are non-errors and are swapped
+  * 4xx & 5xx responses are not swapped and are errors
+  * all other responses are swapped using "..." as a catch-all
+-->
 <meta
 	name="htmx-config"
 	content='{
@@ -980,7 +986,8 @@ config:
             {"code":"204", "swap": false},
             {"code":"[23]..", "swap": true},
             {"code":"422", "swap": true},
-            {"code":"[45]..", "swap": false, "error":true}
+            {"code":"[45]..", "swap": false, "error":true},
+            {"code":"...", "swap": true}
         ]
     }'
 />

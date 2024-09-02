@@ -1236,26 +1236,30 @@ var htmx = (function() {
    * @property {EventTarget} target
    * @property {AnyEventName} event
    * @property {EventListener} listener
+   * @property {Object|boolean} options
    */
 
   /**
    * @param {EventTarget|AnyEventName} arg1
    * @param {AnyEventName|EventListener} arg2
-   * @param {EventListener} [arg3]
+   * @param {EventListener|Object|boolean} [arg3]
+   * @param {Object|boolean} [arg4]
    * @returns {EventArgs}
    */
-  function processEventArgs(arg1, arg2, arg3) {
+  function processEventArgs(arg1, arg2, arg3, arg4) {
     if (isFunction(arg2)) {
       return {
         target: getDocument().body,
         event: asString(arg1),
-        listener: arg2
+        listener: arg2,
+        options: arg3
       }
     } else {
       return {
         target: resolveTarget(arg1),
         event: asString(arg2),
-        listener: arg3
+        listener: arg3,
+        options: arg4
       }
     }
   }
@@ -1267,13 +1271,14 @@ var htmx = (function() {
    *
    * @param {EventTarget|string} arg1 the element to add the listener to | the event name to add the listener for
    * @param {string|EventListener} arg2 the event name to add the listener for | the listener to add
-   * @param {EventListener} [arg3] the listener to add
+   * @param {EventListener|Object|boolean} [arg3] the listener to add | options to add
+   * @param {Object|boolean} [arg4] options to add
    * @returns {EventListener}
    */
-  function addEventListenerImpl(arg1, arg2, arg3) {
+  function addEventListenerImpl(arg1, arg2, arg3, arg4) {
     ready(function() {
-      const eventArgs = processEventArgs(arg1, arg2, arg3)
-      eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener)
+      const eventArgs = processEventArgs(arg1, arg2, arg3, arg4)
+      eventArgs.target.addEventListener(eventArgs.event, eventArgs.listener, eventArgs.options)
     })
     const b = isFunction(arg2)
     return b ? arg2 : arg3
@@ -1460,15 +1465,39 @@ var htmx = (function() {
     return oobValue
   }
 
+  function restorePreservedElements() {
+    const pantry = find('#--htmx-preserve-pantry--')
+    if (pantry) {
+      for (const preservedElt of pantry.children) {
+        const existingElement = find('#' + preservedElt.id)
+        // @ts-ignore - use proposed moveBefore feature
+        existingElement.parentNode.moveBefore(preservedElt, existingElement)
+        existingElement.remove()
+      }
+      pantry.remove()
+    }
+  }
+
   /**
    * @param {DocumentFragment} fragment
    */
   function handlePreservedElements(fragment) {
     forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function(preservedElt) {
       const id = getAttributeValue(preservedElt, 'id')
-      const oldElt = getDocument().getElementById(id)
-      if (oldElt != null) {
-        preservedElt.parentNode.replaceChild(oldElt, preservedElt)
+      const existingElement = getDocument().getElementById(id)
+      if (existingElement != null) {
+        if (preservedElt.moveBefore) { // if the moveBefore API exists, use it
+          // get or create a storage spot for stuff
+          let pantry = find('#--htmx-preserve-pantry--')
+          if (pantry == null) {
+            getDocument().body.insertAdjacentHTML('afterend', "<div id='--htmx-preserve-pantry--'></div>")
+            pantry = find('#--htmx-preserve-pantry--')
+          }
+          // @ts-ignore - use proposed moveBefore feature
+          pantry.moveBefore(existingElement, null)
+        } else {
+          preservedElt.parentNode.replaceChild(existingElement, preservedElt)
+        }
       }
     })
   }
@@ -1871,6 +1900,7 @@ var htmx = (function() {
       }
       handlePreservedElements(fragment)
       swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
+      restorePreservedElements()
     }
 
     // apply saved focus and selection information to swapped content
@@ -2281,11 +2311,11 @@ var htmx = (function() {
       nodeData.boosted = true
       let verb, path
       if (elt.tagName === 'A') {
-        verb = 'get'
+        verb = (/** @type HttpVerb */('get'))
         path = getRawAttribute(elt, 'href')
       } else {
         const rawAttribute = getRawAttribute(elt, 'method')
-        verb = rawAttribute ? rawAttribute.toLowerCase() : 'get'
+        verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         path = getRawAttribute(elt, 'action')
         if (verb === 'get' && path.includes('?')) {
           path = path.replace(/\?[^#]+/, '')
@@ -2477,6 +2507,7 @@ var htmx = (function() {
         windowIsScrolling = true
       }
       window.addEventListener('scroll', scrollHandler)
+      window.addEventListener('resize', scrollHandler)
       setInterval(function() {
         if (windowIsScrolling) {
           windowIsScrolling = false
@@ -3154,7 +3185,9 @@ var htmx = (function() {
         const settleInfo = makeSettleInfo(historyElement)
         handleTitle(fragment.title)
 
+        handlePreservedElements(fragment)
         swapInnerHTML(historyElement, content, settleInfo)
+        restorePreservedElements()
         settleImmediately(settleInfo.tasks)
         currentPathForHistory = path
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
@@ -3176,8 +3209,10 @@ var htmx = (function() {
       const fragment = makeFragment(cached.content)
       const historyElement = getHistoryElement()
       const settleInfo = makeSettleInfo(historyElement)
-      handleTitle(fragment.title)
+      handleTitle(cached.title)
+      handlePreservedElements(fragment)
       swapInnerHTML(historyElement, fragment, settleInfo)
+      restorePreservedElements()
       settleImmediately(settleInfo.tasks)
       getWindow().setTimeout(function() {
         window.scrollTo(0, cached.scroll)
@@ -4656,7 +4691,8 @@ var htmx = (function() {
       serverResponse,
       isError,
       ignoreTitle,
-      selectOverride
+      selectOverride,
+      swapOverride
     }, responseInfo)
 
     if (responseHandling.event && !triggerEvent(target, responseHandling.event, beforeSwapDetails)) return
@@ -4668,6 +4704,7 @@ var htmx = (function() {
     isError = beforeSwapDetails.isError // allow updating error
     ignoreTitle = beforeSwapDetails.ignoreTitle // allow updating ignoring title
     selectOverride = beforeSwapDetails.selectOverride // allow updating select override
+    swapOverride = beforeSwapDetails.swapOverride // allow updating swap override
 
     responseInfo.target = target // Make updated target available to response events
     responseInfo.failed = isError // Make failed property available to response events
@@ -4687,9 +4724,6 @@ var htmx = (function() {
         saveCurrentPageToHistory()
       }
 
-      if (hasHeader(xhr, /HX-Reswap:/i)) {
-        swapOverride = xhr.getResponseHeader('HX-Reswap')
-      }
       var swapSpec = getSwapSpecification(elt, swapOverride)
 
       if (!swapSpec.hasOwnProperty('ignoreTitle')) {
@@ -5122,7 +5156,7 @@ var htmx = (function() {
  */
 
 /**
- * @typedef {HtmxResponseInfo & {shouldSwap: boolean, serverResponse: any, isError: boolean, ignoreTitle: boolean, selectOverride:string}} HtmxBeforeSwapDetails
+ * @typedef {HtmxResponseInfo & {shouldSwap: boolean, serverResponse: any, isError: boolean, ignoreTitle: boolean, selectOverride:string, swapOverride:string}} HtmxBeforeSwapDetails
  */
 
 /**
