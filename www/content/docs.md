@@ -55,7 +55,7 @@ custom_classes = "wide-content"
 htmx is a library that allows you to access modern browser features directly from HTML, rather than using
 javascript.
 
-To understand htmx, first lets take a look at an anchor tag:
+To understand htmx, first let's take a look at an anchor tag:
 
 ```html
 <a href="/blog">Blog</a>
@@ -690,7 +690,7 @@ shows how to use [sweetalert2](https://sweetalert2.github.io/) library for confi
 
 #### Confirming Requests Using Events
 
-Another option to do confirmation with is via the [`htmx:confirm` event](@/events.md#htmx:confirm) event.  This event
+Another option to do confirmation with is via the [`htmx:confirm` event](@/events.md#htmx:confirm).  This event
 is fired on *every* trigger for a request (not just on elements that have a `hx-confirm` attribute) and can be used
 to implement asynchronous confirmation of the request.
 
