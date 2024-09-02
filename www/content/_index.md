@@ -170,7 +170,12 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 	table, thead, tbody, th, td, tr {
 		display: block;
 	}
-
+    #sponsor-table td {
+      width:90%;
+    }
+    #sponsor-table td * {
+      margin: auto;
+    }
 }
 
 </style>
