@@ -77,6 +77,21 @@ describe('Core htmx Events', function() {
     }
   })
 
+  it('events accept an options argument and the result works as expected', function() {
+    var invoked = 0
+    var handler = htmx.on('custom', function() {
+      invoked = invoked + 1
+    }, { once: true })
+    try {
+      var div = make("<div hx-post='/test'></div>")
+      htmx.trigger(div, 'custom')
+      htmx.trigger(div, 'custom')
+      invoked.should.equal(1)
+    } finally {
+      htmx.off('custom', handler)
+    }
+  })
+
   it('htmx:configRequest allows attribute removal', function() {
     var param = 'foo'
     var handler = htmx.on('htmx:configRequest', function(evt) {
@@ -694,6 +709,30 @@ describe('Core htmx Events', function() {
       div.click()
       this.server.respond()
       targetWasUpdatedInAfterSwapHandler.should.equal(true)
+    } finally {
+      htmx.off('htmx:beforeSwap', beforeSwapHandler)
+      htmx.off('htmx:afterSwap', afterSwapHandler)
+    }
+  })
+
+  it('htmx:beforeSwap can override swap style using evt.detail.swapOverride and has final say on it', function() {
+    var swapWasOverriden = false
+    var responseBody = 'look at me. i’m the innerHTML now.'
+
+    var beforeSwapHandler = htmx.on('htmx:beforeSwap', function(evt) {
+      evt.detail.swapOverride = 'innerHTML'
+    })
+    var afterSwapHandler = htmx.on('htmx:afterSwap', function(evt) {
+      console.log('afterSwap', byId('b').innerHTML)
+      swapWasOverriden = byId('b') !== null && byId('b').innerHTML === responseBody
+    })
+
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Reswap': 'afterbegin' }, responseBody])
+      make("<div id='a' hx-get='/test' hx-target='#b' hx-swap='beforeend'></div><div id='b'> – IF YOU CAN READ THIS, IT FAILED – </div>")
+      byId('a').click()
+      this.server.respond()
+      swapWasOverriden.should.equal(true)
     } finally {
       htmx.off('htmx:beforeSwap', beforeSwapHandler)
       htmx.off('htmx:afterSwap', afterSwapHandler)
