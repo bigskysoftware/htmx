@@ -192,7 +192,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
     evt.preventDefault();
     swal({
       title: "Are you sure?",
-      text: "Are you sure you are sure?",
+      text: evt.detail.question,
       icon: "warning",
       buttons: true,
       dangerMode: true,
@@ -207,15 +207,16 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 
 ##### Details
 
-{target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest}
+{target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest, question: question}
 
 * `detail.elt` - the element in question
 * `detail.etc` - additional request information (mostly unused)
-* `detail.issueRequest` - a no argument function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!)
+* `detail.issueRequest(skipConfirmation=false)` - a function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!), if skipConfirmation is `true` the original `window.confirm()` is not executed
 * `detail.path` - the path of the request
 * `detail.target` - the target of the request
 * `detail.triggeringEvent` - the original event that triggered this request
 * `detail.verb` - the verb of the request (e.g. `GET`)
+* `detail.question` - the question passed to `hx-confirm` attribute
 
 ### Event - `htmx:historyCacheError` {#htmx:historyCacheError}
 
