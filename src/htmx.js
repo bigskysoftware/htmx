@@ -3891,7 +3891,7 @@ var htmx = (function() {
     if (context) {
       if (context instanceof Element || typeof context === 'string') {
         return issueAjaxRequest(verb, path, null, null, {
-          targetOverride: resolveTarget(context),
+          targetOverride: resolveTarget(context) || DUMMY_ELT,
           returnPromise: true
         })
       } else {
@@ -3900,7 +3900,7 @@ var htmx = (function() {
             handler: context.handler,
             headers: context.headers,
             values: context.values,
-            targetOverride: resolveTarget(context.target),
+            targetOverride: resolveTarget(context.target) || DUMMY_ELT,
             swapOverride: context.swap,
             select: context.select,
             returnPromise: true
