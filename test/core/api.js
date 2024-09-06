@@ -256,7 +256,7 @@ describe('Core htmx API test', function() {
     this.server.respondWith('GET', '/test', 'foo!')
     var div = make("<div id='d1'></div>")
     htmx.ajax('GET', '/test', {
-      source: 'd2'
+      source: '#d2'
     }).then(
       (value) => {
       },
