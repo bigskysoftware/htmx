@@ -3900,7 +3900,7 @@ var htmx = (function() {
             handler: context.handler,
             headers: context.headers,
             values: context.values,
-            targetOverride: resolveTarget(context.target) || DUMMY_ELT,
+            targetOverride: resolveTarget(context.target) || asElement(getTarget(resolveTarget(context.source))) || DUMMY_ELT,
             swapOverride: context.swap,
             select: context.select,
             returnPromise: true
