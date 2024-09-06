@@ -213,7 +213,7 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('foo!')
   })
 
-  it('ajax api does not fall back to body when target missing', function() {
+  it('ajax api does not fall back to body when target invalid', function() {
     this.server.respondWith('GET', '/test', 'foo!')
     var div = make("<div id='d1'></div>")
     htmx.ajax('GET', '/test', '#d2')
@@ -221,7 +221,7 @@ describe('Core htmx API test', function() {
     document.body.innerHTML.should.not.equal('foo!')
   })
 
-  it('ajax api fails when target missing', function(done) {
+  it('ajax api fails when target invalid', function(done) {
     this.server.respondWith('GET', '/test', 'foo!')
     var div = make("<div id='d1'></div>")
     htmx.ajax('GET', '/test', '#d2').then(
@@ -233,6 +233,33 @@ describe('Core htmx API test', function() {
     )
     this.server.respond()
     div.innerHTML.should.equal('')
+  })
+
+  it('ajax api fails when target invalid even if source set', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: div,
+      target: '#d2'
+    }).then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
+  it('ajax api falls back to targeting source if target not set', function() {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: div
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('foo!')
   })
 
   it('ajax api works with swapSpec', function() {
