@@ -213,6 +213,28 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('foo!')
   })
 
+  it('ajax api does not fall back to body when target missing', function() {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', '#d2')
+    this.server.respond()
+    document.body.innerHTML.should.not.equal('foo!')
+  })
+
+  it('ajax api fails when target missing', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', '#d2').then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
   it('ajax api works with swapSpec', function() {
     this.server.respondWith('GET', '/test', "<p class='test'>foo!</p>")
     var div = make("<div><div id='target'></div></div>")
