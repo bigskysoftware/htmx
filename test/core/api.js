@@ -252,6 +252,22 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('')
   })
 
+  it('ajax api fails when source invalid and no target set', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: 'd2'
+    }).then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
   it('ajax api falls back to targeting source if target not set', function() {
     this.server.respondWith('GET', '/test', 'foo!')
     var div = make("<div id='d1'></div>")
