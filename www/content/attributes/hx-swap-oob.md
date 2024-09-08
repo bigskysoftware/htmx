@@ -34,7 +34,7 @@ If another swap value is given, that swap strategy will be used instead but note
  ...
 </div>
 <div id="alerts" hx-swap-oob="beforeend">
-    <p>Saved again!</p> <!--swap inner contents to end of alters but not wraping oob div-->
+    <p>Saved again!</p> <!--swap inner contents to end of alerts but not wraping oob div-->
 </div>
 ```
 
