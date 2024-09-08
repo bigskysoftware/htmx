@@ -51,6 +51,27 @@ Here is an example with an out of band swap of a table row being encapsulated in
 
 Note that these template tags will be removed from the final content of the page.
 
+### Slippery SVGs
+
+Some element types, like SVG, use a specific XML namespace for their child elements. This prevents internal elements from working correctly when swapped in, unless they are encapsulated within a `svg` tag. To modify the internal contents of an existing SVG, you can use both `template` and `svg` tags to encapsulate the elements, allowing them to get the correct namespace applied.
+
+Here is an example with an out of band swap of svg elements being encapsulated in this way:
+
+```html
+<div>
+    ...
+</div>
+<template><svg>
+    <circle hx-swap-oob="true" id="circle1" r="35" cx="50" cy="50" fill="red" /> 
+</svg></template>
+<template><svg hx-swap-oob="beforebegin:#circle1">
+    <circle id="circle2" r="45" cx="50" cy="50" fill="blue" /> 
+</svg></template>
+```
+This will replace circle1 inline and then insert circle2 before circle1. 
+
+Note that these `template` and `svg` wrapping tags will be removed from the final content of the page.
+
 ## Nested OOB Swaps
 
 By default, any element with `hx-swap-oob=` attribute anywhere in the response is processed for oob swap behavior, including when an element is nested within the main response element.
