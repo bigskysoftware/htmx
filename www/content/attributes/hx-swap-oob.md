@@ -51,9 +51,9 @@ Here is an example with an out of band swap of a table row being encapsulated in
 
 Note that these template tags will be removed from the final content of the page.
 
-### Slipery SVGs
+### Slippery SVGs
 
-Some element types like SVG use an alternative XML namespace for all their children and this prevents internal elements from working if you swap them in unless they are encapsulated in a SVG tag. So to allow you to modify the internal contents of an existing SVG you can use both `template` and `svg` tags to encapsulate these elements which allows them to get the correct namespace applied.
+Some element types, like SVG, use a specific XML namespace for their child elements. This prevents internal elements from working correctly when swapped in, unless they are encapsulated within a `svg` tag. To modify the internal contents of an existing SVG, you can use both `template` and `svg` tags to encapsulate the elements, allowing them to get the correct namespace applied.
 
 Here is an example with an out of band swap of svg elements being encapsulated in this way:
 
