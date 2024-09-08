@@ -70,7 +70,7 @@ Here is an example with an out of band swap of svg elements being encapsulated i
 ```
 This will replace circle1 inline and then insert circle2 before circle1. 
 
-Note that these template and svg wrapping tags will be removed from the final content of the page.
+Note that these `template` and `svg` wrapping tags will be removed from the final content of the page.
 
 ## Nested OOB Swaps
 
