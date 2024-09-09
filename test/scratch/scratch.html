@@ -1,0 +1,147 @@
+<html lang="en">
+<head>
+    <style>
+        div {
+            transition: all 1000ms ease-in;
+        }
+
+        .indicator {
+            opacity: 0;
+        }
+
+        .hx-show-indicator .indicator {
+            opacity: 100%;
+        }
+
+    </style>
+
+
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/htmx.js"></script>
+<script src="../util/util.js"></script>
+<script src="../util/scratch_server.js"></script>
+
+<script>
+
+    // this.server.respondWith("GET", "/test2", "Clicked!");
+    //
+    // make('<div hx-get="/test">dd</div>')
+
+//    htmx.logAll();
+
+    // var i = 1;
+    // this.server.respondWith("GET", "/test", function(xhr){
+    //     xhr.respond(201, {}, "" + i++);
+    // });
+    //
+    // make('<div hx-get="/test" hx-trigger="load, every 5s">Init</div>');
+
+    let xhr;
+
+    htmx.on('htmx:beforeSend', function(evt) {
+        xhr = evt.detail.xhr;
+    });
+
+
+</script>
+
+
+
+<h2>Server Options</h2>
+<button onclick="server.respond()">Server Respond</button>
+<br/>
+Autorespond: <input id="autorespond" type="checkbox" onclick="toggleAutoRespond()">
+<br/>
+<br/>
+<em>Work Area</em>
+<hr/>
+
+<form id="whatever">
+</form>
+
+<input form="whatever">
+
+<div id="work-area" hx-history-elt>
+    <a id="a1" hx-boost="true" href="#" target="">Asdf</a>
+</div>
+
+<button onclick="console.log(this, event)">Log It...</button>
+
+<button hx-get="/whatever">
+
+</button>
+
+<script>
+    let requestCount = 0;
+    this.server.respondWith("GET", "/demo", function(xhr){
+        let randomStr = (Math.random() + 1).toString(36).substring(7);
+        xhr.respond(200,  {}, "Request #" + requestCount++ + " : " + randomStr)
+    });
+</script>
+
+<button hx-get="/demo"
+        hx-target="next h1"
+        hx-swap="innerHTML transition:true">Issue Request</button>
+<h1 id="h1">--</h1>
+
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; }
+    }
+
+    @keyframes fade-out {
+        to { opacity: 0; }
+    }
+
+    @keyframes slide-from-right {
+        from { transform: translateX(90px); }
+    }
+
+    @keyframes slide-to-left {
+        to { transform: translateX(-90px); }
+    }
+
+    .slide-it {
+        view-transition-name: slide-it;
+    }
+
+    ::view-transition-old(slide-it) {
+        animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+    }
+    ::view-transition-new(slide-it) {
+        animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+        600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+    }
+</style>
+
+
+<div class="slide-it">
+    <h1>Initial Content</h1>
+    <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
+        Swap It!
+    </button>
+</div>
+
+<script>
+    var originalContent = htmx.find(".slide-it").innerHTML;
+
+    this.server.respondWith("GET", "/new-content", function(xhr){
+        xhr.respond(200,  {}, "<h1>Initial Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
+    });
+
+    this.server.respondWith("GET", "/original-content", function(xhr){
+        xhr.respond(200,  {}, originalContent)
+    });
+</script>
+
+
+</body>
+</html>

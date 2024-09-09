@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Body Swap Test</title>
+  <script type="application/javascript" src="../../../src/htmx.js"></script>
+</head>
+<body style="padding: 20px; font-family: sans-serif;border: 6px solid red">
+  <button hx-get="body.html"
+          hx-target="body"
+          hx-swap="outerHTML">
+    Swap Body With outerHTML
+  </button>
+</body>
+</html>

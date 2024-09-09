@@ -1,0 +1,282 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+  "name": "htmx",
+  "version": "1.0.0",
+  "js-types-syntax": "typescript",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "attributes": [
+        {
+          "name": "hx-boost",
+          "description": "The **hx-boost** attribute allows you to \"boost\" normal anchors and form tags to use AJAX instead. This has the [nice fallback](https://en.wikipedia.org/wiki/Progressive_enhancement) that, if the user does not have javascript enabled, the site will continue to work.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-boost/"
+        },
+        {
+          "name": "hx-confirm",
+          "description": "The **hx-confirm** attribute allows you to confirm an action before issuing a request. This can be useful in cases where the action is destructive and you want to ensure that the user really wants to do it.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-confirm/"
+        },
+        {
+          "name": "hx-delete",
+          "description": "The **hx-delete** attribute will cause an element to issue a **DELETE** to the specified URL and swap the HTML into the DOM using a swap strategy.",
+          "description-sections": {
+            "Not inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-delete/"
+        },
+        {
+          "name": "hx-disable",
+          "description": "The **hx-disable** attribute disables htmx processing for the given node and any children nodes",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-disable"
+        },
+        {
+          "name": "hx-encoding",
+          "description": "The **hx-encoding** attribute changes the request encoding type",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-encoding"
+        },
+        {
+          "name": "hx-ext",
+          "description": "The **hx-ext** attribute enables extensions for an element",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-ext"
+        },
+        {
+          "name": "hx-get",
+          "description": "The **hx-get** attribute issues a `GET` to the specified URL",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-get"
+        },
+        {
+          "name": "hx-headers",
+          "description": "The **hx-headers** attribute adds to the headers that will be submitted with the request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-headers"
+        },
+        {
+          "name": "hx-history-elt",
+          "description": "The **hx-history-elt** attribute specifies the element to snapshot and restore during history navigation",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-history-elt"
+        },
+        {
+          "name": "hx-include",
+          "description": "The **hx-include** attribute specifies additional values/inputs to include in AJAX requests",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-include"
+        },
+        {
+          "name": "hx-indicator",
+          "description": "The **hx-indicator** attribute specifies the element to put the `htmx-request` class on during the AJAX request, displaying it as a request indicator",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-indicator"
+        },
+        {
+          "name": "hx-disinherit",
+          "description": "The **hx-disinherit** attribute allows you to control and disable automatic attribute inheritance for child nodes",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-disinherit"
+        },
+        {
+          "name": "hx-params",
+          "description": "The **hx-params** attribute allows you filter the parameters that will be submitted with a request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-params"
+        },
+        {
+          "name": "hx-patch",
+          "description": "The **hx-patch** attribute issues a `PATCH` to the specified URL",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-patch"
+        },
+        {
+          "name": "hx-post",
+          "description": "The **hx-post** attribute issues a `POST` to the specified URL",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-post"
+        },
+        {
+          "name": "hx-preserve",
+          "description": "The **hx-preserve** attribute preserves an element between requests (requires the `id` be stable)",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-preserve"
+        },
+        {
+          "name": "hx-prompt",
+          "description": "The **hx-prompt** attribute shows a prompt before submitting a request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-prompt"
+        },
+        {
+          "name": "hx-push-url",
+          "description": "The **hx-push-url** attribute pushes the URL into the location bar, creating a new history entry",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-push-url"
+        },
+        {
+          "name": "hx-put",
+          "description": "The **hx-put** attribute issues a `PUT` to the specified URL",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-put"
+        },
+        {
+          "name": "hx-request",
+          "description": "The **hx-request** attribute configures various aspects of the request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-request"
+        },
+        {
+          "name": "hx-select",
+          "description": "The **hx-select** attribute selects a subset of the server response to process",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-select"
+        },
+        {
+          "name": "hx-sse",
+          "description": "The **hx-sse** attribute connects the DOM to a SSE source",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-sse"
+        },
+        {
+          "name": "hx-swap-oob",
+          "description": "The **hx-swap-oob** attribute marks content in a response as being \"Out of Band\", i.e. swapped somewhere other than the target",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-swap-oob"
+        },
+        {
+          "name": "hx-swap",
+          "description": "The **hx-swap** attribute controls how the response content is swapped into the DOM (e.g. 'outerHTML' or 'beforeend')",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-swap"
+        },
+        {
+          "name": "hx-sync",
+          "description": "The **hx-sync** attribute controls requests made by different elements are synchronized with one another",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-sync"
+        },
+        {
+          "name": "hx-target",
+          "description": "The **hx-target** attribute specifies the target element to be swapped",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-target"
+        },
+        {
+          "name": "hx-trigger",
+          "description": "The **hx-trigger** attribute specifies specifies the event that triggers the request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-trigger"
+        },
+        {
+          "name": "hx-vals",
+          "description": "The **hx-vals** attribute specifies values to add to the parameters that will be submitted with the request in JSON form",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-vals"
+        },
+        {
+          "name": "hx-vars",
+          "description": "The **hx-vars** attribute specifies computed values to add to the parameters that will be submitted with the request",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-vars"
+        },
+        {
+          "name": "hx-ws",
+          "description": "The **hx-ws** attribute  connects the DOM to a Web Socket source",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-ws"
+        }
+      ]
+    },
+    "css": {
+      "classes": [
+        {
+          "name": "htmx-added",
+          "description": "Applied to a new piece of content before it is swapped, removed after it is settled.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-indicator",
+          "description": "A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-request",
+          "description": "Applied to either the element or the element specified with `hx-indicator` while a request is ongoing.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-settling",
+          "description": "Applied to a target after content is swapped, removed after it is settled. The duration can be modified via `hx-swap`.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-swapping",
+          "description": "Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via `hx-swap`.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        }
+      ]
+    }
+  }
+}

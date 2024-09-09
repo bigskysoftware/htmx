@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if page.title -%}
+    {% if page.path is starting_with("/extensions/") -%}
+      {% set html_title = "&lt;/&gt; htmx ~ The " ~ page.title ~ " Extension" -%}
+    {% elif page.path is starting_with("/attributes/") -%}
+      {% set html_title = "&lt;/&gt; htmx ~ " ~ page.title ~ " Attribute" -%}
+    {% else -%}
+      {% set html_title = "&lt;/&gt; htmx ~ " ~ page.title -%}
+    {% endif -%}
+  {% endif -%}
+{% endblock title %}
+
+{% block content %}
+  {% if page.extra and page.extra.show_title is defined -%}
+    {% set show_title = page.extra.show_title -%}
+  {% else -%}
+    {% set show_title = true -%}
+  {% endif -%}
+  {% if page.path is starting_with("/extensions/") -%}
+    {% set page_title = "The <code>" ~ page.title ~ "</code> Extension" -%}
+  {% elif page.path is starting_with("/attributes") -%}
+    {% set page_title = "<code>" ~ page.title ~ "</code>" -%}
+  {% else -%}
+    {% set page_title = page.title -%}
+  {% endif -%}
+  {% if show_title %}<h1>{{ page_title | safe }}</h1>{% endif %}
+  {{ page.content | safe }}
+{% endblock content %}

@@ -1,0 +1,9 @@
+name = "htmx"
+description = "Website theme for htmx"
+license = "BSD-2-Clause"
+homepage = "https://htmx.org"
+min_version = "0.17.1"
+
+[author]
+name = "Carson Gross, et. al."
+homepage = "https://htmx.org"
