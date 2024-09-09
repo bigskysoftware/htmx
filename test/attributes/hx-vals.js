@@ -14,18 +14,6 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make("<div hx-post='/vars' hx-vals='\"i1\":\"test\"'></div>")
-    div.click()
-    this.server.respond()
-    div.innerHTML.should.equal('Clicked!')
-  })
-
-  it('basic hx-vals works with braces', function() {
-    this.server.respondWith('POST', '/vars', function(xhr) {
-      var params = getParameters(xhr)
-      params.i1.should.equal('test')
-      xhr.respond(200, {}, 'Clicked!')
-    })
     var div = make("<div hx-post='/vars' hx-vals='{\"i1\":\"test\"}'></div>")
     div.click()
     this.server.respond()
@@ -39,7 +27,7 @@ describe('hx-vals attribute', function() {
       params.v2.should.equal('42')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make("<div hx-post='/vars' hx-vals='\"v1\":\"test\", \"v2\":42'></div>")
+    var div = make("<div hx-post='/vars' hx-vals='{\"v1\":\"test\", \"v2\":42}'></div>")
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
@@ -51,7 +39,7 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
     })
-    make("<div hx-vals='\"i1\":\"test\"'><div id='d1' hx-post='/vars'></div></div>")
+    make("<div hx-vals='{\"i1\":\"test\"}'><div id='d1' hx-post='/vars'></div></div>")
     var div = byId('d1')
     div.click()
     this.server.respond()
@@ -64,7 +52,7 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('best')
       xhr.respond(200, {}, 'Clicked!')
     })
-    make("<div hx-vals='\"i1\":\"test\"'><div id='d1' hx-vals='\"i1\":\"best\"' hx-post='/vars'></div></div>")
+    make("<div hx-vals='{\"i1\":\"test\"}'><div id='d1' hx-vals='{\"i1\":\"best\"}' hx-post='/vars'></div></div>")
     var div = byId('d1')
     div.click()
     this.server.respond()
@@ -77,7 +65,7 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('best')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make("<div hx-target='this'><input hx-post='/include' hx-vals='\"i1\":\"best\"' hx-trigger='click' id='i1' name='i1' value='test'/></div>")
+    var div = make("<div hx-target='this'><input hx-post='/include' hx-vals='{\"i1\":\"best\"}' hx-trigger='click' id='i1' name='i1' value='test'/></div>")
     var input = byId('i1')
     input.click()
     this.server.respond()
@@ -90,7 +78,7 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make("<div hx-post='/vars' hx-vals='\"i1\":\"test\"' hx-vars='\"i1\":\"best\"'></div>")
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\":\"test\"}' hx-vars='{\"i1\":\"best\"}'></div>")
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
@@ -102,19 +90,19 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make('<div hx-post="/vars" hx-vals="javascript:i1:\'test\'"></div>')
+    var div = make('<div hx-post="/vars" hx-vals="javascript:{i1:\'test\'}"></div>')
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals works with braces', function() {
+  it('basic hx-vals javascript on dynamic keys: works', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make('<div hx-post="/vars" hx-vals="javascript:{i1:\'test\'}"></div>')
+    var div = make('<div hx-post="/vars" hx-vals="javascript:Object.fromEntries([[\'i1\',\'test\']])"></div>')
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
@@ -165,7 +153,7 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('best')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make('<div hx-target="this"><input hx-post="/include" hx-vals="javascript:i1:\'best\'" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
+    var div = make('<div hx-target="this"><input hx-post="/include" hx-vals="javascript:{i1:\'best\'}" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
     var input = byId('i1')
     input.click()
     this.server.respond()
@@ -178,30 +166,13 @@ describe('hx-vals attribute', function() {
       params.i1.should.equal('{"i2":"test"}')
       xhr.respond(200, {}, 'Clicked!')
     })
-    var div = make("<div hx-post='/vars' hx-vals='\"i1\":{\"i2\" : \"test\"}'></div>")
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\":{\"i2\" : \"test\"}}'></div>")
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
 
   it('basic hx-vals can be unset', function() {
-    this.server.respondWith('POST', '/vars', function(xhr) {
-      var params = getParameters(xhr)
-      params.should.be.empty
-      xhr.respond(200, {}, 'Clicked!')
-    })
-    make(
-      "<div hx-vals='\"i1\":\"test\"'>\
-                <div id='d1' hx-post='/vars' hx-vals='unset'></div>\
-            </div>"
-    )
-    var div = byId('d1')
-    div.click()
-    this.server.respond()
-    div.innerHTML.should.equal('Clicked!')
-  })
-
-  it('basic hx-vals with braces can be unset', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.should.be.empty
@@ -225,7 +196,7 @@ describe('hx-vals attribute', function() {
       xhr.respond(200, {}, 'Clicked!')
     })
     make(
-      "<div hx-vals='\"v1\":\"test\", \"v2\":42'>\
+      "<div hx-vals='{\"v1\":\"test\", \"v2\":42'}>\
                 <div id='d1' hx-post='/vars' hx-vals='unset'></div>\
             </div>"
     )
@@ -242,7 +213,7 @@ describe('hx-vals attribute', function() {
       xhr.respond(200, {}, 'Clicked!')
     })
     var div = make(
-      "<div hx-target='this' hx-vals='\"i1\":\"best\"'>\
+      "<div hx-target='this' hx-vals='{\"i1\":\"best\"}'>\
                 <input hx-post='/include' hx-vals='unset' hx-trigger='click' id='i1' name='i1' value='test'/>\
             </div>"
     )
@@ -264,7 +235,7 @@ describe('hx-vals attribute', function() {
         should.not.exist(params.i1)
         xhr.respond(200, {}, 'Clicked!')
       })
-      var div = make('<div hx-post="/vars" hx-vals="javascript:i1:\'test\'"></div>')
+      var div = make('<div hx-post="/vars" hx-vals="javascript:{i1:\'test\'}"></div>')
       div.click()
       this.server.respond()
       div.innerHTML.should.equal('Clicked!')
@@ -287,7 +258,7 @@ describe('hx-vals attribute', function() {
         should.not.exist(params.i1)
         xhr.respond(200, {}, 'Clicked!')
       })
-      var div = make('<div hx-post="/vars" hx-vals="js:i1:\'test\'"></div>')
+      var div = make('<div hx-post="/vars" hx-vals="js:{i1:\'test\'}"></div>')
       div.click()
       this.server.respond()
       div.innerHTML.should.equal('Clicked!')
