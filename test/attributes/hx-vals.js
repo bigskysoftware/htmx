@@ -120,6 +120,18 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
+  it('hx-vals works with braces and null value', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('null')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make('<div hx-post="/vars" hx-vals="javascript:{i1:null}"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
   it('multiple hx-vals works', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
