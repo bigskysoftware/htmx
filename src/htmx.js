@@ -3738,9 +3738,6 @@ var htmx = (function() {
         str = str.substr(3)
         evaluateValue = true
       }
-      if (str.indexOf('{') !== 0) {
-        str = '{' + str + '}'
-      }
       let varsValues
       if (evaluateValue) {
         varsValues = maybeEval(elt, function() { return Function('return (' + str + ')')() }, {})
