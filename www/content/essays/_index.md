@@ -16,6 +16,7 @@ page_template = "essay.html"
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
 * [REST Copypasta](@/essays/rest-copypasta.md)
 * [The #ViewSource Affordance](@/essays/right-click-view-source.md)
+* [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
