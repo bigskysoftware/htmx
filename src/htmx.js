@@ -695,7 +695,7 @@ var htmx = (function() {
    * @property {boolean} [triggeredOnce]
    * @property {number} [delayed]
    * @property {number|null} [throttle]
-   * @property {string} [lastValue]
+   * @property {WeakMap<HtmxTriggerSpecification,WeakMap<EventTarget,string>>} [lastValue]
    * @property {boolean} [loaded]
    * @property {string} [path]
    * @property {string} [verb]
@@ -2407,10 +2407,15 @@ var htmx = (function() {
     }
     // store the initial values of the elements, so we can tell if they change
     if (triggerSpec.changed) {
+      if (!('lastValue' in elementData)) {
+        elementData.lastValue = new WeakMap()
+      }
       eltsToListenOn.forEach(function(eltToListenOn) {
-        const eltToListenOnData = getInternalData(eltToListenOn)
+        if (!elementData.lastValue.has(triggerSpec)) {
+          elementData.lastValue.set(triggerSpec, new WeakMap())
+        }
         // @ts-ignore value will be undefined for non-input elements, which is fine
-        eltToListenOnData.lastValue = eltToListenOn.value
+        elementData.lastValue.get(triggerSpec).set(eltToListenOn, eltToListenOn.value)
       })
     }
     forEach(eltsToListenOn, function(eltToListenOn) {
@@ -2452,13 +2457,14 @@ var htmx = (function() {
             }
           }
           if (triggerSpec.changed) {
-            const eltToListenOnData = getInternalData(eltToListenOn)
+            const node = event.target
             // @ts-ignore value will be undefined for non-input elements, which is fine
-            const value = eltToListenOn.value
-            if (eltToListenOnData.lastValue === value) {
+            const value = node.value
+            const lastValue = elementData.lastValue.get(triggerSpec)
+            if (lastValue.has(node) && lastValue.get(node) === value) {
               return
             }
-            eltToListenOnData.lastValue = value
+            lastValue.set(node, value)
           }
           if (elementData.delayed) {
             clearTimeout(elementData.delayed)
@@ -2835,12 +2841,6 @@ var htmx = (function() {
       nodeData.initHash = attributeHash(elt)
 
       triggerEvent(elt, 'htmx:beforeProcessNode')
-
-      // @ts-ignore value will be undefined for non-input elements, which is fine
-      if (elt.value) {
-        // @ts-ignore
-        nodeData.lastValue = elt.value
-      }
 
       const triggerSpecs = getTriggerSpecs(elt)
       const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
