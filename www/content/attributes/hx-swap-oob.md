@@ -27,14 +27,14 @@ The value of the `hx-swap-oob` can be:
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.
 
-If a swap value is given, that swap strategy will be used.
+If a swap value is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`.
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
-### Troublesome Tables
+### Troublesome Tables and lists
 
 Note that you can use a `template` tag to encapsulate types of elements that, by the HTML spec, can't stand on their own in the
-DOM (`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>` & `<col>`).
+DOM (`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>`, `<col>` & `<li>`).
 
 Here is an example with an out of band swap of a table row being encapsulated in this way:
 
@@ -50,6 +50,42 @@ Here is an example with an out of band swap of a table row being encapsulated in
 ```
 
 Note that these template tags will be removed from the final content of the page.
+
+### Using alternate swap strategies
+
+As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to excapsulate the returned data with the correct tags for the context.
+
+For a table that uses `<tbody>`:
+```html
+<tbody hx-swap-oob="beforeend:#table tbody">
+	<tr>
+		...
+	</tr>
+</tbody>
+```
+
+A "plain" table:
+```html
+<table hx-swap-oob="beforeend:#table2">
+	<tr>
+		...
+	</tr>
+</table>
+```
+
+An `<li>` may be encapsulated in `<ul>`, `<ol>`, `<div>` or `<span>`, for example:
+```html
+<ul hx-swap-oob="beforeend:#list1">
+	<li>...</li>
+</ul>
+```
+
+A `<p>` can be encapsulated in `<div>` or `<span>`:
+```html
+<span hx-swap-oob="beforeend:#text">
+	<p>...</p>
+</span>
+```
 
 ### Slippery SVGs
 
