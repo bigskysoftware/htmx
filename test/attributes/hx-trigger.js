@@ -151,6 +151,48 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('Requests: 4')
   })
 
+  it('separate changed modifier works along from clause with two inputs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input1 = make('<input type="text"/>')
+    var input2 = make('<input type="text"/>')
+    make('<div hx-trigger="click changed from:input:nth-child(1), click changed from:input:nth-child(2)" hx-target="#d1" hx-get="/test"></div>')
+    var div = make('<div id="d1"></div>')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+
+    input1.value = 'bar'
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input2.value = 'foo'
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+  })
+
   it('once modifier works', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
