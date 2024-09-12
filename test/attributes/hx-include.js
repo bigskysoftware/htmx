@@ -224,4 +224,72 @@ describe('hx-include attribute', function() {
     this.server.respond()
     btn.innerHTML.should.equal('Clicked!')
   })
+
+  it('Multiple extended selectors can be used in hx-include', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      params.i2.should.equal('foo')
+      params.i3.should.equal('bar')
+      params.i4.should.equal('test2')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input name="i4" value="test2" id="i4"/>' +
+      '<div id="i">' +
+      '<input name="i1" value="test"/>' +
+      '<input name="i2" value="foo"/>' +
+      '<button id="btn" hx-post="/include" hx-include="closest div, next input, #i4"></button>' +
+      '</div>' +
+      '<input name="i3" value="bar"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-include processes extended selector in between standard selectors', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      should.equal(params.i2, undefined)
+      params.i3.should.equal('bar')
+      params.i4.should.equal('test2')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input name="i4" value="test2" id="i4"/>' +
+      '<div id="i">' +
+      '<input name="i1" value="test" id="i1"/>' +
+      '<input name="i2" value="foo"/>' +
+      '<button id="btn" hx-post="/include" hx-include="#i1, next input, #i4"></button>' +
+      '</div>' +
+      '<input name="i3" value="bar"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-include processes nested standard selectors correctly', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      params.i2.should.equal('foo')
+      params.i3.should.equal('bar')
+      should.equal(params.i4, undefined)
+      should.equal(params.i5, undefined)
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input name="i4" value="test2" id="i4"/>' +
+      '<div id="i">' +
+      '<input name="i1" value="test" id="i1"/>' +
+      '<input name="i2" value="foo"/>' +
+      '<input name="i5" value="test"/>' +
+      '<button id="btn" hx-post="/include" hx-include="next input, #i > :is([name=\'i1\'], [name=\'i2\'])"></button>' +
+      '</div>' +
+      '<input name="i3" value="bar"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
 })
