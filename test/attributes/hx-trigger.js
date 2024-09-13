@@ -1086,7 +1086,7 @@ describe('hx-trigger attribute', function() {
       requests++
       xhr.respond(200, {}, 'Requests: ' + requests)
     })
-    var div = make('<div hx-trigger="load , click" hx-get="/test">Requests: 0</div>')
+    var div = make('<div hx-trigger="load , click consume " hx-get="/test">Requests: 0</div>')
     div.innerHTML.should.equal('Requests: 0')
     this.server.respond()
     div.innerHTML.should.equal('Requests: 1')
