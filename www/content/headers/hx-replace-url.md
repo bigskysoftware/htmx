@@ -16,4 +16,4 @@ The possible values for this header are:
 
 ## Notes
 
-Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response_headers)
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

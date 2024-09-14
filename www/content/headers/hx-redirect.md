@@ -14,4 +14,4 @@ Which would push the client to test as if the user had entered this url manually
 
 ## Notes
 
-Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response_headers)
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

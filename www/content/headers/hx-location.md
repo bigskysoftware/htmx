@@ -31,4 +31,4 @@ Path is required and is url to load the response from. The rest of the data mirr
 
 ## Notes
 
-Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response_headers)
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

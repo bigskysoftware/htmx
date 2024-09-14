@@ -81,4 +81,4 @@ Using events gives you a lot of flexibility to add functionality to normal htmx 
 
 ## Notes
 
-Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response_headers)
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

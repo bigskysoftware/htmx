@@ -1028,7 +1028,7 @@ htmx includes a number of useful headers in requests:
 | `HX-Trigger-Name` | the `name` of the triggered element if it exists
 | `HX-Trigger` | the `id` of the triggered element if it exists
 
-### Response Headers {#response_headers}
+### Response Headers
 
 htmx supports some htmx-specific response headers:
 
