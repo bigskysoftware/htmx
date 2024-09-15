@@ -1034,7 +1034,7 @@ htmx supports some htmx-specific response headers:
 
 * [`HX-Location`](@/headers/hx-location.md) - allows you to do a client-side redirect that does not do a full page reload
 * [`HX-Push-Url`](@/headers/hx-push-url.md) - pushes a new url into the history stack
-* `HX-Redirect` - can be used to do a client-side redirect to a new location
+* [`HX-Redirect`](@/headers/hx-redirect.md) - can be used to do a client-side redirect to a new location
 * `HX-Refresh` - if set to "true" the client-side will do a full refresh of the page
 * [`HX-Replace-Url`](@/headers/hx-replace-url.md) - replaces the current URL in the location bar
 * `HX-Reswap` - allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
@@ -1048,6 +1048,8 @@ For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/head
 
 Submitting a form via htmx has the benefit of no longer needing the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
 After successfully processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+
+Also the response headers above are not provided to htmx for processing with 3xx Redirect response codes like [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). Instead, the browser will intercept the redirection internally and return the headers and response from the redirected URL. Where possible use alternative response codes like 200 to allow returning of these response headers.
 
 ### Request Order of Operations {#request-operations}
 
