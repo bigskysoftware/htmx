@@ -1841,7 +1841,7 @@ var htmx = (function() {
     }
 
     target = resolveTarget(target)
-    const rootNode = getRootNode(swapOptions.contextElement, false)
+    const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : document
 
     // preserve focus and selection
     const activeElt = document.activeElement
