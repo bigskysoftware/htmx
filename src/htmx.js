@@ -1138,10 +1138,7 @@ var htmx = (function() {
    * @returns {Node[]}
    */
   function toNodeArray(node) {
-    if (node) {
-      return [node]
-    }
-    return []
+    return node ? [node] : []
   }
 
   /**
