@@ -1134,6 +1134,17 @@ var htmx = (function() {
   }
 
   /**
+   * @param {Node|null} node
+   * @returns {Node[]}
+   */
+  function toNodeArray(node) {
+    if (node) {
+      return [node]
+    }
+    return []
+  }
+
+  /**
    * @param {Node|Element|Document|string} elt
    * @param {string} selector
    * @param {boolean=} global
@@ -1142,17 +1153,17 @@ var htmx = (function() {
   function querySelectorAllExt(elt, selector, global) {
     elt = resolveTarget(elt)
     if (selector.indexOf('closest ') === 0) {
-      return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
+      return toNodeArray(closest(asElement(elt), normalizeSelector(selector.substr(8))))
     } else if (selector.indexOf('find ') === 0) {
-      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
+      return toNodeArray(find(asParentNode(elt), normalizeSelector(selector.substr(5))))
     } else if (selector === 'next') {
       return [asElement(elt).nextElementSibling]
     } else if (selector.indexOf('next ') === 0) {
-      return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)]
+      return toNodeArray(scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global))
     } else if (selector === 'previous') {
       return [asElement(elt).previousElementSibling]
     } else if (selector.indexOf('previous ') === 0) {
-      return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)]
+      return toNodeArray(scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global))
     } else if (selector === 'document') {
       return [document]
     } else if (selector === 'window') {
@@ -1313,18 +1324,27 @@ var htmx = (function() {
    * @returns {(Node|Window)[]}
    */
   function findAttributeTargets(elt, attrName) {
-    const attrTarget = getClosestAttributeValue(elt, attrName)
+    let attrTarget = getClosestAttributeValue(elt, attrName)
     if (attrTarget) {
-      if (attrTarget === 'this') {
-        return [findThisElement(elt, attrName)]
-      } else {
-        const result = querySelectorAllExt(elt, attrTarget)
-        if (result.length === 0) {
-          logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
-          return [DUMMY_ELT]
+      const optional = attrTarget.slice(-1) === '?'
+      if (optional) {
+        attrTarget = attrTarget.slice(0, -1)
+      }
+      let result = []
+      forEach(attrTarget.split(','), function(target) {
+        if (attrTarget === 'this') {
+          result.push(findThisElement(elt, attrName))
         } else {
-          return result
+          result = result.concat(querySelectorAllExt(elt, target.trim()))
         }
+      })
+      if (result.length === 0) {
+        if (!optional) {
+          logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
+        }
+        return [DUMMY_ELT]
+      } else {
+        return result
       }
     }
   }
