@@ -1417,10 +1417,11 @@ var htmx = (function() {
    * @param {string} oobValue
    * @param {Element} oobElement
    * @param {HtmxSettleInfo} settleInfo
-   * @param {Node|Document} rootNode
+   * @param {Node|Document} [rootNode]
    * @returns
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
+    rootNode = rootNode || getDocument()
     let selector = '#' + getRawAttribute(oobElement, 'id')
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
@@ -1809,7 +1810,7 @@ var htmx = (function() {
   /**
    * @param {DocumentFragment} fragment
    * @param {HtmxSettleInfo} settleInfo
-   * @param {Node|Document} rootNode
+   * @param {Node|Document} [rootNode]
    */
   function findAndSwapOobElements(fragment, settleInfo, rootNode) {
     var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]')
@@ -1841,7 +1842,7 @@ var htmx = (function() {
     }
 
     target = resolveTarget(target)
-    const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : document
+    const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
 
     // preserve focus and selection
     const activeElt = document.activeElement
