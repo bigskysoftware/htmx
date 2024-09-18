@@ -35,7 +35,7 @@ If a selector is given, all elements matched by that selector will be swapped.  
 
 As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to excapsulate the returned data with the correct tags for the context.
 
-For a table that uses `<tbody>`:
+When trying to insert a `<tr>` in a table that uses `<tbody>`:
 ```html
 <tbody hx-swap-oob="beforeend:#table tbody">
 	<tr>
