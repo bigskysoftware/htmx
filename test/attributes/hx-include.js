@@ -224,4 +224,28 @@ describe('hx-include attribute', function() {
     this.server.respond()
     btn.innerHTML.should.equal('Clicked!')
   })
+
+  it('logs error when selector returns no matches', function() {
+    this.server.respondWith('POST', '/include', 'Clicked!')
+    var div = make('<div hx-post="/include" hx-include="input"></div>')
+    const spy = sinon.spy(console, 'error')
+    div.click()
+    this.server.respond()
+    spy.calledOnce.should.equal(true)
+    spy.calledWith('The selector "input" on hx-include returned no matches!').should.equal(true)
+    div.innerHTML.should.equal('Clicked!')
+    spy.restore()
+  })
+
+  it('no error when optional selector returns no matches', function() {
+    this.server.respondWith('POST', '/include', 'Clicked!')
+    var div = make('<div hx-post="/include" hx-include="input?"></div>')
+    const spy = sinon.spy(console, 'error')
+    div.click()
+    this.server.respond()
+    spy.calledOnce.should.equal(false)
+    spy.calledWith('The selector "input" on hx-include returned no matches!').should.equal(false)
+    div.innerHTML.should.equal('Clicked!')
+    spy.restore()
+  })
 })

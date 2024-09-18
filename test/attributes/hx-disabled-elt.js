@@ -80,4 +80,23 @@ describe('hx-disabled-elt attribute', function() {
     b2.hasAttribute('disabled').should.equal(false)
     b3.hasAttribute('disabled').should.equal(false)
   })
+
+  it('find on multiple elts can be disabled', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+    var form = make('<form hx-get="/test" hx-disabled-elt="find input[type=\'text\'], find button" hx-swap="none"><input id="i1" type="text" placeholder="Type here..."><button id="b2" type="submit">Send</button></form>')
+    var i1 = byId('i1')
+    var b2 = byId('b2')
+
+    i1.hasAttribute('disabled').should.equal(false)
+    b2.hasAttribute('disabled').should.equal(false)
+
+    b2.click()
+    i1.hasAttribute('disabled').should.equal(true)
+    b2.hasAttribute('disabled').should.equal(true)
+
+    this.server.respond()
+
+    i1.hasAttribute('disabled').should.equal(false)
+    b2.hasAttribute('disabled').should.equal(false)
+  })
 })

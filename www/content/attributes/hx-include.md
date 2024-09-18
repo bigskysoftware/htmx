@@ -46,7 +46,7 @@ Note that if you include a non-input element, all input elements enclosed in tha
   </div>
   ```
   In the above example, when clicking on the button, the `find input` selector is resolved from the button itself, which
-  does not return any element here, since the button doesn't have any `input` child, thus in this case, raises an error.
+  does not return any element here, since the button doesn't have any `input` child, thus in this case, raises an error. This can be avoided by adding a `?` to the end to make it optional e.g. `hx-include="find input?"`
 * A standard CSS selector resolves
   to [document.querySelectorAll](https://developer.mozilla.org/docs/Web/API/Document/querySelectorAll) and will include
   multiple elements, while the extended selectors such as `find` or `next` only return a single element at most to

@@ -1134,17 +1134,6 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node|null} node
-   * @returns {Node[]}
-   */
-  function toNodeArray(node) {
-    if (node) {
-      return [node]
-    }
-    return []
-  }
-
-  /**
    * @param {Node|Element|Document|string} elt
    * @param {string} selector
    * @param {boolean=} global
@@ -1153,17 +1142,17 @@ var htmx = (function() {
   function querySelectorAllExt(elt, selector, global) {
     elt = resolveTarget(elt)
     if (selector.indexOf('closest ') === 0) {
-      return toNodeArray(closest(asElement(elt), normalizeSelector(selector.substr(8))))
+      return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
     } else if (selector.indexOf('find ') === 0) {
-      return toNodeArray(find(asParentNode(elt), normalizeSelector(selector.substr(5))))
+      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
     } else if (selector === 'next') {
       return [asElement(elt).nextElementSibling]
     } else if (selector.indexOf('next ') === 0) {
-      return toNodeArray(scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global))
+      return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)]
     } else if (selector === 'previous') {
       return [asElement(elt).previousElementSibling]
     } else if (selector.indexOf('previous ') === 0) {
-      return toNodeArray(scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global))
+      return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)]
     } else if (selector === 'document') {
       return [document]
     } else if (selector === 'window') {

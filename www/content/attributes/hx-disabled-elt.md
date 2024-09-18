@@ -41,5 +41,6 @@ The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors 
 ## Notes
 
 * `hx-disabled-elt` is inherited and can be placed on a parent element
+* If the selector supplied matchs no elements it will log an error to the console which can be avoided by adding a `?` to the end to make it optional e.g. `hx-disabled-elt="find button?"`
 
 [hx-trigger]: https://htmx.org/attributes/hx-trigger/
