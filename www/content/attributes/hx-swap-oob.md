@@ -53,7 +53,7 @@ A "plain" table:
 </table>
 ```
 
-An `<li>` may be encapsulated in `<ul>`, `<ol>`, `<div>` or `<span>`, for example:
+A `<li>` may be encapsulated in `<ul>`, `<ol>`, `<div>` or `<span>`, for example:
 ```html
 <ul hx-swap-oob="beforeend:#list1">
 	<li>...</li>
