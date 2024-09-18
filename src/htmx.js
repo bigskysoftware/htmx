@@ -1315,25 +1315,22 @@ var htmx = (function() {
   function findAttributeTargets(elt, attrName) {
     let attrTarget = getClosestAttributeValue(elt, attrName)
     if (attrTarget) {
-      const optional = attrTarget.slice(-1) === '?'
-      if (optional) {
-        attrTarget = attrTarget.slice(0, -1)
-      }
-      let result = []
-      forEach(attrTarget.split(','), function(target) {
-        if (attrTarget === 'this') {
-          result.push(findThisElement(elt, attrName))
-        } else {
-          result = result.concat(querySelectorAllExt(elt, target.trim()))
-        }
-      })
-      if (result.length === 0) {
-        if (!optional) {
-          logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
-        }
-        return [DUMMY_ELT]
+      if (attrTarget === 'this') {
+        return [findThisElement(elt, attrName)]
       } else {
-        return result
+        const optional = attrTarget.slice(-1) === '?'
+        if (optional) {
+          attrTarget = attrTarget.slice(0, -1)
+        }
+        const result = querySelectorAllExt(elt, attrTarget)
+        if (result.length === 0) {
+          if (!optional) {
+            logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
+          }
+          return [DUMMY_ELT]
+        } else {
+          return result
+        }
       }
     }
   }
