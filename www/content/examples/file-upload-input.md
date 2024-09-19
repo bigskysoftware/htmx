@@ -5,7 +5,16 @@ template = "demo.html"
 
 When using server-side error handling and validation with forms that include both primitive values and file inputs, the file input's value is lost when the form returns with error messages. Consequently, users are required to re-upload the file, resulting in a less user-friendly experience.
 
-To overcome the problem of losing file input value in simple cases, you can adopt the following approach:
+To overcome the problem of losing the file input value, you can use the `hx-preserve` attribute on the input element:
+
+```html
+<form method="POST" id="binaryForm" enctype="multipart/form-data" hx-swap="outerHTML" hx-target="#binaryForm">
+    <input hx-preserve id="someId" type="file" name="binaryFile">
+    <button type="submit">Submit</button>
+</form>
+```
+
+Alternatively, you can restructure the form so that the file input is located outside the area that will be swapped.
 
 Before:
 
