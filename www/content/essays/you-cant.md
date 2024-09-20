@@ -294,8 +294,7 @@ hand. Below is a video of that code being used to hide or reveal log items in th
   <source src="/img/you-cant/expanding-log-item.mp4">
 </video>
 
-## Final Myth: Without a *“Proper”* frontend framework, your Client-side Javascript will be
-[Spaghetti and Unmaintainable](https://www.reddit.com/r/webdev/comments/bkk0gl/avoiding_the_vanillajs_spaghetticode/).
+## Final Myth: Without a *“Proper”* frontend framework, your Client-side Javascript will be [Spaghetti and Unmaintainable](https://www.reddit.com/r/webdev/comments/bkk0gl/avoiding_the_vanillajs_spaghetticode/).
 
 This may or may not be true.
 
