@@ -3895,12 +3895,18 @@ var htmx = (function() {
           returnPromise: true
         })
       } else {
+        let resolvedTarget = resolveTarget(context.target)
+        // If target is supplied but can't resolve OR both target and source can't be resolved
+        // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
+        if ((context.target && !resolvedTarget) || (!resolvedTarget && !resolveTarget(context.source))) {
+          resolvedTarget = DUMMY_ELT
+        }
         return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
           {
             handler: context.handler,
             headers: context.headers,
             values: context.values,
-            targetOverride: resolveTarget(context.target) || ((!context.target && resolveTarget(context.source)) ? null : DUMMY_ELT),
+            targetOverride: resolvedTarget,
             swapOverride: context.swap,
             select: context.select,
             returnPromise: true
