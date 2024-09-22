@@ -2549,11 +2549,7 @@ var htmx = (function() {
         handler(elt)
       }
     }
-    if (delay > 0) {
-      getWindow().setTimeout(load, delay)
-    } else {
-      load()
-    }
+    getWindow().setTimeout(load, delay || 0)
   }
 
   /**
