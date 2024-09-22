@@ -58,7 +58,7 @@ To clarify the discussion around exactly what the uniform interface is, let's co
 everyone reading this will understand:
 
 ```html
-<html
+<html>
   <body>
   <section>
     <p>
