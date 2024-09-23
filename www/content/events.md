@@ -241,7 +241,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 * `detail.target` - the target of the request
 * `detail.triggeringEvent` - the original event that triggered this request
 * `detail.verb` - the verb of the request (e.g. `GET`)
-* `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present, otherwise `null`)
+* `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present)
 
 ### Event - `htmx:historyCacheError` {#htmx:historyCacheError}
 
