@@ -179,35 +179,60 @@ than a single value.
 
 ### Event - `htmx:confirm` {#htmx:confirm}
 
-This event is triggered immediately after a trigger occurs on an element.  It allows you to cancel (or delay) issuing
-the AJAX request.  If you call `preventDefault()` on the event, it will not issue the given request.  The `detail`
-object contains a function, `evt.detail.issueRequest()`, that can be used to issue the actual AJAX request at a
-later point.  Combining these two features allows you to create an asynchronous confirmation dialog.
+This event is fired on every trigger for a request (not just on elements that have a hx-confirm attribute).
+It allows you to cancel (or delay) issuing the AJAX request.
+If you call `preventDefault()` on the event, it will not issue the given request.
+The `detail` object contains a function, `evt.detail.issueRequest(skipConfirmation=false)`, that can be used to issue the actual AJAX request at a later point.
+Combining these two features allows you to create an asynchronous confirmation dialog.
 
-Here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert='true'` attribute on it:
+Here is a basic example that shows the basic usage of the `htmx:confirm` event:
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
-  if (evt.target.matches("[confirm-with-sweet-alert='true']")) {
-    evt.preventDefault();
-    swal({
-      title: "Are you sure?",
-      text: evt.detail.question,
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((confirmed) => {
-      if (confirmed) {
-        evt.detail.issueRequest();
-      }
-    });
-  }
+  // 1. Prevent the default behavior (this will prevent the request from being issued)
+  evt.preventDefault();
+  
+  // 2. Do your own logic here
+  console.log(evt.detail)
+
+  // 3. Manually issue the request when you are ready
+  evt.detail.issueRequest(); // or evt.detail.issueRequest(true) to skip the built-in window.confirm()
+});
+```
+
+And here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert='true'` attribute on it:
+
+```javascript
+document.body.addEventListener('htmx:confirm', function(evt) {
+  // 1. The event is triggered on every trigger for a request, so we need to check if the element
+  //    that triggered the request has a hx-confirm attribute, if not we can return early and let
+  //    the default behavior happen
+  if (!evt.detail.target.hasAttribute('hx-confirm')) return
+
+  // 2. The requirement to show the sweet alert is that the element has a confirm-with-sweet-alert
+  //    attribute on it, if it doesn't we can return early and let the default behavior happen
+  if (!evt.target.matches("[confirm-with-sweet-alert='true']")) return
+
+  // 3. Prevent the default behavior (this will prevent the request from being issued)
+  evt.preventDefault();
+
+  // 4. Show the sweet alert
+  swal({
+    title: "Are you sure?",
+    text: "Are you sure you are sure?", // or evt.detail.question (only available if hx-confirm attribute is present)
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then((confirmed) => {
+    if (confirmed) {
+      // 5. If the user confirms, we can manually issue the request
+      evt.detail.issueRequest(true); // true to skip the built-in window.confirm()
+    }
+  });
 });
 ```
 
 ##### Details
-
-{target: target, elt: elt, path: path, verb: verb, triggeringEvent: event, etc: etc, issueRequest: issueRequest, question: question}
 
 * `detail.elt` - the element in question
 * `detail.etc` - additional request information (mostly unused)
@@ -216,7 +241,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 * `detail.target` - the target of the request
 * `detail.triggeringEvent` - the original event that triggered this request
 * `detail.verb` - the verb of the request (e.g. `GET`)
-* `detail.question` - the question passed to `hx-confirm` attribute
+* `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present, otherwise `null`)
 
 ### Event - `htmx:historyCacheError` {#htmx:historyCacheError}
 
