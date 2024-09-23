@@ -1494,7 +1494,7 @@ var htmx = (function() {
             pantry = find('#--htmx-preserve-pantry--')
           }
           // @ts-ignore - use proposed moveBefore feature
-          existingElement.insertAdjacentHTML('beforebegin', `<template id="${id}"></template>`)
+          existingElement.insertAdjacentHTML('beforebegin', `<div id="${id}"></div>`)
           pantry.moveBefore(existingElement, null)
         } else {
           preservedElt.parentNode.replaceChild(existingElement, preservedElt)
