@@ -1493,8 +1493,8 @@ var htmx = (function() {
             getDocument().body.insertAdjacentHTML('afterend', "<div id='--htmx-preserve-pantry--'></div>")
             pantry = find('#--htmx-preserve-pantry--')
           }
-          // @ts-ignore - use proposed moveBefore feature
           existingElement.insertAdjacentHTML('beforebegin', `<div id="${id}"></div>`)
+          // @ts-ignore - use proposed moveBefore feature
           pantry.moveBefore(existingElement, null)
         } else {
           preservedElt.parentNode.replaceChild(existingElement, preservedElt)
