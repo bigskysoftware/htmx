@@ -78,3 +78,7 @@ You may also trigger multiple events with no additional details by sending event
 `HX-Trigger: event1, event2`
 
 Using events gives you a lot of flexibility to add functionality to normal htmx responses.
+
+## Notes
+
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

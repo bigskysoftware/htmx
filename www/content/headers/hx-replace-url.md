@@ -13,3 +13,7 @@ The possible values for this header are:
 1. A URL to replace the current URL in the location bar.
    This may be relative or absolute, as per [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState), but must have the same origin as the current URL.
 2. `false`, which prevents the browser’s current URL from being updated.
+
+## Notes
+
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)
