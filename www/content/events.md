@@ -185,10 +185,13 @@ If you call `preventDefault()` on the event, it will not issue the given request
 The `detail` object contains a function, `evt.detail.issueRequest(skipConfirmation=false)`, that can be used to issue the actual AJAX request at a later point.
 Combining these two features allows you to create an asynchronous confirmation dialog.
 
-Here is a basic example that shows the basic usage of the `htmx:confirm` event:
+Here is a basic example that shows the basic usage of the `htmx:confirm` event without altering the default behavior:
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
+  // 0. To modify the behavior only for elements with the hx-confirm attribute,
+  //    check if evt.detail.target.hasAttribute('hx-confirm')
+
   // 1. Prevent the default behavior (this will prevent the request from being issued)
   evt.preventDefault();
   
@@ -200,18 +203,16 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 });
 ```
 
-And here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert='true'` attribute on it:
+And here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert="{question}"` attribute on it:
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
-  // 1. The event is triggered on every trigger for a request, so we need to check if the element
-  //    that triggered the request has a hx-confirm attribute, if not we can return early and let
-  //    the default behavior happen
-  if (!evt.detail.target.hasAttribute('hx-confirm')) return
-
-  // 2. The requirement to show the sweet alert is that the element has a confirm-with-sweet-alert
+  // 1. The requirement to show the sweet alert is that the element has a confirm-with-sweet-alert
   //    attribute on it, if it doesn't we can return early and let the default behavior happen
-  if (!evt.target.matches("[confirm-with-sweet-alert='true']")) return
+  if (!evt.detail.target.hasAttribute('confirm-with-sweet-alert')) return
+
+  // 2. Get the question from the attribute
+  const question = evt.detail.target.getAttribute('confirm-with-sweet-alert');
 
   // 3. Prevent the default behavior (this will prevent the request from being issued)
   evt.preventDefault();
@@ -219,7 +220,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
   // 4. Show the sweet alert
   swal({
     title: "Are you sure?",
-    text: "Are you sure you are sure?", // or evt.detail.question (only available if hx-confirm attribute is present)
+    text: question || "Are you sure you want to continue?",
     icon: "warning",
     buttons: true,
     dangerMode: true,
@@ -238,7 +239,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 * `detail.etc` - additional request information (mostly unused)
 * `detail.issueRequest(skipConfirmation=false)` - a function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!), if skipConfirmation is `true` the original `window.confirm()` is not executed
 * `detail.path` - the path of the request
-* `detail.target` - the target of the request
+* `detail.target` - the element that triggered the request
 * `detail.triggeringEvent` - the original event that triggered this request
 * `detail.verb` - the verb of the request (e.g. `GET`)
 * `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present)
