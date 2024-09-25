@@ -1128,7 +1128,9 @@ the [`hx-ext`](@/attributes/hx-ext.md) attribute:
 </div>
 ```
 
-If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension)
+For existing extensions, please [see the extensions site](https://extensions.htmx.org).
+
+If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension).
 
 ## Events & Logging {#events}
 
