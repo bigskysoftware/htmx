@@ -1469,7 +1469,13 @@ var htmx = (function() {
     const pantry = find('#--htmx-preserve-pantry--')
     if (pantry) {
       for (const preservedElt of pantry.children) {
-        const existingElement = find('#' + preservedElt.id)
+        const placeholder = find('#hx-preserve-' + preservedElt.id)
+        let existingElement = find('#' + preservedElt.id)
+        if (!existingElement) {
+          existingElement = placeholder
+        } else {
+          placeholder.remove()
+        }
         // @ts-ignore - use proposed moveBefore feature
         existingElement.parentNode.moveBefore(preservedElt, existingElement)
         existingElement.remove()
@@ -1493,7 +1499,7 @@ var htmx = (function() {
             getDocument().body.insertAdjacentHTML('afterend', "<div id='--htmx-preserve-pantry--'></div>")
             pantry = find('#--htmx-preserve-pantry--')
           }
-          existingElement.insertAdjacentHTML('beforebegin', `<div id="${id}"></div>`)
+          existingElement.insertAdjacentHTML('beforebegin', `<div id="hx-preserve-${id}"></div>`)
           // @ts-ignore - use proposed moveBefore feature
           pantry.moveBefore(existingElement, null)
         } else {
