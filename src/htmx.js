@@ -2171,8 +2171,8 @@ var htmx = (function() {
           if (eventFilter) {
             triggerSpec.eventFilter = eventFilter
           }
+          consumeUntil(tokens, NOT_WHITESPACE)
           while (tokens.length > 0 && tokens[0] !== ',') {
-            consumeUntil(tokens, NOT_WHITESPACE)
             const token = tokens.shift()
             if (token === 'changed') {
               triggerSpec.changed = true
@@ -2217,6 +2217,7 @@ var htmx = (function() {
             } else {
               triggerErrorEvent(elt, 'htmx:syntax:error', { token: tokens.shift() })
             }
+            consumeUntil(tokens, NOT_WHITESPACE)
           }
           triggerSpecs.push(triggerSpec)
         }

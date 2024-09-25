@@ -1079,4 +1079,19 @@ describe('hx-trigger attribute', function() {
 
     htmx.config.triggerSpecsCache = initialCacheConfig
   })
+
+  it('handles spaces at the end of trigger specs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var div = make('<div hx-trigger="load , click consume " hx-get="/test">Requests: 0</div>')
+    div.innerHTML.should.equal('Requests: 0')
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+  })
 })
