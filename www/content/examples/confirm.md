@@ -36,12 +36,22 @@ which is then picked up by `hx-trigger`.
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   document.addEventListener("htmx:confirm", function(e) {
+    // The event is triggered on every trigger for a request, so we need to check if the element
+    // that triggered the request has a hx-confirm attribute, if not we can return early and let
+    // the default behavior happen
+    if (!evt.detail.target.hasAttribute('hx-confirm')) return
+
+    // This will prevent the request from being issued to later manually issue it
     e.preventDefault()
+
     Swal.fire({
       title: "Proceed?",
       text: `I ask you... ${e.detail.question}`
     }).then(function(result) {
-      if(result.isConfirmed) e.detail.issueRequest(true) // use true to skip window.confirm
+      if (result.isConfirmed) {
+        // If the user confirms, we manually issue the request
+        e.detail.issueRequest(true); // true to skip the built-in window.confirm()
+      }
     })
   })
 </script>
@@ -62,3 +72,5 @@ when the question depends on the element e.g. a django list:
 <button hx-post="/delete/{{client.pk}}" hx-confirm="Delete {{client.name}}??">Delete</button>
 {% endfor %}
 ```
+
+Learn more about the [`htmx:confirm`](@/events.md#htmx:confirm) event [here](@/events.md#htmx:confirm).

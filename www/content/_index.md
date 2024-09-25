@@ -161,6 +161,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
   padding: 16px;
   min-height: 100px;
   border-bottom: none;
+  width:33%;
 }
 
 @media only screen and (max-width: 760px)  {
@@ -169,39 +170,58 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 	table, thead, tbody, th, td, tr {
 		display: block;
 	}
-
+    #sponsor-table td {
+      width:90%;
+    }
+    #sponsor-table td * {
+      margin: auto;
+    }
 }
 
 </style>
 <div style="overflow-x: auto">
+
+<h1 style="margin-top:32px;text-align:center">Platinum Sponsor</h1>
 <table id="sponsor-table">
 <tr>
 <td colspan="3">
-        <a data-github-account="NotASithLord" href="https://hydrahost.com">
-          <img class="dark-hidden" src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;">
-          <img class="dark-visible" src="/img/hydra-hosting-dark.svg" alt="The GPU Marketplace" style="width:100%;">
-        </a>
-</td>
-</tr>
-<tr>
-<td colspan="3">
-        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
-</td>
-</tr>
-<tr>
-<td>
-        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
-</td>
-<td>
         <a data-github-account="commspace" href="https://www.commspace.co.za">
         <img class="dark-hidden" src="/img/commspace.svg" alt="commspace" style="min-width:200px"/>
         <img class="dark-visible" src="/img/commspace-dark.svg" alt="commspace" style="min-width:200px"/>
         </a>
 </td>
+</tr>
+</table>
+
+## Gold Sponsors
+
+<table id="sponsor-table">
+<tr>
 <td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
+        <a data-github-account="NotASithLord" href="https://hydrahost.com">
+          <img class="dark-hidden" src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;">
+          <img class="dark-visible" src="/img/hydra-hosting-dark.svg" alt="The GPU Marketplace" style="width:100%;">
+        </a>
+</td>
+<td>
+        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
 </td>
 </tr>
+</table>
+
+## Silver Sponsors
+
+<table id="sponsor-table">
+<tr>
+<td>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains" style="max-width:80%;min-width:100px;"></a>
+</td>
+<td>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
+</td>
+</tr>
+</table>
+<table id="sponsor-table">
 <tr>
 <td>
         <a data-github-account="craftcms" href="https://craftcms.com">

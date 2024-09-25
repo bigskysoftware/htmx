@@ -16,6 +16,7 @@ page_template = "essay.html"
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
 * [REST Copypasta](@/essays/rest-copypasta.md)
 * [The #ViewSource Affordance](@/essays/right-click-view-source.md)
+* [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
@@ -39,6 +40,7 @@ page_template = "essay.html"
 * [Model/View/Controller](@/essays/mvc.md)
 * [Is Rendering JSON More Efficient Than Rendering HTML?](https://github.com/1cg/html-json-speed-comparison)
 * [Is JSON Smaller Than HTML?](https://github.com/1cg/html-json-size-comparison)
+* [You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths](@/essays/you-cant.md)
 
 ### Complexity Very Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)

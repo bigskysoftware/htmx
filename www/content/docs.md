@@ -55,7 +55,7 @@ custom_classes = "wide-content"
 htmx is a library that allows you to access modern browser features directly from HTML, rather than using
 javascript.
 
-To understand htmx, first lets take a look at an anchor tag:
+To understand htmx, first let's take a look at an anchor tag:
 
 ```html
 <a href="/blog">Blog</a>
@@ -117,27 +117,27 @@ tag to your document head.  There is no need for a build system to use it.
 
 ### Via A CDN (e.g. unpkg.com)
 
-The fastest way to get going with htmx is to load it via a CDN. You can simply add this to 
+The fastest way to get going with htmx is to load it via a CDN. You can simply add this to
 your head tag and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available for debugging as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.02/dist/htmx.js" integrity="sha384-gpIh5aLQ0qmX8kZdyhsd6jA24uKLkqIr1WAGtantR4KsS97l/NRBvh8/8OYGThAf" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js" integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr" crossorigin="anonymous"></script>
 ```
 
-While the CDN approach is extremely simple, you may want to consider 
+While the CDN approach is extremely simple, you may want to consider
 [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
 ### Download a copy
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -149,7 +149,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@2.0.1
+npm install htmx.org@2.0.2
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
@@ -690,7 +690,7 @@ shows how to use [sweetalert2](https://sweetalert2.github.io/) library for confi
 
 #### Confirming Requests Using Events
 
-Another option to do confirmation with is via the [`htmx:confirm` event](@/events.md#htmx:confirm) event.  This event
+Another option to do confirmation with is via the [`htmx:confirm` event](@/events.md#htmx:confirm).  This event
 is fired on *every* trigger for a request (not just on elements that have a `hx-confirm` attribute) and can be used
 to implement asynchronous confirmation of the request.
 
@@ -710,7 +710,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
       if (confirmed) {
         evt.detail.issueRequest();
       }
-    });     
+    });
   }
 });
 ```
@@ -933,7 +933,7 @@ the response.
 In the event of an error response from the server (e.g. a 404 or a 501), htmx will trigger the [`htmx:responseError`](@/events.md#htmx:responseError)
 event, which you can handle.
 
-In the event of a connection error, the `htmx:sendError` event will be triggered.
+In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) event will be triggered.
 
 ### Configuring Response Handling {#response-handling}
 
@@ -966,8 +966,8 @@ The fields available for response handling configuration on entries in this arra
 #### Configuring Response Handling Examples {#response-handling}
 
 As an example of how to use this configuration, consider a situation when a server-side framework responds with a
-[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response, 
-since it matches the Regular Expression `[45]..`. 
+[`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response,
+since it matches the Regular Expression `[45]..`.
 
 Using the [meta config](#configuration-options) mechanism for configuring responseHandling, we could add the following
 config:
@@ -996,7 +996,7 @@ config:
 If you wanted to swap everything, regardless of HTTP response code, you could use this configuration:
 
 ```html
-<meta name="htmx-config" content='{code:".*", swap: true}, // all responses are swapped'>
+<meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' /> <!--all responses are swapped-->
 ```
 
 Finally, it is worth considering using the [Response Targets](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md)
@@ -1034,7 +1034,7 @@ htmx supports some htmx-specific response headers:
 
 * [`HX-Location`](@/headers/hx-location.md) - allows you to do a client-side redirect that does not do a full page reload
 * [`HX-Push-Url`](@/headers/hx-push-url.md) - pushes a new url into the history stack
-* `HX-Redirect` - can be used to do a client-side redirect to a new location
+* [`HX-Redirect`](@/headers/hx-redirect.md) - can be used to do a client-side redirect to a new location
 * `HX-Refresh` - if set to "true" the client-side will do a full refresh of the page
 * [`HX-Replace-Url`](@/headers/hx-replace-url.md) - replaces the current URL in the location bar
 * `HX-Reswap` - allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
@@ -1048,6 +1048,8 @@ For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/head
 
 Submitting a form via htmx has the benefit of no longer needing the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
 After successfully processing a POST request on the server, you don't need to return a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+
+Also the response headers above are not provided to htmx for processing with 3xx Redirect response codes like [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). Instead, the browser will intercept the redirection internally and return the headers and response from the redirected URL. Where possible use alternative response codes like 200 to allow returning of these response headers.
 
 ### Request Order of Operations {#request-operations}
 
@@ -1126,7 +1128,9 @@ the [`hx-ext`](@/attributes/hx-ext.md) attribute:
 </div>
 ```
 
-If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension)
+For existing extensions, please [see the extensions site](https://extensions.htmx.org).
+
+If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension).
 
 ## Events & Logging {#events}
 
@@ -1660,16 +1664,17 @@ listed below:
 | `htmx.config.disableSelector`         | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                                                                                                                                                                                               |
 | `htmx.config.withCredentials`         | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                                                                                                                                                                                                 |
 | `htmx.config.timeout`                 | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                                                                                                                                                                                                |
-| `htmx.config.scrollBehavior`          | defaults to 'smooth', the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.                                                                                                                                |
+| `htmx.config.scrollBehavior`          | defaults to 'instant', the scroll behavior when using the [show](@/attributes/hx-swap.md#scrolling-scroll-show) modifier with `hx-swap`. The allowed values are `instant` (scrolling should happen instantly in a single jump), `smooth` (scrolling should animate smoothly) and `auto` (scroll behavior is determined by the computed value of [scroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior)).                                                                                                                                    |
 | `htmx.config.defaultFocusScroll`      | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier.                                                                                                                                                                        |
 | `htmx.config.getCacheBusterParam`     | defaults to false, if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`                                                                                                                                                                                                  |
 | `htmx.config.globalViewTransitions`   | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.                                                                                                                                                                                    |
-| `htmx.config.methodsThatUseUrlParams` | defaults to `["get"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                                                                                                                                                                                                 |
+| `htmx.config.methodsThatUseUrlParams` | defaults to `["get", "delete"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                                                                                                                                                                                       |
 | `htmx.config.selfRequestsOnly`        | defaults to `true`, whether to only allow AJAX requests to the same domain as the current document                                                                                                                                                                                                                                     |
 | `htmx.config.ignoreTitle`             | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                                                                                                                                                                                                   |
 | `htmx.config.disableInheritance`      | disables attribute inheritance in htmx, which can then be overridden by the [`hx-inherit`](@/attributes/hx-inherit.md) attribute                                                                                                                                                                                                                  |
 | `htmx.config.scrollIntoViewOnBoost`   | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.                                                                                                                           |
 | `htmx.config.triggerSpecsCache`       | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
+| `htmx.config.responseHandling`        | the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error                                                                                                                                                                                                    |
 | `htmx.config.allowNestedOobSwaps`     | defaults to `true`, whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).                                                                                                                                                              |
 
 </div>

@@ -126,6 +126,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### http4s
 - <https://github.com/martinprobson/http4s-htmx-demo>
 
+### zio-http
+- <https://github.com/rockthejvm/scalatags-htmx-demo>
+
 ## Kotlin
 
 ### Ktor
@@ -175,6 +178,20 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Giraffe
 
 - <https://hamy.xyz/labs/2023-12-fsharp-htmx>
+- <https://github.com/bit-badger/Giraffe.Htmx>
+
+### Feliz.ViewEngine.Htmx
+
+- <https://github.com/Zaid-Ajaj/Feliz.ViewEngine.Htmx>
+- <https://github.com/jkone27/todo-mvc-feliz-htmx>
+
+### Falco.Htmx
+
+- <https://github.com/dpraimeyuu/Falco.Htmx>
+
+### Suave (with Feliz)
+
+- <https://jkone27-3876.medium.com/htmx-and-f-c1ffdc18fbb5>
 
 ## Go
 
