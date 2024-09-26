@@ -570,6 +570,26 @@ describe('hx-trigger attribute', function() {
     div1.innerHTML.should.equal('Requests: 2')
   })
 
+  it('from clause works with multiple extended selectors', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    make('<button id="btn" type="button">Click me</button>' +
+      '<div hx-trigger="click from:(previous button, next a)" hx-target="#a1" hx-get="/test"></div>' +
+      '<a id="a1">Requests: 0</a>')
+    var btn = byId('btn')
+    var a1 = byId('a1')
+    a1.innerHTML.should.equal('Requests: 0')
+    btn.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 1')
+    a1.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 2')
+  })
+
   it('event listeners can filter on target', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {

@@ -1141,31 +1141,55 @@ var htmx = (function() {
    */
   function querySelectorAllExt(elt, selector, global) {
     elt = resolveTarget(elt)
-    if (selector.indexOf('closest ') === 0) {
-      return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
-    } else if (selector.indexOf('find ') === 0) {
-      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
-    } else if (selector === 'next') {
-      return [asElement(elt).nextElementSibling]
-    } else if (selector.indexOf('next ') === 0) {
-      return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)]
-    } else if (selector === 'previous') {
-      return [asElement(elt).previousElementSibling]
-    } else if (selector.indexOf('previous ') === 0) {
-      return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)]
-    } else if (selector === 'document') {
-      return [document]
-    } else if (selector === 'window') {
-      return [window]
-    } else if (selector === 'body') {
-      return [document.body]
-    } else if (selector === 'root') {
-      return [getRootNode(elt, !!global)]
-    } else if (selector.indexOf('global ') === 0) {
-      return querySelectorAllExt(elt, selector.slice(7), true)
-    } else {
-      return toArray(asParentNode(getRootNode(elt, !!global)).querySelectorAll(normalizeSelector(selector)))
+
+    const parts = selector.split(',')
+    const result = []
+    const unprocessedParts = []
+    while (parts.length > 0) {
+      const selector = normalizeSelector(parts.shift())
+      let item
+      if (selector.indexOf('closest ') === 0) {
+        item = closest(asElement(elt), normalizeSelector(selector.substr(8)))
+      } else if (selector.indexOf('find ') === 0) {
+        item = find(asParentNode(elt), normalizeSelector(selector.substr(5)))
+      } else if (selector === 'next' || selector === 'nextElementSibling') {
+        item = asElement(elt).nextElementSibling
+      } else if (selector.indexOf('next ') === 0) {
+        item = scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)
+      } else if (selector === 'previous' || selector === 'previousElementSibling') {
+        item = asElement(elt).previousElementSibling
+      } else if (selector.indexOf('previous ') === 0) {
+        item = scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)
+      } else if (selector === 'document') {
+        item = document
+      } else if (selector === 'window') {
+        item = window
+      } else if (selector === 'body') {
+        item = document.body
+      } else if (selector === 'root') {
+        item = getRootNode(elt, !!global)
+      } else if (selector.indexOf('global ') === 0) {
+        // Previous implementation of `global` only supported it at the first position and applied it to the entire selector string.
+        // For backward compatibility and to maintain logical consistency, we make it apply to everything that follows.
+        parts.unshift(selector.slice(7))
+        result.push(...querySelectorAllExt(elt, parts.join(','), true))
+        break
+      } else {
+        unprocessedParts.push(selector)
+      }
+
+      if (item) {
+        result.push(item)
+      }
     }
+
+    if (unprocessedParts.length > 0) {
+      const standardSelector = unprocessedParts.join(',')
+      const rootNode = asParentNode(getRootNode(elt, !!global))
+      result.push(...toArray(rootNode.querySelectorAll(standardSelector)))
+    }
+
+    return result
   }
 
   /**
