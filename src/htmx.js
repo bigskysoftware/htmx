@@ -1420,6 +1420,7 @@ var htmx = (function() {
    * @returns
    */
   function oobSwap(oobValue, oobElement, settleInfo) {
+    handlePreservedElements(oobElement)
     let selector = '#' + getRawAttribute(oobElement, 'id')
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
@@ -1462,6 +1463,7 @@ var htmx = (function() {
       oobElement.parentNode.removeChild(oobElement)
       triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
     }
+    restorePreservedElements()
     return oobValue
   }
 
@@ -1479,7 +1481,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {DocumentFragment} fragment
+   * @param {DocumentFragment|Element} fragment
    */
   function handlePreservedElements(fragment) {
     forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function(preservedElt) {
