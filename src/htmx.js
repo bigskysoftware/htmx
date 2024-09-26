@@ -1661,9 +1661,13 @@ var htmx = (function() {
     /** @type {Node} */
     let newElt
     const eltBeforeNewContent = target.previousSibling
-    insertNodesBefore(parentElt(target), target, fragment, settleInfo)
+    const parentNode = parentElt(target)
+    if (!parentNode) { // when parent node disappears, we can't do anything
+      return
+    }
+    insertNodesBefore(parentNode, target, fragment, settleInfo)
     if (eltBeforeNewContent == null) {
-      newElt = parentElt(target).firstChild
+      newElt = parentNode.firstChild
     } else {
       newElt = eltBeforeNewContent.nextSibling
     }
@@ -1725,7 +1729,10 @@ var htmx = (function() {
    */
   function swapDelete(target) {
     cleanUpElement(target)
-    return parentElt(target).removeChild(target)
+    const parent = parentElt(target)
+    if (parent) {
+      return parent.removeChild(target)
+    }
   }
 
   /**

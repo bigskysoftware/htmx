@@ -403,4 +403,26 @@ describe('Core htmx API test', function() {
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
     oobDiv.innerHTML.should.be.equal('OOB Swapped!')
   })
+
+  it('swap delete works when parent is removed', function() {
+    this.server.respondWith('DELETE', '/test', 'delete')
+
+    var parent = make('<div><div id="d1" hx-swap="delete" hx-delete="/test">click me</div></div>')
+    var div = htmx.find(parent, '#d1')
+    div.click()
+    parent.remove()
+    this.server.respond()
+    parent.children.length.should.equal(0)
+  })
+
+  it('swap outerHTML works when parent is removed', function() {
+    this.server.respondWith('GET', '/test', 'delete')
+
+    var parent = make('<div><div id="d1" hx-swap="outerHTML" hx-get="/test">click me</div></div>')
+    var div = htmx.find(parent, '#d1')
+    div.click()
+    parent.remove()
+    this.server.respond()
+    parent.children.length.should.equal(0)
+  })
 })
