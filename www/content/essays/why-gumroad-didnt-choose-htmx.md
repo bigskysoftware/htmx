@@ -1,7 +1,7 @@
 +++
 title = "Why Gumroad Didn't Choose htmx"
-date = 2024-02-01
-updated = 2024-04-01
+date = 2024-30-09
+updated = 2024-30-09
 [taxonomies]
 author = ["Sahil Lavingia"]
 tag = ["posts"]
