@@ -292,8 +292,9 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a data-github-account="codacy" href="https://www.codacy.com//">
-          <img class="dark-invert" alt="Codacy" src="/img/codacy.svg" style="width:100%;max-width:250px">
+        <a data-github-account="cased" href="https://cased.com///">
+          <img class="dark-hidden" alt="Developer friendly DevOps" src="/img/Cased_Logo_DarkBlue.svg" style="width:100%;max-width:250px">
+          <img class="dark-visible" alt="Developer friendly DevOps" src="/img/Cased_Logo_Beige-01.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
