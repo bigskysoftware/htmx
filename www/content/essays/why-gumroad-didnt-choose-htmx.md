@@ -37,17 +37,11 @@ Here's why:
 
 Ultimately, we ended up moving to React/Next.js, which has been a really great fit for building the complex UX we've been looking for. We're happy with this decision–for now. It's allowed us to move faster, create more engaging user experiences, and leverage a wealth of existing tools and libraries.
 
-![Gumroad Helper Before After](/img/gumroad-helper-before-after.jpeg)
+![Gumroad Helper Before After](/img/gumroad-helper-before-after.png)
 
 This experience has reinforced a valuable lesson: while it's important to consider lightweight alternatives, it's equally crucial to choose technologies that can grow with your project and support your long-term vision. For Helper, React and Next.js have proven to be that choice.
 
 Since we've moved there, we've been able to seriously upgrade our app's user experience for our core customers.
-
-![Gumroad Helper Workflows](/img/gumroad-helper-workflows.png)
-
-To elaborate further on our experience, particularly regarding the workflow builder shown above:
-
-While the interface might appear simple at first glance—a list of items that can be added to or deleted inline—the complexity lies in the interactions and state management behind this UI.
 
 1. **Drag-and-Drop Functionality**: One of the key features of our workflow builder is the ability to reorder steps through drag-and-drop. While it's possible to implement drag-and-drop with htmx, we found that the available solutions felt clunky and required significant custom JavaScript. In contrast, React ecosystem offers libraries like react-beautiful-dnd that provide smooth, accessible drag-and-drop with minimal setup.
 
