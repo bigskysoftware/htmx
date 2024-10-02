@@ -278,9 +278,10 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a data-github-account="jai-deepsource" href=" https://deepsource.com/">
-          <img class="dark-invert" alt="Deepsource" src="/img/deepsource.svg" style="width:100%;max-width:250px">
-        </a>
+    <a data-github-account="tracebit-com" href="https://tracebit.com/?utm_source=htmx">
+      <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png" style="width:100%;max-width:250px">
+      <img class="dark-visbile" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png" style="width:100%;max-width:250px">
+    </a>
 </td>
 <td>
       <a data-github-account="pubkey" href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
