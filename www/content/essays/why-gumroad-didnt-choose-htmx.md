@@ -45,16 +45,24 @@ Since we've moved there, we've been able to seriously upgrade our app's user exp
 
 ![Gumroad Helper Workflows](/img/gumroad-helper-workflows.png)
 
-To elaborate further on our experience:
+To elaborate further on our experience, particularly regarding the workflow builder shown above:
 
-The "unnatural and forced" feeling with htmx came primarily from trying to implement complex, stateful interactions. For instance, our workflow builder (shown above) requires a lot of client-side state management and real-time updates. With htmx, we found ourselves creating numerous endpoints and writing complex server-side logic to manage what would be simple state updates in React.
+While the interface might appear simple at first glance—a list of items that can be added to or deleted inline—the complexity lies in the interactions and state management behind this UI.
 
-Regarding user experiences that were impractical with htmx, real-time collaborative features were a significant challenge. We wanted users to see each other's cursor movements and edits in real-time, which is straightforward with WebSockets and React but became a complex endeavor with htmx.
+1. **Drag-and-Drop Functionality**: One of the key features of our workflow builder is the ability to reorder steps through drag-and-drop. While it's possible to implement drag-and-drop with htmx, we found that the available solutions felt clunky and required significant custom JavaScript. In contrast, React ecosystem offers libraries like react-beautiful-dnd that provide smooth, accessible drag-and-drop with minimal setup.
 
-Our attempt to implement sophisticated interactions and state management with htmx was driven by the evolving requirements of Helper. As we added features like conditional logic in workflows, multi-step forms with complex validation, and real-time data visualization, we found ourselves pushing against the limits of what htmx was designed to do efficiently.
+2. **Complex State Management**: Each workflow step has its own set of configurations and conditional logic. As users edit these, we need to update the UI in real-time to reflect changes and their implications on other steps. With htmx, this would require numerous server roundtrips or complex client-side state management that goes against htmx's server-centric philosophy. React's state management solutions (like useState or more advanced options like Redux) made this much more straightforward.
 
-We acknowledge that htmx may be a great fit for many projects–though I haven't seen many that reach our desired level of front-end complexity–especially those with simpler interaction models or those built on top of existing server-rendered applications. Our experience doesn't invalidate the benefits others have found in moving from React to htmx. The key is understanding your project's specific needs and choosing the tool that best aligns with those requirements.
+3. **Dynamic Form Generation**: The configuration for each step type is different and can change based on user input. Generating these dynamic forms and handling their state was more intuitive with React's component model. With htmx, we found ourselves writing more complex server-side logic to generate and validate these forms.
 
-In our case, the complex, stateful, and real-time nature of Helper's interface made React and Next.js a better fit. However, we continue to appreciate htmx's approach and may consider it for future projects where its strengths align better with our needs.
+4. **Real-time Collaboration**: While not visible in this screenshot, we implemented features allowing multiple users to edit a workflow simultaneously. Implementing this with WebSockets and React was relatively straightforward, whereas with htmx, it would have required more complex server-side logic and custom JavaScript to handle real-time updates.
+
+5. **Performance Optimization**: As workflows grew larger and more complex, we needed fine-grained control over rendering optimizations. React's virtual DOM and hooks like useMemo and useCallback allowed us to optimize performance in ways that weren't as readily available or intuitive with htmx.
+
+It's important to note that while these challenges aren't insurmountable with htmx, we found that addressing them often led us away from htmx's strengths and towards solutions that felt more natural in a JavaScript-heavy environment. This realization was a key factor in our decision to switch to React and Next.js.
+
+We acknowledge that htmx may be a great fit for many projects, especially those with simpler interaction models or those built on top of existing server-rendered applications. Our experience doesn't invalidate the benefits others have found in htmx. The key is understanding your project's specific needs and choosing the tool that best aligns with those requirements.
+
+In our case, the complex, stateful nature of Helper's interface made React and Next.js a better fit. However, we continue to appreciate htmx's approach and may consider it for future projects where its strengths align better with our needs.
 
 That said, we're always open to reevaluating our tech stack as our needs evolve and new technologies emerge. Who knows what the future might bring?
