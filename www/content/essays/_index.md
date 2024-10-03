@@ -25,7 +25,6 @@ page_template = "essay.html"
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
-* [htmx sucks](@/essays/htmx-sucks.md)
 
 ### Building Hypermedia Applications
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
@@ -49,6 +48,10 @@ page_template = "essay.html"
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 * [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 * [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
+
+### On The Other Hand...
+* [htmx sucks](@/essays/htmx-sucks.md)
+* [Why Gumroad Didn't Choose htmx](@/essays/why-gumroad-didnt-choose-htmx.md)
 
 ### Hypermedia History
 
