@@ -508,6 +508,14 @@ display: block;
 background: none;
 }
 
+figure {
+    margin: 12px;
+}
+
+figcaption {
+    text-align: center;
+    font-style: italic;
+}
 
 .search-box {
     transition: all .2s ease-in-out;
