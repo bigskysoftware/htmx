@@ -121,13 +121,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-TODO" crossorigin="anonymous"></script>
 ```
 
-An unminified version is also available for debugging as well:
+An unminified version is also available as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js" integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.js" integrity="sha384-TODO" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider

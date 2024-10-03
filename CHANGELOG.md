@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.0.3] - 2024-10-03
+
 ## [2.0.2] - 2024-08-12
 * no longer boost forms of type `dialog`
 * properly trigger the `htmx:trigger` event when an event is delayed or throttled
