@@ -1405,9 +1405,11 @@ var htmx = (function() {
    * @param {string} oobValue
    * @param {Element} oobElement
    * @param {HtmxSettleInfo} settleInfo
+   * @param {Node|Document} [rootNode]
    * @returns
    */
-  function oobSwap(oobValue, oobElement, settleInfo) {
+  function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
+    rootNode = rootNode || getDocument()
     let selector = '#' + getRawAttribute(oobElement, 'id')
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
@@ -1422,7 +1424,7 @@ var htmx = (function() {
     oobElement.removeAttribute('hx-swap-oob')
     oobElement.removeAttribute('data-hx-swap-oob')
 
-    const targets = getDocument().querySelectorAll(selector)
+    const targets = querySelectorAllExt(rootNode, selector, false)
     if (targets) {
       forEach(
         targets,
@@ -1807,14 +1809,15 @@ var htmx = (function() {
   /**
    * @param {DocumentFragment} fragment
    * @param {HtmxSettleInfo} settleInfo
+   * @param {Node|Document} [rootNode]
    */
-  function findAndSwapOobElements(fragment, settleInfo) {
+  function findAndSwapOobElements(fragment, settleInfo, rootNode) {
     var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]')
     forEach(oobElts, function(oobElement) {
       if (htmx.config.allowNestedOobSwaps || oobElement.parentElement === null) {
         const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
         if (oobValue != null) {
-          oobSwap(oobValue, oobElement, settleInfo)
+          oobSwap(oobValue, oobElement, settleInfo, rootNode)
         }
       } else {
         oobElement.removeAttribute('hx-swap-oob')
@@ -1838,6 +1841,7 @@ var htmx = (function() {
     }
 
     target = resolveTarget(target)
+    const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
 
     // preserve focus and selection
     const activeElt = document.activeElement
@@ -1876,14 +1880,14 @@ var htmx = (function() {
           const oobValue = oobSelectValue[1] || 'true'
           const oobElement = fragment.querySelector('#' + id)
           if (oobElement) {
-            oobSwap(oobValue, oobElement, settleInfo)
+            oobSwap(oobValue, oobElement, settleInfo, rootNode)
           }
         }
       }
       // oob swaps
-      findAndSwapOobElements(fragment, settleInfo)
+      findAndSwapOobElements(fragment, settleInfo, rootNode)
       forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-        if (findAndSwapOobElements(template.content, settleInfo)) {
+        if (findAndSwapOobElements(template.content, settleInfo, rootNode)) {
           // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
           template.remove()
         }

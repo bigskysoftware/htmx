@@ -260,4 +260,91 @@ describe('hx-swap-oob attribute', function() {
       byId('td1').innerHTML.should.equal('hey')
     })
   }
+  for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
+    it('handles oob target in web components with both inside shadow root and config ' + JSON.stringify(config), function() {
+      this.server.respondWith('GET', '/test', '<div hx-swap-oob="innerHTML:#oob-swap-target">new contents</div>Clicked')
+      class TestElement extends HTMLElement {
+        connectedCallback() {
+          const root = this.attachShadow({ mode: 'open' })
+          root.innerHTML = `
+            <button hx-get="/test" hx-target="next div">Click me!</button>
+            <div id="main-target"></div>
+            <div id="oob-swap-target">this should get swapped</div>
+          `
+          htmx.process(root) // Tell HTMX about this component's shadow DOM
+        }
+      }
+      var elementName = 'test-oobswap-inside-' + config.allowNestedOobSwaps
+      customElements.define(elementName, TestElement)
+      var div = make(`<div><div id="oob-swap-target">this should not get swapped</div><${elementName}/></div>`)
+      var badTarget = div.querySelector('#oob-swap-target')
+      var webComponent = div.querySelector(elementName)
+      var btn = webComponent.shadowRoot.querySelector('button')
+      var goodTarget = webComponent.shadowRoot.querySelector('#oob-swap-target')
+      var mainTarget = webComponent.shadowRoot.querySelector('#main-target')
+      btn.click()
+      this.server.respond()
+      should.equal(mainTarget.textContent, 'Clicked')
+      should.equal(goodTarget.textContent, 'new contents')
+      should.equal(badTarget.textContent, 'this should not get swapped')
+    })
+  }
+  for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
+    it('handles oob target in web components with main target outside web component config ' + JSON.stringify(config), function() {
+      this.server.respondWith('GET', '/test', '<div hx-swap-oob="innerHTML:#oob-swap-target">new contents</div>Clicked')
+      class TestElement extends HTMLElement {
+        connectedCallback() {
+          const root = this.attachShadow({ mode: 'open' })
+          root.innerHTML = `
+            <button hx-get="/test" hx-target="global #main-target">Click me!</button>
+            <div id="main-target"></div>
+            <div id="oob-swap-target">this should get swapped</div>
+          `
+          htmx.process(root) // Tell HTMX about this component's shadow DOM
+        }
+      }
+      var elementName = 'test-oobswap-global-main-' + config.allowNestedOobSwaps
+      customElements.define(elementName, TestElement)
+      var div = make(`<div><div id="main-target"></div><div id="oob-swap-target">this should not get swapped</div><${elementName}/></div>`)
+      var badTarget = div.querySelector('#oob-swap-target')
+      var webComponent = div.querySelector(elementName)
+      var btn = webComponent.shadowRoot.querySelector('button')
+      var goodTarget = webComponent.shadowRoot.querySelector('#oob-swap-target')
+      var mainTarget = div.querySelector('#main-target')
+      btn.click()
+      this.server.respond()
+      should.equal(mainTarget.textContent, 'Clicked')
+      should.equal(goodTarget.textContent, 'new contents')
+      should.equal(badTarget.textContent, 'this should not get swapped')
+    })
+  }
+  for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
+    it('handles global oob target in web components with main target inside web component config ' + JSON.stringify(config), function() {
+      this.server.respondWith('GET', '/test', '<div hx-swap-oob="innerHTML:global #oob-swap-target">new contents</div>Clicked')
+      class TestElement extends HTMLElement {
+        connectedCallback() {
+          const root = this.attachShadow({ mode: 'open' })
+          root.innerHTML = `
+            <button hx-get="/test" hx-target="next div">Click me!</button>
+            <div id="main-target"></div>
+            <div id="oob-swap-target">this should not get swapped</div>
+          `
+          htmx.process(root) // Tell HTMX about this component's shadow DOM
+        }
+      }
+      var elementName = 'test-oobswap-global-oob-' + config.allowNestedOobSwaps
+      customElements.define(elementName, TestElement)
+      var div = make(`<div><div id="main-target"></div><div id="oob-swap-target">this should get swapped</div><${elementName}/></div>`)
+      var webComponent = div.querySelector(elementName)
+      var badTarget = webComponent.shadowRoot.querySelector('#oob-swap-target')
+      var btn = webComponent.shadowRoot.querySelector('button')
+      var goodTarget = div.querySelector('#oob-swap-target')
+      var mainTarget = webComponent.shadowRoot.querySelector('#main-target')
+      btn.click()
+      this.server.respond()
+      should.equal(mainTarget.textContent, 'Clicked')
+      should.equal(goodTarget.textContent, 'new contents')
+      should.equal(badTarget.textContent, 'this should not get swapped')
+    })
+  }
 })
