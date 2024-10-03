@@ -2316,9 +2316,10 @@ var htmx = (function() {
       } else {
         const rawAttribute = getRawAttribute(elt, 'method')
         verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
-        if (verb === 'get') {
-        }
         path = getRawAttribute(elt, 'action')
+        if (verb === 'get' && path.includes('?')) {
+          path = path.replace(/\?[^#]+/, '')
+        }
       }
       triggerSpecs.forEach(function(triggerSpec) {
         addEventListener(elt, function(node, evt) {
