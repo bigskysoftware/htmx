@@ -213,6 +213,71 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('foo!')
   })
 
+  it('ajax api does not fall back to body when target invalid', function() {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', '#d2')
+    this.server.respond()
+    document.body.innerHTML.should.not.equal('foo!')
+  })
+
+  it('ajax api fails when target invalid', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', '#d2').then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
+  it('ajax api fails when target invalid even if source set', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: div,
+      target: '#d2'
+    }).then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
+  it('ajax api fails when source invalid and no target set', function(done) {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: '#d2'
+    }).then(
+      (value) => {
+      },
+      (reason) => {
+        done()
+      }
+    )
+    this.server.respond()
+    div.innerHTML.should.equal('')
+  })
+
+  it('ajax api falls back to targeting source if target not set', function() {
+    this.server.respondWith('GET', '/test', 'foo!')
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('GET', '/test', {
+      source: div
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('foo!')
+  })
+
   it('ajax api works with swapSpec', function() {
     this.server.respondWith('GET', '/test', "<p class='test'>foo!</p>")
     var div = make("<div><div id='target'></div></div>")
@@ -402,5 +467,29 @@ describe('Core htmx API test', function() {
     htmx.swap('#output', '<div id="oob">OOB Swapped!</div><div>Swapped!</div>', { swapStyle: 'innerHTML' }, { selectOOB: '#oob:innerHTML' })
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
     oobDiv.innerHTML.should.be.equal('OOB Swapped!')
+  })
+
+  it('swap delete works when parent is removed', function() {
+    this.server.respondWith('DELETE', '/test', 'delete')
+
+    var parent = make('<div><div id="d1" hx-swap="delete" hx-delete="/test">click me</div></div>')
+    var div = htmx.find(parent, '#d1')
+    div.click()
+    div.remove()
+    parent.remove()
+    this.server.respond()
+    parent.children.length.should.equal(0)
+  })
+
+  it('swap outerHTML works when parent is removed', function() {
+    this.server.respondWith('GET', '/test', 'delete')
+
+    var parent = make('<div><div id="d1" hx-swap="outerHTML" hx-get="/test">click me</div></div>')
+    var div = htmx.find(parent, '#d1')
+    div.click()
+    div.remove()
+    parent.remove()
+    this.server.respond()
+    parent.children.length.should.equal(0)
   })
 })
