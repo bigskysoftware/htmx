@@ -1149,6 +1149,8 @@ var htmx = (function() {
       return [document.body]
     } else if (selector === 'root') {
       return [getRootNode(elt, !!global)]
+    } else if (selector === 'host') {
+      return [(/** @type ShadowRoot */(elt.getRootNode())).host]
     } else if (selector.indexOf('global ') === 0) {
       return querySelectorAllExt(elt, selector.slice(7), true)
     } else {
