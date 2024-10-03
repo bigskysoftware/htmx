@@ -118,4 +118,29 @@ describe('hx-boost attribute', function() {
     this.server.respond()
     btn.innerHTML.should.equal('Boosted!')
   })
+
+  it('form get w/ search params in action property excludes search params', function() {
+    this.server.respondWith('GET', /\/test.*/, function(xhr) {
+      should.equal(undefined, getParameters(xhr).foo)
+      xhr.respond(200, {}, 'Boosted!')
+    })
+
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test?foo=bar" method="get"><button id="b1">Submit</button></form></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Boosted!')
+  })
+
+  it('form post w/ query params in action property uses full url', function() {
+    this.server.respondWith('POST', /\/test.*/, function(xhr) {
+      should.equal(undefined, getParameters(xhr).foo)
+      xhr.respond(200, {}, 'Boosted!')
+    })
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="/test?foo=bar" method="post"><button id="b1">Submit</button></form></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Boosted!')
+  })
 })

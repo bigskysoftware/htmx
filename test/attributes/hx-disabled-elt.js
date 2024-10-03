@@ -80,4 +80,16 @@ describe('hx-disabled-elt attribute', function() {
     b2.hasAttribute('disabled').should.equal(false)
     b3.hasAttribute('disabled').should.equal(false)
   })
+
+  it('load trigger does not prevent disabled element working', function() {
+    this.server.respondWith('GET', '/test', 'Loaded!')
+    var div1 = make('<div id="d1" hx-get="/test" hx-disabled-elt="#b1" hx-trigger="load">Load Me!</div><button id="b1">Demo</button>')
+    var div = byId('d1')
+    var btn = byId('b1')
+    div.innerHTML.should.equal('Load Me!')
+    btn.hasAttribute('disabled').should.equal(true)
+    this.server.respond()
+    div.innerHTML.should.equal('Loaded!')
+    btn.hasAttribute('disabled').should.equal(false)
+  })
 })

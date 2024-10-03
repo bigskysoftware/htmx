@@ -314,4 +314,15 @@ describe('hx-vals attribute', function() {
     }
     calledEvent.should.equal(true)
   })
+  it('hx-vals works with null values', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('null')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\": null }'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
 })
