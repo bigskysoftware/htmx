@@ -1,6 +1,13 @@
 # Changelog
 
 ## [2.0.3] - 2024-10-03
+* Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
+  see the [demo page](/examples/move-before) for more information.
+* Fixed `revealed` event when a resize reveals an element
+* Enabled `hx-preserve` in oob-swaps
+* Better degredation of `hx-boost` on forms with query parameters in their `action`
+* Improved shadowRoot support
+* Many smaller bug fixes
 
 ## [2.0.2] - 2024-08-12
 * no longer boost forms of type `dialog`
