@@ -45,6 +45,23 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
+  it('Dynamic hx-vals using spread operator works', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.v1.should.equal('test')
+      params.v2.should.equal('42')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    window.foo = function() {
+      return { v1: 'test', v2: 42 }
+    }
+    var div = make("<div hx-post='/vars' hx-vals='js:{...foo()}'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    delete window.foo
+  })
+
   it('hx-vals can be on parents', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
@@ -296,5 +313,16 @@ describe('hx-vals attribute', function() {
       htmx.off('htmx:evalDisallowedError', handler)
     }
     calledEvent.should.equal(true)
+  })
+  it('hx-vals works with null values', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('null')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\": null }'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
   })
 })

@@ -64,6 +64,7 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('Requests: 1')
   })
 
+  // This test and the next one should be kept in sync.
   it('changed modifier works along from clause with two inputs', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
@@ -73,6 +74,92 @@ describe('hx-trigger attribute', function() {
     var input1 = make('<input type="text"/>')
     var input2 = make('<input type="text"/>')
     make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    var div = make('<div id="d1"></div>')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+
+    input1.value = 'bar'
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input2.value = 'foo'
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+  })
+
+  // This test and the previous one should be kept in sync.
+  it('changed modifier counts each triggerspec separately', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input1 = make('<input type="text"/>')
+    var input2 = make('<input type="text"/>')
+    make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    var div = make('<div id="d1"></div>')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+
+    input1.value = 'bar'
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+
+    input2.value = 'foo'
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 4')
+  })
+
+  it('separate changed modifier works along from clause with two inputs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input1 = make('<input type="text"/>')
+    var input2 = make('<input type="text"/>')
+    make('<div hx-trigger="click changed from:input:nth-child(1), click changed from:input:nth-child(2)" hx-target="#d1" hx-get="/test"></div>')
     var div = make('<div id="d1"></div>')
 
     input1.click()
@@ -1078,5 +1165,20 @@ describe('hx-trigger attribute', function() {
     Object.keys(htmx.config.triggerSpecsCache).length.should.equal(1)
 
     htmx.config.triggerSpecsCache = initialCacheConfig
+  })
+
+  it('handles spaces at the end of trigger specs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var div = make('<div hx-trigger="load , click consume " hx-get="/test">Requests: 0</div>')
+    div.innerHTML.should.equal('Requests: 0')
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
   })
 })

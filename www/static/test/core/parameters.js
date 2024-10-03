@@ -134,8 +134,10 @@ describe('Core htmx Parameter Handling', function() {
       vals.do.should.equal('rey')
       vals.btn.should.equal('bar')
       done()
-    })
+    }, { once: true })
     button.focus()
+    // Headless / Hardly-throttled CPU might result in 'focusin' not being fired, double it just in case
+    htmx.trigger(button, 'focusin')
   })
 
   it('form includes last focused submit', function(done) {
@@ -149,8 +151,10 @@ describe('Core htmx Parameter Handling', function() {
       vals.do.should.equal('rey')
       vals.s1.should.equal('bar')
       done()
-    })
+    }, { once: true })
     button.focus()
+    // Headless / Hardly-throttled CPU might result in 'focusin' not being fired, double it just in case
+    htmx.trigger(button, 'focusin')
   })
 
   it('form does not include button when focus is lost', function() {
@@ -274,6 +278,14 @@ describe('Core htmx Parameter Handling', function() {
     var form = make('<form hx-post="/test"><test-element></test-element></form>')
     var vals = htmx._('getInputValues')(form, 'get').values
     vals.foo.should.equal('bar')
+  })
+
+  it('formdata works with null values', function() {
+    var form = make('<form hx-post="/test"><input name="foo" value="bar"/></form>')
+    var vals = htmx._('getInputValues')(form, 'get').values
+    function updateToNull() { vals.foo = null }
+    updateToNull.should.not.throw()
+    vals.foo.should.equal('null')
   })
 
   it('order of parameters follows order of input elements', function() {

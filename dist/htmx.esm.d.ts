@@ -124,6 +124,7 @@ export type HtmxBeforeSwapDetails = HtmxResponseInfo & {
     isError: boolean;
     ignoreTitle: boolean;
     selectOverride: string;
+    swapOverride: string;
 };
 export type HtmxAjaxHandler = (elt: Element, responseInfo: HtmxResponseInfo) => any;
 export type HtmxSettleTask = (() => void);
@@ -144,7 +145,7 @@ export type HtmxExtension = {
 declare namespace htmx {
     let onLoad: (callback: (elt: Node) => void) => EventListener;
     let process: (elt: Element | string) => void;
-    let on: (arg1: EventTarget | string, arg2: string | EventListener, arg3?: EventListener) => EventListener;
+    let on: (arg1: EventTarget | string, arg2: string | EventListener, arg3?: EventListener | any | boolean, arg4?: any | boolean) => EventListener;
     let off: (arg1: EventTarget | string, arg2: string | EventListener, arg3?: EventListener) => EventListener;
     let trigger: (elt: EventTarget | string, eventName: string, detail?: any | undefined) => boolean;
     let ajax: (verb: HttpVerb, path: string, context: Element | string | HtmxAjaxHelperContext) => Promise<void>;

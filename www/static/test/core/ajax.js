@@ -559,6 +559,34 @@ describe('Core htmx AJAX Tests', function() {
     values.should.deep.equal({ c1: ['cb1', 'cb3'], c2: 'cb5', c3: 'cb6' })
   })
 
+  it('properly handles radio inputs', function() {
+    var values
+    this.server.respondWith('Post', '/test', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+        '<div role="radiogroup">' +
+        '<input id="rb1" name="r1" value="rb1" type="radio">' +
+        '<input id="rb2" name="r1" value="rb2" type="radio">' +
+        '<input id="rb3" name="r1" value="rb3" type="radio">' +
+        '<input id="rb4" name="r2" value="rb4"  type="radio">' +
+        '<input id="rb5" name="r2" value="rb5"  type="radio">' +
+        '<input id="rb6" name="r3" value="rb6"  type="radio">' +
+        '</div>' +
+        '</form>')
+
+    form.click()
+    this.server.respond()
+    values.should.deep.equal({})
+
+    byId('rb1').checked = true
+    form.click()
+    this.server.respond()
+    values.should.deep.equal({ r1: 'rb1' })
+  })
+
   it('text nodes dont screw up settling via variable capture', function() {
     this.server.respondWith('GET', '/test', "<div id='d1' hx-trigger='click consume' hx-get='/test2'></div>fooo")
     this.server.respondWith('GET', '/test2', 'clicked')

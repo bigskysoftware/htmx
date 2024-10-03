@@ -2,6 +2,8 @@ describe('Core htmx Shadow DOM Tests', function() {
   // Skip these tests if browser doesn't support shadow DOM
   if (typeof window.ShadowRoot === 'undefined') return
 
+  const chai = window.chai
+
   before(function() {
     this.initialWorkArea = getWorkArea().outerHTML
   })
@@ -19,7 +21,9 @@ describe('Core htmx Shadow DOM Tests', function() {
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    getWorkArea().shadowRoot.innerHTML = ''
+    var workArea = getWorkArea()
+    if (!workArea.shadowRoot) workArea.attachShadow({ mode: 'open' })
+    workArea.shadowRoot.innerHTML = ''
   })
 
   // Locally redefine the `byId` and `make` functions to use shadow DOM
@@ -61,6 +65,14 @@ describe('Core htmx Shadow DOM Tests', function() {
   })
   it('properly escapes shadow root for extended selector', function() {
     var div = make('<div hx-target="global #work-area"></div>')
+    htmx.defineExtension('test/shadowdom.js', {
+      init: function(api) {
+        api.getTarget(div).should.equal(getWorkArea())
+      }
+    })
+  })
+  it('properly retrives shadow root host for extended selector', function() {
+    var div = make('<div hx-target="host"></div>')
     htmx.defineExtension('test/shadowdom.js', {
       init: function(api) {
         api.getTarget(div).should.equal(getWorkArea())
@@ -1312,5 +1324,35 @@ describe('Core htmx Shadow DOM Tests', function() {
     btn.click()
     window.foo.should.equal(true)
     delete window.foo
+  })
+
+  it('can target shadow DOM Host and place content below web component', function() {
+    this.server.respondWith('GET', '/test', '<div id="r1">Clicked!</div>')
+    var btn = make('<button hx-get="/test" hx-target="host" hx-swap="afterend">Click Me!</button>')
+    btn.click()
+    this.server.respond()
+    var r1 = document.getElementById('r1')
+    r1.innerHTML.should.equal('Clicked!')
+    r1.remove()
+  })
+
+  it('can target global id outside shadow DOM and place content', function() {
+    this.server.respondWith('GET', '/test', '<div id="r2">Clicked!</div>')
+    var btn = make('<button hx-get="/test" hx-target="global #work-area" hx-swap="beforebegin">Click Me!</button>')
+    btn.click()
+    this.server.respond()
+    var r2 = document.getElementById('r2')
+    r2.innerHTML.should.equal('Clicked!')
+    r2.remove()
+  })
+
+  it('can target shadow DOM Host with outerHTML swap and replace it', function() {
+    this.server.respondWith('GET', '/test', '<div id="work-area" hx-history-elt>Clicked!</div>')
+    var btn = make('<button hx-get="/test" hx-target="host" hx-swap="outerHTML">Click Me!</button>')
+    btn.click()
+    chai.expect(getWorkArea().shadowRoot).to.not.be.a('null')
+    this.server.respond()
+    getWorkArea().innerHTML.should.equal('Clicked!')
+    chai.expect(getWorkArea().shadowRoot).to.be.a('null')
   })
 })
