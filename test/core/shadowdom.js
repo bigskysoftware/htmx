@@ -2,6 +2,8 @@ describe('Core htmx Shadow DOM Tests', function() {
   // Skip these tests if browser doesn't support shadow DOM
   if (typeof window.ShadowRoot === 'undefined') return
 
+  const chai = window.chai;
+
   before(function() {
     this.initialWorkArea = getWorkArea().outerHTML
   })
