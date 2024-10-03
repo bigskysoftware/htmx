@@ -1450,7 +1450,9 @@ var htmx = (function() {
 
           target = beforeSwapDetails.target // allow re-targeting
           if (beforeSwapDetails.shouldSwap) {
+            handlePreservedElements(fragment)
             swapWithStyle(swapStyle, target, target, fragment, settleInfo)
+            restorePreservedElements()
           }
           forEach(settleInfo.elts, function(elt) {
             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails)
@@ -1479,7 +1481,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {DocumentFragment} fragment
+   * @param {DocumentFragment|ParentNode} fragment
    */
   function handlePreservedElements(fragment) {
     forEach(findAll(fragment, '[hx-preserve], [data-hx-preserve]'), function(preservedElt) {
