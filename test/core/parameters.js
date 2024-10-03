@@ -280,6 +280,14 @@ describe('Core htmx Parameter Handling', function() {
     vals.foo.should.equal('bar')
   })
 
+  it('formdata works with null values', function() {
+    var form = make('<form hx-post="/test"><input name="foo" value="bar"/></form>')
+    var vals = htmx._('getInputValues')(form, 'get').values
+    function updateToNull() { vals.foo = null }
+    updateToNull.should.not.throw()
+    vals.foo.should.equal('null')
+  })
+
   it('order of parameters follows order of input elements', function() {
     this.server.respondWith('GET', '/test?foo=bar&bar=foo&foo=bar&foo2=bar2', function(xhr) {
       xhr.respond(200, {}, 'Clicked!')
