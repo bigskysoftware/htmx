@@ -42,7 +42,7 @@ You can copy and paste them and then adjust them for your needs.
 | [Confirm](@/examples/confirm.md)                                            | Demonstrates how to implement a custom confirmation dialog with htmx                                                                               |
 | [Async Authentication](@/examples/async-auth.md)                            | Demonstrates how to handle async authentication tokens in htmx                                                                                     |
 | [Web Components](@/examples/web-components.md)                              | Demonstrates how to integrate htmx with web components and shadow DOM                                                                              |
-| [(Experimental) moveBefore()-powered hx-preserve](@/examples/move-before)   | htmx will use the experimental [`moveBefore()`](https://cr-status.appspot.com/feature/5135990159835136) API for moving elements, if it is present. |
+| [(Experimental) moveBefore()-powered hx-preserve](/examples/move-before)    | htmx will use the experimental [`moveBefore()`](https://cr-status.appspot.com/feature/5135990159835136) API for moving elements, if it is present. |
 
 ## Migrating from Hotwire / Turbo ?
 
