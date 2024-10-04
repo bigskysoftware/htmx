@@ -10,7 +10,7 @@ title = "Reference"
 * [htmx Request Headers](#request_headers)
 * [htmx Response Headers](#response_headers)
 * [htmx Events](#events)
-* [htmx Extensions](https://extensions.htmx.org)
+* [htmx Extensions](/extensions)
 * [JavaScript API](#api)
 * [Configuration Options](#config)
 
@@ -188,7 +188,7 @@ All other attributes available in htmx.
 | [`htmx.config`](@/api.md#config)  | A property that holds the current htmx config object
 | [`htmx.createEventSource`](@/api.md#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
 | [`htmx.createWebSocket`](@/api.md#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
-| [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](https://extensions.htmx.org)
+| [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](https://htmx.org/extensions)
 | [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector
 | [`htmx.findAll()` `htmx.findAll(elt, selector)`](@/api.md#find)  | Finds all elements matching a given selector
 | [`htmx.logAll()`](@/api.md#logAll)  | Installs a logger that will log all htmx events
@@ -200,7 +200,7 @@ All other attributes available in htmx.
 | [`htmx.process()`](@/api.md#process)  | Processes the given element and its children, hooking up any htmx behavior
 | [`htmx.remove()`](@/api.md#remove)  | Removes the given element
 | [`htmx.removeClass()`](@/api.md#removeClass)  | Removes a class from the given element
-| [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](https://extensions.htmx.org)
+| [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](https://htmx.org/extensions)
 | [`htmx.swap()`](@/api.md#swap)  | Performs swapping (and settling) of HTML content
 | [`htmx.takeClass()`](@/api.md#takeClass)  | Takes a class from other elements for the given element
 | [`htmx.toggleClass()`](@/api.md#toggleClass)  | Toggles a class from the given element

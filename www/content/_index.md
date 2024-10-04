@@ -105,7 +105,7 @@ directly in HTML, using [attributes](@/reference.md#attributes), so you can buil
 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://extensions.htmx.org) & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
+[extendable](https://htmx.org/extensions) & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
 
