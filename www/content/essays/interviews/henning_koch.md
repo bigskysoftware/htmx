@@ -17,7 +17,7 @@ Thank you for agreeing to an interview!
 > Sure! I'm currently head of development at [makandra](https://makandra.de/en), a Ruby on Rails consultancy I co-founded back in 2009, after many years of freelancing as a web developer. So my context is working on many different web apps concurrently, and maintaining those for a long time. On a given week we probably touch 10+ projects, for industries ranging from education to automative to cyber security. Unpoly is an extraction from patterns that we saw repeating over and over in client projects.
 
 **Q**: When I created intercooler.js a big part of it was my unwillingness to deal with the popular SPA libraries of the time
-(Angular & ExtJS, for example).  Did Unpoly have a similiar history?
+(Angular & ExtJS, for example).  Did Unpoly have a similar history?
 
 > Our team actually went all-in on AngularJS for a while, in an effort to replace the mountains of jQuery spaghetti that we had before. When Google nuked AngularJS with their Angular 2 rewrite, we held a retrospective for that time and came up with mixed results. While we had built some apps that were a great fit for the SPA model, the majority of projects suffered from larger code bases, more dependencies, logic being split between client and server, lots of boilerplate API to move data from where we already have it (the server) to where we need it (the browser).
 >
@@ -36,7 +36,7 @@ a Rails developer too.  Did that influence your approach to Unpoly?
 
 > I share some of your love for interactive documents that stream their UI together with their content. For me this began in the 1990s with character-based BBS UIs und WinHelp files, until the web eventually supplanted all of that.
 >
-> Today I'm not super philosophical about it, but I do believe that a hypermedia approach is a sweet spot where you get good UI fidelity with very little and mostly boring code. For the median app, hypermedia probably gives a better result than the SPA model. I file like there's this enourmous disconnect between the theoretical ceiling of an SPA model and what most SPAs deliver. SPAs allow for optimistic UI (which is great!), but that's just more code than waiting for a JSON endpoint. So once you do any meaningful interaction on a spotty connection, many SPAs degrade to spinners and blank pages.
+> Today I'm not super philosophical about it, but I do believe that a hypermedia approach is a sweet spot where you get good UI fidelity with very little and mostly boring code. For the median app, hypermedia probably gives a better result than the SPA model. I file like there's this enormous disconnect between the theoretical ceiling of an SPA model and what most SPAs deliver. SPAs allow for optimistic UI (which is great!), but that's just more code than waiting for a JSON endpoint. So once you do any meaningful interaction on a spotty connection, many SPAs degrade to spinners and blank pages.
 
 **Q**: What are the most important technical lessons you draw from unpoly?
 

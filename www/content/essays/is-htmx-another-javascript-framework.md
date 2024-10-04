@@ -77,7 +77,7 @@ In short, while htmx can be used as a framework, it's a framework that [deviates
 <div style="text-align:center; width:100%">
   <img width=500
        src="/img/memes/istudiedhtml.png"
-       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audactiy to come to me for help?'"
+       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audacity to come to me for help?'"
       >
 </div>
 
