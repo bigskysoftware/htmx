@@ -99,6 +99,7 @@ There are some additional non-standard events that htmx supports:
 * `intersect` - fires once when an element first intersects the viewport.  This supports two additional options:
     * `root:<selector>` - a CSS selector of the root element for intersection
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire the event on
+    * `rootMargin:<margin>` - a string, formatted similarly to a CSS margin, but only with support for pixels and percentages. To specify multiple directions, separate the values with `_`, e.g., `10px_20px_30px_40px`
 
 ### Triggering via the `HX-Trigger` header
 
