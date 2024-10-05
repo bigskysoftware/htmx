@@ -7,7 +7,7 @@ morphing is a process where an existing DOM tree is "morphed" into the shape of 
 the existing DOM's nodes as possible.  By preserving nodes when changing from one tree to another you can present a 
 much smoother transition between the two states.
 
-You can use the idiomorph morphing algorith as a [swapping](@attributes/hx-swap) strategy by including the idiomorph 
+You can use the idiomorph morphing algorithm as a [swapping](@attributes/hx-swap) strategy by including the idiomorph 
 extension.
 
 ## Install
