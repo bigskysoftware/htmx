@@ -1,5 +1,5 @@
 +++
-title = "htmx 1.x Compatability Extension"
+title = "htmx 1.x Compatibility Extension"
 +++
 
 The `htmx-1-compat` extension allows you to almost seamlessly upgrade from htmx 1.x to htmx 2.
