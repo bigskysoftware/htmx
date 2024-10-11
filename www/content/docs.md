@@ -999,7 +999,7 @@ If you wanted to swap everything, regardless of HTTP response code, you could us
 <meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' /> <!--all responses are swapped-->
 ```
 
-Finally, it is worth considering using the [Response Targets](/extensions/reponse-targets)
+Finally, it is worth considering using the [Response Targets](/extensions/response-targets)
 extension, which allows you to configure the behavior of response codes declaratively via attributes.
 
 ### CORS
