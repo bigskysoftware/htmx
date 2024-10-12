@@ -8,6 +8,7 @@
 * Better degredation of `hx-boost` on forms with query parameters in their `action`
 * Improved shadowRoot support
 * Many smaller bug fixes
+* Moved the core extension documentation back to <https://htmx.org/extensions>
 
 ## [2.0.2] - 2024-08-12
 * no longer boost forms of type `dialog`

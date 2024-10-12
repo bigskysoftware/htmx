@@ -149,7 +149,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@2.0.2
+npm install htmx.org@2.0.3
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
@@ -448,7 +448,7 @@ cost of more CPU.
 
 The following extensions are available for morph-style swaps:
 
-* [Idiomorph](https://github.com/bigskysoftware/idiomorph#htmx) - A morphing algorithm created by the htmx developers.
+* [Idiomorph](/extensions/idiomorph) - A morphing algorithm created by the htmx developers.
 * [Morphdom Swap](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README.md) - Based on the [morphdom](https://github.com/patrick-steele-idem/morphdom),
   the original DOM morphing library.
 * [Alpine-morph](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/alpine-morph/README.md) - Based on the [alpine morph](https://alpinejs.dev/plugins/morph) plugin, plays
@@ -841,7 +841,7 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 ## Web Sockets & SSE {#websockets-and-sse}
 
 Web Sockets and Server Sent Events (SSE) are supported via extensions.  Please see
-the [SSE extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) and [WebSocket extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md)
+the [SSE extension](/extensions/sse) and [WebSocket extension](/extensions/ws)
 pages to learn more.
 
 ## History Support {#history}
@@ -999,7 +999,7 @@ If you wanted to swap everything, regardless of HTTP response code, you could us
 <meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' /> <!--all responses are swapped-->
 ```
 
-Finally, it is worth considering using the [Response Targets](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/response-targets/README.md)
+Finally, it is worth considering using the [Response Targets](/extensions/reponse-targets)
 extension, which allows you to configure the behavior of response codes declaratively via attributes.
 
 ### CORS
@@ -1117,20 +1117,46 @@ Please see the [Animation Guide](@/examples/animations.md) for more details on t
 
 ## Extensions
 
-Htmx has an extension mechanism that allows you to customize the libraries' behavior.
-Extensions [are defined in javascript](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension) and then used via
-the [`hx-ext`](@/attributes/hx-ext.md) attribute:
+htmx provides an [extensions](/extensions) mechanism that allows you to customize the libraries' behavior.
+Extensions [are defined in javascript](/extensions/building) and then enabled via
+the [`hx-ext`](@/attributes/hx-ext.md) attribute.
+
+Here is how you would install the [idiomorph](@extension/idiomorph) extension, which allows you to use the
+[Idiomorph](https://github.com/bigskysoftware/idiomorph) DOM morphing algorithms for htmx swaps:
 
 ```html
-<div hx-ext="debug">
-    <button hx-post="/example">This button used the debug extension</button>
-    <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
-</div>
+<head>
+  <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
+</head>
+<body hx-ext="morph">
+  ...
+  <button hx-post="/example" hx-swap="morph" hx-target="#content">
+    Update Content
+  </button>
+  ...
+</body>
 ```
 
-For existing extensions, please [see the extensions site](https://extensions.htmx.org).
+First the extension is included (it should be included *after* `htmx.js` is included), then the extension is referenced
+by name via the `hx-ext` attribute.  This enables you to then use the `morph` swap.
 
-If you are interested in adding your own extension to htmx, please [see the extension docs](https://github.com/bigskysoftware/htmx-extensions/tree/main?tab=readme-ov-file#defining-an-extension).
+### Core Extensions
+
+htmx supports a few "core" extensions, which are supported by the htmx development team:
+
+* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
+* [htmx-1-compat](/extensions/htmx-1-compat) - restores htmx 1 defaults & functionality
+* [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
+* [preload](/extensions/preload) - allows you to preload content for better performance
+* [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
+* [sse](/extensions/sse) - support for [Serve Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+* [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
+
+You can see all available extensions on the [Extensions](/extensions) page.
+
+### Creating Extensions
+
+If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions/building).
 
 ## Events & Logging {#events}
 

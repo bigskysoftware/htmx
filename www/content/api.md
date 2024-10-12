@@ -2,7 +2,7 @@
 title = "Javascript API"
 +++
 
-While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://extensions.htmx.org) or for working with [events](@/events.md).
+While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://htmx.org/extensions) or for working with [events](@/events.md).
 
 The [hyperscript](https://hyperscript.org) project is intended to provide more extensive scripting support
 for htmx-based applications.
@@ -183,7 +183,7 @@ to provide custom WebSocket setup.
 
 ### Method - `htmx.defineExtension()` {#defineExtension}
 
-Defines a new htmx [extension](https://extensions.htmx.org).
+Defines a new htmx [extension](https://htmx.org/extensions).
 
 ##### Parameters
 
