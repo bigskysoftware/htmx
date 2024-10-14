@@ -239,7 +239,7 @@ These brief sections are not relevant to non-academics interested in REST.
 
 ## Summary
 
-So there you have it, a brief tour of Chapter 5 of Roy Fielding's disseration, which gave us the term REST.  I have
+So there you have it, a brief tour of Chapter 5 of Roy Fielding's dissertation, which gave us the term REST.  I have
 focused in on the areas that I think are most important for web developers to understand and tried to convey how
 REST describes the original web model.  The uniform interface concept is, in my opinion, the most important and interesting
 aspect of REST, and is useful for web developers to understand as it is primarily responsible for the benefits described

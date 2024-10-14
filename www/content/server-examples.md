@@ -125,6 +125,7 @@ These examples may make it a bit easier to get started using htmx with your plat
   
 ### http4s
 - <https://github.com/martinprobson/http4s-htmx-demo>
+- <https://github.com/eikek/htmx4s>
 
 ### zio-http
 - <https://github.com/rockthejvm/scalatags-htmx-demo>
