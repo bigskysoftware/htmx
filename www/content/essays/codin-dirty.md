@@ -16,37 +16,39 @@ tag = ["posts"]
 > “Writing clean code is what you must do in order to call yourself a professional. There is no reasonable excuse for 
 > doing anything less than your best.” [Clean Code](https://www.goodreads.com/book/show/3735293-clean-code)
 
-In this essay I want to talk about my approach to writing code and contrast it in particular with the recommendations of
+In this essay I want to talk about my approach to writing code and contrast it with the recommendations of
 the book [Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882).
 
-I am going to call my approach "Codin' Dirty" because I often use techniques that conflict with Clean Code recommendations.
+I am going to call my approach "Codin' Dirty" because I often use techniques that conflict with Clean Code 
+recommendations.
 
-I don't really consider my code all that dirty: yeah, it's a little junky in places, but for the most part I'm 
+I don't really consider my code all that dirty: yeah, it's a little janky in places, but for the most part I'm 
 happy with it and find it easy enough to maintain with decent levels of quality.
 
-I also don't think *you* need to code dirty.  My goal here is not to convince you to code the way I code, but rather
-to show that you don't *have* to follow the Clean Code recommendations to write reasonable, maintainable and
-successful software.
+I also want to stress that in this essay I am not trying to convince *you* to code dirty.  Rather I want to
+show that it is possible to write successful software without adopting many "Clean Code" recommendations.
 
-I have been around for a while and I have seen a lot of different approaches to building software work.  Some people are 
-very effective using Object-Oriented Programming, other very smart people hate it.  Some people love the expressiveness 
-of dynamic languages, some smart people hate dynamic languages with a passion. Some people ship successfully while 
+I have been around for a while and I have seen a lot of different approaches to building software work.  Some folks love
+Object-Oriented Programming, other very smart people hate it.  Some folks love the expressiveness 
+of dynamic languages, some people hate dynamic languages. Some people ship successfully while 
 strictly follow Test Driven Development, others slap a few end-to-end tests on at the end of the
-project or (what seems crazy to me) don't bother testing at all.
+project or (what seems crazy to me) don't bother testing at all!
 
-I have seen all these different approaches ship (and maintain) successful software.
+I have seen projects using all these different approaches ship and maintain successful software.
 
 So, again, my goal here is not to convince you that my way of coding is the only way, but rather to show you (particularly
 younger developers, who are prone to being intimidated by terms like "Clean Code") that you can have a successful 
-programming career even it they're tryna catch you codin' dirty.
+programming career using a lot of different approaches, mine being one of them.
 
 ## TLDR
 
-The TLDR of my codin' dirty approach is:
+Three "dirty" coding practices I'm going to discuss in this essay are:
 
 * (Some) big functions are good
 * Prefer integration tests to unit tests
 * Keep class/interface/concept count down, if possible
+
+If you want to skip the rest of the essay, that's the takeaway.
 
 ## I Like Big Functions
 
@@ -60,7 +62,7 @@ This is in contrast with Clean Code, which says:
 Now, it always depends on the type of work that I'm doing, of course, but I usually tend to organize my functions into the 
 following:
 
-* A few large "crux" functions, the real meat of the module.  I set no bound on the Lines of Code (LOC) of these methods.
+* A few large "crux" functions, the real meat of the module.  I set no bound on the Lines of Code (LOC) of these methods, although I start to feel bad when they get larger than a few hundred LOC.
 * A fair number of "support" functions, which tend to be in the 10-20 LOC range
 * A fair number of "utility" functions, which tend to be in the 5-10 LOC range
 
@@ -70,10 +72,10 @@ in [htmx](https://htmx.org).  This method is nearly 400 lines long.
 Definitely not clean!
 
 However, in this function there is a lot of context to keep around, and it lays out a series of specific steps that must
-proceed in a fairly linear manner.  There isn't much reuse to be found by splitting it up into other functions and I
-think it would hurt the clarity (and the debuggability!) of the function if I did so just based on the general sense
-that functions should be small.
+proceed in a fairly linear manner.  There isn't any reuse to be found by splitting it up into other functions and I
+think it would hurt the clarity (and also importantly for me, the debuggability) of the function if I did so.
 
+But, as it stands, I'm not going to break that function up just to make it smaller.
 
 ### Important Things Should Be Big
 
@@ -94,11 +96,12 @@ implementation around, even if they are better expressed in a larger function.
 Everything looks the same: a function signature definition, followed by an if statement or a for loop, maybe a function 
 call or two, and a return.
 
-If you allow your important functions to be larger it is easier to pick them out from the sea of functions, they are
-obviously important: just look at them, they are big!
+If you allow your important "crux" functions to be larger it is easier to pick them out from the sea of functions, they 
+are obviously important: just look at them, they are big!
 
 There are also fewer functions in general in all categories, since much of the code has been merged into larger functions.  This 
-makes it easier to keep the important, and maybe even the medium-important function names and signatures in your head.
+makes it easier to keep the important, and maybe even the medium-important function names and signatures in your head.  You
+also tend to have fewer LOC overall when you do this.
 
 I would much rather come into a module that looks "dirty" like this than one that is "clean": I will be able to understand
 it more quickly and will remember the important parts more easily.
@@ -113,10 +116,10 @@ of the studies he cites show better errors-per-line metrics for *larger*, rather
 
 ### Other Modern Examples
 
-Now, those are older studies (we should do some modern ones!) so maybe they aren't relevant to today's coding environments.
-And perhaps htmx is [too idiosyncratic and sloppy](@/essays/htmx-sucks.md) to draw any conclusions regarding software development from.  
+Now, those are older studies, so maybe they aren't relevant to today's coding environments. And perhaps htmx is 
+[too idiosyncratic and sloppy](@/essays/htmx-sucks.md) to draw any conclusions regarding software development from.  
 
-So let's take a look at some other modern pieces of software.
+Let's take a look at some other modern pieces of software.
 
 Consider the [`sqlite3CodeRhsOfIn()`](https://github.com/sqlite/sqlite/blob/70989b6f5923a732b0caee881bd7c3ff8859e9c5/src/expr.c#L3502)
 of [SQLite](https://sqlite.com/), a popular open source database.  This function looks to be > 200LOC.  Despite this, I haven't 
@@ -131,7 +134,8 @@ Next, consider the [`kvstoreScan()`](https://github.com/redis/redis/blob/3fcddfb
 method in [Redis](https://redis.io/).  This is smaller, on the order of 40LOC, but still far larger than Clean Code would
 suggest.  A quick scan through the Redis codebase will furnish many other "dirty" examples.
 
-These are all C-based projects, so maybe Clean Code's rule of small functions only applies to object-oriented, Java-like languages?
+These are all C-based projects, so maybe the rule of small functions only applies to object-oriented languages, like
+Java?
 
 OK, take a look at the [`update()`](https://github.com/JetBrains/intellij-community/blob/8c6cc1579ac358451ba2c5b8a54853249fdc5451/java/compiler/impl/src/com/intellij/compiler/actions/CompileAction.java#L60)
 method in the `CompilerAction` class of [IntelliJ](https://www.jetbrains.com/idea/), which is roughly 90LOC.  Again, 
@@ -142,23 +146,23 @@ SQLite, Chrome, Redis & IntelliJ...
 These are important, complicated, successful & well maintained pieces of software, and yet 
 we can find large functions in all of them.  
 
-Now, I don't want to imply that these projects agree with this essay in any way, but I think th you also shouldn't be 
-afraid of large functions, nor should you break those large functions up simply in order to 
-make your code "clean".  You should only do so when it allows for reuse or some other necessary functionality.
+Now, I don't want to imply that any of the engineers on these projects agree with this essay in any way, but I think 
+that we have some fairly good evidence that longer functions are OK in software projects.  It seems safe to say that
+breaking up functions just to keep them small is not necessary, and you should consider doing so for other reasons, such
+as if it allows for reuse of some code instead.
 
 ## I Prefer Integration Tests to Unit Tests
 
-I am a huge fan of testing.  htmx is possible because we have a good [test suite](https://htmx.org/test) that helps us ensure
+A second area where I differ from Clean Code is on unit testing.
+
+Now, here, I have to be careful: I am a huge fan of testing and highly recommend testing software as a key component of
+building maintainable systems.
+
+htmx itself is only possible because we have a good [test suite](https://htmx.org/test) that helps us ensure
 that the library stays stable as we work on it.  When I started on [intercooler.js](https://intercoolerjs.org), the 
 predecessor to htmx, I was a dyed-in-the-wool static typing guy.  But working on intercooler and in 
 [Ruby-on-Rails](https://rubyonrails.org/) showed me that, with proper testing, it was possible for me to produce
-quality software in dynamic languages.
-
-As a side note, we recently introduced [JSDoc](https://jsdoc.app/) annotations to the htmx codebase, to get some of
-the benefits of static typing without introducing a build step.  In that effort we found no serious errors.  I can
-think of two minor issues that have come up in the history of the htmx project that could have been prevented by static typing.
-I still like static typing [for other reasons](https://grugbrain.dev/#grug-on-type-systems), but I think that with a good 
-test suite the "correctness" argument is less compelling than I did a decade ago.
+quality software even in dynamic languages.[1](#jsdoc)
 
 If you take a look at the [test suite](https://github.com/bigskysoftware/htmx/blob/master/test/core/ajax.js) one thing
 you might notice is the relative lack of [Unit Tests](https://en.wikipedia.org/wiki/Unit_testing).  We have very few
@@ -176,21 +180,21 @@ Clean Code, on the other hand, recommends extensive Unit Testing, coupled with T
 
 I generally avoid doing this sort of thing, especially early on in projects.  Early on you often have no
 idea what the right abstractions for your domain are, and you need to try a few different approaches to figure out what
-you are doing.  If you adopt this approach you end up with a bunch of tests that are going to break as you explore the
-problem space, trying to find the right abstractions.  
+you are doing.  If you adopt the test first approach you end up with a bunch of tests that are going to break as you 
+explore the problem space, trying to find the right abstractions.  
 
 Further, Unit Testing encourages the exhaustive testing of every single method you write, so you often end up having more 
 tests to be tied to a particular implementation of things, rather than the high level API or conceptual ideas of the
 module of code.
 
-Of course, you can refactor your tests as you change things, but the reality is that a large and growing test suite takes
-on its own mass and momentum in a project, making radical changes more and more difficult as they are added.  You end up
-creating things like test helpers, mocks, etc. for your testing code.  These are all code artifacts that make changing 
-your system more and more difficult over time, a problem that many testing advocates fail to acknowledge.
+Of course, you can and should refactor your tests as you change things, but the reality is that a large and growing test 
+suite takes on its own mass and momentum in a project, making changes more and more difficult as they are added.  You end up
+creating things like test helpers, mocks, etc. for your testing code.  All that code and complexity tends to lock you in
+to a particular implementation.
 
 ### Dirty Testing
 
-My preferred approach in most situations is to do some unit testing, but not a ton, early on in the project and wait 
+My preferred approach in many projects is to do some unit testing, but not a ton, early on in the project and wait 
 until the core APIs and concepts of a module have crystallized.  
 
 At that point I then test the API exhaustively with integrations tests.
@@ -204,19 +208,24 @@ at the higher level: you don't think about units of code, but rather the API you
 and then implement it however you see fit.
 
 So, I think you should hold off on committing to a large test suite until later in the project, and that test suite
-should be done at a higher level than Clean Code suggests.
+should be done at a higher level than Clean Code suggests.  Generally if I can write a higher-level integration test to
+demonstrate a bug or feature I will try to do so, with the hope that that higher-level test will have a longer shelf
+life for the project.
 
 ## I Prefer To Minimize Classes
 
-A final "dirty" code practice I follow is that I try to minimize the number of classes in my projects.  This definitely
-makes me a [black sheep](https://grammarist.com/idiom/black-sheep/) in the Java community, but I have found that it is
-very easy to overwhelm a particular problem with classes and interfaces if you try to decompose it too much.
+First I have to admit that I like Object-Oriented Programming (OOP), which is bad enough, but, what is worse, I actually 
+like the *Java* version of OOP.  Horrible, I know.  Sorry, I just like it.
+
+Now, that being said, I approach OOP in a very different way than many Java developers I know: I generally try to minimize the 
+number of classes in my projects.  I have found that it is very easy to overwhelm a problem with classes and interfaces if
+you try to decompose it too much.
 
 In the OO world, [architecture astronauts](https://en.wikipedia.org/wiki/Architecture_astronaut) are often extremely 
 intimidating to other developers, particularly younger developers, and this puts pressure on everyone to make their
 code as abstract as possible, which inevitably leads to an explosion of classes, interfaces and concepts.
 
-Now, Clean Code does not say that you should maximize the # of classes in your system, but recommendations it
+Clean Code does not say that you should maximize the # of classes in your system, but many recommendations it
 makes tend to lead to this outcome:
 
 > * "Prefer Polymorphism to If/Else or Switch/Case"
@@ -228,8 +237,10 @@ makes tend to lead to this outcome:
 >    nearly three pages in length."
 
 I don't think classes should be particularly small, or that you should prefer polymorphism to a simple (or even a long,
-janky) if/else statement, or that a given module should only have one reason to change.  And I think the last sentence
-is a good indication why: you tend to end up with a lot more code which may be of little real benefit to the system.
+janky) if/else statement, or that a given module should only have one reason to change.
+
+And I think the last sentence is a good hint why: you tend to end up with a lot more code which may be of little 
+real benefit to the system.
 
 ### "God" Objects
 
@@ -237,14 +248,14 @@ You will often hear people criticise the idea of ["God objects"](https://en.wiki
 can of course see where the criticism comes from: an incoherent class with a morass of unrelated methods is obviously 
 a bad thing.
 
-However, I think that fear of "God objects" can tend to lead to over-factoring software as well.
+However, I think that fear of "God objects" can tend to lead to overly-decomposed software as well.
 
-To balance out this fear, let's look at one of my favorite software packages, [Active Record](https://guides.rubyonrails.org/active_record_basics.html).
+To balance out this fear, let's look at one of my favorite software packages, 
+[Active Record](https://guides.rubyonrails.org/active_record_basics.html).
 
 Active Record provides a way for you to map ruby object to a database, it is what is called an 
-[Object/Relational Mapping](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) tool.  And it does a great
-job of that, in my opinion: it makes the easy stuff easy, and you can kick out to raw SQL when you need to without much
-fuss.
+[Object/Relational Mapping](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) tool.  And it does a great job of that, in my opinion: it makes the easy stuff easy, 
+and you can kick out to raw SQL when you need to without much fuss.
 
 But that's not all the Active Record objects are good at: they also provide excellent functionality for building HTML
 in the [view layer](https://guides.rubyonrails.org/action_view_overview.html) of Rails.  Now, they don't include *view
@@ -265,8 +276,22 @@ and Active Record does that job admirably without me needing to deal with a bunc
 ## Conclusion
 
 All of this, again, is not to convince you to code the way I code, or to suggest that the way I code is "optimal" in 
-any way. Rather it is to give you, and especially you younger developers out there, a sense that you don't *have* to write code
+any way.
+
+Rather it is to give you, and especially you younger developers out there, a sense that you don't *have* to write code
 the way that many thought leaders suggest in order to have a successful software career.
 
-I have never liked the morality-tinted rhetoric that sometimes surrounds things like Clean Code, Agile & TDD and, in my 
-experience, there are plenty of different ways to produce successful and maintainable software.
+You shouldn't be intimidated if someone calls your code "dirty", lots of very successful software has been written that
+way and, if you focus on the core ideas of 
+
+--
+
+<p id="jsdoc">
+
+[1](#jsdoc) - <i>As a side note, we recently introduced [JSDoc](https://jsdoc.app/) annotations to the htmx codebase, to get some of
+the benefits of static typing without introducing a build step.  In that effort we found no serious errors.  I can
+think of two minor issues that have come up in the history of the htmx project that could have been prevented by static typing.
+I still like static typing [for other reasons](https://grugbrain.dev/#grug-on-type-systems), but I think that with a good 
+test suite the "correctness" argument is less compelling than I did a decade ago.</i>
+
+</p>
