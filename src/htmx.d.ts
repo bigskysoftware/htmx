@@ -430,6 +430,11 @@ export interface HtmxConfig {
      * @default false 
      */
     ignoreTitle?: boolean;
+    /**
+     * Whether to cancel polling on elements when an error occurs.
+     * @default false
+     */
+    cancelPollingOnError?: boolean;
 }
 
 export type HtmxEvent = "htmx:abort"
