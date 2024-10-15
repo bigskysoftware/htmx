@@ -608,6 +608,40 @@ describe('hx-trigger attribute', function() {
     a1.innerHTML.should.equal('Requests: 1')
   })
 
+  it('from clause works with this', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Called!')
+    })
+
+    var div = make('<div id="d1">Not Called</div>')
+
+    make('<form hx-get="/test" hx-trigger="click changed from:(this input)" hx-target="#d1"><input type="text" id="input"/></form>')
+
+    var input = byId('input')
+    input.click()
+    this.server.respond()
+    requests.should.equal(0)
+    div.innerHTML.should.equal('Not Called')
+
+    input.click()
+    this.server.respond()
+    requests.should.equal(0)
+    div.innerText.should.equal('Not Called')
+
+    input.value = 'bar'
+    input.click()
+    this.server.respond()
+    requests.should.equal(1)
+    div.innerText.should.equal('Called!')
+
+    input.click()
+    this.server.respond()
+    requests.should.equal(1)
+    div.innerText.should.equal('Called!')
+  })
+
   it('event listeners on other elements are removed when an element is swapped out', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {

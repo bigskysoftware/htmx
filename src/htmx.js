@@ -1147,6 +1147,8 @@ var htmx = (function() {
       return [window]
     } else if (selector === 'body') {
       return [document.body]
+    } else if (selector.indexOf('this ') === 0) {
+      return elt.querySelectorAll(normalizeSelector(selector.substr(5)))
     } else if (selector === 'root') {
       return [getRootNode(elt, !!global)]
     } else if (selector === 'host') {
