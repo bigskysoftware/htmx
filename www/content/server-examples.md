@@ -86,6 +86,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
 - <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
 
+### Blazor
+
+- <https://github.com/grugBraid/haxor-contact-app>
+
 ## Prolog
 
 - <https://github.com/Anniepoo/declswiplweb>
