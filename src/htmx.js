@@ -693,6 +693,7 @@ var htmx = (function() {
    * @property {XMLHttpRequest} [xhr]
    * @property {(() => void)[]} [queuedRequests]
    * @property {boolean} [abortable]
+   * @property {boolean} [firstInitCompleted]
    *
    * Event data
    * @property {HtmxTriggerSpecification} [triggerSpec]
@@ -1628,7 +1629,7 @@ var htmx = (function() {
       })
     }
     deInitOnHandlers(element)
-    forEach(Object.keys(internalData), function(key) { delete internalData[key] })
+    forEach(Object.keys(internalData), function(key) { if (key !== 'firstInitCompleted') delete internalData[key] })
   }
 
   /**
@@ -2634,7 +2635,7 @@ var htmx = (function() {
       }, observerOptions)
       observer.observe(asElement(elt))
       addEventListener(asElement(elt), handler, nodeData, triggerSpec)
-    } else if (triggerSpec.trigger === 'load') {
+    } else if (!nodeData.firstInitCompleted && triggerSpec.trigger === 'load') {
       if (!maybeFilterEvent(triggerSpec, elt, makeEvent('load', { elt }))) {
         loadImmediately(asElement(elt), handler, nodeData, triggerSpec.delay)
       }
@@ -2841,11 +2842,12 @@ var htmx = (function() {
       return
     }
     const nodeData = getInternalData(elt)
-    if (nodeData.initHash !== attributeHash(elt)) {
+    const attrHash = attributeHash(elt)
+    if (nodeData.initHash !== attrHash) {
       // clean up any previously processed info
       deInitNode(elt)
 
-      nodeData.initHash = attributeHash(elt)
+      nodeData.initHash = attrHash
 
       triggerEvent(elt, 'htmx:beforeProcessNode')
 
@@ -2870,6 +2872,7 @@ var htmx = (function() {
         initButtonTracking(elt)
       }
 
+      nodeData.firstInitCompleted = true
       triggerEvent(elt, 'htmx:afterProcessNode')
     }
   }
