@@ -693,7 +693,7 @@ var htmx = (function() {
    * @property {XMLHttpRequest} [xhr]
    * @property {(() => void)[]} [queuedRequests]
    * @property {boolean} [abortable]
-   * @property {boolean} [firstInit]
+   * @property {boolean} [firstInitCompleted]
    *
    * Event data
    * @property {HtmxTriggerSpecification} [triggerSpec]
@@ -1629,7 +1629,7 @@ var htmx = (function() {
       })
     }
     deInitOnHandlers(element)
-    forEach(Object.keys(internalData), function(key) { if (key !== 'firstInit') delete internalData[key] })
+    forEach(Object.keys(internalData), function(key) { if (key !== 'firstInitCompleted') delete internalData[key] })
   }
 
   /**
@@ -2635,7 +2635,7 @@ var htmx = (function() {
       }, observerOptions)
       observer.observe(asElement(elt))
       addEventListener(asElement(elt), handler, nodeData, triggerSpec)
-    } else if (nodeData.firstInit && triggerSpec.trigger === 'load') {
+    } else if (!nodeData.firstInitCompleted && triggerSpec.trigger === 'load') {
       if (!maybeFilterEvent(triggerSpec, elt, makeEvent('load', { elt }))) {
         loadImmediately(asElement(elt), handler, nodeData, triggerSpec.delay)
       }
@@ -2844,10 +2844,6 @@ var htmx = (function() {
     const nodeData = getInternalData(elt)
     const attrHash = attributeHash(elt)
     if (nodeData.initHash !== attrHash) {
-      if (nodeData.initHash === undefined) {
-        nodeData.firstInit = true
-      }
-
       // clean up any previously processed info
       deInitNode(elt)
 
@@ -2876,7 +2872,7 @@ var htmx = (function() {
         initButtonTracking(elt)
       }
 
-      nodeData.firstInit = false
+      nodeData.firstInitCompleted = true
       triggerEvent(elt, 'htmx:afterProcessNode')
     }
   }
