@@ -411,7 +411,7 @@ input tag.
   ancestor element or itself, that matches the given CSS selector.
   (e.g. `closest tr` will target the closest table row to the element)
 * The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
-* The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
+* The `previous <CSS selector>` syntax will find the previous element in the DOM matching the given CSS selector.
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
   (e.g `find tr` would target the first child descendant row to the element)
 
