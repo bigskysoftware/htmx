@@ -137,7 +137,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
