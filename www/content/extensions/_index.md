@@ -22,7 +22,7 @@ htmx extensions are split into two categories:
 | [idiomorph](/extensions/idiomorph)               | Provides a `morph` swap strategy based on the [idiomorph](https://github.com/bigskysoftware/idiomorph/) morphing library, which was created by the htmx team.                              |
 | [preload](/extensions/preload)                   | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
 | [response-targets](/extensions/response-targets) | This extension allows you to specify different target elements to be swapped when different HTTP response codes are received.                                                              |
-| [sse](/extensions/sse)                           | Provides support for [Serve Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.                                 |
+| [sse](/extensions/sse)                           | Provides support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.                                |
 | [ws](/extensions/ws)                             | Provides bi-directional communication with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) servers directly from HTML |
 
 ## Community Extensions
