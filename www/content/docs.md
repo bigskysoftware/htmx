@@ -1149,7 +1149,7 @@ htmx supports a few "core" extensions, which are supported by the htmx developme
 * [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
 * [preload](/extensions/preload) - allows you to preload content for better performance
 * [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
-* [sse](/extensions/sse) - support for [Serve Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+* [sse](/extensions/sse) - support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 * [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 
 You can see all available extensions on the [Extensions](/extensions) page.
