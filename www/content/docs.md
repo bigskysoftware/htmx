@@ -137,7 +137,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -411,7 +411,7 @@ input tag.
   ancestor element or itself, that matches the given CSS selector.
   (e.g. `closest tr` will target the closest table row to the element)
 * The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
-* The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
+* The `previous <CSS selector>` syntax will find the previous element in the DOM matching the given CSS selector.
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
   (e.g `find tr` would target the first child descendant row to the element)
 
@@ -1149,7 +1149,7 @@ htmx supports a few "core" extensions, which are supported by the htmx developme
 * [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
 * [preload](/extensions/preload) - allows you to preload content for better performance
 * [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
-* [sse](/extensions/sse) - support for [Serve Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+* [sse](/extensions/sse) - support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 * [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 
 You can see all available extensions on the [Extensions](/extensions) page.
