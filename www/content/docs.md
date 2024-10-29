@@ -162,7 +162,7 @@ import 'htmx.org';
 ```
 
 However, you will probably need the global `htmx` variable, which gives your code access to methods like
-`htmx.onLoad` and allow you to use npm-installed htmx plugins. You can use one of the solutions following solutions
+`htmx.onLoad` and allow you to use npm-installed htmx plugins. You can use one of the following solutions
 to achieve this.
 
 
