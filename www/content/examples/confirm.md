@@ -39,7 +39,7 @@ which is then picked up by `hx-trigger`.
     // The event is triggered on every trigger for a request, so we need to check if the element
     // that triggered the request has a hx-confirm attribute, if not we can return early and let
     // the default behavior happen
-    if (!evt.detail.target.hasAttribute('hx-confirm')) return
+    if (!e.detail.target.hasAttribute('hx-confirm')) return
 
     // This will prevent the request from being issued to later manually issue it
     e.preventDefault()
