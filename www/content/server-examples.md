@@ -200,6 +200,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## Go
 
+### htmgo
+
+- <https://htmgo.dev>
+
 ### templ
 
 - <https://templ.guide/server-side-rendering/htmx>
