@@ -140,6 +140,8 @@ Here are some known implementations of the fragment concept:
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
   * [Quarkus Qute](https://quarkus.io/guides/qute-reference#fragments)
   * [JStachio (mustache)](https://jstach.io/doc/jstachio/current/apidocs/#mustache_fragments)
+* JavaScript
+  * [Jeasx](https://www.jeasx.dev) - see [example for htmx](https://expo.jeasx.dev/fragments)
 * PHP
   * [Latte](https://latte.nette.org/en/template-inheritance#toc-blocks) - Use the 3rd parameter to only render 1 block from the template -  `$Latte_Engine->render('path/to/template.latte', [ 'foo' => 'bar' ], 'content');`
   * [Laravel Blade](https://laravel.com/docs/10.x/blade#rendering-blade-fragments) - includes built-in support for template fragments as of v9.x
