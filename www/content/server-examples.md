@@ -16,6 +16,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/rajasegar/awesome-htmx>
 
+## Julia
+
+- https://github.com/leephillips/juliaVortexWeb/
+- https://github.com/leephillips/pluckit
+
 ## JavaScript
 
 ### Node.js
