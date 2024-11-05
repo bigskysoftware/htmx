@@ -72,8 +72,7 @@ With that in mind, consider the following bit of HTML:
 <button hx-post="/clicked"
     hx-trigger="click"
     hx-target="#parent-div"
-    hx-swap="outerHTML"
->
+    hx-swap="outerHTML">
     Click Me!
 </button>
 ```
@@ -255,8 +254,7 @@ You can use these attributes to implement many common UX patterns, such as [Acti
     hx-get="/trigger_delay"
     hx-trigger="keyup changed delay:500ms"
     hx-target="#search-results"
-    placeholder="Search..."
->
+    placeholder="Search...">
 <div id="search-results"></div>
 ```
 
@@ -317,8 +315,7 @@ a `load` trigger along with a delay, and replaces itself with the response:
 ```html
 <div hx-get="/messages"
     hx-trigger="load delay:1s"
-    hx-swap="outerHTML"
->
+    hx-swap="outerHTML">
 </div>
 ```
 
@@ -393,8 +390,7 @@ use the [hx-target](@/attributes/hx-target.md) attribute, which takes a CSS sele
     hx-get="/trigger_delay"
     hx-trigger="keyup delay:500ms changed"
     hx-target="#search-results"
-    placeholder="Search..."
->
+    placeholder="Search...">
 <div id="search-results"></div>
 ```
 
