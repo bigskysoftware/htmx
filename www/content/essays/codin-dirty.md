@@ -16,25 +16,22 @@ tag = ["posts"]
 > “Writing clean code is what you must do in order to call yourself a professional. There is no reasonable excuse for 
 > doing anything less than your best.” [Clean Code](https://www.goodreads.com/book/show/3735293-clean-code)
 
-In this essay I want to talk about my approach to writing code and contrast it with the recommendations of
-the book [Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882).
+In this essay I want to talk about how I write code.  I am going to call my approach "Codin' Dirty" because I often use
+techniques that conflict with Clean Code recommendations.
 
-I am going to call my approach "Codin' Dirty" because I often use techniques that conflict with Clean Code 
-recommendations.
-
-I don't really consider my code all that dirty: yeah, it's a little janky in places, but for the most part I'm 
+Now, I don't really consider my code all that dirty: sure, it's a little janky in places, but for the most part I'm 
 happy with it and find it easy enough to maintain with decent levels of quality.
 
-I also want to stress that in this essay I am not trying to convince *you* to code dirty.  Rather I want to
-show that it is possible to write successful software without adopting many "Clean Code" recommendations.
+I'm *not* trying to convince *you* to code dirty with this essay.  Rather, I want to
+show that it is possible to write successful software this way and, I hope, offer some balance around software
+methodology discussions.
 
-I have been around for a while and I have seen a lot of different approaches to building software work.  Some folks love
-Object-Oriented Programming, other very smart people hate it.  Some folks love the expressiveness 
-of dynamic languages, some people hate dynamic languages. Some people ship successfully while 
-strictly follow Test Driven Development, others slap a few end-to-end tests on at the end of the
-project or (what seems crazy to me) don't bother testing at all!
+I have been programming for a while and I have seen a bunch of different approaches to building software work.  Some 
+folks love Object-Oriented Programming, other very smart people hate it.  Some folks love the expressiveness 
+of dynamic languages, some people hate it. Some people ship successfully while strictly follow Test Driven Development, 
+others slap a few end-to-end tests on at the end of the project or (what seems crazy to me) don't bother testing at all!
 
-I have seen projects using all these different approaches ship and maintain successful software.
+I've seen projects using all of these different approaches ship and maintain successful software.
 
 So, again, my goal here is not to convince you that my way of coding is the only way, but rather to show you (particularly
 younger developers, who are prone to being intimidated by terms like "Clean Code") that you can have a successful 
@@ -46,7 +43,7 @@ Three "dirty" coding practices I'm going to discuss in this essay are:
 
 * (Some) big functions are good
 * Prefer integration tests to unit tests
-* Keep class/interface/concept count down, if possible
+* Keep class/interface/concept count down
 
 If you want to skip the rest of the essay, that's the takeaway.
 
@@ -79,7 +76,7 @@ But, as it stands, I'm not going to break that function up just to make it small
 
 ### Important Things Should Be Big
 
-A major reason I like big functions is that I think that in software, all other things being equal, important things should 
+A, er, big reason I like big functions is that I think that in software, all other things being equal, important things should 
 be big, whereas unimportant things should be little.
 
 Consider a visual representation of "Clean" code versus "Dirty" code:
@@ -114,24 +111,32 @@ In [Chapter 7, Section 4](https://flylib.com/books/en/2.823.1.64/1/) of [Code Co
 Steve McConnell lays out some evidence for and against longer functions.  The results are mixed, but many
 of the studies he cites show better errors-per-line metrics for *larger*, rather than smaller, functions.
 
-### Other Modern Examples
+There are [newer studies](https://arxiv.org/pdf/2205.01842#:~:text=In%20this%20paper%20we%20examine,also%20decreases%20overall%20maintenance%20efforts) 
+as well that argue for smaller methods (<24 LOC) but that focus on what they call "change-proneness".  When it comes to
+bugs, they say:
 
-Now, those are older studies, so maybe they aren't relevant to today's coding environments. And perhaps htmx is 
-[too idiosyncratic and sloppy](@/essays/htmx-sucks.md) to draw any conclusions regarding software development from.  
+> Correlations between SLOC and bug-proneness (i.e., #BuggyCommits) are significantly lower than the four 
+> change-proneness indicators.
 
-Let's take a look at some other modern pieces of software.
+And, of course, longer methods have more code in them, so the correlation of bug-proneness _per line of code_ will be 
+even lower.
+
+### Real World Examples
+
+Let's set aside the academic studies and look at some real world, complex and successful software.
 
 Consider the [`sqlite3CodeRhsOfIn()`](https://github.com/sqlite/sqlite/blob/70989b6f5923a732b0caee881bd7c3ff8859e9c5/src/expr.c#L3502)
-of [SQLite](https://sqlite.com/), a popular open source database.  This function looks to be > 200LOC.  Despite this, I haven't 
-noticed SQLite having maintenance or code quality issues.
+function in [SQLite](https://sqlite.com/), a popular open source database.  It looks to be > 200LOC, and a walk around the SQLite
+codebase will furnish many other examples of large functions.  SQLite is noted for being extremely high quality and
+very well maintained.
 
 Or consider the [`ChromeContentRendererClient::RenderFrameCreated()`](https://github.com/chromium/chromium/blob/6fdb8fdff0ba83db148ff2f87105bc95e5a4ceec/chrome/renderer/chrome_content_renderer_client.cc#L591)
-function in the [Google Chrome](https://www.google.com/chrome/index.html) Web Browser.  It also looks to be over 200 LOC.
-I'm not saying chrome isn't a beast, but the programmers writing this are pretty smart people, and the project continues
-to make progress and is well maintained.
+function in the [Google Chrome](https://www.google.com/chrome/index.html) Web Browser.  Also looks to be over 200 LOC.  Again, poking around the codebase
+will give you plenty of other long functions to look at.  Chrome is solving one of the hardest problems in software:
+being a good general purpose hypermedia client.  And yet their code doesn't look very "clean" to me.
 
 Next, consider the [`kvstoreScan()`](https://github.com/redis/redis/blob/3fcddfb61f903d7112da186cba8b1c93a99dc87f/src/kvstore.c#L359)
-method in [Redis](https://redis.io/).  This is smaller, on the order of 40LOC, but still far larger than Clean Code would
+method in [Redis](https://redis.io/).  Smaller, on the order of 40LOC, but still far larger than Clean Code would
 suggest.  A quick scan through the Redis codebase will furnish many other "dirty" examples.
 
 These are all C-based projects, so maybe the rule of small functions only applies to object-oriented languages, like
@@ -149,13 +154,13 @@ we can find large functions in all of them.
 Now, I don't want to imply that any of the engineers on these projects agree with this essay in any way, but I think 
 that we have some fairly good evidence that longer functions are OK in software projects.  It seems safe to say that
 breaking up functions just to keep them small is not necessary, and you should consider doing so for other reasons, such
-as if it allows for reuse of some code instead.
+as if it allows for reuse of some of that code instead.
 
 ## I Prefer Integration Tests to Unit Tests
 
-A second area where I differ from Clean Code is on unit testing.
+A second area where I differ from Clean Code recommendations is on unit testing.
 
-Now, here, I have to be careful: I am a huge fan of testing and highly recommend testing software as a key component of
+Here, I have to be careful: I am a huge fan of testing and highly recommend testing software as a key component of
 building maintainable systems.
 
 htmx itself is only possible because we have a good [test suite](https://htmx.org/test) that helps us ensure
@@ -184,7 +189,7 @@ you are doing.  If you adopt the test first approach you end up with a bunch of 
 explore the problem space, trying to find the right abstractions.  
 
 Further, Unit Testing encourages the exhaustive testing of every single method you write, so you often end up having more 
-tests to be tied to a particular implementation of things, rather than the high level API or conceptual ideas of the
+tests that are tied to a particular implementation of things, rather than the high level API or conceptual ideas of the
 module of code.
 
 Of course, you can and should refactor your tests as you change things, but the reality is that a large and growing test 
@@ -209,23 +214,15 @@ and then implement it however you see fit.
 
 So, I think you should hold off on committing to a large test suite until later in the project, and that test suite
 should be done at a higher level than Clean Code suggests.  Generally if I can write a higher-level integration test to
-demonstrate a bug or feature I will try to do so, with the hope that that higher-level test will have a longer shelf
+demonstrate a bug or feature I will try to do so, with the hope that the higher-level test will have a longer shelf
 life for the project.
 
 ## I Prefer To Minimize Classes
 
-First I have to admit that I like Object-Oriented Programming (OOP), which is bad enough, but, what is worse, I actually 
-like the *Java* version of OOP.  Horrible, I know.  Sorry, I just like it.
+The final technique that I use that conflicts with Clean Code recommendations is that I generally strive to minimize the
+number of classes in my projects.
 
-Now, that being said, I approach OOP in a very different way than many Java developers I know: I generally try to minimize the 
-number of classes in my projects.  I have found that it is very easy to overwhelm a problem with classes and interfaces if
-you try to decompose it too much.
-
-In the OO world, [architecture astronauts](https://en.wikipedia.org/wiki/Architecture_astronaut) are often extremely 
-intimidating to other developers, particularly younger developers, and this puts pressure on everyone to make their
-code as abstract as possible, which inevitably leads to an explosion of classes, interfaces and concepts.
-
-Clean Code does not say that you should maximize the # of classes in your system, but many recommendations it
+Clean Code does not explicitly say that you should maximize the # of classes in your system, but many recommendations it
 makes tend to lead to this outcome:
 
 > * "Prefer Polymorphism to If/Else or Switch/Case"
@@ -236,8 +233,8 @@ makes tend to lead to this outcome:
 > * "The first thing you might notice is that the program got a lot longer. It went from a little over one page to 
 >    nearly three pages in length."
 
-I don't think classes should be particularly small, or that you should prefer polymorphism to a simple (or even a long,
-janky) if/else statement, or that a given module should only have one reason to change.
+As with functions, I don't think classes should be particularly small, or that you should prefer polymorphism to a 
+simple (or even a long, janky) if/else statement, or that a given module should only have one reason to change.
 
 And I think the last sentence is a good hint why: you tend to end up with a lot more code which may be of little 
 real benefit to the system.
@@ -245,10 +242,12 @@ real benefit to the system.
 ### "God" Objects
 
 You will often hear people criticise the idea of ["God objects"](https://en.wikipedia.org/wiki/God_object) and I
-can of course see where the criticism comes from: an incoherent class with a morass of unrelated methods is obviously 
+can of course understand where this criticism comes from: an incoherent class with a morass of unrelated methods is obviously 
 a bad thing.
 
-However, I think that fear of "God objects" can tend to lead to overly-decomposed software as well.
+However, I think that fear of "God objects" can tend to lead to an opposite problem: overly-decomposed software.
+
+(Note that the term "overly-decomposed software" will be incoherent to some developers.)
 
 To balance out this fear, let's look at one of my favorite software packages, 
 [Active Record](https://guides.rubyonrails.org/active_record_basics.html).
@@ -258,15 +257,14 @@ Active Record provides a way for you to map ruby object to a database, it is wha
 and you can kick out to raw SQL when you need to without much fuss.
 
 But that's not all the Active Record objects are good at: they also provide excellent functionality for building HTML
-in the [view layer](https://guides.rubyonrails.org/action_view_overview.html) of Rails.  Now, they don't include *view
-specific* pieces of functionality, but they do offer functionality that is very useful on the view side, such as providing
-and API to retrieve error messages, even at the field level.
+in the [view layer](https://guides.rubyonrails.org/action_view_overview.html) of Rails.  They don't include *HTML specific* functionality, but they do offer functionality 
+that is useful on the view side, such as providing and API to retrieve error messages, even at the field level.
 
 When you are writing Ruby on Rails applications you simply pass your Active Record instances out to the view.
 
-Compare this with a more factored implementation, where validation errors are handled as their own "concern".  Now you need
-to pass (or at least access) two different things in order to properly generate your HTML.  It's not uncommon in the Java
-community to adopt the [DTO](https://www.baeldung.com/java-dto-pattern) pattern and have another set of objects entirely
+Compare this with a more heavily factored implementation, where validation errors are handled as their own "concern".  
+Now you need to pass (or at least access) two different things in order to properly generate your HTML.  It's not 
+uncommon in the Java community to adopt the [DTO](https://www.baeldung.com/java-dto-pattern) pattern and have another set of objects entirely
 distinct from the ORM layer that is passed out to the view.
 
 I like the Active Record approach.  It may not be properly [separating concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
