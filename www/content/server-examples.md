@@ -16,6 +16,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/rajasegar/awesome-htmx>
 
+## Julia
+
+- https://github.com/leephillips/juliaVortexWeb/
+- https://github.com/leephillips/pluckit
+
 ## JavaScript
 
 ### Node.js
@@ -86,6 +91,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
 - <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
 
+### Blazor
+
+- <https://github.com/grugBraid/haxor-contact-app>
+
 ## Prolog
 
 - <https://github.com/Anniepoo/declswiplweb>
@@ -125,6 +134,7 @@ These examples may make it a bit easier to get started using htmx with your plat
   
 ### http4s
 - <https://github.com/martinprobson/http4s-htmx-demo>
+- <https://github.com/eikek/htmx4s>
 
 ### zio-http
 - <https://github.com/rockthejvm/scalatags-htmx-demo>
@@ -204,6 +214,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
+
+### htmgo
+
+- <https://htmgo.dev>
 
 ## Delphi
 

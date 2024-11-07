@@ -60,7 +60,7 @@ document.body.addEventListener("showMessage", function(evt){
 
 Each property of the JSON object on the right hand side will be copied onto the details object for the event.
 
-### Targetting Other Elements
+### Targeting Other Elements
 
 You can trigger events on other target elements by adding a `target` argument to the JSON object.
 

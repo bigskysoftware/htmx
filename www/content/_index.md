@@ -330,11 +330,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </td>
 </tr>
 <tr>
-<td></td>
 <td>
-        <a data-github-account="gitdevin99" href="https://insfollowpro.com/">
-          <img src="/img/ins-follow-pro.png" style="width:100%;max-width:250px">
+</td>
+<td>
+        <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
+          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="width:100%;max-width:50px" >
+          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="width:100%;max-width:50px">
         </a>
+</td>
+<td>
 </td>
 </tr>
 </table>
