@@ -4039,7 +4039,15 @@ var htmx = (function() {
       get: function(target, name) {
         if (typeof name === 'symbol') {
           // Forward symbol calls to the FormData itself directly
-          return Reflect.get(target, name)
+          const result = Reflect.get(target, name)
+          // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
+          if (typeof result === 'function') {
+            return function() {
+              return result.apply(formData, arguments)
+            }
+          } else {
+            return result
+          }
         }
         if (name === 'toJSON') {
           // Support JSON.stringify call on proxy
