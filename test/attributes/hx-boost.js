@@ -143,4 +143,30 @@ describe('hx-boost attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Boosted!')
   })
+
+  it('form get with an unset action property', function() {
+    this.server.respondWith('GET', /\/*/, function(xhr) {
+      should.equal(undefined, getParameters(xhr).foo)
+      xhr.respond(200, {}, 'Boosted!')
+    })
+
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" method="get"><button id="b1">Submit</button></form></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Boosted!')
+  })
+
+  it('form get with an empty action property', function() {
+    this.server.respondWith('GET', /\/*/, function(xhr) {
+      should.equal(undefined, getParameters(xhr).foo)
+      xhr.respond(200, {}, 'Boosted!')
+    })
+
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" action="" method="get"><button id="b1">Submit</button></form></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Boosted!')
+  })
 })
