@@ -18,6 +18,7 @@ if command -v pigz >&2; then
   pigz -11 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
 else
   gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
+  echo Falling back to gzip compression. Install pigz for improved Zopfli Compression
 fi
 
 # Generate AMD script
