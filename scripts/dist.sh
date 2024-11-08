@@ -14,7 +14,11 @@ cp $HTMX_SRC dist/htmx.js
 uglifyjs -m eval -o dist/htmx.min.js dist/htmx.js
 
 # Generate gzipped script
-gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
+if command -v pigz >&2; then
+  pigz -11 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
+else
+  gzip -9 -k -f dist/htmx.min.js > dist/htmx.min.js.gz
+fi
 
 # Generate AMD script
 cat > dist/htmx.amd.js << EOF
