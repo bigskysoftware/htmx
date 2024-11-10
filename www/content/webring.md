@@ -38,13 +38,13 @@ title = "htmx webring"
 <td colspan="3" style="text-align: center; ; border: 1px black solid; position: relative">
     [<a
          class="nav-link"
-         href="#" 
+         href="#"
          _="on click
              set links to <a/> in the #ring-table
              decrement :index
              if :index is -1
                 get the length of the links
-                set :index to the result - 1 
+                set :index to the result - 1
              end
              log :index
              get links[:index]
@@ -68,14 +68,14 @@ title = "htmx webring"
              set the #webring's src to the result's @href
              ">Next</a>]<br/>
     [<a href="#" id="show-sites"
-        _="on click 
+        _="on click
              transition the #webring's opacity to 0
              hide the #webring
-             transition #site-table's height to 100% over 300ms then 
+             transition #site-table's height to 100% over 300ms then
              hide me then
              show #return-to-webring">List Sites</a><a id="return-to-webring"
         style="display: none"
-        _="on click 
+        _="on click
              transition #site-table's height to 0px over 800ms then
              show the #webring
              transition the #webring's opacity to 100%
@@ -111,6 +111,7 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://recipes.musicavis.ca">Recipya</a></td><td>A clean, simple and powerful recipe manager your whole family can enjoy.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/ ">DankMuzikk</a></td><td>Create, Share and Play Music Playlists.</td></tr>
 </tbody>
 </table>
 </div>
