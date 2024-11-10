@@ -111,7 +111,7 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://recipes.musicavis.ca">Recipya</a></td><td>A clean, simple and powerful recipe manager your whole family can enjoy.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
-  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/ ">DankMuzikk</a></td><td>Create, Share and Play Music Playlists.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/">DankMuzikk</a></td><td>Create, Share and Play Music Playlists.</td></tr>
 </tbody>
 </table>
 </div>
