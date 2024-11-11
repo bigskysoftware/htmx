@@ -35,7 +35,7 @@ giving your application a roughly 100-200ms head start on serving responses. See
 </body>
 ```
 
-All preload requests include an additional `"HX-Preload": "true"` header.
+All preload requests include an additional `"HX-Preloaded": "true"` header.
 
 ### Inheriting Preload Settings
 
