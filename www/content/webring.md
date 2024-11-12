@@ -73,7 +73,7 @@ title = "htmx webring"
              hide the #webring
              transition #site-table's height to 100% over 300ms then 
              hide me then
-             show #return-to-webring">List Sites</a><a id="return-to-webring"
+             show #return-to-webring">List Sites</a><a href="#" id="return-to-webring"
         style="display: none"
         _="on click 
              transition #site-table's height to 0px over 800ms then
