@@ -160,7 +160,7 @@ describe('hx-ext attribute', function() {
   it('Extensions can be local properly', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 
-    make('<div id="div-AA" hx-ext="ext-1,ext-2,ext-5" hx-get="/test" foo="foo" hx-trigger="click">Click Me!' +
+    make('<div id="div-AA" hx-ext="local:ext-1,ext-2,ext-5" hx-get="/test" foo="foo" hx-trigger="click">Click Me!' +
             '<div id="div-BB" hx-ext="ignore:ext-5"><button id="btn-BB" hx-get="/test" foo="foo" hx-trigger="click consume"></button></div></div>')
 
     var div1 = byId('div-AA')
@@ -168,13 +168,13 @@ describe('hx-ext attribute', function() {
 
     btn2.click()
     this.server.respond()
-    ext1Calls.should.equal(1)
+    ext1Calls.should.equal(0)
     ext2Calls.should.equal(1)
     ext3Calls.should.equal(0)
 
     div1.click()
     this.server.respond()
-    ext1Calls.should.equal(2)
+    ext1Calls.should.equal(1)
     ext2Calls.should.equal(2)
     ext3Calls.should.equal(0)
 
