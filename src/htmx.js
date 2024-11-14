@@ -4910,22 +4910,27 @@ var htmx = (function() {
    * @returns {HtmxExtension[]}
    */
   function getExtensions(elt, extensionsToReturn, extensionsToIgnore) {
-    if (extensionsToReturn == undefined) {
+    const isParentScan = !!extensionsToReturn
+    if (!extensionsToReturn) {
       extensionsToReturn = []
     }
-    if (elt == undefined) {
+    if (!elt) {
       return extensionsToReturn
     }
-    if (extensionsToIgnore == undefined) {
+    if (!extensionsToIgnore) {
       extensionsToIgnore = []
     }
     const extensionsForElement = getAttributeValue(elt, 'hx-ext')
     if (extensionsForElement) {
       forEach(extensionsForElement.split(','), function(extensionName) {
-        extensionName = extensionName.replace(/ /g, '')
-        if (extensionName.slice(0, 7) == 'ignore:') {
+        extensionName = extensionName.trim()
+        if (extensionName.indexOf('ignore:') === 0) {
           extensionsToIgnore.push(extensionName.slice(7))
           return
+        }
+        if (extensionName.indexOf('local:') === 0) {
+          if (isParentScan) return
+          extensionName = extensionName.slice(6)
         }
         if (extensionsToIgnore.indexOf(extensionName) < 0) {
           const extension = extensions[extensionName]
