@@ -152,7 +152,7 @@ The DOM-based lifecycles of custom elements work great in htmx, because everythi
 The default htmx swap style is to just set [`.innerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), and that works great for the vast majority of users.
 
 That's not to say that htmx doesn't have to accommodate weird Web Component edge cases.
-Our community member and resident WC expert [Katrina Scialdone](https://unmodernweb.com/) merged [Shadow DOM support for htmx 2.0](https://github.com/bigskysoftware/htmx/pull/2075), which lets you htmx process the implementation details of a Web Component,
+Our community member and resident WC expert [Katrina Scialdone](https://unmodernweb.com/) merged [Shadow DOM support for htmx 2.0](https://github.com/bigskysoftware/htmx/pull/2075), which lets htmx process the implementation details of a Web Component,
 and supporting that is [occasionally](https://github.com/bigskysoftware/htmx/pull/2846) [frustrating](https://github.com/bigskysoftware/htmx/pull/2866).
 But being able to work with both the [Shadow DOM](@/examples/web-components.md) and the ["Light DOM"](https://meyerweb.com/eric/thoughts/2023/11/01/blinded-by-the-light-dom/) is a nice feature for htmx, and it carries a relatively minimal support burden because htmx just isn't doing all that much.
 
@@ -168,7 +168,7 @@ disrespecting HTML was best practice.
 
 The relatively recent success of htmx—itself now a participant in the zeitgeist—offers an alternative path: take HTML seriously again.
 If your website is one whose functionality can be primarily described with [large-grain hypermedia transfers](@/essays/when-to-use-hypermedia.md) (we believe most of them can), then the value of being able to express more complex patterns through hypermedia increases dramatically.
-As more developers use htmx (and mulit-page architectures generally) to structure their websites,
+As more developers use htmx (and multi-page architectures generally) to structure their websites,
 perhaps the demand for Web Components will increase along with it.
 
 Do Web Components "just work" everywhere? Maybe, maybe not. But they do work here.
