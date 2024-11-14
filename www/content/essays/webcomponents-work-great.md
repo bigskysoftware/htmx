@@ -97,7 +97,7 @@ That will give us this table:
   <tr>
     <td>Sophia
     <td><edit-cell name="sophia-carousel" value="Yes"></edit-cell>
-    <td><edit-cell name="sophia-roller" value="No"></edit-cell>
+    <td><edit-cell name="sophia-roller" value="Yes"></edit-cell>
   </tr>
 </table>
 <button>Save</button>
@@ -125,7 +125,7 @@ Let's remove all that redundancy with a web component!
   <tr>
     <td>Sophia
     <td><edit-cell name="sophia-carousel" value="Yes"></edit-cell>
-    <td><edit-cell name="sophia-roller" value="No"></edit-cell>
+    <td><edit-cell name="sophia-roller" value="Yes"></edit-cell>
   </tr>
 </table>
 <button>Save</button>
@@ -158,11 +158,11 @@ But being able to work with both the [Shadow DOM](@/examples/web-components.md) 
 
 ## Bringing Behavior Back to the HTML
 
-A couple of years ago, W3C Contributor (and Web Component proponent, I think) Leah Verou wrote the following, in a blog post about ["The failed promise of Web Components"](https://lea.verou.me/blog/2020/09/the-failed-promise-of-web-components/):
+A couple of years ago, W3C Contributor (and Web Component proponent, I think) Lea Verou wrote the following, in a blog post about ["The failed promise of Web Components"](https://lea.verou.me/blog/2020/09/the-failed-promise-of-web-components/):
 
 > the main problem is that HTML is not treated with the appropriate respect in the design of these components. They are not designed as closely as possible to standard HTML elements, but expect JS to be written for them to do anything. HTML is simply treated as a shorthand, or worse, as merely a marker to indicate where the element goes in the DOM, with all parameters passed in via JS.
 
-Leah is identifying an issue that, from the perspective of 2020, would have seemed impossible to solve: the cutting-edge web developers targeted by Web Components were not writing HTML, they were writing JSX, usually with React (or Vue, or what have you).
+Lea is identifying an issue that, from the perspective of 2020, would have seemed impossible to solve: the cutting-edge web developers targeted by Web Components were not writing HTML, they were writing JSX, usually with React (or Vue, or what have you).
 The idea that [behavior belongs in the HTML](https://unplannedobsolescence.com/blog/behavior-belongs-in-html/) was, in the zeitgeist, considered [a violation of separation of concerns](https://htmx.org/essays/locality-of-behaviour/);
 disrespecting HTML was best practice.
 
