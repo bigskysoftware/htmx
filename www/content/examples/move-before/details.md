@@ -11,7 +11,7 @@ and the video should continue to work as well.  I enjoy flipping back and forth.
 ### Rick-Rolling
 
 <figure>
-  <iframe hx-preserve="true" id="rick-roll" width="617" height="351" src="https://www.youtube.com/embed/GFq6wH5JR2A" 
+  <iframe hx-preserve="true" id="rick-roll" width="617" height="351" src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
           title="Rick Astley - Never Gonna Give You Up (Official Music Video)" frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
