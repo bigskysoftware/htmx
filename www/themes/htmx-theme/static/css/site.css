@@ -419,8 +419,9 @@ transition: visibility 0s 1s, opacity 1s linear;
   padding:1em 0;
 }
 
-.github-stars {
-  margin-top: 5px;
+.github-stars span {
+    position: relative;
+    top: 4px;
 }
 
 /* Content */
