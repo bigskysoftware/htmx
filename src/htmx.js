@@ -1132,7 +1132,28 @@ var htmx = (function() {
 
     elt = resolveTarget(elt)
 
-    const parts = selector.split(',')
+    const parts = []
+    {
+      let chevronsCount = 0
+      let offset = 0
+      for (let i = 0; i < selector.length; i++) {
+        const char = selector[i]
+        if (char === ',' && chevronsCount === 0) {
+          parts.push(selector.substring(offset, i))
+          offset = i + 1
+          continue
+        }
+        if (char === '<') {
+          chevronsCount++
+        } else if (selector.substring(i, i + 2) === '/>') {
+          chevronsCount--
+        }
+      }
+      if (offset < selector.length) {
+        parts.push(selector.substring(offset))
+      }
+    }
+
     const result = []
     const unprocessedParts = []
     while (parts.length > 0) {
