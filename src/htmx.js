@@ -1126,6 +1126,10 @@ var htmx = (function() {
    * @returns {(Node|Window)[]}
    */
   function querySelectorAllExt(elt, selector, global) {
+    if (selector.indexOf('global ') === 0) {
+      return querySelectorAllExt(elt, selector.slice(7), true)
+    }
+
     elt = resolveTarget(elt)
 
     const parts = selector.split(',')
@@ -1156,12 +1160,6 @@ var htmx = (function() {
         item = getRootNode(elt, !!global)
       } else if (selector === 'host') {
         item = (/** @type ShadowRoot */(elt.getRootNode())).host
-      } else if (selector.indexOf('global ') === 0) {
-        // Previous implementation of `global` only supported it at the first position and applied it to the entire selector string.
-        // For backward compatibility and to maintain logical consistency, we make it apply to everything that follows.
-        parts.unshift(selector.slice(7))
-        result.push(...querySelectorAllExt(elt, parts.join(','), true))
-        break
       } else {
         unprocessedParts.push(selector)
       }
