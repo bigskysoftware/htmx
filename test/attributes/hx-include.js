@@ -292,4 +292,48 @@ describe('hx-include attribute', function() {
     this.server.respond()
     btn.innerHTML.should.equal('Clicked!')
   })
+
+  it('hx-include processes wrapped next/previous selectors correctly', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      should.equal(params.i1, undefined)
+      params.i2.should.equal('foo')
+      params.i3.should.equal('bar')
+      should.equal(params.i4, undefined)
+      should.equal(params.i5, undefined)
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input name="i4" value="test2" id="i4"/>' +
+      '<div id="i">' +
+      '<input name="i1" value="test" id="i1"/>' +
+      '<input name="i2" value="foo"/>' +
+      '<button id="btn" hx-post="/include" hx-include="next <#nonexistent, input/>, previous <#i5, [name=\'i2\'], #i4/>"></button>' +
+      '</div>' +
+      '<input name="i3" value="bar"/>' +
+      '<input name="i5" value="test"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-include processes wrapped closest selector correctly', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      should.equal(params.i1, undefined)
+      params.i2.should.equal('bar')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<section>' +
+      '<input name="i1" value="foo"/>' +
+      '<div>' +
+      '<input name="i2" value="bar"/>' +
+      '<button id="btn" hx-post="/include" hx-include="closest <section, div/>"></button>' +
+      '</div>' +
+      '</section>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
 })
