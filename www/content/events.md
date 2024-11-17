@@ -412,6 +412,17 @@ This event is triggered when an HTTP error response occurs
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
 
+### Event - `htmx:sendAbort` {#htmx:sendAbort}
+
+This event is triggered when a request is aborted
+
+##### Details
+
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.elt` - the element that triggered the request
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
 ### Event - `htmx:sendError` {#htmx:sendError}
 
 This event is triggered when a network error prevents an HTTP request from occurring
