@@ -1145,7 +1145,7 @@ var htmx = (function() {
         }
         if (char === '<') {
           chevronsCount++
-        } else if (selector.substring(i, i + 2) === '/>') {
+        } else if (char === '/' && i < selector.length - 1 && selector[i + 1] === '>') {
           chevronsCount--
         }
       }
