@@ -4881,7 +4881,7 @@ var htmx = (function() {
    * @see https://htmx.org/api/#defineExtension
    *
    * @param {string} name the extension name
-   * @param {HtmxExtension} extension the extension definition
+   * @param {Partial<HtmxExtension>} extension the extension definition
    */
   function defineExtension(name, extension) {
     if (extension.init) {
