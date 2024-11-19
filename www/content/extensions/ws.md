@@ -185,7 +185,7 @@ If the event is cancelled, no further processing will occur and no messages will
 
 * `detail.parameters` - the parameters that will be submitted in the request
 * `detail.unfilteredParameters` - the parameters that were found before filtering
-  by [`hx-select`](https://htmx.org/reference/hx-select.md)
+  by [`hx-params`](https://htmx.org/attributes/hx-params)
 * `detail.headers` - the request headers. Will be attached to the body in `HEADERS` property, if not falsy
 * `detail.errors` - validation errors. Will prevent sending and
   trigger [`htmx:validation:halted`](https://htmx.org/events#htmx:validation:halted) event if not empty
