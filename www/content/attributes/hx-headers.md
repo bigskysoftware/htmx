@@ -11,6 +11,8 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
 
 ```html
   <div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>Get Some HTML, Including A Custom Header in the Request</div>
+
+  <div hx-get="/example" hx-vals='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Header from Javascript in the Request</div>
 ```
 
 ## Security Considerations
