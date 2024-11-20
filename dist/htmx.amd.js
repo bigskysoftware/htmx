@@ -2324,7 +2324,7 @@ var htmx = (function() {
         const rawAttribute = getRawAttribute(elt, 'method')
         verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         path = getRawAttribute(elt, 'action')
-        if (verb === 'get' && path.includes('?')) {
+        if (verb === 'get' && path && path.includes('?')) {
           path = path.replace(/\?[^#]+/, '')
         }
       }
@@ -3906,9 +3906,9 @@ var htmx = (function() {
         })
       } else {
         let resolvedTarget = resolveTarget(context.target)
-        // If target is supplied but can't resolve OR both target and source can't be resolved
+        // If target is supplied but can't resolve OR source is supplied but both target and source can't be resolved
         // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
-        if ((context.target && !resolvedTarget) || (!resolvedTarget && !resolveTarget(context.source))) {
+        if ((context.target && !resolvedTarget) || (context.source && !resolvedTarget && !resolveTarget(context.source))) {
           resolvedTarget = DUMMY_ELT
         }
         return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
@@ -4040,7 +4040,15 @@ var htmx = (function() {
       get: function(target, name) {
         if (typeof name === 'symbol') {
           // Forward symbol calls to the FormData itself directly
-          return Reflect.get(target, name)
+          const result = Reflect.get(target, name)
+          // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
+          if (typeof result === 'function') {
+            return function() {
+              return result.apply(formData, arguments)
+            }
+          } else {
+            return result
+          }
         }
         if (name === 'toJSON') {
           // Support JSON.stringify call on proxy
@@ -4874,7 +4882,7 @@ var htmx = (function() {
    * @see https://htmx.org/api/#defineExtension
    *
    * @param {string} name the extension name
-   * @param {HtmxExtension} extension the extension definition
+   * @param {Partial<HtmxExtension>} extension the extension definition
    */
   function defineExtension(name, extension) {
     if (extension.init) {

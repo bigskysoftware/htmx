@@ -159,7 +159,7 @@ declare namespace htmx {
     let toggleClass: (elt: Element | string, clazz: string) => void;
     let takeClass: (elt: Node | string, clazz: string) => void;
     let swap: (target: string | Element, content: string, swapSpec: HtmxSwapSpecification, swapOptions?: SwapOptions) => void;
-    let defineExtension: (name: string, extension: HtmxExtension) => void;
+    let defineExtension: (name: string, extension: Partial<HtmxExtension>) => void;
     let removeExtension: (name: string) => void;
     let logAll: () => void;
     let logNone: () => void;
