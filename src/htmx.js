@@ -754,17 +754,14 @@ var htmx = (function() {
   }
 
   /**
+   * Checks whether the element is in the document (includes shadow roots).
+   * This function this is a slight misnomer; it will return true even for elements in the head.
+   *
    * @param {Node} elt
    * @returns {boolean}
    */
   function bodyContains(elt) {
-    // IE Fix
-    const rootNode = elt.getRootNode && elt.getRootNode()
-    if (rootNode && rootNode instanceof window.ShadowRoot) {
-      return getDocument().body.contains(rootNode.host)
-    } else {
-      return getDocument().body.contains(elt)
-    }
+    return elt.getRootNode({ composed: true }) === document
   }
 
   /**
