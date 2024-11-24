@@ -48,8 +48,9 @@ page_template = "essay.html"
 * [Is Rendering JSON More Efficient Than Rendering HTML?](https://github.com/1cg/html-json-speed-comparison)
 * [Is JSON Smaller Than HTML?](https://github.com/1cg/html-json-size-comparison)
 
-### Complexity Very Very Bad
+### Complexity Very, Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
+* [Codin' Dirty](@/essays/codin-dirty.md)
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
