@@ -2559,6 +2559,7 @@ var htmx = (function() {
     const load = function() {
       if (!nodeData.loaded) {
         nodeData.loaded = true
+        triggerEvent(elt, 'htmx:trigger')
         handler(elt)
       }
     }
