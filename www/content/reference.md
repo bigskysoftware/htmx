@@ -160,6 +160,7 @@ All other attributes available in htmx.
 | [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown
 | [`htmx:pushedIntoHistory`](@/events.md#htmx:pushedIntoHistory)  | triggered after an url is pushed into history
 | [`htmx:responseError`](@/events.md#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
+| [`htmx:sendAbort`](@/events.md#htmx:sendAbort)  | triggered when a request is aborted
 | [`htmx:sendError`](@/events.md#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
 | [`htmx:sseError`](@/events.md#htmx:sseError)  | triggered when an error occurs with a SSE source
 | [`htmx:sseOpen`](/events#htmx:sseOpen)  | triggered when a SSE source is opened
