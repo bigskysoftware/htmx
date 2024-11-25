@@ -254,7 +254,7 @@ Active Record provides a way for you to map ruby object to a database, it is wha
 And it does a great job of that, in my opinion: it makes the easy stuff easy, 
 the medium stuff easy enough, and when push comes to shove you can kick out to raw SQL without much fuss.
 
-(This is a great example of ["layering"](https://grugbrain.dev/#grug-on-apis) and API.)
+(This is a great example of what I call ["layering"](https://grugbrain.dev/#grug-on-apis) an API.)
 
 But that's not all the Active Record objects are good at: they also provide excellent functionality for building HTML
 in the [view layer](https://guides.rubyonrails.org/action_view_overview.html) of Rails.  They don't include *HTML specific* functionality, but they do offer functionality 
