@@ -281,13 +281,13 @@ domain logic and serves as a vessel for presenting information to the view layer
 
 ## Conclusion
 
-We looked at three techniques I use when I'm codin' dirty:
+I've given three examples of my codin' dirty approach:
 
 * I think (some) big functions are good, actually
 * I prefer integration tests to unit tests
 * I like to keep my class/interface/concept count down
 
-All of this, again, is not to convince _you_ to code the way _I_ code, or to suggest that the way I code is "optimal" in 
+I'm presenting this, again, not to convince _you_ to code the way _I_ code, or to suggest that the way I code is "optimal" in 
 any way.
 
 Rather it is to give you, and especially you younger developers out there, a sense that you don't *have* to write code
@@ -296,4 +296,4 @@ the way that many thought leaders suggest in order to have a successful software
 You shouldn't be intimidated if someone calls your code "dirty": lots of very successful software has been written that
 way and, if you focus on the [core ideas](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs) 
 of [software engineering](https://www.web.stanford.edu/~ouster/cgi-bin/book.php), you will likely be successful 
-regardless of how dirty it is.
+in spite of how "dirty" it is, and maybe even because of it!
