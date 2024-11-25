@@ -29,7 +29,7 @@ methodology discussions.
 
 I've been programming for a while now and I have seen a bunch of different approaches to building software work.  Some 
 people love Object-Oriented Programming (I like it), other very smart people hate it.  Some folks love the expressiveness 
-of dynamic languages, other people hate it. Some people ship successfully while strictly follow Test Driven Development, 
+of dynamic languages, other people hate it. Some people ship successfully while strictly following Test Driven Development, 
 others slap a few end-to-end tests on at the end of the project, and many people end up somewhere between these extremes.
 
 I've seen projects using all of these different approaches ship and maintain successful software.
