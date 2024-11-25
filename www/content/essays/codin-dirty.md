@@ -258,7 +258,7 @@ the medium stuff easy enough, and when push comes to shove you can kick out to r
 
 But that's not all the Active Record objects are good at: they also provide excellent functionality for building HTML
 in the [view layer](https://guides.rubyonrails.org/action_view_overview.html) of Rails.  They don't include *HTML specific* functionality, but they do offer functionality 
-that is useful on the view side, such as providing and API to retrieve error messages, even at the field level.
+that is useful on the view side, such as providing an API to retrieve error messages, even at the field level.
 
 When you are writing Ruby on Rails applications you simply pass your Active Record instances out to the view/templates.
 
