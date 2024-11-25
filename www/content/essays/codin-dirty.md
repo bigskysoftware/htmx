@@ -281,7 +281,7 @@ domain logic and serves as a vessel for presenting information to the view layer
 
 ## Conclusion
 
-So there are three techniques I use when I'm codin' dirty:
+We looked at three techniques I use when I'm codin' dirty:
 
 * I think (some) big functions are good, actually
 * I prefer integration tests to unit tests
