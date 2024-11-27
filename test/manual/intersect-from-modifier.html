@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Test Intersect With from: Modifier</title>
+	<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+	<script src="../util/util.js"></script>
+	<script src="../../src/htmx.js"></script>
+
+	<script>
+        let c = 1;
+		server = makeServer();
+		server.autoRespond = true;
+		server.respondWith("GET", "/more_content", function (request) {
+            request.respond(200, {}, `<li class="response">This list item is proudly presented by HTMX. It is fetched item <strong>#${c++}</strong>.</li>`);
+        });
+	</script>
+
+	<style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 1rem 0 0 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        body > * { margin-inline: 2rem; }
+        li + li { margin-block-start: .5rem; }
+        li a { color: #666; text-decoration: none; }
+        li.response { color: forestgreen; }
+
+		footer {
+            margin: 0;
+            padding: 1rem 2rem;
+            background: plum;
+            width: 100%;
+        }
+	</style>
+</head>
+<body>
+    <h1>Intersect event with <code>from:</code> modifier</h1>
+    <p>New content should be loaded whenever the page footer is scrolled into view.</p>
+    <p>This demonstrates the functionality of <code>hx-trigger="intersect from:footer"</code></p>
+
+    <ul hx-get="/more_content"
+        hx-swap="beforeend"
+        hx-trigger="intersect from:footer">
+        <li>Did you know that the Pea Island Life-Saving Station on the Outer Banks of North Carolina was the first station of the United States Life-Saving Service to be staffed entirely by an African American crew?</li>
+        <li>Did you know that the passing lanes of the Arroyo Seco Parkway, California's first freeway, were paved in a different color to encourage drivers to stay in their lanes?</li>
+        <li>Did you know that Terminonatator ponteixensis is the type and only species described for Terminonatator, a genus of elasmosaurid plesiosaur from Late Cretaceous of Saskatchewan, Canada?</li>
+        <li>Did you know that the Cohocksink Creek was once the boundary between two Pennsylvania towns and now runs beneath the streets of the Philadelphia neighborhood of Northern Liberties?</li>
+        <li>Did you know that 2002's Hurricane Elida was the first hurricane to be observed by the MERIS sensor aboard the ESA's satellite Envisat?</li>
+        <li>Did you know that the former chief architect of Yerevan, Arthur Meschian, was also one of the founders of Armenian rock?</li>
+        <li>Did you know that London's Gresham Club (1843-1991) was named after Sir Thomas Gresham, an Elizabethan merchant?</li>
+        <li>Did you know that violent, porno-chic fashion photography in French and Italian Vogue influenced the sexualized glamor of cosmetics in the 1970s?</li>
+        <li>Did you know that the Roman Temple of Évora in Portugal, was used as a butcher shop for nearly 500 years and thus survived destruction?</li>
+        <li>Did you know that the San Francisco and San Mateo Electric Railway was San Francisco's first electric streetcar company?</li>
+        <li>Did you know that the bobsleigh, luge, and skeleton track constructed for the 1976 Winter Olympics was the first combination track that later served as a model for future tracks of its kind?</li>
+        <li>Did you know that only the shorter of the two Berks and Hants Railway lines actually entered Hants, the longer being entirely in the county of Berks?</li>
+        <li>Did you know that the Frauenfriedenskirche at Frankfurt am Main (Germany) is an unusual expressionist church, decorated with monumental mosaics?</li>
+        <li>Did you know that two new amphibious warfare ships of Australia to be added to the nation's fleet starting in 2012 will each be able to carry an entire infantry battalion and up to 16 helicopters?</li>
+        <li>Did you know that The Expert at the Card Table, one of the most famous books on magic and card tricks, was written in 1902 by S. W. Erdnase, an author whose identity has been an enduring mystery for over 100 years?</li>
+        <li>Did you know that Robert Campbell Reeve, the founder of Reeve Aleutian Airways, set a new world record for the highest landing of a ski equipped aircraft at 8,750 feet (2,667&nbsp;m) on Mount Lucania in 1937?</li>
+        <li>Did you know that the Koca Mustafa Pasha Mosque in Istanbul features a cypress tree with a chain that was swung between two people who gave contradictory statements to determine which one was telling the truth?</li>
+        <li>Did you know that William Melmoth's 1711 work The Great Importance of a Religious Life Consider'd went through thirty editions and sold over 420,000 copies by the end of the century?</li>
+        <li>Did you know that Polly Horvath's award-winning 2001 children's novel Everything on a Waffle tells the story of Primrose Squarp, an 11-year old girl whose parents are lost in a typhoon?</li>
+        <li>Did you know that Hurricane Greg caused one of Mexico's highest rainfall totals from a Pacific hurricane?</li>
+        <li>Did you know that the original land deed requires that a jail cell from the original Dutchess County courthouse be preserved in the current building?</li>
+        <li>Did you know that the Nepalese Maoist Newar National Liberation Front sponsored the 'Miss Newa' beauty pageant despite having previously demonstrated against them?</li>
+        <li>Did you know that William Hogarth's The Distrest Poet depicts a very poor family living in a squalid garret while the man of the family, who fancifully pursues a literary career without regarding his family's poverty, attempts to write a poem entitled "Upon Riches"?</li>
+        <li>Did you know that London's historic United University Club (1821-1972) is now occupied by the London Centre of the University of Notre Dame?</li>
+        <li>Did you know that Francisco de Quevedo's 1626 novel El Buscón, a major work of Spanish literature, was published without the permission of the author?</li>
+        <li>Did you know that Operation Camargue was one of the largest operations of the First Indochina War but it failed to snare the Viet-Minh's Regiment 95?</li>
+        <li>Did you know that in 1920, George Shima controlled 85% of California's potato market, earning him the nickname "The Potato King"?</li>
+        <li>Did you know that Think!, the Jeopardy! theme song composed by show creator Merv Griffin, earned royalties of over $70 million (U.S.) since it debuted on the show in 1964?</li>
+        <li>Did you know that Le chemin de fer, a piano composition by Charles-Valentin Alkan, is the first musical depiction of a railway?</li>
+        <li>Did you know that Hugh Denis Macrossan was one of the shortest serving chief justices of Queensland and that his brother and his nephew also became chief justices of that Australian state?</li>
+        <li>Did you know that Cyclone Inigo  caused more casualties before forming than after?</li>
+        <li>Did you know that  R.E.M. guitarist Peter Buck wanted to produce Uncle Tupelo's album March 16–20, 1992 after seeing the band perform a cover version of the Louvin Brothers' "Great Atomic Power"?</li>
+        <li>Did you know that American mathematician and classical pianist Leonard Gillman received his Ph.D. from Columbia University in 1953, a decade after completing the required coursework?</li>
+    </ul>
+
+    <footer>I'm the footer. Any time you scroll me into view, a new green number should appear above.</footer>
+</body>
+</html>
