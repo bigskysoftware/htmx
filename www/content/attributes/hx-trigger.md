@@ -20,7 +20,7 @@ A standard event, such as `click` can be specified as the trigger like so:
 #### Standard Event Filters
 
 Events can be filtered by enclosing a boolean javascript expression in square brackets after the event name.  If
-this expression evaluates to `true` the event will be triggered, otherwise it will be ignored.
+this expression evaluates to `true` the event will be triggered, otherwise it will be ignored. Standard event filters [require eval](@/docs.md#configuration-options).
 
 ```html
 <div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>
@@ -56,7 +56,7 @@ is seen again it will reset the delay.
 is seen again before the delay completes, it is ignored, the element will trigger at the end of the delay.
 * `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
   * A standard CSS selector resolves to all elements matching that selector. Thus, `from:input` would listen on every input on the page.
-  * The CSS selector is only evaluated once and is not re-evaluated when the page changes. If you need to detect dynamically added elements use an event filter, for example `click[event.target.matches('input')]`
+  * The CSS selector is only evaluated once and is not re-evaluated when the page changes. If you need to detect dynamically added elements use a [standard event filter](#standard-event-filters), for example `hx-trigger="click[event.target.matches('button')] from:body"` which would [catch](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Event_bubbling) click events from every button on the page.
   * The extended CSS selector here allows for the following non-standard CSS values:
     * `document` - listen for events on the document
     * `window` - listen for events on the window
@@ -154,4 +154,4 @@ The AJAX request can be triggered via JavaScript [`htmx.trigger()`](@/api.md#tri
 
 * `hx-trigger` is not inherited
 * `hx-trigger` can be used without an AJAX request, in which case it will only fire the `htmx:trigger` event
-* In order to pass a CSS selector that contains whitespace (e.g. `form input`) to the `from`- or `target`-modifier, surround the selector in parentheses or curly brackets (e.g. `from:(form input)` or `from:nearest (form input)`)
+* In order to pass a CSS selector that contains whitespace (e.g. `form input`) to the `from`- or `target`-modifier, surround the selector in parentheses or curly brackets (e.g. `from:(form input)` or `from:closest (form input)`)

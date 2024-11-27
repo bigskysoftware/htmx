@@ -180,7 +180,7 @@ This event is dispatched when an SSE connection could not be established.
 
 ##### Details
 
-* `detail.error` - The error that occured while creating
+* `detail.error` - The error that occurred while creating
   an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
 * `detail.source` - The [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
 

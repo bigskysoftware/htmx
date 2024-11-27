@@ -72,8 +72,7 @@ With that in mind, consider the following bit of HTML:
 <button hx-post="/clicked"
     hx-trigger="click"
     hx-target="#parent-div"
-    hx-swap="outerHTML"
->
+    hx-swap="outerHTML">
     Click Me!
 </button>
 ```
@@ -137,7 +136,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -255,8 +254,7 @@ You can use these attributes to implement many common UX patterns, such as [Acti
     hx-get="/trigger_delay"
     hx-trigger="keyup changed delay:500ms"
     hx-target="#search-results"
-    placeholder="Search..."
->
+    placeholder="Search...">
 <div id="search-results"></div>
 ```
 
@@ -317,8 +315,7 @@ a `load` trigger along with a delay, and replaces itself with the response:
 ```html
 <div hx-get="/messages"
     hx-trigger="load delay:1s"
-    hx-swap="outerHTML"
->
+    hx-swap="outerHTML">
 </div>
 ```
 
@@ -393,8 +390,7 @@ use the [hx-target](@/attributes/hx-target.md) attribute, which takes a CSS sele
     hx-get="/trigger_delay"
     hx-trigger="keyup delay:500ms changed"
     hx-target="#search-results"
-    placeholder="Search..."
->
+    placeholder="Search...">
 <div id="search-results"></div>
 ```
 
@@ -411,7 +407,7 @@ input tag.
   ancestor element or itself, that matches the given CSS selector.
   (e.g. `closest tr` will target the closest table row to the element)
 * The `next <CSS selector>` syntax will find the next element in the DOM matching the given CSS selector.
-* The `previous <CSS selector>` syntax will find the previous element in the DOM the given CSS selector.
+* The `previous <CSS selector>` syntax will find the previous element in the DOM matching the given CSS selector.
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
   (e.g `find tr` would target the first child descendant row to the element)
 
@@ -999,7 +995,7 @@ If you wanted to swap everything, regardless of HTTP response code, you could us
 <meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' /> <!--all responses are swapped-->
 ```
 
-Finally, it is worth considering using the [Response Targets](/extensions/reponse-targets)
+Finally, it is worth considering using the [Response Targets](/extensions/response-targets)
 extension, which allows you to configure the behavior of response codes declaratively via attributes.
 
 ### CORS
@@ -1149,7 +1145,7 @@ htmx supports a few "core" extensions, which are supported by the htmx developme
 * [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
 * [preload](/extensions/preload) - allows you to preload content for better performance
 * [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
-* [sse](/extensions/sse) - support for [Serve Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+* [sse](/extensions/sse) - support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 * [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 
 You can see all available extensions on the [Extensions](/extensions) page.

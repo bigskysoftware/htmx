@@ -172,7 +172,7 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-select`](@/attributes/hx-select.md)
+* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-params`](@/attributes/hx-params.md)
 * `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
@@ -404,6 +404,17 @@ This event is triggered after a URL has been replaced in history.
 ### Event - `htmx:responseError` {#htmx:responseError}
 
 This event is triggered when an HTTP error response occurs
+
+##### Details
+
+* `detail.xhr` - the `XMLHttpRequest`
+* `detail.elt` - the element that triggered the request
+* `detail.target` - the target of the request
+* `detail.requestConfig` - the configuration of the AJAX request
+
+### Event - `htmx:sendAbort` {#htmx:sendAbort}
+
+This event is triggered when a request is aborted
 
 ##### Details
 
