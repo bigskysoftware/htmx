@@ -570,7 +570,7 @@ pre[class|="language"] {
   color: lightgray;
 }
 .zola-anchor {
-  margin-left: -1.3rem;
+  margin-left: .3rem;
   margin-right: .3rem;
   opacity: 40%;
   color: var(--anchorColor);
