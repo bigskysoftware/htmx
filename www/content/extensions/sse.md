@@ -20,7 +20,7 @@ Use the following attributes to configure how SSE connections behave:
 * `sse-connect="<url>"` - The URL of the SSE server.
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
 * `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using
-  the [`hx-trigger`](https://htmx.org/reference/hx-trigger.md) attribute.
+  the [`hx-trigger`](https://htmx.org/attributes/hx-trigger) attribute.
 * `sse-close=<message-name>` - To close the EventStream gracefully when that message is received. This might be helpful
   if you want to send information to a client that will eventually stop.
 
@@ -110,7 +110,7 @@ Multiple events in different elements (from the same source).
 ### Trigger Server Callbacks
 
 When a connection for server sent events has been established, child elements can listen for these events by using the
-special [`hx-trigger`](https://htmx.org/reference/hx-trigger.md) syntax `sse:<event_name>`. This, when combined with
+special [`hx-trigger`](https://htmx.org/attributes/hx-trigger) syntax `sse:<event_name>`. This, when combined with
 an `hx-get` or similar will trigger the element to make a request.
 
 Here is an example:
