@@ -137,8 +137,9 @@ browser's automatic reconnection, so that your SSE streams will always be as rel
 ### Testing SSE Connections with the Demo Server
 
 Htmx includes a demo SSE server written in Node.js that will help you to see SSE in action, and begin bootstrapping your
-own SSE code. It is located in the /test/ws-sse folder of the htmx distribution. Look at /test/ws-sse/README.md for
-instructions on running and using the test server.
+own SSE code. It is located in the /test/ws-sse folder of
+the [`htmx-extensions`](https://github.com/bigskysoftware/htmx-extensions) repository. Look at /test/ws-sse/README.md
+for instructions on running and using the test server.
 
 ### Migrating from Previous Versions
 
