@@ -1,6 +1,6 @@
 +++
 title = "Examples"
-insert_anchor_links = "right"
+insert_anchor_links = "left"
 +++
 
 ## Server-side Integration Examples
