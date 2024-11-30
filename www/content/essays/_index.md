@@ -1,6 +1,6 @@
 +++
 title = "Essays"
-insert_anchor_links = "right"
+insert_anchor_links = "left"
 page_template = "essay.html"
 +++
 

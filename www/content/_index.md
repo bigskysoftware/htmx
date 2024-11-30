@@ -1,5 +1,5 @@
 +++
-insert_anchor_links = "right"
+insert_anchor_links = "left"
 +++
 
 <style type="text/css">
