@@ -570,10 +570,9 @@ pre[class|="language"] {
   color: lightgray;
 }
 .zola-anchor {
-  margin-right: .3rem;
-  opacity: 40%;
   color: var(--anchorColor);
 }
-.zola-anchor:hover {
-    opacity: 95%;
+
+.zola-anchor:hover::after {
+  content: ' 🔗';
 }
