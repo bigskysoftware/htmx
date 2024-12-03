@@ -69,6 +69,7 @@ if(window.location.search=="?ads=true") {
 </div>
 
 <div class="dark-hero full-width" classes="add appear">
+<marquee>
   <div class="main">
       <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
@@ -83,6 +84,8 @@ if(window.location.search=="?ads=true") {
        <img src="/img/kawaii.png">
      </a>
   </div>
+
+</marquee>
 </div>
 <div class="ad">
 <a href="https://swag.htmx.org">
