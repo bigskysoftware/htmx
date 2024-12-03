@@ -20,7 +20,7 @@
     --alertBackground: #161719;
     --alertBorder: #41464b;
     --alertShadow: rgba(0, 0, 0, 0.15);
-    --anchorColor: #e2dada;
+    --anchorColor: var(--midBlue);
     --bodyBackground: #1f1f1f;
     --footerBackground: #1a1d1e;
     --midBlue: #5b96d5;
