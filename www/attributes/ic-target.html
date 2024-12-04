@@ -1,0 +1,117 @@
+---
+layout: default
+nav: attributes > ic-target
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-target</code> - The Target Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-target</code> attribute tells Intercooler the response from a request should be used to replace
+        a different element than the current one.  This is commonly used with action attributes, for example to make
+        a button replace a div in the UI.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-target</code> attribute can be:</p>
+      <ul>
+        <li>The string <code>this</code>, indicating that the element that the <code>ic-target</code> attribute
+          is on is the target</li>
+        <li>The string <code>closest</code> followed by a valid CSS selector, indicating that the
+          closest parent to the element satisfying the given CSS selector is the
+          target (e.g. <code>closest tr</code>)</li>
+        <li>The string <code>find</code> followed by a valid CSS selector, indicating that the
+          closest child satisfying the given CSS selector is the target (e.g. <code>find .indicator-elt</code>)</li>
+        <li>A valid global CSS selector</li>
+      </ul>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-target</code> has no effect on dependencies.</p>
+
+      <h3>Button Example</h3>
+
+      <p>Here is a simple button that updates a div on click:</p>
+
+      <pre>
+  &lt;div id="target">0 Clicks&lt;/div>
+  &lt;button ic-post-to="/update" ic-target="#target">Update Div&lt;/button>
+      </pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var clicks = 0;
+            $.mockjax({
+              'url': '/update',
+              'response': function () {
+                clicks++;
+                this.responseText = clicks + ' Clicks';
+              }
+            });
+          })();
+        </script>
+        <div id="target">0 Clicks</div>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-target="#target">Update Div</button>
+      </div>
+
+      <h3>Input Example</h3>
+
+      <p>Here is an example of an input that posts its input to the server to validate it, replacing the
+      enclosing div (using standard Bootstrap error classes.)</p>
+
+      <pre>
+  &lt;div id="emailDiv">
+    &lt;div class="form-group">
+      &lt;label class="control-label">Enter Email:&lt;/label>
+      &lt;input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+    &lt;/div>
+  &lt;/div>
+</pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              'url': '/verify_email',
+              'response': function (settings) {
+                var params = parseParams(settings.data);
+                if(/\S+@\S+\.\S+/.test(params['email'])) {
+                  this.responseText = '<div class="form-group has-success">' +
+                    '<label class="control-label">Valid Email!</label>' +
+                    '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
+                    '</div>'
+                } else {
+                  this.responseText = '<div class="form-group has-error">' +
+                    '<label class="control-label">Please Enter A Valid Email!</label>' +
+                    '<input type="text" class="form-control" name="email" ic-post-to="/verify_email" value="' + params['email'] + '" ic-target="#emailDiv">' +
+                    '</div>'
+                }
+              }
+            });
+          })();
+        </script>
+
+        <div id="emailDiv">
+          <div class="form-group">
+            <label class="control-label">Enter Email:</label>
+            <input type="text" class="form-control" name="email" ic-post-to="/verify_email" ic-target="#emailDiv">
+          </div>
+        </div>
+        <em>Tab out of the input to trigger a post...</em>
+      </div>
+
+    </div>
+  </div>
+</div>

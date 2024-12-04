@@ -1,0 +1,209 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Implementing A Bulk Update UI</h1>
+
+      <p>This example demos a bulk update UI for a table of data.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The entire table is wrapped in a <code>form</code> tag, with checkboxes on each row indicating the row id.
+        </li>
+        <li>
+          A drop-down button sits outside the form (not strictly necessary) and includes the form with the
+          <a href="/attributes/ic-include.html"><code>ic-include</code></a>
+          attribute.  The drop-down button targets the body of the table using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute and specifies an request indicator via the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+        <li>
+          The drop-down button has two options, "Active" and "Deactive" which issue posts via
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          to <code>/activate</code> and <code>/deactivate</code> respectively.  Both options inherit all the
+          attibutes specified by the parent dropdown button.
+        </li>
+        <li>
+          When the server side handles a post it re-renders all the rows of the table, and applies a class,
+          <code>activate</code> or <code>deactivate</code> to a row that is activated or deactivated.  Using
+          CSS transitions and the <code>ic-transitioning</code>, we can flash the color of these rows green or red,
+          respectively.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+  <!--
+    This is the initial table.  As with other examples, this table would normally be generated with the same
+    template logic defined in the rowsTemplate() below, but is inlined here to make the example more clear.
+    -->
+  <div class="btn-group" ic-indicator="#indicator" ic-include="#checked-contacts" ic-target="#contactTableBody">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      Bulk Actions <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" >
+      <li><a ic-post-to="/activate">Activate</a></li>
+      <li><a ic-post-to="/deactivate">Deactivate</a></li>
+    </ul>
+  </div>
+  <i class="fa fa-spinner fa-spin" id="indicator" style="display:none"></i>
+
+  <form id="checked-contacts">
+    <table class="table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody id="contactTableBody">
+      <tr>
+        <td><input type="checkbox" name="ids" value="0"></td><td>Joe Smith</td><td>joe@smith.org</td><td>Active</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="ids" value="1"></td><td>Angie MacDowell</td><td>angie@macdowell.org</td><td>Active</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="ids" value="2"></td><td>Fuqua Tarkenton</td><td>fuqua@tarkenton.org</td><td>Active</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="ids" value="3"></td><td>Kim Yee</td><td>kim@yee.org</td><td>Inactive</td>
+      </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <style scoped>
+    .ic-transitioning tr.deactivate td {
+      background: lightcoral;
+    }
+    .ic-transitioning tr.activate td {
+      background: darkseagreen;
+    }
+    tr td {
+      transition: all 1.2s;
+    }
+  </style>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/activate",
+      responseTime: 1800,
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var ids = getIds(params);
+        for (var i = 0; i < ids.length; i++) {
+          var id = ids[i];
+          dataStore.findContactById(id)['status'] = 'Active';
+        }
+        this.responseText = rowsTemplate(ids, dataStore.allContacts(), 'activate');
+      }
+    });
+
+    $.mockjax({
+      url: "/deactivate",
+      responseTime: 1800,
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var ids = getIds(params);
+        for (var i = 0; i < ids.length; i++) {
+          var id = ids[i];
+          dataStore.findContactById(id)['status'] = 'Inactive';
+        }
+        this.responseText = rowsTemplate(ids, dataStore.allContacts(), 'deactivate');
+      }
+    });
+
+    function getIds(params) {
+      if(params['ids']) {
+        if($.isArray(params['ids'])) {
+          return $.map(params['ids'], function(val) {
+            return parseInt(val);
+          })
+        } else {
+          return [parseInt(params['ids'])];
+        }
+      } else {
+        return [];
+      }
+    }
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function rowsTemplate(ids, contacts, action) {
+      var txt = "";
+      for (var i = 0; i < contacts.length; i++) {
+        var c = contacts[i];
+        console.log($.inArray(i, ids));
+        txt += "<tr" + ($.inArray(i, ids) >= 0 ? " class='" + action + "'" : "") +  "> \
+                  <td><input type='checkbox' name='ids' value='" + i + "'></td><td>" + c.name + "</td><td>" + c.email + "</td><td>" + c.status + "</td> \
+                </tr>";
+      }
+      return txt;
+    }
+
+    //========================================================================
+    // Mock Data Store
+    //========================================================================
+    var dataStore = function(){
+      var data = [
+        { name: "Joe Smith", email: "joe@smith.org", status: "Active" },
+        { name: "Angie MacDowell", email: "angie@macdowell.org", status: "Active" },
+        { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
+        { name: "Kim Yee", email: "kim@yee.org", status: "Inactive" }
+      ];
+      return {
+        findContactById : function(id) {
+          return data[id];
+        },
+        allContacts : function() {
+          return data;
+        }
+      }
+    }()
+
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

@@ -1,0 +1,48 @@
+---
+layout: default
+nav: attributes > ic-remove-after
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-remove-after</code> - The Remove After Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-remove-after</code> attribute tells Intercooler to remove the element it is on after a given
+        interval.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should a valid integer, followed by the string "s" (for seconds) or "ms" (for
+        milliseconds).  (e.g. ic-remove-after="1500ms" indicates that the element should be removed after 1500 milliseconds.) </p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-remove-after</code> has no dependency implications.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example of a span removal:</p>
+
+      <pre>
+    &lt;a  ic-post-to="/remove_after" ic-target="#flash-span">Click Me!&lt;/a> &lt;span id="flash-span">&lt;/span>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            url: '/remove_after',
+            responseText: "<span ic-remove-after='1s'>Thanks for clicking!</span>"
+          });
+        </script>
+        <a ic-post-to="/remove_after" ic-target="#flash-span">Click Me!</a> <span id="flash-span"></span>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+---
+layout: default
+---
+<div class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1 ">
+        <img src="/images/Intercooler_CMYK_noType_64.png" id="icon1">
+      </div>
+      <div class="col-md-11">
+        <h1>
+          <img src="/images/Intercooler_CMYK_noType_64.png" id="icon2"> intercooler<span
+          class="intercooler-dot">.</span><span class="intercooler-js">js</span>
+        </h1>
+
+        <p>
+          AJAX With Attributes: There is no need to be complex
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="alert alert-info text-center">
+        <b>Announcement:</b><br/> htmx 1.x (intercooler 2.0) is now available at <a href="https://htmx.org">https://htmx.org</a><br/>
+        and is recommended for all new projects.  <br/>intercooler.js will continue to be supported indefinitely.
+      </div>
+	        <pre>
+  &lt;!-- This anchor tag posts to '/click' when it is clicked -->
+  &lt;a ic-post-to="/click">
+    Click Me!
+  &lt;/a>
+		      </pre>
+
+      <div class="index-demo live-demo text-center">
+        <script>
+          (function() {
+            var clicks = 0;
+            $.mockjax({
+              url: "/click",
+              response: function(settings) {
+                clicks++;
+                if (clicks >= 5) {
+                  this.headers = {'X-IC-Redirect': "/docs.html"};
+                  this.responseText = "";
+                } else if (clicks == 4) {
+                  this.responseText = "<span>OK, enough clicking...  Go to the docs?</span>";
+                } else {
+                  this.responseText = '<span>You clicked me ' + clicks + ' time' + (clicks > 1 ? 's' : '') + '...</span>';
+                }
+              }
+            });
+          })()
+        </script>
+        <style>
+          #intro-btn span {
+            transition: all .15s;
+          }
+
+          #intro-btn.ic-transitioning span {
+            opacity: 0;
+            font-size: 2px;
+          }
+        </style>
+        <a id="intro-btn" class="btn btn-primary" ic-transition-duration="250ms"
+           ic-post-to="/click"><span>Click Me!</span></a>
+      </div>
+
+      <hr/>
+    </div>
+  </div>
+
+</div>
+
+<div class="container">
+  <div class="row">
+
+    <div class="col-md-4">
+      <h2>Simple</h2>
+
+      <p>Use familiar, declarative HTML attributes to add AJAX to your application. Use web standards like CSS, REST
+        and Javascript events to enhance your app.</p>
+
+    </div>
+
+    <div class="col-md-4">
+      <h2>Incremental</h2>
+
+      <p>Use Intercooler for as much or as little of your application as you would like. If you have an existing app,
+        AJAX can be added incrementally without rewriting everything.</p>
+
+    </div>
+
+    <div class="col-md-4">
+      <h2>Unobtrusive</h2>
+
+      <p>Intercooler works with any back-end technology, and can live happily alongside other Javascript frameworks.</p>
+
+    </div>
+
+  </div>
+</div>
+

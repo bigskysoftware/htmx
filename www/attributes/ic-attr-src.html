@@ -1,0 +1,69 @@
+---
+layout: default
+nav: attributes > ic-attr-src
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-attr-src</code> - The Attribute Source Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-attr-src</code> attribute binds a given HTML element's attribute to a URL.  It does not cause any
+        requests to happen by itself, but it can respond to events caused by other attributes.</p>
+
+      <p>When Intercooler issues a request for an element with an <code>ic-attr-src</code>, it will issue a <code>GET</code>
+      and will replace the current element attribute value with resulting text fragment.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid attribute name, followed by a colon, then a valid relative
+        path
+        (e.g. <code>ic-attr-src="style:/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-attr-src</code> implies a dependency on its path, and Intercooler will issue requests for elements
+        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
+      more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, using a poll interval to update:</p>
+
+      <pre>
+  &lt;div ic-style-src="style:/style" ic-poll="1s">Cause you move to a different sound&lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var i = 0;
+            $.mockjax({
+              'url': '/style',
+              response: function () {
+                i+= 1;
+                i = i % 4;
+                if(i == 0) {
+                  this.responseText =  "";
+                } else if(i == 1){
+                  this.responseText =  "font-weight:bold";
+                } else if(i == 2) {
+                  this.responseText =  "font-weight:bold;font-style:italic;";
+                } else {
+                  this.responseText =  "font-style:italic;";
+                }
+              }
+            });
+          })();
+        </script>
+        <div ic-attr-src="style:/style" ic-poll="2s">Cause you move to a different sound</div>
+      </div>
+
+    </div>
+  </div>
+</div>

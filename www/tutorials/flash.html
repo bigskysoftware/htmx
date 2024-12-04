@@ -1,0 +1,49 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Making the Rails Flash Intercooler Friendly</h1>
+
+      <p>This tutorial will show you how to make the Rails flash and IntercoolerJS play well together.</p>
+
+      <h3>Video</h3>
+
+      <div class="text-center">
+        <iframe src="//player.vimeo.com/video/92293170" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+      </div>
+
+      <h3>Outline</h3>
+
+      <p>Here are the basic steps</p>
+
+      <ul>
+        <li>
+          Extract your flash message content to a ERB partial, with a div around the partial include.
+        </li>
+        <li>
+          Create a route to the partial that is rendered using the <code>render :partial</code> technique in rails.
+        </li>
+        <li>
+          Make the surrounding div add new flash messages from the new route using the
+          <code><a href="/attributes/ic-append-from.html">ic-append-from</a></code> and
+          <code><a href="/attributes/ic-deps.html">ic-deps</a></code> attributes.
+        </li>
+      </ul>
+
+      <h3>Git Diff</h3>
+
+      <p>Here is a diff of the changes:</p>
+
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/afba53a5d78b5d79ac352f83ddf62ee5585a7d5e">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/afba53a5d78b5d79ac352f83ddf62ee5585a7d5e
+      </a>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+---
+layout: default
+nav: dependencies
+---
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2>Intercooler 0.2.0 &rarr; 0.3.x Upgrade Guide</h2>
+
+      <p>Fresh on the heels of saying that we were adopting <a href="http://semver.org/">Semantic Versioning</a> in 0.2.0, we
+      promptly violated Semantic Versioning.</p>
+
+      <p>Last time, promise!  &#9786;</p>
+
+      <h4>Upgrade Steps</h4>
+
+      <p>Here are steps to upgrade from Intercooler <code>0.2.0</code> to <code>0.3.0</code>:</p>
+
+      <ol>
+        <li>Rename the <code>ic-load-on</code> attribute to <code>ic-trigger-on</code>.</li>
+        <li>All intercooler events that were previously named <code>ic.*</code> should be reversed to <code>*.ic</code> - this
+        is more consistent with jQuery event name spacing.</li>
+        <li>All logging related methods, <code>setLogger</code>, <code>log</code>, <code>setLogLevel</code> and
+          <code>logLevels</code> were removed from the API and should be replaced by jQuery event listeners for the
+        <code>log.ic</code> event.</li>
+      </ol>
+
+      <p>Not too bad, but still, sorry about that!</p>
+
+    </div>
+  </div>
+
+</div>

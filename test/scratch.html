@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../src/intercooler.js"></script>
+    <script type="text/javascript" src="lib/jquery.mockjax-1.10.2.js"></script>
+  </head>
+  <body id="body" ic-history-target="#body">
+    <script>
+      $(function () {
+        $.mockjaxSettings['responseTime'] = 8000;
+      });
+      var count = 1;
+      $.mockjax({
+        url: "/count",
+        response: function (settings) {
+          this.responseText = "<span>Click Count : " + count++ + "</span></i>";
+        }
+      });
+    </script>
+    <button ic-post-to="/count" ic-transition-duration="200ms" ic-push-url="true">
+      <span>
+        Click Me
+       <i class='fa fa-spinner fa-spin ic-indicator ic-use-transition'></i>
+      </span>
+    </button><br/>
+
+    <style>
+      .fade-hide {
+        opacity: 0;
+        transition: all 1s ease;
+      }
+      .red {
+        color: red;
+        transition: all 1s ease;
+      }
+    </style>
+
+    <button ic-action="addClass:fade-hide; delay:1s; remove" ic-target="#demo-div">Click Me 1!</button><br/>
+    <button ic-action="addClass:red; delay:1s; remove" ic-target="#demo-div">Click Me 2!</button><br/>
+    <button ic-action="fadeOut; remove" ic-target="#demo-div">Click Me 3!</button><br/>
+    <button ic-action="slideUp; remove" ic-target="#demo-div">Click Me 4!</button><br/>
+    <button ic-action="slideToggle" ic-target="#demo-div">Click Me 5!</button><br/>
+    <button ic-action="toggleClass:red" ic-target="#demo-div">Click Me 6!</button><br/>
+    <button onclick="$('#demo-div').toggleClass('red');">Click Me 6!</button><br/>
+
+    <div id="demo-div">
+      <h1>Hello World...</h1>
+    </div>
+
+  </body>
+</html>

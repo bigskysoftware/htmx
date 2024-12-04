@@ -1,0 +1,69 @@
+---
+layout: default
+nav: docs
+---
+<style>
+  .example {
+    margin: 24px;
+  }
+</style>
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Getting To Intercooler</h1>
+
+      <p>Consider the humble anchor tag, foundation of the web:</p>
+
+      <p class="example"><code>&lt;a href="http://www.google.com">Click Me&lt;/a></code></p>
+
+      <p>This bit of HTML tells the browser:</p>
+
+      <div class="example">"When the user clicks on this anchor tag, issue an HTTP GET to http://www.google.com and replace
+      the current page with the response."</div>
+
+      <p>Let's break this sentence down into its components:</p>
+
+      <div class="example">"When <strong style="color: red">[the user clicks on]</strong> this
+        <strong style="color: darkgreen">[anchor tag]</strong>, issue an <strong style="color: magenta">[HTTP GET to http://www.google.com]</strong> and replace
+        <strong style="color: darkblue">[the current page]</strong> with the response."</div>
+
+      <p>Intercooler generalizes each of these components:</p>
+
+      <ul>
+        <li>
+          <strong style="color: red">[the user clicks on]</strong> - <code>ic-trigger-on</code> lets you specify the event that
+          causes the request.
+        </li>
+        <li>
+          <strong style="color: darkgreen">[anchor tag]</strong> - Intercooler attributes work on any element, not just
+          anchor tags.
+        </li>
+        <li>
+          <strong style="color: magenta">[HTTP GET to http://www.google.com]</strong> - Using the <code>ic-post-to</code>,
+          <code>ic-put-to</code>, <code>ic-delete-from</code> and <code>ic-get-from</code> attributes, you can make
+          use of the full catalog of HTTP actions.
+        </li>
+        <li>
+          <strong style="color: darkblue">[the current page]</strong> - You can use the <code>ic-target</code> attribute
+          to target any particular element for replacement.
+        </li>
+      </ul>
+
+      <p>To give a general form to the original statement:</p>
+
+      <div class="example">"When <strong style="color: red">X</strong> this
+        <strong style="color: darkgreen">Y</strong>, issue a <strong style="color: magenta">Z</strong> and replace
+        <strong style="color: darkblue">P</strong> with the response."</div>
+
+      <p>This generalization and extension of the traditional patterns of web development lets you create
+        rich user interaction while minimizing the associated conceptual and complexity burdens.  As you peruse
+      the examples section you will be surprised how many UX patterns normally associated with heavy javascript
+      can be implemented using this simple pattern.</p>
+
+      <p>See the <a href="/docs.html">documentation</a> to find out everything you can do with Intercooler.</p>
+
+    </div>
+  </div>
+
+</div>

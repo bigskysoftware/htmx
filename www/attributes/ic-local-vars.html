@@ -1,0 +1,43 @@
+---
+layout: default
+nav: attributes > ic-local-vars
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-local-vars</code> - The Local Vars Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-local-vars</code> attribute tells Intercooler to include parameters from <code>localStorage</code>
+        in your intercooler requests.  This can be used to maintain local state that is persistent and not encoded
+        directly in the DOM.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-local-vars</code> attribute is a comma separated list of string names that will be
+      used to index into the localStorage object.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <p>Note that the <code>X-IC-Set-Local-Vars</code> response header can be used to write values into <code>localStorage</code></p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-local-vars</code> has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <p>In this example, the button includes a local variable when it POSTs to the server.</p>
+
+      <pre>
+  &lt;button ic-post-to="/update" ic-local-var="foo">Upload Local Var&lt;/button>
+      </pre>
+
+    </div>
+  </div>
+</div>

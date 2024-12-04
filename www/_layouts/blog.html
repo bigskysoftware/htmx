@@ -1,0 +1,21 @@
+---
+layout: default
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+      <h1 class="blog-title">{{ page.title }}<br/> <small>{{ page.date | date: "%-d %B %Y" }}</small></h1>
+
+      <hr/>
+
+      <section class="blog-section">
+        {{content}}
+      </section>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+</div>

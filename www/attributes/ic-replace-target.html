@@ -1,0 +1,59 @@
+---
+layout: default
+nav: attributes > ic-replace-taret
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-replace-target</code> - The Replace Target Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-replace-target</code> attribute tells Intercooler the target element of the intercooler request
+        should be replaced entirely with the server response, rather than replacing the inner HTML of the target.</p>
+
+      <p>This is useful  in cases where you cannot wrap an element around a potential target easily, such as
+        table rows.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-target</code> attribute should be "true", or it should be omitted entirely.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-replace-target</code> has no effect on dependencies..</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple button that replaces an entire div, rather than just the content in the div.
+        You can tell by the lack of border afterwards.</p>
+
+      <pre>
+  &lt;div id="target" style="border: 1px solid red">Before&lt;/div>
+  &lt;button ic-post-to="/update" ic-target="#target" ic-replace-target="true">Update Div&lt;/button>
+      </pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              'url': '/update',
+              'responseText': "<div>After</div>"
+            });
+          })();
+        </script>
+        <div id="target" style="border: 1px solid red">Before </div>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-target="#target" ic-replace-target="true">Update Div</button>
+      </div>
+
+    </div>
+  </div>
+</div>

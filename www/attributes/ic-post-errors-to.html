@@ -1,0 +1,42 @@
+---
+layout: default
+nav: attributes > ic-post-errors-to
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-post-errors-to</code> - The Post-Errors-To Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-post-errors-to</code> attribute tells Intercooler to post all errors that occur during requests
+      and content swapping to a given URL, typically for server side logging.</p>
+
+      <p>This attribute is typically specified on the <code>body</code> tag of your web application.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid URL (e.g. <code>"/errors"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-post-errors-to</code> has no dependency implications.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example usage.  All errors that occur within the body will be posted to the <code>/errors</code>
+      url</p>
+
+      <pre>
+  &lt;body ic-post-errors-to="/errors">
+    ...
+  &lt;/body>
+      </pre>
+
+
+    </div>
+  </div>
+</div>

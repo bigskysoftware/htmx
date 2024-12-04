@@ -1,0 +1,1685 @@
+---
+layout: default
+nav: docs
+---
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.61.0-2013.06.06/jquery.blockUI.min.js"></script>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <div class="toc pull-right clearfix">
+        <h3>Table Of Contents</h3>
+        <ul>
+          <li><a href="#intro">Intercooler in a Nutshell</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#core_attributes">The Core Attributes</a></li>
+          <li><a href="#triggers">Triggering Requests</a></li>
+          <li><a href="#targeting">Targeting Other Elements</a></li>
+          <li><a href="#inputs">Forms & Input Values</a></li>
+          <li><a href="#polling">Polling</a></li>
+          <li><a href="#progress">Progress Indicators</a></li>
+          <li><a href="#transitions">CSS Element Transitions</a></li>
+          <li><a href="#client-side">Client Side Tools</a></li>
+          <li><a href="#history">History</a></li>
+          <li><a href="#progressive_enhancement">Progressive Enhancement</a></li>
+          <li><a href="#sse">Server Sent Events <sub>BETA</sub></a></li>
+          <li><a href="#requests">Anatomy of an Intercooler Request</a></li>
+          <li><a href="#responses">Anatomy of an Intercooler Response</a></li>
+          <li><a href="#dependencies">Dependencies In Intercooler</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#server_side_techniques">Server-Side Techniques</a></li>
+          <li><a href="#debugging">Error Handling &amp; Debugging</a></li>
+          <li><a href="#javascript">Using Intercooler from Javascript</a></li>
+          <li><a href="#cross-domain">Cross-Domain AJAX</a></li>
+          <li><a href="#zepto">zepto.js Compatibility<sub>BETA</sub></a></li>
+          <li><a href="#philosophy">Philosophy</a></li>
+          <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+      </div>
+
+      <section>
+        <a class="anchor" id="intro"></a>
+
+        <h2>Intercooler in a Nutshell</h2>
+
+        <p>Intercooler is very simple to use if you have any web development experience. Anyone reading this
+          should be familiar with anchor tags in HTML:</p>
+
+        <pre class="special">
+  &lt;a href="http://intercoolerjs.org/">Get Intercooler&lt;/a></pre>
+
+        <p>
+          This tells a browser:
+        </p>
+
+        <blockquote><em>"When a user clicks on this link, issue an HTTP GET request to 'http://intercoolerjs.org/' and
+          load the response content into this browser window".</em></blockquote>
+
+        <p>Intercooler builds on this simple concept:</p>
+
+        <pre class="special">
+  &lt;a ic-post-to="/button_click">Click Me!&lt;/a></pre>
+
+        <p>
+          This tells a browser:
+        </p>
+
+        <blockquote><em>"When a user clicks on this link, issue an HTTP POST request to '/button_click' and
+          load the response content into this element".</em></blockquote>
+
+        <p>
+          So you can see that it is very similar a standard anchor link, except that:
+        </p>
+
+        <ul>
+          <li>A different HTTP action is used</li>
+          <li>The request is done via AJAX</li>
+          <li>The response replaces the contents of the element, rather than the entire page</li>
+        </ul>
+
+        <p>And there you have the core of intercooler. It's a simple idea, but you will be surprised how much you can do
+          with it.</p>
+
+        <p>Here is a working version of this example:</p>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/button_click',
+              responseText: 'You Clicked Me!'
+            })
+          </script>
+          <a ic-post-to="/button_click">Click Me!</a>
+        </div>
+
+        <p>The beauty of intercooler is that it allows you to develop web applications in much the same way that they
+        have always been developed, leveraging tools and techniques that have been honed over a decades experience,
+        while incrementally adding AJAX to the highest value areas of your web applications.  This allows you
+        to preserve your complexity budget (you have a complexity budget, right?) much later into your project, so
+        you can see exactly where the application needs something fancy.</p>
+
+        <p>Additionally, this makes intercooler a great tool for adding AJAX incrementally to an existing web app: there
+        is no need for a huge rewrite, you can just start using it in the high value parts of your app quickly and simply.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="installation"></a>
+
+        <h2>Installing Intercooler</h2>
+
+        <p>Intercooler is just another javascript library.  You can download and install the latest version from
+        the <a href="download.html">release</a> page.</p>
+
+        <p>Intercooler can be loaded off of NPM based CDNs, such as <a href="https://unpkg.com/intercooler">https://unpkg.com/intercooler</a>.</p>
+
+        <p>If you are using <a href="http://bower.io/">Bower</a>, the package name for Intercooler is
+          <code>intercooler-js</code>.</p>
+
+        <p>Intercooler depends on JQuery, version 1.10.0 or higher, and is compatible with JQuery 1, 2 and 3.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="core_attributes"></a>
+
+        <h2>The Core Intercooler Attributes</h2>
+
+        <p>
+          The core attributes of intercooler are: <code>ic-get-from</code>, <code>ic-post-to</code>,
+          <code>ic-put-to</code>, <code>ic-patch-to</code> and <code>ic-delete-from</code>.</p>
+
+        <p>Each of these attributes takes a (typically server-relative) URL
+          to issue a request to and then issue an HTTP <code>GET</code>, <code>POST</code>, <code>PUT</code>,
+          <code>PATCH</code> or <code>DELETE</code> respectively, when the element they are declared on is triggered (see
+          below) and then loads the content of the response into the element.
+        </p>
+
+        <p>
+          Underlying all these attributes is the <code>ic-src</code> attribute, which can be thought of as the
+          same as <code>ic-get-from</code>, but with no event trigger.  (It can be triggered manually or
+          via dependencies, see below.)  The attributes above are defined in terms of <code>ic-src</code>,
+          you will not find a need to use this attribute directly very often.
+        </p>
+
+        <p>Here is an example button that issues a <code>PUT</code>:</p>
+
+          <pre>
+  &lt;button ic-put-to="/put_demo">Put Me!&lt;/button></pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/put_demo',
+              responseText: 'You Put Me!'
+            })
+          </script>
+          <button class="btn btn-primary" ic-post-to="/put_demo">Put Me!</button>
+        </div>
+
+        <p><b>Note:</b> if you wish to use the <code>data-*</code> prefix for intercooler attributes, you can add the following
+        meta tag to your head section: </p>
+
+        <p>
+          <code>&lt;meta name="intercoolerjs:use-data-prefix" content="true"/></code>
+        </p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="triggers"></a>
+
+        <h2>Triggering Intercooler Requests</h2>
+
+        <p>
+          The core intercooler attributes specify where to make a request, but they don't specify when to do so. By
+          default
+          intercooler will use the "natural" event for an element:
+        </p>
+
+        <ul>
+          <li>For <code>form</code> elements, issue the request on the <code>submit</code> event.</li>
+          <li>For elements matching the <a href="http://api.jquery.com/input-selector/">JQuery <code>:input</code>
+            pseudo-selector</a>
+            <strong>except buttons</strong>, issue the request on the <code>change</code> event.
+          </li>
+          <li>For all other elements, including buttons, issue the request on the <code>click</code> event.</li>
+        </ul>
+
+        <p>
+          If you wish to listen for an event on another element in the DOM, or the document or window object,
+          you can use the <code>ic-trigger-from</code> attribute.
+        </p>
+
+        <p>
+          For any element you can override the event that triggers an intercooler response by using the
+          <code>ic-trigger-on</code>
+          attribute:
+        </p>
+
+        <pre style="width:90%">
+  &lt;a ic-post-to="/mouse_entered" ic-trigger-on="mouseenter">Mouse Over Me!&lt;/a></pre>
+        <p>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/mouse_entered',
+              responseText: 'The Mouse Entered Me!'
+            })
+          </script>
+          <a ic-post-to="/mouse_entered" ic-trigger-on="mouseenter">Mouse Over Me!</a>
+        </div>
+
+        <p>If you wish to trigger an intercooler request only when an event has occurred <em>and</em> the value of an
+          element has changed, you can use the <code>changed</code> modifier as well:</p>
+
+  <pre>
+    &lt;input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+               ic-target="#text-div" placeholder="Enter Some Text"/>
+    &lt;div id="text-div">&lt;/div>
+  </pre>
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/text_changed',
+              response: function (settings) {
+                var params = parseParams(settings.data);
+                this.responseText = params['text'];
+              }
+            })
+          </script>
+          <input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+                 ic-target="#text-div" placeholder="Enter Some Text" autocomplete="off"/>
+
+          <div id="text-div"></div>
+        </div>
+
+        <p>If you wish for an event to only trigger a request once (e.g. a click to load a detail div) you can use the
+        <code>once</code> modifier:</p>
+
+        <pre>
+    &lt;div ic-get-from="/details" ic-trigger-on="click once"/>
+          Click for Details...
+    &lt;/div>
+        </pre>
+
+        <p>
+          Finally, you can add a delay to the request by using the <a href="/attributes/ic-trigger-delay.html"><code>ic-trigger-delay</code></a>
+          attribute:
+        </p>
+
+
+  <pre>
+    &lt;input type="text" name="text" ic-post-to="/trigger_delay" ic-trigger-on="keyup changed"
+               ic-target="#text-div2" ic-trigger-delay="500ms" placeholder="Enter Some Text"/>
+    &lt;div id="text-div2">&lt;/div>
+  </pre>
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/trigger_delay',
+              response: function (settings) {
+                var params = parseParams(settings.data);
+                this.responseText = params['text'];
+              }
+            })
+          </script>
+          <input type="text" name="text" ic-post-to="/text_changed" ic-trigger-on="keyup changed"
+                 ic-target="#text-div2" ic-trigger-delay="500ms" placeholder="Enter Some Text" autocomplete="off"/>
+
+          <div id="text-div2"></div>
+        </div>
+
+        <p>This attribute allows you to wait until a given interval of time has passed before issuing the request. If
+          the event
+          occurs again, the timer will reset and begin waiting again. This is useful, for example, if you want to issue
+          a request
+          when a user pauses in a text input.</p>
+
+        <h3>Special Events</h3>
+
+        <p>
+          In addition to <a href="http://api.jquery.com/category/events/">the standard JQuery events </a>, Intercooler
+          supports a special event: <code>scrolled-into-view</code>, which is fired when an element is scrolled into
+          view.
+        </p>
+
+        <p>
+          This can be useful for implementing UI patterns such as infinite scroll or lazy image loading.
+        </p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="targeting"></a>
+
+        <h2>Targeting Other Elements</h2>
+
+        <p>
+          Sometimes you don't want to replace the content of the element that causes an intercooler request, but
+          rather some other element on the page. For example, you may have a link that, when it is clicked, should
+          replace an entire section of content with the server response.
+        </p>
+
+        <p>For these situations you can use the <code>ic-target</code> attribute, which takes
+          <a href="http://api.jquery.com/category/selectors/"> a JQuery selector </a> (typically with an element id).
+        </p>
+
+        <pre style="width:90%">
+  &lt;a ic-post-to="/target_span" ic-target='#target_span'>Click Me!&lt;/a>
+  &lt;span id="target_span">You haven't clicked the link next to me...&lt;/span></pre>
+        <p>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/target_span',
+              responseText: 'You Clicked The Link!'
+            })
+          </script>
+          <a ic-post-to="/target_span" ic-target='#target_span'>Click Me!</a>
+          <span id="target_span">You haven't clicked the link next to me...</span>
+        </div>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="inputs"></a>
+
+        <h2>Forms & Input Values</h2>
+
+        <p>Including form data is very simple in intercooler. By default, any element causing an intercooler request
+          will include the serialized version of the nearest parent form. So if the element is a form or is nested
+          within
+          a form the entire form will be serialized and sent up with the request.</p>
+
+        <p>Intercooler includes some additional parameters in the request to help you understand which element invoked
+          the request, see <a href="#requests">Anatomy of an Intercooler Request</a> below for more information.</p>
+
+        <h3>Including Other Values In Requests</h3>
+
+        <p>Sometimes you may want to include the values of inputs in a different part of the DOM. To do this,
+          intercooler
+          supports an attribute, <code>ic-include</code>, in which you can specify a JQuery selector to indicate what
+          other
+          elements to serialize in the request <em>or</em> you can specify a JSON object of name/value pairs to include
+          in the request.</p>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/form_demo',
+              response: function (settings) {
+                var params = parseParams(settings.data);
+                this.responseText = "You entered the email '" + params['email'] + "'.<br/>All parameters: " + settings.data;
+              }
+            })
+          </script>
+          <form ic-post-to="/form_demo" ic-target="#form-target">
+            <input type="hidden" name="hidden" value="hidden value"/>
+
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input name="email" type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input name="password" type="password" class="form-control" id="exampleInputPassword1"
+                     placeholder="Password">
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="checkbox-input" value="checkbox-value"> Check me out
+              </label>
+            </div>
+            <button id="form-button-1" type="submit" class="btn btn-default">Submit</button>
+          </form>
+          <span id="form-target">Submit the form above...</span>
+        </div>
+
+        <p>
+          You can also include values stored persistently in the <code>localStorage</code> object by using the
+          <code>ic-local-vars</code> attribute, which takes a comma separated list of keys to include in the request.
+          (You can set localStorage values using the <code>X-IC-Set-Local-Vars</code> header, mentioned below.)
+        </p>
+
+        <h3>File Uploads</h3>
+
+        <p>File uploads can be accomplished with intercooler by adding the <code>enctype='multipart/form-data'</code>
+        to a form that is set up to submit via intercooler.  When intercooler detects this, it will use the
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects"><code>FormData</code></a> object
+        for creating the request, which will include any file inputs.</p>
+
+        <p>Note that <code>FormData</code> is only available as of IE10.  Also be aware that sub-elements within the form
+        that trigger their own AJAX requests (e.g. an input that triggers on change) will <b>not</b> be submitted as
+        <code>multipart/form-data</code> requests, and will therefore not include any files.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="polling"></a>
+
+        <h2>Polling</h2>
+
+        <p>A common pattern in web development is to have a page poll a URL for updates. Until the day comes when
+          push technologies are available widely, this technique is the best way to dynamically update a UI without a
+          specific client-side event happening.</p>
+
+        <p>Intercooler supports an attribute, <code>ic-poll</code>, which tells an element to poll whatever URL is
+          associated with it on a given interval. This attribute can be of the form "10s" or "100ms", where "s"
+          indicates
+          seconds and "ms" indicates milliseconds.</p>
+
+        <p>Below is an example:</p>
+
+        <pre>
+          &lt;span ic-poll="2s" ic-src="/poll_example">
+            This span will poll the server every two seconds...
+          &lt;/span>
+        </pre>
+
+        <p>Note that if you want the polling element to load data immediately after the page renders,
+          you can add the attribute <code>ic-trigger-on="load"</code></p>
+
+        <div class="live-demo">
+          <style>
+            .flashRed {
+              transition: all 1s;
+            }
+            .ic-transitioning .flashRed {
+              color: red;
+            }
+          </style>
+          <script>
+            (function () {
+              var count = 0;
+              $.mockjax({
+                url: '/poll_example',
+                response: function () {
+                  count++;
+                  this.responseText = 'This span has polled <span class="flashRed">' + count + "</span> times...";
+                }
+              })
+            })()
+          </script>
+          <span ic-poll="2s" ic-src="/poll_example">This span will poll the server every two seconds...</span>
+        </div>
+
+        <h3>Configuring Polling Behavior</h3>
+
+        <p>Intercooler supports a few ways to modify polling behavior. The first is the <a
+          href="/attributes/ic-poll-repeats.html"><code>ic-poll-repeats</code></a>
+          attribute, which you can use to limit the number of times a intercooler will poll for a given element.</p>
+
+        <p>The second is the <a href="/attributes/ic-poll-repeats.html"><code>ic-pause-polling</code></a> attribute, can
+          be set to true to tell an element not to poll.</p>
+
+        <p>A third way is to use the <code>X-IC-CancelPolling</code> response header, which will cancel polling of an
+          element. See the <a href="#responses">Anatomy of an Intercooler Response</a> section for more details on
+          intercooler response headers.</p>
+
+        <p>You can resume polling after it has been cancelled by issuing the <code>X-IC-ResumePolling</code> response
+          header.</p>
+
+        <p>Note that both of the headers will propogate to the nearest <code>ic-poll</code> element that is a parent of
+          the
+          current target.</p>
+
+        <p>Using these two tags and headers, it is fairly simple to set up a "Pause/Play" UI for a pol-based live
+          view.</p>
+
+        <p>If you wish to pause polling when a window is hidden or is not focused, you can use the
+          <a href="/attributes/ic-disable-when-doc-hidden.html"><code>ic-disable-when-doc-hidden</code></a> or
+          <a href="/attributes/ic-disable-when-doc-inactive.html"><code>ic-disable-when-doc-inactive</code></a> attributes,
+          respectively.
+        </p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="progress"></a>
+
+        <h2>Progress Indicators</h2>
+
+        <p>An important but often overlooked aspect of UI design is indicating when a remote request is in flight.
+          Modern browsers have unfortunately made the situation worse for normal web requests by making the request
+          indicator
+          less and less obvious, for what I can only assume are aesthetic considerations.</p>
+
+        <p>AJAX requests have never had a proper indicator mechanism, so it is up to us to build one. Intercooler
+          provides tools to make this easy.</p>
+
+        <h3>The <code>ic-indicator</code> Attribute</h3>
+
+        <p>
+          The first tool available is the <code>ic-indicator</code> attribute, which specifies a selector of an
+          indicator element in the DOM. This element will be made visible during the life of the intercooler request,
+          and hidden afterwards.
+        </p>
+
+        <p>
+          Here is an example:
+        </p>
+
+        <pre>
+          &lt;button ic-post-to="/indicator_demo" ic-indicator="#demo-spinner">Click Me!&lt;/button>
+          &lt;i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none">&lt;/i>
+        </pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              responseTime: 1500,
+              url: '/indicator_demo',
+              responseText: "Done!"
+            });
+          </script>
+          <button class="btn btn-default" ic-post-to="/indicator_demo" ic-indicator="#demo-spinner">Click Me!</button>
+          <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"></i>
+        </div>
+
+        <p>This attribute can be specified on a parent element if you want a group of elements to share the
+          same indicator.</p>
+
+        <h3>The <code>ic-indicator</code> Class</h3>
+
+        <p>
+          Another option is to use the <code>ic-indicator</code> class on an element that is a child of the element
+          issuing the intercooler request.
+        </p>
+
+        <p>
+          Here is an example:
+        </p>
+
+        <pre>
+          &lt;button ic-post-to="/indicator_demo2">Click Me!
+            &lt;i class="ic-indicator fa fa-spinner fa-spin" style="display:none">&lt;/i>
+          &lt;/button>
+        </pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              responseTime: 1500,
+              url: '/indicator_demo2',
+              responseText: "Done!"
+            });
+          </script>
+          <button class="btn btn-default" ic-post-to="/indicator_demo2">
+            Click Me!
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display:none"></i>
+          </button>
+        </div>
+
+        <p>This is less code and is better UX for some situations, but has the disadvantage that if the parent element
+          is replaced the indicator will be removed, causing what can appear to be an abrupt transition.</p>
+
+        <h3>CSS-Based Indicators</h3>
+
+        <p>If you wish to use CSS to style your progress indicator transitions, rather than the default show/hide logic, you
+          can use the <code>ic-use-transition</code> class.  See the <a href="/attributes/ic-indicator.html"><code>ic-indicator</code>
+            documentation</a> for more details and an example.</p>
+
+        <h3>Disabling Elements</h3>
+
+        <p>By default, intercooler will apply the <code>disabled</code> class to the element that triggers an
+          intercooler
+          request. This can be used to give a visual hint to the user that they should not click or otherwise trigger
+          the request again, and is Bootstrap-friendly.</p>
+
+        <p>In the above demos you will see that the button greys out during
+          the request, which is due to Bootstrap's handling of this CSS class.</p>
+
+        <h3>The <code>ic-global-indicator</code> Attribute</h3>
+
+        <p>
+          The <code><a href="/attributes/ic-global-indicator.html">ic-global-indicator</a></code> attribute is similar to the <code>ic-indicator</code> attribute, but
+          will be shown in addition to any local indicators.  This can be used to implement a site-wide progress indicator.
+        </p>
+
+
+      </section>
+
+      <section>
+        <a class="anchor" id="transitions"></a>
+
+        <h2>CSS Element Transitions</h2>
+
+        <p>As of the 0.9.0 release, Intercooler allows you to use CSS 3 transitions to animate content swaps. It does
+          this by adding the <code>ic-transitioning</code> class to the <em>target element</em> that is about to be
+          swapped,
+          waiting a moment, doing the swap, and then removing the <code>ic-transitioning</code> class from the target.
+        </p>
+
+        <p>The amount of time between when the <code>ic-transitioning</code> class is added, the swap is done and then
+          the <code>ic-transitioning</code> class is removed is determined as follows</p>
+
+        <p>Time to swap is determined by:</p>
+
+        <ul>
+          <li>
+            If the attribute <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code>
+            is defined
+            on either the target or triggering element or parents thereof, use the time defined by that attribute.
+          </li>
+          <li>
+            Otherwise, add the <code>transition-duration</code> and <code>transition-delay</code> defined in CSS for the
+            element
+            using 0 if either is absent.
+          </li>
+        </ul>
+
+        <p>
+          Intercooler then waits an additional 5 milliseconds before removing the <code>ic-transitioning</code> class.
+        </p>
+
+        <p>This process lets you define CSS transitions for your elements. Here is a simple example that fades the
+          button
+          out and then back in:</p>
+
+  <pre>
+  &lt;style>
+    #transition-1 {
+      transition: all .9s;
+    }
+
+    #transition-1.ic-transitioning {
+      opacity: 0;
+    }
+  &lt;/style>
+  </pre>
+
+        <div class="live-demo">
+          <style>
+            #transition-1 {
+              transition: all .9s;
+            }
+
+            #transition-1.ic-transitioning {
+              opacity: 0;
+            }
+          </style>
+
+          <script>
+            $.mockjax({
+              url: '/transition_1',
+              responseText: "<span>You Clicked Me!!!</span>"
+            });
+          </script>
+          <a id="transition-1" class="btn btn-primary" ic-post-to="/transition_1">Click Me!</a>
+        </div>
+
+        <p>Since we are using CSS, we can transition elements within the swapped content, rather than the entire
+          content.
+          In this example we only fade in and out the content in the button. Note that we need to define the
+          <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code> to let intercooler
+          know
+          how long to wait, since the transition delay is not defined on the target.</p>
+
+        <p>Note that the CSS transition time is
+          set to a slightly smaller amount than the <code><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></code>
+          is, to avoid timing issues with the <code>ic-transitioning</code> class removal.
+        </p>
+
+  <pre>
+  &lt;style>
+    #transition-2 span {
+      transition: all .9s;
+    }
+
+    #transition-2.ic-transitioning span {
+      opacity: 0;
+    }
+  &lt;/style>
+  </pre>
+
+        <div class="live-demo">
+          <style>
+            #transition-2 span {
+              transition: all .9s;
+            }
+
+            #transition-2.ic-transitioning span {
+              opacity: 0;
+            }
+          </style>
+
+          <script>
+            $.mockjax({
+              url: '/transition_2',
+              responseText: "<span>You Clicked Me!!!</span>"
+            });
+          </script>
+          <a id="transition-2" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2"><span>Click Me!</span></a>
+        </div>
+
+        <p>And, to show that you can use any CSS transition, here is the same example that uses font size:</p>
+
+  <pre>
+  &lt;style>
+    #transition-3 span {
+      transition: all 900ms;
+    }
+
+    #transition-3.ic-transitioning span {
+      font-size: 4px;
+    }
+  &lt;/style>
+  </pre>
+
+        <div class="live-demo">
+          <style>
+            #transition-3 span {
+              transition: all 900ms;
+            }
+
+            #transition-3.ic-transitioning span {
+              font-size: 4px;
+            }
+          </style>
+
+          <script>
+            $.mockjax({
+              url: '/transition_3',
+              responseText: "<span>You Clicked Me!!!</span>"
+            });
+          </script>
+          <a id="transition-3" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2"><span>Click Me!</span></a>
+        </div>
+
+        <p>Using CSS transitions gives you very fine-grained controll over the look and feel of your Intercooler-based
+          app,
+          and they are fun to play with. (Just don't overdo it.)</p>
+
+
+      <section>
+        <a class="anchor" id="client-side"></a>
+
+        <h2>Client-Side Tools</h2>
+
+        <p>Intercooler is primarily a library for making AJAX calls, but it does provide some simple but
+        powerful tools for doing client-side DOM manipulation, allowing you to implement many client-side
+        needs using only a few attributes:</p>
+
+        <h3>Ready Handling</h3>
+
+        <p>A common pattern in jQuery-based applications is to have a <a href="https://api.jquery.com/ready/">ready handler</a>
+          that executes once the page is loaded, and that often is used to hook up event handlers or to initialize javascript
+          widgets:</p>
+
+  <pre>
+    $(document).ready(function() {
+      $("#my-element").click(function() { doSomethingOnClick() });
+    });
+  </pre>
+
+        <p>Intercooler has a similar mechanism so that you can wire event handlers (or use javascript plugins) to
+        partial content that has been swapped into the DOM:</p>
+
+  <pre>
+    Intercooler.ready(function(rootContent) {
+      rootContent.find("#my-element").click(function() { doSomethingOnClick() });
+    });
+  </pre>
+
+        <p>Note that rather than doing a global lookup of elements, you do a look up from the root element of the
+        swap, which is passed in as an argument to the callback.  This helps you avoid accidentally adding multiple
+        handlers to the same element.</p>
+
+        <h3>Adding &amp; Removing Classes After A Delay</h3>
+
+        <p>In order to fine tune transitions or provide other visual easements in your app, you may find yourself
+          wanting to
+          add or remove classes to an element after a specified delay. Intercooler provides two attributes,
+          <a href="/attributes/ic-add-class.html"><code>ic-add-class</code></a> and
+          <a href="/attributes/ic-remove-class.html"><code>ic-remove-class</code></a> to do this.</p>
+
+        <p>In this example, we apply a <code>toRed</code> class to the text inside the button after a click:</p>
+
+        <div class="live-demo">
+          <style>
+            .toRed {
+              color: red;
+              transition: all 1s;
+            }
+          </style>
+
+          <script>
+            $.mockjax({
+              url: '/add_class',
+              responseText: "<span ic-add-class='toRed:500ms'>You Clicked Me!!!</span>"
+            });
+          </script>
+          <a id="add-class" class="btn btn-primary" ic-post-to="/add_class"><span>Click Me!</span></a>
+        </div>
+
+        <h3>Timed Removal Of Elements</h3>
+
+        <p>A common pattern in AJAX applications is to "flash" an element after a request: show the element for a bit
+          then
+          remove it from the DOM. Intercooler includes the <a href="/attributes/ic-remove-after.html"><code>ic-remove-after</code></a>
+          attribute
+          for this situation which, like <code>ic-poll</code>, can take the form "2s" or "1500ms". Once the given amount
+          of
+          time has elapsed, the element will be removed from the DOM.</p>
+
+        <p>This can be paired with the <a href="/attributes/ic-add-class.html"><code>ic-add-class</code></a> or
+          <a href="/attributes/ic-remove-class.html"><code>ic-remove-class</code></a> to achieve a smooth effect.</p>
+
+        <p>Here is an example, where the message is faded out before being removed:</p>
+
+        <div class="live-demo">
+          <style>
+            .icFadeOut {
+              opacity: 0;
+              transition: all 1s;
+            }
+          </style>
+          <script>
+            $.mockjax({
+              url: '/remove_after',
+              responseText: "<span ic-remove-after='2s' ic-add-class='icFadeOut:1s'>Thanks for clicking!</span>"
+            });
+          </script>
+          <a ic-post-to="/remove_after" ic-target="#flash-span">Click Me!</a> <span id="flash-span"></span>
+        </div>
+
+        <h3>Client-Side Actions</h3>
+
+        <p>Sometimes it is useful to have a purely-client side action in response to a given action trigger.  A
+          good example is if you wish simply to remove a element when another element is clicked, without a server
+          request.  Intercooler provides the <code><a href="/attributes/ic-action.html">ic-action</a></code> attribute
+          for this situation.</p>
+
+        <p>The full details of the syntax for this attribute are available on the detail page for it, but here are
+        a few examples:</p>
+
+        <pre>
+   &lt;a ic-action="fadeOut;remove">Fade Then Remove Me!&lt;/a>
+        </pre>
+
+        <div class="live-demo">
+          <a class="btn btn-primary" ic-action="fadeOut;remove">Fade Then Remove Me!</a>
+        </div>
+
+        <pre>
+  &lt;a ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!&lt;/a>
+        </pre>
+
+        <div class="live-demo">
+          <a class="btn btn-primary" ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!</a>
+          <blockquote id="chesterton-quote" style="display: none">
+            “Without education, we are in a horrible and deadly danger of taking educated people seriously.”<br/>
+            --GK Chesterton
+          </blockquote>
+        </div>
+
+        <h3>Switch Class</h3>
+
+        <p>Sometimes you may want to switch a class between siblings in a DOM without replacing the HTML.  A
+        common situation where this comes up is in tabbed UIs, where the target is within the tabbed UI, but the
+        tabs themselves are not replaced.</p>
+
+        <p>Intercooler has an attribute, <code><a href="/attributes/ic-switch-class.html">ic-switch-class</a></code> that
+        enabled this pattern.  It is placed on the parent element and the value is the name of the class that will be
+        switched to the element causing the intercooler request.</p>
+
+        <p>Below is an example of a tabbed UI using this technique.  Note that the tabs are not replaced, but the
+        <code>active</code> class is switched between them as they are clicked.</p>
+
+        <pre>
+        &lt;ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+          &lt;li class="active">&lt;a ic-get-from="/tab1">Tab1&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab2">Tab2&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab3">Tab3&lt;/a>&lt;/li>
+        &lt;/ul>
+        &lt;div id="content">
+          Pick a tab
+        &lt;/div>
+        </pre>
+
+        <div class="live-demo">
+
+          <script>
+            (function () {
+              var i = 0;
+              $.mockjax({'url': '/tab1', 'responseText': "Tab 1"});
+              $.mockjax({'url': '/tab2', 'responseText': "Tab 2"});
+              $.mockjax({'url': '/tab3', 'responseText': "Tab 3"});
+            })();
+          </script>
+
+          <ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+            <li class="active"><a ic-get-from="/tab1">Tab1</a></li>
+            <li><a ic-get-from="/tab2">Tab2</a></li>
+            <li><a ic-get-from="/tab3">Tab3</a></li>
+          </ul>
+          <div id="content">
+            Tab 1
+          </div>
+
+        </div>
+
+        <pre>
+  &lt;a ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!&lt;/a>
+        </pre>
+
+        <div class="live-demo">
+          <a class="btn btn-primary" ic-action="slideToggle" ic-target="#chesterton-quote">Toggle Chesterton!</a>
+          <blockquote id="chesterton-quote" style="display: none">
+            “Without education, we are in a horrible and deadly danger of taking educated people seriously.”<br/>
+            --GK Chesterton
+          </blockquote>
+        </div>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="history"></a>
+
+        <h2>History Support <i class=""></i></h2>
+
+        <p>Intercooler provides simple history support for AJAX calls. This functionality is currently experimental, but
+          is usable and unlikely to change dramatically going forward.</p>
+
+        <p>If you want an intercooler call to push its target URL into the location bar and create a history element,
+          simply add the <code><a href="/attributes/ic-push-url.html">ic-push-url</a></code> attribute to the
+          element and ensure that the target of the element has a stable HTML id.</p>
+
+        <p>Here is an example:</p>
+
+  <pre>
+    &lt;a id="hist-link" ic-post-to="/history_demo" ic-push-url="true">Click Me!&lt;/a>
+  </pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/history_demo',
+              responseText: "Check out the location, then click the back button!"
+            });
+          </script>
+          <a id="hist-link" ic-post-to="/history_demo" ic-push-url="true">Click Me!</a>
+        </div>
+
+        <p>When Intercooler makes a request to <code>/history_demo</code> it snapshots the HTML of the target before
+          swapping
+          in the new content and saves this snapshot to local storage. It then does the swap and pushes a new location
+          onto
+          the history stack.</p>
+
+        <p>When a user hits the back button, Intercooler will retrieve the old content from storage and swap it back
+          into the
+          target, simulating "going back" to the previous state.</p>
+
+        <h3>Specifying History Snapshot Element</h3>
+
+        <p>If you use history extensively within your app, you will want to use a stable element for snapshotting HTML
+          so that
+          if a user is many pages deep in a click stream and goes back multiple steps, the element that will be restored
+          into
+          is still available on the screen. There is typically a div that wraps the main content of your application and
+          this
+          is the suggested element to mark as the element to snapshot and restore to, using the
+          <a href="/attributes/ic-history-elt.html"><code>ic-history-elt</code></a> attribute</p>
+
+        <p>It is <em>highly recommended</em> that you set this attribute in your intercooler application if you are
+          using history.</p>
+
+        <h3>Including Request Paramters In The URL</h3>
+
+        <p>Somtimes you may want to include one or more request parameters in the URL that is set in the
+        navigation bar.  You can do this by using the <a href="/attributes/ic-push-params.html"><code>ic-push-params</code></a>
+        attribute, which lets you specify which parameters should be included in the URL.  A common place where this
+        might be useful is in search dialogs, where you want the search term to appear in the URL so it can be
+        copied and pasted or refreshed and retain the search information.</p>
+
+        <h3>Conditionally Updating The Location/History</h3>
+
+        <p>Sometimes whether or not you want to update the location of the page will be dependent on the result of the
+          intercooler request. In that case, rather than using the <code>ic-push-url</code> attribute, you can use the
+          <code>X-IC-PushURL</code> header, outlined below in the <a href="#responses">Intercooler Response</a> section.
+        </p>
+
+        <p><strong>Note:</strong> This is one area where intercooler leverages some relatively recent web technologies
+          that
+          may not be present on older browsers. Namely, it uses <a
+            href="http://www.w3schools.com/html/html5_webstorage.asp">Web Storage</a>
+          and the <a href="http://www.w3schools.com/JS/js_json.asp">JSON</a> object, both of which are not available in
+          various
+          older browsers. If you wish to maintain maximum compatibility with your intercooler website, you should not
+          use
+          the history support.</p>
+
+      </section>
+
+        <section>
+        <a class="anchor" id="progressive_enhancement"></a>
+
+        <h2>Progressive Enhancement<i class=""></i></h2>
+
+        <p>Intercooler provides a mechanism for
+          <a href="https://en.wikipedia.org/wiki/Progressive_enhancement">progressive enhancement</a>.  The
+          <code><a href="/attributes/ic-enhance.html">ic-enhance</a></code> attribute can be set to <code>true</code>
+        on an element, all child anchor tags and form tags will be converted to their equivalent intercooler
+        implementations.</p>
+
+          <p>Anchor tags (links) will be converted to <code>ic-get-from</code> with <code>ic-push-url</code> set to true.</p>
+
+          <p>Forms will be converted to the intercooler equivalent action (e.g. a POST form will convert to <code>ic-post-to</code>)</p>
+
+        <p>Commonly you will have an <code>ic-target</code> set up at the top level of your DOM, paired with a
+        <code>ic-enhance</code> attribute.  You can differentiate on the server side between normal and AJAX requests
+        by looking for the intercooler headers.</p>
+
+        <p>Here is an example:</p>
+
+  <pre>
+    &lt;div ic-enhance="true">
+      &lt;a href="/enhancement_example">Click Me!&lt;/a>
+    &lt;/div>
+  </pre>
+
+        <div class="live-demo">
+          <script>
+            $.mockjax({
+              url: '/enhancement_example',
+              responseText: "Link was clicked!"
+            });
+          </script>
+          <div ic-enhance="true">
+            <a href="/enhancement_example">Click Me!</a>
+          </div>
+        </div>
+
+      </section>
+
+        <section>
+          <a class="anchor" id="sse"></a>
+
+          <h2>Server Sent Events <sub>BETA</sub></h2>
+
+          <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">Server Sent Events</a> are an HTML5
+          technology allowing for a server to push content to an HTML client.  They are simpler than WebSockets but are
+          unidirectional, allowing a server to send push content to a browser only.</p>
+
+          <p>Browser support for Server Sent Events is <a href="http://caniuse.com/#search=server-sent">widespread</a>, and
+            there are <a href="https://github.com/Yaffle/EventSource">polyfills available</a> for browsers that do not support them natively.
+          </p>
+
+          <p>Intercooler supports Server Sent Events with the <a href="/attributes/ic-sse-src.html"><code>ic-sse-src</code></a>
+          attribute.  This tells intercooler to establish a Server Sent Event connection with the given URL and listen for
+          both messages and events.</p>
+
+  <pre>
+    &lt;div ic-sse-src="/sse_endpoint">A Server-Sent Event Element&lt;/div>
+  </pre>
+
+          <h3>Server Sent Event Sources</h3>
+
+          <p>The simplest way to use Server Sent Events is via messages.  Server Sent Messages will simply have the
+          content of the message swapped in as the body of the target that the attribute is on.  This can be used as an alternative
+          to the more common client-side polling behavior.</p>
+
+          <p>If you wish to append or prepend, rather than replace the content, you can use the
+            <a href="/attributes/ic-swap-style.html"><code>ic-swap-style</code></a> attribute to
+            specify so.</p>
+
+          <h3>Server Sent Event Triggers</h3>
+
+          <p>Another technique with Server Side Events is to use events (rather than messages) to trigger a request, rather
+            than replace content directly.  This can be done by specifying a Server Side Event source with the
+            <code>ic-sse-src</code>
+          tag on a parent element, and then specifying the Server Side Event that triggers a given child using the
+          special <code>sse:</code> prefix.</p>
+
+          <pre>
+  &lt;div ic-sse-src="/sse_endpoint">
+    &lt;span ic-trigger-on="sse:contact_updated" ic-src="/contact/1">&lt;/span>
+  &lt;/div>
+         </pre>
+
+          <p>For the HTML above, the span HTML will be updated from the <code>/contact/1</code> URL when a
+          Server Side Event of the name <code>contact_updated</code> is fired.</p>
+
+          <p><strong>Note:</strong> Server Sent Events are relatively new and are a beta feature of both intercooler
+          and the web in general.  They should be used with caution.</p>
+        </section>
+
+        <section>
+        <a class="anchor" id="requests"></a>
+
+        <h2>Anatomy Of An Intercooler Request</h2>
+
+        <p>
+          Intercooler requests are fairly straight forward HTTP requests, but they do have a few non-standard
+          aspects that help you out.
+        </p>
+
+        <h4>Special Parameters</h4>
+
+        <p>
+          In addition to the form serialization discussed above, intercooler requests include a few additional
+          parameters
+          in every AJAX request:
+        </p>
+
+      {% include request_api.html %}
+
+      </section>
+
+      <section>
+        <a class="anchor" id="responses"></a>
+
+        <h2>Anatomy Of An Intercooler Response</h2>
+
+        <p>Intercooler responses are HTML fragments. Here is an example of some content:</p>
+
+      <pre>
+  &lt;div>
+    Here Is Some Content!
+  &lt;div>
+      </pre>
+
+        <p>This would be swapped in as the body of the element that initiated the request.</p>
+
+        <p>The returned content can, of course, contain Intercooler attributes itself, which will be all wired up.</p>
+
+        <h3>No-Op Responses</h3>
+
+        <p>Intercooler interprets an empty body or a single whitespace character in a request as a No-Op,
+          and will do nothing in response. If you want to replace an element with only whitespace, return at least
+          two whitespaces worth of content.</p>
+
+        <h3>Intercooler Response Headers</h3>
+
+        <p>Not all UI needs can be captured via pure element swapping. Occasionally you may need to invoke a client side
+          event,
+          let other elements know to refresh themselves, redirect the user entirely, and so on.</p>
+
+        <p>To handle these situations, intercooler supports custom HTTP headers. These headers can be used to instruct
+          intercooler to perform additional work in addition to swapping in the returned HTML.
+        </p>
+
+        <p>Here is a table of the response headers intercooler supports:</p>
+
+        {% include response_api.html %}
+
+        <div class="live-demo">
+          <script>
+            $(function(){
+              $('#trigger_demo').on('myEvent', function (elt, arg) {
+                alert("myEvent was invoked by a response header with arg: " + arg + "!"); //wire in an event handler
+              });
+            });
+            $.mockjax({
+              url: '/trigger_demo',
+              headers: {"X-IC-Trigger": '{"myEvent":["foo"]}'}
+            });
+          </script>
+          <button id="trigger_demo" class="btn btn-default" ic-post-to="/trigger_demo">
+            Invoke The 'myEvent' event
+          </button>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <strong>IMPORTANT TIP!</strong> The <code>X-IC-Trigger</code> header is very powerful. You can use this to,
+          for example,
+          dismiss modal pop-ups on a successful modal action. This allows you to use intercooler for an entire set of
+          UI/UX patterns that simple DOM swapping would not support well.
+        </div>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="dependencies"></a>
+
+        <h2>Dependencies In Intercooler</h2>
+
+        <p>Intercooler has a novel mechanism for managing inter-element dependencies which builds on the concept of
+          REST-ful URLs.</p>
+
+        <p>Intercooler uses server path relationships to encode dependencies. The idea is straight forward and natural
+          if you have are familiar with REST-ful URL schemas:</p>
+
+        <blockquote>If an element reads its value (i.e. issues a <code>GET</code>) from a given server path, and
+          an action updates that path (i.e. issues a <code>POST</code> to it), refresh the
+          element after the action occurs.
+        </blockquote>
+
+        <p>So, as a simple example, consider this button and div:</p>
+
+      <pre>
+
+  &lt;button ic-post-to="/example/path">A Button&lt;/button>
+
+  &lt;div ic-src="/example/path">A Div&lt;/div>
+     </pre>
+
+        <p>Here the div <em>depends</em> on the button, because they share a path with one another. When
+          Intercooler issues a <code>POST</code> to the given path (on a user click), upon completion,
+          it will issue a <code>GET</code> to the same path, and replace the div with the new content, if it
+          is different.
+        </p>
+
+        <h3>What Paths Depend On What?</h3>
+
+        <p>It's all very simple when the <code>POST</code> and <code>GET</code> are to the same path, but what if
+          they aren't? What if the post is to <code>/jobs/2341/start</code> and the get is from <code>/jobs/2341</code>?
+          Or vice-versa?</p>
+
+        <p>Our answer is as follows:</p>
+
+        <blockquote>Two server paths express a dependency if either path is the starting path of the other.</blockquote>
+
+        <p>So:</p>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Path Updated</th>
+              <th>Path Read</th>
+              <th>Dependency?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>/foo</td>
+              <td>/bar</td>
+              <td>NO</td>
+            </tr>
+            <tr>
+              <td>/foo</td>
+              <td>/foo</td>
+              <td>YES</td>
+            </tr>
+            <tr>
+              <td>/foo/bar</td>
+              <td>/foo</td>
+              <td>YES</td>
+            </tr>
+            <tr>
+              <td>/foo</td>
+              <td>/foo/bar</td>
+              <td>YES</td>
+            </tr>
+            <tr>
+              <td>/foo/doh</td>
+              <td>/foo/bar</td>
+              <td>NO</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Explicit Dependencies</h3>
+
+        <p>The dependencies above are managed implicitly by Intercooler and, with reasonable layout of your restful
+          URLs, should handle many cases. However, there may be times when you need to express dependencies explicitly.
+          In Intercooler, you can use the <a href="/attributes/ic-deps.html"><code>ic-deps</code></a> attribute to
+          express
+          additional paths that an element depends on.</p>
+
+        <p>To disable dependencies on an element, you can use <code>ic-deps="ignore"</code></p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="events"></a>
+
+        <h2>Intercooler Events</h2>
+
+        <p>Intercooler fires JQuery-style events that can be listened for. Here is a table of the events that are
+          fired:</p>
+
+        {% include events_api.html %}
+
+        <h3>Example</h3>
+
+        <p>Here is some code that uses the BlockUI library to block the UI when an intercooler request
+          is in flight:</p>
+
+      <pre>
+        $(function(){
+          $('#blocking-button').on('beforeSend.ic', function(){
+            $.blockUI();
+          }).on('complete.ic', function(){
+            $.unblockUI();
+          });
+        })
+      </pre>
+
+        <div class="live-demo">
+          <script>
+            $(function () {
+              $('#blocking-button').on('beforeSend.ic', function () {
+                $.blockUI();
+              }).on('complete.ic', function () {
+                $.unblockUI();
+              });
+            })
+            $.mockjax({
+              responseTime: 2000,
+              url: '/blockui_demo'
+            });
+          </script>
+          <button id="blocking-button" class="btn btn-default" ic-post-to="/blockui_demo">
+            Invoke With BlockUI!
+          </button>
+        </div>
+
+        <h3>Event Attributes</h3>
+
+        <p>Javascript can also be invoked with the following attributes: <code>ic-on-beforeSend</code>,
+          <code>ic-on-success</code>, <code>ic-on-error</code>, and <code>ic-on-complete</code>.</p>
+
+        <p>Here is the same demo as above using attributes rather than a JQuery event handler:</p>
+
+        <div class="live-demo">
+          <button class="btn btn-default"
+                  ic-on-beforeSend="$.blockUI()"
+                  ic-on-complete="$.unblockUI()"
+                  ic-post-to="/blockui_demo">
+            Invoke With BlockUI in Attributes!
+          </button>
+        </div>
+
+        <p>These attributes can be placed on parent elements if you want to specify a behavior for an entire secion of a
+          DOM tree.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="server_side_techniques"></a>
+
+        <h2>Server-Side Techniques</h2>
+
+        <p>A great strength of Intercooler is that it is inherently server-side technology agnostic: you can use
+          anything
+          you'd like to serve up the partial HTML and headers needed for your Intercooler-based front-end to function.
+          That being said, there are some techniques that can be applied across all server-side technologies to help you
+          build
+          a better, cleaner web application:</p>
+
+        <h3>Check for the <code>ic-request</code> parameter</h3>
+
+        <p>You can use the <code>ic-request</code> parameter to decide if a request has originated from intercooler
+          (and,
+          therefore, demands a partial bit of HTML) or from a top level browser. If you are using the
+          <code><a href="/attributes/ic-push-url.html">ic-push-url</a></code> attribute to enable AJAX-based history and
+          navigation
+          this can be especially useful.</p>
+
+        <h3>Check the <code>ic-target-id</code> parameter</h3>
+
+        <p>If you have an even more advanced user interface, you may find yourself making requests to the same URL for
+          different parts of the screen (this is common if you have a second-level navigation within a page) and you
+          will
+          want to differentiate between requests that are targeting different parts of the UI. Intercooler provides the
+          ID
+          of the target element, if it exists, in the <code>ic-target-id</code> parameter</p>
+
+        <h3>Use the <code>ic-trigger-id</code> to determine who triggered a request</h3>
+
+        <p>If it is annoying to set up multiple routes with your server-side technology, you may have a few actions that
+          you
+          want to run through a <code>POST</code> to a single URL. You can differentiate between the elements that are
+          sending these posts up by giving them IDS and then checking the <code>ic-trigger-id</code> parameter.</p>
+
+        <h3>Keep your templates <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a></h3>
+
+        <p>Intercooler works best with a tidy server-side, with refactored and well composed templates that generate
+          both the
+          full and partial HTML necessary for a web app.</p>
+
+        <h3>Leverage multiple HTTP Actions at the same URL</h3>
+
+        <p>Intercooler makes it easy to issue more exotic HTTP actions, like <code>DELETE</code> and <code>PUT</code>.
+          Depending
+          on your server-side technology, you can use this to minimize the URL surface area of your app and adhere to
+          <a href="http://www.restapitutorial.com/lessons/restfulresourcenaming.html">REST-ful URL</a> design. There is
+          no
+          reason to limit this concept to only JSON APIs: it often leads to a minimal and tidy code base when used
+          judiciously
+          for partial HTML.</p>
+
+        <h3>Fire client-side events to manage UI state that can't be handled with content swaps</h3>
+
+        <p>Not every UI pattern is amenable to HTML content swapping. For example, you may want to use a modal
+          popup from a framework like Bootstrap. In situations like these, you can often use the <code>IC-Trigger</code>
+          attribute to signal from the server-side to the client-side that something happened, and write javascript
+          to update the UI accordingly (e.g. hide a modal after an update.)</p>
+
+        <p>This is a powerful technique for minimizing the coupling and complexity of your application while still
+          retaining the full power of a javascript client side environment.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="debugging"></a>
+
+        <h2>Error Handling & Debugging</h2>
+
+        <p>Intercooler offers a few tools for handling errors. The most important one is the
+          <a href="/attributes/ic-post-errors-to.html"><code>ic-post-errors-to</code></a> attribute, which will
+          post all AJAX and client side errors that occur during content swaps to a given URL. This is an invaluable way
+          to understand what is going on on the client side of your web application.</p>
+
+        <p>There is also the <a href="/attributes/ic-on-error.html"><code>ic-on-error</code></a> attribute, which
+          allows you to specify an expression to evaluate when an AJAX error occurs.</p>
+
+        <p>Finally, there are the error events specified above that allow you to handle more specific error situations
+          if
+          you wish.</p>
+
+        <h3>Integrated Client-Side Debugger</h3>
+
+        <p>Intercooler comes with an integrated client-side debugger. You can launch the debugger by including the
+        following script on your page:</p>
+
+        <pre class="prettyprint">
+&lt;script>
+  $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js");
+&lt;/script></pre>
+
+
+          <p>The debugger consists of three tabs: "Elements", "Logs" and "Errors".</p>
+
+        <p>"Elements" has a clickable list of active elements on the page. When you click on one of the items in
+          the list, it will be highlighted on the page, and intercooler-related details will be shown about it.</p>
+
+        <p>"Logs" has the intercooler log stream, including clickable links to the elements that caused each
+          message.</p>
+
+        <p>"Errors" will show any errors that intercooler detects (e.g. bad targets on an element).</p>
+
+        <p>You can launch the debugger on this page by clicking this button:</p>
+
+        <p>
+          <button class="btn btn-default"
+                  onclick="$.getScript('https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js');">
+          Launch The Debugger</button>
+        </p>
+
+
+        <p>If you would like, you can capture the intercooler log event if you want to see the low level events that are
+          driving intercooler:</p>
+
+  <pre>
+        $(function(){
+          $(window).on('log.ic', function(evt, msg, level, elt){
+            console.log(msg);
+          });
+        })
+  </pre>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="javascript"></a>
+
+        <h2>Using Intercooler from Javascript</h2>
+
+        <p>Intercooler does not have a large javascript API because it is intended to sit in the background, issuing and
+          processing requests. Events and dependencies can be used to handle almost all dynamic situations that
+          intercooler
+          is appropriate for.</p>
+
+        <p>There are, however, a few methods you can invoke on the global <code>Intercooler</code> object:</p>
+
+        {% include javascript_api.html %}
+
+        <h3>Javascript Expression Evaluation</h3>
+
+        <p>Intercooler evaluates expressions for attributes (<code>ic-on-beforeSend</code>,
+          <code>ic-on-success</code>, <code>ic-on-error</code>, and <code>ic-on-complete</code>) and passed in via
+        headers, etc. in a somewhat complex way:</p>
+
+        <p>If the expression is a single symbol, it will be looked up in the global namespace as a function and then, if
+          it exists, it will be called with the given arguments.</p>
+
+        <p>If not, the expression will be evaluated in a new scope.</p>
+
+        <p>This allows sites with security restrictions around the use of <code>eval()</code> to still make use of scripting
+        within intercooler.</p>
+
+        <p>Also note that, because expressions are evaluated in a new scope, if you are using an attribute that supports
+          a return value (e.g. <code>ic-on-beforeSend</code> returning <code>false</code> to cancel a request) you
+        <b>must</b> return the value using an explicit <code>return</code> statement.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="cross-domain"></a>
+
+        <h2>Cross-Domain AJAX</h2>
+
+        <p>Below are some basic guidelines for getting cross-domain AJAX requests working with
+          Intercooler. For an authoritative resource on cross-domain HTTP requests refer to the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">MDN CORS documentation</a>.</p>
+
+        <h3>Response Headers</h3>
+
+        <p>For responses to cross-domain requests you will need to set the
+          <code>Access-Control-Allow-Origin</code> header to the domain which will be making
+          requests. For example:</p>
+
+        <pre>
+          res.header('Access-Control-Allow-Origin', 'http://example.com');
+        </pre>
+
+        <p>And if you want to use any of the Intercooler response headers you will need to
+          set the <code>Access-Control-Expose-Headers</code> to include the headers you want to use.
+          For example:</p>
+
+        <pre>
+          res.header('Access-Control-Expose-Headers', 'X-IC-Trigger, X-IC-Script');
+        </pre>
+
+        <h3>Cross-Domain Credentials (Cookies and HTTP Auth)</h3>
+
+        <p>If you want to send cookies with cross-domain AJAX requests you'll need to set the
+          <code>Access-Control-Allow-Credentials</code> header to <code>true</code> on the server.
+          For example:</p>
+
+        <pre>
+          res.header("Access-Control-Allow-Credentials", "true");
+        </pre>
+
+        <p>And also set <code>withCredentials</code> to <code>true</code> on the <code>xhrFields</code>
+          property of the AJAX settings in the browser. For example:</p>
+
+        <pre>
+          $(document).on("beforeAjaxSend.ic", function (evt, settings) {
+              settings.xhrFields = {withCredentials: true};
+          });
+        </pre>
+
+        <p>For more information on cross-domain AJAX requests and credentials refer to the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials">MDN XHR documentation</a>.</p>
+
+        <h3>Preflighted <code>OPTIONS</code> Requests</h3>
+
+        <p>Based on the
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Preflighted_requests">MDN documentation on preflighted requests</a>,
+          a request is preflighted if:</p>
+
+        <blockquote>
+          <ul>
+            <li>It uses methods other than <code>GET</code>, <code>HEAD</code> or <code>POST</code>.
+              Also, if <code>POST</code> is used to send request data with a Content-Type other than
+              <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, or
+              <code>text/plain</code>, e.g. if the <code>POST</code> request sends an XML payload to
+              the server using <code>application/xml</code> or <code>text/xml</code>, then the
+              request is preflighted.</li>
+            <li>It sets custom headers in the request (e.g. the request uses a header such as X-PINGOTHER)</li>
+          </ul>
+        </blockquote>
+
+        <p>To avoid preflighted <code>OPTIONS</code> requests for Intercooler requests you can do
+          the following:</p>
+
+        <pre>
+          $(document).on("beforeAjaxSend.ic", function (evt, settings) {
+              delete settings.headers['X-IC-Request'];
+              delete settings.headers['X-HTTP-Method-Override'];
+          });
+        </pre>
+
+        <p>Of course, this means that you won't have access to these headers on the server.</p>
+
+        <h3>jQuery and Cross-Domain AJAX</h3>
+
+        <p>Based on the <a href="http://api.jquery.com/jquery.ajax/">jQuery AJAX settings documentation</a>,
+          the following additional points should be noted about cross-domain AJAX:</p>
+
+        <ul>
+          <li>Synchronous operations are not supported.</li>
+          <li>The error handler is not called.</li>
+        </ul>
+      </section>
+
+      <section>
+        <a class="anchor" id="zepto"></a>
+
+        <h2>zepto.js Compatibility</h2>
+
+        <p><a href="http://zeptojs.com/"> zepto.js</a> is a minimalist, largely jQuery-compatible API for use with
+        modern browsers, that is focused on staying small (<10kB when gzipped, compared with 32kB for the latest versions
+          of jQuery) while providing most of the familiar jQuery APIs.</p>
+
+        <p>As of version <code>1.1.0</code>, intercooler offers zepto.js compatibility in place of jQuery.  To use
+          zepto, rather than jQuery:
+        </p>
+
+        <ul>
+          <li>Include the latest <a href="http://zeptojs.com/">zepto.js</a> release.</li>
+          <li>Include the <code>data</code> module from the <a href="http://zeptojs.com/#modules">zepto modules section</a></li>
+        </ul>
+
+        <p>Using zepto with intercooler.js brings the entire support payload for an intercooler-based web application
+          down to 18kB, which compares favorably with <a href="https://gist.github.com/Restuta/cda69e50a853aa64912d">many JS frameworks</a>
+          (Vue.js, the smallest by a long shot, comes in at 23kB)
+        </p>
+
+        <h3>Differences with jQuery + intercooler.js</h3>
+
+        <p>There are a few differences in behavior when using <code>zepto.js</code> with intercooler:<p>
+
+        <ul>
+          <li>Local HTML fragments (e.g. <code>ic-get-from="#some_div"</code> will not work)</li>
+          <li>Event namespacing is reversed and uses a colon separator, so the <code>beforeSend.ic</code> event becomes
+          the <code>ic:beforeSend</code> event.</li>
+          <li>zepto does not serialize non-form elements, so <code>ic-include</code> must point to a form if you wish
+            to include a value from an input.  The JSON form is not affected.
+          </li>
+        </ul>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="philosophy"></a>
+
+        <h2>Philosophy</h2>
+
+        <p>It can be easy for some developers to dismiss intercooler as overly simple and an archaic way of
+        building web applications.  This is intellectually lazy.
+        </p>
+
+        <p>Intercooler is a tool for returning to the original
+          <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">network architecture</a> of the
+        web.  Using HTML as the data transport in communication with a server is what enables
+        <a href="http://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html">HATEOAS</a>, the core distinguishing
+        feature of that network architecture.  Intercooler goes <i>with</i> the grain of the web, rather than forcing a more
+        traditional thick-client model onto it, thereby avoiding the complexity and security issues that come along
+        with that model.</p>
+
+        <p>Yes, intercooler is simple, but it is a deceptive simplicity, very much like the early web.</p>
+
+        <p>A few related blog posts for the interested reader:</p>
+
+        <ul>
+          <li><a href="/2016/01/18/rescuing-rest.html">Rescuing REST</a></li>
+          <li><a href="/2016/05/08/hatoeas-is-for-humans.html">HATEOAS is for Humans</a></li>
+          <li><a href="/2016/02/17/api-churn-vs-security.html">API Churn v. Security</a></li>
+        </ul>
+
+        <h3>On Churn</h3>
+
+        <p>Many javascript projects are updated at a dizzying pace.  Intercooler is not.</p>
+
+        <p>This is <b>not</b> because it is dead, but rather because it is (mostly) right: the basic idea is right, and
+          the implementation at least right enough.</p>
+
+        <p>
+          This means there will not be constant activity and churn on the project, but rather a <a href="http://goo.gl/sNBng6">stewardship</a>
+          relationship: the main goal now is to not screw it up.  The documentation will be improved, tests will be
+          added, small new delarative features will be added around the edges, but there will be no massive rewrite
+          or constant updating. This is in contrast with the software industry in general and the front end world in
+          particular, which has comical levels of churn.
+        </p>
+
+        <p>Intercooler is a sturdy, reliable tool for web development.</p>
+
+      </section>
+
+      <section>
+        <a class="anchor" id="conclusion"></a>
+
+        <h2>Conclusion</h2>
+
+        <p>And that's it!</p>
+
+        <p>Not a ton to it, which is kind of the point: you can build surprisingly rich UIs with this simple and easy
+          to understand tool, and you can do it incrementally in the areas that matter the most for your users.</p>
+
+        <p><em>"There is no need to be complex..."</em></p>
+
+      </section>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container" xmlns="http://www.w3.org/1999/html">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Click To Load</h1>
+
+      <p>This tutorial will show you how to implement "Click To Load" behavior with only a few lines of IntercoolerJS.
+      It builds on the previous <a href="infinite.html">Infinite Scroll</a> tutorial.</p>
+
+      <h3>Video</h3>
+
+      <div class="text-center">
+        <iframe src="//player.vimeo.com/video/92358424" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+      </div>
+
+      <h3>Outline</h3>
+
+      <p>Here are the steps for implementing inifinite scroll</p>
+
+      <ul>
+        <li>
+          Extract a partial of the row rendering for your table, and add an id to the enclosing <code>tbody</code> so
+          we can target it for appending.
+        </li>
+        <li>
+          Add a hidden input to the last row of the table that is rendered, with the name <code>page</code> and
+          value of the <em>next page to load</em>
+        </li>
+        <li>
+          Add a button after the table that uses the
+          <a href="/attributes/ic-append-from.html"><code>ic-append-from</code></a>,
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>, and
+          <a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a>
+            attributes to trigger appending to the table body, and that includes the hidden input using the
+          <a href="/attributes/ic-include.html"><code>ic-include</code></a> tag to include the last hidden
+          input in the table.</a>
+        </li>
+      </ul>
+
+      <h3>Git Diff</h3>
+
+      <p>Here is a diff between infinite scroll and click-to-load:</p>
+
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/11322f35cda1a7c9fa480f845b43cb28e162f64a">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/11322f35cda1a7c9fa480f845b43cb28e162f64a
+      </a>
+
+    </div>
+  </div>
+</div>

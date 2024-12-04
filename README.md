@@ -1,108 +1,86 @@
-[![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/static/img/htmx_logo.1.png "high power tools for HTML")](https://htmx.org)
+<center>
+  <img src="http://i.imgur.com/CQh4tnm.png">
+</center>
 
-*high power tools for HTML*
+## htmx
 
-[![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
-[![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
-[![Bundlephobia](https://badgen.net/bundlephobia/dependency-count/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
-[![Bundlephobia](https://badgen.net/bundlephobia/minzip/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
+intercooler 2.0 (renamed to htmx 1.0) has been released.  It is smaller, more expressive and no longer has a 
+dependency on jQuery.
 
-## introduction
+You can view the new website here:
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
-[WebSockets](https://htmx.org/docs#websockets) and [Server Sent Events](https://htmx.org/docs#sse)
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
-[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
+[http://htmx.org](http://htmx.org)
 
-htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
-[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
-[extendable](https://htmx.org/extensions)
+And the new repo here:
 
-## motivation
+[https://github.com/bigskysoftware/htmx](https://github.com/bigskysoftware/htmx)
 
-* Why should only `<a>` and `<form>` be able to make HTTP requests?
-* Why should only `click` & `submit` events trigger them?
-* Why should only GET & POST be available?
-* Why should you only be able to replace the *entire* screen?
+---
 
-By removing these arbitrary constraints htmx completes HTML as a
-[hypertext](https://en.wikipedia.org/wiki/Hypertext)
+## Introduction
 
-## quick start
+Intercooler is a small (6.74KB gzipped) [jQuery](https://jquery.com/) or [zepto.js](http://intercoolerjs.org/docs.html#zepto) based library that allows you to add AJAX to 
+your application using HTML attributes.
+
+Here is an example:
 
 ```html
-  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
-  <!-- have a button POST a click via AJAX -->
-  <button hx-post="/clicked" hx-swap="outerHTML">
-    Click Me
-  </button>
+    <!-- When this button is clicked an AJAX POST request is sent to /example and the 
+         response content is swapped in to the body of the button -->
+    <button ic-post-to="/example">
+        Click Me!
+    </button>
 ```
 
-The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
+Despite this simplicity, intercooler supports quite a bit of functionality:
 
-> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
+* It allows you to [specify the UI event](http://intercoolerjs.org/docs.html#triggers) that triggers the AJAX request
+* It makes [progress indicators](http://intercoolerjs.org/docs.html#progress) very simple to add
+* It supports many [custom HTTP response headers](http://intercoolerjs.org/docs.html#responses) for things like client-side redirection
+* It has a [REST-ful dependency mechanism](http://intercoolerjs.org/docs.html#dependencies)
+* It has simple [AJAX history & back-button support](http://intercoolerjs.org/docs.html#history)
+* It provides a [rich event model](http://intercoolerjs.org/docs.html#events)
+* [And much more...](http://intercoolerjs.org/docs.html)
 
-htmx is the successor to [intercooler.js](http://intercoolerjs.org)
+These features allow you to build modern web applications with little fuss, using a simple and intuitive REST-ful architecture that ensures good performance, excellent user experience and a minimum of complexity.
 
-### installing as a node package
+It also is very easy to incrementally retrofit intercooler into existing web applications to add AJAX functionality where
+it is most valuable.
 
-To install using npm:
+Full documentation is available on the [main intercooler website](http://intercoolerjs.org/)
 
-```
-npm install htmx.org --save
-```
+## Installing
 
-Note there is an old broken package called `htmx`.  This is `htmx.org`.
+Intercooler can be downloaded or hot-linked [from the downloads page](http://intercoolerjs.org/download.html).
 
-## website & docs
+Or installed via bower:
 
-* <https://htmx.org>
-* <https://htmx.org/docs>
-
-## contributing
-Want to contribute? Check out our [contribution guidelines](CONTRIBUTING.md)
-
-No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
-
-### hacking guide
-
-To develop htmx locally, you will need to install the development dependencies.
-
-Run:
-
-```
-npm install
+```javascript
+     "dependencies": {
+        "intercooler-js" : "1.2.0"
+      }
 ```
 
-Then, run a web server in the root.
+Intercooler depends on [jQuery](https://jquery.com/) v1.10.0 or higher.
 
-This is easiest with:
+## License
 
-```
-npx serve
-```
+Intercooler is licenced under the [MIT License](https://raw.githubusercontent.com/LeadDyno/intercooler-js/master/LICENSE)
 
-You can then run the test suite by navigating to:
+## Official Theme Music
 
-<http://0.0.0.0:3000/test/>
+[Rober Parker](https://robertparkerofficial.bandcamp.com/)
 
-At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
+## Contributing
 
-* `/test/index.html` - the root test page from which all other tests are included
-* `/test/attributes` - attribute specific tests
-* `/test/core` - core functionality tests
-* `/test/core/regressions.js` - regression tests
-* `/test/ext` - extension tests
-* `/test/manual` - manual tests that cannot be automated
+To contribute a change to intercooler:
 
-htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework
-and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
+* Fork the main intercooler repository
+* Create a new feature branch based on the `development` branch with a reasonably descriptive name (e.g. `fix_http_get_parameter_overriding`)
+* Implement your fix
+* Add a test to `/test/unit_tests.html`.  (It's pretty easy!)
+* Create a pull request for that branch against `development` in the main repository
 
-You can also run live tests and demo of the WebSockets and Server-Side Events extensions with `npm run ws-tests`
+Thank you to [all the contributors](https://github.com/LeadDyno/intercooler-js/graphs/contributors)!
 
-## haiku
-
-*javascript fatigue:<br/>
-longing for a hypertext<br/>
-already in hand*
+🕊️🕊️🕊️

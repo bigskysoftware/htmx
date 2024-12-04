@@ -1,0 +1,71 @@
+---
+layout: default
+nav: attributes > ic-transition-duration
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-transition-duration</code> - The Poll Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-transition-duration</code> attribute tells Intercooler to wait the specified amount of time
+        after applying the <code>ic-transitioning</code> class to the target element and then executing the content swap,
+        which gives a CSS transition time to complete.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should a valid integer, followed by the string "s" (for seconds) or "ms" (for
+        milliseconds).  (e.g. ic-transition-duration="100ms" indicates that the server should be polled every 100 milliseconds.) </p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-transition-duration</code> has no dependency implications.</p>
+
+      <h3>Example</h3>
+
+
+      <p>Here is a simple example, where the inner content is faded in and out on a button:</p>
+
+        <pre>
+  &lt;style>
+    #transition-2 span {
+      transition: all .9s;
+    }
+
+    #transition-2.ic-transitioning span {
+      opacity: 0;
+    }
+  &lt;/style>
+
+  &lt;a id="transition-2" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2">&lt;span>Click Me!&lt;/span>&lt;/a>
+
+  </pre>
+
+      <div class="live-demo">
+        <style>
+          #transition-2 span {
+            transition: all .9s;
+          }
+
+          #transition-2.ic-transitioning span {
+            opacity: 0;
+          }
+        </style>
+
+        <script>
+          $.mockjax({
+            url: '/transition_2',
+            responseText: "<span>You Clicked Me!!!</span>"
+          });
+        </script>
+        <a id="transition-2" ic-transition-duration="1s" class="btn btn-primary" ic-post-to="/transition_2"><span>Click Me!</span></a>
+      </div>
+
+
+    </div>
+  </div>
+</div>

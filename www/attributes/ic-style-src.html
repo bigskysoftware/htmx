@@ -1,0 +1,61 @@
+---
+layout: default
+nav: attributes > ic-style-src
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-style-src</code> - The Style Source Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-style-src</code> attribute binds a given HTML element's style attribute to a URL.  It does not cause any
+        requests to happen by itself, but it can respond to events caused by other attributes.</p>
+
+      <p>When Intercooler issues a request for an element with an <code>ic-style-src</code>, it will issue a <code>GET</code>
+      and will replace the current element's style value with resulting text fragment.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid style attribute name, followed by a colon, then a valid relative
+        path
+        (e.g. <code>ic-style-src="color:/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-style-src</code> implies a mutation to any dependency on its path, and Intercooler will issue
+        <code>GET</code> requests for elements that depend on that path after the <code>POST</code> completes.</p>
+
+      <p>See <a href="/dependencies.html">Dependencies</a> for more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, using a poll interval to update:</p>
+
+      <pre>
+  &lt;div ic-style-src="color:/color" ic-poll="200ms">I'm turning red!&lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var init = new Date().getTime() / 1000;
+            $.mockjax({
+              'url': '/color',
+              response : function () {
+                var seconds = (Math.floor((new Date().getTime() / 1000) - init) * 25) % 256;
+                this.responseText = "rgb(" + seconds + ",0,0)";
+              }
+            });
+          })();
+        </script>
+        <strong><div ic-style-src="color:/color" ic-poll="200ms">Help! I'm turning red!</div></strong>
+      </div>
+
+    </div>
+  </div>
+</div>

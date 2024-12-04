@@ -1,0 +1,50 @@
+---
+layout: default
+nav: attributes > ic-select-from-response
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-select-from-response</code> - The Response Selector Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The response selector attribute can be used to select the element to take the inner HTML from in a
+        a server response.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid selector of the element to take the content from.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example of a response selector filtering a full HTML document for a list:</p>
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            'url': '/target_url',
+            'responseText': '<html><body><div><ul><li>New Item 2</li><li>New Item 3</li></ul></div></body></html>'
+          });
+        </script>
+
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url"
+                ic-target="#my-list" ic-select-from-response="ul">
+          Click Me!
+        </button>
+
+        <ul id="my-list">
+          <li>Initial Item 1</li>
+          <li>Initial Item 3</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Job Management UI</h1>
+
+      <p>This example shows how to implement a client side job management UI using intercooler</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+    <style>
+      #main {
+        transition: all .5s;
+      }
+      #main.ic-transitioning {
+        opacity: 0;
+      }
+    </style>
+
+    <div id="main" ic-src="/job/status">
+      <!-- This post to /job causes the outer div to refresh due to intercooler's dependencies system -->
+      <button class="btn btn-primary" ic-post-to="/job">Start Job</button>
+    </div>
+
+    <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: '/job',
+      response: function (settings) {
+        jobManager.start();
+      }
+    });
+
+    $.mockjax({
+      url: '/job/status',
+      response: function (settings) {
+        var job = jobManager.currentProcess();
+        this.responseText = jobStatusTemplate(job);
+      }
+    });
+
+    $.mockjax({
+      url: '/job/status/percent_complete',
+      response: function () {
+        var job = jobManager.currentProcess();
+        this.responseText = job.percentComplete + "%";
+        if (job.complete) {
+          this.headers = { "X-IC-Refresh": "/job/status" }; // if the job is complete, refresh the entire job status UI
+        }
+      }});
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function jobStatusTemplate(process) {
+      if(process.complete) {
+        return 'Job Complete!';
+      } else {
+        return 'Job Running:' +
+          '  <div class="progress progress-striped active">' +
+          '   <div class="progress-bar" ic-style-src="width:/job/status/percent_complete" ic-poll="1s" style="width:0%"></div>' +
+          '  </div>';
+      }
+    }
+
+    //========================================================================
+    // Mock Process Manager
+    //========================================================================
+    var jobManager = (function(){
+      var currentProcess = null;
+      return {
+        start : function() {
+          currentProcess = {
+            complete : false,
+            percentComplete : 0
+          }
+        },
+        currentProcess : function() {
+          currentProcess.percentComplete += Math.min(100, Math.floor(33 * Math.random()));  // simulate progress
+          currentProcess.complete = currentProcess.percentComplete >= 100;
+          return currentProcess;
+        }
+      }
+    })();
+    </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

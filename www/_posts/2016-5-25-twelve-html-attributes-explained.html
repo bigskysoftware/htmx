@@ -1,0 +1,200 @@
+---
+layout: blog_post
+nav: blog
+title: Twelve, er, Ten, er, Eight HTML Attributes Explained...
+---
+
+<p>
+  <strong>UPDATE:</strong> Jiri made the point that using <code>ic-poll</code> I can simplify the example even more.
+  Thanks Jiri!
+</p>
+
+<p>In my last post I mentioned a nifty little live stock quote app that I built using only twelve intercooler attributes
+and a couple of lines of javascript.  I restructured things a bit and managed to knock it down to <em><strike>just ten attributes</strike></em> <em>just eight</em>!
+Even better.</p>
+
+<p>Again, here is the demo:</p>
+
+<video style="margin-left: 87px" width="500" height="422" controls="controls"><source src="/images/JSchemaTickerwatch.mp4" type="video/mp4"></video>
+
+<p>In this post, I will explain the details of the app, which was built in <a href="http://sparkjava.com">SparkJava</a>,
+  looking at each piece of functionality.</p>
+
+<h2>The Ticker Input Form</h2>
+
+<p>The ticker input form consists of the following html:</p>
+
+<pre>
+  &lt;form id="form" ic-post-to="/" ic-target="#main"
+                 autocomplete="off">
+    &lt;input type='text' id='ticker-input'
+           class='form-control input-lg' name='ticker'
+           placeholder="Enter a stock ticker..."/>
+  &lt;/form>
+</pre>
+
+<p>There are two intercooler attributes here, telling the form to post to <code>/</code> and to target the <code>#main</code>
+  div, which surrounds the entire main body of the application.</p>
+
+<h3>Making Newly Added Tickers Flash</h3>
+
+<p>You will notice a green flash on the row when a ticker is added to the table.  To do this, a class is added to the
+row of a newly added ticker, <code>new-ticker</code>.  Then the following CSS was added:</p>
+
+<pre>
+  .ic-transitioning .new-ticker td {
+    background-color: #a5d1a6;
+  }
+
+  .new-ticker td {
+    background-color: transparent;
+    transition: all 1s;
+  }
+</pre>
+
+<p>This sets the background of the newly added row to a light green when intercooler first swaps in the content (the
+<code>ic-transitioning</code> class is on the parent content) and then transitions it to transparent.  This gives the
+flashing effect you see above.</p>
+
+<h2>Deleting A Ticker</h2>
+
+<p>On each row you will see a trashcan icon that can be used to remove a given ticker.  The HTML for this element looks
+  like so:</p>
+
+<pre>
+  &lt;a ic-target="#main" ic-delete-from="/$ticker.symbol">
+    &lt;i class="fa fa-trash" aria-hidden="true">&lt;/i>
+  &lt;/a>
+</pre>
+
+<p>This tells intercooler to issue a <code>DELETE</code> to the URL corresponding to the tickers symbol, which rerenders
+  the table and then replaces the content of the <code>#main</code> div (just like the form above).
+
+<h2>Clearing All Tickers</h2>
+
+<p>The link to clear all tickers is implemented very similarly to the link to clear a single ticker.  Here is the HTML:
+</p>
+
+<pre>
+&lt;a ic-target="#main" ic-delete-from="/">&lt;i>Clear All&lt;/i>&lt;/a>
+</pre>
+
+<p>We issue a <code>DELETE</code> but to <code>/</code>, which clears the tickers and re-renders the main UI.</p>
+
+<h2>Making The Table "Live"</h2>
+
+<p>Now the tricky part, making the table update.  To do this, we add the following intercooler attributes a div
+  surrounding the table:</p>
+
+<pre>
+  &lt;div ic-poll="5s" ic-src="/">
+</pre>
+
+<p>This div will hit the <code>/</code> URL every five seconds.  The returned content is going to be just the
+table of updated ticker information.</p>
+
+<p>We use <code>/</code> to serve both the top level page as well as this request.  How do we do that?</p>
+
+<p>Intercooler includes a parameter, <code>ic-request</code>, when it issues an AJAX request, so we can test for that
+parameter when determining what to render to the client:</p>
+
+<pre>
+if( "true".equals( req.queryParams( "ic-request" ) ) )
+{
+  return View.renderRaw( "ticker_table.html.vm",
+                         "tickers", tickers,
+                         "states", states );
+} else {
+  return View.renderPage( "index.html.vm",
+                          "tickers", tickers,
+                          "states", states);
+}
+</pre>
+
+<p>We could get even fancier and test for the target of the request, which is also included as a parameter, but this
+is enough for now.</p>
+
+<h3>Making The Price Flash</h3>
+
+<p>In order to make the price flash green or red, depending on if it has gone up or down relative to the last price
+we saw.  This is done by adding an <code>up</code> or <code>down</code> class to the <code>td</code> holding the asking
+price, and then adding this bit of CSS:</p>
+
+<pre>
+.ask {
+  color: rgb(51, 51, 51);
+  transition: all 2s ease;
+}
+
+.ic-transitioning .ask.up {
+  color: green;
+}
+
+.ic-transitioning .ask.down {
+  color: red;
+}
+</pre>
+
+<p>When intercooler inserts the new table, cells with the <code>up</code> class will start with color set to green.  Then
+intercooler removes the .ic-transitioning class from the element that was updated and the CSS transition takes the colors
+back to the default semi-black, causing the nice flash effect.</p>
+
+<h2>A Bit of Javascript</h2>
+
+<p>I said there were two lines of javascript.  That was exaggerating a bit, there are nine lines if you include the
+  boilerplate as well, so lets look at it:</p>
+
+<pre>
+$(function(){
+  $('body').on('applicationError', function(elt, msg){
+    $.jGrowl(msg, { header: 'ERROR' });
+  });
+})
+
+Intercooler.ready(function(){
+  $("#ticker-input").focus()
+})
+</pre>
+
+<p>There are two sections here: first the standard jQuery ready function which hooks up an event handler on the
+  <code>applicationError</code> event and shows a jGrowl notification.  This is used on the server side to communicate
+error messages to the client side using the <a href="http://intercoolerjs.org/docs.html#responses">X-IC-Trigger</a> response
+header, like so:</p>
+
+<pre>
+  res.header( "X-IC-Trigger",
+              "{\"applicationError\":[\"Ticker Not Valid!\"]}" );
+</pre>
+
+<p>This is a very clean way to communicate from the server to the client.</p>
+
+<p>The second bit of javascript is run in the <code>Intercooler.ready()</code> method, which is the intercooler equivalent
+of the jQuery ready concept, but is run on every completed Intercooler request.  We use this to refocus the ticker input.</p>
+
+<h2>That's It!</h2>
+
+<p>And that's it!  Not a lot of code for a pretty slick little UI with some nice visual effects.  I hope this gives
+you an idea of how powerful intercooler is.</p>
+
+<p>Here are links to the raw code:</p>
+
+<ul>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/java/org/jschema/sample/App.java"> App.java - Server Side Impl</a>
+  </li>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/resources/views/layout.html.vm"> layout.html.vm - App layout template</a>
+  </li>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/resources/views/index.html.vm"> index.html.vm - Page layout template, with ticker input</a>
+  </li>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/resources/views/index.html.vm"> ticker_table.html.vm - Table template</a>
+  </li>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/resources/public/main.css"> main.css - App CSS</a>
+  </li>
+  <li>
+    <a href="https://github.com/cahtisroo/jschema-example/blob/master/src/main/resources/public/main.js"> main.js - App JS</a>
+  </li>
+</ul>

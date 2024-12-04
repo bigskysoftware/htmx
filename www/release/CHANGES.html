@@ -1,0 +1,541 @@
+---
+layout: default
+nav: dependencies
+---
+
+<div class="container">
+
+  <a class="anchor" id="1_2_3"></a>
+  <h2>
+    Intercooler 1.2.3 - November 08, 2019
+  </h2>
+  <ul>
+    <li>
+      <code>ic-trigger-on</code> now supports multiple event names, separated by commas
+    </li>
+    <li>
+      The <code>ic-sse-with-credentials</code> attribute enables SSE requests to be made with credentials
+    </li>
+    <li>
+      The <code>ic-push-params</code> attribute allows you to include parameter values in the pushed
+      URL
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_2_2"></a>
+  <h2>
+    Intercooler 1.2.2 - March 29, 2019
+  </h2>
+  <ul>
+    <li>
+      Added <code><a href="/attributes/ic-enhance.html">ic-enhance</a></code> attribute, which enhances standard anchor and form tags with the intercooler
+      equivalent attributes, allowing for graceful degradation in non-javascript environments.
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-global-indicator.html">ic-global-indicator</a></code> attribute, which sets a global indicator to be shown when a request
+      is in flight, even along side any local indicators specified by the triggering element.
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-switch-class.html">ic-switch-class</a></code> attribute, which switches a class between siblings when an intercooler request
+      is caused within one.  This can be uses, for example, to update the "active" state of tabs without replacing
+      the tab UI.
+    </li>
+    <li>
+      <code>LeadDyno.startPolling()</code> and <code>LeadDyno.stopPolling()</code> were added to the Javascript API
+    </li>
+    <li>
+      Added <code>X-IC-Title-Encoded</code> response header to handle URI encoded titles for international users
+    </li>
+    <li>
+      Removed the legacy debugger
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_2_1"></a>
+  <h2>
+    Intercooler 1.2.1 - December 15, 2017
+  </h2>
+  <ul>
+    <li>
+      Added the <code>once</code> modifier to the <code><a href="/attributes/ic-trigger-on.html">ic-trigger-on</a></code>
+      attribute, to allow an event to trigger one and only one request.
+    </li>
+    <li>
+      Added the <code><a href="/attributes/ic-transform-response.html">ic-transform-response</a></code> attribute to
+      allow transforming JSON responses from a server into HTML on the client side.
+    </li>
+    <li>
+      Fixed a bug that prevented <code><a href="/attributes/ic-on-beforeTrigger.html">ic-on-beforeTrigger</a></code> from
+      working properly
+    </li>
+    <li>
+      Deeper tests and an explaination around how returning values from intercooler expression attributes work.
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_2_0"></a>
+  <h2>
+    Intercooler 1.2.0 - October 27, 2017
+  </h2>
+  <ul>
+    <li>
+      Added <code><a href="/attributes/ic-disable-when-doc-hidden.html">ic-disable-when-doc-hidden</a></code> and
+      <code><a href="/attributes/ic-disable-when-doc-inactive.html">ic-disable-when-doc-inactive</a></code>
+      attributes to allow short-circuiting polling when a document isn't focused or active
+    </li>
+    <li>
+      Added <code><a href="/attributes/ic-fix-ids.html">ic-fix-ids</a></code> attribute to replace the IDs of any added elements
+      with globally unique IDs so that they don't conflict with any existing IDs on the page.
+    </li>
+    <li>
+      Better support for last-clicked elements in forms
+    </li>
+    <li>
+      Added <code>timeout:</code> syntax for <code>ic-trigger-on</code> attribute
+    </li>
+    <li>
+      Added four additional local <code>action</code> attributes:
+      <ul>
+        <li>
+          <code>ic-action-beforeSend</code>
+          <code>ic-action-success</code>
+          <code>ic-action-error</code>
+          <code>ic-action-complete</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_1_2"></a>
+  <h2>
+    Intercooler 1.1.2 - May 5th, 2017
+  </h2>
+  <ul>
+    <li>
+      Fixed bug in minified file (Zepto-related)
+    </li>
+    <li>
+      Other bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_1_1"></a>
+  <h2>
+    Intercooler 1.1.1 - March 6th, 2017
+  </h2>
+  <ul>
+    <li>
+      Fix a button related regression due to zepto support
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_1_0"></a>
+  <h2>
+    Intercooler 1.1.0 - February 17th, 2017
+  </h2>
+  <ul>
+    <li>
+      Respect intercooler response headers even when error response codes are sent to the client (e.g. X-IC-Redirect on a 401 response)
+    </li>
+    <li>
+      Support a timed value (e.g. "200ms") for the X-IC-Remove header, to allow a CSS transition
+    </li>
+    <li>
+      Serialize javascript objects used in ic-include JSON form, allowing for more complex data to be included in requests
+    </li>
+    <li>
+      Support zepto as an alternative to jQuery
+    </li>
+    <li>
+      Include form values when a form causes a GET
+    </li>
+    <li>
+      Unit tests running against jQuery v1, v2 and v3
+    </li>
+    <li>
+      jQuery 3 is now the documented option
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_0_3"></a>
+  <h2>
+    Intercooler 1.0.3 - November 22th, 2016
+  </h2>
+  <ul>
+    <li>
+      Added the <code>ic-action-target</code> attribute, allowing for a distinct target for the <code>ic-action</code>
+      attribute.
+    </li>
+    <li>
+      Added the <code>ic-sse-src</code> attribute, allowing intercooler to utilize <a href="/docs.html#sse">Server Sent Events</a> .
+    </li>
+    <li>
+      Added the <code>ic-swap-style</code> attribute, making append/prepend explicit attribute-driven behaviors.
+    </li>
+    <li>
+      The <code>ic-poll</code> attribute now does not ignore dependencies.
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_0_2"></a>
+  <h2>
+    Intercooler 1.0.2 - October 17th, 2016
+  </h2>
+  <ul>
+    <li>
+      Regression Fix on Button Click
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_0_1"></a>
+  <h2>
+    Intercooler 1.0.1 - September 30th, 2016
+  </h2>
+  <ul>
+    <li>
+      Include clicked button value in form submission, using focus
+    </li>
+    <li>
+      Node.js compatibility improvements
+    </li>
+  </ul>
+
+  <a class="anchor" id="1_0_0"></a>
+  <h2>
+    Intercooler 1.0.0 - September 12th, 2016
+  </h2>
+  <ul>
+    <li>
+      Added the <code>ic-trigger-from</code> attribute, to allow specifying the element to listen to for the
+      event that triggers an intercooler request.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_7"></a>
+  <h3>Intercooler 0.9.7 - June 24th, 2016</h3>
+  <ul>
+    <li>
+      Support for setting title with the <code>X-IC-Title</code> response header
+    </li>
+    <li>
+      Support for reading and writing local variables stored in <code>localStorage</code> using
+      the <code>ic-local-vars</code> attribute and <code>X-IC-Set-Local-Vars</code> response
+      header.
+    </li>
+    <li>
+      Support the <code>autofocus</code> attribute in intercooler AJAX responses.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_6"></a>
+  <h3>Intercooler 0.9.6 - April 22nd, 2016</h3>
+  <ul>
+    <li>
+      Support for invocation of global functions in the [ic-action](/attributes/ic-action.html) attribute.
+    </li>
+    <li>
+      We now include the URL of the AJAX request that caused an error when we post errors to the server via the
+      [ic-post-errors](/attributes/ic-post-errors-to.html) attribute.
+    </li>
+    <li>
+      For browser compatibility reasons, intercooler sends all non-GET AJAX requests at a POST, with standard
+      metadata for frameworks to use to interpret the actual action. If you wish to use the actual HTTP method
+      (e.g. `DELETE`) you can now set the meta tag value `intercoolerjs:use-actual-http-method` to `true`
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_5"></a>
+  <h3>Intercooler 0.9.5 - April 8th, 2016</h3>
+  <ul>
+    <li>
+      Removed the <code>ic-last-request</code> parameter to avoid cache busting.  Server-side cookies should be used
+      for more consistent refresh timing information.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_4"></a>
+  <h3>Intercooler 0.9.4 - Jan 29th, 2016</h3>
+  <ul>
+    <li>
+      Anchor tags with intercooler attributes on them now prevent event bubbling, which stops them from causing a
+      browser to navigate as well as sending an ajax request.
+    </li>
+    <li>
+      Clicking the "Cancel" button on the input prompt when using the <code>ic-prompt</code> attribute now
+      stops intercooler from issuing an ajax request.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_3"></a>
+  <h3>Intercooler 0.9.3 - Jan 15th, 2016</h3>
+  <ul>
+    <li>
+      Support for the <code>data-*</code> prefix on attributes via the
+      <code>&lt;meta name="intercoolerjs:use-data-prefix" content="true"/></code> meta-tag.
+    </li>
+    <li>
+      Introduced the <code>beforeAjaxSend.ic</code>, which allows programmers to modify the setting hash passed
+      to <code>$.ajax()</code> to do thinks like add headers, set content type, remove parameters, etc.
+    </li>
+    <li>
+      Removed deprecated javascript methods on the <code>Intercooler</code> object.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_2"></a>
+  <h3>Intercooler 0.9.2 - Jan 1st, 2016</h3>
+  <ul>
+    <li>
+      File-upload/ multi-part form data support.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_1"></a>
+  <h3>Intercooler 0.9.1 - December 28th, 2015</h3>
+  <ul>
+    <li>
+      Support for the <a href="/attributes/ic-action.html"><code>ic-action</code></a> attribute, allowing
+      for pure declarative client-side operations in intercooler.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_9_0"></a>
+  <h3>Intercooler 0.9.0 - September 11th, 2015</h3>
+  <div class="alert alert-warning" role="alert">
+    <i class="fa fa-warning"></i> The v0.4.9 to v0.9.0 move involved extensive code changes.  Please test your
+    existing application <b>thoroughly</b> when you upgrade!
+  </div>
+  <ul>
+    <li>
+      <code>ic-select-from-response</code> now takes the <em>inner HTML content</em> of the given element, rather than
+      the entire element. This makes the API more natural to work with, but unfortuantely breaks backwards compatibility.
+    </li>
+    <li>
+      Reworked history to use remote restoration once local storage overflows.
+    </li>
+    <li>
+      <code>ic-indicator</code> class will now work on next sibling of element firing request
+    </li>
+    <li>
+      <code>ic-patch-to</code> attribute was added to suppor the <code>PATCH</code> action
+    </li>
+    <li>
+      All non-GET requests are issued as POSTs now.  This is because browsers have funky, browser dependent
+      rules on how they handle redirects with parameters to a GET: sometimes they pass them along, sometimes
+      they don't.
+    </li>
+    <li>
+      Element transitions were <a href="/docs.html#transitions">moved to CSS</a>.  <code>Intercooler.defaultTransition()</code> and
+      <code>Intercooler.defineTransition()</code> have been deprecated and now have no effect.
+    </li>
+    <li>
+      <code>Intercooler.addURLHandler()</code> and <code>Intercooler.setRemote()</code> have been deprecated
+      and now have no effect.
+    </li>
+    <li>
+      <code>ic-add-class</code> and <code>ic-remove-class</code> were added to make it easy to create CSS transition
+      based easements in your Intercooler application.
+    </li>
+    <li>
+      <code>ic-global-include</code> allows you to include data with requests made by every element on a page.
+    </li>
+    <li>
+      <code>ic-beforeTrigger</code> allows you execute logic before Intercooler fires a request (and potentially
+      cancel the trigger).
+    </li>
+    <li>
+      <code>ic-pause-polling</code> allows you issue an element with an <code>ic-poll</code> attribute in it that
+      is in a paused state.
+    </li>
+    <li>
+      <code>X-IC-ResumePolling</code> response header allows you to restart polling for an element.
+    </li>
+    <li>
+      <code>ic-post-errors-to</code> allows you specify a URL for intercooler to post client side errors to.
+    </li>
+    <li>
+      <code>ic-prompt</code> allows you to prompt the user for input before a request, asking for input.
+    </li>
+    <li>
+      <code>ic-remove-after</code> allows you to remove an element after a given time period.
+    </li>
+    <li>
+      <code>ic-scroll-to-target</code> and <code>ic-scroll-offset</code> allow you to scroll to the top of a target
+      if it is not visible in the viewport.
+    </li>
+    <li>
+      <code>ic-transition-duration</code> allows you to tell intercooler to wait some amount of time for a CSS
+      transition to complete before a swap is done.
+    </li>
+    <li>
+      <code>ic-target-id</code>, <code>ic-trigger-id</code> and <code>ic-trigger-name</code> parameters were all
+      added to intercooler requests, to make it easier to dynamically determine which partial to render in response
+      to a given url
+    </li>
+    <li>
+      The <code>X-IC-Trigger-Data</code> has been deprecated.  The <code>X-IC-Trigger</code> attribute can now be
+      either a plain string for the event name, or a JSON object that satisfies the jQuery
+      <a href="http://api.jquery.com/jQuery.parseJSON/"><code>parseJSon()</code></a> requirements, where each property
+      is an event name to trigger, and the value of each property is an array of arguments to pass to that
+      event.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_10"></a>
+  <h3>Intercooler 0.4.10 - April 17th, 2015</h3>
+  <ul>
+    <li>
+      Reworked history storage to be more stable and less leaky.
+    </li>
+    <li>
+      Bug fixes
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_9"></a>
+  <h3>Intercooler 0.4.9 - March 10th, 2015</h3>
+  <ul>
+    <li>
+      Added the <code>ic-select-from-response</code> attribute, allowing people to select sub-elements from a
+      server response to swap in.
+    </li>
+    <li>
+      Extended the <code>ic-include</code> attribute to allow for JSON name/value pairs to be included in a
+      request.
+    </li>
+    <li>
+      Default the value of <code>ic-always-update</code> to true, so you have to opt out of content swapping now.
+    </li>
+    <li>
+      Added the <code>ic-remove-after</code> attribute, allowing people to remove an element after a given
+      interval of time cleanly.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_8"></a>
+  <h3>Intercooler 0.4.8 - January 27th, 2015</h3>
+  <ul>
+    <li>
+      Reworked history support, with the <code>ic-push-url</code> attribute.  Renamed the <code>X-IC-SetLocation</code>
+      response header to <code>X-IC-PushURL</code> to be consistent with the new attribute.
+    </li>
+    <li>
+      Include the current URL on all intercooler requests in the <code>ic-current-url</code> parameter.
+    </li>
+    <li>
+      For elements with no text children, apply the fadeFast transition to children only, rather than the parent.  This
+      makes buttons look better if their content is wrapped in a span.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_7"></a>
+  <h3>Intercooler 0.4.7 - January 5th, 2015</h3>
+  <ul>
+    <li>
+      Added an integrated visual debugger.
+    </li>
+    <li>
+      Added the 'changed' modifier for ic-trigger-on events
+    </li>
+    <li>
+      Only allow one request in flight at a time for a given element.
+    </li>
+    <li>
+      Allow child elements to trigger parent elements separately.
+    </li>
+    <li>
+      Added <code>ic-trigger-delay</code> attribute to delay firing a request.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_6"></a>
+  <h3>Intercooler 0.4.6 - December 30th, 2014</h3>
+  <ul>
+    <li>
+      Added <code>ic-replace-target</code> attribute, allowing full replacement of target elements
+      for situations like replacing a table row.
+    </li>
+    <li>
+      Added the ability to target elements that are closest to a triggered element in a <code>ic-target</code> attribute
+      via the <code>closest </code> prefix.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_5"></a>
+  <h3>Intercooler 0.4.5 - December 12th, 2014</h3>
+  <ul>
+    <li>
+      Added <code>ic-on-beforeSend</code>, <code>ic-on-success</code>, <code>ic-on-error</code> and
+      <code>ic-on-complete</code>
+      attributes.
+    </li>
+    <li>
+      Always swap content containing a <code>script</code> element, so things are properly reevaluated.
+    </li>
+  </ul>
+
+  <a class="anchor" id="0_4_1"></a>
+  <h3>Intercooler 0.4.1 - July 4th, 2014</h3>
+  <ul>
+    <li>Exposed <code>Intercooler.processElements()</code> in the Javascript API</li>
+    <li>Begin sending the  <code>X-HTTP-Method-Override</code> header up in intercooler requests</li>
+    <li>Begin sending the  <code>X-IC-Request</code> header up in intercooler requests</li>
+  </ul>
+
+  <a class="anchor" id="0_4_0"></a>
+  <h3>Intercooler 0.4.0 - June 19th, 2014</h3>
+  <ul>
+    <li>Added the <a href="/responses.html#http_headers"><code>X-IC-Trigger</code></a> response header to trigger client
+      side event
+      handlers.
+    </li>
+    <li>Added the <a href="/attributes/ic-confirm.html"><code>ic-confirm</code></a> attribute.</li>
+    <li>Merged a fix for <a href="https://github.com/intercoolerjs/intercooler-js/pull/19">an IE8 compatibility issue</a>.
+    </li>
+  </ul>
+  <h4>Comments on 0.4.0 Release</h4>
+
+  <p>
+    The big enhancement in this release (small code change, but <strong>big</strong> functionality boost!) is the <code>X-IC-Trigger</code>
+    response header, which finally solves a tricky problem I've been wrestling with: How do you communicate server side state
+    changes that have client-side UI ramifications that fall outside the usual Intercooler request-and-replace
+    partial view flow?
+  </p>
+
+  <p>This new mechanism allows you to cleanly separate your server side and client-side logic even in cases where the
+    simple content-swapping approach isn't enough.</p>
+
+  <p>A great example is if you want to hide a modal if and only if a form in the modal submits valid data to the
+    server.  You can now easily fire an <code>server.accountCreated</code> event (as an example) from the server side
+    and respond to that on the client side by hiding the modal.  Clean, crisp and very little code!</p>
+
+  <p>You can download the latest <code>intercooler.js</code> from <a href="/download.html">the Downloads page</a>.</p>
+
+  <p>Enjoy!</p>
+</div>

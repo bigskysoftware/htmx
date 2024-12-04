@@ -1,84 +1,29 @@
 {
-  "name": "htmx.org",
-  "description": "high power tools for html",
+  "name": "intercooler",
+  "version": "1.2.3",
+  "description": "Making AJAX as easy as anchor tags",
+  "homepage": "http://intercoolerjs.org",
+  "author": {
+    "name": "LeadDyno, LLC",
+    "url": "http://www.leaddyno.com"
+  },
   "keywords": [
-    "AJAX",
-    "HTML"
+    "ajax",
+    "anchor",
+    "attribute"
   ],
-  "version": "2.0.3",
-  "homepage": "https://htmx.org/",
-  "bugs": {
-    "url": "https://github.com/bigskysoftware/htmx/issues"
-  },
-  "license": "0BSD",
-  "files": [
-    "LICENSE",
-    "README.md",
-    "dist/htmx.esm.d.ts",
-    "dist/*.js",
-    "dist/ext/*.js",
-    "dist/*.js.gz",
-    "editors/jetbrains/htmx.web-types.json"
-  ],
-  "main": "dist/htmx.esm.js",
-  "types": "dist/htmx.esm.d.ts",
-  "unpkg": "dist/htmx.min.js",
-  "web-types": "editors/jetbrains/htmx.web-types.json",
-  "scripts": {
-    "dist": "./scripts/dist.sh && npm run types-generate",
-    "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
-    "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
-    "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
-    "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
-    "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
-    "ws-tests": "cd ./test/ws-sse && node ./server.js",
-    "www": "bash ./scripts/www.sh",
-    "sha": "bash ./scripts/sha.sh"
-  },
+  "license": "MIT",
+  "main": "dist/intercooler.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bigskysoftware/htmx.git"
-  },
-  "eslintConfig": {
-    "extends": "standard",
-    "rules": {
-      "camelcase": 0,
-      "no-var": 0,
-      "no-undef": 0,
-      "eqeqeq": 0,
-      "no-multi-str": 0,
-      "no-prototype-builtins": 0,
-      "no-cond-assign": 0,
-      "no-empty": 0,
-      "no-eval": 0,
-      "no-new-func": 0,
-      "no-redeclare": 0,
-      "no-return-assign": 0,
-      "no-unused-vars": 0,
-      "no-useless-call": 0,
-      "no-useless-escape": 0,
-      "no-unused-expressions": 0,
-      "space-before-function-paren": [
-        "error",
-        "never"
-      ]
-    }
+    "url": "git://github.com/LeadDyno/intercooler-js"
   },
   "devDependencies": {
-    "@types/node": "20.0.0",
-    "chai": "^4.3.10",
-    "chai-dom": "^1.12.0",
-    "eslint": "^8.56.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "fs-extra": "^9.1.0",
-    "mocha": "10.1.0",
-    "mocha-chrome": "https://github.com/Telroshan/mocha-chrome",
-    "mocha-webdriver": "^0.3.2",
-    "mock-socket": "^9.3.1",
-    "sinon": "^9.2.4",
-    "typescript": "^5.5.4",
-    "uglify-js": "^3.17.4",
-    "ws": "^8.14.2"
+    "grunt": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-regex-replace": "^0.3.0",
+    "grunt-umd": "^2.3.6"
   }
 }

@@ -1,0 +1,71 @@
+---
+layout: default
+nav: attributes > ic-enhance
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-enhance</code> - The Enhance Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-enhance</code> attribute tells intercooler to enhance all anchor tags (links) and form tags
+        found below the attribute, causing them to issue AJAX requests rather than their standard behavior.</p>
+
+      <p>For anchor tags this means that the <code>href</code> is copied over to <code>ic-src</code>, the
+      <code>ic-push-url</code> attribute is set to <code>true</code>, and the <code>ic-deps</code> attribute
+      is set to <code>ignore</code> so no dependent requests are generated for it.</p>
+
+      <p>Only local references will be enhanced.  Anchor tags that point to other sites, or that reference fragment
+      ids will not be modified.</p>
+
+      <p>For form tags this means that the <code>action</code> is copied over to <code>ic-src</code>, the
+      <code>ic-verb</code> attribute is set to <code>method</code> attribute, and the <code>ic-deps</code> attribute
+      is set to <code>false</code> so no dependent requests are generated for it.</p>
+
+      <p>In both cases, intercooler attributes can be overridden or added directly to the element if you so wish.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be <code>true</code> or <code>false</code>.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-enhance</code> has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      Below is a live demo of an achor tag that has been enhanced.  Note that it is a standard anchor tag, but
+      if you click on it it will issue an AJAX request and update the navigation bar.
+
+      <pre>
+      &lt;div ic-enhance="true">
+        &lt;h3>Here is an enhanced link&lt;/h3>
+        &lt;a href="/ic-enhance">A Link&lt;/a>
+      &lt;/div>
+      </pre>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              'url': '/ic-enhance',
+              'response': function () {
+                this.responseText = "Yep, this link has been enhanced to use AJAX!"
+              }
+            });
+          })();
+        </script>
+
+        <div ic-enhance="true">
+          <h3>Here is an enhanced link</h3>
+          <a href="/ic-enhance">A Link</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

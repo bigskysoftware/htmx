@@ -1,0 +1,61 @@
+---
+layout: default
+nav: attributes > ic-src
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-src</code> - The Source Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-src</code> attribute binds a given HTML element to a URL.  It does not cause any requests to happen
+      by itself, but it can respond to events caused by other attributes, such as
+        <a href="/attributes/ic-poll.html"><code>ic-poll</code></a> or
+        <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>.</p>
+
+      <p>When Intercooler issues a request for an element with an <code>ic-src</code>, it will issue a <code>GET</code>
+      and will replace the current elements content with resulting HTML fragment, if it is different than the
+        current content.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid relative path (e.g. <code>ic-src="/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-src</code> implies a dependency on its path, and Intercooler will issue requests for elements
+        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
+      more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, using a poll interval to update:</p>
+
+      <pre>
+  &lt;div ic-src="/seconds" ic-poll="5s">You have been on this page for 0 seconds...&lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var init = Math.floor(new Date().getTime() / 1000);
+            $.mockjax({
+              url: '/seconds',
+              response: function (settings) {
+                var seconds = Math.floor((new Date().getTime() / 1000) - init);
+                this.responseText = 'You have been on this page for ' + seconds + ' seconds...'
+              }
+            });
+          })();
+        </script>
+        <div ic-src="/seconds" ic-poll="5s">You have been on this page for 0 seconds...</div>
+      </div>
+
+    </div>
+  </div>
+</div>

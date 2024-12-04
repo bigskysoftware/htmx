@@ -1,0 +1,16 @@
+---
+layout: history
+nav: tutorial
+---
+
+  <div id="content" ic-history-elt>
+    <ul class="nav nav-tabs" ic-target="#content" ic-push-url="true" ic-select-from-response="#content">
+      <li><a ic-get-from="/examples/history_tab1.html">Tab1</a></li>
+      <li><a ic-get-from="/examples/history_tab2.html">Tab2</a></li>
+      <li class="active"><a ic-get-from="/examples/history_tab3.html">Tab3</a></li>
+    </ul>
+    <div>
+      <h1>Tab 3</h1>
+      <a ic-post-to="/click_me">Click Me!</a>
+    </div>
+  </div>

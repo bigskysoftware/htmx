@@ -1,0 +1,191 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Implementing Click To Load</h1>
+
+      <p>This example demos a click to load UI for a table.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          After the last row of data, emit a single row/column with a colspan of the entire table, with a button in it.
+        </li>
+        <li>
+          That button has an
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute that loads the next page of data (including another button).  The button targets the closest
+          table row for replacement with the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute, using the special <code>closest</code> syntax.  Finally, because we want to replace the entire row
+          with the new page of rows returned (rather than simply replacing the inner content of the row), the
+          <a href="/attributes/ic-replace-target.html"><code>ic-replace-target</code></a>
+          is set to <code>true</code>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+  <!--
+    This is the initial table.  As with other examples, this table would normally be generated with the same
+    template logic defined in the rowsTemplate() below, but is inlined here to make the example more clear.
+
+    The last row in the table includes an ic-append-from directive to append more rows when the 'scrolled-into-view'
+    event is fired.  It targets the <tbody> of the table, so the rows are appended to the table, and uses an indicator
+    to show that more rows are loading.
+    -->
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>ID #</th>
+    </tr>
+    </thead>
+    <tbody id="contactTableBody">
+    <tr>
+      <td>Agent Smith</td><td>void0@null.org</td><td>D92B582CA8GDD94</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void1@null.org</td><td>4AEC9GF0F0A35G5</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void2@null.org</td><td>3G80BFBF490BBAF</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void3@null.org</td><td>A4CB29F6G6D812D</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void4@null.org</td><td>FDFEGE1580A78C0</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void5@null.org</td><td>96961373E447G6F</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void6@null.org</td><td>05EE57C9C2GD1B0</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void7@null.org</td><td>2G6BC043G9F12BD</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void8@null.org</td><td>2G6BC043G9F12BD</td>
+    </tr>
+    <tr>
+      <td>Agent Smith</td><td>void9@null.org</td><td>3C8D2157F4B854F</td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <center> <!-- lol -->
+          <button class="btn btn-default" ic-get-from='/contacts/?page=2' ic-target='closest tr' ic-replace-target="true">
+            Load More Agents... <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i>
+          </button>
+        </center>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: /\/contacts.*/,
+      responseTime: 800,
+      response: function (settings) {
+        var queryStr = settings.url.substring(settings.url.lastIndexOf('?'));
+        var params = parseParams(queryStr);
+
+        var page = parseInt(params['page']);
+        var contacts = dataStore.contactsForPage(page)
+        this.responseText = rowsTemplate(page, contacts);
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function rowsTemplate(page, contacts) {
+      var txt = "";
+      for (var i = 0; i < contacts.length; i++) {
+        var c = contacts[i];
+        txt += "<tr> \
+                  <td>" + c.name + "</td><td>" + c.email + "</td><td>" + c.id + "</td> \
+                </tr>";
+      }
+      txt += loadMoreRow(page);
+      return txt;
+    }
+
+    function loadMoreRow(page) {
+      return '<tr id="replaceMe"> \
+                <td colspan="3"> \
+                  <center> \
+                   <button class="btn btn-default"   ic-post-to="/contacts/?page=' + (page + 1) + '" ic-target="closest tr" ic-replace-target="true">\
+                     Load More Agents... <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i> \
+                   </button> \
+                   </center>\
+                 </td>\
+               </tr>';
+    }
+
+    //========================================================================
+    // Mock Data Store
+    //========================================================================
+    var dataStore = function(){
+      var contactId = 9;
+      function generateContact() {
+        contactId++;
+        var idHash = "";
+        var possible = "ABCDEFG0123456789";
+        for( var i=0; i < 15; i++ ) idHash += possible.charAt(Math.floor(Math.random() * possible.length));
+        return { name: "Agent Smith", email: "void" + contactId + "@null.org", id: idHash }
+      }
+      return {
+        contactsForPage : function(page) {
+          var vals = [];
+          for( var i=0; i < 10; i++ ){
+            vals.push(generateContact());
+          }
+          return vals;
+        }
+      }
+    }()
+
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

@@ -1,0 +1,84 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Debugging Intercooler</h1>
+
+      <p>This example shows some of the features of the intercooler debugger.  The debugger
+      can be launched by including the following javascript:</p>
+      <pre class="prettyprint">
+&lt;script>
+  $.getScript("https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js");
+&lt;/script></pre>
+
+      <p class="text-center">
+        <button onclick="$.getScript('https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-debugger.js');" class="btn btn-primary btn-lg">Launch Intercooler Debugger</button>
+      </p>
+
+      <p>The buttons below will all show up in the "Elements" tab of the debugger.  If you click on the element it will
+      highlight the element in the UI and show you the intercooler related details, including the target.</p>
+
+      <p>The "Log" tab will include all the log messages that intercooler generates, with links back to the elements that
+      generate them.</p>
+
+      <p>Finally, the "Errors" tab will include any error states that intercooler detects.  In this case, there are two:
+        Button 2 has a bad target, and Button 3 has a bad indicator.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <button ic-post-to="/example1" ic-target="#a-div" ic-indicator="#ind">Button 1</button>
+  <button ic-post-to="/example2" ic-target="a-div">Button 2</button>
+  <button ic-post-to="/example3" ic-target="#a-div"  ic-indicator="ind">Button 3</button>
+  <i id="ind" class="fa fa-spinner fa-spin" style="display: none"></i>
+  <div id="a-div">
+    Click A Button!
+  </div>
+
+  <script>
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/example1",
+      responseText: "You clicked Button 1"
+    });
+    $.mockjax({
+      url: "/example2",
+      responseText: "You clicked Button 2"
+    });
+    $.mockjax({
+      url: "/example3",
+      responseText: "You clicked Button 3"
+    });
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

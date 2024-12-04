@@ -1,0 +1,53 @@
+---
+layout: default
+nav: attributes > ic-poll-repeats
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-poll-repeats</code> - The Poll Repeats Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-poll-repeats</code> attribute is used in conjuction with the <a href="/attributes/ic-poll.html"><code>ic-poll</code></a>
+      attribute. It tells Intercooler to repeat the poll up to a specified number.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should a valid integer.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-poll-repeats</code> is only functional when using the <a href="/attributes/ic-poll.html"><code>ic-poll</code></a> attribute.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example of a poll repeat:</p>
+
+      <pre>
+  &lt;div ic-src="/seconds" ic-poll="2s" ic-poll-repeats="5">You have been on this page for 0 seconds...&lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var init = Math.floor(new Date().getTime() / 1000);
+            $.mockjax({
+              'url': '/seconds',
+              'response': function () {
+                var seconds = Math.floor((new Date().getTime() / 1000) - init);
+                this.responseText = 'You have been on this page for ' + seconds + ' seconds...'
+              }
+            });
+          })();
+        </script>
+        <div ic-src="/seconds" ic-poll="2s" ic-poll-repeats="5">You have been on this page for 0 seconds...</div>
+      </div>
+
+    </div>
+  </div>
+</div>

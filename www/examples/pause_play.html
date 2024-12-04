@@ -1,0 +1,111 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>A Pause/Play UI</h1>
+
+      <p>This demo shows how to set up a list that is appended to periodically and that can be paused and resumed</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          A div polls the <code>/poll</code> url every two seconds by using the
+          <a href="/attributes/ic-prepend-from.html"><code>ic-prepend-from</code></a> and
+          <a href="/attributes/ic-poll.html"><code>ic-poll</code></a> attributes, and prepends the results
+          into an inner div using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute.
+        </li>
+        <li>
+          Two inner divs post to the server using the
+          <a href="/attributes/ic-target.html"><code>ic-post-to</code></a>
+          attribute and update their respective parent div.  The server either starts or stops polling by using
+          the <code>X-IC-ResumePolling</code> or <code>X-IC-CancelPolling</code> response headers, respectively.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active">
+            <a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live Demo</a>
+          </li>
+          <li role="presentation">
+            <a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <div ic-prepend-from="/poll" ic-poll="1s" ic-target="#content">
+    <div ic-target="this">
+      <div class="btn btn-default active" ic-post-to="/play"><i class="fa fa-play"></i></div>
+      <div class="btn btn-default" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>
+    </div>
+    <div id="content" ic-limit-children="5">
+    </div>
+  </div>
+
+  <style>
+    #content div {
+      transition: all 3s;
+    }
+    #content div.flash-red {
+      color: red;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var pollCount = 1;
+      $.mockjax({
+        'url': '/poll',
+        'response': function () {
+          this.responseText = "<div class='flash-red' ic-remove-class='flash-red'>Poll request #" + pollCount++ + "</div>";
+        }
+      });
+      $.mockjax({
+        'url': '/pause',
+        "headers": {
+          "X-IC-CancelPolling": true
+        },
+        "responseText" : '<div class="btn btn-default" ic-post-to="/play"><i class="fa fa-play"></i></div>\
+                          <div class="btn btn-default active" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>'
+      });
+      $.mockjax({
+        'url': '/play',
+        "headers": {
+          "X-IC-ResumePolling": true
+        },
+        "responseText" : '<div class="btn btn-default active" ic-post-to="/play"><i class="fa fa-play"></i></div>\
+                          <div class="btn btn-default" ic-post-to="/pause" ><i class="fa fa-pause"></i></div>'
+      });
+    })();
+  </script>
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

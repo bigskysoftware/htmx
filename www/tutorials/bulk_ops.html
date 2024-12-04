@@ -1,0 +1,47 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container" xmlns="http://www.w3.org/1999/html">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Bulk Operations</h1>
+
+      <p>This tutorial will show you how to implement bulk operations on a table using IntercoolerJS.</p>
+
+      <h3>Video</h3>
+
+      <div class="text-center">
+        <iframe src="//player.vimeo.com/video/92365167" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+      </div>
+
+      <h3>Outline</h3>
+
+      <p>Here are the steps for implementing bulk operations</p>
+
+      <ul>
+        <li>
+          Extract a partial of the table and wrap it in a form that uses the <code>ic-src</code> attribute to
+          re-render the table.  Give the form a useful ID.
+        </li>
+        <li>
+          Add bulk operation buttons that post to the same URL that the table sources from using the
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a> attribute, and include the
+          checked rows by using the <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>.
+        </li>
+      </ul>
+
+      <h3>Git Diff</h3>
+
+      <p>Here is a diff showing what's necessary to implement the bulk operations:</p>
+
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/0f3499cdf8896180fa50fe9dac48a88315d82256">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/0f3499cdf8896180fa50fe9dac48a88315d82256
+      </a>
+
+    </div>
+  </div>
+</div>

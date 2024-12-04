@@ -1,0 +1,115 @@
+<table class="table table-hover">
+
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <tr>
+      <td>
+        <code>Intercooler.refresh(eltOrPath)</code>
+      </td>
+      <td>If the argument is an element, it will issue a new AJAX request. If it is a string path, it will issue
+        a request for all dependent elements.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.triggerRequest(elt, handler)</code>
+      </td>
+      <td>
+        Triggers an intercooler request for the given element.  An optional handler can be used to handle processing
+        the response, which can be useful for integrating with third party libraries that work with JSON.  See
+        the <a href="/examples/typeahead.html">Twitter Typeahead Example</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.processNodes(elt)</code>
+      </td>
+      <td>
+        This will wire in all intercooler behavior to the given element and its children.  Useful if you've done an
+        out of band content swap.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.closestAttrValue(elt, attr)</code>
+      </td>
+      <td>
+        Finds the value of the given attribute that is closest in the parent hierarchy of the given element, including
+        the element.  Null if none is found.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.verbFor(elt)</code>
+      </td>
+      <td>
+        Finds the associated HTTP verb for the element.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.isDependent(elt1, elt2)</code>
+      </td>
+      <td>
+        Returns true if elt2 depends on elt1
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.getTarget(elt1)</code>
+      </td>
+      <td>
+        Returns the target of the given element.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.processHeaders(elt, xhr)</code>
+      </td>
+      <td>
+        Parses an XHR response for Intercooler headers and executes them on a given DOM element.
+        This can be useful for integrating with third party libraries that issue their own Ajax requests.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>Intercooler.ready(func(elt))</code>
+      </td>
+      <td>
+        Takes a function that takes a single argument, elt, to be run on the top level of all content that is swapped
+        into the DOM by intercooler.  This is the Intercooler equivalent of the jQuery <code>ready</code> concept.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>LeadDyno.startPolling(elt)</code>
+      </td>
+      <td>Begins polling for the given element</td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>LeadDyno.stopPolling(elt)</code>
+      </td>
+      <td>Stops polling for the given element</td>
+    </tr>
+
+
+  </tbody>
+</table>

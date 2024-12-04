@@ -1,0 +1,109 @@
+---
+layout: default
+nav: tutorial
+---
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Sortable List</h1>
+
+      <p>This demo shows how to integrate the excellent <a href="https://rubaxa.github.io/Sortable/">SortableJS</a> library with Intercooler.  </p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          Listen for the "sorted" event fired by Sortable and send the reordered list up to the server via AJAX
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <span>Your Favorite Colors (Drag to reorder)
+      <span id="indicator" style="display:none">
+        <i class="fa fa-spinner fa-spin"></i> Saving...
+      </span>
+  </span>
+
+  <form>
+    <ul id="sortable-list" ic-put-to="/colors" ic-trigger-on="end" ic-indicator="#indicator">
+      <li>Blue <input type="hidden" name="colors" value="Blue"></li>
+      <li>Red <input type="hidden" name="colors" value="Red"></li>
+      <li>Green <input type="hidden" name="colors" value="Green"></li>
+      <li>Yellow <input type="hidden" name="colors" value="Yellow"></li>
+      <li>Purple <input type="hidden" name="colors" value="Purple"></li>
+    </ul>
+  </form>
+
+  <script>
+
+    //========================================================================
+    // Initialize the sortable list using SortableJS
+    //========================================================================
+    $(function(){
+        var list = document.getElementById("sortable-list");
+        Sortable.create(list); // That's all.
+    });
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/colors",
+      responseTime: 750,
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var colors = params['colors'];
+        this.responseText = colorListTemplate(colors);
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+    function colorListTemplate(colors) {
+      var txt = "";
+      for (var i = 0; i < colors.length; i++) {
+        var c = colors[i];
+        txt += '<li>' + c + ' <input type="hidden" name="colors" value="' + c + '"/></li>';
+      }
+      return txt;
+    }
+
+    //========================================================================
+    // Mock Data Store
+    //========================================================================
+    var colors = ["Blue", "Red", "Green", "Yellow", "Purple"];
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

@@ -1,0 +1,37 @@
+---
+layout: default
+nav: attributes > ic-sse-src
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-sse-src</code> - The Server Sent Event Source Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-sse-src</code> attribute binds a given HTML element to a given
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">Server Sent Event</a>
+        source.</p>
+
+      <p>When the Server Sent Event source sends a message, the content of that message will be swapped into the
+      element the attribute is on, using the swap strategy specified.</p>
+
+      <p>When the Server Sent Event source sends an event, any child elements listening for that event will
+        be triggered.</p>
+
+      <p>See <a href="/docs.html#sse">the documentation</a> for more details.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid relative path (e.g. <code>ic-src="/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-sse-src</code> has no effect on dependencies.</p>
+
+    </div>
+  </div>
+</div>

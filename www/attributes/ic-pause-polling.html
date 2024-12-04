@@ -1,0 +1,79 @@
+---
+layout: default
+nav: attributes > ic-poll
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-pause-polling</code> - The Pause Polling Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-pause-polling</code> attribute tells Intercooler to not poll in the presence of an <code>ic-poll</code>
+        attribute.  This can be used to implement a Pause/Play UI.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be <code>true</code> or <code>false</code></p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-pause-polling</code> has no dependency implications.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple Pause/Play UI that starts in a paused state, and can be started by clicking the play
+        button:</p>
+
+      <pre>
+  &lt;div ic-prepend-from="/poll" ic-poll="1s" ic-target="#content" ic-pause-polling="true">
+    &lt;div>
+      &lt;div class="btn btn-default" ic-post-to="/play">&lt;i class="fa fa-play">&lt;/i>&lt;/div>
+      &lt;div class="btn btn-default" ic-post-to="/pause">&lt;i class="fa fa-pause">&lt;/i>&lt;/div>
+    &lt;/div>
+    &lt;div id="content" ic-limit-children="5">
+    &lt;/div>
+  &lt;/div>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var pollCount = 1;
+            $.mockjax({
+              'url': '/poll',
+              'response': function () {
+                this.responseText = "<div>Poll request #" + pollCount++ + "</div>";
+              }
+            });
+            $.mockjax({
+              'url': '/pause',
+              "headers": {
+                "X-IC-CancelPolling": true
+              }
+            });
+            $.mockjax({
+              'url': '/play',
+              "headers": {
+                "X-IC-ResumePolling": true
+              }
+            });
+          })();
+        </script>
+        <div ic-prepend-from="/poll" ic-poll="1s" ic-target="#content" ic-pause-polling="true">
+          <div>
+            <div class="btn btn-default" ic-post-to="/play"><i class="fa fa-play"></i></div>
+            <div class="btn btn-default" ic-post-to="/pause"><i class="fa fa-pause"></i></div>
+          </div>
+          <div id="content" ic-limit-children="5">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

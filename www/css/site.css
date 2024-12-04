@@ -1,0 +1,247 @@
+.body-wrapper {
+  margin-top: 55px !important;
+}
+
+.jumbotron {
+  padding-bottom:32px !important;
+  padding-top: 42px !important;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Crete Round', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.navbar-brand {
+  padding-top: 20px;
+  font-family: 'Crete Round', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16pt;
+}
+
+p {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14pt;
+}
+
+ul {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+li {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13pt;
+  margin-top: 4px;
+}
+
+body {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14pt;
+}
+
+.red {
+  color: red;
+}
+
+.live-demo {
+  position: relative;
+  border: 1px solid #d3d3d3;
+  border-radius: 5px;
+  padding: 28px;
+  margin: 36px;
+}
+
+.live-demo:before {
+  position: absolute;
+  content: "Live Demo";
+  font-weight: bold;
+  top: -15px;
+  left: 10px;
+  padding: 2px 4px;
+  background-color: white;
+}
+
+.index-demo {
+  max-width: 500px;
+  margin: 32px auto;
+  padding: 32px;
+}
+
+pre.prettyprint {
+  max-width: 70%;
+  margin: 8px auto;
+}
+
+pre.special {
+  display: inline-block !important;
+  min-width: 50%;
+}
+
+code {
+  color: #008800;
+  background-color: #f5f5f5;
+}
+
+.navbar-nav>li>a {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.tutorial-overview {
+  padding: 8px 12px;
+}
+
+.intercooler-dot {
+  color: #26628E;
+}
+.intercooler-js {
+  color: #8EB3D0;
+}
+
+#icon1 {
+  margin-right:24px;
+  display: inline-block;
+}
+
+#icon2 {
+  display: none;
+}
+
+#little-lib {
+  font-size: 14px;
+  position: relative;
+  top: 12px;
+  left: -12px
+}
+
+.anchor {
+    display: block;
+    position: relative;
+    top: -70px;
+    visibility: hidden;
+}
+
+section p {
+  margin: 20px 32px;
+}
+
+section blockquote {
+  margin: 48px;
+}
+
+section blockquote p {
+  margin: 0;
+}
+
+section ul {
+  margin: 24px;
+}
+
+section table {
+  margin: 24px;
+}
+
+.toc {
+    display: inline-block;
+    margin: 42px 20px;
+    border: 1px solid #f5f5f5;
+    border-radius: 8px;
+    position: relative;
+    padding-top: 8px;
+    padding-right: 16px;
+}
+
+.toc h3 {
+    position: absolute;
+    top: -40px;
+    left: 16px;
+    background: white;
+    padding: 8px;
+}
+
+.toc li {
+    font-size: 16px;
+    list-style: none;
+}
+
+.demo-nav {
+  width: 290px;
+  margin: 20px auto;
+}
+.demo-nav li {
+  margin: 8px;
+}
+
+#src-pre {
+  width: 100%;
+  max-width: 100%;
+  margin: 16px;
+}
+
+@media (max-width: 992px) {
+  #icon1 {
+    display: none;
+  }
+
+  #icon2 {
+    height: 60px;
+    margin-right: 10px;
+    display: inline-block;
+  }
+
+  #little-lib {
+    font-size: 14px;
+    position: inherit;
+    display: block;
+    margin-top: 14px;
+  }
+}
+
+@media screen and (min-width: 0px) and (max-width: 992px) {
+  .jumbotron {
+    padding: 12px !important;
+  }
+  .jumbotron h1, .jumbotron .h1 {
+    font-size: 32px;
+  }
+  .toc{
+    display: none;
+  }
+  pre.special {
+    display: block !important;
+    max-width: 70%;
+    margin: 8px auto;
+  }
+  section p {
+    margin: 20px 4px;
+  }
+}
+
+section {
+  margin-bottom: 72px;
+}
+
+.blog-title {
+  margin-top: 32px;
+}
+
+.blog-section {
+  padding: 8px 16px;
+}
+
+.blog-col {
+  max-width: 768px;
+}
+
+.blog-summary {
+  margin-bottom: 24px;
+}
+
+.blog-summary div {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.blog-summary em {
+  border-bottom: 1px solid whitesmoke;
+}

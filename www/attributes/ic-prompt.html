@@ -1,0 +1,54 @@
+---
+layout: default
+nav: attributes > ic-prompt
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-prompt</code> - The Prompt Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-prompt</code> attribute tells Intercooler to prompt the user for input before issuing an AJAX
+        request.  The input is included in the <code>ic-prompt-value</code> parameter of the request.  If you wish
+        to change this, you can use the <code>ic-prompt-name</code> attribute to override it.</p>
+
+      <p>If the user cancels the prompt, no request will be made.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-prompt</code> attribute should be a string prompting the user for input. </p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p>The <code>ic-prompt</code> attribute has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <pre>
+  &lt;button ic-post-to="/target_url" ic-prompt="What's your name?">Click Me!&lt;/button>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            'url': '/target_url',
+            'response': function (settings) {
+              var params = parseParams(settings.data);
+              this.responseText = "Hi, " + params['your-name'] + "!";
+            }
+          });
+        </script>
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-prompt="What's your name?" ic-prompt-name="your-name">Click Me!</button>
+      </div>
+
+    </div>
+  </div>
+</div>

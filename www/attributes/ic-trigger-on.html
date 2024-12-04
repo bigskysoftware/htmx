@@ -1,0 +1,83 @@
+---
+layout: default
+nav: attributes > ic-trigger-on
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-trigger-on</code> - The Trigger On Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-trigger-on</code> attribute tells Intercooler to load the content of a <code>ic-src</code> attribute
+        when a given event occurs.</p>
+
+      <p>This can be used to implement infinite scrolling, lazy loading of elements, etc.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid JQuery event:</p>
+
+      <a href="http://api.jquery.com/category/events/">http://api.jquery.com/category/events/</a>
+
+      <p>The special event <code>scrolled-into-view</code> will fire when an element first scrolls into view.</p>
+
+      <p>The special event <code>timeout</code> allows you to trigger the request after a given interval (e.g.
+        <code>timeout:400ms</code> will fire after 400 milliseconds</p>
+
+      <p>The <code>changed</code> modifier can be added after the event name and a space.  Intercooler will only trigger a request
+      if the value of the element in question has changed if this modifier is present.</p>
+
+      <p>The <code>once</code> modifier can be added after the event name and a space.  Intercooler will only trigger a request
+      once for the given event if this modifier is present.</p>
+
+      <h4>Server Sent Events</h4>
+
+      <p>If a parent element has an <code>ic-sse-src</code> attribute on it, it is possible to use server sent
+      events to trigger an element by using the <code>sse:</code> prefix, followed by the event name.</p>
+
+      <p>See <a href="/docs.html#sse">the documentation</a> for more details.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-trigger-on</code> has no effect on dependencies.</p>
+
+      <h3>Multiple Events</h3>
+
+      <p><code>ic-trigger-on</code> supports multiple events, separated by a comma: <code>click, change</code></p>
+
+      <h3>Simple Example</h3>
+
+      <p>Here is a div with a header tag near the bottom that issues a request once it is scrolled into view:</p>
+
+      <pre>
+  &lt;h2>Scroll Down To Load &lt;i class="fa fa-arrow-down" style="margin-bottom:150%">&lt;/i> &lt;/h2>
+
+  &lt;h2 ic-src="/get_it" ic-trigger-on="scrolled-into-view">
+    Not Loaded Yet...
+  &lt;/h2>
+</pre>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              url: '/get_it',
+              responseTime: 1000,
+              responseText: "Loaded!!!"
+            });
+          })();
+        </script>
+
+        <h2>Scroll Down To Load <i class="fa fa-arrow-down" style="margin-bottom:150%"></i> </h2>
+
+        <h2 ic-src="/get_it" ic-trigger-on="scrolled-into-view">
+          Not Loaded Yet...
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>

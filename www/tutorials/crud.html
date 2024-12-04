@@ -1,0 +1,62 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Adding AJAX to a Rails CRUD UI With Intercooler</h1>
+
+      <p>This tutorial will show you how to add AJAX to a Rails CRUD UI using Intercooler.</p>
+
+      <h3>Video</h3>
+
+      <div class="text-center">
+        <iframe src="//player.vimeo.com/video/92261049" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+      </div>
+
+      <h3>Outline</h3>
+
+      <p>Here are the steps for converting a Rails CRUD UI into an AJAX UI</p>
+
+      <ul>
+        <li>
+          Add a reference to the the IntercoolerJS library from the <a href="/download.html">download</a> page.
+        </li>
+        <li>
+          Update the edit button to use the <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a> and
+          <a href="/attributes/ic-target.html"><code>ic-target</code> attributes.</a>
+        </li>
+        <li>
+          Update the controller to not render layouts for intercooler requests by using the <code>ic-request</code>
+          parameter.
+        </li>
+        <li>
+          Update the save button to use the <a href="/attributes/ic-put-to.html"><code>ic-put-to</code></a> and
+          <a href="/attributes/ic-target.html"><code>ic-target</code> attributes.</a>
+        </li>
+        <li>
+          Update the controller's <code>update</code> method to render partials correct.y
+        </li>
+        <li>
+          Set the location of the browser using the <a href="/responses.html"><code>X-IC-SetLocation</code></a> header.
+        </li>
+        <li>
+          Update the <code>new</code> and <code>create</code> UI and controller code in a similar manner.
+        </li>
+      </ul>
+
+      <h3>Git Diff</h3>
+
+      <p>Here is a diff between the standard Rails code and Intercooler-powered code:</p>
+
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/b425ad671746c34039bd84fc76bb7c11d6537b24">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/b425ad671746c34039bd84fc76bb7c11d6537b24
+      </a>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+name: IntercoolerJS - REST-ful data bindings for HTML
+pygments: false
+exclude:
+  - config
+  - Gemfile
+  - Gemfile.lock
+  - Capfile
+  - vendor

@@ -1,0 +1,43 @@
+---
+layout: default
+nav: attributes > ic-action-target
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-action-target</code> - The Action Target Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-action-target</code> overrides the standard <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+        attribute when deciding what element to target with the <a href="/attributes/ic-action.html"><code>ic-action</code></a>
+        attribute.
+      </p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-action-target</code> attribute can be:</p>
+      <ul>
+        <li>The string <code>this</code>, indicating that the element that the <code>ic-action-target</code> attribute
+          is on is the target</li>
+        <li>The string <code>closest </code> followed by a valid CSS selector, indicating that the
+          closest parent to the element satisfying the given css selector is the
+          target (e.g. <code>closest tr</code></li>
+        <li>The string <code>find </code> followed by a valid CSS selector, indicating that the
+          closest child satisfying the given css selector is the target (e.g. <code>closest .indicator-elt</code></li>
+        <li>A valid global CSS selector</li>
+      </ul>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-action-target</code> has no effect on dependencies.</p>
+
+    </div>
+  </div>
+</div>

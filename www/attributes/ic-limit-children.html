@@ -1,0 +1,53 @@
+---
+layout: default
+nav: attributes > ic-limit-children
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-limit-children</code> - The Limit Children Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-limit-children</code> allows you to limit the number of children an element can have
+      after a <code>ic-append-from</code> or <code>ic-prepend-from</code> fires.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid integer.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, using a poll interval to update:</p>
+
+      <pre>
+  &lt;ul ic-append-from="/list_src" ic-poll="2s" ic-limit-children="5">&lt;/ul>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              'url': '/list_src',
+              'response': function () {
+                function randIp() {
+                  function getOctet() {
+                    return Math.round(Math.random()*255);
+                  }
+1                  return getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet();
+                }
+                this.responseText = "<li>Being looked at by " + randIp() + "</li>";
+              }
+            });
+          })();
+        </script>
+        <ul ic-append-from="/list_src" ic-poll="2s" ic-limit-children="5"></ul>
+      </div>
+
+    </div>
+  </div>
+</div>

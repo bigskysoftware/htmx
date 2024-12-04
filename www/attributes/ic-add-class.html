@@ -1,0 +1,47 @@
+---
+layout: default
+nav: attributes > ic-add-class
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-add-class</code> - The Add Class Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-add-class</code> attribute allows you to add classes to an element after a specified delay.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute can be either a valid CSS class name, a valid CSS class name followed by a colon
+        followed by a time delay, or a comma separated list of either of these.</p>
+
+      <h3>Dependencies</h3>
+
+      <p>The <code>ic-add-class</code> attribute has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, which adds a 'fadeRed' class after 2 seconds and takes 10 seconds to
+      complete the transition.</p>
+
+      <pre>
+        &lt;h3 ic-add-class="fadeRed">This Will Fade Red&lt;/h3>
+      </pre>
+
+      <style>
+        .fadeRed {
+          color: red;
+          transition: color 10s;
+        }
+      </style>
+      <div class="live-demo">
+        <h3 ic-add-class="fadeRed:2s">This Will Fade Red</h3>
+      </div>
+
+    </div>
+  </div>
+</div>

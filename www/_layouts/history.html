@@ -1,0 +1,106 @@
+---
+layout: default
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>History Support</h1>
+
+      <p>This example demonstrates history support in intercooler.</p>
+
+      <p>As you click between the tabs, the URL and history will be updated correctly, allowing back button
+        support</p>
+
+      <ul>
+        <li>
+          The <code>content</code> div tells Intercooler that it should be snap-shotted for history, rather than the
+          body of the page, by using the
+          <a href="/attributes/ic-history-elt.html"><code>ic-history-elt</code></a>
+          attribute.  The element that is snap-shotted for history should be stable across your entire site
+          so that the UI can be reliably restored.
+        </li>
+        <li>
+          <p>
+            The navigation tabs parent <code>ul</code> targets a div with the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute.  This div encloses both the tabs and content, allowing the server side to render
+          a new tab state as well as the new content.
+          </p>
+
+          <p>
+            The key element on the <code>ul</code> that enables history support is the
+          <a href="/attributes/ic-push-url.html"><code>ic-push-url</code></a>
+          attribute, which tells Intercooler to push the url into the location bar, with a new history entry,
+          when a request is made.
+          </p>
+
+          <p>
+            Finally, because this nav is layered on top of actual pages, we use the
+          <a href="/attributes/ic-select-from-response.html"><code>ic-select-from-response</code></a>
+            attribute on the <code>ul</code> to pick out the content from within the response for the tab UI.
+          </p>
+        </li>
+        <li>
+          Each tab has an
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute which points to the page for each respective tab.  Because of the behavior inherited from the paren
+          <code>ul</code>, the request will target the content div, will pick out the content tab-specific content from
+          the response and will push a new entry into history.
+        </li>
+        <li>
+          We use some transition CSS to make the inner content (but not the tabs) fade in and out.
+        </li>
+      </ul>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+          <style>
+            #content.ic-transitioning div {
+              transition: all 800ms;
+              opacity: 0;
+            }
+            #content div {
+              transition: all 800ms;
+            }
+          </style>
+
+          {{content}}
+
+          <script>
+
+            //========================================================================
+            // Mock Server-Side HTTP End Point
+            //========================================================================
+            $.mockjax({
+              url: "/click_me",
+              response: function (settings) {
+                this.responseText = "You clicked me!";
+              }
+            });
+
+          </script>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

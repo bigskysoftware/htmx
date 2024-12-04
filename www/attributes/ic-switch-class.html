@@ -1,0 +1,69 @@
+---
+layout: default
+nav: attributes > ic-switch-class
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-switch-class</code> - The Switch Class Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-switch-class</code> attribute allows you to switch classes
+        between elements after a response has been received.  This allows you to
+        for example update a tab state without replacing the tabs in the server
+        response.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of this attribute should be the name of the class to be switched between sibling
+      elements and the attribute should be placed on the parent element.</p>
+
+      <h3>Dependencies</h3>
+
+      <p>The <code>ic-switch-class</code> attribute has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple bootstrap tab example.  Note that the body of the tabbed UI is
+      replaced with new HTML, but the tabs are not, since we are targeting <code>#content</code>.
+      The tabs update based on switching the class <code>active</code> between them.</p>
+
+      <pre>
+        &lt;ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+          &lt;li class="active">&lt;a ic-get-from="/tab1">Tab1&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab2">Tab2&lt;/a>&lt;/li>
+          &lt;li>&lt;a ic-get-from="/tab3">Tab3&lt;/a>&lt;/li>
+        &lt;/ul>
+        &lt;div id="content">
+          Tab 1
+        &lt;/div>
+      </pre>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var i = 0;
+            $.mockjax({'url': '/tab1', 'responseText': "Tab 1"});
+            $.mockjax({'url': '/tab2', 'responseText': "Tab 2"});
+            $.mockjax({'url': '/tab3', 'responseText': "Tab 3"});
+          })();
+        </script>
+
+        <ul class="nav nav-tabs" ic-target="#content" ic-switch-class="active">
+          <li class="active"><a ic-get-from="/tab1">Tab1</a></li>
+          <li><a ic-get-from="/tab2">Tab2</a></li>
+          <li><a ic-get-from="/tab3">Tab3</a></li>
+        </ul>
+        <div id="content">
+          Tab 1
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

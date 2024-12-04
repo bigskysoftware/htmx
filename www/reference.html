@@ -1,0 +1,415 @@
+---
+layout: default
+nav: attributes > all
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Intercooler Reference</h2>
+
+      <section>
+        <h3><i class="fa fa-code"></i> HTML Attributes</h3>
+
+        <table class="table table-striped table-hover">
+
+          <thead>
+            <tr>
+              <th style="width:120px;min-width:180px">Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td><a href="/attributes/ic-action.html">ic-action</a></td>
+              <td>This attribute allows you to make client-side modifications (e.g. element removal) to the DOM without
+                a server request.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-action-target.html">ic-action-target</a></td>
+              <td>This attribute allows you to change the target of a <code>ic-action</code> attribute </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-add-class.html">ic-add-class</a></td>
+              <td>This attribute allows you to add one or many classes to an element after a specified time delay.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-append-from.html">ic-append-from</a></td>
+              <td>When triggered this attribute will issue a <code>GET</code> and append all content returned to the
+                children of the element it is on.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-attr-src.html">ic-attr-src</a></td>
+              <td>Like <code>ic-style-src</code>, this attribute allows you bind to a URL. However, this attribute binds
+                an <strong>attribute value</strong> to a URL. The syntax is "<em>attribute</em>:<em>url</em>". For
+                example,
+                to bind the style of an element to "/style/random", you would say
+                <code>ic-attr-src="style:/style/random"</code></td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-confirm.html">ic-confirm</a></td>
+              <td>This attribute can be used to confirm an action with a user before proceeding.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-delete-from.html">ic-delete-from</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>DELETE</code> to the URL and replace the element with the new content.
+                Intercooler will detect any other elements that the <code>DELETE</code> effects and automatically refresh them.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-deps.html">ic-deps</a></td>
+              <td>This attribute allows you to express additional path dependencies for a given element, beyond the
+                <a href="docs.html#dependencies">implied ones</a>.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-disable-when-doc-hidden.html">ic-disable-when-doc-hidden</a></td>
+              <td>Disables requests when a document is hidden (e.g. for polling)</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-disable-when-doc-inactive.html">ic-disable-when-doc-inactive</a></td>
+              <td>Disables requests when a document is inactive, that is it does not have focus (e.g. for polling)</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-enhance.html">ic-enhance</a></td>
+              <td>This attribute tells intercooler to enhance all anchor tags and form tags that it founds, adding
+              the equivalent AJAX functionality to them.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-fix-ids.html">ic-fix-ids</a></td>
+              <td>This attribute tells Intercooler to replace the IDs of any added elements with globally unique IDs
+                so that they don't conflict with any existing IDs on the page.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-get-from.html">ic-get-from</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>GET</code> to the URL and replace the element with the new content.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-global-include.html">ic-global-include</a></td>
+              <td>This attribute can be used to add data to all requests made by Intercooler</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-global-indicator.html">ic-global-indicator</a></td>
+              <td>This attribute tells Intercooler to show the specified global indicator, in addition to whatever local
+              indicators an element might want shown.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-history-elt.html">ic-history-elt</a></td>
+              <td>This attribute attribute tells intercooler the element to take a snapshot of when storing history entries, as well as the element to restore history snapshots into.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-include.html">ic-include</a></td>
+              <td>A selector attribute that can be used to include additional input with an action request (e.g. can be
+                used to include a form with an unrelated button.)</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-indicator.html">ic-indicator</a></td>
+              <td>This attribute can be used to show a progress indicator while an Intercooler AJAX request is in flight.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-limit-children.html">ic-limit-children</a></td>
+              <td>Limits the number of children that an element is allowed to have after an <code>ic-prepend-from</code> or
+                <code>ic-append-from</code> fires.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-local-vars.html">ic-local-vars</a></td>
+              <td>A comma separated list of variables from <code>localStorage</code> to include intercooler requests.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-on-beforeSend.html">ic-on-beforeSend</a></td>
+              <td>This attribute allows a script to be evaluated during the beforeSend stage of AJAX requests
+                made on behalf of Intercooler.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-on-beforeTrigger.html">ic-on-beforeTrigger</a></td>
+              <td>This attribute allows a script to be evaluated before a trigger is processed.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-on-complete.html">ic-on-complete</a></td>
+              <td>This attribute allows a script to be evaluated after any AJAX requests
+                made on behalf of Intercooler.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-on-error.html">ic-on-error</a></td>
+              <td>This attribute allows a script to be evaluated after unsuccessful AJAX requests
+                made on behalf of Intercooler.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-on-success.html">ic-on-success</a></td>
+              <td>This attribute allows a script to be evaluated after successful AJAX requests
+                made on behalf of Intercooler.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-patch-to.html">ic-patch-to</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>PATCH</code> to the URL and replace the element with the new content.
+                Intercooler will detect any other elements that the <code>PATCH</code> effects and automatically refresh them.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-pause-polling.html">ic-pause-polling</a></td>
+              <td>If <code>true</code> then an <code>ic-poll</code> attribute will not start polling.  This can be
+              used to implement a Pause/Play UX.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-poll.html">ic-poll</a></td>
+              <td>This attribute tells Intercooler to poll the source URL for the element it is on in a given interval,
+                expressed as milliseconds or seconds.  (e.g. '500ms' or '2s')</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-poll-repeats.html">ic-poll-repeats</a></td>
+              <td>This attribute limit the number of polling calls  (e.g. '5')</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-post-errors-to.html">ic-post-errors-to</a></td>
+              <td>Allows you to specify a URL to post javascript errors to that occur when intercooler is making requests
+                and swapping content.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-post-to.html">ic-post-to</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>POST</code> to the URL and replace the element with the new content.
+                Intercooler will detect any other elements that the <code>POST</code> effects and automatically refresh them.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-prepend-from.html">ic-prepend-from</a></td>
+              <td>When triggered this attribute will issue a <code>GET</code> and prepend all content returned to the
+                children of the element it is on.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-prompt.html">ic-prompt</a></td>
+              <td>This attribute allows you to prompt the user before intercooler issues a request.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-push-url.html">ic-push-url</a></td>
+              <td>This attribute tells Intercooler to update the current location with the target URL of the element
+                after a successful AJAX request, with history support.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-push-params.html">ic-push-params</a></td>
+              <td>This attribute tells Intercooler to include the given parameters in the URL that is pushed via the
+                <code>ic-push-url</code> attribute.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-put-to.html">ic-put-to</a></td>
+              <td>This attribute allows you to bind the "action" of an element to a given URL. Once it is bound, when an
+                "action" occurs (e.g. clicking a button) Intercooler will issue
+                a <code>PUT</code> to the URL and replace the element with the new content.
+                Intercooler will detect any other elements that the <code>PUT</code> effects and automatically refresh them.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-remove-after.html">ic-remove-after</a></td>
+              <td>This attribute tells Intercooler to remove the element it is on after the given amount of time has elapsed.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-remove-class.html">ic-remove-class</a></td>
+              <td>This attribute allows you to remove one or many classes to an element after a specified time delay.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-replace-target.html">ic-replace-target</a></td>
+              <td>If this attribute is set to "true", the target element of the intercooler request will be replaced
+                entirely with the server response, rather than replacing the inner HTML of the element.  This is useful
+                in cases where you cannot wrap an element around a potential target easily, like table rows.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-scroll-offset.html">ic-scroll-offset</a></td>
+              <td>An offset in pixels to adjust the scroll position when using the <code>ic-scroll-to-target</code> attribute</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-scroll-to-target.html">ic-scroll-to-target</a></td>
+              <td>If this attribute is set to "true", the target element of the intercooler request will have its
+                top scrolled into the viewport if it is not visible. The scroll destination can be adjusted using
+                the <code>ic-scroll-offset</code> attribute.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-select-from-response.html">ic-select-from-response</a></td>
+              <td>This attribute tells Intercooler to filter the servers response to content matching the
+                given CSS selector.  This can be useful for making a full HTML response act like a partial response.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-src.html">ic-src</a></td>
+              <td>This attribute allows you to bind an element to a given URL. Once it is bound, when a change occurs that
+                Intercooler recognizes as affecting the URL (or given an event such as a poll), Intercooler will issue
+                a <code>GET</code> to the URL and replace the element with the new content.
+              </td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-sse-src.html">ic-sse-src</a></td>
+              <td>This attribute allows you to bind an element to a given Server Sent Event endpoint and update the
+              elements content or trigger Server Sent events on child elements.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-style-src.html">ic-style-src</a></td>
+              <td>Like <code>ic-src</code>, this attribute allows you bind to a URL. However, this attribute binds a
+                <strong>style</strong> attribute to a URL. The syntax is "<em>style-attribute</em>:<em>url</em>". For
+                example,
+                to bind the color of an element to "/color/random", you would say
+                <code>ic-style-src="color:/color/random"</code></td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-swap-style.html">ic-swap-style</a></td>
+              <td>Allows you to specify the swap mechanism that intercooler will use with content received from the
+              server</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-switch-class.html">ic-switch-class</a></td>
+              <td>Allows you to swap a class amongst sibling elements in a DOM when an intercooler event is triggered.
+              This can be used, for example, to switch an <code>active</code> class between tabs without replacing
+              the HTML.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-target.html">ic-target</a></td>
+              <td>This attribute is often used with an action attribute (e.g. <code>ic-post-to</code>) in order to target
+                the content of another element for replacement.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-transform-response.html">ic-transform-response</a></td>
+              <td>A javascript expression that transforms the given server response into HTML to be swapped into the
+              DOM</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-transition-duration.html">ic-transition-duration</a></td>
+              <td>An amount of time to wait between starting a transition and executing a content swap.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-trigger-delay.html">ic-trigger-delay</a></td>
+              <td>This attributes delays the execution of a trigger and, if the trigger occurs again within the
+                given interval, cancels the original trigger in favor of the new one, which will begin waiting
+                for the interval again.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-trigger-from.html">ic-trigger-from</a></td>
+              <td>This attribute can be used to listen for events on other elements in the DOM, or the document
+              or window.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-trigger-on.html">ic-trigger-on</a></td>
+              <td>This attributes changes the event on which the element is loaded via <code>ic-src</code>.  It can be
+                used to implement lazy loading of images or charts, infinite scrolling, etc.</td>
+            </tr>
+
+            <tr>
+              <td><a href="/attributes/ic-verb.html">ic-verb</a></td>
+              <td>This attribute allows you to override the HTTP verb to use in a request.</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h3><i class="fa fa-cloud-upload"></i> Request Parameters &amp; Headers</h3>
+        {% include request_api.html %}
+      </section>
+
+      <section>
+        <h3><i class="fa fa-cloud-download"></i> Response Headers</h3>
+        {% include response_api.html %}
+      </section>
+
+      <section>
+        <h3><i class="fa fa-smile-o"></i> Javascript Events</h3>
+        {% include events_api.html %}
+      </section>
+
+      <section>
+        <h3><i class="fa fa-frown-o"></i> Javascript API</h3>
+        {% include javascript_api.html %}
+      </section>
+
+      <section>
+        <h3><i class="fa fa-magic"></i> Meta Tags</h3>
+        <table class="table table-striped table-hover">
+
+          <thead>
+            <tr>
+              <th style="width:120px;min-width:180px">Meta Tag</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td><code>&lt;meta name="intercoolerjs:use-data-prefix" content="true"/></code></td>
+              <td>By setting this meta-tag value, you will be able to use the <code>data-*</code> prefix for all
+              intercooler attributes, making your HTML validatable.</td>
+            </tr>
+            <tr>
+              <td><code>&lt;meta name="intercoolerjs:use-actual-http-method" content="true"/></code></td>
+              <td>By default intercooler uses the <code>POST</code> HTTP method for all non-<code>GET</code> actions,
+              passing the actual method up with the <code>_method</code> parameter as well as the <code>X-HTTP-Method-Override</code>
+              header, in order to support browsers with incomplete AJAX implementations.  If you wish to use the actual
+              HTTP method in the AJAX call (e.g. <code>DELETE</code>) and not worry about legacy browswers, you can set
+              this meta-tag value to "true".</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </div>
+
+</div>

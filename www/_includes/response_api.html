@@ -1,0 +1,130 @@
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th style="width:360px">Header</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>X-IC-Trigger</code>
+      </td>
+      <td>
+        Allows you to <a href="http://api.jquery.com/trigger/">trigger a JQuery event handler</a> on the client
+        side.  The value of this header can either be a plain string for the event name, or a JSON object that satisfies
+        the jQuery <a href="http://api.jquery.com/jQuery.parseJSON/"><code>parseJSon()</code></a> requirements, where each
+        property is an event name to trigger, and the value of each property is an array of arguments to pass to that
+        event.</td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Refresh</code>
+      </td>
+      <td>
+        A comma separated list of dependency paths to refresh.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Redirect</code>
+      </td>
+      <td>
+        Causes a client-side redirect to the given URL.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Script</code>
+      </td>
+      <td>
+        Allows you to evaluate arbitrary javascript.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-CancelPolling</code>
+      </td>
+      <td>
+        Cancels any polling associated with the target element or parent thereof.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-ResumePolling</code>
+      </td>
+      <td>
+        Restarts any polling associated with the target element or parent thereof.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-SetPollInterval</code>
+      </td>
+      <td>
+        Sets the polling interval to the given value for the target element or parent thereof.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Open</code>
+      </td>
+      <td>
+        Opens a new window at the given location.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-PushURL</code>
+      </td>
+      <td>
+        Sets a new location for the page and saves the history of the element being replaced.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Remove</code>
+      </td>
+      <td>
+        Removes the target element.  The value of this header can either be <code>true</code> in which case the
+        element is removed immediately or a numeric time delay (e.g. <code>750ms</code> or <code>2s</code>) in which case
+        it will be removed after the given amount of time.  If there is a delay the <code>ic-removing</code> class
+        will be added to the element, allowing for a CSS3 animation to be applied prior to the elements removal.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Title</code>
+      </td>
+      <td>
+        Sets the title of the page/document to the given header value. Please note that only ASCII characters are guaranteed to work. 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Title-Encoded</code>
+      </td>
+      <td>
+        The same as <code>X-IC-Title</code> but the value is expected to be URI encoded
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Title-Encoded</code>
+      </td>
+      <td>
+        URI decodes the given header value and sets the title of the page/document to the decoded value. Use this header if you need to show UTF-8 characters in the title.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-IC-Set-Local-Vars</code>
+      </td>
+      <td>
+        A JSON object that will be used to set values in the client side <code>localStorage</code> object.
+        Can be used in conjunction with the <code>ic-local-vars</code> attribute to maintain client-side state
+        across requests.
+      </td>
+    </tr>
+  </tbody>
+</table>

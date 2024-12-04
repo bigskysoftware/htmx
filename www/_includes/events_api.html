@@ -1,0 +1,127 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>log.ic(evt, msg, level, elt)</code>
+      </td>
+      <td>
+        Event fired when log messages occur internally in intercooler (can be used to debug specific
+        DOM elements.)
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeAjaxSend.ic(evt, ajaxSetting, elt)</code>
+      </td>
+      <td>
+        Fired on the document before every AJAX request, allowing you to modify the settings object (e.g. to add
+        or remove parameter or headers, change content types, etc.)  You can cancel the request by setting the
+        <code>cancel</code> property of the ajaxSettings object to <code>true</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeHeaders.ic(evt, elt, xhr)</code>
+      </td>
+      <td>
+        Triggered before intercooler headers are processed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>afterHeaders.ic(evt, elt, xhr)</code>
+      </td>
+      <td>
+        Triggered after intercooler headers are processed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeSend.ic(evt, elt, data, settings, xhr, requestId)</code>
+      </td>
+      <td>
+        Triggered before sending an intercooler AJAX request to the server.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>success.ic(evt, elt, data, textStatus, xhr, requestId)</code>
+      </td>
+      <td>
+        Triggered after a successful intercooler request is received
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>after.success.ic(evt, elt, data, textStatus, xhr, requestId)</code>
+      </td>
+      <td>
+        After headers are processed and the swapping mechanism has begun
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>error.ic(evt, elt, status, str, xhr)</code>
+      </td>
+      <td>
+        Triggered after an error occurs during an intercooler request
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>complete.ic(evt, elt, data, status, xhr, requestId)</code>
+      </td>
+      <td>
+        Triggered after an intercooler request completes, regardless of status. This event is triggered on the
+        <code>body</code> tag.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>onPoll.ic(evt, elt)</code>
+      </td>
+      <td>
+        Triggered before a poll request is dispatched
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>handle.onpopstate.ic(evt)</code>
+      </td>
+      <td>
+        Triggered when intercooler handles an onpopstate event. Triggered on the document body.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>elementAdded.ic(evt)</code>
+      </td>
+      <td>
+        Triggered on an element when it is processed by intercooler.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>pushUrl.ic(evt, target, data)</code>
+      </td>
+      <td>
+        Triggered when a URL is pushed
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>beforeHistorySnapshot.ic(evt, target)</code>
+      </td>
+      <td>
+        Triggered before a snapshot is taken for history.  Can be used to unwire javascript-based widgets that have
+        messed the DOM up after insert.
+      </td>
+    </tr>
+  </tbody>
+</table>

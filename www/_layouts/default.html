@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/images/Intercooler_CMYK_noType_ico.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple AJAX using HTML attributes">
+  <meta name="author" content="Carson Gross">
+
+  <meta property="og:title" content="Simple AJAX using HTML attributes"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://intercoolerjs.org"/>
+  <meta property="og:site_name" content="Intercooler.js"/>
+  <meta property="og:image" content="http://intercoolerjs.org/images/Intercooler_CMYK_noType_ico.png" />
+
+  {% if page.title %}
+  <title>{{page.title}}</title>
+  {% else %}
+  <title>intercooler.js - Simple AJAX using HTML attributes</title>
+  {% endif %}
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+  <link href="/css/site.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/release/lib/jquery.mockjax-2.2.1.js"></script>
+  <script>
+    $.mockjaxSettings['responseTime'] = 100;
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+  </script>
+  <script type="text/javascript" src="/release/intercooler-1.2.3.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">intercooler<span class="intercooler-dot">.</span><span class="intercooler-js">js</span></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="{% active docs %}"><a href="/docs.html">Guide</a></li>
+              <li class="{% active tutorial %}"><a href="/examples/index.html">Examples</a></li>
+              <li class="{% active attributes %}"><a href="/reference.html">Reference</a></li>
+              <li class="{% active blog %}" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Talk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="mailto:intercoolerjs@gmail.com?subject=intercooler.js Consulting">Consulting Contact</a></li>
+                  <li><a href="https://gitter.im/intercooler-js/Lobby" target="_blank">Gitter</a></li>
+                  <li><a href="https://groups.google.com/forum/#!forum/intercooler-js" target="_blank">Newsgroup</a></li>
+                  <li><a href="https://github.com/intercoolerjs/intercooler-js/issues" target="_blank">Bugs</a></li>
+                  <li><a href="/blog.html">Blog</a></li>
+                </ul>
+              </li>
+              <li class="{% active download %}"><a href="/download.html">Download</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://github.com/intercoolerjs/intercooler-js"><i class="fa fa-github"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="body-wrapper">
+  {{content}}
+</div>
+
+<div class="container">
+  <hr>
+  <footer>
+    <p>
+      &copy; <a href="http://intercoolerjs.org">IntercoolerJS.org</a> 2013-{{ 'now' | date: "%Y" }}
+    </p>
+  </footer>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20364649-2', 'intercoolerjs.org');
+  ga('send', 'pageview');
+</script>
+<script>
+  $('pre').addClass('prettyprint');
+</script>
+<script src="/js/google-code-prettify/run_prettify.js?lang=css&skin=desert"></script>
+</body>
+</html>

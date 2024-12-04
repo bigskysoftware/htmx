@@ -1,0 +1,25 @@
+---
+layout: default
+---
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <h3>Obsolete Examples Page</h3>
+
+            <p>This page is no longer up to date.</p>
+
+            <p>Redirecting to the <a href="/examples/index.html">New Examples Page</a> in 3 seconds...</p>
+
+            <script>
+                $(function () {
+                    // Handler for .ready() called.
+                    window.setTimeout(function () {
+                        location.href = "/examples/index.html";
+                    }, 3000);
+                });
+            </script>
+        </div>
+    </div>
+</div>

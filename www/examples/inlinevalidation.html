@@ -1,0 +1,129 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Inline Form Validation</h1>
+
+      <p>This example validates an email address format and uniqueness (only test@test.com will work) when
+      the input fires a 'change' event.  </p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          A intercooler-based form tag is being used.
+        </li>
+        <li>
+          Within the form tag is an input for an email that does server side validation.  It does this by using a
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          to post the email to the server when the input changes.  It targets the enclosing div tag, using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute and the <code>closest</code> syntax.  Because we need to replace the entire div to get the proper
+          styling, the
+          <a href="/attributes/ic-replace-target.html"><code>ic-replace-target</code></a>
+          attribute is set to <code>true</code>
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <h3>Contact Info</h3>
+
+  <form ic-post-to="/contact">
+    <div class="form-group">
+      <label class="control-label">Email Address <i id="email-ind" class="fa fa-spinner fa-spin" style="display:none"></i> </label>
+      <input class="form-control" name="email"
+             ic-post-to="/contact/email" ic-target="closest div"
+             ic-replace-target="true" ic-indicator="#email-ind">
+    </div>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" class="form-control" name="firstName">
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" class="form-control" name="lastName">
+    </div>
+    <button class="btn btn-default">Submit</button>
+  </form>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/contact",
+      response: function (settings) {
+        this.responseText = formTemplate();
+      }
+    });
+
+    $.mockjax({
+      url: "/contact/email",
+      responseTime: 450 ,
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var email = params['email'];
+        if(!/\S+@\S+\.\S+/.test(email)) {
+          this.responseText = emailInputTemplate(email, "Please enter a valid email address");
+        } else if(email != "test@test.com") {
+          this.responseText = emailInputTemplate(email, "That email is already taken.  Please enter another email.");
+        } else {
+          this.responseText = emailInputTemplate(email, null);
+        }
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+
+    var originalForm = $('form').html();
+    function formTemplate() {
+      return originalForm;
+    }
+
+    function emailInputTemplate(val, errorMsg) {
+      return '<div id="email-div" class="form-group has-' + (errorMsg ? 'error' : 'success') + ' has-feedback"> \
+               <label class="control-label">Email Address</label> \
+               <input class="form-control" name="email" ic-replace-target="true" \
+                      ic-post-to="/contact/email" ic-target="#email-div" value="' + val + '">' +
+               (errorMsg ? '<span class="help-block text-error">' + errorMsg + '</span>' : "") +
+             '</div>';
+    }
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

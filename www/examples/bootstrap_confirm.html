@@ -1,0 +1,106 @@
+---
+layout: default
+nav: tutorial
+---
+<script src="bootstrap-dialog.js"></script>
+<link href="bootstrap-dialog.css" type="text/css" rel="stylesheet" />
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Bootstrap Confirm</h1>
+
+      <p>This demo shows how to use Bootstrap confirmation dialogs with intercooler by using a custom event, fired when
+        the confirm button is clicked on.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The <code>#confirm-me</code> div is wired into the bootstrap confirmation library via a standard
+          jQuery <code>click</code> event handler.  This div also has a standard <code>ic-post-to</code> declaration,
+          as well as an <code>ic-trigger-on</code> attribute which is set to the custom
+          <code>confirmed-by-user</code> event.
+        </li>
+        <li>
+          When the "Confirm" button is clicked on the bootstrap dialog, the <code>confirmed-by-user</code> event is
+          triggered on the <code>#confirm-me</code> div, triggering an intercooler request.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+
+        <div role="tabpanel" class="tab-pane active" id="demo">
+          <div id="confirm-me"
+               class="btn btn-primary"
+               ic-post-to="/click"
+               ic-trigger-on="confirmed-by-user">
+            Click Me
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display: none;"></i>
+          </div>
+
+          <script>
+            $(function () {
+              $('#confirm-me').click(function () {
+                BootstrapDialog.show(
+                  {
+                    message: 'Are you sure you want to proceed?',
+                    buttons: [
+                      {
+                        label: 'Confirm',
+                        cssClass: 'btn-primary',
+                        action: function (dialogItself) {
+                          dialogItself.close();
+                          $('#confirm-me').trigger('confirmed-by-user'); // this lines up with the ic-trigger name on the element
+                        }
+                      },
+                      {
+                        icon: 'glyphicon glyphicon-ban-circle',
+                        label: 'Cancel',
+                        cssClass: 'btn-warning',
+                        action: function (dialogItself) {
+                          dialogItself.close();
+                        }
+                      }]
+                  });
+              })
+            });
+
+            $.mockjax({
+              url: "/click",
+              responseTime: 1500,
+              response: function (settings) {
+                this.responseText = "Confirmed Click!";
+              }
+            });
+          </script>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

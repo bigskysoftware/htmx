@@ -1,0 +1,99 @@
+---
+layout: default
+nav: tutorial
+---
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Modifying Requests</h1>
+
+      <p>This demo shows how to modify intercooler requests on the client side using Javascript</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          You can add a listener for the <code>beforeAjaxSend.ic</code> event on the <code>document</code> object.  This
+          will be passed in the <a href="http://api.jquery.com/jQuery.ajax/">ajax setup hash</a> which you can modify
+          to add headers, parameters, etc.  By setting the <code>cancel</code> property to true, you will cancel the
+          ajax request.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+          <a class="btn btn-default" ic-post-to="/req" ic-target="#response" data-custom-data="myCustomData">Send Request...</a>
+
+          <div>
+            <label>
+              <input type="checkbox" id="stop-request"> Stop Requests
+            </label>
+          </div>
+
+          <h2>Response:</h2>
+          <div id="response">
+          </div>
+
+  <script>
+
+    $(function(){
+      $(document).on('beforeAjaxSend.ic', function(event, ajaxSetup, elt){
+
+        // Add a parameter
+        ajaxSetup.data = ajaxSetup.data + "&timestamp_from_javascript=" + new Date().getTime().toString();
+
+        // Add a custom HTTP header
+        ajaxSetup.headers['X-My-Custom-Header'] = "A header value";
+
+        // Cancel the requests if the "Stop Request" checkbox is checked
+        ajaxSetup.cancel = $('#stop-request').is(":checked");
+
+        // Add some custom data from the triggered element
+        ajaxSetup.data = ajaxSetup.data + "&from_elt=" + elt.data('custom-data');
+
+      });
+    });
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/req",
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var str = "<h4>Parameters</h4><ul>";
+        for (var property in params) {
+          str += "<li><strong>" + property + "</strong>: " + params[property] + "</li>"
+        }
+        this.responseText =  str + "</ul>"
+      }
+    });
+
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

@@ -1,0 +1,59 @@
+---
+layout: default
+nav: attributes > ic-indicator
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-indicator</code> - The Global Indicator Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The global indicator attribute can be used to show an indicator while a request is in process.  This
+      indicator will be shown in addition to any local request indicators otherwise specified.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid selector of the indicator element to show, or
+      <code>false</code> if you wish for an element to not show a global indicator specified on a
+      parent element.</p>
+
+      <h3>Example</h3>
+
+<pre>
+  &lt;div ic-global-indicator="#indicator">
+    &lt;button ic-post-to="/target_url" >
+      Click Me!
+      &lt;i class="fa fa-spinner fa-spin ic-indicator" style="display:none">&lt;/i>
+    &lt;/button>
+    &lt;br/>
+    Global Indicator: &lt;i id="indicator" class="fa fa-spinner fa-spin" style="display:none">&lt;/i>
+  &lt;/div>
+</pre>
+
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            'url': '/target_url',
+            responseTime: 1500
+          });
+        </script>
+
+        <div ic-global-indicator="#indicator">
+        <button ic-post-to="/target_url" >
+        Click Me!
+        <i class="fa fa-spinner fa-spin ic-indicator" style="display:none"></i>
+        </button>
+
+          <br/>
+
+        Global Indicator: <i id="indicator" class="fa fa-spinner fa-spin" style="display:none"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

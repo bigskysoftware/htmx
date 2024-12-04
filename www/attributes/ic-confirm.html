@@ -1,0 +1,51 @@
+---
+layout: default
+nav: attributes > ic-confirm
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-confirm</code> - The Confirm Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-confirm</code> attribute tells Intercooler to confirm the action with the user using the
+        string of the attribute and the javascript <code>confirm()</code> function.</p>
+
+      <p>This can be useful when you want to confirm destructive operations, such as a delete.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-verb</code> attribute should be a string asking the user to confirm the given action.
+      </p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p>The <code>ic-confirm</code> attribute has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <pre>
+  &lt;button ic-post-to="/target_url" ic-confirm="Are you sure?">Click Me!&lt;/button>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            'url': '/target_url',
+            responseText: "Confirmed!!"
+          });
+        </script>
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-confirm="Are you sure?">Click Me!</button>
+      </div>
+
+    </div>
+  </div>
+</div>

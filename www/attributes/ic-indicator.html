@@ -1,0 +1,99 @@
+---
+layout: default
+nav: attributes > ic-indicator
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-indicator</code> - The Indicator Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The indicator attribute can be used to show an indicator while a request is in process.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid selector of the indicator element to show</p>
+
+      <p>You can also use the <code>ic-indicator</code> CSS class on elements <em>within</em> an element
+      to specify an indicator.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h4>CSS-based Indicators</h4>
+
+      <p>Normally request indicators are show via the <code>$.show()</code> function.  If you wish to use a CSS
+      transition instead, you can add the <code>ic-use-transition</code> class to the indicator instead.  If
+      this class is on the indicator, it will be <em>removed</em> while a request is in flight and then
+      readded when the request is over.</p>
+
+      <h3>Examples</h3>
+
+      <h4>Show/Hide Example</h4>
+
+      <p>Here is a simple example of an indicator next to a button:</p>
+
+<pre>
+  &lt;button ic-post-to="/target_url" ic-indicator="#indicator">
+    Click Me!
+  &lt;/button>
+
+  &lt;i id="indicator" class="fa fa-spinner fa-spin" style="display:none">&lt;/i>
+</pre>
+
+
+      <div class="live-demo">
+        <script>
+          $.mockjax({
+            'url': '/target_url',
+            responseTime: 1500
+          });
+        </script>
+
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-indicator="#indicator">
+          Click Me!
+        </button>
+
+        <i id="indicator" class="fa fa-spinner fa-spin" style="display:none"></i>
+      </div>
+
+      <h4>CSS Example</h4>
+
+      <p>Here is a simple example of an indicator next to a button that uses a CSS transition:</p>
+
+<pre>
+  &lt;button ic-post-to="/target_url" ic-indicator="#indicator">
+    Click Me!
+  &lt;/button>
+
+  &lt;i id="indicator" class="fa fa-spinner fa-spin ic-use-transition">&lt;/i>
+</pre>
+
+
+      <div class="live-demo">
+        <style>
+          .css-demo.ic-use-transition {
+            opacity: 0;
+            font-size: 8px;
+          }
+          .css-demo {
+            opacity: 1;
+            font-size: 25px;
+            transition: all 500ms;
+          }
+        </style>
+
+        <button class="btn btn-lg btn-primary" ic-post-to="/target_url" ic-indicator="#indicator-css">
+          Click Me!
+        </button>
+
+        <i id="indicator-css" class="css-demo fa fa-spinner fa-spin ic-use-transition"></i>
+      </div>
+
+    </div>
+  </div>
+</div>

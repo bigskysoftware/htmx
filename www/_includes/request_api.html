@@ -1,0 +1,123 @@
+<h4>Parameters</h4>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th style="width:360px">Parameter</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>ic-request</code>
+      </td>
+      <td>
+        This will always be <code>true</code> for intercooler requests.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>_method</code>
+      </td>
+      <td>
+        Because not all browsers support <code>PUT</code> and <code>DELETE</code> requests
+        in AJAX, intercooler uses the Rails convention and adds a <code>_method</code> parameter to the request
+        whose
+        value will be the HTTP Method type (e.g. <code>DELETE</code>).
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-element-id</code>
+      </td>
+      <td>
+        The HTML id of the element that caused the request, that is the element that has the <code>ic-post-to</code>
+        or similar attribute on it.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-element-name</code>
+      </td>
+      <td>
+        The HTML name of the element that caused the request, that is the element that has the <code>ic-post-to</code>
+        or similar attribute on it.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-target-id</code>
+      </td>
+      <td>
+        The ID of the target element of the request.  This can be used to figure out which bit of partial HTML to
+        render, if a given URL is used to target different areas depending on the context.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-trigger-id</code>
+      </td>
+      <td>
+        The ID of the target that initially triggered the request.  This can be different than the element that
+        caused the request: it could be a child element.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-trigger-name</code>
+      </td>
+      <td>
+        The HTML name of the target that initially triggered the request.  This can be different than the element that
+        caused the request: it could be a child element.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-current-url</code>
+      </td>
+      <td>
+        The current URL of the page.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ic-prompt-value</code>
+      </td>
+      <td>
+        The user input from the javascript prompt if the <code><a href="/attributes/ic-prompt.html">ic-prompt</a>
+        attribute is used</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Headers</h4>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th style="width:360px">Header</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>X-IC-Request</code>
+      </td>
+      <td>
+        Set to <code>true</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>X-HTTP-Method-Override</code>
+      </td>
+      <td>
+        Set to the HTTP Method type (e.g. <code>DELETE</code>) for the request, to communicate the actual
+        request type to the server if it cannot be directly supported by the client.
+      </td>
+    </tr>
+  </tbody>
+</table>

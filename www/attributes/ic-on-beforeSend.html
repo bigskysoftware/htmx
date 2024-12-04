@@ -1,0 +1,38 @@
+---
+layout: default
+nav: attributes > ic-on-beforeSend
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-on-beforeSend</code> - JQuery AJAX Request life cycle attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>This attribute is a javascript expression that will be evaluated before an AJAX request is initiated on behalf
+        of Intercooler. It corresponds to the <code>beforeSend</code> property in JQuery's <code>ajax()</code> method.
+      </p>
+
+      <h3>Syntax</h3>
+
+      <p>This attribute is a valid javascript expression, evaluated within an isolated scope.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <p>Available symbols are:</p>
+      <ul>
+        <li><code>data</code> - The data to be send to the server</li>
+        <li><code>settings</code> - The AJAX settings object</li>
+        <li><code>xhr</code> - The XHR object</li>
+      </ul>
+
+      <p>The <code>ic-on-beforeSend</code> can be placed on an parent element, allowing general request processing
+      for an entire page.  Intercooler will find the closest element with this attribute and evaluate it.</p>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,85 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <h1>Local Prototyping &amp; Content</h1>
+
+  <p>If you wish to prototype intercooler interfaces locally, with no server, or if you wish to avoid server round
+    trips for certain elements, you can take advantage of the prototyping system built into intercooler:</p>
+
+  <ul>
+    <li>
+      Demarcate a section of HTML to be ignored by intercooler by applying the <code>ic-ignore</code> class to it.
+      No content will be processed in this section, so you can use intercooler attributes without risk of triggering
+      things like polling, event support, etc.
+    </li>
+    <li>
+      Within this section, you can create elements with unique ID's that hold the prototype HTML content you want
+      swapped in via an intercooler request.
+    </li>
+    <li>
+      In your active UI, you can refer to these elements using a
+      <a href="http://en.wikipedia.org/wiki/Fragment_identifier">fragment identifier</a> corresponding to the
+      element's ID.
+    </li>
+    <li>
+      You can use <code>ic-local-*</code> attributes to return status codes or custom intercooler headers to
+      more fully simulate server requests.
+    </li>
+    <li>
+      Depending on where you are in development, you may want to hide the <code>ic-ignore</code> section, to better
+      visually simulate your UX.
+    </li>
+  </ul>
+
+  <p>Using this technique, you can build prototype or local-content UX with no Javascript whatsoever!</p>
+
+  <div>
+    <ul class="demo-nav nav nav-pills">
+      <li role="presentation" class="active">
+        <a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live Demo</a>
+      </li>
+      <li role="presentation">
+        <a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="demo">
+
+      <div ic-on-error="alert('oh no!')">
+        <div class="btn btn-default" ic-get-from="#hello_world">Click me</div>
+        <div class="btn btn-default" ic-get-from="#error_example">Don't Click me</div>
+      </div>
+
+
+      <hr/>
+      <h3>HTML For Responses:</h3>
+
+      <div class="ic-ignore panel">
+
+        <div id="hello_world">
+          Hello, world
+        </div>
+
+        <div id="error_example" ic-local-status="500 Server Error">
+          Goodbye, world
+        </div>
+      </div>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="code">
+      <pre id="src-pre"></pre>
+    </div>
+
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

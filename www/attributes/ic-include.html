@@ -1,0 +1,71 @@
+---
+layout: default
+nav: attributes > ic-include
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-include</code> - The Include Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-include</code> attribute tells Intercooler to include additional parameters in a request that
+        it makes to the server, allowing you to pass up additional UI information to the server.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-include</code> attribute can either be a CSS/JQuery element selector of elements
+        to include in the request or a JSON object of name/value pairs to include.  If it is a JSON object, it must
+      satisfy the <a href="http://api.jquery.com/jquery.parsejson/">jQuery parseJSON() requirements</a>.</p>
+
+      <p>This attribute may be placed on parent elements, allowing you to specify behavior across
+        multiple elements.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-include</code> has no effect on dependencies.</p>
+
+      <h3>Example</h3>
+
+      <p>In this example, the button includes the value of the input when it POSTs to the server.</p>
+
+      <pre>
+  &lt;div ic-src="/update">Please Enter A Name...&lt;/div>
+  &lt;input id="name" name="name"/>
+  &lt;button ic-post-to="/update" ic-include="#name">Upload Name&lt;/button>
+      </pre>
+
+      <p>Note that the response to the button click is the content to swap in for the <em>div</em>, not the button.</p>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var name = '';
+            $.mockjax({
+              'url': '/update',
+              'response' : function(settings) {
+                if(settings.type == "GET") {
+                  if(name == "") {
+                    this.responseText = 'Please Enter A Valid Name...'
+                  } else {
+                    this.responseText = 'Great Name: ' + name
+                  }
+                } else {
+                  var params = parseParams(settings.data);
+                  name = params['name'];
+                }
+              }
+            });
+          })();
+        </script>
+        <div ic-src="/update">Please Enter A Name...</div>
+        <input id="name" name="name"/>
+        <button class="btn btn-lg btn-primary" ic-post-to="/update" ic-include="#name">Upload Name</button>
+      </div>
+
+    </div>
+  </div>
+</div>

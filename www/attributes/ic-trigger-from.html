@@ -1,0 +1,54 @@
+---
+layout: default
+nav: attributes > ic-trigger-from
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-trigger-from</code> - The Trigger From Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-trigger-from</code> attribute tells Intercooler to watch another element in the DOM for
+      events that will trigger a request.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be either <code>document</code>, <code>window</code> or a valid
+      jQuery selector for the element.</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-trigger-from</code> has no effect on dependencies.</p>
+
+      <h3>Simple Example</h3>
+
+      <p>Here is a div that is triggered by the click event of an otherwise unrelated button:</p>
+
+      <pre>
+  &lt;button id="myButton">Click Me&lt;/button>
+  &lt;div ic-get-from="/get_it" ic-trigger-from="#myButton">
+    Not Loaded Yet...
+  &lt;/div>
+</pre>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({ url: '/get_it', responseText: "Loaded!!!"});
+          })();
+        </script>
+
+        <button id="myButton">Click Me</button>
+        <div ic-get-from="/get_it" ic-trigger-from="#myButton">
+          Not Loaded Yet...
+          <i class="ic-indicator fa fa-spinner fa-spin" style="display:none"></i>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,162 @@
+---
+layout: default
+nav: attributes > ic-action
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-action</code> - The Action Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-action</code> attribute tells Intercooler to perform a client side action
+        when the element is triggered via the normal triggering mechanism, against the specified
+        target.</p>
+
+      <p>This attribute allows you to make modifications to the client-side DOM without a server
+      request, while using the declarative mechansims of Intercooler.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the <code>ic-action</code> attribute is a list of commands, separated by
+      the semi-colon character.</p>
+
+      <p>Each command consists of a function name, followed by:</p>
+
+      <ul>
+        <li>
+          Nothing, if there are no arguments to the function:
+          <pre>
+// equivalent to $(elt).remove();
+
+&lt;div ic-action="remove">Remove Me&lt;/div></pre>
+        </li>
+        <li>
+          A colon followed by an unquoted string, if there is a single string argument to the function:
+          <pre>
+// equivalent to $(elt).toggleClass("example-class"), note the lack of quotes
+
+&lt;div ic-action="toggleClass:example-class">Toggle Class&lt;/div></pre>
+        </li>
+        <li>
+          A comma separated list of arguments to the function (strings must be quoted in this form):
+          <pre>
+// equivalent to $(elt).effect('highlight', {color: '#99ff99'}, 1500), note that quotes are required for strings
+
+&lt;div ic-action="effect:'highlight', {color: '#99ff99'}, 1500">Highlight Green&lt;/div></pre>
+        </li>
+      </ul>
+
+
+      <p>Valid commands are any jQuery method that can be invoked on the target element (e.g. <code>fadeOut</code>)
+        as well as the special <code>delay</code> command.  The <code>delay</code> command takes an argument
+        specifying an amount of time to wait (a number with either with a 'ms' or 's' suffix) and
+        will delay the execution of the immediately following command by the specified amount.  This can be used,
+        for example, to give a CSS transition time to complete before executing another action.
+      </p>
+
+      <p>Each command will be executed with a 420ms delay between them, unless otherwise specified by a <code>delay</code>
+      command. (420 milliseconds is a bit longer than the standard jQuery animation time.)</p>
+
+      <h3>Why Not Just Use jQuery handlers?  Or <code>onclick</code>?</h3>
+
+      <p>This command syntax allows you to execute client side code using a declarative syntax and leveraging the
+      existing intercooler attributes (e.g. <code>ic-target</code>, <code>ic-confirm</code>, etc.)</p>
+
+      <p>It is more expressive than regular javascript, supporting linear, declarative commands, rather than requiring
+        complex callback expressions or multiple calls to <code>setTimeout()</code>.</p>
+
+      <p>It does not handle all UX cases, of course, but does allow you to capture many common UI/UX needs using a small
+      and simple syntax.</p>
+
+      <h3>AJAX Lifecycle Integrated Actions</h3>
+
+      There are four additional <code>action</code> attributes:
+
+      <ul>
+        <li>
+          <code>ic-beforeSend-action</code>
+          <code>ic-success-action</code>
+          <code>ic-error-action</code>
+          <code>ic-complete-action</code>
+        </li>
+      </ul>
+
+      These actions are fired during the jQuery AJAX life cycle.
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-action</code> has no effect on dependencies.</p>
+
+      <h3>Examples</h3>
+
+      <p>Here are some button examples of <code>ic-action</code> in, er, action:</p>
+
+      <style>
+        .fadeMe {
+          opacity: 0;
+          transition: all 1s ease;
+        }
+      </style>
+
+      <div>
+        <ul>
+          <li>
+            Fade out and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="fadeOut;remove">Code: fadeOut;remove</div>
+          </li>
+          <li>
+            Remove the button:<br/>
+            <div class="btn btn-primary" ic-action="remove">Code: remove</div>
+          </li>
+          <li>
+            Fade out the button quickly (100 means 100 milliseconds, when passed to the <a href="http://api.jquery.com/fadeout/"><code>fadeOut()</code></a> method)
+            and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="fadeOut:100;remove">Code: fadeOut:100;remove</div>
+          </li>
+          <li>
+            Add the <code>fadeMe</code> class to the button, wait 1 second for the CSS transition to complete
+            (<a href="https://api.jquery.com/addclass/"><code>addClass</code></a> does not provide a completion callback)
+            and then remove the button:<br/>
+            <div class="btn btn-primary" ic-action="addClass:fadeMe;delay:1s;remove">Code: addClass:fadeMe;delay:1s;remove</div>
+          </li>
+          <li>
+            Toggle the <code>btn-primary</code> class on the button:<br/>
+            <div class="btn btn-primary btn-default" ic-action="toggleClass:btn-primary">Code: toggleClass:btn-primary</div>
+          </li>
+        </ul>
+
+      </div>
+
+      <p>Here's an example of <code>ic-beforeSend-action</code>; the other <code>ic-*-action</code> attributes work
+        similarly:</p>
+
+      <div>
+        <ul>
+          <li>
+            Fade out and then remove the button before sending POST request to update span:<br/>
+            <div class="live-demo">
+              <script>
+                (function () {
+                  $.mockjax({
+                    'url': '/target_url',
+                    'response': function (settings) {
+                      this.responseText = '<span ic-src="/target_url">Thanks for clicking!</span>'
+                    }
+                  });
+                })();
+              </script>
+              <button class="btn btn-primary" ic-post-to="/target_url" ic-beforeSend-action="fadeOut;remove">Click Me!</button>
+              <span ic-src="/target_url">You haven't clicked yet...</span>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+
+    </div>
+  </div>
+</div>

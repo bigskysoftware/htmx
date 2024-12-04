@@ -1,0 +1,137 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Deleting A Table Row</h1>
+
+      <p>This example demos a delete button that removes a table row upon completion.  A confirmation popup is specified
+      at the tbody level, so all buttons share the same confirmation message.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          Each row has a button with a
+          <a href="/attributes/ic-delete-from.html"><code>ic-delete-from</code></a>
+          attribute set up to delete the row from the server
+        </li>
+        <li>
+          The table body has an
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          set to <code>closest tr</code> and causes a confirmation message with an
+          <a href="/attributes/ic-confirm.html"><code>ic-confirm</code></a>
+          attribute.  The delete buttons in the table inherit these attributes.
+        </li>
+        <li>
+          The server side returns an empty response, with the special header <code>X-IC-Remove</code> set to
+          <code>1s</code>, which tells intercooler to remove the target (in this case, the closest row) after
+          1 second, allowing for a CSS3 transition to fade the row out.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody ic-confirm="Are you sure?" ic-target="closest tr">
+      <tr id="row-0">
+        <td>Joe Smith</td>
+        <td>joe@smith.org</td>
+        <td>Active</td>
+        <td>
+          <button class="btn btn-danger" ic-delete-from="/contacts/0">
+            Delete
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display: none"></i>
+          </button>
+        </td>
+      </tr>
+      <tr id="row-1">
+        <td>Angie MacDowell</td><td>angie@macdowell.org</td><td>Active</td>
+        <td>
+          <button class="btn btn-danger" ic-delete-from="/contacts/1">
+            Delete
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display: none"></i>
+          </button>
+        </td>
+      </tr>
+      <tr id="row-2">
+        <td>Fuqua Tarkenton</td><td>fuqua@tarkenton.org</td><td>Active</td>
+        <td>
+          <button class="btn btn-danger" ic-delete-from="/contacts/2">
+            Delete
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display: none"></i>
+          </button>
+        </td>
+      </tr>
+      <tr id="row-3">
+        <td>Kim Yee</td><td>kim@yee.org</td><td>Inactive</td>
+        <td>
+          <button class="btn btn-danger" ic-delete-from="/contacts/3">
+            Delete
+            <i class="ic-indicator fa fa-spinner fa-spin" style="display: none"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: /\/contacts\/.*/,
+      responseTime: 750,
+      headers : { 'X-IC-Remove' : "1s" }
+    });
+  </script>
+
+
+  <style>
+    tr.ic-removing td {
+      opacity: 0;
+      transition: all 1s ease;
+    }
+  </style>
+
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

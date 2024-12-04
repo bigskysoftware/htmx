@@ -1,0 +1,65 @@
+---
+layout: default
+nav: attributes > ic-trigger-on
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-trigger-delay</code> - The Trigger Delay Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-trigger-delay</code> attribute tells Intercooler to delay the firing of a request in response
+        to a trigger until the specified time interval has passed.  If the trigger occurs again before the interval
+        is complete, the earlier trigger will cancel and new trigger will begin waiting for the specified interval.</p>
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should a valid integer, followed by the string "s" (for seconds) or "ms" (for
+        milliseconds).  (e.g. ic-trigger-delay="100ms" indicates intercooler will delay firing the request for 
+        100 milliseconds after the trigger has occurred.) </p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-trigger-delay</code> has no dependency implications.</p>
+
+      <h3>Simple Example</h3>
+
+      <p>Here is a text box that updates a div with its content after a delay:</p>
+
+      <pre>
+  &lt;input type="text" name="text"
+         ic-post-to="/text" ic-trigger-on="keypress" ic-trigger-delay="500ms"
+         ic-target="#text-div" ic-indicator="#indicator"/>
+  &lt;i id="indicator" class="fa fa-spinner fa-spin" style="display:none">&lt;/i>
+  &lt;br/>
+  Text: &lt;div id="text-div">&lt;/div>
+</pre>
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              url: '/text',
+              response: function(settings) {
+                this.responseText = parseParams(settings.data)['text'];
+              }
+            });
+          })();
+        </script>
+
+        <input type="text" name="text"
+               ic-post-to="/text" ic-trigger-on="keypress" ic-trigger-delay="500ms"
+               ic-target="#text-div" ic-indicator="#indicator"/>
+        <i id="indicator" class="fa fa-spinner fa-spin" style="display:none"></i>
+        <br/>
+        Text: <div id="text-div"></div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

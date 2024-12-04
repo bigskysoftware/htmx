@@ -1,0 +1,72 @@
+---
+layout: default
+nav: attributes > ic-get-from
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-get-from</code> - The Get-From Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-get-from</code> attribute binds the <em>default action</em> (see below) of HTML element to a
+        <code>GET</code> to the given URL.  For example, on a button, when the button is clicked, an
+        AJAX <code>GET</code> will be issued to the given URL.</p>
+
+      {% include action_common.html %}
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid relative path (e.g. <code>ic-get-from="/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-get-from</code> implies a dependency on its path, and Intercooler will issue requests for elements
+        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
+      more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, with a span that depends on the updated URL:</p>
+
+<pre>
+  &lt;button ic-get-from="/target_url" ic-target="#target-span">
+    Click Me!
+  &lt;/button>
+
+  &lt;span id="target-span">
+    You haven't clicked yet...
+  &lt;/span>
+</pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            var init = Math.floor(new Date().getTime() / 1000);
+            $.mockjax({
+              'url': '/target_url',
+              'response': function () {
+                this.responseText = '<span ic-src="/target_url">Thanks for clicking!</span>'
+              }
+            });
+          })();
+        </script>
+
+        <button class="btn btn-lg btn-primary"
+                ic-get-from="/target_url"
+                ic-target="#target-span">
+          Click Me!
+        </button>
+
+        <span id="target-span">
+          You haven't clicked yet...
+        </span>
+      </div>
+
+    </div>
+  </div>
+</div>

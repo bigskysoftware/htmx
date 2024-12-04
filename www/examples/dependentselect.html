@@ -1,0 +1,143 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Dependent Select</h1>
+
+      <p>This example has a form with a second drop-down dependent on the value of the first, with the
+      values driven by a server-side data structure.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          The first dropdown issues a post to <code>/models</code> via a
+          <a href="/attributes/ic-post-to.html"><code>ic-post-to</code></a>
+          attributes. It does this when the value changes (the default trigger on inputs).  It targets the model
+          drop down by CSS ID using the
+          <a href="/attributes/ic-target.html"><code>ic-target</code></a>
+          attribute, and displays a spinner via the
+          <a href="/attributes/ic-indicator.html"><code>ic-indicator</code></a>
+          attribute.
+        </li>
+        <li>
+          The server side gets the make that was selected in the input via a request parameter and renders an select
+          with all the models available for that make.
+        </li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active"><a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live
+            Demo</a></li>
+          <li role="presentation"><a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+  <h3>Pick A Make/Model</h3>
+
+  <form ic-post-to="/form">
+    <div class="form-group">
+      <label class="control-label">Make</label>
+      <select class="form-control" name="make"
+             ic-post-to="/models" ic-target="#models" ic-indicator="#model-ind">
+        <option value="audi">Audi</option>
+        <option value="toyota">Toyota</option>
+        <option value="bmw">BMW</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Model <i id="model-ind" class="fa fa-spinner fa-spin" style="display: none"></i></label>
+      <select id="models" class="form-control" name="model">
+        <option value="a1">A1</option>
+        <option value="a3">A3</option>
+        <option value="a6">A6</option>
+      </select>
+    </div>
+
+    <button class="btn btn-default">Submit</button>
+  </form>
+
+  <script>
+
+    //========================================================================
+    // Mock Server-Side HTTP End Point
+    //========================================================================
+    $.mockjax({
+      url: "/form",
+      response: function (settings) {
+        this.responseText = formTemplate();
+      }
+    });
+
+    $.mockjax({
+      url: "/models",
+      responseTime: 450 ,
+      response: function (settings) {
+        var params = parseParams(settings.data);
+        var make = dataStore.findMake(params['make']);
+        this.responseText = modelOptions(make['models']);
+      }
+    });
+
+    //========================================================================
+    // Mock Server-Side Templates
+    //========================================================================
+
+    var originalForm = $('form').html();
+    function formTemplate() {
+      return originalForm;
+    }
+
+    function modelOptions(make) {
+      return $.map(make, function(val) {
+        return "<option value='" + val + "'>" + val +"</option>";
+      });
+    }
+
+    //========================================================================
+    // Mock Data Store
+    //========================================================================
+    var dataStore = function(){
+      var data = {
+        audi : { models : ["A1", "A4", "A6"] },
+        toyota : { models : ["Landcruiser", "Landcruiser", "Landcruiser"] },
+        bmw : { models : ["325i", "325ix", "X5"] }
+      };
+      return {
+        findMake : function(make) {
+          return data[make];
+        }
+      }
+    }()
+
+
+
+  </script>
+  </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

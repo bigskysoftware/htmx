@@ -1,0 +1,51 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container" xmlns="http://www.w3.org/1999/html">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Inline Validation</h1>
+
+      <p>This tutorial will show you how to implement inline server-side field validation in Rails with only a few lines
+        of IntercoolerJS.</p>
+
+      <h3>Video</h3>
+
+      <div class="text-center">
+        <iframe src="//player.vimeo.com/video/92368790" width="1000" height="750" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="max-width:100%"></iframe>
+      </div>
+
+      <h3>Outline</h3>
+
+      <p>Here are the steps for implementing inline validation</p>
+
+      <ul>
+        <li>
+          Extract a partial of the input div, and wrap it with a new <code>div</code> with an ID so
+          we can target it for appending.
+        </li>
+        <li>
+          Create an route that will render the partial input and implement non-updating validation
+          in the controller.
+        </li>
+        <li>
+          Add the <code>ic-post-to</code> annotation to the input and target the wrapping div with an
+          <code>ic-target</code> annotation.
+        </li>
+      </ul>
+
+      <h3>Git Diff</h3>
+
+      <p>Here's a diff between the standard rails form code and the IntercoolerJS inline validation version:</p>
+
+      <a href="https://github.com/LeadDyno/intercooler-tutorial-app/commit/b94118fbb5cb0ccd065c6e27d316de3e29313bce">
+        https://github.com/LeadDyno/intercooler-tutorial-app/commit/b94118fbb5cb0ccd065c6e27d316de3e29313bce
+      </a>
+
+    </div>
+  </div>
+</div>

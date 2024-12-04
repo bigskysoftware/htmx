@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A Javascript-optional AJAX library featuring declarative, REST-ful bindings">
+  <meta name="author" content="">
+
+  <title>Intercooler.js</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Crete+Round:400italic,400" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
+    rel="stylesheet" type="text/css">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+
+  <!--BEGIN HEADER-->
+  <script src="lib/jquery-3.1.1.js"></script>
+  <script type="text/javascript" src="lib/jquery.mockjax-2.2.1.js"></script>
+  <!--END HEADER-->
+
+  <script>
+    var USE_DATA_ATTRS = location.search.indexOf("use-data-attr") >= 0;
+    function fixAttrName(name) {
+      if(USE_DATA_ATTRS) {
+        return "data-" + name;
+      } else {
+        return name;
+      }
+    }
+    if (USE_DATA_ATTRS) {
+      $('head').append('<meta name="intercoolerjs:use-data-prefix" content="true"/>');
+      $(function() {
+        function addDataPrefix(elt) {
+          var attrs = elt[0].attributes;
+          for (var i = 0; i < attrs.length; i++) {
+            var attr = attrs[i];
+            var name = attr.name;
+            if (name.indexOf('ic-') == 0) {
+              elt.attr(fixAttrName(name), attr.value);
+            }
+          }
+          for (var i = 0; i < attrs.length; i++) {
+            var attr = attrs[i];
+            var name = attr.name;
+            if (name.indexOf('ic-') == 0) {
+              elt.removeAttr(name);
+            }
+          }
+        }
+
+        $('body').find('*').each(function() {
+          addDataPrefix($(this));
+        });
+      });
+    }
+  </script>
+
+  <script src="https://code.jquery.com/qunit/qunit-1.16.0.js"></script>
+
+  <script type="text/javascript" src="./intercooler-1.1.0.js" data-cover></script>
+
+
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
+
+  <script>
+    // clear out the intercooler library for blanket if we are in a coverage test
+    if(location.search.indexOf("coverage") >= 0) {
+      Intercooler = null;
+      window.onpopstate = null;
+    }
+  </script>
+  <script src="lib/blanket.min.js"></script>
+
+  <script>
+
+    // Helper function for async QUnit tests
+    function intercoolerTest(name, beforeRequest, afterRequest, timeout) {
+      QUnit.test(name, function (assert) {
+        var done = assert.async();
+        beforeRequest(assert);
+        var delay = timeout || 100;
+        setTimeout(function () {
+          afterRequest(assert);
+          done();
+        }, delay);
+      });
+    }
+
+    // Taken from https://gist.github.com/kares/956897
+    function parseParams(str) {
+      var re = /([^&=]+)=?([^&]*)/g;
+      var decode = function (str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+      };
+      var params = {}, e;
+      if (str) {
+        if (str.substr(0, 1) == '?') {
+          str = str.substr(1);
+        }
+        while (e = re.exec(str)) {
+          var k = decode(e[1]);
+          var v = decode(e[2]);
+          if (params[k] !== undefined) {
+            if (!$.isArray(params[k])) {
+              params[k] = [params[k]];
+            }
+            params[k].push(v);
+          } else {
+            params[k] = v;
+          }
+        }
+      }
+      return params;
+    }
+
+    // no transition and fast response time from mockjax
+    $(function () {
+      $.mockjaxSettings['responseTime'] = 1;
+    });
+
+    // server sent events mock
+    Intercooler._internal.initEventSource = function(url) {
+      var eventHandlers = {};
+      var that = {
+        close : function(){},
+        fireMessage : function(msg){
+          that.onmessage({'data' : msg})
+        },
+        fireEvent : function(evt, data) {
+          var handlers = eventHandlers[evt];
+          for (var i = 0; i < handlers.length; i++) {
+            handlers[i]({'data' : data});
+          }
+        },
+        addEventListener : function(event, func) {
+          var handlers = eventHandlers[event] || [];
+          handlers.push(func);
+          eventHandlers[event] = handlers;
+        },
+        close : function () {
+          that.closed = true;
+        }
+      };
+      return that;
+    };
+
+  </script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Intercooler.js Test Suite</h2>
+
+  <p>This is the test suite for the Intercooler.js library. Simply loading this page in a browser will run all the
+    tests</p>
+
+  <p>New tests should follow the existing test templates, using
+    the <code>intercoolerTest()</code> helper and <a href="https://github.com/jakerella/jquery-mockjax">mockjax</a> for
+    mocking out AJAX requests.</p>
+
+  <p>
+    <a class="btn btn-primary" href="?use-data-attr=true">Run With data-* style attributes</a>
+  </p>
+</div>
+
+<hr/>
+
+
+<div class="container">
+
+  <h3>Test Results</h3>
+
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+</div>
+
+<div class="container">
+
+<div class="row">
+  <div class="col-md-12">
+    <h4>Test HTML</h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <hr/>
+    <div id="ic-src-div1" ic-src="/attr-test-1"></div>
+    <div id="ic-post-to-div1" ic-post-to="/attr-test-1"></div>
+    <div id="ic-append-from-div1" ic-append-from="/attr-test-1"></div>
+    <div id="ic-prepend-from-div1" ic-prepend-from="/attr-test-1"></div>
+    <div id="ic-style-src-div1" ic-style-src="color:/attr-test-1"></div>
+    <div id="ic-attr-src-div1" ic-attr-src="style:/attr-test-1"></div>
+    <script>
+      QUnit.test("IC attributes are set on elements", function (assert) {
+        assert.ok($('#ic-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+
+        assert.ok($('#ic-post-to-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+
+        assert.ok($('#ic-append-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+
+        assert.ok($('#ic-prepend-from-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+
+        assert.ok($('#ic-style-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+
+        assert.ok($('#ic-attr-src-div1').attr(fixAttrName('ic-id')) != null, "Has ID");
+      });
+    </script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <hr/>
+    <div>Javascript API Test</div>
+    <script>
+      QUnit.test("Javascript API Test", function (assert) {
+        assert.ok(Intercooler.closestAttrValue('body', 'foo') == null, "Should have returned null");
+      });
+    </script>
+  </div>
+</div>
+
+<div id="ic-src-div2" ic-src="/basic_update">Foo</div>
+<script>
+  intercoolerTest("Simple Update",
+    function (assert) {
+      $.mockjax({
+        url: "/basic_update",
+        responseText: 'Bar'
+      });
+      assert.equal($('#ic-src-div2').text(), "Foo", "Updated");
+      Intercooler.refresh($("#ic-src-div2"));
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div2').text(), "Bar", "Updated");
+    });
+</script>
+
+<div id="ic-src-div3" ic-src="/deps_test1">Foo</div>
+<button id="ic-post-to-btn1" ic-post-to="/deps_test1">Click</button>
+
+<script>
+  intercoolerTest("Dependency update w/ POST",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_test1",
+        response: function (settings) {
+          if (settings['type'] == 'POST') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div3').text(), "Foo", "Updated");
+      $("#ic-post-to-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div3').text(), "Bar", "Updated");
+    });
+</script>
+
+<div id="ic-src-div6" ic-src="/deps_put_test1">Foo</div>
+<button id="ic-put-to-btn1" ic-put-to="/deps_put_test1">Click</button>
+
+<script>
+  intercoolerTest("Dependency update w/ PUT",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_put_test1",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'PUT') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div6').text(), "Foo", "Updated");
+      $("#ic-put-to-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div6').text(), "Bar", "Updated");
+    });
+</script>
+
+<div id="ic-src-div6a" ic-src="/deps_patch_test1">Foo</div>
+<button id="ic-patch-to-btn1" ic-patch-to="/deps_patch_test1">Click</button>
+
+<script>
+  intercoolerTest("Dependency update w/ PATCH",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_patch_test1",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'PATCH') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div6a').text(), "Foo", "Updated");
+      $("#ic-patch-to-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div6a').text(), "Bar", "Updated");
+    });
+</script>
+
+<div id="ic-src-div7" ic-src="/deps_delete_test1">Foo</div>
+<button id="ic-delete-from-btn1" ic-delete-from="/deps_delete_test1">Click</button>
+<script>
+  intercoolerTest("Dependency update w/ DELETE",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_delete_test1",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          if (params["_method"] == 'DELETE') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div7').text(), "Foo", "Updated");
+      $("#ic-delete-from-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div7').text(), "Bar", "Updated");
+    });
+</script>
+
+<span id="get-from-target"></span>
+<button id="ic-get-from-btn1" ic-get-from="/get_from_test" ic-target="#get-from-target">Click</button>
+<script>
+  intercoolerTest("ic-get-from test",
+    function (assert) {
+      $.mockjax({
+        url: "/get_from_test",
+        responseText: "foo"
+      });
+      assert.equal($('#get-from-target').text(), "", "Pre");
+      $("#ic-get-from-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#get-from-target').text(), "foo", "Updated");
+    });
+</script>
+
+<div id="ic-src-div8">Foo</div>
+<button id="ic-delete-from-btn2" ic-delete-from="/deps_delete_test2" ic-target="#ic-src-div8">Click</button>
+<script>
+  intercoolerTest("DELETE with removal",
+    function (assert) {
+      $.mockjax({
+        url: "/deps_delete_test2",
+        headers: {
+          'X-IC-Remove': true
+        }
+      });
+      $("#ic-delete-from-btn2").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div8').length, 0);
+    });
+</script>
+
+<div id="ic-src-div4" ic-src="/deps_test2">Foo</div>
+<button id="ic-post-to-btn2" ic-post-to="/deps_test2/super">Clicked</button>
+<script>
+  intercoolerTest("Dependency on updated superpath",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: /\/deps_test2.*/,
+        response: function (settings) {
+          if (settings['type'] == 'POST') {
+            text = "Bar";
+          }
+          this.responseText = text;
+        }
+      });
+      assert.equal($('#ic-src-div4').text(), "Foo", "Updated");
+      $("#ic-post-to-btn2").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-src-div4').text(), "Bar", "Updated");
+    });
+</script>
+
+<div id="ic-src-div5" ic-src="/deps_test3/sub">Foo</div>
+<button id="ic-post-to-btn3" ic-post-to="/deps_test3">Clicked</button>
+<script>
+  intercoolerTest("Dependency on updated subpath", function (assert) {
+    var text = "Foo";
+    $.mockjax({
+      url: /deps_test3.*/,
+      response : function(settings) {
+        if(settings['type'] == "POST"){
+          text = "Bar"
+        }
+        this.responseText = text
+      }
+    });
+    assert.equal($('#ic-src-div5').text(), "Foo", "Updated");
+    $("#ic-post-to-btn3").click();
+  }, function (assert) {
+    assert.equal($('#ic-src-div5').text(), "Bar", "Updated");
+  });
+</script>
+
+<script>
+  intercoolerTest("partial path elements do not indicate a dependency", function (assert) {
+    assert.ok(!Intercooler.isDependent("/model/aa", "/model/a"));
+    assert.ok(!Intercooler.isDependent("/model/a", "/model/aa"));
+  }, function(assert) {});
+</script>
+
+<script>
+  intercoolerTest("query string and hash arguments are stripped for dependency checks", function (assert) {
+    assert.ok(Intercooler.isDependent("/model/aa?1", "/model/aa?2"));
+    assert.ok(Intercooler.isDependent("/model/#1", "/model/#2"));
+  }, function(assert) {});
+</script>
+
+<script>
+  intercoolerTest("empty path elements are discarded for isDependent", function (assert) {
+    assert.ok(Intercooler.isDependent("/model/1", "//model//1/"));
+  }, function(assert) {});
+</script>
+
+<div id="ic-deps-div1" ic-src="/deps_test4" ic-deps="/deps_test5">Foo</div>
+<button id="ic-deps-btn1" ic-post-to="/deps_test5">Clicked</button>
+<script>
+  intercoolerTest("Explicit dependency works", function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/deps_test4",
+        response: function (settings) {
+          this.responseText = text;
+        }
+      });
+      $.mockjax({
+        url: "/deps_test5",
+        response: function (settings) {
+          text = "Bar";
+        }
+      });
+      assert.equal($('#ic-deps-div1').text(), "Foo", "Updated");
+      $("#ic-deps-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-deps-div1').text(), "Bar", "Updated");
+    });
+</script>
+
+<ul id="ic-prepend-from-div2" ic-prepend-from="/prepend_from1">
+  <li>bar</li>
+</ul>
+<button id="ic-prepend-from-btn1" ic-post-to="/prepend_from1">Clicked</button>
+<script>
+  intercoolerTest("Prepend works properly",
+    function (assert) {
+      $.mockjax({
+        url: "/prepend_from1",
+        responseText :"<li>foo</li>"
+      });
+      assert.equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g, ''), "bar", "Pre-update");
+      $("#ic-prepend-from-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-prepend-from-div2').text().replace(/[ \n]/g, ''), "foobar", "Updated");
+    });
+</script>
+
+<ul id="ic-append-from-div2" ic-append-from="/append_from1">
+  <li>bar</li>
+</ul>
+<button id="ic-append-from-btn1" ic-post-to="/append_from1">Clicked</button>
+<script>
+  intercoolerTest("Append works properly",
+    function (assert) {
+      $.mockjax({
+        url: "/append_from1",
+        responseText: "<li>foo</li>"
+      });
+      assert.equal($('#ic-append-from-div2').text().replace(/[ \n]/g, ''), "bar", "Pre-update");
+      $("#ic-append-from-btn1").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-append-from-div2').text().replace(/[ \n]/g, ''), "barfoo", "Updated");
+    });
+</script>
+
+<button id="eval-btn" ic-post-to="/frontmatter_eval">Eval</button>
+<script>
+  intercoolerTest("Eval header works",
+    function () {
+      $.mockjax({
+        url: "/frontmatter_eval",
+        headers: {
+          "X-IC-Script": "window.eval_test_var2 = 10;"
+        }
+      });
+      $("#eval-btn").click();
+    },
+    function (assert) {
+      assert.equal(window.eval_test_var2, 10);
+    });
+</script>
+
+<form ic-post-to="/form_target">
+  <button id="form-btn">Submit</button>
+</form>
+<script>
+  intercoolerTest("Form submission works",
+    function (assert) {
+      $.mockjax({
+        url: "/form_target",
+        responseText : "<span id='form-after-submit'></span>"
+      });
+      $("#form-btn").click();
+    },
+    function (assert) {
+      assert.equal($("#form-after-submit").length, 1);
+    });
+</script>
+
+<form ic-post-to="/form_target2">
+  <input id="form_target2_btn" type="submit" ic-post-to="somewhere" value="Submit" />
+</form>
+<script>
+  intercoolerTest("Form submission with submit button works",
+    function (assert) {
+      $.mockjax({
+        url: "/form_target2",
+        responseText : "<span id='form-after-submit2'></span>"
+      });
+      $("#form_target2_btn").click();
+    },
+    function (assert) {
+      assert.equal($("#form-after-submit2").length, 1);
+    });
+</script>
+
+<form id="form_target3_form" ic-post-to="/form_target3">
+</form>
+<script>
+  intercoolerTest("Form submission works on direct form submission",
+    function (assert) {
+      $.mockjax({
+        url: "/form_target3",
+        responseText : "<span id='form-after-submit3'></span>"
+      });
+      $("#form_target3_form").submit();
+    },
+    function (assert) {
+      assert.equal($("#form-after-submit3").length, 1);
+    });
+</script>
+
+
+<div id="refresh-api-test" ic-src="/refresh-api-test">Foo</div>
+<script>
+  intercoolerTest("Intercooler.refresh() with element works",
+    function () {
+      $.mockjax({
+        url: "/refresh-api-test",
+        responseText: 'Bar'
+      });
+      Intercooler.refresh($('#refresh-api-test'));
+    },
+    function (assert) {
+      assert.equal('Bar', $('#refresh-api-test').text());
+    });
+</script>
+
+<div id="refresh-api-test-2" ic-src="/2refresh-api-test">Foo</div>
+<script>
+  intercoolerTest("Intercooler.refresh() with path works",
+    function () {
+      $.mockjax({
+        url: "/2refresh-api-test",
+        responseText: 'Bar'
+      });
+      Intercooler.refresh('/2refresh-api-test');
+    },
+    function (assert) {
+      assert.equal('Bar', $('#refresh-api-test-2').text());
+    });
+</script>
+
+<div id="indicator-test" ic-post-to="/indicator"><strong id="indicator1" class="ic-indicator" style="display:none">loading...</strong> Foo
+</div>
+<script>
+  intercoolerTest("Test indicator as class",
+    function (assert) {
+      $.mockjax({ url: "/indicator" });
+      $("#indicator-test").click();
+      assert.equal('inline', $('#indicator1').css('display'));
+    },
+    function (assert) {
+      assert.equal('none', $('#indicator1').css('display'));
+    });
+</script>
+
+<strong id="indicator2">loading...</strong>
+<div id="indicator-test-2" ic-post-to="/indicator2" ic-indicator="#indicator2"> Foo</div>
+<script>
+  intercoolerTest("Test indicator as an attribute",
+    function (assert) {
+      $.mockjax({ url: "/indicator2" });
+      $("#indicator-test-2").click();
+    },
+    function (assert) {
+      assert.equal('none', $('#indicator2').css('display'));
+    });
+</script>
+
+<strong id="indicator3">loading...</strong>
+<div ic-indicator="#indicator3">
+  <div id="indicator-test-3" ic-post-to="/indicator3"> Foo</div>
+</div>
+
+<script>
+  intercoolerTest("Test indicator as an attribute on a parent",
+    function () {
+    $.mockjax({ url: "/indicator3" });
+    $("#indicator-test-3").click();
+  }, function (assert) {
+    assert.equal('none', $('#indicator3').css('display'));
+  });
+</script>
+
+<div id="target-target"></div>
+<div id="target-test" ic-post-to="/target_test" ic-target="#target-target"></div>
+<script>
+  intercoolerTest("Target attribute works", function () {
+      $.mockjax({
+        url: "/target_test",
+        responseText: "foo"
+      });
+      $("#target-test").click();
+    },
+    function (assert) {
+      assert.equal('foo', $('#target-target').text());
+    });
+</script>
+
+<ul id="target-target-append">
+  <li>bar</li>
+</ul>
+<div id="target-test-append"
+     ic-trigger-on="default"
+     ic-append-from="/append_target_test"
+     ic-target="#target-target-append"></div>
+<script>
+  intercoolerTest("Target attribute works with append", function () {
+      $.mockjax({
+        url: "/append_target_test",
+        responseText: "<li>foo</li>"
+      });
+      $("#target-test-append").click();
+    },
+    function (assert) {
+      assert.equal('barfoo', $('#target-target-append').text().replace(/[ \n]/g, ''));
+    });
+</script>
+
+<ul id="target-target-prepend">
+  <li>bar</li>
+</ul>
+<div id="target-test-prepend" ic-prepend-from="/prepend_target_test" ic-trigger-on='default'
+     ic-target="#target-target-prepend"></div>
+<script>
+  intercoolerTest("Target attribute works with prepend",
+    function () {
+      $.mockjax({
+        url: "/prepend_target_test",
+        responseText: '<li>foo</li>'
+      });
+      $("#target-test-prepend").click();
+    },
+    function (assert) {
+      assert.equal('foobar', $('#target-target-prepend').text().replace(/[ \n]/g, ''));
+    });
+</script>
+
+
+<ul id="prepend-limit" ic-limit-children="3">
+</ul>
+<div id="prepend-btn" ic-prepend-from="/prepend_limit" ic-trigger-on="click" ic-target="#prepend-limit"></div>
+<script>
+  intercoolerTest("ic-limit-children works with prepend",
+    function () {
+      var i = 0;
+      $.mockjax({
+        url: "/prepend_limit",
+        response: function () {
+          i++;
+          this.responseText = '<li>' + i + '</li>';
+        }
+      });
+      $("#prepend-btn").click();
+      setTimeout(function(){ $("#prepend-btn").click(); }, 100);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 200);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 300);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 400);
+      setTimeout(function(){ $("#prepend-btn").click(); }, 500);
+    },
+    function (assert) {
+      assert.equal('654', $('#prepend-limit').text().replace(/[ \n]/g, ''));
+    }, 600);
+</script>
+
+<ul id="append-limit" ic-limit-children="3">
+</ul>
+<div id="append-btn" ic-append-from="/append_limit" ic-trigger-on="click" ic-target="#append-limit"></div>
+<script>
+  intercoolerTest("ic-limit-children works with append and target",
+    function () {
+      var i = 0;
+      $.mockjax({
+        url: "/append_limit",
+        response: function () {
+          i++;
+          this.responseText = '<li>' + i + '</li>';
+        }
+      });
+      $("#append-btn").click();
+      setTimeout(function(){ $("#append-btn").click(); }, 100);
+      setTimeout(function(){ $("#append-btn").click(); }, 200);
+      setTimeout(function(){ $("#append-btn").click(); }, 300);
+      setTimeout(function(){ $("#append-btn").click(); }, 400);
+      setTimeout(function(){ $("#append-btn").click(); }, 500);
+    },
+    function (assert) {
+      assert.equal('456', $('#append-limit').text().replace(/[ \n]/g, ''));
+    }, 600);
+</script>
+
+<input id="hidden-input" type="hidden" name="hidden" value="foo">
+<div id="include-works" ic-post-to="/include_works" ic-include="#hidden-input"></div>
+<script>
+  if($.zepto) {
+    //skip
+  } else {
+  intercoolerTest("ic-include works",
+    function (assert) {
+      $.mockjax({
+        url: "/include_works",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          this.responseText = params['hidden'];
+        }
+      });
+      $("#include-works").click();
+    },
+    function (assert) {
+      assert.equal('foo', $("#include-works").text());
+    });
+  }
+</script>
+
+<input id="trigger-on-works" ic-src="/trigger_test" ic-verb="POST" ic-trigger-on="focus"/>
+<script>
+  intercoolerTest("ic-trigger-on works",
+    function (assert) {
+      $.mockjax({
+        url: "/trigger_test",
+        responseText: "foo"
+      });
+      $("#trigger-on-works").focus();
+    },
+    function (assert) {
+      assert.equal('foo', $("#trigger-on-works").text());
+    });
+</script>
+
+<span id="ic-verb-btn1" ic-src="/verb_test" ic-verb="PUT" ic-trigger-on="click"></span>
+<span id="ic-verb-btn2" ic-src="/verb_test" ic-verb="POST" ic-trigger-on="click"></span>
+<script>
+  intercoolerTest("ic-verb works", function () {
+      $.mockjax({
+        url: "/verb_test",
+        response: function (settings) {
+          var params = parseParams(settings.data);
+          this.responseText = params["_method"];
+        }
+      });
+      $("#ic-verb-btn1").click();
+      $("#ic-verb-btn2").click();
+    },
+    function (assert) {
+      assert.equal('PUT', $("#ic-verb-btn1").text());
+      assert.equal('POST', $("#ic-verb-btn2").text());
+    });
+</script>
+
+<!--TODO cgross: how to test polling? -->
+<!--<span id="poll-span" ic-src="/poll_test" ic-poll='1s'></span>-->
+<!--<script>-->
+  <!--intercoolerTest("ic-poll updates content",-->
+    <!--function (assert) {-->
+      <!--$.mockjax({-->
+        <!--url: "/poll_test",-->
+        <!--responseText: "updated",-->
+        <!--headers: {'X-IC-CancelPolling': true}-->
+      <!--});-->
+      <!--assert.equal("", $("#poll-span").text());-->
+    <!--},-->
+    <!--function (assert) {-->
+      <!--equal("updated", $("#poll-span").text());-->
+    <!--}, 2000);-->
+<!--</script>-->
+
+<span id="style-src" ic-style-src="font-style:/style_test" ic-trigger-on="click">Foo</span>
+<script>
+  intercoolerTest("ic-style-src updates style",
+    function () {
+      $.mockjax({
+        url: "/style_test",
+        responseText: "italic"
+      });
+      $("#style-src").click();
+    },
+    function (assert) {
+      assert.equal("italic", $("#style-src").css('font-style'));
+    });
+</script>
+
+
+<span id="attr-src" ic-attr-src="foo:/attr_test" ic-trigger-on="click">Foo</span>
+<script>
+  intercoolerTest("ic-attr-src updates attr", function () {
+      $.mockjax({
+        url: "/attr_test",
+        responseText: "bar"
+      });
+      $("#attr-src").click();
+    },
+    function (assert) {
+      assert.equal("bar", $("#attr-src").attr('foo'));
+    });
+</script>
+
+
+<span id="log-test" ic-post-to="/log_test">Foo</span>
+<script>
+  (function () {
+    var logged = false;
+    intercoolerTest("Log event happens properly",
+      function () {
+        $('#log-test').on('log.ic', function (e, msg) {
+          logged = true;
+        });
+        $.mockjax({url: "/log_test"});
+        $("#log-test").click();
+      },
+      function (assert) {
+        assert.equal(true, logged);
+      });
+  })()
+</script>
+
+<span id="header_1" ic-post-to="/ic_header_1"></span>
+<script>
+  (function () {
+    var called = false;
+    intercoolerTest("IC-Trigger Header", function (assert) {
+        $('body').on('trigger_test_1', function () {
+          called = true;
+        });
+        $.mockjax({
+          url: "/ic_header_1",
+          'headers': {
+            'X-IC-Trigger': 'trigger_test_1'
+          }
+        });
+        assert.equal(false, called);
+        $("#header_1").click();
+      },
+      function (assert) {
+        assert.equal(true, called);
+      });
+  })();
+</script>
+
+<span id="header_2" ic-post-to="/ic_header_2"></span>
+<script>
+  (function () {
+    var obj = null;
+    intercoolerTest("IC-Trigger Header With Single Arg",
+      function () {
+        $('body').on('trigger_test_2', function (e, data) {
+          obj = data;
+        });
+        $.mockjax({
+          url: "/ic_header_2",
+          headers: {
+            'X-IC-Trigger': 'trigger_test_2',
+            'X-IC-Trigger-Data': '{"foo" : "bar"}'
+          }
+        });
+        $("#header_2").click();
+      },
+      function (assert) {
+        assert.equal("bar", obj.foo);
+      });
+  })()
+</script>
+
+<span id="header_3" ic-post-to="/ic_header_3"></span>
+<script>
+  (function () {
+    var obj = null;
+    intercoolerTest("IC-Trigger Header With Array Args",
+      function () {
+        $('body').on('trigger_test_3', function (e, a1, a2, a3) {
+          obj = a3;
+        });
+        $.mockjax({
+          url: "/ic_header_3",
+          'headers': {
+            'X-IC-Trigger': 'trigger_test_3',
+            'X-IC-Trigger-Data': '[1, 2, 3]'
+          }
+        });
+        $("#header_3").click();
+      },
+      function (assert) {
+        assert.equal(3, obj);
+      });
+  })();
+</script>
+
+<span id="header_4" ic-post-to="/ic_header_4"></span>
+<script>
+  (function () {
+    var obj = null;
+    var obj2 = null;
+    intercoolerTest("IC-Trigger with JSON objects",
+      function () {
+        $('body').on('trigger_test_4', function (e, a1, a2, a3) {
+          obj = a3;
+        });
+        $('body').on('trigger_test_5', function (e, a1, a2, a3) {
+          obj2 = a3;
+        });
+        $.mockjax({
+          url: "/ic_header_4",
+          'headers': {
+            'X-IC-Trigger': '{"trigger_test_4":[1, 2, 3], "trigger_test_5": [1, 2, 3]}'
+          }
+        });
+        $("#header_4").click();
+      },
+      function (assert) {
+        assert.equal(3, obj);
+        assert.equal(3, obj2);
+      });
+  })();
+</script>
+
+<span id="double_request_test" ic-post-to="/double_req_test">Text</span>
+<script>
+  intercoolerTest("No double-wiring of events after a refresh",
+    function () {
+      var count = 0;
+      $.mockjax({
+        url: "/double_req_test",
+        response: function () {
+          count += 1;
+          this.responseText = "" + count;
+        }
+      });
+      $("#double_request_test").click();
+      $("#double_request_test").click();
+    },
+    function (assert) {
+      assert.equal("2", $("#double_request_test").text());
+    });
+</script>
+
+<span id="child_wiring_test" ic-post-to="/child_wiring_test" ic-trigger-on='focus'></span>
+<script>
+  intercoolerTest("Children are wired in properly",
+    function () {
+      $.mockjax({
+        url: "/child_wiring_test",
+        responseText: "<span id='child_wiring_test2' " + fixAttrName("ic-post-to") + "='/new_child_wiring_test'></span>"
+      });
+      $.mockjax({
+        url: "/new_child_wiring_test",
+        responseText: "Updated"
+      });
+      Intercooler.refresh($("#child_wiring_test"));
+      setTimeout(function () {
+        $("#child_wiring_test2").click();
+      }, 50);
+    },
+    function (assert) {
+      assert.equal("Updated", $("#child_wiring_test2").text());
+    },
+    100);
+</script>
+
+<span id="double_eval_of_scripts" ic-post-to="/double_eval"></span>
+<script>
+  intercoolerTest("Scripts are evaluated once", function () {
+      $.mockjax({
+        url: "/double_eval",
+        responseText: "New Content.. <scrip" + "t>window.double_eval = window.double_eval + 1;" + "</s" + "cript>"
+      });
+      window.double_eval = 0;
+      $("#double_eval_of_scripts").click();
+    },
+    function (assert) {
+      assert.equal(window.double_eval, 1);
+    });
+</script>
+
+<span id="ic_on_event_test" ic-on-beforeSend="icOnBeforeSend++" ic-post-to="/before_send"></span>
+<script>
+  var icOnBeforeSend = 0;
+  intercoolerTest("ic-on-beforeSend is invoked",
+    function (assert) {
+      $.mockjax({
+        url: '/before_send'
+      });
+      $("#ic_on_event_test").click();
+    },
+    function(assert) {
+    equal(icOnBeforeSend, 1);
+  });
+</script>
+
+<span ic-on-beforeSend="picOnBeforeSend++">
+  <span id="parent_ic_on_event_test" ic-post-to="/parent_before_send"></span>
+</span>
+
+<script>
+  var picOnBeforeSend = 0;
+  intercoolerTest("ic-on-beforeSend is invoked on parent",
+    function (assert) {
+      $.mockjax({
+        url: '/parent_before_send'
+      });
+      $("#parent_ic_on_event_test").click();
+    },
+    function(assert) {
+      equal(picOnBeforeSend, 1);
+    });
+</script>
+
+<span id="ic_replace_target_test" ic-post-to="/ic_replace_target_test" ic-replace-target="true"></span>
+<script>
+  intercoolerTest("ic-replace-target replaces itself", function (assert) {
+      $.mockjax({
+        url: "/ic_replace_target_test",
+        responseText: "<span>asdf</span>"
+      });
+      assert.equal($("#ic_replace_target_test").click().length, 1);
+    },
+    function (assert) {
+      assert.equal($("#ic_replace_target_test").length, 0);
+    });
+</script>
+
+
+<div>
+  <span id="closest-test"></span>
+  <span id="closest-test-btn" ic-post-to="/closest_target_test" ic-target="closest div"></span>
+</div>
+<script>
+  intercoolerTest("ic-target with a closest expression works", function (assert) {
+      $.mockjax({
+        url: "/closest_target_test",
+        responseText: "<span>asdf</span>"
+      });
+      assert.equal($("#closest-test").length, 1);
+      $("#closest-test-btn").click();
+    },
+    function (assert) {
+      assert.equal($("#closest-test").length, 0);
+    });
+</script>
+
+<div>
+  <span id="find-test"></span>
+  <span id="find-test-btn" ic-post-to="/find_target_test" ic-target="find a">
+    <a id="find-a-link">Foo</a>
+  </span>
+</div>
+<script>
+  intercoolerTest("ic-target with a find expression works", function (assert) {
+      $.mockjax({
+        url: "/find_target_test",
+        responseText: '<a id="find-a-link">Bar</a>'
+      });
+      assert.equal($("#find-a-link").text(), "Foo");
+      $("#find-test-btn").click();
+    },
+    function (assert) {
+      assert.equal($("#find-a-link").text(), "Bar");
+    });
+</script>
+
+<div>
+  <span id="delay-test1" ic-post-to="/ic_delay_test1" ic-trigger-delay="500ms">0</span>
+</div>
+<script>
+  QUnit.test("ic-trigger with a delay clause fires after delay", function (assert) {
+
+    var done = assert.async();
+
+    var calls = 0;
+    $.mockjax({
+      url: "/ic_delay_test1",
+      response: function() {
+        calls++;
+        this.responseText = "" + calls;
+      }
+    });
+
+    assert.equal($("#delay-test1").html(), "0");
+    $("#delay-test1").click();
+
+    assert.equal($("#delay-test1").html(), "0");
+
+    setTimeout(function () {
+      assert.equal($("#delay-test1").html(), "0"); // Should not have fired yet
+    }, 200);
+
+    setTimeout(function () {
+      assert.equal($("#delay-test1").html(), "1");  // Should have fired by now
+      done();
+    }, 800);
+
+  });
+</script>
+
+<div>
+  <span id="delay-test2" ic-post-to="/ic_delay_test2" ic-trigger-delay="500ms">0</span>
+</div>
+<script>
+  QUnit.test("ic-trigger with a delay does not cause multiple calls to issue", function (assert) {
+
+    var done = assert.async();
+
+    var calls = 0;
+    $.mockjax({
+      url: "/ic_delay_test2",
+      response: function() {
+        calls++;
+        this.responseText = "" + calls;
+      }
+    });
+
+    assert.equal($("#delay-test2").html(), "0");
+    $("#delay-test2").click();
+    assert.equal($("#delay-test2").html(), "0");
+
+    setTimeout(function(){
+      $("#delay-test2").click();
+      assert.equal($("#delay-test2").html(), "0");
+    }, 50);
+
+    setTimeout(function () {
+      assert.equal($("#delay-test2").html(), "0"); // Should not have fired yet
+    }, 200);
+
+    setTimeout(function () {
+      assert.equal($("#delay-test2").html(), "1");  // Should have fired by now, but only once
+      done();
+    }, 800);
+
+  });
+</script>
+
+<div>
+  <span id="double-click-span" ic-post-to="/double_click">0</span>
+</div>
+<script>
+  intercoolerTest("trigger during request on element is caught and deferred", function (assert) {
+      var calls = 0;
+      $.mockjax({
+        url: "/double_click",
+        response: function() {
+          calls++;
+          this.responseText = "" + calls;
+        }
+      });
+      assert.equal($("#double-click-span").text(), "0");
+      $("#double-click-span").click().click();
+      assert.equal($("#double-click-span").text(), "0");
+    },
+    function (assert) {
+      assert.equal($("#double-click-span").text(), "2");
+    });
+</script>
+
+<div>
+  <span id="triple-click-span" ic-post-to="/triple_click">0</span>
+</div>
+<script>
+  intercoolerTest("only one deferred trigger is fired", function (assert) {
+      var calls = 0;
+      $.mockjax({
+        url: "/triple_click",
+        response: function() {
+          calls++;
+          this.responseText = "" + calls;
+        }
+      });
+      assert.equal($("#triple-click-span").text(), "0");
+      $("#triple-click-span").click().click().click();
+      assert.equal($("#triple-click-span").text(), "0");
+    },
+    function (assert) {
+      assert.equal($("#triple-click-span").text(), "2");
+    });
+</script>
+
+<div>
+  <form ic-post-to="/child_trigger">
+    <input id="child-trigger-input" name="child-trigger-input" type="text" ic-trigger-on="keyup"/>
+  </form>
+</div>
+<script>
+  intercoolerTest("Child trigger works", function (assert) {
+      $.mockjax({
+        url: "/child_trigger",
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          assert.equal(params['ic-trigger-id'], "child-trigger-input");
+          assert.equal(params['ic-trigger-name'], "child-trigger-input");
+          this.responseText = "<!-- nothing -->";
+        }
+      });
+      assert.equal($("#child-trigger-input").length, 1);
+      $("#child-trigger-input").keyup();
+    },
+    function (assert) {
+      assert.equal($("#child-trigger-input").length, 0);
+    });
+</script>
+
+<a id="test-url-is-present" ic-post-to="/test_url_is_present"></a>
+<script>
+  intercoolerTest("Current URL is present", function (assert) {
+      $.mockjax({
+        url: "/test_url_is_present",
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          assert.ok(params['ic-current-url'] != null);
+        }
+      });
+      $("#test-url-is-present").click();
+    },
+    function (assert) {
+      // nothing
+    });
+</script>
+
+<a id="history-test" ic-history-elt ic-post-to="/hist_test1" ic-push-url="true">History Test</a>
+<script>
+  QUnit.test("Basic history support works", function (assert) {
+
+    // don't run test locally
+    if(window.location.hostname == "") {
+      assert.equal(true, true);
+      return;
+    }
+
+    var done = assert.async();
+
+    $.mockjax({
+      url: "/hist_test1",
+      responseText: "History Link Clicked"
+    });
+    $("#history-test").click();
+
+    setTimeout(function(){
+      assert.equal($("#history-test").text(), "History Link Clicked");
+      assert.equal(window.location.pathname, "/hist_test1");
+      if(window.location.pathname == "/hist_test1") {
+        window.history.back();
+      }
+    }, 100);
+
+    setTimeout(function () {
+      assert.equal($("#history-test").text(), "History Test");
+      assert.notEqual(window.location.pathname, "/hist_test1");
+      done();
+    }, 200);
+
+  });
+</script>
+
+<a id="get-from-with-target-test" ic-get-from="/get_from_w_target" ic-target="#get-from-with-target">Get From</a>
+<div id="get-from-with-target"></div>
+<script>
+  QUnit.test("Get from with target works", function (assert) {
+    var done = assert.async();
+
+    $.mockjax({
+      url: "/get_from_w_target",
+      responseText: "foo"
+    });
+    $("#get-from-with-target-test").click();
+
+    setTimeout(function(){
+      assert.equal($("#get-from-with-target").text(), "foo");
+      done();
+    }, 300);
+  });
+</script>
+
+<div id="test-response-selector" ic-post-to="/response_selector" ic-select-from-response="div"></div>
+<script>
+  intercoolerTest("Basic partial response selector works properly", function (assert) {
+      $.mockjax({
+        url: "/response_selector",
+        responseText: "<html><body><div><ul><li>Example</li></ul></div></body></html>"
+      });
+      $("#test-response-selector").click();
+    },
+    function (assert) {
+      assert.equal($("#test-response-selector").html(), "<ul><li>Example</li></ul>");
+    });
+</script>
+
+<ul id="test-response-selector-append" ic-append-from="/append_response_selector" ic-select-from-response="ul" ic-trigger-on="click"></ul>
+<script>
+  intercoolerTest("Partial response selector works properly with append from", function (assert) {
+      $.mockjax({
+        url: "/append_response_selector",
+        responseText: "<html><body><div><ul id='test-response-selector-2-ul'><li>Example</li></ul></div></body></html>"
+      });
+      $("#test-response-selector-append").click();
+    },
+    function (assert) {
+      assert.equal($("#test-response-selector-append").text(), "Example");
+    }, 700);
+</script>
+
+<ul id="test-response-selector-prepend" ic-prepend-from="/prepend_response_selector" ic-select-from-response="li" ic-trigger-on="click"></ul>
+<script>
+  intercoolerTest("Partial response selector works properly with prepend from", function (assert) {
+      $.mockjax({
+        url: "/prepend_response_selector",
+        responseText: "<html><body><div><ul id='test-response-selector-2-ul'><li>Example</li></ul></div></body></html>"
+      });
+      $("#test-response-selector-prepend").click();
+    },
+    function (assert) {
+      assert.equal($("#test-response-selector-prepend").text(), "Example");
+    }, 500);
+</script>
+
+<div id="test-include-with-json" ic-post-to="/include_with_json" ic-include='{"foo":"bar", "doh" : "rey", "obj" : {"a" : "b"}, "bool" : true, "int" : 42}'></div>
+<script>
+  intercoolerTest("ic-include works with JSON content", function (assert) {
+      $.mockjax({
+        url: "/include_with_json",
+        response: function(settings) {
+          var params = parseParams(settings.data);
+          assert.equal(params['foo'], "bar");
+          assert.equal(params['doh'], "rey");
+          assert.equal(params['bool'], "true");
+          assert.equal(params['int'], "42");
+          assert.equal(params['obj'], '{"a":"b"}');
+        }
+      });
+      $("#test-include-with-json").click();
+    },
+    function (assert) {
+      // nothing
+    });
+</script>
+
+<div id="test-js-events" ic-get-from="/test-js-events"></div>
+<script>
+  if($.zepto) {
+    //skip
+  } else {
+  intercoolerTest("test that js events are called correctly", function (assert) {
+      $.mockjax({
+        url: "/test-js-events",
+        responseText: "Foo!"
+      });
+
+      var elid = "test-js-events";
+      var el = $("#" + elid);
+
+      el.on("beforeSend.ic", function (evt, elt, data, settings, xhr) {
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(data, undefined);
+        assert.notEqual(settings, undefined);
+        assert.notEqual(xhr, undefined);
+
+        assert.equal(evt.type, "beforeSend");
+        assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'], elid);
+      });
+
+      el.on("beforeHeaders.ic", function (evt, elt, xhr) {
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(xhr, undefined);
+
+        assert.equal(evt.type, "beforeHeaders");
+        assert.equal(elt.get(0).id, elid);
+        assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.on("afterHeaders.ic", function (evt, elt, xhr) {
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(xhr, undefined);
+
+        assert.equal(evt.type, "afterHeaders");
+        assert.equal(elt.get(0).id, elid);
+        assert.equal(xhr.responseText, "Foo!");
+      });
+
+      $('body').on("success.ic", function (evt, elt, data, textStatus, xhr) {
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(data, undefined);
+        assert.notEqual(textStatus, undefined);
+        assert.notEqual(xhr, undefined);
+
+        assert.equal(evt.type, "success");
+        assert.equal(elt.get(0).id, elid);
+        assert.equal(data, "Foo!");
+        assert.equal(textStatus, "success");
+        assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.on("error.ic", function (evt, elt, req, status, str) {
+        assert.ok(false);  // shouldn't run
+
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(req, undefined);
+        assert.notEqual(status, undefined);
+        assert.notEqual(str, undefined);
+
+        assert.equal(evt.type, "error");
+        assert.equal(elt.get(0).id, elid);
+        assert.equal(req, "Foo!");
+        assert.equal(status, "error");
+        assert.notEqual(str, undefined);
+      });
+
+      el.on("complete.ic", function (evt, elt, data, status, xhr) {
+        assert.notEqual(evt, undefined);
+        assert.notEqual(elt, undefined);
+        assert.notEqual(data, undefined);
+        assert.notEqual(status, undefined);
+        assert.notEqual(xhr, undefined);
+
+        assert.equal(evt.type, "complete");
+        assert.equal(elt.get(0).id, elid);
+
+        var params = parseParams(data);
+        assert.equal(params['ic-element-id'], elid);
+        assert.equal(status, "success");
+        assert.equal(xhr.responseText, "Foo!");
+      });
+
+      el.click();
+    },
+
+    function (assert) {
+      // nothing
+    });
+    }
+</script>
+
+<div id="selftarget">
+    <a id="test-target-self" ic-target="#selftarget" ic-get-from="/api44">click me! (self targeted)</a>
+</div>
+
+<a id="test-target-external" ic-target="#externaltarget" ic-get-from="/api44">click me! (external target)</a>
+<div id="externaltarget"></div>
+<script>
+    $('body').on('complete.ic', function(){
+        window.completed44 = true;
+    });
+    $.mockjax({
+        url: "/api44",
+        responseText: '<a ic-target="#selftarget" ic-get-from="/api44">click again</a>'
+    });
+
+    intercoolerTest("Issue #44 complete event should fire on click with external ic-target",
+            function (assert) {
+                window.completed44 = false;
+                $("#test-target-external").click();
+            },
+            function (assert) {
+                assert.equal(window.completed44, true);
+            });
+
+    intercoolerTest("Issue #44 complete event should fire on click with self-replacing ic-target",
+            function (assert) {
+                window.completed44 = false;
+                $("#test-target-self").click();
+            },
+            function (assert) {
+                assert.equal(window.completed44, true);
+            });
+
+</script>
+
+
+<div class="ic-ignore">
+  <button id="ic-ignore-test" ic-post-to="/ignore_test">Ignored</button>
+</div>
+
+<script>
+  intercoolerTest("Test ic-ignore class causes elements within it to be ignored",
+    function (assert) {
+      var text = "Foo";
+      $.mockjax({
+        url: "/ignore_test",
+        responseText: "Was Not Ignored"
+      });
+      assert.equal($('#ic-ignore-test').text(), "Ignored");
+      $("#ic-ignore-test").click();
+    },
+    function (assert) {
+      assert.equal($('#ic-ignore-test').text(), "Ignored");
+    });
+</script>
+
+<div id="remove-after-test" ic-post-to="/remove_after"></div>
+<script>
+  intercoolerTest("Test remove-after",
+    function (assert) {
+      $.mockjax({
+        url: "/remove_after",
+        responseText: "<div id='parent_remove_after'><div id='child_remove_after' " + fixAttrName("ic-remove-after") + "='1ms'></div></div>"
+      });
+      assert.equal($('#remove-after-test').text(), "");
+      $("#remove-after-test").click();
+    },
+    function (assert) {
+      assert.equal($('#parent_remove_after').length, 1);
+      assert.equal($('#child_remove_after').length, 0);
+    });
+</script>
+
+<div id="add-class-test" ic-post-to="/add_class"></div>
+<script>
+  intercoolerTest("Test ic-add-class",
+    function (assert) {
+      $.mockjax({
+        url: "/add_class",
+        responseText: "<div id='add_class_div' " + fixAttrName("ic-add-class") + "='classToAdd'></div>"
+      });
+      $("#add-class-test").click();
+    },
+    function (assert) {
+      assert.ok($('#add_class_div').hasClass("classToAdd"));
+    });
+</script>
+
+<div id="remove-class-test" ic-post-to="/remove_class"></div>
+<script>
+  intercoolerTest("Test ic-remove-class",
+    function (assert) {
+      $.mockjax({
+        url: "/remove_class",
+        responseText: "<div id='remove_class_div' class='classToRemove' " + fixAttrName("ic-remove-class") + "='classToRemove'></div>"
+      });
+      $("#remove-class-test").click();
+    },
+    function (assert) {
+      assert.ok(!$('#remove_class_div').hasClass("classToRemove"));
+    });
+</script>
+
+  <div id="local-transport-test" ic-local-X-IC-Trigger="foo">Bar</div>
+<div id="local-transport" ic-post-to="#local-transport-test"></div>
+<script>
+  if($.zepto) {
+    //skip
+  } else {
+    intercoolerTest("Test local transport",
+      function (assert) {
+        assert.equal($('#local-transport').text(), "");
+        $("#local-transport").click();
+      },
+      function (assert) {
+        assert.equal($('#local-transport').text(), "Bar");
+      });
+  }
+</script>
+
+
+<script>
+  QUnit.test('Run initialization sets up pushstate', function (assert) {
+    window.onpopstate = null;
+    Intercooler._internal.init();
+    assert.notEqual(null, window.onpopstate);
+  });
+</script>
+
+<script>
+  QUnit.test('Test replaceOrAddMethod', function (assert) {
+    assert.equal("foo=bar&_method=POST", Intercooler._internal.replaceOrAddMethod("foo=bar", "POST"));
+    assert.equal("&_method=POST", Intercooler._internal.replaceOrAddMethod("", "POST"));
+    assert.equal("foo=bar&_method=POST", Intercooler._internal.replaceOrAddMethod("foo=bar&_method=GET", "POST"));
+    assert.equal("&_method=POST&foo=bar", Intercooler._internal.replaceOrAddMethod("_method=GET&foo=bar", "POST"));
+    assert.equal("foo=bar&_method=POST&foo=bar", Intercooler._internal.replaceOrAddMethod("foo=bar&_method=GET&foo=bar", "POST"));
+    assert.equal("&_method=POST", Intercooler._internal.replaceOrAddMethod("_method=GET", "POST"));
+  });
+</script>
+
+<button id="ica-btn-1" ic-action="addClass:ic-apply1">ic-apply-button</button>
+<button id="ica-btn-2" ic-action="addClass:ic-apply1;addClass:ic-apply2">ic-apply-button</button>
+<button id="ica-btn-3" ic-action="addClass:ic-apply1;delay:0ms;addClass:ic-apply2">ic-apply-button</button>
+<button id="ica-btn-4" ic-action="addClass:ic-apply1;addClass:ic-apply2;addClass:ic-apply3">ic-apply-button</button>
+<button id="ica-btn-5" ic-action="addClass:ic-apply1;delay:0ms;addClass:ic-apply2;delay:0ms;addClass:ic-apply3">ic-apply-button</button>
+<button id="ica-btn-6" ic-action=";addClass:ic-apply1;">ic-apply-button</button>
+<button id="ica-btn-7" ic-action="delay:10ms;addClass:ic-apply1;">ic-apply-button</button>
+<button id="ica-btn-8" ic-action="delay:10ms;globalFuncForAction:1, 2, 3;">ic-apply-button</button>
+
+  <script>
+    var globalVarForAction = 0;
+    function globalFuncForAction(a, b, c) {
+      globalVarForAction = a + b + c;
+    }
+  QUnit.test('Test ic-action', function (assert) {
+    var done = assert.async();
+
+//    assert.ok($('#ica-btn-5').length == 1);
+
+    $('#ica-btn-1').click();
+    $('#ica-btn-2').click();
+    $('#ica-btn-3').click();
+    $('#ica-btn-4').click();
+    $('#ica-btn-5').click();
+    $('#ica-btn-6').click();
+    $('#ica-btn-7').click();
+    $('#ica-btn-8').click();
+
+    setTimeout(function () {
+      assert.ok($('#ica-btn-1').is(".ic-apply1"));
+
+      assert.ok($('#ica-btn-2').is(".ic-apply1"));
+      assert.ok(!$('#ica-btn-2').is(".ic-apply2"));
+
+      assert.ok($('#ica-btn-3').is(".ic-apply1"));
+      assert.ok($('#ica-btn-3').is(".ic-apply2"));
+
+      assert.ok($('#ica-btn-4').is(".ic-apply1"));
+      assert.ok(!$('#ica-btn-4').is(".ic-apply2"));
+      assert.ok(!$('#ica-btn-4').is(".ic-apply3"));
+
+      assert.ok($('#ica-btn-5').is(".ic-apply1"));
+      assert.ok($('#ica-btn-5').is(".ic-apply2"));
+      assert.ok($('#ica-btn-5').is(".ic-apply3"));
+
+      assert.ok($('#ica-btn-6').is(".ic-apply1"));
+
+      assert.ok(!$('#ica-btn-7').is(".ic-apply1"));
+    }, 5);
+
+    setTimeout(function () {
+      assert.ok($('#ica-btn-7').is(".ic-apply1"));
+      assert.equal(globalVarForAction, 6);
+    }, 12);
+
+    setTimeout(function () {
+      assert.ok($('#ica-btn-2').is(".ic-apply1"));
+      assert.ok($('#ica-btn-2').is(".ic-apply2"));
+
+      assert.ok($('#ica-btn-4').is(".ic-apply1"));
+      assert.ok($('#ica-btn-4').is(".ic-apply2"));
+      assert.ok(!$('#ica-btn-4').is(".ic-apply3"));
+
+    }, 500);
+
+    setTimeout(function () {
+      assert.ok($('#ica-btn-4').is(".ic-apply1"));
+      assert.ok($('#ica-btn-4').is(".ic-apply2"));
+      assert.ok($('#ica-btn-4').is(".ic-apply3"));
+      done();
+    }, 1000);
+
+  });
+</script>
+
+
+<button id="reqhandler-btn-1" ic-get-from="/reqhandler_start"></button>
+
+<script>
+  intercoolerTest("Test beforeAjaxSend.ic can modify ajax setup", function (assert) {
+
+      $(document).on("beforeAjaxSend.ic", function(evt, settings){
+        if(settings['url'] == "/reqhandler_start") {
+          settings['url'] = "/reqhandler_end"
+        }
+      });
+      $.mockjax({
+        url: "/reqhandler_end",
+        responseText: "foo"
+      });
+      $('#reqhandler-btn-1').click();
+    },
+    function (assert) {
+      assert.equal($("#reqhandler-btn-1").text(), "foo");
+    });
+</script>
+
+<script>
+  QUnit.test("If testing w/ data, assert there are data-* attributes", function (assert) {
+    if(USE_DATA_ATTRS) {
+      assert.ok($("[data-ic-target]").length > 0);
+    } else {
+      assert.ok($("[data-ic-target]").length == 0);
+    }
+  });
+</script>
+
+
+  <a id="google_link" href="http://www.google.com" ic-get-from="/anchor_override">Before</a>
+
+  <script>
+    intercoolerTest("Anchors do not navigate if overridden by intercooler",
+      function (assert) {
+        $.mockjax({
+          url: "/anchor_override",
+          responseText: "After"
+        });
+        assert.equal($('#google_link').text(), "Before");
+        $("#google_link").click();
+      },
+      function (assert) {
+        assert.equal($('#google_link').text(), "After");
+      });
+  </script>
+
+  <div id="localsParent">
+    <a id="a_no_href" ic-get-from="/anchor_override2">Before</a>
+    <a id="a_local_href" href="#foo" ic-get-from="/anchor_override3">Before</a>
+  </div>
+
+  <script>
+    intercoolerTest("Anchors do not navigate if overridden by intercooler",
+      function (assert) {
+
+        $("#localsParent").click(function(){
+          console.log("here");
+          var clicks = $("#localsParent").data("clicked_count") || 0;
+          console.log(clicks);
+          $("#localsParent").data("clicked_count", clicks + 1);
+        });
+
+        $.mockjax({
+          url: "/anchor_override2",
+          responseText: "After2"
+        });
+        $.mockjax({
+          url: "/anchor_override3",
+          responseText: "After3"
+        });
+        assert.equal($('#a_no_href').text(), "Before");
+        assert.equal($('#a_local_href').text(), "Before");
+        $("#a_no_href").click();
+        $("#a_local_href").click();
+      },
+      function (assert) {
+        assert.equal($('#a_no_href').text(), "After2");
+        assert.equal($('#a_local_href').text(), "After3");
+        assert.equal($("#localsParent").data("clicked_count"), 2);
+      });
+  </script>
+
+  <a id="local-var-set" ic-post-to="/local_vars_set">Local Var Set</a>
+  <script>
+    intercoolerTest("Local vars set test",
+      function (assert) {
+
+        localStorage.removeItem("foo");
+        localStorage.removeItem("bar");
+        localStorage.removeItem("do");
+
+        $.mockjax({
+          url: "/local_vars_set",
+          headers: {
+            "X-IC-Set-Local-Vars": '{"foo":"a", "bar":"b"}'
+          }
+        });
+        $("#local-var-set").click();
+      },
+      function (assert) {
+        assert.equal(localStorage.getItem("foo"), "a");
+        assert.equal(localStorage.getItem("bar"), "b");
+        assert.equal(localStorage.getItem("do"), null);
+      });
+  </script>
+
+  <a ic-local-vars="foo, bar, do" id="local-var-include" ic-post-to="/local_vars_include">Local Var Include</a>
+  <script>
+    intercoolerTest("Local vars include test",
+      function (assert) {
+
+        localStorage.setItem("foo", "a");
+        localStorage.setItem("bar", "b");
+        localStorage.removeItem("do");
+
+        $.mockjax({
+          url: "/local_vars_include",
+          response: function (settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "a");
+            assert.equal(params["bar"], "b");
+            assert.equal(params["do"], null);
+          }
+        });
+        $("#local-var-include").click();
+      },
+      function (assert) {
+        localStorage.removeItem("foo");
+        localStorage.removeItem("bar");
+        localStorage.removeItem("do");
+      });
+  </script>
+
+  <div id="auto-focus-div" ic-post-to="/autofocus">Autofocus</div>
+  <script>
+    intercoolerTest("Autofocus works",
+      function (assert) {
+
+        $.mockjax({
+          url: "/autofocus",
+          responseText: "<input id='auto-focus-input' autofocus>"
+        });
+        $("#auto-focus-div").click();
+      },
+      function (assert) {
+        assert.ok($('#auto-focus-input').is(":focus"));
+      });
+  </script>
+
+  <div id="trigger-from-1" ic-trigger-on='trigger-from-1'
+       ic-trigger-from='document' ic-get-from="/trigger1"></div>
+
+  <div id="trigger-from-2-target"></div>
+  <div id="trigger-from-2" ic-trigger-from="#trigger-from-2-target" ic-get-from="/trigger2"></div>
+  <script>
+    intercoolerTest("trigger-from attribute works",
+      function (assert) {
+        $.mockjax({ url: "/trigger1", responseText: "Foo"});
+        $.mockjax({ url: "/trigger2", responseText: "Bar"});
+        $(document).trigger('trigger-from-1');
+        $("#trigger-from-2-target").click();
+      },
+      function (assert) {
+        assert.ok($("#trigger-from-1").text() == "Foo");
+        assert.ok($("#trigger-from-2").text() == "Bar");
+      });
+  </script>
+
+  <form ic-post-to='/btn_val_included'>
+    <button id="btn_val_button" name="foo" value="bar">click button</button>
+    <button id="btn_val_button2" name="foo" value="doh">click button</button>
+    <button id="btn_val_button3" name="bar" value="doh">click button</button>
+  </form>
+  <script>
+    intercoolerTest("Button value is included in request",
+      function (assert) {
+        $.mockjax({
+          url: "/btn_val_included",
+          response: function(settings) {
+            var params = parseParams(settings.data);
+            assert.equal(params["foo"], "bar");
+            assert.equal(params["bar"], null);
+            return "";
+          }
+        });
+        $("#btn_val_button").focus().click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+  <form id="addCategoryForm" ic-post-to="/categories/create" style="">
+    <div class="form-group">
+      <input type="text" class="form-control" name="Name" placeholder="Category Name - 'Apparel', 'Drinkware', etc..." required="" value="asdr">
+    </div>
+    <button id="addCategoryFormBtn" type="submit" class="btn btn-default">Save</button>
+    &nbsp;
+    <a id="cancelAddCategory" href="javascript:;">Cancel</a>
+  </form>
+  <script>
+    intercoolerTest("Regression form submission",
+      function (assert) {
+        $.mockjax({
+          url: "/categories/create",
+          response: function(settings) {
+            assert.equal(settings.data.lastIndexOf('ic-request'), 0);
+            return "";
+          }
+        });
+        $("#addCategoryFormBtn").focus().click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+  <form ic-post-to="/no_button_val">
+    <button id="noButtonVal" type="submit" class="btn btn-default">Save</button>
+  </form>
+  <script>
+    intercoolerTest("Button does not submit a value if there is none",
+      function (assert) {
+        $.mockjax({
+          url: "/no_button_val",
+          response: function(settings) {
+            assert.equal(settings.data.indexOf('undefined'), -1);
+            return "";
+          }
+        });
+        $("#noButtonVal").focus().click();
+      },
+      function (assert) {
+        // nothing to do here
+      });
+  </script>
+
+  <div id="action-target-div"></div>
+  <div id="action-target-div-2"></div>
+  <a id="action-target-div-btn" ic-action="addClass:foo" ic-action-target="#action-target-div" ic-target="#action-target-div-2"></a>
+  <script>
+    intercoolerTest("ic-action-target attribute works", function (assert) {
+      assert.equal(false, $("#action-target-div").is(".foo"));
+      assert.equal(false, $("#action-target-div-2").is(".foo"));
+      assert.equal(false, $("#action-target-div-btn").is(".foo"));
+      $("#action-target-div-btn").click();
+    },
+      function (assert) {
+        assert.equal(true, $("#action-target-div").is(".foo"));
+        assert.equal(false, $("#action-target-div-2").is(".foo"));
+        assert.equal(false, $("#action-target-div-btn").is(".foo"));
+    });
+  </script>
+
+
+  <div id='sse-1' ic-sse-src="/foo"></div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works", function (assert) {
+      var mockSource = $("#sse-1").data("ic-event-sse-source");
+      assert.equal("", $("#sse-1").html());
+      mockSource.fireMessage("foo");
+    },
+    function(assert) {
+      assert.equal("foo", $("#sse-1").html());
+    });
+  </script>
+
+  <div id='sse-2' ic-sse-src="/foo" ic-swap-style="append">foo</div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works w/ Append", function (assert) {
+      var mockSource = $("#sse-2").data("ic-event-sse-source");
+      assert.equal("foo", $("#sse-2").html());
+      mockSource.fireMessage("bar");
+    },
+    function(assert) {
+      assert.equal("foobar", $("#sse-2").html());
+    });
+  </script>
+
+  <div id='sse-3' ic-sse-src="/foo" ic-swap-style="prepend">foo</div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works w/ Prepend", function (assert) {
+      var mockSource = $("#sse-3").data("ic-event-sse-source");
+      assert.equal("foo", $("#sse-3").html());
+      mockSource.fireMessage("bar");
+    },
+    function(assert) {
+      assert.equal("barfoo", $("#sse-3").html());
+    });
+  </script>
+
+  <div id='sse-4' ic-sse-src="/foo">
+    <span id='sse-4-inner' ic-get-from="/sse_triggered_req" ic-trigger-on="sse:foo"></span>
+  </div>
+  <script>
+    intercoolerTest("Server Sent Event Source Works As A Trigger", function(assert) {
+        $.mockjax({
+          url: "/sse_triggered_req",
+          responseText: "foo"
+        });
+        var mockSource = $("#sse-4").data("ic-event-sse-source");
+        assert.equal("", $("#sse-4-inner").html());
+        mockSource.fireEvent("foo", "bar");
+      },
+      function(assert) {
+        assert.equal("foo", $("#sse-4-inner").html());
+      });
+  </script>
+
+  <div id='sse-5' ic-get-from="/sse5" >
+    <span ic-sse-src="/foo" id='sse-5-inner'></span>
+  </div>
+  <script>
+    var closedMockSource = null;
+    intercoolerTest("Server Sent Events Sources are closed when element is swapped out", function(assert) {
+        $.mockjax({
+          url: "/sse5",
+          responseText: "foo"
+        });
+        closedMockSource = $("#sse-5-inner").data("ic-event-sse-source");
+        $("#sse-5").click();
+        assert.ok(closedMockSource.closed != true);
+      },
+      function(assert) {
+        assert.ok(closedMockSource.closed);
+      });
+  </script>
+
+  <div id="anchor-regression-div">
+      <a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=1" ic-replace-target="true">
+          <span>Click Me!</span>
+      </a>
+  </div>
+  <script>
+      intercoolerTest("replace-target anchor regression test", function(assert) {
+          $.mockjax({
+              url: /\/anchor_regression.*/,
+              response: function (settings) {
+                  var queryStr = settings.url.substring(settings.url.lastIndexOf('?'));
+                  var params = parseParams(queryStr);
+                  var issue = parseInt(params['issue']);
+                  this.responseText = '\
+<a id="anchor-regression-a" class="button button--primary" ic-post-to="/anchor_regression?issue=' + (issue + 1) + '" ic-replace-target="true">\
+    <span>You clicked me ' + issue + ' times...</span>\
+</a>';
+              }
+          });
+          $("#anchor-regression-a").click();
+      },
+      function(assert) {
+          assert.equal("You clicked me 1 times...", $("#anchor-regression-a").find('span').text());
+          assert.equal(1, $("#anchor-regression-div").find('a').length);
+      });
+  </script>
+
+  <div>
+      <form id="form-get-test" ic-get-from="/form_get">
+          <button id="form-get-test-btn" name="bar" value="foo">bar</button>
+        <input type="hidden" name="hidden" value="blam"/>
+      </form>
+  </div>
+  <script>
+    intercoolerTest("Include form values on GET if the form is the source of the request",
+      function (assert) {
+        $.mockjax({
+          url: "/form_get",
+          response: function (settings) {
+            var params = parseParams(settings.data);
+            console.log(params);
+            assert.equal(params['bar'], "foo", "Included");
+            assert.equal(params['hidden'], "blam", "Included");
+            this.responseText = "";
+          }
+        });
+        $("#form-get-test-btn").focus().click();
+      },
+      function (assert) {
+      });
+  </script>
+
+</div>
+</body>
+</html>

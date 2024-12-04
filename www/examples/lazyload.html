@@ -1,0 +1,90 @@
+---
+layout: default
+nav: tutorial
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h1>Lazy Loading A Div</h1>
+
+      <p>This example lazily loads an expensive to calculate graph in a div within the page, allowing the
+        page to respond immediately.</p>
+
+      <p>Note that the "server side" implementation is mocked out using mockjax, so you can see the entire
+        implementation. Click the "Source Code" tab to see the code.</p>
+
+      <h2>Explanation</h2>
+
+      <ul>
+        <li>
+          A div within the page loads a graph from another URL using the
+          <a href="/attributes/ic-get-from.html"><code>ic-get-from</code></a>
+          attribute.  In order to trigger the loading when the page loads, the
+          <a href="/attributes/ic-trigger-on.html"><code>ic-trigger-on</code></a>
+          attribute is set to "load".
+        </li>
+        <li>A progress spinner is in the div when it is first rendered, to let the user know that the
+          lazily loaded content is in flight</li>
+      </ul>
+
+      <h2>Demo</h2>
+
+      <div>
+        <ul class="demo-nav nav nav-pills">
+          <li role="presentation" class="active">
+            <a href="#demo" aria-controls="demo" role="tab" data-toggle="tab">Live Demo</a>
+          </li>
+          <li role="presentation">
+            <a href="#code" aria-controls="demo" role="tab" data-toggle="tab">Source Code</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="demo">
+
+          <h3>Tokyo Climate Graph</h3>
+
+          <div class="text-center" ic-get-from="/graph" ic-trigger-on="load">
+            <i class="fa fa-spinner fa-spin fa-2x"></i> Loading Graph...
+          </div>
+
+          <style>
+            div img {
+              transition: all 1s;
+            }
+            div.ic-transitioning img {
+               opacity: 0;
+            }
+          </style>
+
+          <script>
+
+            //========================================================================
+            // Mock Server-Side HTTP End Point
+            //========================================================================
+            $.mockjax({
+              url: "/graph",
+              responseTime: 2500,
+              response: function (settings) {
+                this.responseText = "<img src='/images/tokyo.png'>"; // Hey, it's just a demo...
+              }
+            });
+
+          </script>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="code">
+          <pre id="src-pre"></pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $("#src-pre").text($("#demo").html());
+    </script>
+
+  </div>
+</div>

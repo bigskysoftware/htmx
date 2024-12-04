@@ -1,0 +1,56 @@
+---
+layout: default
+nav: attributes > ic-delete-from
+---
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2><code>ic-delete-from</code> - The Delete-To Attribute</h2>
+
+      <h3>Summary</h3>
+
+      <p>The <code>ic-delete-from</code> attribute binds the <em>default action</em> (see below) of HTML element to a
+        <code>DELETE</code> to the given URL.  For example, on a button, when the button is clicked, an
+        AJAX <code>DELETE</code> will be issued to the given URL.</p>
+
+      {% include action_common.html %}
+
+      <h3>Syntax</h3>
+
+      <p>The value of the attribute should be a valid relative path (e.g. <code>ic-delete-from="/foo/bar"</code>).</p>
+
+      <h3>Dependencies</h3>
+
+      <p><code>ic-delete-from</code> implies a dependency on its path, and Intercooler will issue requests for elements
+        whenever it detects an action that the path depends on.  See <a href="/dependencies.html">Dependencies</a> for
+      more information.</p>
+
+      <h3>Example</h3>
+
+      <p>Here is a simple example, with a span that depends on the updated URL:</p>
+
+      <pre>
+        &lt;button class="btn btn-lg btn-primary" ic-delete-from="/delete_me">Delete Me!&lt;/button>
+      </pre>
+
+
+      <div class="live-demo">
+        <script>
+          (function () {
+            $.mockjax({
+              'url': '/delete_me',
+              "headers": {
+                "X-IC-Remove": true
+              }
+            });
+          })();
+        </script>
+        <button class="btn btn-lg btn-primary" ic-delete-from="/delete_me">Delete Me!</button>
+      </div>
+
+    </div>
+  </div>
+</div>
