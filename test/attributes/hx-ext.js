@@ -156,4 +156,28 @@ describe('hx-ext attribute', function() {
 
     ext5Calls.should.equal(1)
   })
+
+  it('Extensions can be applied to this element only properly', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+
+    make('<div id="div-AA" hx-ext="this-only:ext-1,ext-2,ext-5" hx-get="/test" foo="foo" hx-trigger="click">Click Me!' +
+            '<div id="div-BB" hx-ext="ignore:ext-5"><button id="btn-BB" hx-get="/test" foo="foo" hx-trigger="click consume"></button></div></div>')
+
+    var div1 = byId('div-AA')
+    var btn2 = byId('btn-BB')
+
+    btn2.click()
+    this.server.respond()
+    ext1Calls.should.equal(0)
+    ext2Calls.should.equal(1)
+    ext3Calls.should.equal(0)
+
+    div1.click()
+    this.server.respond()
+    ext1Calls.should.equal(1)
+    ext2Calls.should.equal(2)
+    ext3Calls.should.equal(0)
+
+    ext5Calls.should.equal(1)
+  })
 })
