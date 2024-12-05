@@ -157,10 +157,10 @@ describe('hx-ext attribute', function() {
     ext5Calls.should.equal(1)
   })
 
-  it('Extensions can be local properly', function() {
+  it('Extensions can be applied to this element only properly', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 
-    make('<div id="div-AA" hx-ext="local:ext-1,ext-2,ext-5" hx-get="/test" foo="foo" hx-trigger="click">Click Me!' +
+    make('<div id="div-AA" hx-ext="this-only:ext-1,ext-2,ext-5" hx-get="/test" foo="foo" hx-trigger="click">Click Me!' +
             '<div id="div-BB" hx-ext="ignore:ext-5"><button id="btn-BB" hx-get="/test" foo="foo" hx-trigger="click consume"></button></div></div>')
 
     var div1 = byId('div-AA')

@@ -25,10 +25,10 @@ hierarchy and it will apply to all child elements.
 </div>
 ```
 
-* If an extension needs to apply only to a single element you can override inheritance on an element using `hx-ext="local:extensionName"` 
+* If an extension needs to apply only to a single element you can override inheritance on an element using `hx-ext="this-only:extensionName"` 
 
 ```html
-<div hx-ext="local:example"> <!-- "Example" extension is used just on this element -->
+<div hx-ext="this-only:example"> <!-- "Example" extension is used just on this element only -->
   <div>
     ... but it will not be used in this part.
   </div>

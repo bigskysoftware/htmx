@@ -4928,9 +4928,9 @@ var htmx = (function() {
           extensionsToIgnore.push(extensionName.slice(7))
           return
         }
-        if (extensionName.indexOf('local:') === 0) {
+        if (extensionName.indexOf('this-only:') === 0) {
           if (isParentScan) return
-          extensionName = extensionName.slice(6)
+          extensionName = extensionName.slice(10)
         }
         if (extensionsToIgnore.indexOf(extensionName) < 0) {
           const extension = extensions[extensionName]
