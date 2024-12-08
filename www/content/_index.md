@@ -346,10 +346,22 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </td>
 <td>
-        <a data-github-account="Viralyft" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
+        <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
            <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
         </a>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+        <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
+           <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
 </td>
 </tr>
 </table>
