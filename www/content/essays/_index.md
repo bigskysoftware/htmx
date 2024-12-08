@@ -58,6 +58,7 @@ page_template = "essay.html"
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 * [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 * [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
+* [Prefer If Statements to Polymorphism, etc.](@/essays/prefer-if-statements.md)
 
 ### Hypermedia History
 
