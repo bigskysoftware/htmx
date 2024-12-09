@@ -13,7 +13,7 @@ unused requests. Use this extension carefully!
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx-ext-preload@2.0.3/preload.js"></script>
+<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
 ```
 
 ## Usage
