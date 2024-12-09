@@ -959,7 +959,7 @@ The fields available for response handling configuration on entries in this arra
 * `target` - A CSS selector specifying an alternative target for the response
 * `swapOverride` - An alternative swap mechanism for the response
 
-#### Configuring Response Handling Examples {#response-handling}
+#### Configuring Response Handling Examples {#response-handling-examples}
 
 As an example of how to use this configuration, consider a situation when a server-side framework responds with a
 [`422 - Unprocessable Entity`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) response when validation errors occur.  By default, htmx will ignore the response,
