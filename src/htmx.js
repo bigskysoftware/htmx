@@ -2321,8 +2321,13 @@ var htmx = (function() {
         const rawAttribute = getRawAttribute(elt, 'method')
         verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         path = getRawAttribute(elt, 'action')
-        if (verb === 'get' && path && path.includes('?')) {
-          path = path.replace(/\?[^#]+/, '')
+        if (path == null || path === '') {
+          // if there is no action attribute on the form set path to current href before the
+          // following logic to properly clear parameters on a GET (not on a POST!)
+          path = getDocument().location.href
+        }
+        if (verb === 'get' && path.includes('?')) {
+          path = path.replace(/\?[^#]+/, '');
         }
       }
       triggerSpecs.forEach(function(triggerSpec) {
