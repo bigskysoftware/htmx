@@ -69,6 +69,7 @@ if(window.location.search=="?ads=true") {
 </div>
 
 <div class="dark-hero full-width" classes="add appear">
+<marquee>
   <div class="main">
       <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
@@ -83,6 +84,8 @@ if(window.location.search=="?ads=true") {
        <img src="/img/kawaii.png">
      </a>
   </div>
+
+</marquee>
 </div>
 <div class="ad">
 <a href="https://swag.htmx.org">
@@ -330,11 +333,35 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </td>
 </tr>
 <tr>
-<td></td>
 <td>
-        <a data-github-account="gitdevin99" href="https://insfollowpro.com/">
-          <img src="/img/ins-follow-pro.png" style="width:100%;max-width:250px">
+        <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
+          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="width:100%;max-width:50px" >
+          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="width:100%;max-width:50px">
         </a>
+</td>
+<td>
+        <a data-github-account="Viralyft" alt="Buy YouTube views" href="https://viralyft.com/buy-youtube-views/">
+           <img class="dark-hidden" src="/img/Viralyft_light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/Viralyft_dark.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
+           <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+        <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
+           <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
 </td>
 </tr>
 </table>
