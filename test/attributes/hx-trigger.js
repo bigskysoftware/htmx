@@ -1043,6 +1043,28 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
+  it('fires the htmx:trigger event when the trigger is a load', function(done) {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div hx-trigger="load delay:50ms" hx-on::trigger="this.innerText = \'Done\'">Response</div>'
+    )
+
+    var div = make('<div hx-get="/test">Submit</div>')
+    div.click()
+    this.server.respond()
+    var response = div.children[0]
+    response.innerText.should.equal('Response')
+
+    setTimeout(function() {
+      try {
+        response.innerText.should.equal('Done')
+        done()
+      } finally {
+      }
+    }, 100)
+  })
+
   it('filters support "this" reference to the current element', function() {
     this.server.respondWith('GET', '/test', 'Called!')
     var form = make('<form hx-get="/test" hx-trigger="click[this.classList.contains(\'bar\')]">Not Called</form>')
