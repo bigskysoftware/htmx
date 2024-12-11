@@ -1128,17 +1128,17 @@ var htmx = (function() {
   function querySelectorAllExt(elt, selector, global) {
     elt = resolveTarget(elt)
     if (selector.indexOf('closest ') === 0) {
-      return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
+      return [closest(asElement(elt), normalizeSelector(selector.slice(8)))]
     } else if (selector.indexOf('find ') === 0) {
-      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
+      return [find(asParentNode(elt), normalizeSelector(selector.slice(5)))]
     } else if (selector === 'next') {
       return [asElement(elt).nextElementSibling]
     } else if (selector.indexOf('next ') === 0) {
-      return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)]
+      return [scanForwardQuery(elt, normalizeSelector(selector.slice(5)), !!global)]
     } else if (selector === 'previous') {
       return [asElement(elt).previousElementSibling]
     } else if (selector.indexOf('previous ') === 0) {
-      return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)]
+      return [scanBackwardsQuery(elt, normalizeSelector(selector.slice(9)), !!global)]
     } else if (selector === 'document') {
       return [document]
     } else if (selector === 'window') {
@@ -1416,8 +1416,8 @@ var htmx = (function() {
     if (oobValue === 'true') {
       // do nothing
     } else if (oobValue.indexOf(':') > 0) {
-      swapStyle = oobValue.substr(0, oobValue.indexOf(':'))
-      selector = oobValue.substr(oobValue.indexOf(':') + 1, oobValue.length)
+      swapStyle = oobValue.substring(0, oobValue.indexOf(':'))
+      selector = oobValue.substring(oobValue.indexOf(':') + 1)
     } else {
       swapStyle = oobValue
     }
@@ -2026,7 +2026,7 @@ var htmx = (function() {
         while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
           position++
         }
-        tokens.push(str.substr(startPosition, position - startPosition + 1))
+        tokens.push(str.substring(startPosition, position + 1))
       } else if (STRINGISH_START.indexOf(str.charAt(position)) !== -1) {
         const startChar = str.charAt(position)
         var startPosition = position
@@ -2037,7 +2037,7 @@ var htmx = (function() {
           }
           position++
         }
-        tokens.push(str.substr(startPosition, position - startPosition + 1))
+        tokens.push(str.substring(startPosition, position + 1))
       } else {
         const symbol = str.charAt(position)
         tokens.push(symbol)
@@ -3582,7 +3582,7 @@ var htmx = (function() {
       } else if (paramsValue === '*') {
         return inputValues
       } else if (paramsValue.indexOf('not ') === 0) {
-        forEach(paramsValue.substr(4).split(','), function(name) {
+        forEach(paramsValue.slice(4).split(','), function(name) {
           name = name.trim()
           inputValues.delete(name)
         })
@@ -3632,15 +3632,15 @@ var htmx = (function() {
         for (let i = 0; i < split.length; i++) {
           const value = split[i]
           if (value.indexOf('swap:') === 0) {
-            swapSpec.swapDelay = parseInterval(value.substr(5))
+            swapSpec.swapDelay = parseInterval(value.slice(5))
           } else if (value.indexOf('settle:') === 0) {
-            swapSpec.settleDelay = parseInterval(value.substr(7))
+            swapSpec.settleDelay = parseInterval(value.slice(7))
           } else if (value.indexOf('transition:') === 0) {
-            swapSpec.transition = value.substr(11) === 'true'
+            swapSpec.transition = value.slice(11) === 'true'
           } else if (value.indexOf('ignoreTitle:') === 0) {
-            swapSpec.ignoreTitle = value.substr(12) === 'true'
+            swapSpec.ignoreTitle = value.slice(12) === 'true'
           } else if (value.indexOf('scroll:') === 0) {
-            const scrollSpec = value.substr(7)
+            const scrollSpec = value.slice(7)
             var splitSpec = scrollSpec.split(':')
             const scrollVal = splitSpec.pop()
             var selectorVal = splitSpec.length > 0 ? splitSpec.join(':') : null
@@ -3648,14 +3648,14 @@ var htmx = (function() {
             swapSpec.scroll = scrollVal
             swapSpec.scrollTarget = selectorVal
           } else if (value.indexOf('show:') === 0) {
-            const showSpec = value.substr(5)
+            const showSpec = value.slice(5)
             var splitSpec = showSpec.split(':')
             const showVal = splitSpec.pop()
             var selectorVal = splitSpec.length > 0 ? splitSpec.join(':') : null
             swapSpec.show = showVal
             swapSpec.showTarget = selectorVal
           } else if (value.indexOf('focus-scroll:') === 0) {
-            const focusScrollVal = value.substr('focus-scroll:'.length)
+            const focusScrollVal = value.slice('focus-scroll:'.length)
             swapSpec.focusScroll = focusScrollVal == 'true'
           } else if (i == 0) {
             swapSpec.swapStyle = value
@@ -3777,10 +3777,10 @@ var htmx = (function() {
         return null
       }
       if (str.indexOf('javascript:') === 0) {
-        str = str.substr(11)
+        str = str.slice(11)
         evaluateValue = true
       } else if (str.indexOf('js:') === 0) {
-        str = str.substr(3)
+        str = str.slice(3)
         evaluateValue = true
       }
       if (str.indexOf('{') !== 0) {
