@@ -2324,7 +2324,7 @@ var htmx = (function() {
         verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         path = getRawAttribute(elt, 'action')
         if (!path) {
-          return;
+          path = ''
         }
         if (verb === 'get' && path.includes('?')) {
           path = path.replace(/\?[^#]+/, '')
