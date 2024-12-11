@@ -4929,7 +4929,9 @@ var htmx = (function() {
           return
         }
         if (extensionName.indexOf('this-only:') === 0) {
-          if (isParentScan) return
+          if (isParentScan) {
+            return
+          }
           extensionName = extensionName.slice(10)
         }
         if (extensionsToIgnore.indexOf(extensionName) < 0) {
