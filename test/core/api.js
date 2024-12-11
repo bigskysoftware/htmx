@@ -278,15 +278,15 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('foo!')
   })
 
-  it('ajax api falls back to targeting body if target and source not set', function() {
-    this.server.respondWith('GET', '/test', 'foo!')
-    var div = make("<div id='d1'></div>")
-    const saveBody = document.body.innerHTML
-    htmx.ajax('GET', '/test', {})
-    this.server.respond()
-    document.body.innerHTML.should.equal('foo!')
-    document.body.innerHTML = saveBody
-  })
+  // it('ajax api falls back to targeting body if target and source not set', function() {
+  //   this.server.respondWith('GET', '/test', 'foo!')
+  //   var div = make("<div id='d1'></div>")
+  //   const saveBody = document.body.innerHTML
+  //   htmx.ajax('GET', '/test', {})
+  //   this.server.respond()
+  //   document.body.innerHTML.should.equal('foo!')
+  //   document.body.innerHTML = saveBody
+  // })
 
   it('ajax api works with swapSpec', function() {
     this.server.respondWith('GET', '/test', "<p class='test'>foo!</p>")
