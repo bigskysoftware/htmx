@@ -1126,34 +1126,77 @@ var htmx = (function() {
    * @returns {(Node|Window)[]}
    */
   function querySelectorAllExt(elt, selector, global) {
-    elt = resolveTarget(elt)
-    if (selector.indexOf('closest ') === 0) {
-      return [closest(asElement(elt), normalizeSelector(selector.slice(8)))]
-    } else if (selector.indexOf('find ') === 0) {
-      return [find(asParentNode(elt), normalizeSelector(selector.slice(5)))]
-    } else if (selector === 'next') {
-      return [asElement(elt).nextElementSibling]
-    } else if (selector.indexOf('next ') === 0) {
-      return [scanForwardQuery(elt, normalizeSelector(selector.slice(5)), !!global)]
-    } else if (selector === 'previous') {
-      return [asElement(elt).previousElementSibling]
-    } else if (selector.indexOf('previous ') === 0) {
-      return [scanBackwardsQuery(elt, normalizeSelector(selector.slice(9)), !!global)]
-    } else if (selector === 'document') {
-      return [document]
-    } else if (selector === 'window') {
-      return [window]
-    } else if (selector === 'body') {
-      return [document.body]
-    } else if (selector === 'root') {
-      return [getRootNode(elt, !!global)]
-    } else if (selector === 'host') {
-      return [(/** @type ShadowRoot */(elt.getRootNode())).host]
-    } else if (selector.indexOf('global ') === 0) {
+    if (selector.indexOf('global ') === 0) {
       return querySelectorAllExt(elt, selector.slice(7), true)
-    } else {
-      return toArray(asParentNode(getRootNode(elt, !!global)).querySelectorAll(normalizeSelector(selector)))
     }
+
+    elt = resolveTarget(elt)
+
+    const parts = []
+    {
+      let chevronsCount = 0
+      let offset = 0
+      for (let i = 0; i < selector.length; i++) {
+        const char = selector[i]
+        if (char === ',' && chevronsCount === 0) {
+          parts.push(selector.substring(offset, i))
+          offset = i + 1
+          continue
+        }
+        if (char === '<') {
+          chevronsCount++
+        } else if (char === '/' && i < selector.length - 1 && selector[i + 1] === '>') {
+          chevronsCount--
+        }
+      }
+      if (offset < selector.length) {
+        parts.push(selector.substring(offset))
+      }
+    }
+
+    const result = []
+    const unprocessedParts = []
+    while (parts.length > 0) {
+      const selector = normalizeSelector(parts.shift())
+      let item
+      if (selector.indexOf('closest ') === 0) {
+        item = closest(asElement(elt), normalizeSelector(selector.substr(8)))
+      } else if (selector.indexOf('find ') === 0) {
+        item = find(asParentNode(elt), normalizeSelector(selector.substr(5)))
+      } else if (selector === 'next' || selector === 'nextElementSibling') {
+        item = asElement(elt).nextElementSibling
+      } else if (selector.indexOf('next ') === 0) {
+        item = scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)
+      } else if (selector === 'previous' || selector === 'previousElementSibling') {
+        item = asElement(elt).previousElementSibling
+      } else if (selector.indexOf('previous ') === 0) {
+        item = scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)
+      } else if (selector === 'document') {
+        item = document
+      } else if (selector === 'window') {
+        item = window
+      } else if (selector === 'body') {
+        item = document.body
+      } else if (selector === 'root') {
+        item = getRootNode(elt, !!global)
+      } else if (selector === 'host') {
+        item = (/** @type ShadowRoot */(elt.getRootNode())).host
+      } else {
+        unprocessedParts.push(selector)
+      }
+
+      if (item) {
+        result.push(item)
+      }
+    }
+
+    if (unprocessedParts.length > 0) {
+      const standardSelector = unprocessedParts.join(',')
+      const rootNode = asParentNode(getRootNode(elt, !!global))
+      result.push(...toArray(rootNode.querySelectorAll(standardSelector)))
+    }
+
+    return result
   }
 
   /**
@@ -2327,7 +2370,7 @@ var htmx = (function() {
           path = getDocument().location.href
         }
         if (verb === 'get' && path.includes('?')) {
-          path = path.replace(/\?[^#]+/, '');
+          path = path.replace(/\?[^#]+/, '')
         }
       }
       triggerSpecs.forEach(function(triggerSpec) {

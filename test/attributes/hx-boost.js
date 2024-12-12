@@ -157,17 +157,16 @@ describe('hx-boost attribute', function() {
   })
 
   it('form get with no action properly clears existing parameters on submit', function() {
-
     /// add a foo=bar to the current url
-    var path = location.href;
-    if (!path.includes("foo=bar")) {
-      if (!path.includes("?")) {
-        path += "?foo=bar";
+    var path = location.href
+    if (!path.includes('foo=bar')) {
+      if (!path.includes('?')) {
+        path += '?foo=bar'
       } else {
-        path += "&foo=bar";
+        path += '&foo=bar'
       }
     }
-    history.replaceState({ htmx: true }, '', path);
+    history.replaceState({ htmx: true }, '', path)
 
     this.server.respondWith('GET', /\/*/, function(xhr) {
       // foo should not be present because the form is a get with no action
@@ -183,17 +182,16 @@ describe('hx-boost attribute', function() {
   })
 
   it('form get with an empty action properly clears existing parameters on submit', function() {
-
     /// add a foo=bar to the current url
-    var path = location.href;
-    if (!path.includes("foo=bar")) {
-      if (!path.includes("?")) {
-        path += "?foo=bar";
+    var path = location.href
+    if (!path.includes('foo=bar')) {
+      if (!path.includes('?')) {
+        path += '?foo=bar'
       } else {
-        path += "&foo=bar";
+        path += '&foo=bar'
       }
     }
-    history.replaceState({ htmx: true }, '', path);
+    history.replaceState({ htmx: true }, '', path)
 
     this.server.respondWith('GET', /\/*/, function(xhr) {
       // foo should not be present because the form is a get with no action
