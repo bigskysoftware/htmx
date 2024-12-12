@@ -2,6 +2,15 @@
 
 ## [2.0.4] - 2024-12-13
 
+* Calling `htmx.ajax` with no target or source now defaults to body (previously did nothing)
+* Nested [shadow root](https://github.com/bigskysoftware/htmx/commit/5ab508f6523a37890932176f7dc54be9f7a281ff) fix
+* The `htmx:trigger` event now properly fires on the synthetic `load` event
+* The synthetic `load` event will not be re-called when an element is reinitialized via `htmx.process()`
+* Boosted `<form>` tags that issue a `GET` with no or empty `action` attributes will properly replace all existing query 
+  parameters
+* Events that are triggered on htmx-powered elements located outside a form, but that refer to a form via the`form` 
+  attribute, now properly cancel the submission of the referred-to form
+
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
   see the [demo page](/examples/move-before) for more information.
