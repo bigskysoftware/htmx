@@ -574,5 +574,5 @@ pre[class|="language"] {
 }
 
 .zola-anchor:hover::after {
-  content: ' 🔗';
+  content: ' #';
 }
