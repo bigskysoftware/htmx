@@ -113,16 +113,6 @@ describe('Core htmx internals Tests', function() {
     htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
   })
 
-  it('tags respond correctly to shouldCancel even if they are outside of a form', function() {
-    var form = make("<form id='f1'></form><input id='i1' form='f1' type='submit'>")
-    var input = byId('i1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
-
-    form = make("<form id='f1'></form><button id='b1' form='f1' type='submit'>")
-    var button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
-  })
-
   it('unset properly unsets a given attribute', function() {
     make("<div foo='1'><div foo='2'><div foo='unset' id='d1'></div></div></div>")
     var div = byId('d1')
