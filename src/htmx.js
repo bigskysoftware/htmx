@@ -2370,7 +2370,7 @@ var htmx = (function() {
           path = getDocument().location.href
         }
         if (verb === 'get' && path.includes('?')) {
-          path = path.replace(/\?[^#]+/, '');
+          path = path.replace(/\?[^#]+/, '')
         }
       }
       triggerSpecs.forEach(function(triggerSpec) {
