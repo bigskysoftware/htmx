@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.0.4] - 2024-12-13
+
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
   see the [demo page](/examples/move-before) for more information.
