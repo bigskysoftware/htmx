@@ -10,6 +10,13 @@
   parameters
 * Events that are triggered on htmx-powered elements located outside a form, but that refer to a form via the`form` 
   attribute, now properly cancel the submission of the referred-to form
+* Extension Updates
+  * `preload` extension was 
+    [completely reworked](https://github.com/bigskysoftware/htmx-extensions/commit/fb68dfb48063505d2d7420d717c24ac9a8dae244) 
+    by @marisst to be compatible with `hx-boost`, not cause side effect, etc. Thank you!
+  * `response-targets` was updated to not use deprecated methods
+  * A [small fix](https://github.com/bigskysoftware/htmx-extensions/commit/e87e1c3d0bf728b4e43861c7459f3f937883eb99) to
+    `ws` to avoid an error when closing in some cases
 
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
