@@ -17,6 +17,7 @@
   * `response-targets` was updated to not use deprecated methods
   * A [small fix](https://github.com/bigskysoftware/htmx-extensions/commit/e87e1c3d0bf728b4e43861c7459f3f937883eb99) to
     `ws` to avoid an error when closing in some cases
+  * The `head-support` extension was updated to work with the `sse` extension
 
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
