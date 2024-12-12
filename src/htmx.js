@@ -2400,7 +2400,8 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
-      if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
+      if (matches(elt, 'input[type="submit"], button') &&
+        (matches(elt, '[form]') || closest(elt, 'form') !== null)) {
         return true
       }
       if (elt instanceof HTMLAnchorElement && elt.href &&
