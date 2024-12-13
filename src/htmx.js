@@ -1160,17 +1160,17 @@ var htmx = (function() {
       const selector = normalizeSelector(parts.shift())
       let item
       if (selector.indexOf('closest ') === 0) {
-        item = closest(asElement(elt), normalizeSelector(selector.substr(8)))
+        item = closest(asElement(elt), normalizeSelector(selector.slice(8)))
       } else if (selector.indexOf('find ') === 0) {
-        item = find(asParentNode(elt), normalizeSelector(selector.substr(5)))
+        item = find(asParentNode(elt), normalizeSelector(selector.slice(5)))
       } else if (selector === 'next' || selector === 'nextElementSibling') {
         item = asElement(elt).nextElementSibling
       } else if (selector.indexOf('next ') === 0) {
-        item = scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)
+        item = scanForwardQuery(elt, normalizeSelector(selector.slice(5)), !!global)
       } else if (selector === 'previous' || selector === 'previousElementSibling') {
         item = asElement(elt).previousElementSibling
       } else if (selector.indexOf('previous ') === 0) {
-        item = scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)
+        item = scanBackwardsQuery(elt, normalizeSelector(selector.slice(9)), !!global)
       } else if (selector === 'document') {
         item = document
       } else if (selector === 'window') {
