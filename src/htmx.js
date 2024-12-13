@@ -4201,9 +4201,11 @@ var htmx = (function() {
 
       const buttonVerb = getRawAttribute(submitter, 'formmethod')
       if (buttonVerb != null) {
-      // ignore buttons with formmethod="dialog"
-        if (buttonVerb.toLowerCase() !== 'dialog') {
+        if (VERBS.includes(buttonVerb.toLowerCase())) {
           verb = (/** @type HttpVerb */(buttonVerb))
+        } else {
+          maybeCall(resolve)
+          return promise
         }
       }
     }
