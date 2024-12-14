@@ -157,4 +157,4 @@ The AJAX request can be triggered via JavaScript [`htmx.trigger()`](@/api.md#tri
 * `hx-trigger` is not inherited
 * `hx-trigger` can be used without an AJAX request, in which case it will only fire the `htmx:trigger` event
 * In order to pass a CSS selector that contains whitespace (e.g. `form input`) to the `from`- or `target`-modifier, surround the selector in parentheses or curly brackets (e.g. `from:(form input)` or `from:closest (form input)`)
-* Reset triggers only on the second successive event (e.g. 2 clicks on reset button) when hx-trigger contains other triggers (e.g. hx-trigger="change, reset"). Add any delay to reset as a workaround (e.g. hx-trigger="change, reset delay:0.01s").  
+* A reset event in hx-trigger (e.g. hx-trigger="change, reset") might not work as intended, since HTMX builds its values and sends a request before the browser resets the form values. As a workaround, add a delay to let the browser reset the form before making the request (e.g. hx-trigger="change, reset delay:0.01s"). 
