@@ -147,7 +147,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Http4k
 
-<https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/mikaelstaldal/htmx-http4k-thymeleaf>
 
 ## Julia
 

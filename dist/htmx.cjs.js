@@ -277,7 +277,7 @@ var htmx = (function() {
     parseInterval: null,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.3'
+    version: '2.0.4'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -693,6 +693,7 @@ var htmx = (function() {
    * @property {XMLHttpRequest} [xhr]
    * @property {(() => void)[]} [queuedRequests]
    * @property {boolean} [abortable]
+   * @property {boolean} [firstInitCompleted]
    *
    * Event data
    * @property {HtmxTriggerSpecification} [triggerSpec]
@@ -754,17 +755,14 @@ var htmx = (function() {
   }
 
   /**
+   * Checks whether the element is in the document (includes shadow roots).
+   * This function this is a slight misnomer; it will return true even for elements in the head.
+   *
    * @param {Node} elt
    * @returns {boolean}
    */
   function bodyContains(elt) {
-    // IE Fix
-    const rootNode = elt.getRootNode && elt.getRootNode()
-    if (rootNode && rootNode instanceof window.ShadowRoot) {
-      return getDocument().body.contains(rootNode.host)
-    } else {
-      return getDocument().body.contains(elt)
-    }
+    return elt.getRootNode({ composed: true }) === document
   }
 
   /**
@@ -1128,34 +1126,77 @@ var htmx = (function() {
    * @returns {(Node|Window)[]}
    */
   function querySelectorAllExt(elt, selector, global) {
-    elt = resolveTarget(elt)
-    if (selector.indexOf('closest ') === 0) {
-      return [closest(asElement(elt), normalizeSelector(selector.substr(8)))]
-    } else if (selector.indexOf('find ') === 0) {
-      return [find(asParentNode(elt), normalizeSelector(selector.substr(5)))]
-    } else if (selector === 'next') {
-      return [asElement(elt).nextElementSibling]
-    } else if (selector.indexOf('next ') === 0) {
-      return [scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)]
-    } else if (selector === 'previous') {
-      return [asElement(elt).previousElementSibling]
-    } else if (selector.indexOf('previous ') === 0) {
-      return [scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)]
-    } else if (selector === 'document') {
-      return [document]
-    } else if (selector === 'window') {
-      return [window]
-    } else if (selector === 'body') {
-      return [document.body]
-    } else if (selector === 'root') {
-      return [getRootNode(elt, !!global)]
-    } else if (selector === 'host') {
-      return [(/** @type ShadowRoot */(elt.getRootNode())).host]
-    } else if (selector.indexOf('global ') === 0) {
+    if (selector.indexOf('global ') === 0) {
       return querySelectorAllExt(elt, selector.slice(7), true)
-    } else {
-      return toArray(asParentNode(getRootNode(elt, !!global)).querySelectorAll(normalizeSelector(selector)))
     }
+
+    elt = resolveTarget(elt)
+
+    const parts = []
+    {
+      let chevronsCount = 0
+      let offset = 0
+      for (let i = 0; i < selector.length; i++) {
+        const char = selector[i]
+        if (char === ',' && chevronsCount === 0) {
+          parts.push(selector.substring(offset, i))
+          offset = i + 1
+          continue
+        }
+        if (char === '<') {
+          chevronsCount++
+        } else if (char === '/' && i < selector.length - 1 && selector[i + 1] === '>') {
+          chevronsCount--
+        }
+      }
+      if (offset < selector.length) {
+        parts.push(selector.substring(offset))
+      }
+    }
+
+    const result = []
+    const unprocessedParts = []
+    while (parts.length > 0) {
+      const selector = normalizeSelector(parts.shift())
+      let item
+      if (selector.indexOf('closest ') === 0) {
+        item = closest(asElement(elt), normalizeSelector(selector.substr(8)))
+      } else if (selector.indexOf('find ') === 0) {
+        item = find(asParentNode(elt), normalizeSelector(selector.substr(5)))
+      } else if (selector === 'next' || selector === 'nextElementSibling') {
+        item = asElement(elt).nextElementSibling
+      } else if (selector.indexOf('next ') === 0) {
+        item = scanForwardQuery(elt, normalizeSelector(selector.substr(5)), !!global)
+      } else if (selector === 'previous' || selector === 'previousElementSibling') {
+        item = asElement(elt).previousElementSibling
+      } else if (selector.indexOf('previous ') === 0) {
+        item = scanBackwardsQuery(elt, normalizeSelector(selector.substr(9)), !!global)
+      } else if (selector === 'document') {
+        item = document
+      } else if (selector === 'window') {
+        item = window
+      } else if (selector === 'body') {
+        item = document.body
+      } else if (selector === 'root') {
+        item = getRootNode(elt, !!global)
+      } else if (selector === 'host') {
+        item = (/** @type ShadowRoot */(elt.getRootNode())).host
+      } else {
+        unprocessedParts.push(selector)
+      }
+
+      if (item) {
+        result.push(item)
+      }
+    }
+
+    if (unprocessedParts.length > 0) {
+      const standardSelector = unprocessedParts.join(',')
+      const rootNode = asParentNode(getRootNode(elt, !!global))
+      result.push(...toArray(rootNode.querySelectorAll(standardSelector)))
+    }
+
+    return result
   }
 
   /**
@@ -1418,8 +1459,8 @@ var htmx = (function() {
     if (oobValue === 'true') {
       // do nothing
     } else if (oobValue.indexOf(':') > 0) {
-      swapStyle = oobValue.substr(0, oobValue.indexOf(':'))
-      selector = oobValue.substr(oobValue.indexOf(':') + 1, oobValue.length)
+      swapStyle = oobValue.substring(0, oobValue.indexOf(':'))
+      selector = oobValue.substring(oobValue.indexOf(':') + 1)
     } else {
       swapStyle = oobValue
     }
@@ -1628,7 +1669,7 @@ var htmx = (function() {
       })
     }
     deInitOnHandlers(element)
-    forEach(Object.keys(internalData), function(key) { delete internalData[key] })
+    forEach(Object.keys(internalData), function(key) { if (key !== 'firstInitCompleted') delete internalData[key] })
   }
 
   /**
@@ -1889,7 +1930,7 @@ var htmx = (function() {
       // oob swaps
       findAndSwapOobElements(fragment, settleInfo, rootNode)
       forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-        if (findAndSwapOobElements(template.content, settleInfo, rootNode)) {
+        if (template.content && findAndSwapOobElements(template.content, settleInfo, rootNode)) {
           // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
           template.remove()
         }
@@ -2028,7 +2069,7 @@ var htmx = (function() {
         while (SYMBOL_CONT.exec(str.charAt(position + 1))) {
           position++
         }
-        tokens.push(str.substr(startPosition, position - startPosition + 1))
+        tokens.push(str.substring(startPosition, position + 1))
       } else if (STRINGISH_START.indexOf(str.charAt(position)) !== -1) {
         const startChar = str.charAt(position)
         var startPosition = position
@@ -2039,7 +2080,7 @@ var htmx = (function() {
           }
           position++
         }
-        tokens.push(str.substr(startPosition, position - startPosition + 1))
+        tokens.push(str.substring(startPosition, position + 1))
       } else {
         const symbol = str.charAt(position)
         tokens.push(symbol)
@@ -2323,6 +2364,11 @@ var htmx = (function() {
         const rawAttribute = getRawAttribute(elt, 'method')
         verb = (/** @type HttpVerb */(rawAttribute ? rawAttribute.toLowerCase() : 'get'))
         path = getRawAttribute(elt, 'action')
+        if (path == null || path === '') {
+          // if there is no action attribute on the form set path to current href before the
+          // following logic to properly clear parameters on a GET (not on a POST!)
+          path = getDocument().location.href
+        }
         if (verb === 'get' && path.includes('?')) {
           path = path.replace(/\?[^#]+/, '')
         }
@@ -2354,7 +2400,8 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
-      if (matches(elt, 'input[type="submit"], button') && closest(elt, 'form') !== null) {
+      if (matches(elt, 'input[type="submit"], button') &&
+        (matches(elt, '[form]') || closest(elt, 'form') !== null)) {
         return true
       }
       if (elt instanceof HTMLAnchorElement && elt.href &&
@@ -2559,6 +2606,7 @@ var htmx = (function() {
     const load = function() {
       if (!nodeData.loaded) {
         nodeData.loaded = true
+        triggerEvent(elt, 'htmx:trigger')
         handler(elt)
       }
     }
@@ -2634,7 +2682,7 @@ var htmx = (function() {
       }, observerOptions)
       observer.observe(asElement(elt))
       addEventListener(asElement(elt), handler, nodeData, triggerSpec)
-    } else if (triggerSpec.trigger === 'load') {
+    } else if (!nodeData.firstInitCompleted && triggerSpec.trigger === 'load') {
       if (!maybeFilterEvent(triggerSpec, elt, makeEvent('load', { elt }))) {
         loadImmediately(asElement(elt), handler, nodeData, triggerSpec.delay)
       }
@@ -2841,11 +2889,12 @@ var htmx = (function() {
       return
     }
     const nodeData = getInternalData(elt)
-    if (nodeData.initHash !== attributeHash(elt)) {
+    const attrHash = attributeHash(elt)
+    if (nodeData.initHash !== attrHash) {
       // clean up any previously processed info
       deInitNode(elt)
 
-      nodeData.initHash = attributeHash(elt)
+      nodeData.initHash = attrHash
 
       triggerEvent(elt, 'htmx:beforeProcessNode')
 
@@ -2870,6 +2919,7 @@ var htmx = (function() {
         initButtonTracking(elt)
       }
 
+      nodeData.firstInitCompleted = true
       triggerEvent(elt, 'htmx:afterProcessNode')
     }
   }
@@ -3581,7 +3631,7 @@ var htmx = (function() {
       } else if (paramsValue === '*') {
         return inputValues
       } else if (paramsValue.indexOf('not ') === 0) {
-        forEach(paramsValue.substr(4).split(','), function(name) {
+        forEach(paramsValue.slice(4).split(','), function(name) {
           name = name.trim()
           inputValues.delete(name)
         })
@@ -3631,15 +3681,15 @@ var htmx = (function() {
         for (let i = 0; i < split.length; i++) {
           const value = split[i]
           if (value.indexOf('swap:') === 0) {
-            swapSpec.swapDelay = parseInterval(value.substr(5))
+            swapSpec.swapDelay = parseInterval(value.slice(5))
           } else if (value.indexOf('settle:') === 0) {
-            swapSpec.settleDelay = parseInterval(value.substr(7))
+            swapSpec.settleDelay = parseInterval(value.slice(7))
           } else if (value.indexOf('transition:') === 0) {
-            swapSpec.transition = value.substr(11) === 'true'
+            swapSpec.transition = value.slice(11) === 'true'
           } else if (value.indexOf('ignoreTitle:') === 0) {
-            swapSpec.ignoreTitle = value.substr(12) === 'true'
+            swapSpec.ignoreTitle = value.slice(12) === 'true'
           } else if (value.indexOf('scroll:') === 0) {
-            const scrollSpec = value.substr(7)
+            const scrollSpec = value.slice(7)
             var splitSpec = scrollSpec.split(':')
             const scrollVal = splitSpec.pop()
             var selectorVal = splitSpec.length > 0 ? splitSpec.join(':') : null
@@ -3647,14 +3697,14 @@ var htmx = (function() {
             swapSpec.scroll = scrollVal
             swapSpec.scrollTarget = selectorVal
           } else if (value.indexOf('show:') === 0) {
-            const showSpec = value.substr(5)
+            const showSpec = value.slice(5)
             var splitSpec = showSpec.split(':')
             const showVal = splitSpec.pop()
             var selectorVal = splitSpec.length > 0 ? splitSpec.join(':') : null
             swapSpec.show = showVal
             swapSpec.showTarget = selectorVal
           } else if (value.indexOf('focus-scroll:') === 0) {
-            const focusScrollVal = value.substr('focus-scroll:'.length)
+            const focusScrollVal = value.slice('focus-scroll:'.length)
             swapSpec.focusScroll = focusScrollVal == 'true'
           } else if (i == 0) {
             swapSpec.swapStyle = value
@@ -3776,10 +3826,10 @@ var htmx = (function() {
         return null
       }
       if (str.indexOf('javascript:') === 0) {
-        str = str.substr(11)
+        str = str.slice(11)
         evaluateValue = true
       } else if (str.indexOf('js:') === 0) {
-        str = str.substr(3)
+        str = str.slice(3)
         evaluateValue = true
       }
       if (str.indexOf('{') !== 0) {
@@ -3905,9 +3955,9 @@ var htmx = (function() {
         })
       } else {
         let resolvedTarget = resolveTarget(context.target)
-        // If target is supplied but can't resolve OR both target and source can't be resolved
+        // If target is supplied but can't resolve OR source is supplied but both target and source can't be resolved
         // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
-        if ((context.target && !resolvedTarget) || (!resolvedTarget && !resolveTarget(context.source))) {
+        if ((context.target && !resolvedTarget) || (context.source && !resolvedTarget && !resolveTarget(context.source))) {
           resolvedTarget = DUMMY_ELT
         }
         return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
@@ -4039,7 +4089,15 @@ var htmx = (function() {
       get: function(target, name) {
         if (typeof name === 'symbol') {
           // Forward symbol calls to the FormData itself directly
-          return Reflect.get(target, name)
+          const result = Reflect.get(target, name)
+          // Wrap in function with apply to correctly bind the FormData context, as a direct call would result in an illegal invocation error
+          if (typeof result === 'function') {
+            return function() {
+              return result.apply(formData, arguments)
+            }
+          } else {
+            return result
+          }
         }
         if (name === 'toJSON') {
           // Support JSON.stringify call on proxy
@@ -4873,7 +4931,7 @@ var htmx = (function() {
    * @see https://htmx.org/api/#defineExtension
    *
    * @param {string} name the extension name
-   * @param {HtmxExtension} extension the extension definition
+   * @param {Partial<HtmxExtension>} extension the extension definition
    */
   function defineExtension(name, extension) {
     if (extension.init) {

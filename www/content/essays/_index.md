@@ -26,32 +26,39 @@ page_template = "essay.html"
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 * [SPA Alternative](@/essays/spa-alternative.md)
 
-### Building Hypermedia Applications
+### Real World htmx Experiences
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
 * [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
-* [Web Security Basics (with htmx)](@/essays/web-security-basics-with-htmx.md)
+* [Next.js to htmx — A Real World Example](@/essays/a-real-world-nextjs-to-htmx-port.md)
+* [You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths](@/essays/you-cant.md)
+
+### On The Other Hand...
+* [htmx sucks](@/essays/htmx-sucks.md)
+* [Why Gumroad Didn't Choose htmx](@/essays/why-gumroad-didnt-choose-htmx.md)
+* [A Modest Critique of htmx](https://chrisdone.com/posts/htmx-critique/) [[Response]](https://news.ycombinator.com/item?id=41782080)
+
+### Building Hypermedia Applications
 * [Hypermedia-Driven Applications (HDAs)](@/essays/hypermedia-driven-applications.md)
+* [Web Security Basics (with htmx)](@/essays/web-security-basics-with-htmx.md)
 * [Hypermedia Friendly Scripting](@/essays/hypermedia-friendly-scripting.md)
 * [10 Tips For Building SSR/HDA applications](@/essays/10-tips-for-SSR-HDA-apps.md)
 * [Why I Tend Not To Use Content Negotiation](@/essays/why-tend-not-to-use-content-negotiation.md)
 * [Template Fragments](@/essays/template-fragments.md)
+* [Web Components Work Great with htmx](@/essays/webcomponents-work-great.md)
 * [View Transitions](@/essays/view-transitions.md)
 * [Model/View/Controller](@/essays/mvc.md)
 * [Is Rendering JSON More Efficient Than Rendering HTML?](https://github.com/1cg/html-json-speed-comparison)
 * [Is JSON Smaller Than HTML?](https://github.com/1cg/html-json-size-comparison)
-* [You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths](@/essays/you-cant.md)
 
-### Complexity Very Very Bad
+### Complexity Very, Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
+* [Codin' Dirty](@/essays/codin-dirty.md)
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 * [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 * [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
-
-### On The Other Hand...
-* [htmx sucks](@/essays/htmx-sucks.md)
-* [Why Gumroad Didn't Choose htmx](@/essays/why-gumroad-didnt-choose-htmx.md)
+* [Prefer If Statements to Polymorphism, etc.](@/essays/prefer-if-statements.md)
 
 ### Hypermedia History
 
