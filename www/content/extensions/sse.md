@@ -26,10 +26,19 @@ Use the following attributes to configure how SSE connections behave:
 
 ## Install
 
+From CDN with a script tag:
 ```html
-
 <script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>
 ```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-sse
+```
+```JS
+import 'htmx-ext-sse';
+```
+
 
 ## Usage
 

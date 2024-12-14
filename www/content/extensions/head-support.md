@@ -15,8 +15,17 @@ a feature of the library.  This extension addresses that shortcoming.
 
 ## Install
 
+From CDN with a script tag:
 ```html
-<script src="https://unpkg.com/htmx-ext-head-support@2.0.1/head-support.js"></script>
+<script src="https://unpkg.com/htmx-ext-head-support@2.0.2/head-support.js"></script>
+```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-head-support
+```
+```JS
+import 'htmx-ext-head-support';
 ```
 
 ## Usage

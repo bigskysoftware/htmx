@@ -12,8 +12,17 @@ unused requests. Use this extension carefully!
 
 ## Install
 
+From CDN with a script tag:
 ```html
-<script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
+<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
+```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-preload
+```
+```JS
+import 'htmx-ext-preload';
 ```
 
 ## Usage

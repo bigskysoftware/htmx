@@ -6,9 +6,17 @@ The `htmx-1-compat` extension allows you to almost seamlessly upgrade from htmx 
 
 ## Install
 
+From CDN with a script tag:
 ```html
-
 <script src="https://unpkg.com/htmx-ext-htmx-1-compat@2.0.0/htmx-1-compat.js"></script>
+```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-htmx-1-compat
+```
+```JS
+import 'htmx-ext-htmx-1-compat';
 ```
 
 ## What it covers

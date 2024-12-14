@@ -12,8 +12,17 @@ extension.
 
 ## Install
 
+From CDN with a script tag:
 ```html
 <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
+```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i idiomorph
+```
+```JS
+import 'idiomorph';
 ```
 
 ## Usage

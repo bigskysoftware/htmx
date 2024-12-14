@@ -24,8 +24,17 @@ The value of each attribute can be:
 
 ## Install
 
+From CDN with a script tag:
 ```html
-<script src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"></script>
+<script src="https://unpkg.com/htmx-ext-response-targets@2.0.2/response-targets.js"></script>
+```
+
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-response-targets
+```
+```JS
+import 'htmx-ext-response-targets';
 ```
 
 ## Configure (optional)

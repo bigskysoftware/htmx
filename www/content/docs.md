@@ -1114,27 +1114,35 @@ Please see the [Animation Guide](@/examples/animations.md) for more details on t
 ## Extensions
 
 htmx provides an [extensions](/extensions) mechanism that allows you to customize the libraries' behavior.
-Extensions [are defined in javascript](/extensions/building) and then enabled via
+Extensions [are defined in javascript](/extensions/building) and enabled via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute.
 
-Here is how you would install the [idiomorph](@extension/idiomorph) extension, which allows you to use the
-[Idiomorph](https://github.com/bigskysoftware/idiomorph) DOM morphing algorithms for htmx swaps:
-
+Extensions can be installed using a `<script>` tag or with an `import` statement. Here is an example of how to install the [preload](/extensions/preload) extension from a CDN with a script tag (it should be installed *after* `htmx.js`):
 ```html
 <head>
-  <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
 </head>
-<body hx-ext="morph">
+```
+To install the extension using npm and a bundler (e.g. Rollup, Webpack), use this command:
+```
+npm i htmx-ext-preload
+```
+And then integrate the package in one of your scripts:
+```JS
+import 'htmx-ext-preload';
+```
+
+To enable the extension, add a `hx-ext` attribute with its name. The following example enables you to load HTML fragments into your browser's cache before they are requested by the user.
+
+```html
+<body hx-ext="preload">
   ...
-  <button hx-post="/example" hx-swap="morph" hx-target="#content">
-    Update Content
-  </button>
+  <a href="/server/1" preload>Link which will be preloaded</a>
   ...
 </body>
 ```
 
-First the extension is included (it should be included *after* `htmx.js` is included), then the extension is referenced
-by name via the `hx-ext` attribute.  This enables you to then use the `morph` swap.
 
 ### Core Extensions
 

@@ -20,9 +20,17 @@ Use the following attributes to configure how WebSockets behave:
 
 ## Install
 
+From CDN with a script tag:
 ```html
+<script src="https://unpkg.com/htmx-ext-ws@2.0.2/ws.js"></script>
+```
 
-<script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
+From npm using a bundler (e.g. Rollup, Webpack):
+```
+npm i htmx-ext-ws
+```
+```JS
+import 'htmx-ext-ws';
 ```
 
 ## Usage
