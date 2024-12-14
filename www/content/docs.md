@@ -126,7 +126,7 @@ your head tag and get going:
 An unminified version is also available as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.5/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
