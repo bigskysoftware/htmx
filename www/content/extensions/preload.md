@@ -131,7 +131,7 @@ trigger preloads as soon as an object has been processed by htmx.
 By default, the extension will preload each element once.
 If you would like to keep always preloading the element, you can add `preload="always"` attribute.
 This can be useful if `hx-target` is not the element itself.
-This attribute can be conbined with other configuration attributes e.g. `preload="always mouseover"`.
+This attribute can be combined with other configuration attributes e.g. `preload="always mouseover"`.
 
 ### About Touch Events
 
