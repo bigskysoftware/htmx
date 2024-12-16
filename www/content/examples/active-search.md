@@ -8,17 +8,17 @@ This example actively searches a contacts database as the user enters text.
 We start with a search input and an empty table:
 
 ```html
-<h3> 
-  Search Contacts 
-  <span class="htmx-indicator"> 
-    <img src="/img/bars.svg"/> Searching... 
-   </span> 
+<h3>
+  Search Contacts
+  <span class="htmx-indicator">
+    <img src="/img/bars.svg"/> Searching...
+   </span>
 </h3>
-<input class="form-control" type="search" 
-       name="search" placeholder="Begin Typing To Search Users..." 
-       hx-post="/search" 
-       hx-trigger="input changed delay:500ms, search" 
-       hx-target="#search-results" 
+<input class="form-control" type="search"
+       name="search" placeholder="Begin Typing To Search Users..."
+       hx-post="/search"
+       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+       hx-target="#search-results"
        hx-indicator=".htmx-indicator">
 
 <table class="table">
@@ -34,18 +34,17 @@ We start with a search input and an empty table:
 </table>
 ```
 
-The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the body of the table to be the resulting content. Note that the `keyup` event could be used as well, but would not fire if the user pasted text with their mouse (or any other non-keyboard method).
+The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the body of the table to be the resulting content.
 
 We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
-value of the input (e.g. they hit an arrow key, or pasted the same value).  
+value of the input (e.g. they hit an arrow key, or pasted the same value).
 
-Since we use a `search` type input we will get an `x` in the input field to clear the input. 
-To make this trigger a new `POST` we have to specify another trigger. We specify another trigger by using a comma to 
-separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override 
-the 500 ms `input` event delay by just pressing enter.
+We can use multiple triggers by separating them with a comma, this way we add 2 more triggers:
+- `keyup[key=='Enter']` triggers once enter is pressed. We use [event filters](/attributes/hx-trigger#standard-event-filters) here to check for [the key property in the KeyboardEvent object](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key).
+- `load` in order to show all results initially on load.
 
-Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
+Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute.
 
 {{ demoenv() }}
 
@@ -75,11 +74,11 @@ Search Contacts
 </span>
 </h3>
 
-<input class="form-control" type="search" 
-       name="search" placeholder="Begin Typing To Search Users..." 
-       hx-post="/search" 
-       hx-trigger="input changed delay:500ms, search" 
-       hx-target="#search-results" 
+<input class="form-control" type="search"
+       name="search" placeholder="Begin Typing To Search Users..."
+       hx-post="/search"
+       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+       hx-target="#search-results"
        hx-indicator=".htmx-indicator">
 
 <table class="table">
