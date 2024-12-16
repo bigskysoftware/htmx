@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "https://htmx.org"
+base_url = "https://v2-0v2-0.htmx.org"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false

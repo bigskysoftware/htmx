@@ -10,6 +10,7 @@ The possible values of this attribute are:
 
 * `innerHTML` - Replace the inner html of the target element
 * `outerHTML` - Replace the entire target element with the response
+* `textContent` - Replace the text content of the target element, without parsing the response as HTML
 * `beforebegin` - Insert the response before the target element
 * `afterbegin` - Insert the response before the first child of the target element
 * `beforeend` - Insert the response after the last child of the target element

@@ -2,28 +2,113 @@
 insert_anchor_links = "left"
 +++
 
-<div class="dark-hero full-width" classes="add appear">
-  <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
-  <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+<style type="text/css">
+.wuw {
+  display:none;
+}
+.uwu {
+  display:none;
+}
+body.lmao .dark-hero .main {
+    display:none;
+}
+body.lmao .dark-hero .wuw {
+    display:block;
+    padding-top: 24px;
+}
+body.lmao .dark-hero .uwu {
+    display:none;
+}
+body.kawaii .dark-hero .main {
+    display:none;
+}
+body.kawaii .dark-hero .wuw {
+    display:none;
+}
+body.kawaii .dark-hero .uwu {
+    display:block;
+    padding-top: 24px;
+}
+
+body.ads .ad {
+  display: block;
+  text-align: center;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+body.ads .ad a:hover {
+  opacity: 100%;
+}
+
+body .ad {
+  display: none;
+}
+
+body.ads .ad img {
+  max-width: 90vw;
+}
+
+</style>
+<script type="application/javascript">
+if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
+  document.body.classList.add('lmao');
+}
+if(window.location.search=="?uwu=true") {
+  document.body.classList.add('kawaii');
+}
+if(window.location.search=="?ads=true") {
+  document.body.classList.add('ads');
+}
+</script>
+
+<div class="ad" style="margin-bottom: 30px">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_top.png"/>
+</a>
 </div>
 
-<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> htmx finished 2nd in the <a href="https://risingstars.js.org/2023/en#section-framework">2023 
-JavaScript Rising Stars</a> "Front-end Frameworks" category, just behind React (htmx is a library, btw) and <a href="https://risingstars.js.org/2023/en#section-all">#10 overall</a>!
-Thank you to everyone who <a href="https://github.com/bigskysoftware/htmx">starred</a> us!
+<div class="dark-hero full-width" classes="add appear">
+<marquee>
+  <div class="main">
+      <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
+      <sub class="no-mobile"><i>high power tools for HTML</i></sub>
+  </div>
+  <div class="wuw">
+     <a href="https://swag.htmx.org/products/shut-up-warren-tee">
+       <img src="/img/wuw.png">
+     </a>
+  </div>
+  <div class="uwu">
+     <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
+       <img src="/img/kawaii.png">
+     </a>
+  </div>
+
+</marquee>
+</div>
+<div class="ad">
+<a href="https://swag.htmx.org">
+  <img src="/img/ads_bottom.png"/>
+</a>
+</div>
+
+<div class="alert">
+<b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <a href="https://docs.npmjs.com/cli/v10/commands/npm-dist-tag#purpose"><code>latest</code></a>
+in NPM so that people using the <a href="https://v1.htmx.org">1.x line</a> are not accidentally upgraded.  We will mark
+2.0 as <code>latest</code> at some point in 2025.
 </div>
 
 <h2>introduction</h2>
 
-htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets) and [Server Sent Events](@/docs.md#sse) 
-directly in HTML, using [attributes](@/reference.md#attributes), so you can build 
-[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and 
+htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets-and-sse) and [Server Sent Events](@/docs.md#websockets-and-sse)
+directly in HTML, using [attributes](@/reference.md#attributes), so you can build
+[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)), 
+htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](@/extensions/_index.md), 
-IE11 compatible & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
+[extendable](https://htmx.org/extensions) & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
 <h2>motivation</h2>
 
@@ -37,7 +122,7 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -53,9 +138,12 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
+Note that htmx 2.x has dropped IE support.  If you require IE support you can use the [1.x](https://v1.htmx.org)
+code-line, which will be supported in perpetuity.
+
 <h2><a name='book'></a>book</h2>
 
-We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build 
+We are happy to announce the release of [Hypermedia Systems](https://hypermedia.systems), a book on how to build
 [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
 
 <div style="text-align: center;padding: 24px">
@@ -76,55 +164,90 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
   padding: 16px;
   min-height: 100px;
   border-bottom: none;
+  width:33%;
 }
 
 @media only screen and (max-width: 760px)  {
 
 	/* Force table to not be like tables anymore */
-	table, thead, tbody, th, td, tr { 
-		display: block; 
+	table, thead, tbody, th, td, tr {
+		display: block;
 	}
-
+    #sponsor-table td {
+      width:90%;
+    }
+    #sponsor-table td * {
+      margin: auto;
+    }
 }
 
 </style>
 <div style="overflow-x: auto">
+
+<h1 style="margin-top:32px;text-align:center">Platinum Sponsor</h1>
 <table id="sponsor-table">
 <tr>
 <td colspan="3">
-        <a data-github-account="NotASithLord" href="https://hydrahost.com"><img src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;"></a>
+        <a data-github-account="commspace" href="https://www.commspace.co.za">
+        <img class="dark-hidden" src="/img/commspace.svg" alt="commspace" style="min-width:200px"/>
+        <img class="dark-visible" src="/img/commspace-dark.svg" alt="commspace" style="min-width:200px"/>
+        </a>
 </td>
 </tr>
+</table>
+
+## Gold Sponsors
+
+<table id="sponsor-table">
 <tr>
 <td>
-        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.png" alt="Jetbrains" style="max-width:30%;min-width:100px;"></a>
+        <a data-github-account="NotASithLord" href="https://hydrahost.com">
+          <img class="dark-hidden" src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;">
+          <img class="dark-visible" src="/img/hydra-hosting-dark.svg" alt="The GPU Marketplace" style="width:100%;">
+        </a>
 </td>
 <td>
-        <a data-github-account="commspace" href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="min-width:200px"></a>
-</td>
-<td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
+        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
 </td>
 </tr>
+</table>
+
+## Silver Sponsors
+
+<table id="sponsor-table">
 <tr>
 <td>
-        <a data-github-account="craftcms" href="https://craftcms.com"><img src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px"></a>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains" style="max-width:80%;min-width:100px;"></a>
+</td>
+<td>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
+</td>
+</tr>
+</table>
+<table id="sponsor-table">
+<tr>
+<td>
+        <a data-github-account="craftcms" href="https://craftcms.com">
+        <img class="dark-hidden" src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px">
+        <img  class="dark-visible" src="/img/logo-craft-cms-dark.svg" alt="craft cms" style="width:90%;max-width:200px">
+        </a>
 </td>
 <td>
         <a data-github-account="ButterCMS" href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
-          <img src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
+          <img class="dark-invert" src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
         <a data-github-account="Black-HOST" href="https://black.host">
-          <img src="/img/blackhost-logo.svg" alt="Black Host" style="width:100%;max-width:200px">
+          <img class="dark-invert"  src="/img/blackhost-logo.svg" alt="Black Host" style="width:100%;max-width:200px">
         </a>
 </td>
 </tr>
 <tr>
 <td>
         <a href="https://www.v7n.com/">
-          <img alt="V7N" src="/img/v7n-logo.png" style="width:100%;max-width:200px">
+          <img alt="V7N" class="dark-hidden" src="/img/v7n-logo.png" style="width:100%;max-width:200px">
+          <img alt="V7N" class="dark-visible" src="/img/v7n-logo-dark.png" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
@@ -132,30 +255,36 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </td>
 <td>
         <a href="https://dasfilter.shop/pages/affiliates">
-          <img alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
+          <img class="dark-hidden"  alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
+          <img class="dark-visible"  alt="Das Filter" src="/img/das-filter-dark.svg" style="width:100%;max-width:300px">
         </a>
 </td>
 </tr>
 <tr>
 <td>
       <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx">
-        <img src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px">
+        <img class="dark-hidden" src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px"/>
+        <img class="dark-visible" src="/img/pullapprove-logo-dark.svg" alt="PullApprove" style="width:100%;max-width:200px"/>
       </a>
 </td>
 <td>
         <a data-github-account="transloadit" href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
-          <img alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
+          <img class="dark-hidden" alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
+          <img class="dark-visible" alt="Transloadit" src="/img/transloadit-logo-dark.svg" style="width:100%;max-width:200px">
         </a>
 </td>
 <td>
-      <a data-github-account="uibakery" href="https://uibakery.io"><img src="/img/ui-bakery.png" alt="UI Bakery" style="width:100%;max-width:250px"></a>
+      <a data-github-account="uibakery" href="https://uibakery.io">
+      <img class="dark-hidden" src="/img/ui-bakery.svg" alt="UI Bakery" style="width:100%;max-width:250px">
+      <img class="dark-visible" src="/img/ui-bakery-dark.svg" alt="UI Bakery" style="width:100%;max-width:250px"></a>
 </td>
 </tr>
 <tr>
 <td>
-        <a data-github-account="jai-deepsource" href=" https://deepsource.com/">
-          <img alt="Deepsource" src="/img/deepsource.svg" style="width:100%;max-width:250px">
-        </a>
+    <a data-github-account="tracebit-com" href="https://tracebit.com/?utm_source=htmx">
+      <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png" style="width:100%;max-width:250px">
+      <img class="dark-visbile" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png" style="width:100%;max-width:250px">
+    </a>
 </td>
 <td>
       <a data-github-account="pubkey" href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
@@ -167,13 +296,15 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
-        <a data-github-account="codacy" href="https://www.codacy.com//">
-          <img alt="Deepsource" src="/img/codacy.svg" style="width:100%;max-width:250px">
+        <a data-github-account="cased" href="https://cased.com///">
+          <img class="dark-hidden" alt="Developer friendly DevOps" src="/img/Cased_Logo_DarkBlue.svg" style="width:100%;max-width:250px">
+          <img class="dark-visible" alt="Developer friendly DevOps" src="/img/Cased_Logo_Beige-01.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
         <a data-github-account="apesternikov" href="https://codereviewbot.ai/">
-          <img alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
+          <img class="dark-hidden" alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
+          <img class="dark-visible" alt="AI Code Review Bot" src="/img/codereviewbot-dark.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
@@ -185,13 +316,52 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <tr>
 <td>
         <a data-github-account="VPSServerCom" href="https://www.vpsserver.com/">
-          <img alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo.svg" style="width:100%;max-width:250px">
+          <img class="dark-hidden" alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo.svg" style="width:100%;max-width:250px">
+          <img class="dark-visible" alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo-dark.svg" style="width:100%;max-width:250px">
         </a>
 </td>
 <td>
         <a data-github-account="appleple" href="https://www.a-blogcms.jp/">
           <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
         </a>
+</td>
+<td>
+        <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
+           <img class="dark-hidden" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+</tr>
+<tr>
+<td>
+        <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
+          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="width:100%;max-width:50px" >
+          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="width:100%;max-width:50px">
+        </a>
+</td>
+<td>
+        <a data-github-account="Viralyft" alt="Buy YouTube views" href="https://viralyft.com/buy-youtube-views/">
+           <img class="dark-hidden" src="/img/Viralyft_light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/Viralyft_dark.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
+        <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
+           <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
+        </a>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+        <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
+           <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
+        </a>
+</td>
+<td>
 </td>
 </tr>
 </table>

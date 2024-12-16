@@ -11,7 +11,7 @@ The `hx-request` attribute allows you to configure various aspects of the reques
 These attributes are set using a JSON-like syntax:
 
 ```html
-<div ... hx-request='\"timeout\":100'>
+<div ... hx-request='{"timeout":100}'>
   ...
 </div>
 ```

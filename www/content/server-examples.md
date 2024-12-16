@@ -16,6 +16,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/rajasegar/awesome-htmx>
 
+## Julia
+
+- https://github.com/leephillips/juliaVortexWeb/
+- https://github.com/leephillips/pluckit
+
 ## JavaScript
 
 ### Node.js
@@ -44,6 +49,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/renceInbox/fastapi-todo>
 - <https://github.com/AutomationPanda/bulldoggy-reminders-app>
+- <https://github.com/volfpeter/fastapi-htmx-tailwind-example>
 
 ### Flask
 
@@ -64,7 +70,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Quarkus
 
-- <https://github.com/derkoe/quarkus-htmx-todos>
+- <https://github.com/ia3andy/renotes>
+- <https://github.com/ia3andy/htmx-todo>
 
 ## ColdFusion (CFML - a JVM Language)
 
@@ -83,6 +90,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/khalidabuhakmeh/Htmx.Net>
 - <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
 - <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
+
+### Blazor
+
+- <https://github.com/grugBraid/haxor-contact-app>
 
 ## Prolog
 
@@ -115,10 +126,18 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/libsyz/htmx-to-do-app>
 - <https://github.com/beechnut/pokebutt-htmx>
 
+## Rust
+
+- <https://github.com/paultuckey/example-todo-app-rust-htmx>
+
 ## Scala
   
 ### http4s
 - <https://github.com/martinprobson/http4s-htmx-demo>
+- <https://github.com/eikek/htmx4s>
+
+### zio-http
+- <https://github.com/rockthejvm/scalatags-htmx-demo>
 
 ## Kotlin
 
@@ -128,7 +147,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Http4k
 
-<https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/mikaelstaldal/htmx-http4k-thymeleaf>
 
 ## Julia
 
@@ -169,6 +189,20 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### Giraffe
 
 - <https://hamy.xyz/labs/2023-12-fsharp-htmx>
+- <https://github.com/bit-badger/Giraffe.Htmx>
+
+### Feliz.ViewEngine.Htmx
+
+- <https://github.com/Zaid-Ajaj/Feliz.ViewEngine.Htmx>
+- <https://github.com/jkone27/todo-mvc-feliz-htmx>
+
+### Falco.Htmx
+
+- <https://github.com/dpraimeyuu/Falco.Htmx>
+
+### Suave (with Feliz)
+
+- <https://jkone27-3876.medium.com/htmx-and-f-c1ffdc18fbb5>
 
 ## Go
 
@@ -181,6 +215,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
+
+### htmgo
+
+- <https://htmgo.dev>
 
 ## Delphi
 

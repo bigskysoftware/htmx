@@ -1,5 +1,69 @@
 # Changelog
 
+## [2.0.4] - 2024-12-13
+
+* Calling `htmx.ajax` with no target or source now defaults to body (previously did nothing)
+* Nested [shadow root](https://github.com/bigskysoftware/htmx/commit/5ab508f6523a37890932176f7dc54be9f7a281ff) fix
+* The `htmx:trigger` event now properly fires on the synthetic `load` event
+* The synthetic `load` event will not be re-called when an element is reinitialized via `htmx.process()`
+* Boosted `<form>` tags that issue a `GET` with no or empty `action` attributes will properly replace all existing query 
+  parameters
+* Events that are triggered on htmx-powered elements located outside a form, but that refer to a form via the`form` 
+  attribute, now properly cancel the submission of the referred-to form
+* Extension Updates
+  * `preload` extension was 
+    [completely reworked](https://github.com/bigskysoftware/htmx-extensions/commit/fb68dfb48063505d2d7420d717c24ac9a8dae244) 
+    by @marisst to be compatible with `hx-boost`, not cause side effect, etc. Thank you!
+  * `response-targets` was updated to not use deprecated methods
+  * A [small fix](https://github.com/bigskysoftware/htmx-extensions/commit/e87e1c3d0bf728b4e43861c7459f3f937883eb99) to
+    `ws` to avoid an error when closing in some cases
+  * The `head-support` extension was updated to work with the `sse` extension
+
+## [2.0.3] - 2024-10-03
+* Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
+  see the [demo page](/examples/move-before) for more information.
+* Fixed `revealed` event when a resize reveals an element
+* Enabled `hx-preserve` in oob-swaps
+* Better degredation of `hx-boost` on forms with query parameters in their `action`
+* Improved shadowRoot support
+* Many smaller bug fixes
+* Moved the core extension documentation back to <https://htmx.org/extensions>
+
+## [2.0.2] - 2024-08-12
+* no longer boost forms of type `dialog`
+* properly trigger the `htmx:trigger` event when an event is delayed or throttled
+* file upload is now fixed
+* empty templates that are not used for oob swaps are no longer removed from the DOM
+* request indicators are not removed when a full page redirect or refresh occurs
+* elements that have been disabled for a request are properly re-enabled before snapshotting for history
+* you can now trigger events on other elements using the `HX-Trigger` response header
+* The `.d.ts` file should now work properly
+
+## [2.0.1] - 2024-07-12
+
+* Make the `/dist/htmx.esm.js` file the `main` file in `package.json` to make installing htmx smoother
+* Update `htmx.d.ts` & include it in the distribution
+* A fix to avoid removing text-only templates on htmx cleanup
+* A fix for outerHTML swapping of the `body` tag
+* Many docs fixes
+
+## [2.0.0] - 2024-06-17
+
+* Removed extensions and moved to their own repos linked off of <https://extensions.htmx.org>
+* The website now supports dark mode! (Thanks [@pokonski](https://github.com/pokonski)!)
+* The older, deprecated [SSE & WS](https://v1.htmx.org/docs/#websockets-and-sse) attributes were removed
+* Better support for [Web Components & Shadow DOM](https://htmx.org/examples/web-components/)
+* HTTP `DELETE` requests now use parameters, rather than form encoded bodies, for their payload (This is in accordance w/ the spec.)
+* Module support was split into different files:
+* We now provide specific files in `/dist` for the various JavaScript module styles:
+  * ESM Modules: `/dist/htmx.esm.js`
+  * AMD Modules: `/dist/htmx.amd.js`
+  * CJS Modules: `/dist/htmx.cjs.js`
+  * The `/dist/htmx.js` file continues to be browser-loadable
+* The `hx-on` attribute, with its special syntax, has been removed in favor of the less-hacky `hx-on:` syntax.
+* See the [Upgrade Guide](https://htmx.org/migration-guide-htmx-1/) for more details on upgrade steps
+* The `selectAndSwap()` internal API method was replaced with the public (and much better) [`swap()`](/api/#swap) method
+
 ## [1.9.12] - 2024-04-17
 
 * [IE Fixes](https://github.com/bigskysoftware/htmx/commit/e64238dba3113c2eabe26b1e9e9ba7fe29ba3010)

@@ -3,12 +3,20 @@ title = "hx-disabled-elt"
 +++
 
 The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute
-added to them for the duration of the request.
+added to them for the duration of the request. The value of this attribute can be:
 
-The value of this attribute is a CSS query selector of the element or elements to apply the class to,
-or the keyword [`closest`](https://developer.mozilla.org/docs/Web/API/Element/closest), followed by a CSS selector, 
-which will find the closest ancestor element or itself, that matches the given CSS selector (e.g. `closest tr`), or
-the keyword `this`
+* A CSS query selector of the element to disable.
+* `this` to disable the element itself
+* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
+  ancestor element or itself, that matches the given CSS selector
+  (e.g. `closest fieldset` will disable the closest to the element `fieldset`).
+* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector
+* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
+* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector
+  (e.g. `next button` will disable the closest following sibling `button` element)
+* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
+* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
+  (e.g `previous input` will disable the closest previous sibling `input` element)
 
 Here is an example with a button that will disable itself during a request:
 
@@ -21,10 +29,10 @@ Here is an example with a button that will disable itself during a request:
 When a request is in flight, this will cause the button to be marked with [the `disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled), 
 which will prevent further clicks from occurring.  
 
-The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors separated by commas to disable multiple elements during the request. Here is an example that disables a button and a text input field during the request:
+The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors separated by commas to disable multiple elements during the request. Here is an example that disables buttons and text input fields of a particular form during the request:
 
 ```html
-<form hx-post="/example" hx-disabled-elt="input[type='text'], button">
+<form hx-post="/example" hx-disabled-elt="find input[type='text'], find button">
     <input type="text" placeholder="Type here...">
     <button type="submit">Send</button>
 </form>
@@ -32,4 +40,6 @@ The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors 
 
 ## Notes
 
-* `hx-disable-elt` is inherited and can be placed on a parent element
+* `hx-disabled-elt` is inherited and can be placed on a parent element
+
+[hx-trigger]: https://htmx.org/attributes/hx-trigger/

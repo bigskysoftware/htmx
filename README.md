@@ -16,9 +16,8 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~14k min.gz'd](https://unpkg.com/htmx.org/dist/)),
-[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
-[extendable](https://htmx.org/extensions) &
-IE11 compatible
+[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
+[extendable](https://htmx.org/extensions)
 
 ## motivation
 
@@ -33,7 +32,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -69,8 +68,6 @@ No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#spon
 ### hacking guide
 
 To develop htmx locally, you will need to install the development dependencies.
-
-__Requires Node 15.__
 
 Run:
 

@@ -3,16 +3,39 @@ Thank you for your interest in contributing! Because we're a small team, we have
 
 ## Issues
 1. Issues are the best place to propose a new feature. Keep in mind that htmx is a small library, so there are lots of great ideas that don't fit in the core; it's always best to check in about an idea before doing a bunch of work on it.
-1. When proposing a new features, we will often suggest that you implement it as an [extension](https://htmx.org/extensions), so try that first. Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
+1. When proposing a new feature, we will often suggest that you implement it as an [extension](https://github.com/bigskysoftware/htmx-extensions), so try that first. Even if we don't end up supporting it officially, you can publish it yourself and we can link to it.
 1. Search the issues before proposing a feature to see if it is already under discussion. Referencing existing issues is a good way to increase the priority of your own.
 1. We don't have an issue template yet, but the more detailed your description of the issue, the more quickly we'll be able to evaluate it.
 1. See an issue that you also have? Give it a reaction (and comment, if you have something to add). We note that!
 1. If you haven't gotten any traction on an issue, feel free to bump it in the #issues-and-pull-requests channel on our Discord.
 1. Want to contribute but don't know where to start? Look for issues with the "help wanted" tag.
 
+## Creating a Development Environment
+### Pre-requisites
+To create a development environment for htmx, you'll need the following tools on your system:
+
+- Node.js 20.x or later
+- Chrome or Chromium
+
+Additionally, the environment variable `CHROME_PATH` must contain the full path to the Chrome or Chromium binary on your system.
+
+### Installing Packages
+To install htmx's required packages, run the following command:
+
+```bash
+npm install
+```
+
+### Running Automated Tests
+To verify that your htmx environment is working correctly, you can run htmx's automated tests with the following command:
+
+```bash
+npm test
+```
+
 ## Pull Requests
 ### Technical Requirements
-1. Code, including tests, must be written in ES5 for [IE 11 compatibility](https://stackoverflow.com/questions/39902809/support-for-es6-in-internet-explorer-11).
+1. Please lint all proposed changes with the `npm run format` command
 1. All PRs must be made against the `dev` branch, except documentation PRs (that only modify the `www/` directory) which can be made against `master`.
 1. Please avoid sending the `dist` files along your PR, only include the `src` ones.
 1. Please include test cases in [`/test`](https://github.com/bigskysoftware/htmx/tree/dev/test) and docs in [`/www`](https://github.com/bigskysoftware/htmx/tree/dev/www).

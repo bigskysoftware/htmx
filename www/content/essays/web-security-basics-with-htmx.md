@@ -201,7 +201,7 @@ Cookie: token=asd8234nsdfp982
 
 Each time someone makes a request to your server, it needs to parse out that token and determine if it's valid. Simple enough.
 
-You can also set options on that cookie, like the ones I recommended above. How to do this differs depending on the programming language, but the outcome is always an HTTP request that looks like this:
+You can also set options on that cookie, like the ones I recommended above. How to do this differs depending on the programming language, but the outcome is always an HTTP response that looks like this:
 
 ```
 HTTP/2.0 200 OK
@@ -241,9 +241,9 @@ Keep in mind that the JSON you parse might have a *property* that is formatted a
 { "name": "<script>alert('Hahaha I am a script')</script>" }
 ```
 
-Therefore, don't insert JSON values as HTML either—use `innerText` if you're doing something like that. This is well outside the realm of htmx-controlled UI though.
+Therefore, don't insert JSON values as HTML either—use `textContent` if you're doing something like that. This is well outside the realm of htmx-controlled UI though.
 
-The 2.0 version of htmx will include an `innerText` swap, if you want to call someone else's API directly from the client and just put that text into the page.
+The 2.0 version of htmx will include a `textContent` swap, if you want to call someone else's API directly from the client and just put that text into the page.
 
 ### Custom HTML controls
 

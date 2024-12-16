@@ -32,7 +32,7 @@
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/chai-dom/chai-dom.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/mocha-webdriver-runner/dist/mocha-webdriver-client.js"></script>
+<script src="../node_modules/mocha-webdriver/dist/index.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="../src/htmx.js"></script>
@@ -49,7 +49,7 @@
 <script class="mocha-init">
     mocha.setup('bdd');
     mocha.checkLeaks();
-    should = chai.should();
+    window.should = window.chai.should()
 </script>
 
 <script src="util/util.js"></script>
@@ -58,15 +58,18 @@
 <script src="core/internals.js"></script>
 <script src="core/api.js"></script>
 <script src="core/ajax.js"></script>
-<script src="core/extensions.js"></script>
+<script src="core/config.js"></script>
 <script src="core/verbs.js"></script>
 <script src="core/parameters.js"></script>
 <script src="core/headers.js"></script>
 <script src="core/regressions.js"></script>
 <script src="core/security.js"></script>
+<script src="core/shadowdom.js"></script>
 <script src="core/perf.js"></script>
 <script src="core/validation.js"></script>
 <script src="core/tokenizer.js"></script>
+<script src="core/extensions.js"></script>
+<script src="core/extension-swap.js"></script>
 
 <!-- attribute tests -->
 <script src="attributes/hx-boost.js"></script>
@@ -79,8 +82,8 @@
 <script src="attributes/hx-include.js"></script>
 <script src="attributes/hx-indicator.js"></script>
 <script src="attributes/hx-disabled-elt.js"></script>
+<script src="attributes/hx-inherit.js"></script>
 <script src="attributes/hx-disinherit.js"></script>
-<script src="attributes/hx-on.js"></script>
 <script src="attributes/hx-on-wildcard.js"></script>
 <script src="attributes/hx-params.js"></script>
 <script src="attributes/hx-patch.js"></script>
@@ -91,7 +94,6 @@
 <script src="attributes/hx-request.js"></script>
 <script src="attributes/hx-select.js"></script>
 <script src="attributes/hx-select-oob.js"></script>
-<script src="attributes/hx-sse.js"></script>
 <script src="attributes/hx-swap-oob.js"></script>
 <script src="attributes/hx-swap.js"></script>
 <script src="attributes/hx-sync.js"></script>
@@ -99,73 +101,9 @@
 <script src="attributes/hx-trigger.js"></script>
 <script src="attributes/hx-vals.js"></script>
 <script src="attributes/hx-vars.js"></script>
-<script src="attributes/hx-ws.js"></script>
 
-<!-- hyperscript integration -->
+<!-- this hyperscript integration should be removed once its removed from the tests -->
 <script src="lib/_hyperscript.js"></script>
-<script src="ext/hyperscript.js"></script>
-
-<!-- extension tests -->
-<script src="ext/extension-swap.js"></script>
-
-<script src="../src/ext/method-override.js"></script>
-<script src="ext/method-override.js"></script>
-
-<script src="../src/ext/debug.js"></script>
-<script src="ext/debug.js"></script>
-
-<script src="lib/morphdom-umd.js"></script>
-<script src="../src/ext/morphdom-swap.js"></script>
-<script src="ext/morphdom-swap.js"></script>
-
-<script src="../src/ext/json-enc.js"></script>
-<script src="ext/json-enc.js"></script>
-
-<script src="lib/handlebars-v4.7.6.js"></script>
-<script src="lib/mustache.js"></script>
-<script src="../src/ext/client-side-templates.js"></script>
-<script src="ext/client-side-templates.js"></script>
-
-<script src="../src/ext/path-deps.js"></script>
-<script src="ext/path-deps.js"></script>
-
-<script src="../src/ext/class-tools.js"></script>
-<script src="ext/class-tools.js"></script>
-
-<script src="../src/ext/loading-states.js"></script>
-<script src="ext/loading-states.js"></script>
-
-<script src="ext/bad-extension.js"></script>
-
-<script src="../src/ext/remove-me.js"></script>
-<script src="ext/remove-me.js"></script>
-
-<script src="../src/ext/include-vals.js"></script>
-<script src="ext/include-vals.js"></script>
-
-<script src="../src/ext/ajax-header.js"></script>
-<script src="ext/ajax-header.js"></script>
-
-<script src="../src/ext/event-header.js"></script>
-<script src="ext/event-header.js"></script>
-
-<script src="../src/ext/disable-element.js"></script>
-<script src="ext/disable-element.js"></script>
-
-<script src="../src/ext/multi-swap.js"></script>
-<script src="ext/multi-swap.js"></script>
-
-<script src="../src/ext/ws.js"></script>
-<script src="ext/ws.js"></script>
-
-<script src="../src/ext/sse.js"></script>
-<script src="ext/sse.js"></script>
-
-<script src="../src/ext/response-targets.js"></script>
-<script src="ext/response-targets.js"></script>
-
-<script src="../src/ext/path-params.js"></script>
-<script src="ext/path-params.js"></script>
 
 <!-- events last so they don't screw up other tests -->
 <script src="core/events.js"></script>
@@ -174,7 +112,6 @@
 
 <script class="mocha-exec">
     document.addEventListener("DOMContentLoaded", function () {
-        mocha.setup({globals: ['$0', '$1', '$2', '$3', '$4', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame', 'confirm']}); <!-- IE11 -->
         mocha.run();
     })
 </script>

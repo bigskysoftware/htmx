@@ -1,117 +1,53 @@
 +++
 title = "Extensions"
-insert_anchor_links = "left"
 +++
 
-Htmx provides an extension mechanism for defining and using extensions within htmx-based applications.
+htmx supports extensions to augment the core hypermedia infrastructure it provides.  The extension mechanism takes
+pressure off the core library to add new features, allowing it to focus on its main purpose of 
+[generalizing hypermedia controls](https://dl.acm.org/doi/10.1145/3648188.3675127).
 
-## Using Extensions {#using}
+If you are interested in creating an extension for htmx, please see [Building htmx Extensions](/extensions/building).
 
-Using an extension involves two steps:
+htmx extensions are split into two categories:
 
- * include the extension definition, which will add it to the `htmx` extension registry
- * reference the extension via the [hx-ext](@/attributes/hx-ext.md) attribute
+* [core extensions](#core-extensions) - supported by the htmx team
+* [community extensions](#community-extensions) - supported by the broader community
 
-Here is an example
+## Core Extensions
 
-```html
-  <script src="/path/to/ext/debug.js" defer></script>
-  <button hx-post="/example" hx-ext="debug">This Button Uses The Debug Extension</button>
-```
+| Name                                             | Description                                                                                                                                                                                |
+|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [head-support](/extensions/head-support)         | Provides support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
+| [htmx-1-compat](/extensions/htmx-1-compat)       | Rolls back most of the behavioral changes of htmx 2 to the htmx 1 defaults.                                                                                                                |
+| [idiomorph](/extensions/idiomorph)               | Provides a `morph` swap strategy based on the [idiomorph](https://github.com/bigskysoftware/idiomorph/) morphing library, which was created by the htmx team.                              |
+| [preload](/extensions/preload)                   | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
+| [response-targets](/extensions/response-targets) | This extension allows you to specify different target elements to be swapped when different HTTP response codes are received.                                                              |
+| [sse](/extensions/sse)                           | Provides support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly from HTML.                                |
+| [ws](/extensions/ws)                             | Provides bi-directional communication with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) servers directly from HTML |
 
-This loads the debug extension off of the `unpkg` CDN and then adds the debug extension to the given button.  (This
-will print out extensive logging for the button, for debugging purposes.)
+## Community Extensions
 
-Note that the `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire part of the DOM,
-and on the `body` tag for it to apply to all htmx requests.
-
-**Tip:** To use multiple extensions on one element, separate them with a comma:
-
-```html
-  <button hx-post="/example" hx-ext="debug, json-enc">This Button Uses Two Extensions</button>
-```
-
-## Ignoring Extensions {#ignoring}
-
-By default, extensions are applied to the DOM node where it is invoked, along with all child elements inside of that parent node.
-If you need to disable an extension somewhere within the DOM tree, you can use the `ignore:` keyword to stop it from being used.
-
-```html
-<div hx-ext="debug">
-  <button hx-post="/example">This button used the debug extension</button>
-  <button hx-post="/example" hx-ext="ignore:debug">This button does not</button>
-</div>
-```
-
-## Included Extensions {#included}
-
-htmx includes a set of extensions out of the box that address common developer needs.  These extensions are tested
-against `htmx` in each distribution.
-
-### Installing Extensions {#installing}
-
-You can find the source for the bundled extensions at `https://unpkg.com/browse/htmx.org@1.9.12/dist/ext/`.  You will need
-to include the javascript file for the extension and then install it using the [hx-ext](@/attributes/hx-ext.md) attributes.
-
-See the individual extension documentation for more details.
-
-### Included Extensions List {#reference}
-
-<div class="info-table">
-
-| Extension                                                        | Description
-|------------------------------------------------------------------|-------------
-| [`ajax-header`](@/extensions/ajax-header.md)                     | includes the commonly-used `X-Requested-With` header that identifies ajax requests in many backend frameworks
-| [`alpine-morph`](@/extensions/alpine-morph.md)                   | an extension for using the [Alpine.js morph](https://alpinejs.dev/plugins/morph) plugin as the swapping mechanism in htmx.
-| [`class-tools`](@/extensions/class-tools.md)                     | an extension for manipulating timed addition and removal of classes on HTML elements
-| [`client-side-templates`](@/extensions/client-side-templates.md) | support for client side template processing of JSON/XML responses
-| [`debug`](@/extensions/debug.md)                                 | an extension for debugging of a particular element using htmx
-| [`event-header`](@/extensions/event-header.md)                   | includes a JSON serialized version of the triggering event, if any
-| [`head-support`](@/extensions/head-support.md)                   | support for merging the `head` tag from responses into the existing documents `head`
-| [`include-vals`](@/extensions/include-vals.md)                   | allows you to include additional values in a request
-| [`json-enc`](@/extensions/json-enc.md)                           | use JSON encoding in the body of requests, rather than the default `x-www-form-urlencoded`
-| [`idiomorph`](https://github.com/bigskysoftware/idiomorph)       | an extension for using the idiomorph morphing algorithm as a swapping mechanism
-| [`loading-states`](@/extensions/loading-states.md)               | allows you to disable inputs, add and remove CSS classes to any element while a request is in-flight.
-| [`method-override`](@/extensions/method-override.md)             | use the `X-HTTP-Method-Override` header for non-`GET` and `POST` requests
-| [`morphdom-swap`](@/extensions/morphdom-swap.md)                 | an extension for using the [morphdom](https://github.com/patrick-steele-idem/morphdom) library as the swapping mechanism in htmx.
-| [`multi-swap`](@/extensions/multi-swap.md)                       | allows to swap multiple elements with different swap methods
-| [`path-deps`](@/extensions/path-deps.md)                         | an extension for expressing path-based dependencies [similar to intercoolerjs](http://intercoolerjs.org/docs.html#dependencies)
-| [`preload`](@/extensions/preload.md)                             | preloads selected `href` and `hx-get` targets based on rules you control.
-| [`remove-me`](@/extensions/remove-me.md)                         | allows you to remove an element after a given amount of time
-| [`response-targets`](@/extensions/response-targets.md)           | allows to specify different target elements to be swapped when different HTTP response codes are received
-| [`restored`](@/extensions/restored.md)                           | allows you to trigger events when the back button has been pressed
-| [`server-sent-events`](@/extensions/server-sent-events.md)       | uni-directional server push messaging via [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
-| [`web-sockets`](@/extensions/web-sockets.md)                     | bi-directional connection to WebSocket servers
-| [`path-params`](@/extensions/path-params.md)                     | allows to use parameters for path variables instead of sending them in query or body
-
-</div>
-
-## Defining an Extension {#defining}
-
-To define an extension you call the `htmx.defineExtension()` function:
-
-```html
-<script>
-  htmx.defineExtension('my-ext', {
-    onEvent : function(name, evt) {
-        console.log("Fired event: " + name, evt);
-    }
-  })
-</script>
-```
-
-Typically, this is done in a stand-alone javascript file, rather than in an inline `script` tag.
-
-Extensions should have names that are dash separated and that are reasonably short and descriptive.
-
-Extensions can override the following default extension points to add or change functionality:
-
-```javascript
-{
-    onEvent : function(name, evt) {return true;},
-    transformResponse : function(text, xhr, elt) {return text;},
-    isInlineSwap : function(swapStyle) {return false;},
-    handleSwap : function(swapStyle, target, fragment, settleInfo) {return false;},
-    encodeParameters : function(xhr, parameters, elt) {return null;}
-}
-```
+| Name                                                                                                                     | Description                                                                                                                                                                                                                                                                                   |
+|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [ajax-header](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ajax-header/README.md)                     | Adds an `X-Requested-With` header to all requests made by htmx                                                                                                                                                                                                                                |
+| [alpine-morph](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/alpine-morph/README.md)                   | Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morph) and this extension allows you to use it as the swapping mechanism in htmx which is necessary to retain Alpine state when you have entire Alpine components swapped by htmx.                                |
+| [class-tools](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/class-tools/README.md)                     | The `class-tools` extension allows you to specify CSS classes that will be swapped onto or off of the elements by using a `classes` or `data-classes` attribute.                                                                                                                              |
+| [client-side-templates](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/client-side-templates/README.md) | This extension supports transforming a JSON/XML request response into HTML via a client-side template before it is swapped into the DOM.                                                                                                                                                      |
+| [debug](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/debug/README.md)                                 | This extension includes log all htmx events for the element it is on, either through the `console.debug` function or through the `console.log` function with a `DEBUG:` prefix.                                                                                                               |
+| [disable-element](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/disable-element/README.md)             | This extension disables an element during an htmx request, when configured on the element triggering the request. Note that this functionality is now part of the core of htmx via the `hx-disabled-elt` attribute                                                                            |
+| [event-header](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/event-header/README.md)                   | This extension adds the `Triggering-Event` header to requests. The value of the header is a JSON serialized version of the event that triggered the request.                                                                                                                                  |
+| [include-vals](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/include-vals/README.md)                   | The `include-vals` extension allows you to programmatically include values in a request with a `include-vals` attribute. The value of this attribute is one or more name/value pairs, which will be evaluated as the fields in a javascript object literal.                                   |
+| [json-enc-custom](https://github.com/Emtyloc/json-enc-custom/blob/main/README.md)                                        | This extension works similarly to json-enc but allows for very complex structures, such as embedding JSON objects, lists, or handling indexes, just by using the name attribute.                                                                                                              |
+| [json-enc](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/json-enc/README.md)                           | This extension encodes parameters in JSON format instead of url format.                                                                                                                                                                                                                       |
+| [loading-states](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/loading-states/README.md)               | This extension allows you to easily manage loading states while a request is in flight, including disabling elements, and adding and removing CSS classes.                                                                                                                                    |
+| [morphdom-swap](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README.md)                 | Provides a `morph` swap strategy based on the [morphdom](https://github.com/patrick-steele-idem/morphdom/) morphing library.                                                                                                                                                                  |
+| [multi-swap](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/multi-swap/README.md)                       | This extension allows you to swap multiple elements marked from the HTML response. You can also choose for each element which swap method should be used.                                                                                                                                     |
+| [no-cache](https://github.com/craigharman/htmx-ext-no-cache/blob/master/README.md)                                       | This extension forces HTMX to bypass client caches and make a new request. An `hx-no-cache` header is also added to allow server-side caching to be bypassed.                                                                                                                                 |
+| [path-deps](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md)                         | This extension supports expressing inter-element dependencies based on paths, inspired by the [intercooler.js dependencies mechanism](http://intercoolerjs.org/docs.html#dependencies).                                                                                                       |
+| [path-params](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-params/README.md)                     | This extension uses request parameters to populate path variables. Used parameters are removed so they won't be sent in the query string or body anymore.                                                                                                                                     |
+| [remove-me](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/remove-me/README.md)                         | Allows you to remove an element after a specified interval.                                                                                                                                                                                                                                   |
+| [replace-params](https://github.com/fanelfaa/htmx-ext-replace-params/blob/main/README.md)                                | This extension uses request parameters to replace existing parameters. If given value is empty string then parameter will be deleted. This extension would be useful in situations like pagination, search that you only want to replace only few parameters instead of reset all parameters. |
+| [restored](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/restored/README.md)                           | Triggers an event whenever a back button even is detected while using `hx-boost`                                                                                                                                                                                                              |
+| [safe-nonce](https://github.com/MichaelWest22/htmx-extensions/blob/main/src/safe-nonce/README.md)                        | The `safe-nonce` extension can be used to improve the security of the application/web-site and help avoid XSS issues by allowing you to return known trusted inline scripts safely                                                                                                            |
+| [signalr](https://github.com/Renerick/htmx-signalr/blob/master/README.md)                                                | Provides bidirectional real-time communication via [SignalR](https://github.com/dotnet/AspNetCore/tree/main/src/SignalR).                                                                                                                                                                     |
+| [amz-content-sha256](https://github.com/felipegenef/amz-content-sha256/blob/main/README.md)                              | HTMX extension for interacting with AWS services that require the content hash as part of the request for data integrity verification.                                                                                                                                                        |

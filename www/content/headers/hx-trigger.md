@@ -60,6 +60,12 @@ document.body.addEventListener("showMessage", function(evt){
 
 Each property of the JSON object on the right hand side will be copied onto the details object for the event.
 
+### Targeting Other Elements
+
+You can trigger events on other target elements by adding a `target` argument to the JSON object.
+
+`HX-Trigger: {"showMessage":{"target" : "#otherElement"}}`
+
 ### Multiple Triggers
 
 If you wish to invoke multiple events, you can simply add additional properties to the top level JSON
@@ -72,3 +78,7 @@ You may also trigger multiple events with no additional details by sending event
 `HX-Trigger: event1, event2`
 
 Using events gives you a lot of flexibility to add functionality to normal htmx responses.
+
+## Notes
+
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)
