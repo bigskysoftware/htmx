@@ -68,7 +68,7 @@ This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%2
 
 ## \* library
 
-People often call htmx a framework, but it's [a library](https://x.com/htmx_org/status/1848751101035827210)
+People often [call htmx a framework](@/essays/is-htmx-another-javascript-framework.md), but it's [a library](https://x.com/htmx_org/status/1848751101035827210)
 
 ## "man"
 
