@@ -24,7 +24,7 @@ A common set of phrases used by htmx enthusiasts when, for example, [@bunjavascr
 At one point there was a hostile takeover attempt of the htmx CEO position and, in a desperate poison pill, I declared
 everyone CEO of htmx.  
 
-[Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register at a CEO.
+[Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register as a CEO.
 
 If someone emails hr@bigsky.software asking if you are CEO of htmx, I will tell them yes.
 
