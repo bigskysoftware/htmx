@@ -88,3 +88,9 @@ claims and point out that ["that's ridiculous"](https://x.com/search?q=%22that%2
 ## Grug
 
 I created <http://grugbrain.dev>.
+
+## The htmx/intercooler.js feud
+
+The htmx & [intercooler.js](https://x.com/intercoolerjs) twitter accounts often fight with one another.  Sometimes its
+just me [switching back and forth](https://x.com/intercoolerjs/status/1859652045399355559), but two other people have 
+access to the intercooler account, so sometimes I have no idea who I am fighting with.
