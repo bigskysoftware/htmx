@@ -75,7 +75,7 @@ People often call htmx a framework, but it's [a library](https://x.com/htmx_org/
 A common [one word response](https://x.com/search?q=%22man%22%20from%3Ahtmx_org&src=typed_query&f=live) when i don't feel like
 arguing with someone.
 
-## The Le Marquee d'<something>
+## The Le Marquee d'&lt;something>
 
 In December of 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
 the htmx website and started using the honorific (sic) in my twitter title.
