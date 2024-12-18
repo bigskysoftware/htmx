@@ -61,7 +61,7 @@ I believe that [this tweet](https://x.com/htmx_org/status/1672264927136952322) i
 
 ## Stronger Together
 
-In Decemer of 2023, I was trying to get some indonesian twitter users to take a look at htmx, so I created a 
+In December 2023, I was trying to get some indonesian twitter users to take a look at htmx, so I created a 
 ["Montana & Indonesia, Stronger Together!"](https://x.com/htmx_org/status/1734371865156563428) tweet w/an AI image.
 
 This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%20together%22%20from%3A%40htmx_org&src=typed_query&f=live).
@@ -77,7 +77,7 @@ arguing with someone.
 
 ## The Le Marquee d'&lt;something>
 
-In December of 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
+In December 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
 the htmx website and started using the honorific (sic) in my twitter title.
 
 ## htmx sucks
@@ -94,7 +94,7 @@ Please don't harass him, [I draw energy](https://x.com/htmx_org/status/175647644
 
 ## Drop Downs
 
-In July of 2023, sparked by the accusation that htmx users could not create dropdowns, I did a deep-dive into web
+In July 2023, sparked by the accusation that htmx users could not create dropdowns, I did a deep-dive into web
 drop down technology and [uncovered a bombshell](https://x.com/htmx_org/status/1684936514885869568)
 
 ## "htmx is a front end library of peace"
@@ -104,7 +104,7 @@ violent htmx-related imagery with.
 
 ## "that's ridiculous"
 
-In [June of 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accussed
+In [June 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accussed
 htmx of being a government op, the first in many such increasingly ridiculous claims.  I typically quote-tweet these
 claims and point out that ["that's ridiculous"](https://x.com/search?q=%22that%27s%20ridiculous%22%20from%3A%40htmx_org&src=typed_query&f=live)
 
