@@ -102,6 +102,11 @@ drop down technology and [uncovered a bombshell](https://x.com/htmx_org/status/1
 A phrase I will often [quote tweet](https://x.com/search?q=htmx%20is%20a%20front%20end%20library%20of%20peace%20from%3A%40htmx_org&src=typed_query&f=live)
 violent htmx-related imagery with.
 
+## The Process &trade;
+
+[The Process&trade;](https://x.com/htmx_org/status/1697651918858764375) is the mechanism by which people initially hostile
+to htmx come to be enlightened.
+
 ## "that's ridiculous"
 
 In [June 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accussed
@@ -125,6 +130,10 @@ Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
 ## "looking into this"
 
 [idk](https://x.com/search?q=%22idk%22%20from%3Ahtmx_org&src=typed_query&f=live), I just think [it's funny](https://x.com/search?q=%22looking%20into%20this%22%20from%3Ahtmx_org&src=typed_query)
+
+## "Look at this nerd ragin'"
+
+A common phrase used to [mock people (including ourselves)](https://x.com/search?q=%22Look%20at%20this%20nerd%20ragin%27%22%20from%3Ahtmx_org&src=typed_query) with.
 
 ## Joker/Bane/Skeletor/Thanos, etc.
 
