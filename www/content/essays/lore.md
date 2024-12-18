@@ -77,6 +77,10 @@ In December 2023, I was trying to get some indonesian twitter users to take a lo
 
 This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%20together%22%20from%3A%40htmx_org&src=typed_query&f=live).
 
+## Hinges
+
+Sometimes I am accused of being "unhinged" but, in fact, [I own many hinges](https://x.com/search?q=from%3Ahtmx_org%20hinges&src=typed_query).
+
 ## \* library
 
 People often [call htmx a framework](@/essays/is-htmx-another-javascript-framework.md), but it's [a library](https://x.com/htmx_org/status/1848751101035827210)
