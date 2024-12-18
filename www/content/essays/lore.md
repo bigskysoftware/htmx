@@ -34,7 +34,7 @@ Spieltrieb means "play instinct", and is a big part of the [htmx vibe](https://x
 
 ## Pickles
 
-At some point someone (I think [@techsavvytravvy](https://x.com/techsavvytravvy)), generated a grug AI image, and there
+At some point someone (I think [@techsavvytravvy](https://x.com/techsavvytravvy)), generated [a grug AI image](https://x.com/htmx_org/status/1708697536587047142), and there
 was a pickle smiling in a really bizzare way in it.  So we started riffing on pickles and now 
 [there's a shirt](https://swag.htmx.org/products/htmx-pickle-shirt).
 
