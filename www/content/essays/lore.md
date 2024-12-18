@@ -66,6 +66,10 @@ In Decemer of 2023, I was trying to get some indonesian twitter users to take a 
 
 This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%20together%22%20from%3A%40htmx_org&src=typed_query&f=live).
 
+## \* library
+
+People often call htmx a framework, but it's [a library](https://x.com/htmx_org/status/1848751101035827210)
+
 ## The Le Marquee d'<something>
 
 In December of 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
