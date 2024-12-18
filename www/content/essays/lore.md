@@ -112,3 +112,8 @@ I created <http://grugbrain.dev>.
 The htmx & [intercooler.js](https://x.com/intercoolerjs) twitter accounts often fight with one another.  Sometimes its
 just me [switching back and forth](https://x.com/intercoolerjs/status/1859652045399355559), but two other people have 
 access to the intercooler account, so sometimes I have no idea who I am fighting with.
+
+## If Nothing Magically Works
+
+Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
+
