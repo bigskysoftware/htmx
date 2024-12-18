@@ -126,3 +126,6 @@ Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
 
 [idk](https://x.com/search?q=%22idk%22%20from%3Ahtmx_org&src=typed_query&f=live), I just think [it's funny](https://x.com/search?q=%22looking%20into%20this%22%20from%3Ahtmx_org&src=typed_query)
 
+## Joker/Bane/Skeletor/Thanos, etc.
+
+htmx is a [villian](https://x.com/htmx_org/status/1651698199478796292) in the front-end world, i'm good w/that
