@@ -68,6 +68,7 @@ page_template = "essay.html"
 * [Architectural Styles and the Design of Network-based Software Architectures (Roy Fielding, 2000)](https://ics.uci.edu/~fielding/pubs/dissertation/top.htm)
 * [State of the Art Review on Hypermedia Issues and Applications (2006)](https://paul.luon.net/hypermedia/index.html) [[archive]](https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html)
 * [Interview: Henning Koch, Creator of Unpoly](@/essays/interviews/henning_koch.md)
+* [htmx lore](@/essays/lore.md)
 
 ## Banners
 <div style="text-align: center;margin:32px">

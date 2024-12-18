@@ -1,0 +1,90 @@
++++
+title = "htmx lore"
+date = 2024-12-17
+updated = 2024-12-17
+[taxonomies]
+author = ["Carson Gross"]
+tag = ["posts"]
++++
+
+For better or for worse, htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org):
+
+## It's So Over/We're So Back
+
+A common set of phrases used by htmx enthusiasts when, for example, [@bunjavascript told me to delete my account](https://x.com/bunjavascript/status/1708557665268568412)
+
+## htmx CEO
+
+At one point there was a hostile takeover attempt of the htmx CEO position and, in a desperate poison pill, I declared
+everyone CEO of htmx.  [Turk](https://x.com/gitpush_gitpaid) created https://htmx.ceo if you want to register at the CEO.
+
+If someone emails hr@bigsky.software asking if you are CEO of htmx, I will tell them yes.
+
+You can put it on your LinkedIn, because it's true.
+
+## Laser Eye Horse 
+
+At some point I photoshopped lasers onto a horse mask, as kind of an homage to [@horse_js](https://x.com/horse_js).
+
+For some reason it stuck and now it's the [official unofficial](https://swag.htmx.org/products/i-lied-sticker) mascot of htmx.
+
+## Pickles
+
+At some point someone (I think [@techsavvytravvy](https://x.com/techsavvytravvy)), generated a grug AI image, and there
+was a pickle smiling in a really bizzare way in it.  So we started riffing on pickles and now 
+[there's a shirt](https://swag.htmx.org/products/htmx-pickle-shirt).
+
+## Shut Up Warren
+
+[@WarrenInTheBuff](https://x.com/WarrenInTheBuff) is the king of twitter and we regularly fight with him.  This often
+ends in someone saying ["shut up warren"](https://x.com/ThePrimeagen/status/1792564215749779515).
+
+You can see the htmx website do this by going to <https://htmx.org?suw=true>
+
+## (same thing)
+
+I believe that [this tweet](https://x.com/htmx_org/status/1672264927136952322) is the origin of the (same thing) meme
+
+## Stronger Together
+
+In Decemer of 2023, I was trying to get some indonesian twitter users to take a look at htmx, so I created a 
+["Montana & Indonesia, Stronger Together!"](https://x.com/htmx_org/status/1734371865156563428) tweet w/an AI image.
+
+This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%20together%22%20from%3A%40htmx_org&src=typed_query&f=live).
+
+## The Le Marquee d'<something>
+
+In December of 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
+the htmx website and started using the honorific (sic) in my twitter title.
+
+## htmx sucks
+
+I wrote an essay called [htmx sucks](@/essays/htmx-sucks.md) in which I criticize htmx (some valid, some tongue in 
+cheek, most both.)  I also released [a mug](https://swag.htmx.org/products/htmx-sucks-mug) that I will often link to when people are criticizing htmx.
+
+## Jason Knight
+
+Jason Knight [hates htmx](https://x.com/JasonKn99664124/status/1731555036864381251) and wrote a
+[great post](https://archive.is/rQrl7) about it.
+
+Please don't harass him, [I draw energy](https://x.com/htmx_org/status/1756476449693872635) from his posts.
+
+## Drop Downs
+
+In July of 2023, sparked by the accusation that htmx users could not create dropdowns, I did a deep-dive into web
+drop down technology and [uncovered a bombshell](https://x.com/htmx_org/status/1684936514885869568)
+
+## "htmx is a front end library of peace"
+
+A phrase I will often [quote tweet](https://x.com/search?q=htmx%20is%20a%20front%20end%20library%20of%20peace%20from%3A%40htmx_org&src=typed_query&f=live)
+violent htmx-related imagery with.
+
+## "that's ridiculous"
+
+In [June of 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accussed
+htmx of being a government op, the first in many such increasingly ridiculous claims.  I typically quote-tweet these
+claims and point out that ["that's ridiculous"](https://x.com/search?q=%22that%27s%20ridiculous%22%20from%3A%40htmx_org&src=typed_query&f=live)
+
+## Grug
+
+I created <http://grugbrain.dev>.
