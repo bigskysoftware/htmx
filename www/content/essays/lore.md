@@ -7,7 +7,13 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-For better or for worse, htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org):
+<center style="padding: 12px">
+<img src="/img/i-lied.png" alt="I lied." style="border-radius: 32px">
+</center>
+
+For better or for worse, htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).
+
+Here are some explainations.
 
 ## It's So Over/We're So Back
 
