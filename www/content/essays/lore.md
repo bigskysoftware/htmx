@@ -8,7 +8,7 @@ tag = ["posts"]
 +++
 
 <center style="padding: 12px">
-<img src="/img/i-lied.png" alt="I lied." style="border-radius: 32px">
+<img src="/img/i-lied.png" alt="I lied." style="border-radius: 32px; max-width: 100%">
 </center>
 
 For better or for worse, htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).
