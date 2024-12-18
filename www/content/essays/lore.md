@@ -16,7 +16,7 @@ A common set of phrases used by htmx enthusiasts when, for example, [@bunjavascr
 ## htmx CEO
 
 At one point there was a hostile takeover attempt of the htmx CEO position and, in a desperate poison pill, I declared
-everyone CEO of htmx.  [Turk](https://x.com/gitpush_gitpaid) created https://htmx.ceo if you want to register at the CEO.
+everyone CEO of htmx.  [Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register at a CEO.
 
 If someone emails hr@bigsky.software asking if you are CEO of htmx, I will tell them yes.
 
@@ -30,7 +30,7 @@ For some reason it stuck and now it's the [official unofficial](https://swag.htm
 
 ## Spieltrieb
 
-Spieltrieb means "play drive", and is a big part of the [htmx vibe](https://x.com/search?q=spieltrieb%20from%3Ahtmx_org&src=typed_query).
+Spieltrieb means "play instinct", and is a big part of the [htmx vibe](https://x.com/search?q=spieltrieb%20from%3Ahtmx_org&src=typed_query).
 
 ## Pickles
 
