@@ -28,6 +28,10 @@ At some point I photoshopped lasers onto a horse mask, as kind of an homage to [
 
 For some reason it stuck and now it's the [official unofficial](https://swag.htmx.org/products/i-lied-sticker) mascot of htmx.
 
+## Spieltrieb
+
+Spieltrieb means "play drive", and is a big part of the [htmx vibe](https://x.com/search?q=spieltrieb%20from%3Ahtmx_org&src=typed_query).
+
 ## Pickles
 
 At some point someone (I think [@techsavvytravvy](https://x.com/techsavvytravvy)), generated a grug AI image, and there
@@ -40,6 +44,16 @@ was a pickle smiling in a really bizzare way in it.  So we started riffing on pi
 ends in someone saying ["shut up warren"](https://x.com/ThePrimeagen/status/1792564215749779515).
 
 You can see the htmx website do this by going to <https://htmx.org?suw=true>
+
+## Microsoft Purchase Rumor
+
+In January of 2024 I make the htmx twitter account really serious for a week and started quote tweeting things
+about microsoft.  People started worrying.  I announced a [license change](https://x.com/htmx_org/status/1746736273728094323)
+to get people freaked out about a rug pull.
+
+[I then changed htmx to BSD0](https://x.com/htmx_org/status/1746880860723544211)
+
+[This is the offer](https://x.com/htmx_org/status/1746895016256328079) I got from microsoft (real).
 
 ## (same thing)
 
