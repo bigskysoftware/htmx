@@ -70,6 +70,11 @@ This turned into a [whole series of tweets](https://x.com/search?q=%22stronger%2
 
 People often call htmx a framework, but it's [a library](https://x.com/htmx_org/status/1848751101035827210)
 
+## "man"
+
+A common [one word response](https://x.com/search?q=%22man%22%20from%3Ahtmx_org&src=typed_query&f=live) when i don't feel like
+arguing with someone.
+
 ## The Le Marquee d'<something>
 
 In December of 2024, I [added a marquee tag](https://github.com/bigskysoftware/htmx/commit/2b88d967c19619281228d1bf5398751615bdf462) to 
@@ -116,4 +121,8 @@ access to the intercooler account, so sometimes I have no idea who I am fighting
 ## If Nothing Magically Works
 
 Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
+
+## "looking into this"
+
+[idk](https://x.com/search?q=%22idk%22%20from%3Ahtmx_org&src=typed_query&f=live), I just think [it's funny](https://x.com/search?q=%22looking%20into%20this%22%20from%3Ahtmx_org&src=typed_query)
 
