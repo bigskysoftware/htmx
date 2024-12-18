@@ -22,7 +22,9 @@ A common set of phrases used by htmx enthusiasts when, for example, [@bunjavascr
 ## htmx CEO
 
 At one point there was a hostile takeover attempt of the htmx CEO position and, in a desperate poison pill, I declared
-everyone CEO of htmx.  [Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register at a CEO.
+everyone CEO of htmx.  
+
+[Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register at a CEO.
 
 If someone emails hr@bigsky.software asking if you are CEO of htmx, I will tell them yes.
 
@@ -41,8 +43,11 @@ Spieltrieb means "play instinct", and is a big part of the [htmx vibe](https://x
 ## Pickles
 
 At some point someone (I think [@techsavvytravvy](https://x.com/techsavvytravvy)), generated [a grug AI image](https://x.com/htmx_org/status/1708697536587047142), and there
-was a pickle smiling in a really bizzare way in it.  So we started riffing on pickles and now 
-[there's a shirt](https://swag.htmx.org/products/htmx-pickle-shirt).
+was a pickle smiling in a really bizarre way in it.  
+
+So we started riffing on pickles and now [there's a shirt](https://swag.htmx.org/products/htmx-pickle-shirt).
+
+Cry more, [drizzle](https://x.com/DrizzleORM/status/1757149983713665238).
 
 ## Shut Up Warren
 
