@@ -12,12 +12,13 @@ extension.
 
 ## Installing
 
-The fastest way to install `idiomorph` is to load it via a CDN. Remember to always include the core htmx library before the extension.
+The fastest way to install `idiomorph` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/idiomorph@0.3.0" integrity="sha384-tg/2Ca9U/RohyxmGCb8qJVR3j9cswtKbdRSXOaPX/aDDOW1bfbeyV+7G9ifYF4bC" crossorigin="anonymous"></script>
 </head>
+<body hx-ext="morph">
 ```
 An unminified version is also available at https://unpkg.com/idiomorph/dist/idiomorph.js.
 

@@ -20,12 +20,13 @@ Use the following attributes to configure how WebSockets behave:
 
 ## Installing
 
-The fastest way to install `ws` is to load it via a CDN. Remember to always include the core htmx library before the extension.
+The fastest way to install `ws` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx-ext-ws@2.0.2" integrity="sha384-vuKxTKv5TX/b3lLzDKP2U363sOAoRo5wSvzzc3LJsbaQRSBSS+3rKKHcOx5J8doU" crossorigin="anonymous"></script>
 </head>
+<body hx-ext="ws">
 ```
 An unminified version is also available at https://unpkg.com/htmx-ext-ws/dist/ws.js.
 

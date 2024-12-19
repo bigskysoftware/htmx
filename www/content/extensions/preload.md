@@ -12,12 +12,14 @@ unused requests. Use this extension carefully!
 
 ## Installing
 
-The fastest way to install `preload` is to load it via a CDN. Remember to always include the core htmx library before the extension.
+The fastest way to install `preload` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx-ext-preload@2.1.0" integrity="sha384-fkzubQiTB69M7XTToqW6tplvxAOJkqPl5JmLAbumV2EacmuJb8xEP9KnJafk/rg8" crossorigin="anonymous"></script>
 </head>
+<body hx-ext="preload">
+...
 ```
 An unminified version is also available at https://unpkg.com/htmx-ext-preload/dist/preload.js.
 
@@ -44,7 +46,6 @@ and `hx-get` elements you want to preload. By default, resources will be loaded 
 giving your application a roughly 100-200ms head start on serving responses. See configuration below for other options.
 
 ```html
-
 <body hx-ext="preload">
 <h1>What Works</h2>
     <a href="/server/1" preload>WILL BE requested using a standard XMLHttpRequest() and default options (below)</a>

@@ -24,12 +24,14 @@ The value of each attribute can be:
 
 ## Installing
 
-The fastest way to install `response-targets` is to load it via a CDN. Remember to always include the core htmx library before the extension.
+The fastest way to install `response-targets` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
+<body hx-ext="response-targets">
+...
 ```
 An unminified version is also available at https://unpkg.com/htmx-ext-response-targets/dist/response-targets.js.
 

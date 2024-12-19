@@ -1133,12 +1133,14 @@ You can see all available extensions on the [Extensions](/extensions) page.
 
 ### Installing Extensions
 
-The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions. For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
+The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
+<body hx-ext="extension-name">
+    ...
 ```
 An unminified version is also available at `https://unpkg.com/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
 
