@@ -10,7 +10,7 @@ behavior to fit your applications needs and use cases.
 too many resources can negatively impact your visitors' bandwidth and your server performance by initiating too many
 unused requests. Use this extension carefully!
 
-## Installation
+## Installing
 
 The fastest way to install `preload` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

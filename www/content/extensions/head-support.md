@@ -13,7 +13,7 @@ The [`hx-boost`](@/attributes/hx-boost.md) attribute moved htmx closer to this w
 support for extracting the `title` tag out of head elements was eventually added, but full head tag support has never been
 a feature of the library.  This extension addresses that shortcoming.
 
-## Installation
+## Installing
 
 The fastest way to install `head-support` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

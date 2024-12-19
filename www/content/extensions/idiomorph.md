@@ -10,7 +10,7 @@ much smoother transition between the two states.
 You can use the idiomorph morphing algorithm as a [swapping](@attributes/hx-swap) strategy by including the idiomorph 
 extension.
 
-## Installation
+## Installing
 
 The fastest way to install `idiomorph` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

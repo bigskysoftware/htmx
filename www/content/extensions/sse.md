@@ -24,7 +24,7 @@ Use the following attributes to configure how SSE connections behave:
 * `sse-close=<message-name>` - To close the EventStream gracefully when that message is received. This might be helpful
   if you want to send information to a client that will eventually stop.
 
-## Installation
+## Installing
 
 The fastest way to install `sse` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

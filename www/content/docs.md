@@ -1158,7 +1158,7 @@ import `htmx.org`;
 import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
 ```
 
-Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Instead of `htmx-ext-idiomorph` use `idiomorph`. For example `https://unpkg.com/idiomorph` or `npm install idiomorph`.
+Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://unpkg.com/idiomorph` or `npm install idiomorph`.
 
 ### Enabling Extensions
 

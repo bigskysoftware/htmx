@@ -4,7 +4,7 @@ title = "htmx 1.x Compatibility Extension"
 
 The `htmx-1-compat` extension allows you to almost seamlessly upgrade from htmx 1.x to htmx 2.
 
-## Installation
+## Installing
 
 The fastest way to install `htmx-1-compat` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

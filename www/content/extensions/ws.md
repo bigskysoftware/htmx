@@ -18,7 +18,7 @@ Use the following attributes to configure how WebSockets behave:
   event
   or the event specified by [`hx-trigger`])
 
-## Installation
+## Installing
 
 The fastest way to install `ws` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML

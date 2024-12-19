@@ -22,7 +22,7 @@ The value of each attribute can be:
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
 (e.g `previous .error` will target the closest previous sibling with `error` class)
 
-## Installation
+## Installing
 
 The fastest way to install `response-targets` is to load it via a CDN. Remember to always include the core htmx library before the extension.
 ```HTML
