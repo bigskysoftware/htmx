@@ -1117,6 +1117,22 @@ htmx provides an [extensions](/extensions) mechanism that allows you to customiz
 Extensions [are defined in javascript](/extensions/building) and then enabled via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute.
 
+### Core Extensions
+
+htmx supports a few "core" extensions, which are supported by the htmx development team:
+
+* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests
+* [htmx-1-compat](/extensions/htmx-1-compat) - restores htmx 1 defaults & functionality
+* [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
+* [preload](/extensions/preload) - allows you to preload content for better performance
+* [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
+* [sse](/extensions/sse) - support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+* [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
+
+You can see all available extensions on the [Extensions](/extensions) page.
+
+### Installing Extensions
+
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions. For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
@@ -1142,7 +1158,13 @@ import `htmx.org`;
 import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
 ```
 
-To enable the extension, add a `hx-ext="extension-name"` attribute to `<body>` or another HTML element (replace `extension-name` with the name of the extension). The following example allows you to specify different target elements to be swapped when different HTTP response codes are received.
+Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Instead of `htmx-ext-idiomorph` use `idiomorph`. For example `https://unpkg.com/idiomorph` or `npm install idiomorph`.
+
+### Enabling Extensions
+
+To enable an extension, add a `hx-ext="extension-name"` attribute to `<body>` or another HTML element (replace `extension-name` with the name of the extension). The extension will be applied to all child elements.
+
+The following example shows how to enable [response-targets](/extensions/response-targets) extension, allowing you to specify different target elements to be swapped based on HTTP response code.
 ```html
 <body hx-ext="response-targets">
     ...
@@ -1154,21 +1176,6 @@ To enable the extension, add a `hx-ext="extension-name"` attribute to `<body>` o
     ...
 </body>
 ```
-
-
-### Core Extensions
-
-htmx supports a few "core" extensions, which are supported by the htmx development team:
-
-* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
-* [htmx-1-compat](/extensions/htmx-1-compat) - restores htmx 1 defaults & functionality
-* [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
-* [preload](/extensions/preload) - allows you to preload content for better performance
-* [response-targets](/extensions/response-targets) - allows you to target elements based on HTTP response codes (e.g. `404`)
-* [sse](/extensions/sse) - support for [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-* [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
-
-You can see all available extensions on the [Extensions](/extensions) page.
 
 ### Creating Extensions
 
