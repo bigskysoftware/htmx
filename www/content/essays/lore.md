@@ -142,6 +142,13 @@ access to the intercooler account, so sometimes I have no idea who I am fighting
 
 Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
 
+## /r/webdev
+
+I was very unfairly given [a lifetime ban](https://x.com/htmx_org/status/1719687461385691283) from 
+[/r/webdev/](https://www.reddit.com/r/webdev/) for an
+[obviously satirical post](https://old.reddit.com/r/webdev/comments/17i0loi/anyone_heard_of_htmx/).  My understanding
+it that even the term "htmx" is banned (or semi-banned) on that sub.
+
 ## "looking into this"
 
 [idk](https://x.com/search?q=%22idk%22%20from%3Ahtmx_org&src=typed_query&f=live), I just think [it's funny](https://x.com/search?q=%22looking%20into%20this%22%20from%3Ahtmx_org&src=typed_query)
