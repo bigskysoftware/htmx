@@ -1137,7 +1137,7 @@ The fastest way to install htmx extensions created by others is to load them via
 ```HTML
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-NtTh9TBZ2X/pFpfsVvQOjSsYWmjmqG6h5ioQWVAe2/j3AuTHRmfqvoqp+iOed+I0" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
 ```
 An unminified version is also available at `https://unpkg.com/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
