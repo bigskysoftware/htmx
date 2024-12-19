@@ -1,6 +1,9 @@
 +++
 title = "Essays"
+sort_by = "date"
 insert_anchor_links = "left"
+generate_feeds = true
+template = "essay_index.html"
 page_template = "essay.html"
 +++
 
@@ -8,15 +11,10 @@ page_template = "essay.html"
 * [HATEOAS](@/essays/hateoas.md)
 * [How Did REST Come To Mean The Opposite of REST?](@/essays/how-did-rest-come-to-mean-the-opposite-of-rest.md)
 * [Two Approaches To Decoupling](@/essays/two-approaches-to-decoupling.md)
-* [Hypermedia APIs vs. Data APIs](@/essays/hypermedia-apis-vs-data-apis.md)
-* [Splitting Your Data & Application APIs: Going Further](@/essays/splitting-your-apis.md)
 * [Hypermedia Clients](@/essays/hypermedia-clients.md)
 * [HATEOAS Is For Humans](https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html)
-* [Rescuing REST From the API Winter](https://intercoolerjs.org/2016/01/18/rescuing-rest.html)
 * [Taking HTML Seriously](https://intercoolerjs.org/2020/01/14/taking-html-seriously)
-* [REST Copypasta](@/essays/rest-copypasta.md)
 * [The #ViewSource Affordance](@/essays/right-click-view-source.md)
-* [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
 
 ### Why Hypermedia? Why Multi-Page Applications?
 * [Hypermedia On Whatever you'd Like (HOWL)](@/essays/hypermedia-on-whatever-youd-like.md)
@@ -24,7 +22,6 @@ page_template = "essay.html"
 * [When To Use Hypermedia?](@/essays/when-to-use-hypermedia.md)
 * [The API Churn/Security Trade-off](https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html)
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
-* [SPA Alternative](@/essays/spa-alternative.md)
 
 ### Real World htmx Experiences
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
@@ -58,17 +55,15 @@ page_template = "essay.html"
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 * [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 * [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
-* [Prefer If Statements to Polymorphism, etc.](@/essays/prefer-if-statements.md)
 
-### Hypermedia History
+### Hypermedia Research
 
 * [A File Structure For The Complex, The Changing and the Indeterminate (Ted Nelson, 1965)](https://dl.acm.org/doi/pdf/10.1145/800197.806036)
 * [The Mother Of All Demos (Doug Englebart, 1968)](https://www.youtube.com/watch?v=B6rKUf9DWRI)
 * [The First Web Page (1991)](http://info.cern.ch/hypertext/WWW/TheProject.html)
 * [Architectural Styles and the Design of Network-based Software Architectures (Roy Fielding, 2000)](https://ics.uci.edu/~fielding/pubs/dissertation/top.htm)
 * [State of the Art Review on Hypermedia Issues and Applications (2006)](https://paul.luon.net/hypermedia/index.html) [[archive]](https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html)
-* [Interview: Henning Koch, Creator of Unpoly](@/essays/interviews/henning_koch.md)
-* [htmx lore](@/essays/lore.md)
+* [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
 
 ## Banners
 <div style="text-align: center;margin:32px">
