@@ -1114,32 +1114,44 @@ Please see the [Animation Guide](@/examples/animations.md) for more details on t
 ## Extensions
 
 htmx provides an [extensions](/extensions) mechanism that allows you to customize the libraries' behavior.
-Extensions [are defined in javascript](/extensions/building) and enabled via
+Extensions [are defined in javascript](/extensions/building) and then enabled via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute.
 
-Extensions can be installed using a `<script>` tag or with an `import` statement. Here is an example of how to install the [preload](/extensions/preload) extension from a CDN with a script tag (it should be installed *after* `htmx.js`):
-```html
+The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions. For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
+```HTML
 <head>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-NtTh9TBZ2X/pFpfsVvQOjSsYWmjmqG6h5ioQWVAe2/j3AuTHRmfqvoqp+iOed+I0" crossorigin="anonymous"></script>
 </head>
 ```
-To install the extension using npm and a bundler (e.g. Rollup, Webpack), use this command:
+An unminified version is also available at `https://unpkg.com/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
+
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install htmx extensions is to simply copy them into your project. Download the extension from `https://unpkg.com/htmx-ext-extension-name` (replace `extension-name` with the name of the extension) e.g., https://unpkg.com/htmx-ext-response-targets. Then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install htmx extensions via [npm](https://www.npmjs.com/) (replace `extension-name` with the name of the extension):
+```shell
+npm install htmx-ext-extension-name
 ```
-npm i htmx-ext-preload
-```
-And then integrate the package in one of your scripts:
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-extension-name/dist/extension-name.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htx-ext-extension-name` via npm (replace `extension-name` with the name of the extension)
+- Import both packages to your `index.js`
 ```JS
-import 'htmx-ext-preload';
+import `htmx.org`;
+import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
 ```
 
-To enable the extension, add a `hx-ext` attribute with its name. The following example enables you to load HTML fragments into your browser's cache before they are requested by the user.
-
+To enable the extension, add a `hx-ext="extension-name"` attribute to `<body>` or another HTML element (replace `extension-name` with the name of the extension). The following example allows you to specify different target elements to be swapped when different HTTP response codes are received.
 ```html
-<body hx-ext="preload">
-  ...
-  <a href="/server/1" preload>Link which will be preloaded</a>
-  ...
+<body hx-ext="response-targets">
+    ...
+    <button hx-post="/register" hx-target="#response-div" hx-target-404="#not-found">
+        Register!
+    </button>
+    <div id="response-div"></div>
+    <div id="not-found"></div>
+    ...
 </body>
 ```
 
