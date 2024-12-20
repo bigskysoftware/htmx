@@ -69,7 +69,6 @@ if(window.location.search=="?ads=true") {
 </div>
 
 <div class="dark-hero full-width" classes="add appear">
-<marquee behavior="alternate" direction="right">
   <div class="main">
       <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
@@ -85,13 +84,21 @@ if(window.location.search=="?ads=true") {
      </a>
   </div>
 
-</marquee>
 </div>
 <div class="ad">
 <a href="https://swag.htmx.org">
   <img src="/img/ads_bottom.png"/>
 </a>
 </div>
+
+<marquee class="full-width" direction="left" style="padding: 32px 0 12px; font-size:30px; color: darkgreen;text-shadow: 1px 1px 1px whitesmoke;" scrollamount="10">
+  ❄️🎄🎅 🎁 <a href="https://github.com/bigskysoftware/htmx"
+                    style="padding-top: 32px; font-size:30px; color: darkgreen;text-shadow: 1px 1px 1px whitesmoke;text-decoration: underline">
+    A <span style="font-size:32px; font-weight:bold; color: red; text-decoration:underline !important;" >Github Star</span>  Would Be A Great Christmas Gift!!!
+</a> 🎁 🎅🎄❄️
+</marquee>
+
+
 
 <div class="alert">
 <b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <a href="https://docs.npmjs.com/cli/v10/commands/npm-dist-tag#purpose"><code>latest</code></a>
