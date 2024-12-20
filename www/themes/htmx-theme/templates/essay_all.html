@@ -22,7 +22,7 @@ time { padding-right: 10px; }
 {% for page in section.pages %}
   <li>
    <time datetime={{page.date}}>{{ page.date | date(format="%b %d, %Y") }}</time>
-   <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+   <a href="{{ page.permalink | safe }}">{{ page.title | safe }}</a>
   </li>
 {% endfor %}
 </ol>
