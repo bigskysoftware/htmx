@@ -49,6 +49,16 @@ So we started riffing on pickles and now [there's a shirt](https://swag.htmx.org
 
 Cry more, [drizzle](https://x.com/DrizzleORM/status/1757149983713665238).
 
+## XSS
+
+In July 2023, when htmx first got popular, there was a
+[moral panic](https://x.com/htmx_org/status/1683607693246775297) around
+[cross site scripting](https://x.com/htmx_org/status/1683529221195571200).  I
+[may](https://x.com/htmx_org/status/1683607217499414531) have
+[overcooked](https://x.com/htmx_org/status/1683649190071791617) my
+[response](https://x.com/htmx_org/status/1683612179512057856) to
+[it](https://x.com/htmx_org/status/1683818711763877892).
+
 ## Shut Up Warren
 
 [@WarrenInTheBuff](https://x.com/WarrenInTheBuff) is the king of twitter and we regularly fight with him.  This often
