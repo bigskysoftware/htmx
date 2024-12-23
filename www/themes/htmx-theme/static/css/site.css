@@ -20,7 +20,7 @@
     --alertBackground: #161719;
     --alertBorder: #41464b;
     --alertShadow: rgba(0, 0, 0, 0.15);
-    --anchorColor: #e2dada;
+    --anchorColor: var(--midBlue);
     --bodyBackground: #1f1f1f;
     --footerBackground: #1a1d1e;
     --midBlue: #5b96d5;
@@ -575,11 +575,9 @@ pre[class|="language"] {
   color: lightgray;
 }
 .zola-anchor {
-  margin-left: -1.3rem;
-  margin-right: .3rem;
-  opacity: 40%;
   color: var(--anchorColor);
 }
-.zola-anchor:hover {
-    opacity: 95%;
+
+.zola-anchor:hover::after {
+  content: ' #';
 }
