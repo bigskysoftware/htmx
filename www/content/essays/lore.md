@@ -11,7 +11,7 @@ tag = ["posts"]
 <img src="/img/i-lied.png" alt="I lied." style="border-radius: 32px; max-width: 100%">
 </center>
 
-For better or for worse, htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).
+For better or [for worse](https://x.com/IroncladDev/status/1866185587616596356), htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).
 
 Here are some explainations.
 
