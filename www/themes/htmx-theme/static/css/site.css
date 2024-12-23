@@ -419,9 +419,6 @@ transition: visibility 0s 1s, opacity 1s linear;
   padding:1em 0;
 }
 
-.github-stars {
-    width: 98px;
-}
 .github-stars span {
     position: relative;
     top: 4px;
@@ -455,7 +452,12 @@ h1,h2,h3,h4{
 
 @media(min-width:45em) {
 
-  /* Menu */
+    /* Avoid nav jump */
+  .github-stars {
+    width: 98px;
+  }
+
+    /* Menu */
   .menu,
   .navigation > div{
       display:flex;

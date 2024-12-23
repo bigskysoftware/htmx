@@ -68,8 +68,9 @@ You can see the htmx website do this by going to <https://htmx.org?suw=true>
 
 ## Microsoft Purchase Rumor
 
-In January of 2024 I make the htmx twitter account really serious for a week and started quote tweeting things
-about microsoft.  People started worrying.  I announced a [license change](https://x.com/htmx_org/status/1746736273728094323)
+In mid-January of 2024 I got really serious with the htmx twitter account and started [quote](https://x.com/htmx_org/status/1745930477825868044) 
+tweeting [things](https://x.com/htmx_org/status/1745915394626351315)
+[about microsoft](https://x.com/htmx_org).  People started [worrying](https://x.com/SusSoftware/status/1746206195461878113).  I announced a [license change](https://x.com/htmx_org/status/1746736273728094323)
 to get people freaked out about a rug pull.
 
 [I then changed htmx to BSD0](https://x.com/htmx_org/status/1746880860723544211)
