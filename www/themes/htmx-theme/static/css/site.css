@@ -452,7 +452,12 @@ h1,h2,h3,h4{
 
 @media(min-width:45em) {
 
-  /* Menu */
+    /* Avoid nav jump */
+  .github-stars {
+    width: 98px;
+  }
+
+    /* Menu */
   .menu,
   .navigation > div{
       display:flex;

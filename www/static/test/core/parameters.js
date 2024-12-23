@@ -288,6 +288,14 @@ describe('Core htmx Parameter Handling', function() {
     vals.foo.should.equal('null')
   })
 
+  it('formdata can be used to construct a URLSearchParams instance', function() {
+    var form = make('<input name="foo" value="bar"/>')
+    var vals = htmx._('getInputValues')(form, 'get').values
+    function makeSearchParams() { return new URLSearchParams(vals).toString() }
+    makeSearchParams.should.not.throw()
+    makeSearchParams().should.equal('foo=bar')
+  })
+
   it('order of parameters follows order of input elements', function() {
     this.server.respondWith('GET', '/test?foo=bar&bar=foo&foo=bar&foo2=bar2', function(xhr) {
       xhr.respond(200, {}, 'Clicked!')

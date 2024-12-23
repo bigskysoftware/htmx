@@ -23,7 +23,7 @@ has been swapped or settled yet, only that the request has finished.
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
@@ -34,7 +34,7 @@ This event is triggered after htmx has initialized a DOM node.  It can be useful
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the element being initialized
 
 ### Event - `htmx:afterRequest` {#htmx:afterRequest}
 
@@ -44,7 +44,7 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
@@ -59,7 +59,7 @@ This event is triggered after the DOM has [settled](@/docs.md#request-operations
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the updated element
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
@@ -70,7 +70,7 @@ This event is triggered after new content has been [swapped into the DOM](@/docs
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the swapped in element
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
@@ -81,11 +81,11 @@ This event is triggered before htmx [disables](@/attributes/hx-disable.md) an el
 
 ##### Details
 
-* `detail.elt` - the cleaned up element
+* `detail.elt` - the element to be cleaned up
 
 ### Event - `htmx:beforeOnLoad` {#htmx:beforeOnLoad}
 
-This event is triggered before any response processing occurs.  If the event is cancelled, no swap will occur.
+This event is triggered before any response processing occurs.  If you call `preventDefault()` on the event to cancel it, no swap will occur.
 
 ##### Details
 
@@ -100,11 +100,11 @@ This event is triggered before htmx initializes a DOM node and has processed all
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the element being initialized
 
 ### Event - `htmx:beforeRequest` {#htmx:beforeRequest}
 
-This event is triggered before an AJAX request is issued.  If the event is cancelled, no request will occur.
+This event is triggered before an AJAX request is issued.  If you call `preventDefault()` on the event to cancel it, no request will occur.
 
 ##### Details
 
@@ -126,16 +126,17 @@ This event is triggered right before a request is sent.  You may not cancel the 
 
 ### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
 
-This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).  If the event is cancelled, no swap will occur.
+This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).  If you call `preventDefault()` on the event to cancel it, no swap will occur.
 
 You can modify the default swap behavior by modifying the `shouldSwap` and `target` properties of the event detail. See
 the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the target of the swap
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.requestConfig` - the configuration of the AJAX request
+* `detail.requestConfig.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.ignoreTitle` - if `true` any title tag in the response will be ignored
 * `detail.target` - the target of the swap
@@ -143,7 +144,7 @@ the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavio
 ### Event - `htmx:beforeTransition` {#htmx:beforeTransition}
 
 This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) 
-wrapped swap occurs.  If the event is cancelled, the View Transition will not occur and the normal swapping logic will
+wrapped swap occurs.  If you call `preventDefault()` on the event to cancel it, the View Transition will not occur and the normal swapping logic will
 happen instead.
 
 ##### Details
@@ -324,7 +325,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the swapped in element
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 * `detail.fragment` - the response fragment
@@ -335,7 +336,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 
 ##### Details
 
-* `detail.elt` - the element that dispatched the request
+* `detail.elt` - the target of the swap
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 * `detail.fragment` - the response fragment
@@ -380,7 +381,6 @@ used to modify the `path` or `type` used to update the history.
 ##### Details
 
 * `detail.history` - the `path` and `type` (push, replace) for the history update
-* `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
@@ -526,7 +526,7 @@ to implement custom validation rules.
 
 ##### Details
 
-* `detail.elt` - the element that triggered the request
+* `detail.elt` - the element to be validated
 
 ### Event - `htmx:validation:failed` {#htmx:validation:failed}
 
@@ -534,7 +534,7 @@ This event is triggered when an element fails validation.
 
 ##### Details
 
-* `detail.elt` - the element that triggered the request
+* `detail.elt` - the element that failed validation
 * `detail.message` - the validation error message
 * `detail.validity` - the validity object, which contains properties specifying how validation failed
 

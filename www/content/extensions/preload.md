@@ -13,7 +13,7 @@ unused requests. Use this extension carefully!
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
+<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
 ```
 
 ## Usage
@@ -35,6 +35,8 @@ giving your application a roughly 100-200ms head start on serving responses. See
 </body>
 ```
 
+All preload requests include an additional `"HX-Preloaded": "true"` header.
+
 ### Inheriting Preload Settings
 
 You can add the `preload` attribute to the top-level element that contains several `<a href="">` or `hx-get=""`
@@ -51,6 +53,15 @@ you preload many more resources than you need.
 </ul>
 </body>
 ```
+
+### Preloading Forms
+
+The extension can preload some form elements if the form includes `hx-get` attribute or uses `method="get"`. The `preload` attribute can be added to the form or to some of its selected elements. Currently these form elements can be preloaded:
+- `<input type="radio>">` will be preloaded as if the radio button was clicked and form submitted
+- `<input type="checkbox">` will be preloaded as if the checkbox was checked and form submitted
+- `<input type="checkbox" checked>` will be preloaded as if the checkbox was unchecked and form submitted
+- `<select>` will send multiple preload requests as if each unselected option was selected and form submitted
+- `<input type="submit">` will be preloaded as if form was submitted
 
 ### Preloading of Linked Images
 
@@ -114,6 +125,13 @@ trigger preloads as soon as an object has been processed by htmx.
     </div>
 </body>
 ```
+
+#### preload="always"
+
+By default, the extension will preload each element once.
+If you would like to keep always preloading the element, you can add `preload="always"` attribute.
+This can be useful if `hx-target` is not the element itself.
+This attribute can be combined with other configuration attributes e.g. `preload="always mouseover"`.
 
 ### About Touch Events
 
