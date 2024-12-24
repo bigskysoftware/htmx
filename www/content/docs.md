@@ -101,9 +101,12 @@ It's worth mentioning that, if you prefer, you can use the [`data-`](https://htm
 <a data-hx-post="/click">Click Me!</a>
 ```
 
-Finally, [Version 1](https://v1.htmx.org) of htmx is still supported and supports IE11.
+If you understand the concepts around htmx and want to see the quirks of the library, please see our 
+[QUIRKS](@/QUIRKS.md) page.
 
 ## 1.x to 2.x Migration Guide
+
+[Version 1](https://v1.htmx.org) of htmx is still supported and supports IE11, but the latest version of htmx is 2.x.
 
 If you are migrating to htmx 2.x from [htmx 1.x](https://v1.htmx.org), please see the [htmx 1.x migration guide](@/migration-guide-htmx-1.md).
 
