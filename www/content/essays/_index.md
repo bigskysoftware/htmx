@@ -2,7 +2,6 @@
 title = "Essays"
 insert_anchor_links = "heading"
 sort_by = "date"
-insert_anchor_links = "left"
 generate_feeds = true
 template = "essay_index.html"
 page_template = "essay.html"
