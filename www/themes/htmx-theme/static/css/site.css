@@ -575,7 +575,7 @@ pre[class|="language"] {
   color: lightgray;
 }
 .zola-anchor {
-  color: var(--anchorColor);
+  color: var(--textColor);
 }
 
 .zola-anchor:hover::after {
