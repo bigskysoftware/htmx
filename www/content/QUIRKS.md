@@ -7,7 +7,7 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQLite](https://www.sqlite.org/quirks.html).
+This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQLite" page](https://www.sqlite.org/quirks.html).
 
 ## Attribute Inheritance
 
