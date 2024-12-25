@@ -26,6 +26,7 @@ div:
 ```
 
 This helps avoid repeating attributes, thus keeping code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+
 On the other hand, as the attributes get further away elements, you lose [Locality of Behavior](@/essays/locality-of-behaviour.md)
 and it becomes more difficult to understand what an element is doing.
 
@@ -42,12 +43,15 @@ Here is a `meta` tag configuration that does so:
 
 ## The Default Swap Strategy is `innerHTML`
 
-The [target](@/attributes/hx-swap.md) attribute allows you to control how a swap is performed.  The default strategy is
-`innerHTML`, that is, to place the response HTML content within the target element.  Many people prefer to use the 
-`outerHTML` strategy as the default instead.
+The [`hx-swap`](@/attributes/hx-swap.md) attribute allows you to control how a swap is performed.  The default strategy is
+`innerHTML`, that is, to place the response HTML content within the target element.
+
+Many people prefer to use the `outerHTML` strategy as the default instead.
 
 You can change this behavior using the `htmx.config.defaultSwapStyle` 
-[configuration variable](/@docs.md#config).  Here is a `meta` tag configuration that does so:
+[configuration variable](/@docs.md#config).
+
+Here is a `meta` tag configuration that does so:
 
 ```html
   <meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
@@ -55,17 +59,22 @@ You can change this behavior using the `htmx.config.defaultSwapStyle`
 
 ## Targeting the `body` Always Performs an innerHTML Swap
 
-For historical reasons, if you target the `body` element, htmx will always perform an `innerHTML` swap.  This means you
-cannot change attributes on the `body` tag via an htmx request.
+For historical reasons, if you target the `body` element, htmx will
+[always perform an `innerHTML` swap](https://github.com/bigskysoftware/htmx/blob/fb78106dc6ef20d3dfa7e54aca20408c4e4336fc/src/htmx.js#L1696).
+
+This means you cannot change attributes on the `body` tag via an htmx request.
 
 ## By Default `4xx` & `5xx` Responses Do Not Swap
 
-htmx has never swapped "error" status response codes by default.  This behavior annoys some people, and some server
-frameworks, in particular, will return a `422 - Unprocessable Entity` response code to indicate that a form was not 
-filled out properly.  This can be very confusing when it is first encountered.
+htmx has never swapped "error" status response codes (`400`s & `500`s) by default.
 
-You can configure the response behavior of htmx via the `` event or 
-[via the `htmx.config.responseHandling` config array]https://htmx.org/docs/#response-handling.
+This behavior annoys some people, and some server frameworks, in particular, will return a `422 - Unprocessable Entity` 
+response code to indicate that a form was not filled out properly.  
+
+This can be very confusing when it is first encountered.
+
+You can configure the response behavior of htmx via the [`htmx:beforeSwap`](@/docs.md#modifying_swapping_behavior_with_events) 
+event or [via the `htmx.config.responseHandling` config array]https://htmx.org/docs/#response-handling.
 
 Here is the default configuration:
 
@@ -130,7 +139,8 @@ Here is a meta tag that disables history caching:
 [`hx-boost`](@/attributes/hx-boost.md) is an odd feature compared with most other aspects of htmx: it "magically" turns
 all anchor tags and forms into AJAX requests.
 
-This can speed the feel of these interactions up, and also continue working when JavaScript is disabled, however it comes
+This can speed the feel of these interactions up, and also allows the forms and anchors to continue working when 
+[JavaScript is disabled](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), however it comes 
 with some tradeoffs:
 
 * The history issues mentioned above can show up
@@ -142,8 +152,10 @@ Some members on the core htmx team feel that, due to these issues, as well as th
 quite a bit in page navigation, it is best to avoid `hx-boost` and just use unboosted links and forms.
 
 There is no doubt that `hx-boost` is an odd-man out when compared to other htmx attributes and suffers from the dictum
-that "If something magically works, then it can also magically break."  Despite this fact, I (Carson) still feel it is
-useful in many situations, and it is used on the <https://htmx.org> website
+that "If something magically works, then it can also magically break."
+
+Despite this fact, I (Carson) still feel it is useful in many situations, and it is used on the <https://htmx.org> 
+website.
 
 ## The JavaScript API Is Not A Focus
 
