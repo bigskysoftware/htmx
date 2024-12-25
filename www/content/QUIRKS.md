@@ -164,5 +164,7 @@ htmx is a hypermedia-oriented front end library.  This means that htmx enhances 
 JavaScript API.
 
 There _is_ a [JavaScript API](@/reference.md#api), but it is not a focus of the library and, in most cases,
-should not be used heavily by htmx end users.  If you find yourself using it heavily, especially the `htmx.ajax()` method,
-it may be worth asking yourself if there is a more htmx-ish way to achieve what you are doing.
+should not be used heavily by htmx end users.
+
+If you find yourself using it heavily, especially the [`htmx.ajax()`](@/api.md#ajax) method, it may be
+worth asking yourself if there is a more htmx-ish approach to achieve what you are doing.
