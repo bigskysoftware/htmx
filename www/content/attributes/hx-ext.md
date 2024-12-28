@@ -4,7 +4,7 @@ title = "hx-ext"
 
 The `hx-ext` attribute enables an htmx [extension](https://htmx.org/extensions) for an element and all its children.
 
-The value can be a single extension name or a list of extensions (separated by commas).
+The value can be a single extension name or a list of extension names (separated by commas).
 
 The `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire swath of the DOM,
 and on the `body` tag for it to apply to all htmx requests.
