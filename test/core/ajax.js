@@ -1184,6 +1184,48 @@ describe('Core htmx AJAX Tests', function() {
     values.should.deep.equal({ t1: 'textValue', b1: ['inputValue', 'buttonValue'] })
   })
 
+  it('sends referenced form values when a button referencing another form is clicked', function() {
+    var values
+    this.server.respondWith('POST', '/test3', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(205, {}, '')
+    })
+
+    make('<form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input type="hidden" name="b1" value="inputValue">' +
+            '</form>' +
+            '<form hx-post="/test2">' +
+            '<input type="text" name="t1" value="checkValue">' +
+            '<button id="submit" form="externalForm" hx-post="/test3" type="submit" name="b1" value="buttonValue">button</button>' +
+            '</form>')
+
+    byId('submit').click()
+    this.server.respond()
+    values.should.deep.equal({ t1: 'textValue', b1: ['inputValue', 'buttonValue'] })
+  })
+
+  it('sends referenced form values when a submit input referencing another form is clicked', function() {
+    var values
+    this.server.respondWith('POST', '/test3', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+
+    make('<form id="externalForm" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<input type="hidden" name="b1" value="inputValue">' +
+            '</form>' +
+            '<form hx-post="/test2">' +
+            '<input type="text" name="t1" value="checkValue">' +
+            '<input id="submit" form="externalForm" hx-post="/test3" type="submit" name="b1" value="buttonValue">' +
+            '</form>')
+
+    byId('submit').click()
+    this.server.respond()
+    values.should.deep.equal({ t1: 'textValue', b1: ['inputValue', 'buttonValue'] })
+  })
+
   it('properly handles inputs external to form', function() {
     var values
     this.server.respondWith('Post', '/test', function(xhr) {

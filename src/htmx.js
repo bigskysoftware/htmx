@@ -3523,7 +3523,7 @@ var htmx = (function() {
 
     // for a non-GET include the closest form
     if (verb !== 'get') {
-      processInputValue(processed, priorityFormData, errors, closest(elt, 'form'), validate)
+      processInputValue(processed, priorityFormData, errors, ('form' in elt && elt.form) || closest(elt, 'form'), validate)
     }
 
     // include the element itself
