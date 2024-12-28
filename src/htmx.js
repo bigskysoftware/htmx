@@ -3521,9 +3521,10 @@ var htmx = (function() {
       validate = validate && internalData.lastButtonClicked.formNoValidate !== true
     }
 
-    // for a non-GET include the closest form
+    // for a non-GET include the associated form, which may or may not be a parent element of elt
     if (verb !== 'get') {
-      processInputValue(processed, priorityFormData, errors, ('form' in elt && elt.form) || closest(elt, 'form'), validate)
+      const form = ('form' in elt && elt.form) || closest(elt, 'form')
+      processInputValue(processed, priorityFormData, errors, form, validate)
     }
 
     // include the element itself
