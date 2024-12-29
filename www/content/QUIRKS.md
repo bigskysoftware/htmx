@@ -118,6 +118,24 @@ Here is a meta tag allowing all responses to swap:
   <meta name="htmx-config" content='{"responseHandling": [{"code":"...", "swap": true}]'>
 ```
 
+## `GET` Requests on Non-Form Elements Do Not Include Form Values by Default
+
+If a non-form element makes a non-`GET` request (e.g. a `PUT` request) via htmx, the values of the enclosing form
+of that element (if any) [will be included in the request](@/docs#parameters).
+
+However, if the element issues a `GET`, the values of an enclosing form will
+[not be included.](https://github.com/bigskysoftware/htmx/blob/fb78106dc6ef20d3dfa7e54aca20408c4e4336fc/src/htmx.js#L3525)
+
+If you wish to include the values of the enclosing form when issuing an `GET` you can use the
+[`hx-include`](@/attributes/hx-include.md) attribute like so:
+
+```html
+<button hx-get="/search"
+        hx-include="closest form">
+  Search
+</button>
+```
+
 ## History Can Be Tricky
 
 htmx provides support for interacting with the broswer's [history](@/docs.md#history).  This can be very powerful, but it
