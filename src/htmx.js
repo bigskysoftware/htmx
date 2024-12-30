@@ -2401,7 +2401,7 @@ var htmx = (function() {
         return true
       }
       if (matches(elt, 'input[type="submit"], button') &&
-        (matches(elt, '[form]') || closest(elt, 'form') !== null)) {
+        (/** @type HTMLInputElement|HTMLButtonElement */(elt).form)) {
         return true
       }
       if (elt instanceof HTMLAnchorElement && elt.href &&
@@ -2804,7 +2804,7 @@ var htmx = (function() {
     if (!elt) {
       return
     }
-    const form = resolveTarget('#' + getRawAttribute(elt, 'form'), elt.getRootNode()) || closest(elt, 'form')
+    const form = (/** @type HTMLInputElement|HTMLButtonElement */(elt).form) || closest(elt, 'form')
     if (!form) {
       return
     }
@@ -3523,7 +3523,7 @@ var htmx = (function() {
 
     // for a non-GET include the associated form, which may or may not be a parent element of elt
     if (verb !== 'get') {
-      const form = ('form' in elt && elt.form) || closest(elt, 'form')
+      const form = (/** @type HTMLInputElement|HTMLButtonElement */(elt).form) || closest(elt, 'form')
       processInputValue(processed, priorityFormData, errors, form, validate)
     }
 
