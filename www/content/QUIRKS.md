@@ -74,7 +74,7 @@ response code to indicate that a form was not filled out properly.
 This can be very confusing when it is first encountered.
 
 You can configure the response behavior of htmx via the [`htmx:beforeSwap`](@/docs.md#modifying_swapping_behavior_with_events) 
-event or [via the `htmx.config.responseHandling` config array]https://htmx.org/docs/#response-handling.
+event or [via the `htmx.config.responseHandling` config array](https://htmx.org/docs/#response-handling).
 
 Here is the default configuration:
 
