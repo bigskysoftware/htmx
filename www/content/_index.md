@@ -91,15 +91,6 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<marquee class="full-width" direction="left" style="padding: 32px 0 12px; font-size:30px; color: darkgreen;text-shadow: 1px 1px 1px whitesmoke;" scrollamount="10">
-  ❄️🎄🎅 🎁 <a href="https://github.com/bigskysoftware/htmx"
-                    style="padding-top: 32px; font-size:30px; color: darkgreen;text-shadow: 1px 1px 1px whitesmoke;text-decoration: underline">
-    A <span style="font-size:32px; font-weight:bold; color: red; text-decoration:underline !important;" >Github Star</span>  Would Be A Great Christmas Gift!!!
-</a> 🎁 🎅🎄❄️
-</marquee>
-
-
-
 <div class="alert">
 <b>NEWS:</b> htmx 2.0 has been released!  It is not currently marked as <a href="https://docs.npmjs.com/cli/v10/commands/npm-dist-tag#purpose"><code>latest</code></a>
 in NPM so that people using the <a href="https://v1.htmx.org">1.x line</a> are not accidentally upgraded.  We will mark
