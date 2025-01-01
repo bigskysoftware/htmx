@@ -1415,6 +1415,9 @@ be possible using a standard `on*` property, but it can be done using the `hx-on
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
+Another usecase is to [reset form inputs](@/examples/reset-form-inputs.md) after submission using the `afterRequest` event, 
+avoiding the need for something like an out of band swap.
+
 The `hx-on*` attributes are a very simple mechanism for generalized embedded scripting.  It is _not_ a replacement for more
 fully developed front-end scripting solutions such as AlpineJS or hyperscript.  It can, however, augment a VanillaJS-based
 approach to scripting in your htmx-powered application.
