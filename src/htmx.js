@@ -2400,7 +2400,7 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
-      if (matches(elt, 'input[type="submit"], button') &&
+      if (matches(elt, 'input[type=submit], button:not([type=button], [type=reset])') &&
         (/** @type HTMLInputElement|HTMLButtonElement */(elt).form)) {
         return true
       }
