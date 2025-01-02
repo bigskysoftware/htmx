@@ -2804,16 +2804,12 @@ var htmx = (function() {
   }
 
   /**
-   * @typedef {HTMLElement & { form: HTMLFormElement | null }} FormAssociatedElement
-  */
-
-  /**
    * @param {Element} elt
    * @returns {HTMLFormElement|null}
    */
   function getRelatedForm(elt) {
-    // Get the related form if available, else find the closest parent form
-    return /** @type {FormAssociatedElement} */ (elt).form || /** @type {HTMLFormElement} */ (closest(elt, 'form'))
+    // @ts-ignore Get the related form if available, else find the closest parent form
+    return elt.form || closest(elt, 'form')
   }
 
   /**
