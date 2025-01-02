@@ -2778,7 +2778,7 @@ var htmx = (function() {
    * @param {Event} evt
    */
   function maybeSetLastButtonClicked(evt) {
-    const elt = /** @type {HTMLButtonElement|HTMLInputElement} */ (closest(asElement(evt.target), "button, input[type='submit']"))
+    const elt = getTargetButton(evt.target)
     const internalData = getRelatedFormData(evt)
     if (internalData) {
       internalData.lastButtonClicked = elt
@@ -2796,15 +2796,36 @@ var htmx = (function() {
   }
 
   /**
+   * @param {EventTarget} target
+   * @returns {HTMLButtonElement|HTMLInputElement|null}
+   */
+  function getTargetButton(target) {
+    return /** @type {HTMLButtonElement|HTMLInputElement|null} */ (closest(asElement(target), "button, input[type='submit']"))
+  }
+
+  /**
+   * @typedef {HTMLElement & { form: HTMLFormElement | null }} FormAssociatedElement
+  */
+
+  /**
+   * @param {Element} elt
+   * @returns {HTMLFormElement|null}
+   */
+  function getRelatedForm(elt) {
+    // Get the related form if available, else find the closest parent form
+    return /** @type {FormAssociatedElement} */ (elt).form || /** @type {HTMLFormElement} */ (closest(elt, 'form'))
+  }
+
+  /**
    * @param {Event} evt
    * @returns {HtmxNodeInternalData|undefined}
    */
   function getRelatedFormData(evt) {
-    const elt = closest(asElement(evt.target), "button, input[type='submit']")
+    const elt = getTargetButton(evt.target)
     if (!elt) {
       return
     }
-    const form = (/** @type HTMLInputElement|HTMLButtonElement */(elt).form) || closest(elt, 'form')
+    const form = getRelatedForm(elt)
     if (!form) {
       return
     }
@@ -3521,10 +3542,9 @@ var htmx = (function() {
       validate = validate && internalData.lastButtonClicked.formNoValidate !== true
     }
 
-    // for a non-GET include the associated form, which may or may not be a parent element of elt
+    // for a non-GET include the related form, which may or may not be a parent element of elt
     if (verb !== 'get') {
-      const form = (/** @type HTMLInputElement|HTMLButtonElement */(elt).form) || closest(elt, 'form')
-      processInputValue(processed, priorityFormData, errors, form, validate)
+      processInputValue(processed, priorityFormData, errors, getRelatedForm(elt), validate)
     }
 
     // include the element itself
