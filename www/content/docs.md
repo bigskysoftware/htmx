@@ -640,8 +640,8 @@ will include the values of all inputs within it.
 
 As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends.
 
-Additionally, if the element causes a non-`GET` request, the values of all the inputs of the nearest enclosing form
-will be included.
+Additionally, if the element causes a non-`GET` request, the values of all the inputs of the associated form will be
+included (typically this is the nearest enclosing form, but could be different if e.g. `<button form="associated-form">` is used).
 
 If you wish to include the values of other elements, you can use the [hx-include](@/attributes/hx-include.md) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
