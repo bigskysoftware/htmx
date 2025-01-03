@@ -1304,4 +1304,40 @@ describe('Core htmx AJAX Tests', function() {
     this.server.respond()
     values.should.deep.equal({ name: '', outside: '' })
   })
+
+  it('properly handles form reset behaviour with a htmx enabled reset button inside a form', function() {
+    var values
+    this.server.respondWith('POST', '/reset', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+
+    make('<form id="externalForm" hx-post="/test">' +
+            '<input id="t1" type="text" name="t1" value="defaultValue">' +
+            '<button hx-post="/reset" id="reset" type="reset" name="b1" value="buttonValue">reset</button>' +
+            '</form>')
+    byId('t1').value = 'otherValue'
+    byId('reset').click()
+    this.server.respond()
+    values.should.deep.equal({ b1: 'buttonValue', t1: 'otherValue' })
+    byId('t1').value.should.equal('defaultValue')
+  })
+
+  it('properly handles form reset behaviour with a htmx enabled reset button outside a form', function() {
+    var values
+    this.server.respondWith('POST', '/reset', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+
+    make('<form id="externalForm" hx-post="/test">' +
+            '<input id="t1" type="text" name="t1" value="defaultValue">' +
+            '</form>' +
+            '<button hx-post="/reset" id="reset" form="externalForm" type="reset" name="b1" value="buttonValue">reset</button>')
+    byId('t1').value = 'otherValue'
+    byId('reset').click()
+    this.server.respond()
+    values.should.deep.equal({ b1: 'buttonValue', t1: 'otherValue' })
+    byId('t1').value.should.equal('defaultValue')
+  })
 })
