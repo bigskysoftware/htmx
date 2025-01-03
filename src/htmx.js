@@ -2400,8 +2400,9 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
-      if (matches(elt, 'input[type=submit], button:not([type=button], [type=reset])') &&
-        (/** @type HTMLInputElement|HTMLButtonElement */(elt).form)) {
+      // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
+      // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
+      if (elt.form && elt.type === 'submit') {
         return true
       }
       if (elt instanceof HTMLAnchorElement && elt.href &&
