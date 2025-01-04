@@ -60,8 +60,14 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
+- <https://github.com/erwindrsno/simple-to-do-list>
 
 ## Java
+
+### Javalin
+
+- <https://github.com/AussieGuy0/java-htmx-todo/>
+- <https://github.com/erwindrsno/simple-to-do-list>
 
 ### Spring Boot
 
