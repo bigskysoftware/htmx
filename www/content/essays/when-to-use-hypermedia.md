@@ -174,6 +174,15 @@ architecture, than vice-versa.  Isolated client-side components can communicate 
 via [events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events), in the manner demonstrated
 in the [drag-and-drop Sortable.js + htmx](@/examples/sortable.md) example.
 
+### _...If you want integrated copy & paste components_
+
+Recently we have seen the rise of "Copy & Paste" friendly components such as [ShadCN](https://ui.shadcn.com/).
+These components are typically designed for a specific front end framework such as React, and choosing htmx means that
+you can't use them.
+
+There are front-end library neutral component libraries such as [lit](https://lit.dev/), but they are not as integrated
+with htmx as ShadCN is with React.
+
 ### _...If your team is not on board_
 
 A final reason to not choose hypermedia isn't technical, but rather sociological: currently, hypermedia simply isn't
