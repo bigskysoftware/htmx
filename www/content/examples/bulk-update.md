@@ -139,7 +139,7 @@ You can see a working example of this code below.
         }
       }
 
-      return `<span id="toast" aria-live="polite">Activated ${activated} and deactivated ${deactivated} users</span>`;
+      return `Activated ${activated} and deactivated ${deactivated} users`;
     });
 
     // templates
@@ -148,7 +148,7 @@ You can see a working example of this code below.
                <form
                 id="checked-contacts"
                 hx-post="/users"
-                hx-swap="outerHTML settle:3s"
+                hx-swap="innerHTML settle:3s"
                 hx-target="#toast"
               >
                 <table>
@@ -164,7 +164,7 @@ You can see a working example of this code below.
                   </tbody>
                 </table>
                 <input type="submit" value="Bulk Update" class="btn primary">
-                <span id="toast"></span>
+                <span id="toast" aria-live="polite"></span>
               </form>
               <br>`;
     }
