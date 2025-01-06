@@ -126,10 +126,12 @@ This event is triggered right before a request is sent.  You may not cancel the 
 
 ### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
 
-This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).  If you call `preventDefault()` on the event to cancel it, no swap will occur.
+This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).
+Most values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.
+If you call `preventDefault()` on the event to cancel it, no swap will occur.
 
-You can modify the default swap behavior by modifying the `shouldSwap` and `target` properties of the event detail. See
-the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
+You can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.
+See the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
@@ -139,6 +141,10 @@ the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavio
 * `detail.requestConfig.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.ignoreTitle` - if `true` any title tag in the response will be ignored
+* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events
+* `detail.serverResponse` - the server response as text to be used for the swap
+* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value
+* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value
 * `detail.target` - the target of the swap
 
 ### Event - `htmx:beforeTransition` {#htmx:beforeTransition}
