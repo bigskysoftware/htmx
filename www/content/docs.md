@@ -1120,7 +1120,7 @@ htmx provides an [extensions](/extensions) mechanism that allows you to customiz
 Extensions [are defined in javascript](/extensions/building) and then enabled via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute.
 
-Here is how you would install the [idiomorph](@extension/idiomorph) extension, which allows you to use the
+Here is how you would install the [idiomorph](/extensions/idiomorph) extension, which allows you to use the
 [Idiomorph](https://github.com/bigskysoftware/idiomorph) DOM morphing algorithms for htmx swaps:
 
 ```html
