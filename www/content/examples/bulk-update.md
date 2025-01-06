@@ -10,7 +10,7 @@ values in the form submission (`POST` request):
 ```html
 <form id="checked-contacts"
       hx-post="/users"
-      hx-swap="outerHTML settle:3s"
+      hx-swap="innerHTML settle:3s"
       hx-target="#toast">
     <table>
       <thead>
