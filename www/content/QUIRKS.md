@@ -138,7 +138,7 @@ If you wish to include the values of the enclosing form when issuing an `GET` yo
 
 ## History Can Be Tricky
 
-htmx provides support for interacting with the broswer's [history](@/docs.md#history).  This can be very powerful, but it
+htmx provides support for interacting with the browser's [history](@/docs.md#history).  This can be very powerful, but it
 can also be tricky, particularly if you are using 3rd party JavaScript libraries that modify the DOM.
 
 There can also be [security concerns](@/docs.md#hx-history) when using htmx's history support.
