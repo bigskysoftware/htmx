@@ -9,7 +9,7 @@
     {# This block should set html_title appropriately -#}
     {% block title %} {% endblock title -%}
     <title>{{ html_title | default(value=config.title) | safe }}</title>
-    <link rel="canonical" href="{{ current_url | safe }}">
+    {% if current_url %} <link rel="canonical" href="{{ current_url | safe }}"> {% endif %}
     {#TODO: only generate this for the home page #}
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
     <link rel="stylesheet" href="/css/site.css">

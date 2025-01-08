@@ -115,7 +115,7 @@ If you want to specifically allow `422` responses to swap, you can use this conf
 Here is a meta tag allowing all responses to swap:
 
 ```html
-  <meta name="htmx-config" content='{"responseHandling": [{"code":"...", "swap": true}]'>
+  <meta name="htmx-config" content='{"responseHandling": [{"code":"...", "swap": true}]}'>
 ```
 
 ## `GET` Requests on Non-Form Elements Do Not Include Form Values by Default
