@@ -64,6 +64,7 @@ page_template = "essay.html"
 * [Architectural Styles and the Design of Network-based Software Architectures (Roy Fielding, 2000)](https://ics.uci.edu/~fielding/pubs/dissertation/top.htm)
 * [State of the Art Review on Hypermedia Issues and Applications (2006)](https://paul.luon.net/hypermedia/index.html) [[archive]](https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html)
 * [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
+* [Preserving REST-ful Visibility Of Rich Web Applications With Generalized Hypermedia Controls (ACM SIGWEB Newsletter, Autumn'24)](https://hypermedia.cs.montana.edu/papers/preserving-restful.pdf)
 
 ## Banners
 <div style="text-align: center;margin:32px">
