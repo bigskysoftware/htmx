@@ -352,8 +352,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </tr>
 <tr>
 <td>
+    <a data-github-account="ExchangeRate-API" alt="The Accurate & Reliable Exchange Rate API" href="https://www.exchangerate-api.com">
+       <img class="dark-hidden" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
+       <img class="dark-visible" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
+    </a>
 </td>
 <td>
+        <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
+           <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
+        </a>
 </td>
 <td>
 </td>
