@@ -96,19 +96,31 @@ describe('Core htmx internals Tests', function() {
     var form = make('<form></form>')
     htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
 
-    form = make("<form><input id='i1' type='submit'></form>")
-    var input = byId('i1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
+    form = make('<form id="f1">' +
+        '<input id="insideInput" type="submit">' +
+        '<button id="insideFormBtn"></button>' +
+        '<button id="insideSubmitBtn" type="submit"></button>' +
+        '<button id="insideResetBtn" type="reset"></button>' +
+        '<button id="insideButtonBtn" type="button"></button>' +
+        '</form>' +
+        '<input id="outsideInput" form="f1" type="submit">' +
+        '<button id="outsideFormBtn" form="f1"></button>' +
+        '<button id="outsideSubmitBtn" form="f1" type="submit"></button>")' +
+        '<button id="outsideButtonBtn" form="f1" type="button"></button>")' +
+        '<button id="outsideResetBtn" form="f1" type="reset"></button>")' +
+        '<button id="outsideNoFormBtn"></button>")')
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideInput')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideFormBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideSubmitBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideResetBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideButtonBtn')).should.equal(false)
 
-    form = make("<form><button id='b1' type='submit'></form>")
-    var button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
-
-    form = make("<form id='f1'></form><input id='i1' form='f1' type='submit'><button id='b1' form='f1' type='submit'>")
-    input = byId('i1')
-    button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideInput')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideFormBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideSubmitBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideButtonBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideResetBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideNoFormBtn')).should.equal(false)
   })
 
   it('unset properly unsets a given attribute', function() {
