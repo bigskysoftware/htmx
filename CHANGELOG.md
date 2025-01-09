@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.5] - 2025-??-??
+
+* Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`).
+
 ## [2.0.4] - 2024-12-13
 
 * Calling `htmx.ajax` with no target or source now defaults to body (previously did nothing)
