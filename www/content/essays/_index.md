@@ -26,6 +26,7 @@ page_template = "essay.html"
 ### Real World htmx Experiences
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
 * [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
+* [A Real World wasm to htmx Port](@/essays/a-real-world-wasm-to-htmx-port.md)
 * [Next.js to htmx — A Real World Example](@/essays/a-real-world-nextjs-to-htmx-port.md)
 * [You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths](@/essays/you-cant.md)
 
