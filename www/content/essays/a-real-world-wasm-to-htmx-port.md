@@ -3,9 +3,16 @@ title = "A Real World wasm to htmx Port"
 date = 2025-01-10
 updated = 2025-01-10
 [taxonomies]
-author = ["Carson Gross"]
+author = ["Joe Fioti"]
 tag = ["posts"]
 +++
+
+<style>
+img, video {
+  max-width: 100%;
+  margin: 10px;
+}
+</style>
 
 When I was in college, I wrote some customer service software that tied together some custom AI models I trained, the OpenAI API, a database, and some social media APIs to make the first version of [Sidekick](sidekickai.co).
 
@@ -27,6 +34,9 @@ Large refactors typically have a bad track record so we wrote a quick and dirty 
 - **8 crates -> 1 crate**
 - **~5 bug reports / week -> ~1 bug report / week**
 - **More full nights of sleep**
+
+![sidekick_port_loc.jpg](/img/sidekick_port_loc.jpg)
+
 
 The rewrite went far better than I could have imagined. It definitely won't be representative of every experience, our app was definitely uniquely suited to HTMX. Axum and some custom middleware also went a long way for sharing common infrastructure across the site. Though we don't have proper metrics, we've anecdotally noticed significantly improved load times.
 
