@@ -60,7 +60,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
-- <https://github.com/erwindrsno/simple-to-do-list>
 
 ## Java
 
