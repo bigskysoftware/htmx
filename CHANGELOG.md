@@ -4,6 +4,7 @@
 
 * Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
 * Using `<button formmethod="dialog">` will no longer submit its associated form
+* Added `hx-prompt-default` to set the default value of a `hx-prompt`
 
 ## [2.0.4] - 2024-12-13
 

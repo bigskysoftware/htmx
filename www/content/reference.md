@@ -62,6 +62,7 @@ All other attributes available in htmx.
 | [`hx-patch`](@/attributes/hx-patch.md)               | issues a `PATCH` to the specified URL                                                                                              |
 | [`hx-preserve`](@/attributes/hx-preserve.md)         | specifies elements to keep unchanged between requests                                                                              |
 | [`hx-prompt`](@/attributes/hx-prompt.md)             | shows a `prompt()` before submitting a request                                                                                     |
+| [`hx-prompt-default`](@/attributes/hx-prompt-default.md)             | sets the default value used by `hx-prompt`                                                                                     |
 | [`hx-put`](@/attributes/hx-put.md)                   | issues a `PUT` to the specified URL                                                                                                |
 | [`hx-replace-url`](@/attributes/hx-replace-url.md)   | replace the URL in the browser location bar                                                                                        |
 | [`hx-request`](@/attributes/hx-request.md)           | configures various aspects of the request                                                                                          |

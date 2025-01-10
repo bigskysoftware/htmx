@@ -16,3 +16,4 @@ Here is an example:
 ## Notes
 
 * `hx-prompt` is inherited and can be placed on a parent element
+* Use the optional [`hx-prompt-default`](@/attributes/hx-prompt-default.md) to set the [default value](https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt#defaultvalue) for the prompt

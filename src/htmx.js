@@ -4325,7 +4325,8 @@ var htmx = (function() {
     }
     const promptQuestion = getClosestAttributeValue(elt, 'hx-prompt')
     if (promptQuestion) {
-      var promptResponse = prompt(promptQuestion)
+      const defaultValue = getClosestAttributeValue(elt, 'hx-prompt-default') || undefined
+      var promptResponse = prompt(promptQuestion, defaultValue)
       // prompt returns null if cancelled and empty string if accepted with no entry
       if (promptResponse === null ||
       !triggerEvent(elt, 'htmx:prompt', { prompt: promptResponse, target })) {
