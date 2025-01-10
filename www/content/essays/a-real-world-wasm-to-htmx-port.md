@@ -14,7 +14,7 @@ img, video {
 }
 </style>
 
-When I was in college, I wrote some customer service software that tied together some custom AI models I trained, the OpenAI API, a database, and some social media APIs to make the first version of [Sidekick](sidekickai.co).
+When I was in college, I wrote some customer service software that tied together some custom AI models I trained, the OpenAI API, a database, and some social media APIs to make the first version of [Sidekick](https://sidekickai.co).
 
 ## Led astray
 
