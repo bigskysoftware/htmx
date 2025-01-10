@@ -32,4 +32,6 @@ The rewrite went far better than I could have imagined. It definitely won't be r
 
 ## Reflection
 
-I'll finish by touching on the biggest benefit in my eyes: it's tremendously easier to add new features as our customers request them. A feature that would have taken 2 weeks to fully implement, test and ship, now takes a day or two. As a small startup with a large number of customer demands, this is table stakes. Sidekick hasn't raised VC funding so I can't afford to hire lots of devs. With HTMX we don't need to.
+I'll finish by touching on the biggest benefit in my eyes: it's tremendously easier to add new features as our customers request them. A feature that would have taken 2 weeks to fully implement, test and ship, now takes a day or two. As a small startup with a large number of customer demands, this is table stakes.
+
+Sidekick hasn't raised VC funding so I can't afford to hire lots of devs. With HTMX we don't need to.
