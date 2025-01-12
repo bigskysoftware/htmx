@@ -45,7 +45,7 @@ npm install htmx-ext-sse
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-sse/dist/sse.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
 
 If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htx-ext-sse` via npm
+- Install `htmx.org` and `htmx-ext-sse` via npm
 - Import both packages to your `index.js`
 ```JS
 import `htmx.org`;

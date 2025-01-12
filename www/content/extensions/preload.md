@@ -32,7 +32,7 @@ npm install htmx-ext-preload
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-preload/dist/preload.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
 
 If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htx-ext-preload` via npm
+- Install `htmx.org` and `htmx-ext-preload` via npm
 - Import both packages to your `index.js`
 ```JS
 import `htmx.org`;

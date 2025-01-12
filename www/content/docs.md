@@ -1156,7 +1156,7 @@ npm install htmx-ext-extension-name
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-extension-name/dist/extension-name.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
 
 If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htx-ext-extension-name` via npm (replace `extension-name` with the name of the extension)
+- Install `htmx.org` and `htmx-ext-extension-name` via npm (replace `extension-name` with the name of the extension)
 - Import both packages to your `index.js`
 ```JS
 import `htmx.org`;
@@ -1164,6 +1164,8 @@ import `htmx-ext-extension-name`; // replace `extension-name` with the name of t
 ```
 
 Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://unpkg.com/idiomorph` or `npm install idiomorph`.
+
+Note: Community extensions hosted outside this repository might have different installation instructions. Please check the corresponding repository for set-up guidance.
 
 ### Enabling Extensions
 
