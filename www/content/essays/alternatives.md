@@ -32,7 +32,7 @@ tooling.  It eventually became its own project and takes an [SSE-oriented](https
 approach to hypermedia.  
 
 Datastar combines functionality found in both htmx and [Alpine.js](https://alpinejs.dev/) into 
-a single, tidy package.  
+a single, tidy package that is smaller than htmx.  
 
 You can see many examples of Datastar in action [here](https://data-star.dev/examples).
 
@@ -68,6 +68,13 @@ This is the *entire* source of the library (I'm not joking):
 ```
 
 Amazing!
+
+## TwinSpark
+
+[TwinSpark](https://twinspark.js.org/) is a library created by [Alexander Solovyov](https://solovyov.net/) that is 
+similar to htmx, and includes features such as [morphing](https://twinspark.js.org/api/ts-swap/#morph).
+
+It is being [used in production](https://https://twinspark.js.org#who-is-using-this) on sites with 100k+ daily users.
 
 ## jQuery
 
