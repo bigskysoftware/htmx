@@ -74,7 +74,7 @@ Amazing!
 [TwinSpark](https://twinspark.js.org/) is a library created by [Alexander Solovyov](https://solovyov.net/) that is 
 similar to htmx, and includes features such as [morphing](https://twinspark.js.org/api/ts-swap/#morph).
 
-It is being [used in production](https://https://twinspark.js.org#who-is-using-this) on sites with 100k+ daily users.
+It is being [used in production](https://twinspark.js.org#who-is-using-this) on sites with 100k+ daily users.
 
 ## jQuery
 
