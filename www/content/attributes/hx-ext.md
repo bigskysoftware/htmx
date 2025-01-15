@@ -27,6 +27,6 @@ hierarchy and it will apply to all child elements.
 ```
 ```html
 <body hx-ext="preload,morph">
-...
+  "preload" and "morph" extensions are used in this part of the tree
 </body>
 ```
