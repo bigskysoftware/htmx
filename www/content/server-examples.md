@@ -95,6 +95,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/grugBraid/haxor-contact-app>
 
+### Minimal API
+
+- <https://github.com/benjaminsampica/bensampica.com/tree/main/content/post/minimalapihtmx/src/HtmxMinimalApi>
+
 ## Prolog
 
 - <https://github.com/Anniepoo/declswiplweb>
