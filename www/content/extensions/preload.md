@@ -10,10 +10,33 @@ behavior to fit your applications needs and use cases.
 too many resources can negatively impact your visitors' bandwidth and your server performance by initiating too many
 unused requests. Use this extension carefully!
 
-## Install
+## Installing
 
-```html
-<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
+The fastest way to install `preload` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
+```HTML
+<head>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-preload@2.1.0" integrity="sha384-fkzubQiTB69M7XTToqW6tplvxAOJkqPl5JmLAbumV2EacmuJb8xEP9KnJafk/rg8" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="preload">
+...
+```
+An unminified version is also available at https://unpkg.com/htmx-ext-preload/dist/preload.js.
+
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `preload` is to simply copy it into your project. Download the extension from `https://unpkg.com/htmx-ext-preload`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install `preload` via [npm](https://www.npmjs.com/):
+```shell
+npm install htmx-ext-preload
+```
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-preload/dist/preload.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htmx-ext-preload` via npm
+- Import both packages to your `index.js`
+```JS
+import `htmx.org`;
+import `htmx-ext-preload`; 
 ```
 
 ## Usage
@@ -23,7 +46,6 @@ and `hx-get` elements you want to preload. By default, resources will be loaded 
 giving your application a roughly 100-200ms head start on serving responses. See configuration below for other options.
 
 ```html
-
 <body hx-ext="preload">
 <h1>What Works</h2>
     <a href="/server/1" preload>WILL BE requested using a standard XMLHttpRequest() and default options (below)</a>
