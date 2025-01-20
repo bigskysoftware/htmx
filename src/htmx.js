@@ -3855,7 +3855,7 @@ var htmx = (function() {
       }
       let varsValues
       if (evaluateValue) {
-        varsValues = maybeEval(elt, function() { return Function('return (' + str + ')')() }, {})
+        varsValues = maybeEval(elt, function() { return Function('return (' + str + ')').call(elt) }, {})
       } else {
         varsValues = parseJSON(str)
       }
