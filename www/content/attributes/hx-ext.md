@@ -4,7 +4,7 @@ title = "hx-ext"
 
 The `hx-ext` attribute enables an htmx [extension](https://htmx.org/extensions) for an element and all its children.
 
-The value can be a single extension name or a comma separated list of extensions to apply.
+The value can be a single extension name or a comma-separated list of extensions to apply.
 
 The `hx-ext` tag may be placed on parent elements if you want a plugin to apply to an entire swath of the DOM,
 and on the `body` tag for it to apply to all htmx requests.
@@ -25,4 +25,8 @@ hierarchy and it will apply to all child elements.
   </div>
 </div>
 ```
-
+```html
+<body hx-ext="preload,morph">
+  "preload" and "morph" extensions are used in this part of the tree...
+</body>
+```

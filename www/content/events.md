@@ -305,10 +305,6 @@ This event is triggered before the content is saved in the history api.
 * `detail.path` - the path and query of the page being restored
 * `detail.historyElt` - the history element being restored into
 
-##### Details
-
-* `detail.config` - the config that will be passed to the `EventSource` constructor
-
 ### Event - `htmx:load` {#htmx:load}
 
 This event is triggered when a new node is loaded into the DOM by htmx.
