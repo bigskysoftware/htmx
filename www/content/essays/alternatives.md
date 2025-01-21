@@ -25,6 +25,31 @@ I interviewed the author, Henning Koch, [here](@/essays/interviews/henning_koch.
 
 You can see a demo application using Unpoly [here](https://demo.unpoly.com/).
 
+## Triptych
+
+[Triptych](https://github.com/alexpetros/triptych) is a set of [three proposals](https://alexanderpetros.com/triptych/) 
+to bring more generalized hypermedia controls directly into the HTML specification:
+
+* Allow more [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) to be used directly from HTML
+* Allow buttons to act as stand-alone hypermedia controls
+* Allow hypermedia controls to target any element on the page for replacement
+
+It is [in the process](https://github.com/whatwg/html/issues/3577#issuecomment-2294931398) of being introduced to the 
+[WHATWG](https://whatwg.org/) for inclusion in the HTML specification.
+
+The project includes a [polyfill](https://github.com/alexpetros/triptych/blob/main/triptych.js) that can be used today
+to implement applications using the proposal today.
+
+## fixi.js
+
+[fixi.js](https://github.com/bigskysoftware/fixi) is a minimalist implementation of
+[generalized hypermedia controls](https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127) by the htmx team, focusing
+on being as small as possible and [omitting](https://github.com/bigskysoftware/fixi#minimalism) many of the features 
+found in htmx.
+
+It is intended to be as small as possible (~3.5k unminified & uncompressed, ~1.3k compressed) while still being readable
+and debuggable, so it can be included in a project directly without requiring any transformations.
+
 ## Datastar
 
 [Datastar](https://data-star.dev/) started life as a proposed rewrite of htmx in typescript and with modern
