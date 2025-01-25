@@ -157,8 +157,8 @@ Nothing [magically breaks](https://x.com/htmx_org/status/1729870461864226829).
 
 I was very unfairly given [a lifetime ban](https://x.com/htmx_org/status/1719687461385691283) from 
 [/r/webdev/](https://www.reddit.com/r/webdev/) for an
-[obviously satirical post](https://old.reddit.com/r/webdev/comments/17i0loi/anyone_heard_of_htmx/).  My understanding
-it that even the term "htmx" is banned (or semi-banned) on that sub.
+[obviously satirical post](https://old.reddit.com/r/webdev/comments/17i0loi/anyone_heard_of_htmx/).  Even the term "htmx" is banned (or semi-banned) on that sub, so people now use
+the [htmeggs](https://swag.htmx.org/products/htmeggs-shirt) instead.
 
 ## "looking into this"
 
