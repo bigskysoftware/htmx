@@ -7,12 +7,15 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-"Vendoring" software is a technique where you copy the source of another project directly into your own project. It is 
-an old technique that has been used for time immemorial in software development, but the term "vendoring" to 
+"Vendoring" software is a technique where you copy the source of another project directly into your own project. 
+
+It is an old technique that has been used for time immemorial in software development, but the term "vendoring" to 
 describe it appears to have originated in the [ruby community](https://stackoverflow.com/posts/72115282/revisions).
 
-Vendoring can be and is still used today. It can be done with htmx, for example, quite easily.  Assuming you have a 
-`/js/vendor` directory in your project, you can just download the source into your own project like so:
+Vendoring can be and is still used today. You can vendor htmx, for example, quite easily.
+
+Assuming you have a `/js/vendor` directory in your project, you can just download the source into your own project like 
+so:
 
 ```bash
 curl https://raw.githubusercontent.com/bigskysoftware/htmx/refs/tags/v2.0.4/dist/htmx.min.js > /js/vendor/htmx-2.0.4.min.js
@@ -24,7 +27,9 @@ You then include the library in your `head` tag:
 <script src="/js/vendor/htmx-2.0.4.min.js"></script>
 ```
 
-And then check the library source into your own source control repository.
+And then you check the htmx source into your own source control repository.  (I would even recommend considering using 
+the [non-minimized version](https://raw.githubusercontent.com/bigskysoftware/htmx/refs/tags/v2.0.4/dist/htmx.js), so
+you can better understand and debug the code.)
 
 That's it, that's vendoring.
 
