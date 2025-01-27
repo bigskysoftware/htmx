@@ -96,11 +96,11 @@ So dependency managers solve the transitive dependency problem that vendoring ha
 engineering, there are tradeoffs associated with them.  To see some of these tradeoffs, let's take a look at the 
 [`package-lock.json`](https://github.com/bigskysoftware/htmx/blob/master/package-lock.json) file in htmx.
 
-NPM generates a `package-log.json` file that contains the resolved transitive closure of dependencies for a project, with 
+NPM generates a `package-lock.json` file that contains the resolved transitive closure of dependencies for a project, with 
 the concrete versions of those dependencies.  This helps ensure that the same dependencies are used unless an user
 explicitly updates them.
 
-If you take a look at the `package-log.json` for htmx, you will find that the original 13 development dependencies have
+If you take a look at the `package-lock.json` for htmx, you will find that the original 13 development dependencies have
 ballooned into a total of 411 dependencies when all is said and done.
 
 htmx, it turns out, relies on a huge number of packages, despite priding itself on being a relatively lean.  In fact,
