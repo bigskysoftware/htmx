@@ -1,7 +1,7 @@
 +++
 title = "Vendoring"
-date = 2022-05-01
-updated = 2022-05-01
+date = 2025-01-27
+updated = 2025-01-27
 [taxonomies]
 author = ["Carson Gross"]
 tag = ["posts"]
