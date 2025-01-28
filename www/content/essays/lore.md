@@ -1,10 +1,10 @@
 +++
 title = "htmx lore"
 description = """\
-  Carson Gross explores the fascinating lore of htmx, from its playful community memes like "It's So Over/We're So \
-  Back" and "Laser Eye Horse" to humorous controversies such as the "Microsoft Purchase Rumor" and the \
-  htmx/intercooler.js feud. This essay dives into the vibrant culture, iconic moments, and lighthearted chaos \
-  surrounding htmx."""
+  Carson Gross explores the fascinating lore of htmx, from its playful community memes like &quot;It's So Over/We're \
+  So Back&quot; and &quot;Laser Eye Horse&quot; to humorous controversies such as the &quot;Microsoft Purchase \
+  Rumor&quot; and the htmx/intercooler.js feud. This essay dives into the vibrant culture, iconic moments, and \
+  lighthearted chaos surrounding htmx."""
 date = 2024-12-17
 updated = 2024-12-17
 [taxonomies]

@@ -2,7 +2,7 @@
 title = "SPA Alternative"
 description = """\
   In this essay, Carson Gross explores alternatives to Single Page Applications (SPAs), advocating for an \
-  "HTML-Centric" development approach. He highlights the drawbacks of SPA complexity and the benefits of embracing \
+  'HTML-Centric' development approach. He highlights the drawbacks of SPA complexity and the benefits of embracing \
   HTML as the core medium for web development, offering a simpler, more efficient way to build applications without \
   sacrificing interactivity. Carson discusses how tools like htmx enhance HTML's capabilities and encourages \
   developers to reconsider the dominant SPA paradigm with technical bravery."""

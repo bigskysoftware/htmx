@@ -1,7 +1,7 @@
 +++
 title = "Hypermedia On Whatever you'd Like"
 description = """\
-  In this essay, Carson Gross explores the concept of "The HOWL Stack" (Hypermedia On Whatever you'd Like) and argues \
+  In this essay, Carson Gross explores the concept of 'The HOWL Stack' (Hypermedia On Whatever you'd Like) and argues \
   that using a hypermedia-driven approach for web applications allows developers to choose their preferred server-side \
   technology, freeing them from the pressure to use JavaScript throughout their entire stack while maintaining modern \
   web functionality through HTML and hypermedia enhancements."""

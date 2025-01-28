@@ -1,7 +1,7 @@
 +++
 title = "Vendoring"
 description = """\
-  Carson Gross explores the concept of "vendoring" in software development, where external project sources are copied \
+  Carson Gross explores the concept of 'vendoring' in software development, where external project sources are copied \
   directly into a project. He covers the benefits of vendoring, such as improved visibility and control over \
   dependencies, and discusses challenges like transitive dependencies and the culture of dependency in modern software \
   development. He also contrasts vendoring with modern dependency management tools, and considers the potential for \
