@@ -1,5 +1,11 @@
 +++
 title = "htmx sucks"
+description = """\
+  A humorous and satirical critique of the web development library htmx, written by its own creator. The essay \
+  playfully mocks common criticisms of htmx while simultaneously highlighting its key features and philosophy, \
+  covering topics from code quality and build tools to team organization and scaling concerns. Through \
+  self-deprecating humor and intentionally exaggerated arguments, the piece ultimately serves as both entertainment \
+  and an exploration of modern web development practices."""
 date = 2024-02-01
 updated = 2024-04-01
 [taxonomies]
