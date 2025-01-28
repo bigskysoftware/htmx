@@ -4,6 +4,14 @@
   {% set html_title = "&lt;/&gt; htmx ~ Examples ~ " ~ page.title %}
 {% endblock title %}
 
+{% block description %}
+  {%- if page.description -%}
+    {{- page.description | safe -}}
+  {%- else -%}
+    {{- super() -}}
+  {%- endif -%}
+{% endblock description %}
+
 {% block content %}
   {% if page.extra and page.extra.show_title is defined %}
     {% set show_title = page.extra.show_title %}
