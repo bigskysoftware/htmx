@@ -1,5 +1,12 @@
 +++
 title = "Why I Tend Not To Use Content Negotiation"
+description = """\
+  In this essay, Carson Gross explores his preference for separating JSON and hypermedia APIs instead of using content \
+  negotiation, a feature in HTTP that allows clients to request different formats (e.g., HTML, JSON). He discusses the \
+  limitations of content negotiation in APIs, especially when mixing stable, versioned JSON data APIs with dynamic, \
+  UI-driven hypermedia APIs. Carson argues that by splitting these concerns into distinct APIs, developers can better \
+  maintain stability for data APIs while allowing flexibility for hypermedia APIs to evolve with user interface needs. \
+  He also highlights the challenges content negotiation introduces to API design and scalability."""
 date = 2023-11-18
 updated = 2023-11-18
 [taxonomies]
@@ -67,7 +74,7 @@ This is the act of "content negotiation" and it is certainly an interesting feat
 
 ## Using Content Negotiation In APIs
 
-As far as I am aware, it was the [Ruby On Rails](https://rubyonrails.org/) community that first went in in a big way
+As far as I am aware, it was the [Ruby On Rails](https://rubyonrails.org/) community that first went in a big way
 using content negotiation to provide both HTML and JSON (and other) formats from the same URL.
 
 In Rails, this is accomplished via the [`respond_to`](https://apidock.com/rails/ActionController/MimeResponds/respond_to) helper method available in 
@@ -154,7 +161,7 @@ is making a SoC argument.)
 ## So What's The Alternative?
 
 The alternative is, as I advocate in [Splitting Your APIs](@/essays/splitting-your-apis.md), er, well, splitting your
-APIs.  This means providing different paths (or sub-domains, or whatever) for your JSON API and your hypermedia (HTML)
+APIs.  This means providing different paths (or subdomains, or whatever) for your JSON API and your hypermedia (HTML)
 API.
 
 Going back to our contacts API, we might have the following:
