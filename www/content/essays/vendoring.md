@@ -192,7 +192,7 @@ There is also a set htmx-adjacent projects that are taking vendoring seriously:
 * [fixi](https://github.com/bigskysoftware/fixi) - a minimal htmx alternative
 
 None of these JavaScript projects are available in NPM, and all of them [recommend](https://github.com/gnat/surreal#-install) 
-[vendoring](https://github.com/kgscialdone/facet#installation) the [software](https://github.com/bigskysoftware/fixi#instalation) 
+[vendoring](https://github.com/kgscialdone/facet#installation) the [software](https://github.com/bigskysoftware/fixi#installing) 
 into your own project as the primary installation mechanism.
 
 ## Vendor First Dependency Managers?
