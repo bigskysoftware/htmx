@@ -74,7 +74,7 @@ This is the act of "content negotiation" and it is certainly an interesting feat
 
 ## Using Content Negotiation In APIs
 
-As far as I am aware, it was the [Ruby On Rails](https://rubyonrails.org/) community that first went in a big way
+As far as I am aware, it was the [Ruby On Rails](https://rubyonrails.org/) community that first went in in a big way
 using content negotiation to provide both HTML and JSON (and other) formats from the same URL.
 
 In Rails, this is accomplished via the [`respond_to`](https://apidock.com/rails/ActionController/MimeResponds/respond_to) helper method available in 
