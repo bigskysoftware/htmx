@@ -12,8 +12,6 @@ an hypermedia-oriented javascript library that was being used at Facebook in the
 
 Thank you for agreeing to an interview!
 
-Here’s your interview response with corrections for typos, grammar, and clarity, while keeping your tone natural and conversational:
-
 Q: To begin with, why don’t you give the readers a bit of your background both professionally & technically?
 
 >I’ve always been into tech. In high school, I used to build computers for friends and family. I took the computer science classes my high school offered and went on to study computer science in college. I was always amazed by the fact that I could build cool things—games, tools, etc.—with just a computer and an internet connection.
