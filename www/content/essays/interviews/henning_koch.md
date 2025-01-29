@@ -7,7 +7,7 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-I'm very excited to be able to interview Henning Koch, the creators of [Unpoly](https://unpoly.com/),
+I'm very excited to be able to interview Henning Koch, the creator of [Unpoly](https://unpoly.com/),
 a hypermedia-oriented javascript library that was created in parallel with intercooler.js.
 
 Thank you for agreeing to an interview!
