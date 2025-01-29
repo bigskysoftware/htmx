@@ -1,5 +1,9 @@
 +++
 title = "Next.js to htmx — A Real World Example"
+description = """\
+  In this case study, Pouria Ezzati examines how migrating a URL shortener from Next.js to htmx resulted in \
+  significant improvements in codebase size, dependencies, and developer experience while challenging assumptions \
+  about modern web frameworks."""
 date = 2024-11-07
 updated = 2024-11-07
 [taxonomies]

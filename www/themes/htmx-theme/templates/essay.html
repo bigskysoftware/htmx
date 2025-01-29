@@ -6,6 +6,14 @@
   {% endif -%}
 {% endblock title %}
 
+{% block description %}
+  {%- if page.description -%}
+    {{- page.description | safe -}}
+  {%- else -%}
+    {{- super() -}}
+  {%- endif -%}
+{% endblock description %}
+
 {% block content %}
 
   {% if page.extra and page.extra.show_title is defined -%}

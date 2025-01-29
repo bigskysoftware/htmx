@@ -1,5 +1,9 @@
 +++
 title = "A Real World wasm to htmx Port"
+description = """\
+  In this article, Joe Fioti describes their journey of simplifying their web application architecture by moving from \
+  a complex WebAssembly-based system to a streamlined htmx solution, resulting in significantly reduced code \
+  complexity and improved development efficiency."""
 date = 2025-01-10
 updated = 2025-01-10
 [taxonomies]
