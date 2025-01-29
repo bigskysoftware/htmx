@@ -1,5 +1,9 @@
 +++
 title = "An interview with Chris Wanstrath aka @defunkt, Creator of pjax"
+description = """\
+  This article features an in-depth interview with Chris Wanstrath (defunkt), the co-founder of GitHub and creator of \
+  pjax, where he discusses his journey from early web development to creating pjax, an innovative JavaScript library \
+  that helped bridge the gap between traditional web navigation and dynamic content loading."""
 date = 2025-01-27
 updated = 2025-01-27
 authors = ["Carson Gross"]
@@ -9,7 +13,7 @@ tag = ["posts"]
 
 I'm very excited to be able to interview @defunkt, the author of [pjax](https://github.com/defunkt/jquery-pjax), an
 early hypermedia-oriented javascript library that served as an inspiration for intercooler.js, which later became
-htmx. He's done a few other things too, like co-founding github, but in this interview I want to focus on pjax, how it
+htmx. He's done a few other things too, like co-founding GitHub, but in this interview I want to focus on pjax, how it
 came to be, what influenced it and what it in turn influenced.
 
 Thank you for agreeing to an interview @defunkt!
