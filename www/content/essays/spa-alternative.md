@@ -8,8 +8,8 @@ description = """\
   developers to reconsider the dominant SPA paradigm with technical bravery."""
 date = 2020-10-29
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

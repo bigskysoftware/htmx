@@ -6,8 +6,8 @@ description = """\
   strategies for effective complexity management and the challenges that arise when attempting to reduce it."""
 date = 2020-10-29
 updated = 2024-01-21
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

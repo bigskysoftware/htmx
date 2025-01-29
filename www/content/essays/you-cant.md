@@ -9,8 +9,8 @@ description = """\
   JavaScript to create robust, user-friendly web apps in 2024."""
 date = 2024-09-20
 updated = 2024-09-20
+authors = ["Tony Alaribe"]
 [taxonomies]
-author = ["Tony Alaribe"]
 tag = ["posts"]
 +++
 

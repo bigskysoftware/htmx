@@ -7,8 +7,8 @@ description = """\
   distinct characteristics should inform different design approaches for each type of API."""
 date = 2021-07-17
 updated = 2022-04-07
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

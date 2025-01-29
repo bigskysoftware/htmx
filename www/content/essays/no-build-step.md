@@ -7,8 +7,8 @@ description = """\
   ES6. Alexander also acknowledges the potential limitations of this approach and discusses how these tradeoffs align \
   with htmx's goals of simplicity and developer choice in web development."""
 date = 2023-08-19
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 

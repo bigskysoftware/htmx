@@ -6,8 +6,8 @@ description = """\
   while continuing to promote hypermedia-driven development and support the broader web development ecosystem."""
 date = 2025-01-01
 updated = 2025-01-01
+authors = ["Carson Gross", "Alex Petros"]
 [taxonomies]
-author = ["Carson Gross", "Alex Petros"]
 tag = ["posts"]
 +++
 

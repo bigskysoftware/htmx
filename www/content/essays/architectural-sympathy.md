@@ -7,8 +7,9 @@ description = """\
   cathedral construction to illustrate the balance between innovation and coherent design."""
 date = 2023-04-06
 updated = 2023-04-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
+tag = ["posts"]
 +++
 
 

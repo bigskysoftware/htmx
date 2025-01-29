@@ -2,8 +2,8 @@
 title = "An interview with Makinde Adeagbo, Creator of Primer"
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

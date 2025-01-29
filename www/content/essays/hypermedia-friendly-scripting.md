@@ -8,8 +8,8 @@ description = """\
   event communication, and the islands architecture pattern."""
 date = 2022-11-17
 updated = 2022-11-29
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

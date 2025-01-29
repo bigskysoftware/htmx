@@ -7,8 +7,8 @@ description = """\
   developers."""
 date = 2021-07-13
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

@@ -8,8 +8,8 @@ description = """\
   with complex client-side features."""
 date = 2023-11-06
 updated = 2023-11-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

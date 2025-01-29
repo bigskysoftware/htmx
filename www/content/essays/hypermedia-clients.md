@@ -7,8 +7,8 @@ description = """\
   web browsers remain the most practical choice for hypermedia-driven applications."""
 date = 2023-01-28
 updated = 2023-01-29
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

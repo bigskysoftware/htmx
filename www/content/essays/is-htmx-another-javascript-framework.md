@@ -7,8 +7,8 @@ description = """\
   capabilities and lack of dependencies makes it a more sustainable choice for building long-lasting web \
   applications."""
 date = 2024-01-10
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 

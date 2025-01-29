@@ -6,8 +6,8 @@ description = """\
   extending HTML infrastructure through declarative syntax and hypermedia-based server interactions."""
 date = 2022-02-06
 updated = 2022-10-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

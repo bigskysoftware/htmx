@@ -9,8 +9,8 @@ description = """\
   also includes examples and known implementations of template fragments in various programming languages."""
 date = 2022-08-03
 updated = 2023-03-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

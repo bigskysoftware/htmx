@@ -7,8 +7,8 @@ description = """\
   hypermedia rather than requiring prior knowledge of the API interface."""
 date = 2021-10-16
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 [extra]
 show_title = false

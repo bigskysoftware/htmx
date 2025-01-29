@@ -7,8 +7,8 @@ description = """\
   code duplication, support both JSON APIs and hypermedia, and maintain flexibility in application design."""
 date = 2024-01-16
 updated = 2024-01-16
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

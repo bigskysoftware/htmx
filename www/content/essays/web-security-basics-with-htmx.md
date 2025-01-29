@@ -8,8 +8,8 @@ description = """\
   server construction, it emphasizes security techniques that are easy to implement and crucial for protecting user \
   data in dynamic web applications."""
 date = 2024-02-06
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 

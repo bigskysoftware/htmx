@@ -9,8 +9,8 @@ description = """\
   highlights the importance of selecting technologies that can grow with the project's needs."""
 date = 2024-09-30
 updated = 2024-09-30
+authors = ["Sahil Lavingia"]
 [taxonomies]
-author = ["Sahil Lavingia"]
 tag = ["posts"]
 +++
 

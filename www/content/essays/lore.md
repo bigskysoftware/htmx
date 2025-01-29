@@ -7,8 +7,8 @@ description = """\
   lighthearted chaos surrounding htmx."""
 date = 2024-12-17
 updated = 2024-12-17
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

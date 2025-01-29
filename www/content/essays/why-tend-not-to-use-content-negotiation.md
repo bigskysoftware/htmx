@@ -9,8 +9,8 @@ description = """\
   He also highlights the challenges content negotiation introduces to API design and scalability."""
 date = 2023-11-18
 updated = 2023-11-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

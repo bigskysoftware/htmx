@@ -8,8 +8,8 @@ description = """\
   heavy JavaScript frameworks, highlighting their compatibility with htmx's DOM-based lifecycle. Alexander also \
   addresses potential challenges and how htmx manages them efficiently."""
 date = 2024-11-13
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 

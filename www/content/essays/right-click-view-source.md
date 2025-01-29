@@ -7,8 +7,9 @@ description = """\
   #ViewSource-friendly practices in modern web development."""
 date = 2023-09-21
 updated = 2023-09-21
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
+tag = ["posts"]
 +++
 
 > Not for nothing, Hypercard presaged the web's critical "#ViewSource" affordance, which allowed people to copy,

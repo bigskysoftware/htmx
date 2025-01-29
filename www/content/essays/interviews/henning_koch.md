@@ -2,8 +2,8 @@
 title = "An interview with Henning Koch, Creator of Unpoly"
 date = 2022-06-13
 updated = 2023-06-13
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

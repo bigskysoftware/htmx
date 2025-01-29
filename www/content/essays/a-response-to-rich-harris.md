@@ -7,8 +7,8 @@ description = """\
   broader implications for web development architecture and the future role of JavaScript in web applications."""
 date = 2021-12-24
 updated = 2022-05-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

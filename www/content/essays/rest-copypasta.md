@@ -7,8 +7,8 @@ description = """\
   defining REST-ful systems. You will surely not make any enemies or regret posting these responses in any way."""
 date = 2023-06-26
 updated = 2023-06-26
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 [extra]
 show_title = false

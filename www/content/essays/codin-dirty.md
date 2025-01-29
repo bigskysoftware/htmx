@@ -7,8 +7,8 @@ description = """\
   successful software projects that demonstrate these practices can lead to maintainable, high-quality code."""
 date = 2024-11-24
 updated = 2024-11-24
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

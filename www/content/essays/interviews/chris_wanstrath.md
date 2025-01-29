@@ -2,8 +2,8 @@
 title = "An interview with Chris Wanstrath aka @defunkt, Creator of pjax"
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

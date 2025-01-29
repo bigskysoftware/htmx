@@ -9,8 +9,8 @@ description = """\
   dependencies and promotes a more independent approach to software development."""
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

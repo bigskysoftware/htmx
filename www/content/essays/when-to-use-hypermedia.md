@@ -10,8 +10,8 @@ description = """\
   architecture."""
 date = 2022-10-23
 updated = 2023-02-03
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

@@ -7,8 +7,8 @@ description = """\
   complexity and abstraction."""
 date = 2024-12-07
 updated = 2024-12-07
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

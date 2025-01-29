@@ -7,8 +7,8 @@ description = """\
   for JSON-based APIs that lack the key hypermedia constraints that define true REST architectural style."""
 date = 2022-07-18
 updated = 2022-11-26
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

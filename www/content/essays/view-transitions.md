@@ -9,8 +9,8 @@ description = """\
   hypermedia-driven applications, offering an alternative to single-page applications (SPAs) and highlighting its \
   potential once widely available in HTML."""
 date = 2023-04-11
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

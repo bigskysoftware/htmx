@@ -7,8 +7,8 @@ description = """\
   professionalism of its creator."""
 date = 2024-02-01
 updated = 2024-04-01
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

@@ -6,8 +6,8 @@ description = """\
   technology, freeing them from the pressure to use JavaScript throughout their entire stack while maintaining modern \
   web functionality through HTML and hypermedia enhancements."""
 date = 2023-05-23
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
