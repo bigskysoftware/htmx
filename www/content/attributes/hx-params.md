@@ -1,5 +1,7 @@
 +++
 title = "hx-params"
+description = """\
+  The hx-params attribute in htmx allows you to filter the parameters that will be submitted with an AJAX request."""
 +++
 
 The `hx-params` attribute allows you to filter the parameters that will be submitted with an AJAX request.  

@@ -1,5 +1,8 @@
 +++
 title = "hx-request"
+description = """\
+  The hx-request attribute in htmx allows you to configure the request timeout, whether the request will send \
+  credentials, and whether the request will include headers."""
 +++
 
 The `hx-request` attribute allows you to configure various aspects of the request via the following attributes:

@@ -1,5 +1,7 @@
 +++
 title = "hx-headers"
+description = """\
+  The hx-headers attribute in htmx allows you to add to the headers that will be submitted with an AJAX request."""
 +++
 
 The `hx-headers` attribute allows you to add to the headers that will be submitted with an AJAX request.

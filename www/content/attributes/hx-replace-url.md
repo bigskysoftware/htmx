@@ -1,5 +1,7 @@
 +++
 title = "hx-replace-url"
+description = """\
+  The hx-replace-url attribute in htmx allows you to replace the current URL of the browser location history."""
 +++
 
 The `hx-replace-url` attribute allows you to replace the current url of the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).

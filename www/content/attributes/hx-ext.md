@@ -1,5 +1,8 @@
 +++
 title = "hx-ext"
+description = """\
+  The hx-ext attribute in htmx enables one or more htmx extensions for an element and all its children. You can also \
+  use this attribute to ignore an extension that is enabled by a parent element."""
 +++
 
 The `hx-ext` attribute enables an htmx [extension](https://htmx.org/extensions) for an element and all its children.

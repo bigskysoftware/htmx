@@ -1,5 +1,8 @@
 +++
 title = "hx-swap"
+description = """\
+  The hx-swap attribute in htmx allows you to specify the 'swap strategy', or how the response will be swapped in \
+  relative to the target of an AJAZ request. The default swap strategy is `innerHTML`."""
 +++
 
 The `hx-swap` attribute allows you to specify how the response will be swapped in relative to the
