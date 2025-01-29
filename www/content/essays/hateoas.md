@@ -1,9 +1,14 @@
 +++
 title = "HATEOAS"
+description = """\
+  In this essay, Carson Gross explores HATEOAS (Hypermedia as the Engine of Application State), explaining how it \
+  enables REST APIs through hypermedia responses and contrasting it with modern JSON-based APIs. Using clear HTML \
+  examples, Carson demonstrates how HATEOAS allows clients to discover available actions dynamically through \
+  hypermedia rather than requiring prior knowledge of the API interface."""
 date = 2021-10-16
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 [extra]
 show_title = false

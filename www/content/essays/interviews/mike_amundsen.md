@@ -1,9 +1,13 @@
 +++
 title = "An interview with Mike Amundsen, Author of 'RESTful Web APIs'"
+description = """\
+  In this in-depth interview, Mike Amundsen, a leading expert on REST and hypermedia, discusses the evolution of \
+  hypermedia technologies, highlights unsung pioneers like Paul Otlet, and shares insights on the future of hypermedia \
+  in enterprise systems and machine-to-machine interactions."""
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -78,7 +82,7 @@ disagree with in it?
 > example but it is just that; an example of his approach to information network design. There have been other designs
 > from the same school (UC Irvine) including Justin Erenkrantz’s Computational
 > REST ([CREST](https://www.erenkrantz.com/CREST/)) and Rohit Kare’s Asynchronous REST (A-REST). These were efforts that
-> got the message of Fielding: “Let’s design networked software systems\!
+> got the message of Fielding: “Let’s design networked software systems\!”
 > 
 > But that is much more abstract work that most real-world developers need to deal with. They have to get code out the
 > door and up and running quickly and consistently. Fielding’s work, he admitted, was on
@@ -137,7 +141,7 @@ older ideas that are worth looking at again?
 > API-era has, in some ways, distracted us from the power of hypermedia controls as a design element for
 > service-to-service interactions.
 > 
-> While I think Nelson, Beners-Lee and others have done a great job of laying out the possibilities for human-to-machine
+> While I think Nelson, Berners-Lee and others have done a great job of laying out the possibilities for human-to-machine
 > interaction, I think we’ve lost sight of the possibilities hypermedia gives us for machine-to-machine interactions. I am
 > surprised we don’t have more hypermedia-driven workflow systems available today.
 > 

@@ -1,9 +1,16 @@
 +++
 title = "Vendoring"
+description = """\
+  Carson Gross explores the concept of 'vendoring' in software development, where external project sources are copied \
+  directly into a project. He covers the benefits of vendoring, such as improved visibility and control over \
+  dependencies, and discusses challenges like transitive dependencies and the culture of dependency in modern software \
+  development. He also contrasts vendoring with modern dependency management tools, and considers the potential for \
+  vendor-first dependency managers to combine the strengths of both approaches. He encourages a rethinking of \
+  dependencies and promotes a more independent approach to software development."""
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -41,12 +48,12 @@ It turns out there are quite a few:
 
 * Your entire project is checked in to your source repository, so no external systems beyond your source control need
   to be involved when building it
-* Vendoring dramaticaly improves dependency *visibility*: you can _see_ all the code your project depends on, so you
+* Vendoring dramatically improves dependency *visibility*: you can _see_ all the code your project depends on, so you
   won't have a situation like we have in htmx, where we feel like we only have a few development dependencies, whe in
   fact we may have a lot
 * This also means if you have a good debugger, you can step into the library code as easily as any other code.  You
   can also read it, learn from it and even modify it if necessary.
-* From a security perspective, you aren't relying on opaque code.  Even if your package manager has a
+* From a security perspective, you aren't relying on opaque code.  Even if your package manager has
   an integrity hash system, the actual code may be opaque to you.  With vendored code it is checked in and can be
   analysed automatically or by a security team.
 * Personally, it has always seemed crazy to me that people will often resolve dependencies at deployment time, right
@@ -97,7 +104,7 @@ engineering, there are tradeoffs associated with them.  To see some of these tra
 [`package-lock.json`](https://github.com/bigskysoftware/htmx/blob/master/package-lock.json) file in htmx.
 
 NPM generates a `package-lock.json` file that contains the resolved transitive closure of dependencies for a project, with 
-the concrete versions of those dependencies.  This helps ensure that the same dependencies are used unless an user
+the concrete versions of those dependencies.  This helps ensure that the same dependencies are used unless a user
 explicitly updates them.
 
 If you take a look at the `package-lock.json` for htmx, you will find that the original 13 development dependencies have

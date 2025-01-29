@@ -7,8 +7,8 @@ description = """\
   hypermedia-driven application development options beyond htmx."""
 date = 2025-01-12
 updated = 2024-01-12
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

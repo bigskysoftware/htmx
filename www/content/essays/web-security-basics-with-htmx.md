@@ -1,8 +1,15 @@
 +++
 title = "Web Security Basics (with htmx)"
+description = """\
+  This guide by Alexander Petros provides essential web security best practices for building applications with htmx, \
+  focusing on safe handling of dynamic, user-generated content. It covers fundamental principles such as using only \
+  trusted routes, employing auto-escaping template engines, and securing cookies to prevent common vulnerabilities \
+  like Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF). Aimed at developers familiar with backend \
+  server construction, it emphasizes security techniques that are easy to implement and crucial for protecting user \
+  data in dynamic web applications."""
 date = 2024-02-06
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 
@@ -53,7 +60,7 @@ The reason for this is simple: htmx inserts the response from that route directl
 
 Fortunately, this is a very easy rule to follow. Hypermedia APIs (i.e. HTML) are [specific to the layout of your application](https://htmx.org/essays/hypermedia-apis-vs-data-apis/), so there is almost never any reason you'd *want* to insert someone else's HTML into your page. All you have to do is make sure you only call your own routes (htmx 2 will actually disable calling other domains by default).
 
-Though it's not quite as popular these days, a common SPA pattern was to separate the frontend and backend into different repositories, and sometimes even to serve them from different URLs. This would require using absolute URLs in the frontend, and often, [disabling CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). With htmx (and, to be fair, modern React with NextJS) this is an anti-pattern.
+Though it's not quite as popular these days, a common SPA pattern was to separate the frontend and backend into different repositories, and sometimes even to serve them from different URLs. This would require using absolute URLs in the frontend, and often, [disabling CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). With htmx (and, to be fair, modern React with Next.js) this is an anti-pattern.
 
 Instead, you simply serve your HTML frontend from the same server (or at least the same domain) as your backend, and everything else falls into place: you can use relative URLs, you'll never have trouble with CORS, and you'll never call anyone else's backend.
 

@@ -6,8 +6,8 @@ description = """\
   how content-focused web applications can benefit from a hypermedia architectural approach."""
 date = 2023-09-20
 updated = 2023-09-20
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

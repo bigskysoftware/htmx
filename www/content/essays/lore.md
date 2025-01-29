@@ -1,9 +1,14 @@
 +++
 title = "htmx lore"
+description = """\
+  Carson Gross explores the fascinating lore of htmx, from its playful community memes like &quot;It's So Over/We're \
+  So Back&quot; and &quot;Laser Eye Horse&quot; to humorous controversies such as the &quot;Microsoft Purchase \
+  Rumor&quot; and the htmx/intercooler.js feud. This essay dives into the vibrant culture, iconic moments, and \
+  lighthearted chaos surrounding htmx."""
 date = 2024-12-17
 updated = 2024-12-17
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -13,7 +18,7 @@ tag = ["posts"]
 
 For better or [for worse](https://x.com/IroncladDev/status/1866185587616596356), htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).
 
-Here are some explainations.
+Here are some explanations.
 
 ## It's So Over/We're So Back
 
@@ -98,7 +103,7 @@ People often [call htmx a framework](@/essays/is-htmx-another-javascript-framewo
 
 ## "man"
 
-A common [one word response](https://x.com/search?q=%22man%22%20from%3Ahtmx_org&src=typed_query&f=live) when i don't feel like
+A common [one word response](https://x.com/search?q=%22man%22%20from%3Ahtmx_org&src=typed_query&f=live) when I don't feel like
 arguing with someone.
 
 ## The Le Marquee d'&lt;something>
@@ -135,7 +140,7 @@ to htmx come to be enlightened.
 
 ## "that's ridiculous"
 
-In [June 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accussed
+In [June 2023](https://x.com/htmx_org/status/1807183339222405317), [@srasash](https://twitter.com/srasash) accused
 htmx of being a government op, the first in many such increasingly ridiculous claims.  I typically quote-tweet these
 claims and point out that ["that's ridiculous"](https://x.com/search?q=%22that%27s%20ridiculous%22%20from%3A%40htmx_org&src=typed_query&f=live)
 
@@ -170,4 +175,4 @@ A common phrase used to [mock people (including ourselves)](https://x.com/search
 
 ## Joker/Bane/Skeletor/Thanos, etc.
 
-htmx is a [villian](https://x.com/htmx_org/status/1651698199478796292) in the front-end world, i'm good w/that
+htmx is a [villain](https://x.com/htmx_org/status/1651698199478796292) in the front-end world, I'm good w/that

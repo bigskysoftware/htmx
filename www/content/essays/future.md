@@ -1,9 +1,13 @@
 +++
 title = "The future of htmx"
+description = """\
+  In this essay, Carson Gross and Alex Petros discuss htmx's future direction and philosophy. They explain how the \
+  project aims to emulate jQuery's success through API stability, minimal feature additions, and quarterly releases \
+  while continuing to promote hypermedia-driven development and support the broader web development ecosystem."""
 date = 2025-01-01
-updated = 2024-01-01
+updated = 2025-01-01
+authors = ["Carson Gross", "Alex Petros"]
 [taxonomies]
-author = ["Carson Gross", "Alex Petros"]
 tag = ["posts"]
 +++
 

@@ -1,9 +1,14 @@
 +++
 title = "How Did REST Come To Mean The Opposite of REST?"
+description = """\
+  In this article, Carson Gross explores how the term REST (Representational State Transfer) evolved to mean nearly \
+  the opposite of its original definition in modern web development. It traces how REST, originally defined by Roy \
+  Fielding to describe the web's architecture of hypermedia-driven interactions, came to be widely misused as a term \
+  for JSON-based APIs that lack the key hypermedia constraints that define true REST architectural style."""
 date = 2022-07-18
 updated = 2022-11-26
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -49,7 +54,7 @@ Only a few obstinate folks grumble: but these JSON APIs aren't RESTful!
 
 In this post, I'd like to give you a [brief, incomplete and mostly wrong](https://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html)
 history of REST, and how we got to a place where its meaning has been nearly perfectly inverted to mean what REST was
-original contrasted with: RPC.
+originally contrasted with: RPC.
 
 ##  Where Did REST Come From?
 
