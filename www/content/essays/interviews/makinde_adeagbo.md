@@ -7,8 +7,6 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-# An Interview with Makinde Adeagbo, creator of primer (at Facebook)
-
 I'm delighted to be able to interview Makinde Adeagbo, one of the creators of [Primer](https://www.youtube.com/watch?v=wHlyLEPtL9o),
 an hypermedia-oriented javascript library that was being used at Facebook in the 2000s.
 

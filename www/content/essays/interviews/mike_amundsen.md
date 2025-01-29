@@ -7,8 +7,6 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-# Hypermedia: The Important Parts
-
 Mike Amundsen is a computer programmer, author and speaker, and is one of the world leading experts on REST &
 hypermedia. He has been writing about REST and Hypermedia since 2008 and has published two books on the ideas:
 

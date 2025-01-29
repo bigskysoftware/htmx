@@ -7,8 +7,6 @@ author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-# An Interview with defunkt, creator of pjax
-
 I'm very excited to be able to interview @defunkt, the author of [pjax](https://github.com/defunkt/jquery-pjax), an
 early hypermedia-oriented javascript library that served as an inspiration for intercooler.js, which later became
 htmx. He's done a few other things too, like co-founding github, but in this interview I want to focus on pjax, how it
