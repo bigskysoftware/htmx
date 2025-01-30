@@ -6,8 +6,8 @@ description = """\
   complexity and improved development efficiency."""
 date = 2025-01-10
 updated = 2025-01-10
+authors = ["Joe Fioti"]
 [taxonomies]
-author = ["Joe Fioti"]
 tag = ["posts"]
 +++
 

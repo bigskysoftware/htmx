@@ -1,9 +1,17 @@
 +++
 title = "When Should You Use Hypermedia?"
+description = """\
+  This essay by Carson Gross explores when to use hypermedia in web development, highlighting its advantages and \
+  trade-offs. Carson discusses scenarios where hypermedia is a good fit, such as text and image-heavy UIs, CRUD \
+  applications, and nested UIs with well-defined areas. He also addresses when hypermedia may not be ideal, including \
+  situations with frequent UI state updates, offline requirements, or dynamic interdependencies. Using a \
+  'Transitional' approach (as suggested by Rich Harris), Carson advocates for combining hypermedia with other \
+  strategies to optimize web application development, emphasizing its practical benefits and alignment with the web's \
+  architecture."""
 date = 2022-10-23
 updated = 2023-02-03
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

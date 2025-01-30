@@ -1,9 +1,16 @@
 +++
 title = "You Can't Build Interactive Web Apps Except as Single Page Applications... And Other Myths"
+description = """\
+  Tony Alaribe challenges common myths about multi-page applications (MPAs) and explores how modern browser \
+  technologies can enable fast, interactive, and offline-capable web applications without relying on single-page \
+  application (SPA) frameworks. Alaribe discusses advancements in service workers, caching, and cross-document \
+  transitions, offering insights into building efficient MPAs. By debunking myths like slow page transitions and the \
+  necessity of JavaScript-heavy frameworks, Alaribe highlights how developers can leverage HTML, CSS, and minimal \
+  JavaScript to create robust, user-friendly web apps in 2024."""
 date = 2024-09-20
 updated = 2024-09-20
+authors = ["Tony Alaribe"]
 [taxonomies]
-author = ["Tony Alaribe"]
 tag = ["posts"]
 +++
 
@@ -144,9 +151,9 @@ help you—I prefer using Google's [Workbox](https://developer.chrome.com/docs/w
 By following these steps, you instruct the browser to serve cached assets whenever possible, drastically reducing load
 times and improving the overall performance of your multi-page application.
 
-![Image showing the registered service worker from the chrome browser console.](/img/you-cant/service-worker.png)
+![Image showing the registered service worker from the Chrome browser console.](/img/you-cant/service-worker.png)
 
-Image showing the registered service worker from the chrome browser console.
+Image showing the registered service worker from the Chrome browser console.
 
 ### [`Speculation Rules API`](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API): Prerender pages for instant page navigation.
 
@@ -235,7 +242,7 @@ don't have to do everything server-side. Many HTMX and regular MPA users continu
 Hyperscript where appropriate.
 
 In situations where robust interactivity is helpful, you can lean into the component islands architecture using
-WebComponents or any javascript framework (react, angular, etc) of your choice. That way, instead of your entire
+WebComponents or any javascript framework (React, Angular, etc.) of your choice. That way, instead of your entire
 application being an SPA, you can leverage those frameworks specifically for the bits of your application that need that
 interactivity.
 

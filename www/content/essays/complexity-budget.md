@@ -1,9 +1,13 @@
 +++
 title = "Complexity Budget"
+description = """\
+  In this essay, Carson Gross explores the concept of a complexity budget in software development. He discusses how \
+  managing complexity across applications is a critical responsibility for architects and developers, while examining \
+  strategies for effective complexity management and the challenges that arise when attempting to reduce it."""
 date = 2020-10-29
 updated = 2024-01-21
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

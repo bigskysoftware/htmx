@@ -1,9 +1,13 @@
 +++
 title = "An interview with Makinde Adeagbo, Creator of Primer"
+description = """\
+  In this interview with software engineer Makinde Adeagbo, he discusses his role in creating Primer, a \
+  hypermedia-oriented JavaScript library used at Facebook in the 2000s, and shares insights about building developer \
+  tools, Facebook's evolution, and the cyclical nature of web development approaches."""
 date = 2025-01-27
 updated = 2025-01-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

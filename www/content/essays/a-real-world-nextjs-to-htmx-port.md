@@ -6,8 +6,8 @@ description = """\
   about modern web frameworks."""
 date = 2024-11-07
 updated = 2024-11-07
+authors = ["Pouria Ezzati"]
 [taxonomies]
-author = ["Pouria Ezzati"]
 tag = ["posts"]
 +++
 
