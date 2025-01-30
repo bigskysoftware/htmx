@@ -73,8 +73,7 @@ page_template = "essay.html"
 
 * [Henning Koch](@/essays/interviews/henning_koch.md), creator of [Unpoly](https://unpoly.com/)
 * [Makinde Adeagbo](@/essays/interviews/makinde_adeagbo.md), creator of [Primer](https://www.youtube.com/watch?v=wHlyLEPtL9o)
-
-[//]: # (* [Chris Wanstrath aka @defunkt]&#40;@/essays/interviews/chris_wanstrath.md&#41;, creator of [pjax]&#40;https://github.com/defunkt/jquery-pjax&#41;)
+* [Chris Wanstrath aka @defunkt](@/essays/interviews/chris_wanstrath.md), creator of [pjax](https://github.com/defunkt/jquery-pjax)
 
 [//]: # (* [Mike Amundsen]&#40;@/essays/interviews/mike_amundsen.md&#41;, author of [RESTful Web APIs]&#40;http://restfulwebapis.com/&#41;)
 
