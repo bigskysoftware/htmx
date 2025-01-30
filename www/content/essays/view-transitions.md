@@ -25,7 +25,7 @@ the application, even if it has feature-parity with an SPA version:
 > delete a contact. This is because every user interaction (link click or form submission) requires a full page
 > refresh, with a whole new HTML document to process after each action.
 >
-> *–Hypermedia Systems - [Chapter 5](https://hypermedia.systems/book/extending-html-as-hypermedia/)*
+> *–Hypermedia Systems - [Chapter 4](https://hypermedia.systems/extending-html-as-hypermedia/)*
 
 This jarring "ka-chunk" between webpages, often with a [Flash of Unstyled Content](https://webkit.org/blog/66/the-fouc-problem/)
 has been with us forever and, while modern browsers have improved the situation somewhat (while, unfortunately, also making
