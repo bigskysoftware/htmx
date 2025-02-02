@@ -11,10 +11,10 @@ This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQL
 
 ## Attribute Inheritance
 
-Many attributes in htmx are [inherited](@/docs.md#inheritance): child elements can receive behavior from attributes located 
+Many attributes in htmx are [inherited](@/docs.md#inheritance): child elements can receive behavior from attributes located
 on parent elements.
 
-As an example, here are two htmx-powered buttons that inherit their [target](@/attributes/hx-target.md) from a parent 
+As an example, here are two htmx-powered buttons that inherit their [target](@/attributes/hx-target.md) from a parent
 div:
 
 ```html
@@ -32,8 +32,8 @@ and it becomes more difficult to understand what an element is doing.
 
 It is also possible to inadvertently change the behavior of elements by adding attributes to parents.
 
-Some people prefer to disable inheritance in htmx entirely, using the `htmx.config.disableInheritance` 
-[configuration variable](@/docs.md#config).  
+Some people prefer to disable inheritance in htmx entirely, using the `htmx.config.disableInheritance`
+[configuration variable](@/docs.md#config).
 
 Here is a `meta` tag configuration that does so:
 
@@ -48,7 +48,7 @@ The [`hx-swap`](@/attributes/hx-swap.md) attribute allows you to control how a s
 
 Many people prefer to use the `outerHTML` strategy as the default instead.
 
-You can change this behavior using the `htmx.config.defaultSwapStyle` 
+You can change this behavior using the `htmx.config.defaultSwapStyle`
 [configuration variable](@/docs.md#config).
 
 Here is a `meta` tag configuration that does so:
@@ -68,12 +68,12 @@ This means you cannot change attributes on the `body` tag via an htmx request.
 
 htmx has never swapped "error" status response codes (`400`s & `500`s) by default.
 
-This behavior annoys some people, and some server frameworks, in particular, will return a `422 - Unprocessable Entity` 
-response code to indicate that a form was not filled out properly.  
+This behavior annoys some people, and some server frameworks, in particular, will return a `422 - Unprocessable Entity`
+response code to indicate that a form was not filled out properly.
 
 This can be very confusing when it is first encountered.
 
-You can configure the response behavior of htmx via the [`htmx:beforeSwap`](@/docs.md#modifying_swapping_behavior_with_events) 
+You can configure the response behavior of htmx via the [`htmx:beforeSwap`](@/docs.md#modifying_swapping_behavior_with_events)
 event or [via the `htmx.config.responseHandling` config array](https://htmx.org/docs/#response-handling).
 
 Here is the default configuration:
@@ -143,7 +143,7 @@ can also be tricky, particularly if you are using 3rd party JavaScript libraries
 
 There can also be [security concerns](@/docs.md#hx-history) when using htmx's history support.
 
-Most of these issues can be solved by disabling any local history cache and simply issuing a server request when a 
+Most of these issues can be solved by disabling any local history cache and simply issuing a server request when a
 user navigates backwards in history, with the tradeoff that history navigation will be slower.
 
 Here is a meta tag that disables history caching:
@@ -157,8 +157,8 @@ Here is a meta tag that disables history caching:
 [`hx-boost`](@/attributes/hx-boost.md) is an odd feature compared with most other aspects of htmx: it "magically" turns
 all anchor tags and forms into AJAX requests.
 
-This can speed the feel of these interactions up, and also allows the forms and anchors to continue working when 
-[JavaScript is disabled](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), however it comes 
+This can speed the feel of these interactions up, and also allows the forms and anchors to continue working when
+[JavaScript is disabled](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), however it comes
 with some tradeoffs:
 
 * The history issues mentioned above can show up
@@ -166,18 +166,19 @@ with some tradeoffs:
 * The global javascript scope is not refreshed, so it is possible to have strange interactions between pages.  For example
   a global `let` may start failing because a symbol is already defined.
 
-Some members on the core htmx team feel that, due to these issues, as well as the fact that browsers have improved 
-quite a bit in page navigation, it is best to avoid `hx-boost` and just use unboosted links and forms.
+Some members on the core htmx team feel that, due to these issues, as well as the fact that browsers have improved
+quite a bit in page navigation, it is best to avoid `hx-boost` and
+[just use unboosted links and forms](https://unplannedobsolescence.com/blog/less-htmx-is-more/).
 
 There is no doubt that `hx-boost` is an odd-man out when compared to other htmx attributes and suffers from the dictum
 that "If something magically works, then it can also magically break."
 
-Despite this fact, I (Carson) still feel it is useful in many situations, and it is used on the <https://htmx.org> 
+Despite this fact, I (Carson) still feel it is useful in many situations, and it is used on the <https://htmx.org>
 website.
 
 ## The JavaScript API Is Not A Focus
 
-htmx is a hypermedia-oriented front end library.  This means that htmx enhances HTML via 
+htmx is a hypermedia-oriented front end library.  This means that htmx enhances HTML via
 [attributes](@/reference.md#attributes) in the HTML , rather than providing an elaborate
 JavaScript API.
 
