@@ -230,4 +230,4 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## FreePascal with Pas2JS
 
-- <https://github.com/zendrael/create_pas2js_app>
+- <https://github.com/zendrael/create_htmx_pascal_app>
