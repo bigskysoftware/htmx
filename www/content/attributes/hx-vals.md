@@ -1,5 +1,7 @@
 +++
 title = "hx-vals"
+description = """\
+  The hx-vals attribute in htmx allows you to add to the parameters that will be submitted with an AJAX request."""
 +++
 
 The `hx-vals` attribute allows you to add to the parameters that will be submitted with an AJAX request.

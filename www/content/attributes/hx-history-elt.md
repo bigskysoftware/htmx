@@ -1,5 +1,8 @@
 +++
 title = "hx-history-elt"
+description = """\
+  The hx-history-elt attribute in htmx allows you to specify the element that will be used to snapshot and restore \
+  page state during navigation. In most cases we do not recommend using this element."""
 +++
 
 The `hx-history-elt` attribute allows you to specify the element that will be used to snapshot and

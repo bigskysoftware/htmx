@@ -1,5 +1,10 @@
 +++
 title = "hx-trigger"
+description = """\
+  The hx-trigger attribute in htmx allows you to specify what triggers an AJAX request. Supported triggers include \
+  standard DOM events, custom events, polling intervals, and event modifiers. The hx-trigger attribute also allows \
+  specifying event filtering, timing controls, event bubbling, and multiple trigger definitions for fine-grained \
+  control over when and how requests are initiated."""
 +++
 
 The `hx-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger
@@ -69,7 +74,7 @@ is seen again before the delay completes, it is ignored, the element will trigge
       (e.g. `next .error` will target the closest following sibling element with `error` class)
     * `previous` resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
     * `previous <CSS selector>` scans the DOM backwards for the first element that matches the given CSS selector.
-      (e.g `previous .error` will target the closest previous sibling with `error` class)
+      (e.g. `previous .error` will target the closest previous sibling with `error` class)
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element
