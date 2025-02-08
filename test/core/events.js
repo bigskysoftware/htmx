@@ -738,4 +738,36 @@ describe('Core htmx Events', function() {
       htmx.off('htmx:afterSwap', afterSwapHandler)
     }
   })
+
+  it('htmx:targetError should include the hx-target value', function() {
+    var target = null
+    var handler = htmx.on('htmx:targetError', function(evt) {
+      target = evt.detail.target
+    })
+    try {
+      this.server.respondWith('GET', '/test', '')
+      var div = make('<div hx-post="/test" hx-target="#non-existent"></div>')
+      div.click()
+      this.server.respond()
+      target.should.equal('#non-existent')
+    } finally {
+      htmx.off('htmx:targetError', handler)
+    }
+  })
+
+  it('htmx:targetError can include an inherited hx-target value', function() {
+    var target = null
+    var handler = htmx.on('htmx:targetError', function(evt) {
+      target = evt.detail.target
+    })
+    try {
+      this.server.respondWith('GET', '/test', '')
+      make('<div hx-target="#parent-target"><div id="child" hx-post="/test"></div></div>')
+      byId('child').click()
+      this.server.respond()
+      target.should.equal('#parent-target')
+    } finally {
+      htmx.off('htmx:targetError', handler)
+    }
+  })
 })
