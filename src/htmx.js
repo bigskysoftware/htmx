@@ -4686,6 +4686,7 @@ var htmx = (function() {
     if (title) {
       const titleElt = find('title')
       if (titleElt) {
+        /** @type HTMLElement */
         titleElt.innerText = title
       } else {
         window.document.title = title
