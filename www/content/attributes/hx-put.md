@@ -1,5 +1,8 @@
 +++
 title = "hx-put"
+description = """\
+  The hx-put attribute in htmx will cause an element to issue a PUT request to the specified URL and swap the returned \
+  HTML into the DOM using a swap strategy."""
 +++
 
 The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap

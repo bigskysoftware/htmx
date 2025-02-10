@@ -1,8 +1,15 @@
 +++
 title = "Web Components Work Great with htmx"
+description = """\
+  This essay by Alexander Petros explores how Web Components can be integrated seamlessly with htmx, a library that \
+  enables dynamic web pages through HTML. It discusses the flexibility of htmx in handling interactive elements like \
+  Web Components alongside traditional server-driven approaches, such as multi-page apps. By using the example of an \
+  editable carnival ride table, Alexander demonstrates how Web Components simplify functionality without the need for \
+  heavy JavaScript frameworks, highlighting their compatibility with htmx's DOM-based lifecycle. Alexander also \
+  addresses potential challenges and how htmx manages them efficiently."""
 date = 2024-11-13
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 
@@ -145,7 +152,7 @@ A lot of the problems that JavaScript frameworks have supporting Web Components 
 
 Web Components [have DOM-based lifecycles](https://dev.to/ryansolid/web-components-are-not-the-future-48bh), so they are difficult for JavaScript frameworks, which often manipulate elements outside of the DOM, to work with.
 Frameworks have to account for some [bizarre and arguably buggy](https://x.com/Rich_Harris/status/1841467510194843982) APIs that behave differently for native DOM elements than they do for custom ones.
-Here at htmx, we agree with with [SvelteJS creator Rich Harris](https://x.com/Rich_Harris/status/1839484645194277111): "web components are [not] useful primitives on which to build web frameworks."
+Here at htmx, we agree with [SvelteJS creator Rich Harris](https://x.com/Rich_Harris/status/1839484645194277111): "web components are [not] useful primitives on which to build web frameworks."
 
 The good news is that htmx [is not really a JavaScript web framework](@/essays/is-htmx-another-javascript-framework.md).
 The DOM-based lifecycles of custom elements work great in htmx, because everything in htmx has a DOM-based lifecycle—we get stuff from the server, and we add it to the DOM.

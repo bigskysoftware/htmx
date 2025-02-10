@@ -1,5 +1,9 @@
 +++
 title = "hx-boost"
+description = """\
+  The hx-boost attribute in htmx enables progressive enhancement by converting standard HTML anchors and forms into \
+  AJAX requests, maintaining graceful fallback for users without JavaScript while providing modern dynamic page \
+  updates for those with JavaScript enabled."""
 +++
 
 The `hx-boost` attribute allows you to "boost" normal anchors and form tags to use AJAX instead.  This

@@ -1,5 +1,8 @@
 +++
 title = "hx-select-oob"
+description = """\
+  The hx-select-oob attribute in htmx allows you to select content from a response to be swapped in via an out-of-band \
+  swap. The value of this attribute is comma separated list of elements to be swapped out of band."""
 +++
 
 The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band swap.  

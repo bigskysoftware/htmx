@@ -1,9 +1,13 @@
 +++
 title = "10 Tips For Building SSR/HDA applications"
+description = """\
+  In this guide, Carson Gross provides ten practical tips to help developers transition from Single Page Applications \
+  (SPAs) to Server-Side Rendering and Hypermedia-Driven Applications, focusing on essential mindset shifts and \
+  architectural advantages."""
 date = 2022-06-13
 updated = 2023-06-13
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

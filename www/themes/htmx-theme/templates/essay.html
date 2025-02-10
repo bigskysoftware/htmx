@@ -6,6 +6,14 @@
   {% endif -%}
 {% endblock title %}
 
+{% block description %}
+  {%- if page.description -%}
+    {{- page.description | safe -}}
+  {%- else -%}
+    {{- super() -}}
+  {%- endif -%}
+{% endblock description %}
+
 {% block content %}
 
   {% if page.extra and page.extra.show_title is defined -%}
@@ -22,8 +30,8 @@
 
   {% set page_title = page.title -%}
   {% if show_title %}<h1>{{ page_title | safe }}</h1>{% endif %}
-  {% if show_author and page.taxonomies.author %}
-    <address>{{ page.taxonomies.author | join(sep=", ") }}</address>
+  {% if show_author and page.authors | length > 0 %}
+    <address>{{ page.authors | join(sep=", ") }}</address>
     <time>{{ page.date | date(format="%B %d, %Y") }}</time>
   {% endif %}
 

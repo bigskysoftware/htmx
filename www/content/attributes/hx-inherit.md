@@ -1,5 +1,9 @@
 +++
 title = "hx-inherit"
+description = """\
+  The hx-inherit attribute in htmx allows you to explicitly control attribute inheritance behavior between parent and \
+  child elements, providing fine-grained control over which htmx attributes are inherited when the default inheritance \
+  system is disabled through configuration."""
 +++
 
 The default behavior for htmx is to "inherit" many attributes automatically: that is, an attribute such as

@@ -1,9 +1,14 @@
 +++
 title = "htmx sucks"
+description = """\
+  This article provides a critical analysis of htmx, a web development library, explaining why the author believes it \
+  represents a problematic approach to modern web development due to its outdated coding practices, lack of build \
+  tools, absence of TypeScript support, and reliance on HTML-based architecture, while also questioning the \
+  professionalism of its creator."""
 date = 2024-02-01
 updated = 2024-04-01
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

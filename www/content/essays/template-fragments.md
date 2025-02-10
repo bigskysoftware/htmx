@@ -1,9 +1,16 @@
 +++
 title = "Template Fragments"
+description = """\
+  In this essay, Carson Gross explores the concept of template fragments, a feature in server-side rendering (SSR) \
+  that allows partial rendering of content within templates. He highlights the benefits of using template fragments in \
+  hypermedia-driven applications, providing a cleaner and more maintainable approach compared to traditional template \
+  decomposition. Carson showcases the use of template fragments in the Chill templating language and discusses how \
+  this feature improves the developer experience when working with htmx and other hypermedia-oriented libraries. He \
+  also includes examples and known implementations of template fragments in various programming languages."""
 date = 2022-08-03
 updated = 2023-03-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

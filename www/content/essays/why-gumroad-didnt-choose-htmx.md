@@ -1,9 +1,16 @@
 +++
 title = "Why Gumroad Didn't Choose htmx"
+description = """\
+  In this essay, Sahil Lavingia, CEO of Gumroad, explains why the company decided against using htmx for its new \
+  project, Helper, in favor of React and Next.js. He shares the challenges faced with htmx, including issues with \
+  developer experience, user experience limitations, scalability, and AI tool support. While acknowledging htmx's \
+  potential for simpler projects, Lavingia emphasizes how React and Next.js offered better solutions for complex \
+  features like real-time collaboration, drag-and-drop functionality, and dynamic forms. Ultimately, Lavingia \
+  highlights the importance of selecting technologies that can grow with the project's needs."""
 date = 2024-09-30
 updated = 2024-09-30
+authors = ["Sahil Lavingia"]
 [taxonomies]
-author = ["Sahil Lavingia"]
 tag = ["posts"]
 +++
 
@@ -66,7 +73,7 @@ Here's why:
 <a href="/img/gumroad-green.jpeg" target="_blank">
 <img alt="Gumroad Green" src="/img/gumroad-green.jpeg" style="width: 100%">
 </a> 
-<figcaption>Source with NextJS - Click Image To View</figcaption>
+<figcaption>Source with Next.js - Click Image To View</figcaption>
 </figure>
 
 Ultimately, we ended up moving to React/Next.js, which has been a really great fit for building the complex UX we've

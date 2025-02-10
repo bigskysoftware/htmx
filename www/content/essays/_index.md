@@ -57,6 +57,7 @@ page_template = "essay.html"
 * [Why htmx Does Not Have a Build Step](@/essays/no-build-step.md)
 * [Is htmx Just Another JavaScript Framework?](@/essays/is-htmx-another-javascript-framework.md)
 * [htmx Implementation Deep Dive (Video)](https://www.youtube.com/watch?v=javGxN-h9VQ)
+* [Vendoring](@/essays/vendoring.md)
 
 ### Hypermedia Research
 
@@ -67,6 +68,13 @@ page_template = "essay.html"
 * [State of the Art Review on Hypermedia Issues and Applications (2006)](https://paul.luon.net/hypermedia/index.html) [[archive]](https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html)
 * [Hypermedia Controls: Feral to Formal (ACM HT'24)](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127)
 * [Preserving REST-ful Visibility Of Rich Web Applications With Generalized Hypermedia Controls (ACM SIGWEB Newsletter, Autumn'24)](https://hypermedia.cs.montana.edu/papers/preserving-restful.pdf)
+
+### Interviews
+
+* [Henning Koch](@/essays/interviews/henning_koch.md), creator of [Unpoly](https://unpoly.com/)
+* [Makinde Adeagbo](@/essays/interviews/makinde_adeagbo.md), creator of [Primer](https://www.youtube.com/watch?v=wHlyLEPtL9o)
+* [Chris Wanstrath aka @defunkt](@/essays/interviews/chris_wanstrath.md), creator of [pjax](https://github.com/defunkt/jquery-pjax)
+* [Mike Amundsen](@/essays/interviews/mike_amundsen.md), author of [RESTful Web APIs](http://restfulwebapis.com/)
 
 ## Banners
 <div style="text-align: center;margin:32px">
