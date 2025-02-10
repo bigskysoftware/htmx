@@ -1660,6 +1660,25 @@ with application security.
 A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provide a good jumping off point
 for exploring this topic.
 
+### CSRF Prevention
+
+The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustarted below. 
+
+```html
+<html lang="en" hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
+    :
+</html>
+```
+
+```html
+    <body hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
+        :
+    </body>
+```
+
+The above elements are usually unique in an HTML document and should be easy to locate within templates. 
+
+
 ## Configuring htmx {#config}
 
 Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are

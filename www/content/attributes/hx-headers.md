@@ -24,6 +24,8 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
   security considerations, especially when dealing with user input such as query strings or user-generated content,
   which could introduce a [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/) vulnerability.
 
+* Whilst far from being a foolproof solution to [Cross-Site Request Forgery](https://owasp.org/www-community/attacks/csrf), the `hx-headers` attribute can support backend services to provide [CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html). For more information see the [CSRF Prevention](https://htmx.org/docs/#csrf-prevention) section.
+
 ## Notes
 
 * `hx-headers` is inherited and can be placed on a parent element.
