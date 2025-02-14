@@ -1680,7 +1680,7 @@ The above elements are usually unique in an HTML document and should be easy to 
 
 #### Using dynamic CSRF tokens
 
-The approach described above is fine when the CSRF token remains constant between page refreshes. For greater assurance it might be necessary to replace the CSRF token with every communication with the server. This would be problematic using the pure JSON solution described above. However, `hx-headers` can still support CSRF Prevention using inline Javascript to dynamically prepare the JSON string. As illustrated below, this could use a `meta` tag in the head of the document to retain the CSRF token, which would be easy to update with new token values. 
+The approach described above is fine when the CSRF token remains constant between page refreshes. For greater assurance it might be necessary to replace the CSRF token with every communication with the server. This would be problematic using the pure JSON solution described above. However, `hx-headers` can still support CSRF prevention using inline JavaScript to dynamically prepare the JSON string. As illustrated below, this could use a `meta` tag in the head of the document to retain the CSRF token, which would be easy to update with new token values. 
 
 ```html
     <head>
@@ -1693,7 +1693,7 @@ The approach described above is fine when the CSRF token remains constant betwee
     </body>
 ```
 
-With each HTTP response, received by the browser, a new CSRF token could be supplied in a replacement `meta` element. The `hx-headers` attribute is evaluated with each outbound HTTP request, enabling the new CSRF token to be retrieved from the `meta` element and its content included.   
+With each HTTP response, received by the browser, a new CSRF token could be supplied in a replacement `meta` element. The `hx-headers` attribute is evaluated with each outbound HTTP request, enabling the new CSRF token to be retrieved from the `meta` element and its content attribute included in the request header.   
 
 
 ## Configuring htmx {#config}
