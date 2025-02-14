@@ -1120,30 +1120,11 @@ htmx provides an [extensions](/extensions) mechanism that allows you to customiz
 Extensions [are defined in javascript](/extensions/building) and then enabled via
 the [`hx-ext`](@/attributes/hx-ext.md) attribute.
 
-Here is how you would install the [idiomorph](/extensions/idiomorph) extension, which allows you to use the
-[Idiomorph](https://github.com/bigskysoftware/idiomorph) DOM morphing algorithms for htmx swaps:
-
-```html
-<head>
-  <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
-</head>
-<body hx-ext="morph">
-  ...
-  <button hx-post="/example" hx-swap="morph" hx-target="#content">
-    Update Content
-  </button>
-  ...
-</body>
-```
-
-First the extension is included (it should be included *after* `htmx.js` is included), then the extension is referenced
-by name via the `hx-ext` attribute.  This enables you to then use the `morph` swap.
-
 ### Core Extensions
 
 htmx supports a few "core" extensions, which are supported by the htmx development team:
 
-* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
+* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests
 * [htmx-1-compat](/extensions/htmx-1-compat) - restores htmx 1 defaults & functionality
 * [idiomorph](/extensions/idiomorph) - supports the `morph` swap strategy using idiomorph
 * [preload](/extensions/preload) - allows you to preload content for better performance
@@ -1152,6 +1133,56 @@ htmx supports a few "core" extensions, which are supported by the htmx developme
 * [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 
 You can see all available extensions on the [Extensions](/extensions) page.
+
+### Installing Extensions
+
+The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
+```HTML
+<head>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="extension-name">
+    ...
+```
+An unminified version is also available at `https://unpkg.com/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
+
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install htmx extensions is to simply copy them into your project. Download the extension from `https://unpkg.com/htmx-ext-extension-name` (replace `extension-name` with the name of the extension) e.g., https://unpkg.com/htmx-ext-response-targets. Then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install htmx extensions via [npm](https://www.npmjs.com/) (replace `extension-name` with the name of the extension):
+```shell
+npm install htmx-ext-extension-name
+```
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-extension-name/dist/extension-name.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htmx-ext-extension-name` via npm (replace `extension-name` with the name of the extension)
+- Import both packages to your `index.js`
+```JS
+import `htmx.org`;
+import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
+```
+
+Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://unpkg.com/idiomorph` or `npm install idiomorph`.
+
+Note: Community extensions hosted outside this repository might have different installation instructions. Please check the corresponding repository for set-up guidance.
+
+### Enabling Extensions
+
+To enable an extension, add a `hx-ext="extension-name"` attribute to `<body>` or another HTML element (replace `extension-name` with the name of the extension). The extension will be applied to all child elements.
+
+The following example shows how to enable [response-targets](/extensions/response-targets) extension, allowing you to specify different target elements to be swapped based on HTTP response code.
+```html
+<body hx-ext="response-targets">
+    ...
+    <button hx-post="/register" hx-target="#response-div" hx-target-404="#not-found">
+        Register!
+    </button>
+    <div id="response-div"></div>
+    <div id="not-found"></div>
+    ...
+</body>
+```
 
 ### Creating Extensions
 
