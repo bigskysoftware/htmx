@@ -75,6 +75,7 @@ page_template = "essay.html"
 * [Makinde Adeagbo](@/essays/interviews/makinde_adeagbo.md), creator of [Primer](https://www.youtube.com/watch?v=wHlyLEPtL9o)
 * [Chris Wanstrath aka @defunkt](@/essays/interviews/chris_wanstrath.md), creator of [pjax](https://github.com/defunkt/jquery-pjax)
 * [Mike Amundsen](@/essays/interviews/mike_amundsen.md), author of [RESTful Web APIs](http://restfulwebapis.com/)
+* [Leonard Richardson](@/essays/interviews/leonard_richardson.md), creator of the [RMM](https://en.wikipedia.org/wiki/Richardson_Maturity_Model)
 
 ## Banners
 <div style="text-align: center;margin:32px">
