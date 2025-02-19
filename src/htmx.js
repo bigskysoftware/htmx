@@ -3827,9 +3827,10 @@ var htmx = (function() {
  * @param {string} attr
  * @param {boolean=} evalAsDefault
  * @param {Object=} values
+ * @param {Event=} event
  * @returns {Object}
  */
-  function getValuesForElement(elt, attr, evalAsDefault, values) {
+  function getValuesForElement(elt, attr, evalAsDefault, values, event) {
     if (values == null) {
       values = {}
     }
@@ -3855,7 +3856,13 @@ var htmx = (function() {
       }
       let varsValues
       if (evaluateValue) {
-        varsValues = maybeEval(elt, function() { return Function('return (' + str + ')')() }, {})
+        varsValues = maybeEval(elt, function() {
+          if (event) {
+            return Function('event', 'return (' + str + ')')(event)
+          } else { // allow window.event to be accessible
+            return Function('return (' + str + ')')()
+          }
+        }, {})
       } else {
         varsValues = parseJSON(str)
       }
@@ -3867,7 +3874,7 @@ var htmx = (function() {
         }
       }
     }
-    return getValuesForElement(asElement(parentElt(elt)), attr, evalAsDefault, values)
+    return getValuesForElement(asElement(parentElt(elt)), attr, evalAsDefault, values, event)
   }
 
   /**
@@ -3887,28 +3894,31 @@ var htmx = (function() {
 
   /**
  * @param {Element} elt
- * @param {*?} expressionVars
+ * @param {Event=} event
+ * @param {*?=} expressionVars
  * @returns
  */
-  function getHXVarsForElement(elt, expressionVars) {
-    return getValuesForElement(elt, 'hx-vars', true, expressionVars)
+  function getHXVarsForElement(elt, event, expressionVars) {
+    return getValuesForElement(elt, 'hx-vars', true, expressionVars, event)
   }
 
   /**
  * @param {Element} elt
- * @param {*?} expressionVars
+ * @param {Event=} event
+ * @param {*?=} expressionVars
  * @returns
  */
-  function getHXValsForElement(elt, expressionVars) {
-    return getValuesForElement(elt, 'hx-vals', false, expressionVars)
+  function getHXValsForElement(elt, event, expressionVars) {
+    return getValuesForElement(elt, 'hx-vals', false, expressionVars, event)
   }
 
   /**
  * @param {Element} elt
+ * @param {Event=} event
  * @returns {FormData}
  */
-  function getExpressionVars(elt) {
-    return mergeObjects(getHXVarsForElement(elt), getHXValsForElement(elt))
+  function getExpressionVars(elt, event) {
+    return mergeObjects(getHXVarsForElement(elt, event), getHXValsForElement(elt, event))
   }
 
   /**
@@ -4358,7 +4368,7 @@ var htmx = (function() {
     if (etc.values) {
       overrideFormData(rawFormData, formDataFromObject(etc.values))
     }
-    const expressionVars = formDataFromObject(getExpressionVars(elt))
+    const expressionVars = formDataFromObject(getExpressionVars(elt, event))
     const allFormData = overrideFormData(rawFormData, expressionVars)
     let filteredFormData = filterValues(allFormData, elt)
 
