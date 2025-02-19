@@ -1,5 +1,8 @@
 +++
 title = "hx-get"
+description = """\
+  The hx-get attribute in htmx will cause an element to issue a GET request to the specified URL and swap the returned \
+  HTML into the DOM using a swap strategy."""
 +++
 
 The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap

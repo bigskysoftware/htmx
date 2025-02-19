@@ -24,11 +24,32 @@ Use the following attributes to configure how SSE connections behave:
 * `sse-close=<message-name>` - To close the EventStream gracefully when that message is received. This might be helpful
   if you want to send information to a client that will eventually stop.
 
-## Install
+## Installing
 
-```html
+The fastest way to install `sse` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
+```HTML
+<head>
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-sse@2.2.2" integrity="sha384-Y4gc0CK6Kg+hmulDc6rZPJu0tqvk7EWlih0Oh+2OkAi1ZDlCbBDCQEE2uVk472Ky" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="sse">
+```
+An unminified version is also available at https://unpkg.com/htmx-ext-sse/dist/sse.js.
 
-<script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `sse` is to simply copy it into your project. Download the extension from `https://unpkg.com/htmx-ext-sse`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install `sse` via [npm](https://www.npmjs.com/):
+```shell
+npm install htmx-ext-sse
+```
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-sse/dist/sse.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htmx-ext-sse` via npm
+- Import both packages to your `index.js`
+```JS
+import `htmx.org`;
+import `htmx-ext-sse`; 
 ```
 
 ## Usage

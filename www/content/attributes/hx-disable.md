@@ -1,5 +1,6 @@
 +++
 title = "hx-disable"
+description = "The hx-disable attribute in htmx will disable htmx processing for a given element and all its children."
 +++
 
 The `hx-disable` attribute will disable htmx processing for a given element and all its children.  This can be 
