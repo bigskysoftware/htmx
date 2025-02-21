@@ -71,7 +71,7 @@ You can see many examples of Datastar in action [here](https://data-star.dev/exa
 Speaking of Alpine (which is a common library to use in conjunction with htmx) you should look at 
 [Alpine AJAX](https://alpine-ajax.js.org/), an Alpine plugin which integrates htmx-like concepts directly into Alpine.
 
-If you are already and Alpine enthusiast, Alpine AJAX allows you to stay in that world.
+If you are already an Alpine enthusiast, Alpine AJAX allows you to stay in that world.
 
 You can see many examples of Alpine AJAX in action [here](https://alpine-ajax.js.org/examples/).
 
