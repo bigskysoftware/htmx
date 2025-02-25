@@ -158,7 +158,8 @@ All other attributes available in htmx.
 | [`htmx:oobBeforeSwap`](@/events.md#htmx:oobBeforeSwap)  | triggered before an out of band element swap is done, allows you to configure the swap
 | [`htmx:oobErrorNoTarget`](@/events.md#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
 | [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown
-| [`htmx:pushedIntoHistory`](@/events.md#htmx:pushedIntoHistory)  | triggered after an url is pushed into history
+| [`htmx:pushedIntoHistory`](@/events.md#htmx:pushedIntoHistory)  | triggered after a url is pushed into history
+| [`htmx:replacedInHistory`](@/events.md#htmx:replacedInHistory)  | triggered after a url is replaced in history
 | [`htmx:responseError`](@/events.md#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
 | [`htmx:sendAbort`](@/events.md#htmx:sendAbort)  | triggered when a request is aborted
 | [`htmx:sendError`](@/events.md#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
