@@ -1,5 +1,9 @@
 +++
 title = "Javascript API"
+description = """\
+  This documentation describes the JavaScript API for htmx, including methods and properties for configuring the \
+  behavior of htmx, working with CSS classes, AJAX requests, event handling, and DOM manipulation. The API provides \
+  helper functions primarily intended for extension development and event management."""
 +++
 
 While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://htmx.org/extensions) or for working with [events](@/events.md).
