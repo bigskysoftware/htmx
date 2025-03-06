@@ -52,13 +52,13 @@ body.ads .ad img {
 </style>
 <script type="application/javascript">
 if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
-  document.body.classList.add('lmao');
+  document.body.classList.add("lmao")
 }
 if(window.location.search=="?uwu=true") {
-  document.body.classList.add('kawaii');
+  document.body.classList.add("kawaii")
 }
 if(window.location.search=="?ads=true") {
-  document.body.classList.add('ads');
+  document.body.classList.add("ads")
 }
 </script>
 
@@ -183,190 +183,168 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div style="overflow-x: auto">
 
 <h1 style="margin-top:32px;text-align:center">Platinum Sponsor</h1>
-<table id="sponsor-table">
-<tr>
-<td colspan="3">
+<div style="display: grid;grid-template-columns: 1fr">
+<div>
         <a data-github-account="commspace" href="https://www.commspace.co.za">
         <img class="dark-hidden" src="/img/commspace.svg" alt="commspace" style="min-width:200px"/>
         <img class="dark-visible" src="/img/commspace-dark.svg" alt="commspace" style="min-width:200px"/>
         </a>
-</td>
-</tr>
-</table>
+</div>
+</div>
 
 ## Gold Sponsors
 
-<table id="sponsor-table">
-<tr>
-<td>
-        <a data-github-account="NotASithLord" href="https://hydrahost.com">
-          <img class="dark-hidden" src="/img/hydra-hosting.svg" alt="The GPU Marketplace" style="width:100%;">
-          <img class="dark-visible" src="/img/hydra-hosting-dark.svg" alt="The GPU Marketplace" style="width:100%;">
-        </a>
-</td>
-<td>
+<div style="display: grid;grid-template-columns: 1fr">
+<div>
         <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
-</td>
-</tr>
-</table>
+</div>
+</div>
 
 ## Silver Sponsors
-
-<table id="sponsor-table">
-<tr>
-<td>
-        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains" style="max-width:80%;min-width:100px;"></a>
-</td>
-<td>
+<style>
+#silver-sponsors div {
+  text-align: center;
+  padding: 12px;
+}
+#silver-sponsors div a * {
+    width: 80%;
+}
+</style>
+<div id="silver-sponsors" style="display: grid;grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; ">
+<div>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img src="/img/jetbrains.svg" alt="Jetbrains"></a>
+</div>
+<div>
         <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
-</td>
-</tr>
-</table>
-<table id="sponsor-table">
-<tr>
-<td>
+</div>
+<div>
         <a data-github-account="craftcms" href="https://craftcms.com">
-        <img class="dark-hidden" src="/img/logo-craft-cms.svg" alt="craft cms" style="width:90%;max-width:200px">
-        <img  class="dark-visible" src="/img/logo-craft-cms-dark.svg" alt="craft cms" style="width:90%;max-width:200px">
+        <img class="dark-hidden" src="/img/logo-craft-cms.svg" alt="craft cms">
+        <img  class="dark-visible" src="/img/logo-craft-cms-dark.svg" alt="craft cms">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="ButterCMS" href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
-          <img class="dark-invert" src="/img/butter-cms.svg" alt="ButterCMS" style="width:100%;max-width:200px">
+          <img class="dark-invert" src="/img/butter-cms.svg" alt="ButterCMS">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="Black-HOST" href="https://black.host">
-          <img class="dark-invert"  src="/img/blackhost-logo.svg" alt="Black Host" style="width:100%;max-width:200px">
+          <img class="dark-invert"  src="/img/blackhost-logo.svg" alt="Black Host">
         </a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+<div>
         <a href="https://www.v7n.com/">
-          <img alt="V7N" class="dark-hidden" src="/img/v7n-logo.png" style="width:100%;max-width:200px">
-          <img alt="V7N" class="dark-visible" src="/img/v7n-logo-dark.png" style="width:100%;max-width:200px">
+          <img alt="V7N" class="dark-hidden" src="/img/v7n-logo.png">
+          <img alt="V7N" class="dark-visible" src="/img/v7n-logo-dark.png">
         </a>
-</td>
-<td>
-      <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px; width:100%;max-width:150px"></a>
-</td>
-<td>
+</div>
+<div>
+      <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px"></a>
+</div>
+<div>
         <a href="https://dasfilter.shop/pages/affiliates">
-          <img class="dark-hidden"  alt="Das Filter" src="/img/das-filter.svg" style="width:100%;max-width:300px">
-          <img class="dark-visible"  alt="Das Filter" src="/img/das-filter-dark.svg" style="width:100%;max-width:300px">
+          <img class="dark-hidden"  alt="Das Filter" src="/img/das-filter.svg">
+          <img class="dark-visible"  alt="Das Filter" src="/img/das-filter-dark.svg">
         </a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+<div>
       <a href="https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx">
-        <img class="dark-hidden" src="/img/pullapprove-logo.svg" alt="PullApprove" style="width:100%;max-width:200px"/>
-        <img class="dark-visible" src="/img/pullapprove-logo-dark.svg" alt="PullApprove" style="width:100%;max-width:200px"/>
+        <img class="dark-hidden" src="/img/pullapprove-logo.svg" alt="PullApprove"/>
+        <img class="dark-visible" src="/img/pullapprove-logo-dark.svg" alt="PullApprove"/>
       </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="transloadit" href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
-          <img class="dark-hidden" alt="Transloadit" src="/img/logos-transloadit-default.svg" style="width:100%;max-width:200px">
-          <img class="dark-visible" alt="Transloadit" src="/img/transloadit-logo-dark.svg" style="width:100%;max-width:200px">
+          <img class="dark-hidden" alt="Transloadit" src="/img/logos-transloadit-default.svg">
+          <img class="dark-visible" alt="Transloadit" src="/img/transloadit-logo-dark.svg">
         </a>
-</td>
-<td>
+</div>
+<div>
       <a data-github-account="uibakery" href="https://uibakery.io">
-      <img class="dark-hidden" src="/img/ui-bakery.svg" alt="UI Bakery" style="width:100%;max-width:250px">
-      <img class="dark-visible" src="/img/ui-bakery-dark.svg" alt="UI Bakery" style="width:100%;max-width:250px"></a>
-</td>
-</tr>
-<tr>
-<td>
+      <img class="dark-hidden" src="/img/ui-bakery.svg" alt="UI Bakery">
+      <img class="dark-visible" src="/img/ui-bakery-dark.svg" alt="UI Bakery"></a>
+</div>
+
+<div>
     <a data-github-account="tracebit-com" href="https://tracebit.com/?utm_source=htmx">
-      <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png" style="width:100%;max-width:250px">
-      <img class="dark-visbile" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png" style="width:100%;max-width:250px">
+      <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png">
+      <img class="dark-visbile" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png">
     </a>
-</td>
-<td>
+</div>
+<div>
       <a data-github-account="pubkey" href="https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx">
-        <img src="/img/rxdb.svg" alt="RxDB JavaScript Database" style="width:100%;max-width:150px"></a>
-</td>
-<td>
+        <img src="/img/rxdb.svg" alt="RxDB JavaScript Database"></a>
+</div>
+<div>
       <a href="https://www.ohne-makler.net/"><img src="/img/ohne-makler.svg" alt="Ohne-Makler" style="width:100%;max-width:150px"></a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+
+<div>
         <a data-github-account="cased" href="https://cased.com///">
           <img class="dark-hidden" alt="Developer friendly DevOps" src="/img/Cased_Logo_DarkBlue.svg" style="width:100%;max-width:250px">
           <img class="dark-visible" alt="Developer friendly DevOps" src="/img/Cased_Logo_Beige-01.svg" style="width:100%;max-width:250px">
         </a>
-</td>
-<td>
-        <a data-github-account="apesternikov" href="https://codereviewbot.ai/">
-          <img class="dark-hidden" alt="AI Code Review Bot" src="/img/codereviewbot.svg" style="width:100%;max-width:250px">
-          <img class="dark-visible" alt="AI Code Review Bot" src="/img/codereviewbot-dark.svg" style="width:100%;max-width:250px">
-        </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="llcorg" href="https://www.llc.org/">
           <img alt="How to start an LLC - a guide from LLC.org, proud open source sponsor" src="/img/llc-org.svg" style="width:100%;max-width:250px">
         </a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+
+<div>
         <a data-github-account="VPSServerCom" href="https://www.vpsserver.com/">
           <img class="dark-hidden" alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo.svg" style="width:100%;max-width:250px">
           <img class="dark-visible" alt="VPS Server Hosting in the Cloud: Cost Efficiency" src="/img/vps-server-logo-dark.svg" style="width:100%;max-width:250px">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="appleple" href="https://www.a-blogcms.jp/">
           <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
            <img class="dark-hidden" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
         </a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+
+<div>
         <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
           <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="width:100%;max-width:50px" >
           <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="width:100%;max-width:50px">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="Viralyft" alt="Buy YouTube views" href="https://viralyft.com/buy-youtube-views/">
            <img class="dark-hidden" src="/img/Viralyft_light.png" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/Viralyft_dark.png" style="width:100%;max-width:250px">
         </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
            <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
         </a>
-</td>
-</tr>
-<tr>
-<td>
+</div>
+
+
+<div>
     <a data-github-account="ExchangeRate-API" alt="The Accurate & Reliable Exchange Rate API" href="https://www.exchangerate-api.com">
        <img class="dark-hidden" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
        <img class="dark-visible" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
     </a>
-</td>
-<td>
+</div>
+<div>
         <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
            <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
         </a>
-</td>
-<td>
-</td>
-</tr>
-</table>
+</div>
 </div>
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>
