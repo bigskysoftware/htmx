@@ -1,7 +1,7 @@
 +++
 title = "An interview with Leonard Richardson"
 description = """\
-  In this interview, Leonard Richardson, creator of the Richardson Maturity Model for RESTful web services discusses\
+  In this interview, Leonard Richardson, creator of the Richardson Maturity Model for RESTful web services discusses \
   the history of REST, interoperability in APIs and his impression of newer approaches such as GraphQL."""
 date = 2025-02-19
 updated = 2025-02-19
