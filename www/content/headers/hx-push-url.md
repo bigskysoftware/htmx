@@ -1,5 +1,7 @@
 +++
 title = "HX-Push-Url Response Header"
+description = """\
+  Use the HX-Push-Url response header in htmx to push a URL into the browser location history."""
 +++
 
 The `HX-Push-Url` header allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).

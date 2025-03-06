@@ -1,5 +1,7 @@
 +++
 title = "HX-Trigger Response Headers"
+description = """\
+  Use the HX-Trigger family of response headers in htmx to trigger client-side actions from an htmx response."""
 +++
 
 These response headers can be used to trigger client side actions on the target element within a response to htmx.  You
