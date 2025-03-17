@@ -5012,9 +5012,20 @@ var htmx = (function() {
   // Initialization
   //= ===================================================================
   var isReady = false
-  getDocument().addEventListener('DOMContentLoaded', function() {
+  var readyFunctions = []
+  /*
+   * When the HTMX lib is loaded async, the DOMContentLoaded event never fires, so the
+   * ready functions never trigger. (https://github.com/bigskysoftware/htmx/issues/3165)
+   * To make sure this never happens, we will listen to both DOMContentLoaded and window.onload
+   */
+  function triggerReadyFunctions() {
+    if (!readyFunctions) { return }
     isReady = true
-  })
+    readyFunctions.forEach(x => x())
+    readyFunctions = undefined
+  }
+  getDocument().addEventListener('DOMContentLoaded', triggerReadyFunctions)
+  window.onload = triggerReadyFunctions
 
   /**
    * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
@@ -5028,8 +5039,9 @@ var htmx = (function() {
     // some means other than the initial page load.
     if (isReady || getDocument().readyState === 'complete') {
       fn()
+      triggerReadyFunctions()
     } else {
-      getDocument().addEventListener('DOMContentLoaded', fn)
+      readyFunctions.push(fn)
     }
   }
 
