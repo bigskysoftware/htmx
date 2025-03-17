@@ -3492,7 +3492,7 @@ var htmx = (function() {
     const element = /** @type {HTMLElement & ElementInternals} */ (elt)
     if (element.willValidate) {
       triggerEvent(element, 'htmx:validation:validate')
-      if (!element.checkValidity()) {
+      if (!element.reportValidity()) {
         errors.push({ elt: element, message: element.validationMessage, validity: element.validity })
         triggerEvent(element, 'htmx:validation:failed', { message: element.validationMessage, validity: element.validity })
       }
