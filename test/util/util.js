@@ -71,8 +71,8 @@ function parseParams(str) {
   }
   var params = {}; var e
   if (str) {
-    if (str.substr(0, 1) == '?') {
-      str = str.substr(1)
+    if (str.slice(0, 1) == '?') {
+      str = str.slice(1)
     }
     while (e = re.exec(str)) {
       var k = decode(e[1])
