@@ -325,4 +325,16 @@ describe('hx-vals attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
+
+  it('js: this refers to the element with the hx-vals attribute', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make('<div hx-post="/vars" hx-vals="javascript:{ ...this.dataset, }" data-i1="test"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
 })
