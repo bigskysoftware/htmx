@@ -10,7 +10,7 @@ your htmx webpage in real-time.
 SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through
 proxy servers and firewalls. Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE
 server once the connection has been established. If you need bi-directional communication, then you should consider
-using [WebSockets](@web-sockets.md) instead.
+using [WebSockets](@/extensions/ws.md) instead.
 
 This extension replaces the experimental `hx-sse` attribute built into previous versions of htmx. For help migrating
 from older versions, see the migration guide at the bottom of this page.
