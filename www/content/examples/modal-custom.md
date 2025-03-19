@@ -132,8 +132,8 @@ example.
 }
 ```
 
-<script src="https://unpkg.com/htmx.org"></script>
-<script src="https://unpkg.com/hyperscript.org"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org"></script>
+<script src="https://cdn.jsdelivr.net/npm/hyperscript.org"></script>
 <script type="text/javascript">
 
     //=========================================================================
