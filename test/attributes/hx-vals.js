@@ -314,6 +314,33 @@ describe('hx-vals attribute', function() {
     }
     calledEvent.should.equal(true)
   })
+
+  it('using js: with hx-vals has event available', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make('<div id="test" hx-post="/vars" hx-vals="js:i1:event.target.id"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('using js: with hx-vals has event available when used with a delay', function(done) {
+    var params = null
+    var div = make('<div id="test" hx-post="/vars" hx-vals="js:{i1:event.target.id}" hx-trigger="click delay:10ms"></div>')
+    htmx.on(div, 'htmx:configRequest', function(evt) {
+      evt.preventDefault()
+      params = evt.detail.parameters
+    }, { once: true })
+    div.click()
+    new Promise(resolve => setTimeout(resolve, 20)).then(function() {
+      params.i1.should.equal('test')
+      done()
+    }).catch(done)
+  })
+
   it('hx-vals works with null values', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
