@@ -336,4 +336,88 @@ describe('hx-include attribute', function() {
     this.server.respond()
     btn.innerHTML.should.equal('Clicked!')
   })
+
+  it('`inherit` can be used to expand parent hx-include', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <button id="btn" hx-include="inherit, #i2" hx-post="/include"></button>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` can be used to expand multiple parents hx-include', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="inherit, #i2">' +
+      '       <button id="btn" hx-include="inherit, #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` chain breaks properly', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      should.not.exist(params.i1)
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="#i2">' +
+      '       <button id="btn" hx-include="inherit, #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` syntax regex properly catches keyword', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="#i2,   inherit,.nonexistent-class">' +
+      '       <button id="btn" hx-include="customtag,inherit   , #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
 })

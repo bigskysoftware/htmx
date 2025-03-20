@@ -1350,6 +1350,16 @@ var htmx = (function() {
         return [findThisElement(elt, attrName)]
       } else {
         const result = querySelectorAllExt(elt, attrTarget)
+        // find `inherit` whole word in value, make sure it's surrounded by commas or is at the start/end of string
+        const shouldInherit = /(^|,)(\s*)inherit(\s*)($|,)/.test(attrTarget)
+        if (shouldInherit) {
+          const eltToInheritFrom = asElement(getClosestMatch(elt, function(parent) {
+            return parent !== elt && hasAttribute(asElement(parent), attrName)
+          }))
+          if (eltToInheritFrom) {
+            result.push(...findAttributeTargets(eltToInheritFrom, attrName))
+          }
+        }
         if (result.length === 0) {
           logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
           return [DUMMY_ELT]
