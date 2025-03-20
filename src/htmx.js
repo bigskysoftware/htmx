@@ -2512,7 +2512,7 @@ var htmx = (function() {
             }
           }
           if (triggerSpec.changed) {
-            const node = event.target
+            const node = evt.target
             // @ts-ignore value will be undefined for non-input elements, which is fine
             const value = node.value
             const lastValue = elementData.lastValue.get(triggerSpec)
