@@ -86,12 +86,12 @@ but with a target filter for a child element
   * `all` - queue all events (issue a request for each event)
   * `none` - do not queue new events
 
-Here is an example of a search box that searches on `keyup`, but only if the search value has changed
+Here is an example of a search box that searches on `input`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:
 
 ```html
 <input name="q"
-       hx-get="/search" hx-trigger="keyup changed delay:1s"
+       hx-get="/search" hx-trigger="input changed delay:1s"
        hx-target="#search-results"/>
 ```
 
