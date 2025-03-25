@@ -7,7 +7,7 @@ tag = ["posts", "announcements"]
 
 ## htmx 0.0.3 Release
 
-I'm pleased to announce the [0.0.3 release](https://unpkg.com/browse/htmx.org@0.0.3/) of kutty, er, htmx, the successor
+I'm pleased to announce the [0.0.3 release](https://cdn.jsdelivr.net/npm/browse/htmx.org@0.0.3/) of kutty, er, htmx, the successor
 to [intercooler.js](http://intercoolerjs.org)!
 
 #### Why not kutty 0.0.2?

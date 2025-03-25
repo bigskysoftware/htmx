@@ -88,7 +88,7 @@ Now, that's my kind of API.
 As luck would have it, it's trivial to wrap this API around the regular htmx swapping model, which allows us to
 start exploring View Transitions in htmx, even before it's generally available in HTML! 
 
-And, as of [htmx 1.9.0](https://unpkg.com/htmx.org@1.9.0), you can start experimenting with the API by adding the 
+And, as of [htmx 1.9.0](https://cdn.jsdelivr.net/npm/htmx.org@1.9.0), you can start experimenting with the API by adding the 
 `transition:true` attribute to an [`hx-swap`](/attributes/hx-swap) attribute.
 
 ## A Practical Example
