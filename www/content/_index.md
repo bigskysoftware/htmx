@@ -209,10 +209,13 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 #silver-sponsors div a * {
     width: 80%;
 }
+#silver-sponsors img {
+    min-width: 150px;
+}
 </style>
 <div id="silver-sponsors" style="display: grid;grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; ">
 <div>
-        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img style="min-width:150px" src="/img/jetbrains.svg" alt="Jetbrains"></a>
+        <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img  src="/img/jetbrains.svg" alt="Jetbrains"></a>
 </div>
 <div>
         <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
@@ -225,7 +228,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </div>
 <div>
         <a data-github-account="ButterCMS" href="https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome">
-          <img class="dark-invert" src="/img/butter-cms.svg" alt="ButterCMS">
+          <img class="dark-invert" style="min-width: 150px;" src="/img/butter-cms.svg" alt="ButterCMS">
         </a>
 </div>
 <div>
@@ -245,7 +248,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div>
         <a href="https://dasfilter.shop/pages/affiliates">
           <img class="dark-hidden"  alt="Das Filter" src="/img/das-filter.svg">
-          <img class="dark-visible"  alt="Das Filter" src="/img/das-filter-dark.svg">
+          <img class="dark-visible" alt="Das Filter" src="/img/das-filter-dark.svg">
         </a>
 </div>
 <div>
@@ -315,8 +318,8 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 
 <div>
         <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
-          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="width:100%;max-width:50px" >
-          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="width:100%;max-width:50px">
+          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="min-width: 80px" >
+          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="min-width: 80px">
         </a>
 </div>
 <div>
