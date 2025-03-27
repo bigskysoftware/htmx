@@ -192,14 +192,6 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </div>
 </div>
 
-## Gold Sponsors
-
-<div style="display: grid;grid-template-columns: 1fr">
-<div>
-        <a data-github-account="deco-cx" href="https://deco.cx/?utm_source=htmx"><img src="/img/deco.cx-logo-outline.png" alt="Your first and last web editor" style="width:100%;"></a>
-</div>
-</div>
-
 ## Silver Sponsors
 <style>
 #silver-sponsors div {
