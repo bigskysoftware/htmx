@@ -165,5 +165,7 @@ Here are some known implementations of the fragment concept:
   * [Giraffe.ViewEngine.Htmx](https://github.com/bit-badger/Giraffe.Htmx/tree/main/src/ViewEngine.Htmx)
 * Rust
   * [MiniJinja](https://docs.rs/minijinja/latest/minijinja/struct.State.html#method.render_block)
+* Raku
+  * [Cro Templates](https://github.com/croservices/cro-website/blob/main/docs/reference/cro-webapp-template-syntax.md#fragments)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.
