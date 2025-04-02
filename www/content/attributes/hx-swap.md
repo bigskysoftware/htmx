@@ -57,7 +57,7 @@ Similarly, you can modify the time between the swap and the settle logic by incl
 modifier:
 
 ```html
-  <!-- this will wait 1s before doing the swap after it is received -->
+  <!-- this will wait 1s before doing the settle after it is received -->
   <div hx-get="/example" hx-swap="innerHTML settle:1s">Get Some HTML & Append It</div>
 ```
 
