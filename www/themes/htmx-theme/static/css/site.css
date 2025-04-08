@@ -392,6 +392,12 @@ th {
   border-bottom: 2px solid #eee;
 }
 
+tbody > tr > th[scope="rowgroup"] {
+  font-style: italic;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
 .btn {
   padding: 1em;
   letter-spacing: .1em;
