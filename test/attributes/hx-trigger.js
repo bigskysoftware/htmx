@@ -454,7 +454,7 @@ describe('hx-trigger attribute', function() {
       div.dispatchEvent(event)
       this.server.respond()
       div.innerHTML.should.equal('Not Called')
-      foo = true
+      window.foo = true
       div.dispatchEvent(event)
       this.server.respond()
       div.innerHTML.should.equal('Called!')

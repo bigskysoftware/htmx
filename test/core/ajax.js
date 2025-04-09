@@ -964,7 +964,11 @@ describe('Core htmx AJAX Tests', function() {
 
   it('scripts w/ src attribute are properly loaded', function(done) {
     try {
-      this.server.respondWith('GET', '/test', "<script id='setGlobalScript' src='setGlobal.js'></script>")
+      if (byId('mocha')) {
+        this.server.respondWith('GET', '/test', "<script id='setGlobalScript' src='setGlobal.js'></script>")
+      } else {
+        this.server.respondWith('GET', '/test', "<script id='setGlobalScript' src='/test/setGlobal.js'></script>")
+      }
       var div = make("<div hx-get='/test'></div>")
       div.click()
       this.server.respond()
