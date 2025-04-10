@@ -87,7 +87,7 @@ describe('Core htmx internals Tests', function() {
     var anchorThatShouldCancel = make("<a href='/foo'></a>")
     htmx._('shouldCancel')({ type: 'click' }, anchorThatShouldCancel).should.equal(true)
 
-    var anchorThatShouldCancel = make("<a href='#'></a>")
+    anchorThatShouldCancel = make("<a href='#'></a>")
     htmx._('shouldCancel')({ type: 'click' }, anchorThatShouldCancel).should.equal(true)
 
     var anchorThatShouldNotCancel = make("<a href='#foo'></a>")
@@ -96,12 +96,18 @@ describe('Core htmx internals Tests', function() {
     var form = make('<form></form>')
     htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
 
-    var form = make("<form><input id='i1' type='submit'></form>")
+    form = make("<form><input id='i1' type='submit'></form>")
     var input = byId('i1')
     htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
 
-    var form = make("<form><button id='b1' type='submit'></form>")
+    form = make("<form><button id='b1' type='submit'></form>")
     var button = byId('b1')
+    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
+
+    form = make("<form id='f1'></form><input id='i1' form='f1' type='submit'><button id='b1' form='f1' type='submit'>")
+    input = byId('i1')
+    button = byId('b1')
+    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
     htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
   })
 

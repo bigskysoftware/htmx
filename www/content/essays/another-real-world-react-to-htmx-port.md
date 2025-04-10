@@ -1,9 +1,13 @@
 +++
 title = "Another Real World React -> htmx Port"
+description = """\
+  In this article, Carson Gross summarizes a real-world case study of Adrian McPhee porting the OpenUnited platform \
+  from React to htmx, documenting significant reductions in code complexity and development time while highlighting \
+  how content-focused web applications can benefit from a hypermedia architectural approach."""
 date = 2023-09-20
 updated = 2023-09-20
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

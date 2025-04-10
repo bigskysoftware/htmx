@@ -1,9 +1,14 @@
 +++
 title = "Hypermedia Clients"
+description = """\
+  In this essay, Carson Gross explores the critical but often overlooked role of hypermedia clients in REST \
+  architectures. He explains why adding hypermedia controls to JSON APIs is insufficient for true RESTful systems \
+  without proper client implementation. Carson examines the challenges of building hypermedia clients and argues that \
+  web browsers remain the most practical choice for hypermedia-driven applications."""
 date = 2023-01-28
 updated = 2023-01-29
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

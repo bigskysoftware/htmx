@@ -4,7 +4,7 @@ theme = "htmx-theme"
 
 compile_sass = false
 build_search_index = false
-generate_feed = true
+generate_feeds = true
 
 taxonomies = [
   { name = "tag", render = false, feed = true },

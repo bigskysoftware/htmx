@@ -18,7 +18,7 @@ It is worth noting the difference in approach between what Intercooler set out t
 
 This capability is augmented in primarily 2 ways:
 
-1. [Extensions](https://extensions.htmx.org#reference). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md)
+1. [Extensions](https://htmx.org/extensions). The htmx extension framework allows for custom extensions/plugins to achieve specific functionality. An example  of this is the dependencies mechanism baked into Intercooler, which is not present in htmx core. but available via [an extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md). There are also other extensions which enables new behavior that Intercooler was not capable of out the box, e.g. the [`preload` extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md)
 
 2. Using the htmx events system with vanilla javascript, [alpine.js](https://github.com/alpinejs/alpine/) or [hyperscript](https://hyperscript.org).  Hyperscript is a small, open scripting language designed to be embedded in HTML, inspired by HyperTalk and is a companion project of htmx.
 

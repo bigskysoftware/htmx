@@ -64,6 +64,7 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('Requests: 1')
   })
 
+  // This test and the next one should be kept in sync.
   it('changed modifier works along from clause with two inputs', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
@@ -73,6 +74,92 @@ describe('hx-trigger attribute', function() {
     var input1 = make('<input type="text"/>')
     var input2 = make('<input type="text"/>')
     make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    var div = make('<div id="d1"></div>')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+
+    input1.value = 'bar'
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+
+    input2.value = 'foo'
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+  })
+
+  // This test and the previous one should be kept in sync.
+  it('changed modifier counts each triggerspec separately', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input1 = make('<input type="text"/>')
+    var input2 = make('<input type="text"/>')
+    make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    make('<div hx-trigger="click changed from:input" hx-target="#d1" hx-get="/test"></div>')
+    var div = make('<div id="d1"></div>')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+
+    input1.value = 'bar'
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+
+    input2.value = 'foo'
+    input1.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+    input2.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 4')
+  })
+
+  it('separate changed modifier works along from clause with two inputs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input1 = make('<input type="text"/>')
+    var input2 = make('<input type="text"/>')
+    make('<div hx-trigger="click changed from:input:nth-child(1), click changed from:input:nth-child(2)" hx-target="#d1" hx-get="/test"></div>')
     var div = make('<div id="d1"></div>')
 
     input1.click()
@@ -570,6 +657,26 @@ describe('hx-trigger attribute', function() {
     div1.innerHTML.should.equal('Requests: 2')
   })
 
+  it('from clause works with multiple extended selectors', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    make('<button id="btn" type="button">Click me</button>' +
+      '<div hx-trigger="click from:(previous button, next a)" hx-target="#a1" hx-get="/test"></div>' +
+      '<a id="a1">Requests: 0</a>')
+    var btn = byId('btn')
+    var a1 = byId('a1')
+    a1.innerHTML.should.equal('Requests: 0')
+    btn.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 1')
+    a1.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 2')
+  })
+
   it('event listeners can filter on target', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
@@ -657,7 +764,7 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
-  it('A throttle of 0 does not multiple requests from happening', function(done) {
+  it('A throttle of 0 does not prevent multiple requests from happening', function(done) {
     var requests = 0
     var server = this.server
     server.respondWith('GET', '/test', function(xhr) {
@@ -939,6 +1046,45 @@ describe('hx-trigger attribute', function() {
     }
   })
 
+  it('fires the htmx:trigger event for delayed triggers', function(done) {
+    var param = 'foo'
+    var handler = htmx.on('htmx:trigger', function(evt) {
+      param = 'bar'
+    })
+    var div = make('<button hx-trigger="click delay:10ms">Submit</button>')
+    div.click()
+    setTimeout(function() {
+      try {
+        should.equal(param, 'bar')
+        done()
+      } finally {
+        htmx.off('htmx:trigger', handler)
+      }
+    }, 50)
+  })
+
+  it('fires the htmx:trigger event when the trigger is a load', function(done) {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div hx-trigger="load delay:50ms" hx-on::trigger="this.innerText = \'Done\'">Response</div>'
+    )
+
+    var div = make('<div hx-get="/test">Submit</div>')
+    div.click()
+    this.server.respond()
+    var response = div.children[0]
+    response.innerText.should.equal('Response')
+
+    setTimeout(function() {
+      try {
+        response.innerText.should.equal('Done')
+        done()
+      } finally {
+      }
+    }, 100)
+  })
+
   it('filters support "this" reference to the current element', function() {
     this.server.respondWith('GET', '/test', 'Called!')
     var form = make('<form hx-get="/test" hx-trigger="click[this.classList.contains(\'bar\')]">Not Called</form>')
@@ -1061,5 +1207,20 @@ describe('hx-trigger attribute', function() {
     Object.keys(htmx.config.triggerSpecsCache).length.should.equal(1)
 
     htmx.config.triggerSpecsCache = initialCacheConfig
+  })
+
+  it('handles spaces at the end of trigger specs', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var div = make('<div hx-trigger="load , click consume " hx-get="/test">Requests: 0</div>')
+    div.innerHTML.should.equal('Requests: 0')
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
   })
 })

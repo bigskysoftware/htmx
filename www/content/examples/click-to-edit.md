@@ -86,8 +86,8 @@ return `<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
     <label for="email">Email Address</label>
     <input type="email" id="email" name="email" value="${contact.email}">
   </div>
-  <button class="btn" type="submit">Submit</button>
-  <button class="btn" hx-get="/contact/1">Cancel</button>
+  <button class="btn primary" type="submit">Submit</button>
+  <button class="btn danger" hx-get="/contact/1">Cancel</button>
 </form>`
     }
 

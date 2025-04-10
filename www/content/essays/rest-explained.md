@@ -1,7 +1,15 @@
 +++
 title = "REST - Explained For Beginners"
+description = """\
+  In this essay, Carson Gross presents the core concepts of REST (Representational State Transfer) explained in simple \
+  terms for beginners. He breaks down Roy Fielding's dissertation to highlight key principles like the Uniform \
+  Interface, Statelessness, Hypermedia (HATEOAS), and more, making REST easy to understand for non-academic web \
+  developers."""
 date = 2021-07-13
 updated = 2022-02-06
+authors = ["Carson Gross"]
+[taxonomies]
+tag = ["posts"]
 +++
 
 There is no topic that generates more confusion in web development than the idea of Representational State Transfer, 
@@ -58,7 +66,7 @@ To clarify the discussion around exactly what the uniform interface is, let's co
 everyone reading this will understand:
 
 ```html
-<html
+<html>
   <body>
   <section>
     <p>
@@ -239,7 +247,7 @@ These brief sections are not relevant to non-academics interested in REST.
 
 ## Summary
 
-So there you have it, a brief tour of Chapter 5 of Roy Fielding's disseration, which gave us the term REST.  I have
+So there you have it, a brief tour of Chapter 5 of Roy Fielding's dissertation, which gave us the term REST.  I have
 focused in on the areas that I think are most important for web developers to understand and tried to convey how
 REST describes the original web model.  The uniform interface concept is, in my opinion, the most important and interesting
 aspect of REST, and is useful for web developers to understand as it is primarily responsible for the benefits described

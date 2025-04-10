@@ -1,9 +1,14 @@
 +++
 title = "htmx sucks"
+description = """\
+  This article provides a critical analysis of htmx, a web development library, explaining why the author believes it \
+  represents a problematic approach to modern web development due to its outdated coding practices, lack of build \
+  tools, absence of TypeScript support, and reliance on HTML-based architecture, while also questioning the \
+  professionalism of its creator."""
 date = 2024-02-01
 updated = 2024-04-01
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -171,7 +176,7 @@ Sometimes the htmx author will make a smart-alec comment like "Well, how do you 
 Another practical reason not to use htmx is that there are, rounding off, zero htmx jobs.
 
 I just did a search for htmx jobs on indeed and found a grand total of two: one at Microsoft and one at Oak Ridge
-National Labratory.
+National Laboratory.
 
 A search for "react", on the other hand, gives 13,758 jobs.
 
@@ -206,7 +211,7 @@ Another technical issue with htmx is that it just won't scale.  It may work for 
 get larger the htmx model breaks down and becomes a mess.  The component model of React and other front-end tools keeps
 everything compartmentalized and testable.  This makes it much easier to keep large codebases clean.
 
-As an example, consider [Github](https://github.com/), which started out using technology a lot like htmx.  It has
+As an example, consider [GitHub](https://github.com/), which started out using technology a lot like htmx.  It has
 recently started adopting React and is now much more stable than it was previously.  They would have been better off
 if they had just started with React and built the whole thing in a modern, component-based way, but at least they
 are making the right move now.  Better late than never.

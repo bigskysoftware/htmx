@@ -29,7 +29,7 @@
           "description-sections": {
             "Not inherited": ""
           },
-          "doc-url": "https://htmx.org/attributes/hx-confirm/"
+          "doc-url": "https://htmx.org/attributes/hx-delete/"
         },
         {
           "name": "hx-disable",
