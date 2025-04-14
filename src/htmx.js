@@ -826,12 +826,12 @@ var htmx = (function() {
    */
   function normalizePath(path) {
     try {
-      const url = new URL(path)
+      const url = new URL(path, location.origin)
       if (url) {
         path = url.pathname + url.search
       }
       // remove trailing slash, unless index page
-      if (!(/^\/$/.test(path))) {
+      if (path !== '/') {
         path = path.replace(/\/+$/, '')
       }
       return path
@@ -1074,18 +1074,10 @@ var htmx = (function() {
    */
   function closest(elt, selector) {
     elt = asElement(resolveTarget(elt))
-    if (elt && elt.closest) {
+    if (elt) {
       return elt.closest(selector)
-    } else {
-      // TODO remove when IE goes away
-      do {
-        if (elt == null || matches(elt, selector)) {
-          return elt
-        }
-      }
-      while (elt = elt && asElement(parentElt(elt)))
-      return null
     }
+    return null
   }
 
   /**
@@ -1468,7 +1460,7 @@ var htmx = (function() {
     oobElement.removeAttribute('data-hx-swap-oob')
 
     const targets = querySelectorAllExt(rootNode, selector, false)
-    if (targets) {
+    if (targets.length) {
       forEach(
         targets,
         function(target) {
@@ -1687,7 +1679,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1718,11 +1710,7 @@ var htmx = (function() {
       newElt = newElt.nextSibling
     }
     cleanUpElement(target)
-    if (target instanceof Element) {
-      target.remove()
-    } else {
-      target.parentNode.removeChild(target)
-    }
+    target.remove()
   }
 
   /**
@@ -1793,7 +1781,7 @@ var htmx = (function() {
   /**
    * @param {HtmxSwapStyle} swapStyle
    * @param {Element} elt
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1889,17 +1877,15 @@ var htmx = (function() {
     // preserve focus and selection
     const activeElt = document.activeElement
     let selectionInfo = {}
-    try {
-      selectionInfo = {
-        elt: activeElt,
-        // @ts-ignore
-        start: activeElt ? activeElt.selectionStart : null,
-        // @ts-ignore
-        end: activeElt ? activeElt.selectionEnd : null
-      }
-    } catch (e) {
-      // safari issue - see https://github.com/microsoft/playwright/issues/5894
+
+    selectionInfo = {
+      elt: activeElt,
+      // @ts-ignore
+      start: activeElt ? activeElt.selectionStart : null,
+      // @ts-ignore
+      end: activeElt ? activeElt.selectionEnd : null
     }
+
     const settleInfo = makeSettleInfo(target)
 
     // For text content swaps, don't parse the response as HTML, just insert it
@@ -2388,14 +2374,10 @@ var htmx = (function() {
 
   /**
    * @param {Event} evt
-   * @param {Node} node
+   * @param {Element} elt
    * @returns {boolean}
    */
-  function shouldCancel(evt, node) {
-    const elt = asElement(node)
-    if (!elt) {
-      return false
-    }
+  function shouldCancel(evt, elt) {
     if (evt.type === 'submit' || evt.type === 'click') {
       if (elt.tagName === 'FORM') {
         return true
@@ -2445,7 +2427,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} elt
+   * @param {Element} elt
    * @param {TriggerHandler} handler
    * @param {HtmxNodeInternalData} nodeData
    * @param {HtmxTriggerSpecification} triggerSpec
@@ -2635,7 +2617,7 @@ var htmx = (function() {
         triggerSpecs.forEach(function(triggerSpec) {
           addTriggerHandler(elt, triggerSpec, nodeData, function(node, evt) {
             const elt = asElement(node)
-            if (closest(elt, htmx.config.disableSelector)) {
+            if (eltIsDisabled(elt)) {
               cleanUpElement(elt)
               return
             }
@@ -2654,7 +2636,7 @@ var htmx = (function() {
    */
 
   /**
-   * @param {Node} elt
+   * @param {Element} elt
    * @param {HtmxTriggerSpecification} triggerSpec
    * @param {HtmxNodeInternalData} nodeData
    * @param {TriggerHandler} handler
@@ -2750,27 +2732,23 @@ var htmx = (function() {
    * @returns {NodeListOf<Element>|[]}
    */
   function findElementsToProcess(elt) {
-    if (elt.querySelectorAll) {
-      const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
+    const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
 
-      const extensionSelectors = []
-      for (const e in extensions) {
-        const extension = extensions[e]
-        if (extension.getSelectors) {
-          var selectors = extension.getSelectors()
-          if (selectors) {
-            extensionSelectors.push(selectors)
-          }
+    const extensionSelectors = []
+    for (const e in extensions) {
+      const extension = extensions[e]
+      if (extension.getSelectors) {
+        var selectors = extension.getSelectors()
+        if (selectors) {
+          extensionSelectors.push(selectors)
         }
       }
-
-      const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
-        ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
-
-      return results
-    } else {
-      return []
     }
+
+    const results = elt.querySelectorAll(VERB_SELECTOR + boostedSelector + ", form, [type='submit']," +
+      ' [hx-ext], [data-hx-ext], [hx-trigger], [data-hx-trigger]' + extensionSelectors.flat().map(s => ', ' + s).join(''))
+
+    return results
   }
 
   /**
@@ -2823,9 +2801,6 @@ var htmx = (function() {
       return
     }
     const form = getRelatedForm(elt)
-    if (!form) {
-      return
-    }
     return getInternalData(form)
   }
 
@@ -2902,10 +2877,6 @@ var htmx = (function() {
    * @param {Element|HTMLInputElement} elt
    */
   function initNode(elt) {
-    if (closest(elt, htmx.config.disableSelector)) {
-      cleanUpElement(elt)
-      return
-    }
     const nodeData = getInternalData(elt)
     const attrHash = attributeHash(elt)
     if (nodeData.initHash !== attrHash) {
@@ -2951,7 +2922,7 @@ var htmx = (function() {
    */
   function processNode(elt) {
     elt = resolveTarget(elt)
-    if (closest(elt, htmx.config.disableSelector)) {
+    if (eltIsDisabled(elt)) {
       cleanUpElement(elt)
       return
     }
@@ -2978,16 +2949,9 @@ var htmx = (function() {
    * @returns {CustomEvent}
    */
   function makeEvent(eventName, detail) {
-    let evt
-    if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-      // TODO: `composed: true` here is a hack to make global event handlers work with events in shadow DOM
-      // This breaks expected encapsulation but needs to be here until decided otherwise by core devs
-      evt = new CustomEvent(eventName, { bubbles: true, cancelable: true, composed: true, detail })
-    } else {
-      evt = getDocument().createEvent('CustomEvent')
-      evt.initCustomEvent(eventName, true, true, detail)
-    }
-    return evt
+    // TODO: `composed: true` here is a hack to make global event handlers work with events in shadow DOM
+    // This breaks expected encapsulation but needs to be here until decided otherwise by core devs
+    return new CustomEvent(eventName, { bubbles: true, cancelable: true, composed: true, detail })
   }
 
   /**
@@ -3027,11 +2991,7 @@ var htmx = (function() {
   }
 
   function logError(msg) {
-    if (console.error) {
-      console.error(msg)
-    } else if (console.log) {
-      console.log('ERROR: ', msg)
-    }
+    console.error(msg)
   }
 
   /**
@@ -3189,13 +3149,7 @@ var htmx = (function() {
     // so we can prevent privileged data entering the cache.
     // The page will still be reachable as a history entry, but htmx will fetch it
     // live from the server onpopstate rather than look in the localStorage cache
-    let disableHistoryCache
-    try {
-      disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
-    } catch (e) {
-    // IE11: insensitive modifier not supported so fallback to case sensitive selector
-      disableHistoryCache = getDocument().querySelector('[hx-history="false"],[data-hx-history="false"]')
-    }
+    const disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
     if (!disableHistoryCache) {
       triggerEvent(getDocument().body, 'htmx:beforeHistorySave', { path, historyElt: elt })
       saveToHistoryCache(path, elt)
@@ -3294,13 +3248,10 @@ var htmx = (function() {
       currentPathForHistory = path
       triggerEvent(getDocument().body, 'htmx:historyRestore', { path, item: cached })
     } else {
-      if (htmx.config.refreshOnHistoryMiss) {
-        // @ts-ignore: optional parameter in reload() function throws error
-        // noinspection JSUnresolvedReference
-        window.location.reload(true)
-      } else {
-        loadHistoryFromServer(path)
-      }
+      // @ts-ignore: optional parameter in reload() function throws error
+      // noinspection JSUnresolvedReference
+      if (htmx.config.refreshOnHistoryMiss) window.location.reload(true)
+      else loadHistoryFromServer(path)
     }
   }
 
@@ -3431,6 +3382,20 @@ var htmx = (function() {
     }
   }
 
+  /** @param {Element} elt
+   * @returns {string|Array}
+   */
+  function getValueFromInput(elt) {
+    if (elt instanceof HTMLSelectElement && elt.multiple) {
+      return toArray(elt.querySelectorAll('option:checked')).map(function(e) { return (/** @type HTMLOptionElement */(e)).value })
+    }
+    // include file inputs
+    if (elt instanceof HTMLInputElement && elt.files) {
+      return toArray(elt.files)
+    }
+    return elt.value
+  }
+
   /**
    * @param {Element[]} processed
    * @param {FormData} formData
@@ -3446,16 +3411,7 @@ var htmx = (function() {
     }
     if (shouldInclude(elt)) {
       const name = getRawAttribute(elt, 'name')
-      // @ts-ignore value will be undefined for non-input elements, which is fine
-      let value = elt.value
-      if (elt instanceof HTMLSelectElement && elt.multiple) {
-        value = toArray(elt.querySelectorAll('option:checked')).map(function(e) { return (/** @type HTMLOptionElement */(e)).value })
-      }
-      // include file inputs
-      if (elt instanceof HTMLInputElement && elt.files) {
-        value = toArray(elt.files)
-      }
-      addValueToFormData(name, value, formData)
+      addValueToFormData(name, getValueFromInput(elt), formData)
       if (validate) {
         validateElement(elt, errors)
       }
@@ -3466,7 +3422,7 @@ var htmx = (function() {
           // The input has already been processed and added to the values, but the FormData that will be
           //  constructed right after on the form, will include it once again. So remove that input's value
           //  now to avoid duplicates
-          removeValueFromFormData(input.name, input.value, formData)
+          removeValueFromFormData(input.name, getValueFromInput(input), formData)
         } else {
           processed.push(input)
         }
@@ -3475,9 +3431,7 @@ var htmx = (function() {
         }
       })
       new FormData(elt).forEach(function(value, name) {
-        if (value instanceof File && value.name === '') {
-          return // ignore no-name files
-        }
+        if (value instanceof File && value.name === '') return // ignore no-name files
         addValueToFormData(name, value, formData)
       })
     }
@@ -4016,17 +3970,9 @@ var htmx = (function() {
    * @return {boolean}
    */
   function verifyPath(elt, path, requestConfig) {
-    let sameHost
-    let url
-    if (typeof URL === 'function') {
-      url = new URL(path, document.location.href)
-      const origin = document.location.origin
-      sameHost = origin === url.origin
-    } else {
-    // IE11 doesn't support URL
-      url = path
-      sameHost = startsWith(path, document.location.origin)
-    }
+    const url = new URL(path, document.location.href)
+    const origin = document.location.origin
+    const sameHost = origin === url.origin
 
     if (htmx.config.selfRequestsOnly) {
       if (!sameHost) {
@@ -4084,12 +4030,14 @@ var htmx = (function() {
         }
 
         if (target[key] && target[key].length === 1) {
+          console.log('array.something')
           return target[key][0]
         } else {
           return target[key]
         }
       },
       set: function(target, index, value) {
+        console.log('array.set')
         target[index] = value
         formData.delete(name)
         target.forEach(function(v) { formData.append(name, v) })
@@ -4114,6 +4062,7 @@ var htmx = (function() {
               return result.apply(formData, arguments)
             }
           } else {
+            console.log('form.get.result')
             return result
           }
         }
@@ -4128,6 +4077,7 @@ var htmx = (function() {
               return formData[name].apply(formData, arguments)
             }
           } else {
+            console.log('form.nameintargetnotfunction')
             return target[name]
           }
         }
@@ -4143,6 +4093,7 @@ var htmx = (function() {
       },
       set: function(target, name, value) {
         if (typeof name !== 'string') {
+          console.log('form.set.notstring')
           return false
         }
         target.delete(name)
@@ -4446,6 +4397,7 @@ var htmx = (function() {
     if (!verifyPath(elt, finalPath, requestConfig)) {
       triggerErrorEvent(elt, 'htmx:invalidPath', requestConfig)
       maybeCall(reject)
+      endRequestLock()
       return promise
     }
 
@@ -4508,10 +4460,11 @@ var htmx = (function() {
           }
         }
         maybeCall(resolve)
-        endRequestLock()
       } catch (e) {
         triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({ error: e }, responseInfo))
         throw e
+      } finally {
+        endRequestLock()
       }
     }
     xhr.onerror = function() {
@@ -5050,9 +5003,7 @@ var htmx = (function() {
     const element = getDocument().querySelector('meta[name="htmx-config"]')
     if (element) {
       return parseJSON(element.content)
-    } else {
-      return null
-    }
+    } else return null
   }
 
   function mergeMetaConfig() {
@@ -5091,9 +5042,7 @@ var htmx = (function() {
           })
         })
       } else {
-        if (originalPopstate) {
-          originalPopstate(event)
-        }
+        if (originalPopstate) originalPopstate(event)
       }
     }
     getWindow().setTimeout(function() {

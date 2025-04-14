@@ -325,4 +325,16 @@ describe('hx-vals attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
+
+  it('hx-vals works with object values', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('{"a":"b"}')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\": { \"a\": \"b\" } }'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
 })

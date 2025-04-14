@@ -347,4 +347,20 @@ describe('hx-swap-oob attribute', function() {
       should.equal(badTarget.textContent, 'this should not get swapped')
     })
   }
+
+  it('triggers htmx:oobErrorNoTarget when no targets found', function(done) {
+    this.server.respondWith('GET', '/test', "Clicked<div id='nonexistent' hx-swap-oob='true'>Swapped</div>")
+    var div = make('<div hx-get="/test">click me</div>')
+
+    // Define the event listener function so it can be removed later
+    var eventListenerFunction = function(event) {
+      event.detail.content.innerHTML.should.equal('Swapped')
+      document.body.removeEventListener('htmx:oobErrorNoTarget', eventListenerFunction)
+      done()
+    }
+
+    document.body.addEventListener('htmx:oobErrorNoTarget', eventListenerFunction)
+    div.click()
+    this.server.respond()
+  })
 })

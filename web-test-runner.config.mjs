@@ -15,7 +15,7 @@ const config = {
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-    <meta name="htmx-config" content='{"historyEnabled":false,"defaultSettleDelay":0}'>
+    <meta name="htmx-config" content='{"historyEnabled":false,"defaultSettleDelay":0,"inlineStyleNonce":"nonce"}'>
 </head>
 <body style="padding:20px;font-family: sans-serif">
 
@@ -27,11 +27,6 @@ const config = {
 <script src="node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="src/htmx.js"></script>
 <script>
-  // Do not log all the events in headless mode (the log output is enormous)
-  if (navigator.webdriver) {
-    htmx.logAll = function () { }
-  }
-
   // Add the version number to the top
   document.getElementById('version-number').innerText += htmx.version
 </script>
@@ -47,7 +42,7 @@ const config = {
 <!-- this hyperscript integration should be removed once its removed from the tests -->
 <script src="test/lib/_hyperscript.js"></script>
 
-
+<div hx-trigger="restored" hidden>just for htmx:restored event testing</div>
 <em>Work Area</em>
 <hr/>
 <div id="work-area" hx-history-elt>

@@ -205,4 +205,14 @@ describe('hx-boost attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Boosted!')
   })
+
+  it('handles basic anchor properly', function() {
+    this.server.respondWith('GET', '/test', 'Boosted')
+    var div = make('<div hx-target="this" hx-boost="true"><a id="a1" href="/test">Foo</a></div>')
+    var a = byId('a1')
+    var evt = new MouseEvent('click', { ctrlKey: true })
+    a.dispatchEvent(evt)
+    this.server.respond()
+    div.innerHTML.should.not.equal('Boosted')
+  })
 })

@@ -1330,4 +1330,30 @@ describe('Core htmx AJAX Tests', function() {
     values.should.deep.equal({ b1: 'buttonValue', t1: 'otherValue' })
     byId('t1').value.should.equal('defaultValue')
   })
+
+  it('script tags get swapped in with nonce applied from inlineScriptNonce', function() {
+    var globalWasCalled = false
+    window.callGlobal = function() {
+      globalWasCalled = true
+    }
+    htmx.config.inlineScriptNonce = 'testnonce'
+    try {
+      this.server.respondWith('GET', '/test', "<script id='noncescript'>callGlobal()</script>")
+      var div = make("<div hx-get='/test'></div>")
+      div.click()
+      this.server.respond()
+      globalWasCalled.should.equal(true)
+      byId('noncescript').nonce.should.equal('testnonce')
+    } finally {
+      delete window.callGlobal
+      htmx.config.inlineScriptNonce = ''
+    }
+  })
+
+  it('normalizeScriptTags logs error when insertBefore fails', function() {
+    htmx.div = make('<div><script></script></div>')
+    htmx.div.insertBefore = undefined
+    htmx._('normalizeScriptTags(htmx.div)')
+    delete htmx.div
+  })
 })

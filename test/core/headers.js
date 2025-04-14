@@ -267,6 +267,17 @@ describe('Core htmx AJAX headers', function() {
     div2.innerHTML.should.equal('Result')
   })
 
+  it('should handle HX-Retarget override back to this', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Retarget': 'this' }, 'Result'])
+
+    var div1 = make('<div id="d1" hx-get="/test" hx-target="#d2"></div>')
+    var div2 = make('<div id="d2"></div>')
+    div1.click()
+    this.server.respond()
+    div1.innerHTML.should.equal('Result')
+    div2.innerHTML.should.equal('')
+  })
+
   it('should handle HX-Reswap', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Reswap': 'innerHTML' }, 'Result'])
 
@@ -354,14 +365,17 @@ describe('Core htmx AJAX headers', function() {
     htmx.off('bar', handlerBar)
   })
 
-  it('should change body content on HX-Location', function() {
-    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#testdiv"}' }, ''])
+  it('should change body content on HX-Location', function(done) {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#work-area"}' }, ''])
     this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
     var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
     div.click()
     this.server.respond()
     this.server.respond()
-    div.innerHTML.should.equal('<div>Yay! Welcome</div>')
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      done()
+    }, 30)
   })
 
   it('request to restore history should include the HX-Request header', function() {
@@ -371,6 +385,21 @@ describe('Core htmx AJAX headers', function() {
     })
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
+  })
+
+  it('request history from server with error status code throws error event', function() {
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.requestHeaders['HX-Request'].should.be.equal('true')
+      xhr.respond(404, {}, '')
+    })
+    var invokedEvent = false
+    var handler = htmx.on('htmx:historyCacheMissLoadError', function(evt) {
+      invokedEvent = true
+    })
+    htmx._('loadHistoryFromServer')('/test')
+    this.server.respond()
+    invokedEvent.should.equal(true)
+    htmx.off('htmx:historyCacheMissLoadError', handler)
   })
 
   it('request to restore history should include the HX-History-Restore-Request header', function() {

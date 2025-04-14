@@ -90,6 +90,32 @@ describe('htmx config test', function() {
     }
   })
 
+  it('non mapped responseHandling config will not swap', function() {
+    var originalResponseHandling = htmx.config.responseHandling
+    try {
+      htmx.config.responseHandling = [{ code: '200', swap: true }]
+
+      var responseCode = null
+      this.server.respondWith('GET', '/test', function(xhr, id) {
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
+      })
+
+      responseCode = 400 // 400 should not swap as not found in config
+      var btn = make('<button hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('Click Me!')
+
+      responseCode = 200 // 200 should cause a swap by default
+      var btn = make('<button hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('200')
+    } finally {
+      htmx.config.responseHandling = originalResponseHandling
+    }
+  })
+
   it('can change the target of a given response code', function() {
     var originalResponseHandling = htmx.config.responseHandling
     try {
