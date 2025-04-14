@@ -1,9 +1,11 @@
 describe('Core htmx AJAX headers', function() {
   const chai = window.chai
+
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
   })
+
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
@@ -131,7 +133,7 @@ describe('Core htmx AJAX headers', function() {
     invokedEvent.should.equal(true)
   })
 
-  it('should handle JSON with array arg HX-Trigger response header properly', function() {
+  it('should handle JSON with object arg HX-Trigger response header properly', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Trigger': '{"foo":{"a":1, "b":2}}' }, ''])
 
     var div = make('<div hx-get="/test"></div>')

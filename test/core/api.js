@@ -111,7 +111,7 @@ describe('Core htmx API test', function() {
     div.classList.contains('foo').should.equal(false)
   })
 
-  it('should add class properly after delay', function(done) {
+  it('should remove class properly after delay', function(done) {
     var div = make('<div></div>')
     htmx.addClass(div, 'foo')
     div.classList.contains('foo').should.equal(true)
@@ -549,7 +549,7 @@ describe('Core htmx API test', function() {
     JSON.stringify(assign).should.equal('{"t1":"textValue"}')
   })
 
-  it('tests for formDataProxy array updating', function() {
+  it('tests for formDataProxy array updating and testing for loc coverage', function() {
     var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input id="i2" name="do" value="rey"/></form>')
     var vals = htmx.values(form, 'post')
     vals.foo.should.equal('bar')
@@ -559,6 +559,17 @@ describe('Core htmx API test', function() {
     vals.do.should.deep.equal(['rey', 'rey', 'test'])
     vals.do = ['bob', 'jim']
     vals.do.should.deep.equal(['bob', 'jim'])
+    vals.do[0] = 'hi'
+    vals.do.should.deep.equal(['hi', 'jim'])
+    var arr = vals.do
+    arr[0] = ['override']
+    arr[0].should.equal('override')
+    vals.do.should.deep.equal(['override', 'jim'])
+    vals[Symbol.toStringTag].should.equal('FormData')
+    try {
+      vals[Symbol.toStringTag] = 'notFormData' // should do nothing
+    } catch (e) {}
+    vals[Symbol.toStringTag].should.equal('FormData')
   })
 
   it('logAll() and logNone() run without error', function() {

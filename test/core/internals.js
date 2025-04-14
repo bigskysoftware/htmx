@@ -185,4 +185,9 @@ describe('Core htmx internals Tests', function() {
     window.document.title.should.equal('update title')
     window.document.title = oldTitle
   })
+
+  it('without meta config getMetaConfig returns null', function() {
+    document.querySelector('meta[name="htmx-config"]').remove()
+    should.equal(htmx._('getMetaConfig')(), null)
+  })
 })

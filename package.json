@@ -46,8 +46,11 @@
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
   "eslintConfig": {
-    "extends": "standard",
+    "extends": ["standard", "plugin:mocha/recommended"],
     "rules": {
+      "mocha/consistent-spacing-between-blocks": 0,
+      "mocha/no-setup-in-describe": 0,
+      "mocha/no-skipped-tests": 0,
       "camelcase": 0,
       "no-var": 0,
       "no-undef": 0,
@@ -73,13 +76,14 @@
   "devDependencies": {
     "@types/node": "20.0.0",
     "@types/parse5": "^7.0.0",
-    "@web/test-runner": "^0.20.0",
+    "@web/test-runner": "^0.20.1",
     "@web/test-runner-playwright": "^0.11.0",
     "chai": "^4.5.0",
     "chai-dom": "^1.12.1",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-mocha": "^10.5.0",
     "fs-extra": "^9.1.0",
     "mocha": "^11.1.0",
     "mock-socket": "^9.3.1",

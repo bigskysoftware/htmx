@@ -15,11 +15,13 @@ const config = {
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-    <meta name="htmx-config" content='{"historyEnabled":false,"defaultSettleDelay":0,"inlineStyleNonce":"nonce"}'>
+    <meta name="htmx-config" content='{"historyEnabled":false,"defaultSettleDelay":0,"inlineStyleNonce":"${Math.random() < 0.5 ? 'nonce' : ''}"}'>
 </head>
 <body style="padding:20px;font-family: sans-serif">
 
 <h2>web-test-runner Test Suite</h2>
+
+<script>${Math.random() < 0.5 ? 'window.onpopstate = function(event) {}' : ''}</script>
 
 <script src="node_modules/chai/chai.js"></script>
 <script src="node_modules/chai-dom/chai-dom.js"></script>

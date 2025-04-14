@@ -137,7 +137,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('multiple hx-vals works', function() {
+  it('multiple hx-vals works with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.v1.should.equal('test')
@@ -150,7 +150,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals can be on parents', function() {
+  it('hx-vals can be on parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('test')
@@ -163,7 +163,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals can override parents', function() {
+  it('hx-vals can override parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('best')
@@ -176,7 +176,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals overrides inputs', function() {
+  it('hx-vals overrides inputs with javascript', function() {
     this.server.respondWith('POST', '/include', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('best')

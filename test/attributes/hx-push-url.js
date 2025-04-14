@@ -167,7 +167,7 @@ describe('hx-push-url attribute', function() {
     cache.length.should.equal(3)
   })
 
-  it('does not blow out cache when saving a URL twice', function() {
+  it('setting history cache size to 0 clears cache', function() {
     htmx._('saveToHistoryCache')('url1', make('<div>'))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
