@@ -8,8 +8,9 @@ This guide outlines how to test htmx, focusing on running tests headlessly or in
 2. Install dependencies by running:
    ```bash
    npm install
-   npx playwright install
+   npm run test
    ```
+During test runs it will auto install playwrite
 
 ## Running All Tests
 
@@ -59,11 +60,7 @@ npm run test:debug
 This will start the server, and open the test runner in a browser. From there you can choose a test file to run. Note that all test logs will show up only in dev tools console unlike Mocha.
 
 ## Code Coverage Report
-To test lines of code coverage it is best to run the playwright chrome tests as this produces the most useful coverage reporting.
-
-```bash
-npm run test:chrome
-```
+Lines of code coverage reporting will only work when running the default chrome headless testing
 
 After a test run completes, you can open `coverage/lcov-report/index.html` to view the code coverage report. On Ubuntu you can run:
 ```bash
