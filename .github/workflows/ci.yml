@@ -16,5 +16,4 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-      - run: npm npx playwright install
-      - run: npm test:ci
+      - run: npm test

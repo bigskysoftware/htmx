@@ -206,9 +206,9 @@ describe('hx-boost attribute', function() {
     div.innerHTML.should.equal('Boosted!')
   })
 
-  if (window.__playwright__binding__ && !navigator.userAgent.includes('WebKit')) {
+  if (window.__playwright__binding__ && /chrome/i.test(navigator.userAgent)) {
     it('ctrlKey mouse click does not boost', function() {
-      // Test only works well in playwright for code coverage as otherwise it opens a new tab breaking things. aslo not working in WebKit
+      // Test only works well in playwright with chome for code coverage as otherwise it opens a new tab breaking things
       this.server.respondWith('GET', '/test', 'Boosted')
       var div = make('<div hx-target="this" hx-boost="true"><a id="a1" href="/test">Foo</a></div>')
       var a = byId('a1')
