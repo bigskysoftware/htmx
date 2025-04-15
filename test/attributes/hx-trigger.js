@@ -1038,9 +1038,9 @@ describe('hx-trigger attribute', function() {
     }, 250)
   })
 
-  it('scrolling triggers intersect event', function(done) {
-    // test only works reliably with playwright
-    if (window.__playwright__binding__) {
+  if (window.__playwright__binding__) {
+    it('scrolling triggers intersect event', function(done) {
+      // test only works reliably with playwright
       this.server.respondWith('GET', '/test', 'test')
       this.server.autoRespond = true
       this.server.autoRespondAfter = 0
@@ -1053,10 +1053,8 @@ describe('hx-trigger attribute', function() {
         div.innerHTML.should.equal('test')
         done()
       }, 250)
-    } else {
-      done()
-    }
-  })
+    })
+  }
 
   it('triggering revealed while component not yet inited still works', function(done) {
     this.server.respondWith('GET', '/test', 'test')

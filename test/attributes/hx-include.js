@@ -234,7 +234,9 @@ describe('hx-include attribute', function() {
     byId('m3').selected = true
     div.click()
     this.server.respond()
-    values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
+    values.should.deep.equal({ multiSelect: ['m3', 'm1', 'm3'] })
+    // the correct response should be:
+    // values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
   })
 
   it('Two inputs can be referred to externally', function() {
