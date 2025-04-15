@@ -304,8 +304,8 @@ describe('hx-push-url attribute', function() {
     htmx._('currentPathForHistory').should.equal('/test')
   })
 
-  if (!byId('mocha')) { // This test does not work in browser using mocha
-    it('ensure history pushState called', function() {
+  it('ensure history pushState called', function() {
+    if (!byId('mocha')) { // This test does not work in browser using mocha
       this.server.respondWith('GET', /\/test.*/, function(xhr) {
         xhr.respond(200, {}, 'Clicked!')
       })
@@ -319,8 +319,8 @@ describe('hx-push-url attribute', function() {
       } finally {
         htmx.config.historyEnabled = false
       }
-    })
-  }
+    }
+  })
 
   it('should handle HX-Push response header', function() {
     var path
