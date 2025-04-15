@@ -61,7 +61,7 @@ const config = {
     'test/attributes/**/*.js',
     'test/core/**/*.js'
   ],
-  reporters: [summaryReporter(), defaultReporter()]
+  reporters: [defaultReporter()]
 }
 
 export default config
