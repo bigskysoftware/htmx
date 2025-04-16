@@ -1,7 +1,15 @@
 import {
   summaryReporter,
-  defaultReporter
+  defaultReporter,
+  dotReporter
 } from '@web/test-runner'
+
+// There is a bug in the summaryReporter made with this PR https://github.com/modernweb-dev/web/pull/2126
+// It captures the buffered logger into cachedLogger for reuse later for the test run finished error reporting
+// But the buffered logger in finished its buffer flush before this test error reporting so these logs go nowhere
+// to resolve this for now reusing dotReporter which reports errors well but disabled its . test reporting
+const errorReporter = dotReporter()
+delete errorReporter.reportTestFileResults
 
 const config = {
   testRunnerHtml: (testFramework) => `
@@ -61,7 +69,7 @@ const config = {
     'test/attributes/**/*.js',
     'test/core/**/*.js'
   ],
-  reporters: [defaultReporter()]
+  reporters: [summaryReporter({ flatten: true }), errorReporter, defaultReporter({ reportTestProgress: true, reportTestResults: false })]
 }
 
 export default config
