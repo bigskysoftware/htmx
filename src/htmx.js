@@ -828,7 +828,7 @@ var htmx = (function() {
       path = url.pathname + url.search
     }
     // remove trailing slash, unless index page
-    if (!(/^\/$/.test(path))) {
+    if (path != '/') {
       path = path.replace(/\/+$/, '')
     }
     return path
