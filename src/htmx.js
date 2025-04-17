@@ -2400,8 +2400,9 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
-      if (matches(elt, 'input[type="submit"], button') &&
-        (matches(elt, '[form]') || closest(elt, 'form') !== null)) {
+      // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
+      // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
+      if (elt.form && elt.type === 'submit') {
         return true
       }
       if (elt instanceof HTMLAnchorElement && elt.href &&
@@ -2778,7 +2779,7 @@ var htmx = (function() {
    * @param {Event} evt
    */
   function maybeSetLastButtonClicked(evt) {
-    const elt = /** @type {HTMLButtonElement|HTMLInputElement} */ (closest(asElement(evt.target), "button, input[type='submit']"))
+    const elt = getTargetButton(evt.target)
     const internalData = getRelatedFormData(evt)
     if (internalData) {
       internalData.lastButtonClicked = elt
@@ -2796,15 +2797,32 @@ var htmx = (function() {
   }
 
   /**
+   * @param {EventTarget} target
+   * @returns {HTMLButtonElement|HTMLInputElement|null}
+   */
+  function getTargetButton(target) {
+    return /** @type {HTMLButtonElement|HTMLInputElement|null} */ (closest(asElement(target), "button, input[type='submit']"))
+  }
+
+  /**
+   * @param {Element} elt
+   * @returns {HTMLFormElement|null}
+   */
+  function getRelatedForm(elt) {
+    // @ts-ignore Get the related form if available, else find the closest parent form
+    return elt.form || closest(elt, 'form')
+  }
+
+  /**
    * @param {Event} evt
    * @returns {HtmxNodeInternalData|undefined}
    */
   function getRelatedFormData(evt) {
-    const elt = closest(asElement(evt.target), "button, input[type='submit']")
+    const elt = getTargetButton(evt.target)
     if (!elt) {
       return
     }
-    const form = resolveTarget('#' + getRawAttribute(elt, 'form'), elt.getRootNode()) || closest(elt, 'form')
+    const form = getRelatedForm(elt)
     if (!form) {
       return
     }
@@ -3521,9 +3539,9 @@ var htmx = (function() {
       validate = validate && internalData.lastButtonClicked.formNoValidate !== true
     }
 
-    // for a non-GET include the closest form
+    // for a non-GET include the related form, which may or may not be a parent element of elt
     if (verb !== 'get') {
-      processInputValue(processed, priorityFormData, errors, closest(elt, 'form'), validate)
+      processInputValue(processed, priorityFormData, errors, getRelatedForm(elt), validate)
     }
 
     // include the element itself
@@ -4201,9 +4219,11 @@ var htmx = (function() {
 
       const buttonVerb = getRawAttribute(submitter, 'formmethod')
       if (buttonVerb != null) {
-      // ignore buttons with formmethod="dialog"
-        if (buttonVerb.toLowerCase() !== 'dialog') {
+        if (VERBS.includes(buttonVerb.toLowerCase())) {
           verb = (/** @type HttpVerb */(buttonVerb))
+        } else {
+          maybeCall(resolve)
+          return promise
         }
       }
     }
