@@ -1,9 +1,16 @@
 +++
 title = "Two Approaches To Decoupling"
+description = """\
+  Carson Gross explores two different approaches to decoupling in web applications: decoupling at the application \
+  level using a JSON Data API and decoupling at the network architecture level using a hypermedia API. He discusses \
+  the trade-offs between the two methods, highlighting how a hypermedia API, despite introducing tighter coupling at \
+  the application level, offers greater resilience to change at the system level. Carson also touches on the \
+  limitations of each approach and discusses strategies like GraphQL and splitting APIs to address specific challenges \
+  in web development."""
 date = 2022-05-01
 updated = 2022-05-01
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -157,7 +164,7 @@ is to say, at the system level.  [Hypermedia systems](https://hypermedia.systems
 client (in the case of the web, the browser) from the hypermedia server.
 
 This is accomplished primarily via the Uniform Interface constraint of REST and, in particular, by using 
-Hypermedia As The Engine of Application State ([HATOEAS](/essays/hateoas)).
+Hypermedia As The Engine of Application State ([HATEOAS](/essays/hateoas)).
 
 This style of decoupling allows tighter coupling at the higher application level (which we have seen may be an 
 _inherent_ coupling) while still retaining the benefits of decoupling for the overall system.

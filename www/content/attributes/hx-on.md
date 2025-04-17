@@ -1,5 +1,8 @@
 +++
 title = "hx-on"
+description = """\
+  The hx-on attributes in htmx allow you to write inline JavaScript event handlers directly on HTML elements, \
+  supporting both standard DOM events and htmx-specific events with improved locality of behavior."""
 +++
 
 The `hx-on*` attributes allow you to embed scripts inline to respond to events directly on an element; similar to the 

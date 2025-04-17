@@ -1,5 +1,8 @@
 +++
 title = "hx-preserve"
+description = """\
+  The hx-preserve attribute in htmx allows you to keep an element unchanged during HTML replacement. Elements with \
+  hx-preserve set are preserved by `id` when htmx updates any ancestor element."""
 +++
 
 The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.

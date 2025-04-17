@@ -1,20 +1,25 @@
 +++
 title = "An interview with Henning Koch, Creator of Unpoly"
+description = """\
+  In this interview with Henning Koch, creator of Unpoly, he discusses his journey from managing a Rails consultancy \
+  to developing this hypermedia-oriented JavaScript library. Koch shares insights on progressive enhancement, the \
+  challenges of Single Page Applications, and why hypermedia approaches often deliver better results for typical web \
+  applications."""
 date = 2022-06-13
 updated = 2023-06-13
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-I'm very excited to be able to interview Henning Koch, the creators of [Unpoly](https://unpoly.com/),
+I'm very excited to be able to interview Henning Koch, the creator of [Unpoly](https://unpoly.com/),
 a hypermedia-oriented javascript library that was created in parallel with intercooler.js.
 
 Thank you for agreeing to an interview!
 
 **Q**: To begin with, why don't you give the readers a bit of your background both professionally & technically:
 
-> Sure! I'm currently head of development at [makandra](https://makandra.de/en), a Ruby on Rails consultancy I co-founded back in 2009, after many years of freelancing as a web developer. So my context is working on many different web apps concurrently, and maintaining those for a long time. On a given week we probably touch 10+ projects, for industries ranging from education to automative to cyber security. Unpoly is an extraction from patterns that we saw repeating over and over in client projects.
+> Sure! I'm currently head of development at [makandra](https://makandra.de/en), a Ruby on Rails consultancy I co-founded back in 2009, after many years of freelancing as a web developer. So my context is working on many different web apps concurrently, and maintaining those for a long time. On a given week we probably touch 10+ projects, for industries ranging from education to automotive to cybersecurity. Unpoly is an extraction from patterns that we saw repeating over and over in client projects.
 
 **Q**: When I created intercooler.js a big part of it was my unwillingness to deal with the popular SPA libraries of the time
 (Angular & ExtJS, for example).  Did Unpoly have a similar history?
@@ -30,7 +35,7 @@ a Rails developer too.  Did that influence your approach to Unpoly?
 >
 > Some recent Rails mottos are "Compress the complexity of modern web apps" and "The one person framework". With my other responsibility at makandra being training young developers, that resonates with me a lot. I really care about maintaining a stack where a single person can be a full-stack developer and deliver good results consistently.
 >
-> Also, as a Rubyist, I have an excessive obsession with the ergonomics and aesthetics of code *as it is invoked*. I stress a lot over how a feature looks when it is used in client code. When a small ideas takes a disproportionate amount of code, this is something I lose sleep over.
+> Also, as a Rubyist, I have an excessive obsession with the ergonomics and aesthetics of code *as it is invoked*. I stress a lot over how a feature looks when it is used in client code. When a small idea takes a disproportionate amount of code, this is something I lose sleep over.
 
 **Q**: Did you think much about hypermedia, REST, etc. when you were building Unpoly?  Do you find that stuff useful?  Interesting?
 

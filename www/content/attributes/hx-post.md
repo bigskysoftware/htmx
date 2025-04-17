@@ -1,5 +1,8 @@
 +++
 title = "hx-post"
+description = """\
+  The hx-post attribute in htmx will cause an element to issue a POST request to the specified URL and swap the \
+  returned HTML into the DOM using a swap strategy."""
 +++
 
 The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap

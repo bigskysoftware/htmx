@@ -1,7 +1,15 @@
 +++
 title = "REST - Explained For Beginners"
+description = """\
+  In this essay, Carson Gross presents the core concepts of REST (Representational State Transfer) explained in simple \
+  terms for beginners. He breaks down Roy Fielding's dissertation to highlight key principles like the Uniform \
+  Interface, Statelessness, Hypermedia (HATEOAS), and more, making REST easy to understand for non-academic web \
+  developers."""
 date = 2021-07-13
 updated = 2022-02-06
+authors = ["Carson Gross"]
+[taxonomies]
+tag = ["posts"]
 +++
 
 There is no topic that generates more confusion in web development than the idea of Representational State Transfer, 
