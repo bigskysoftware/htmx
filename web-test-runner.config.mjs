@@ -69,7 +69,7 @@ const config = {
     'test/attributes/**/*.js',
     'test/core/**/*.js'
   ],
-  reporters: [summaryReporter({ flatten: true }), errorReporter, defaultReporter({ reportTestProgress: true, reportTestResults: false })]
+  reporters: [summaryReporter({ flatten: false }), errorReporter, defaultReporter({ reportTestProgress: true, reportTestResults: false })]
 }
 
 export default config
