@@ -52,3 +52,4 @@ Note that if you include a non-input element, all input elements enclosed in tha
   to [document.querySelectorAll](https://developer.mozilla.org/docs/Web/API/Document/querySelectorAll) and will include
   multiple elements, while the extended selectors such as `find` or `next` only return a single element at most to
   include
+* `hx-include` will ignore disabled inputs
