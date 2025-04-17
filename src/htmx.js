@@ -2879,7 +2879,7 @@ var htmx = (function() {
       return
     }
     // Ensure only valid Elements and not shadow DOM roots are inited
-    if (elt instanceof Element) return
+    if (!(elt instanceof Element)) return
     const nodeData = getInternalData(elt)
     const attrHash = attributeHash(elt)
     if (nodeData.initHash !== attrHash) {
