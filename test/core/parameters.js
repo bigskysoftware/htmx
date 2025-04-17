@@ -3,6 +3,7 @@ describe('Core htmx Parameter Handling', function() {
     this.server = makeServer()
     clearWorkArea()
   })
+
   afterEach(function() {
     this.server.restore()
     clearWorkArea()

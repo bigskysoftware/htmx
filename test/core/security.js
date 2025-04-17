@@ -65,6 +65,28 @@ describe('security options', function() {
     btn.innerHTML.should.equal('Clicked a second time')
   })
 
+  it('can disable a single a tag dynamically & enable it back with boost', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+
+    var btn = make('<a id="b1" hx-boost="true" href="/test" hx-target="this">Initial</button>')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+
+    this.server.respondWith('GET', '/test', 'Clicked a second time')
+
+    btn.setAttribute('hx-disable', '')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+
+    btn.removeAttribute('hx-disable')
+    htmx.process(btn)
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked a second time')
+  })
+
   it('can disable a single parent elt dynamically', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 
@@ -118,6 +140,18 @@ describe('security options', function() {
     // will 404, but should respond
     var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
     btn.click()
+  })
+
+  it('can make a real local data uri request when selfRequestOnly false', function(done) {
+    htmx.config.selfRequestsOnly = false
+    this.server.restore() // use real xhrs
+    var btn = make('<button hx-get="data:,foo">Initial</button>')
+    btn.click()
+    htmx.config.selfRequestsOnly = true
+    setTimeout(function() {
+      btn.innerHTML.should.equal('foo')
+      done()
+    }, 30)
   })
 
   it('can disable hx-on on a single elt', function() {
