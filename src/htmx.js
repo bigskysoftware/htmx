@@ -484,10 +484,7 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function matches(elt, selector) {
-    // @ts-ignore: non-standard properties for browser compatibility
-    // noinspection JSUnresolvedVariable
-    const matchesFunction = elt instanceof Element && (elt.matches || elt.matchesSelector || elt.msMatchesSelector || elt.mozMatchesSelector || elt.webkitMatchesSelector || elt.oMatchesSelector)
-    return !!matchesFunction && matchesFunction.call(elt, selector)
+    return elt instanceof Element && elt.matches(selector)
   }
 
   /**
@@ -825,20 +822,16 @@ var htmx = (function() {
    * @returns {string}
    */
   function normalizePath(path) {
-    try {
-      const url = new URL(path)
-      if (url) {
-        path = url.pathname + url.search
-      }
-      // remove trailing slash, unless index page
-      if (!(/^\/$/.test(path))) {
-        path = path.replace(/\/+$/, '')
-      }
-      return path
-    } catch (e) {
-      // be kind to IE11, which doesn't support URL()
-      return path
+    // use dummy base URL to allow normalize on path only
+    const url = new URL(path, 'http://x')
+    if (url) {
+      path = url.pathname + url.search
     }
+    // remove trailing slash, unless index page
+    if (!(/^\/$/.test(path))) {
+      path = path.replace(/\/+$/, '')
+    }
+    return path
   }
 
   //= =========================================================================================
@@ -1074,18 +1067,10 @@ var htmx = (function() {
    */
   function closest(elt, selector) {
     elt = asElement(resolveTarget(elt))
-    if (elt && elt.closest) {
+    if (elt) {
       return elt.closest(selector)
-    } else {
-      // TODO remove when IE goes away
-      do {
-        if (elt == null || matches(elt, selector)) {
-          return elt
-        }
-      }
-      while (elt = elt && asElement(parentElt(elt)))
-      return null
     }
+    return null
   }
 
   /**
@@ -1398,13 +1383,7 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function shouldSettleAttribute(name) {
-    const attributesToSettle = htmx.config.attributesToSettle
-    for (let i = 0; i < attributesToSettle.length; i++) {
-      if (name === attributesToSettle[i]) {
-        return true
-      }
-    }
-    return false
+    return htmx.config.attributesToSettle.includes(name)
   }
 
   /**
@@ -1626,14 +1605,11 @@ var htmx = (function() {
    */
   function attributeHash(elt) {
     let hash = 0
-    // IE fix
-    if (elt.attributes) {
-      for (let i = 0; i < elt.attributes.length; i++) {
-        const attribute = elt.attributes[i]
-        if (attribute.value) { // only include attributes w/ actual values (empty is same as non-existent)
-          hash = stringHash(attribute.name, hash)
-          hash = stringHash(attribute.value, hash)
-        }
+    for (let i = 0; i < elt.attributes.length; i++) {
+      const attribute = elt.attributes[i]
+      if (attribute.value) { // only include attributes w/ actual values (empty is same as non-existent)
+        hash = stringHash(attribute.name, hash)
+        hash = stringHash(attribute.value, hash)
       }
     }
     return hash
@@ -1678,12 +1654,8 @@ var htmx = (function() {
   function cleanUpElement(element) {
     triggerEvent(element, 'htmx:beforeCleanupElement')
     deInitNode(element)
-    // @ts-ignore IE11 code
-    // noinspection JSUnresolvedReference
-    if (element.children) { // IE
-      // @ts-ignore
-      forEach(element.children, function(child) { cleanUpElement(child) })
-    }
+    // @ts-ignore
+    forEach(element.children, function(child) { cleanUpElement(child) })
   }
 
   /**
@@ -2906,39 +2878,42 @@ var htmx = (function() {
       cleanUpElement(elt)
       return
     }
-    const nodeData = getInternalData(elt)
-    const attrHash = attributeHash(elt)
-    if (nodeData.initHash !== attrHash) {
-      // clean up any previously processed info
-      deInitNode(elt)
+    // Ensure only valid Elements and not shadow DOM roots are inited
+    if (elt instanceof Element) {
+      const nodeData = getInternalData(elt)
+      const attrHash = attributeHash(elt)
+      if (nodeData.initHash !== attrHash) {
+        // clean up any previously processed info
+        deInitNode(elt)
 
-      nodeData.initHash = attrHash
+        nodeData.initHash = attrHash
 
-      triggerEvent(elt, 'htmx:beforeProcessNode')
+        triggerEvent(elt, 'htmx:beforeProcessNode')
 
-      const triggerSpecs = getTriggerSpecs(elt)
-      const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
+        const triggerSpecs = getTriggerSpecs(elt)
+        const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
 
-      if (!hasExplicitHttpAction) {
-        if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
-          boostElement(elt, nodeData, triggerSpecs)
-        } else if (hasAttribute(elt, 'hx-trigger')) {
-          triggerSpecs.forEach(function(triggerSpec) {
-            // For "naked" triggers, don't do anything at all
-            addTriggerHandler(elt, triggerSpec, nodeData, function() {
+        if (!hasExplicitHttpAction) {
+          if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
+            boostElement(elt, nodeData, triggerSpecs)
+          } else if (hasAttribute(elt, 'hx-trigger')) {
+            triggerSpecs.forEach(function(triggerSpec) {
+              // For "naked" triggers, don't do anything at all
+              addTriggerHandler(elt, triggerSpec, nodeData, function() {
+              })
             })
-          })
+          }
         }
-      }
 
-      // Handle submit buttons/inputs that have the form attribute set
-      // see https://developer.mozilla.org/docs/Web/HTML/Element/button
-      if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
-        initButtonTracking(elt)
-      }
+        // Handle submit buttons/inputs that have the form attribute set
+        // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+        if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
+          initButtonTracking(elt)
+        }
 
-      nodeData.firstInitCompleted = true
-      triggerEvent(elt, 'htmx:afterProcessNode')
+        nodeData.firstInitCompleted = true
+        triggerEvent(elt, 'htmx:afterProcessNode')
+      }
     }
   }
 
@@ -2978,16 +2953,9 @@ var htmx = (function() {
    * @returns {CustomEvent}
    */
   function makeEvent(eventName, detail) {
-    let evt
-    if (window.CustomEvent && typeof window.CustomEvent === 'function') {
-      // TODO: `composed: true` here is a hack to make global event handlers work with events in shadow DOM
-      // This breaks expected encapsulation but needs to be here until decided otherwise by core devs
-      evt = new CustomEvent(eventName, { bubbles: true, cancelable: true, composed: true, detail })
-    } else {
-      evt = getDocument().createEvent('CustomEvent')
-      evt.initCustomEvent(eventName, true, true, detail)
-    }
-    return evt
+    // TODO: `composed: true` here is a hack to make global event handlers work with events in shadow DOM
+    // This breaks expected encapsulation but needs to be here until decided otherwise by core devs
+    return new CustomEvent(eventName, { bubbles: true, cancelable: true, composed: true, detail })
   }
 
   /**
@@ -3027,11 +2995,7 @@ var htmx = (function() {
   }
 
   function logError(msg) {
-    if (console.error) {
-      console.error(msg)
-    } else if (console.log) {
-      console.log('ERROR: ', msg)
-    }
+    console.error(msg)
   }
 
   /**
@@ -3189,13 +3153,7 @@ var htmx = (function() {
     // so we can prevent privileged data entering the cache.
     // The page will still be reachable as a history entry, but htmx will fetch it
     // live from the server onpopstate rather than look in the localStorage cache
-    let disableHistoryCache
-    try {
-      disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
-    } catch (e) {
-    // IE11: insensitive modifier not supported so fallback to case sensitive selector
-      disableHistoryCache = getDocument().querySelector('[hx-history="false"],[data-hx-history="false"]')
-    }
+    const disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
     if (!disableHistoryCache) {
       triggerEvent(getDocument().body, 'htmx:beforeHistorySave', { path, historyElt: elt })
       saveToHistoryCache(path, elt)
@@ -3933,8 +3891,7 @@ var htmx = (function() {
    * @return {string}
    */
   function getPathFromResponse(xhr) {
-  // NB: IE11 does not support this stuff
-    if (xhr.responseURL && typeof (URL) !== 'undefined') {
+    if (xhr.responseURL) {
       try {
         const url = new URL(xhr.responseURL)
         return url.pathname + url.search
@@ -4016,17 +3973,9 @@ var htmx = (function() {
    * @return {boolean}
    */
   function verifyPath(elt, path, requestConfig) {
-    let sameHost
-    let url
-    if (typeof URL === 'function') {
-      url = new URL(path, document.location.href)
-      const origin = document.location.origin
-      sameHost = origin === url.origin
-    } else {
-    // IE11 doesn't support URL
-      url = path
-      sameHost = startsWith(path, document.location.origin)
-    }
+    const url = new URL(path, document.location.href)
+    const origin = document.location.origin
+    const sameHost = origin === url.origin
 
     if (htmx.config.selfRequestsOnly) {
       if (!sameHost) {

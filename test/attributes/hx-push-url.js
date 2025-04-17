@@ -161,9 +161,9 @@ describe('hx-push-url attribute', function() {
     htmx._('saveToHistoryCache')('url1', make('<div>'))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
-    cache[0].url.should.equal('url3')
-    cache[1].url.should.equal('url2')
-    cache[2].url.should.equal('url1')
+    cache[0].url.should.equal('/url3')
+    cache[1].url.should.equal('/url2')
+    cache[2].url.should.equal('/url1')
   })
 
   it('htmx:afterSettle is called when replacing outerHTML', function() {
