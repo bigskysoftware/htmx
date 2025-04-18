@@ -50,9 +50,7 @@ describe('hx-push-url attribute', function() {
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
-    cache[1].url.should.equal('abc123')
-    // the url should be normalized with a / but this code has an issue right now
-    // cache[1].url.should.equal('/abc123')
+    cache[1].url.should.equal('/abc123')
   })
 
   it('restore should return old value', function() {
