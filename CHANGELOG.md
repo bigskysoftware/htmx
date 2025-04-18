@@ -4,6 +4,7 @@
 
 * Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
 * Using `<button formmethod="dialog">` will no longer submit its associated form
+* Fixed a bug that prevented `hx-on*` from firing when triggered immediately by `load` or `revealed`
 
 ## [2.0.4] - 2024-12-13
 
