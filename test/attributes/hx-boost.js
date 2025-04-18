@@ -205,4 +205,17 @@ describe('hx-boost attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Boosted!')
   })
+
+  if (window.__playwright__binding__ && /chrome/i.test(navigator.userAgent)) {
+    it('ctrlKey mouse click does not boost', function() {
+      // Test only works well in playwright with chome for code coverage as otherwise it opens a new tab breaking things
+      this.server.respondWith('GET', '/test', 'Boosted')
+      var div = make('<div hx-target="this" hx-boost="true"><a id="a1" href="/test">Foo</a></div>')
+      var a = byId('a1')
+      var evt = new MouseEvent('click', { ctrlKey: true })
+      a.dispatchEvent(evt)
+      this.server.respond()
+      div.innerHTML.should.not.equal('Boosted')
+    })
+  }
 })

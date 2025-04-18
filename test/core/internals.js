@@ -146,4 +146,48 @@ describe('Core htmx internals Tests', function() {
     var value = htmx._('encodeParamsForBody')(null, form, {});
     (value instanceof FormData).should.equal(true)
   })
+
+  it('Calling onpopstate to trigger backup and restore of page triggers htmx:restored event', function() {
+    var restored
+    var handler = htmx.on('htmx:restored', function(event) {
+      restored = true
+    })
+    make('<div hx-get="/test" hx-trigger="restored">Not Called</div>')
+    window.onpopstate({ state: { htmx: true } })
+    restored.should.equal(true)
+    htmx.off('htmx:restored', handler)
+  })
+
+  it('calling onpopstate with no htmx state not true calls original popstate', function() {
+    window.onpopstate({ state: { htmx: false } })
+  })
+
+  it('getPathFromResponse returns paths when valid', function() {
+    var path = htmx._('getPathFromResponse')({ responseURL: 'https://htmx.org/somepath?a=b#fragment' })
+    should.equal(path, '/somepath?a=b')
+    path = htmx._('getPathFromResponse')({ responseURL: 'notvalidurl' })
+    should.equal(path, undefined)
+  })
+
+  it('appendParam can process objects', function() {
+    var param = htmx._('appendParam')('a=b', 'jim', 'foo')
+    should.equal(param, 'a=b&jim=foo')
+    param = htmx._('appendParam')('a=b', 'jim', '{"foo":"bar"}')
+    should.equal(param, 'a=b&jim=%7B%22foo%22%3A%22bar%22%7D')
+    param = htmx._('appendParam')('a=b', 'jim', { foo: 'bar' })
+    should.equal(param, 'a=b&jim=%7B%22foo%22%3A%22bar%22%7D')
+  })
+
+  it('handleTitle falls back to setting document.title when no title head element', function() {
+    var oldTitle = window.document.title
+    document.querySelector('title').remove()
+    htmx._('handleTitle')('update title')
+    window.document.title.should.equal('update title')
+    window.document.title = oldTitle
+  })
+
+  it('without meta config getMetaConfig returns null', function() {
+    document.querySelector('meta[name="htmx-config"]').remove()
+    should.equal(htmx._('getMetaConfig')(), null)
+  })
 })

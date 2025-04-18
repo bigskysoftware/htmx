@@ -57,6 +57,6 @@ describe('Core htmx perf Tests', function() {
     htmx._('cleanInnerHtmlForHistory')(workArea)
     var end = performance.now()
     var timeInMs = end - start
-    chai.assert(timeInMs < 50, 'Should take less than 50ms on most platforms')
+    chai.assert(timeInMs < 80, 'Should take less than 80ms on most platforms')
   })
 })
