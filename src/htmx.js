@@ -271,7 +271,14 @@ var htmx = (function() {
        * @type boolean
        * @default true
        */
-      allowNestedOobSwaps: true
+      allowNestedOobSwaps: true,
+      /**
+       * Whether to treat history cache miss full page relaod requests as a "HX-Request" by returning this response header
+       * This should always be disabled when using HX-Request header to optionally return partial responses
+       * @type boolean
+       * @default true
+       */
+      historyRestoreAsHxRequest: true
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -3246,7 +3253,9 @@ var htmx = (function() {
     const details = { path, xhr: request }
     triggerEvent(getDocument().body, 'htmx:historyCacheMiss', details)
     request.open('GET', path, true)
-    request.setRequestHeader('HX-Request', 'true')
+    if (htmx.config.historyRestoreAsHxRequest) {
+      request.setRequestHeader('HX-Request', 'true')
+    }
     request.setRequestHeader('HX-History-Restore-Request', 'true')
     request.setRequestHeader('HX-Current-URL', getDocument().location.href)
     request.onload = function() {
