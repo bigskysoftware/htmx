@@ -399,6 +399,7 @@ describe('Core htmx AJAX headers', function() {
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
     htmx.config.historyRestoreAsHxRequest = true
+  })
 
   it('request history from server with error status code throws error event', function() {
     this.server.respondWith('GET', '/test', function(xhr) {
