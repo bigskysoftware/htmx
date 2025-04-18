@@ -30,7 +30,13 @@
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
     "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
     "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
-    "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
+    "test": "npm run lint && npm run types-check && npm run test:chrome",
+    "test:debug": "web-test-runner --manual --open",
+    "test:chrome": "playwright install chromium && web-test-runner --browsers chromium --playwright",
+    "test:firefox": "playwright install firefox && web-test-runner --concurrency 1 --browsers firefox --playwright",
+    "test:webkit": "playwright install webkit && web-test-runner --browsers webkit --playwright",
+    "test:all": "playwright install chromium firefox webkit && web-test-runner --concurrency 1 --browsers chromium firefox webkit --playwright",
+    "test:ci": "npm run lint && npm run types-check && npm run test:all",
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh",
     "sha": "bash ./scripts/sha.sh"
@@ -40,8 +46,11 @@
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
   "eslintConfig": {
-    "extends": "standard",
+    "extends": ["standard", "plugin:mocha/recommended"],
     "rules": {
+      "mocha/consistent-spacing-between-blocks": 0,
+      "mocha/no-setup-in-describe": 0,
+      "mocha/no-skipped-tests": 0,
       "camelcase": 0,
       "no-var": 0,
       "no-undef": 0,
@@ -66,19 +75,21 @@
   },
   "devDependencies": {
     "@types/node": "20.0.0",
-    "chai": "^4.3.10",
-    "chai-dom": "^1.12.0",
-    "eslint": "^8.56.0",
+    "@types/parse5": "^7.0.0",
+    "@web/test-runner": "^0.20.1",
+    "@web/test-runner-playwright": "^0.11.0",
+    "chai": "^4.5.0",
+    "chai-dom": "^1.12.1",
+    "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-mocha": "^10.5.0",
     "fs-extra": "^9.1.0",
-    "mocha": "10.1.0",
-    "mocha-chrome": "https://github.com/Telroshan/mocha-chrome",
-    "mocha-webdriver": "^0.3.2",
+    "mocha": "^11.1.0",
     "mock-socket": "^9.3.1",
-    "sinon": "^9.2.4",
+    "sinon": "^10.0.1",
     "typescript": "^5.5.4",
-    "uglify-js": "^3.17.4",
-    "ws": "^8.14.2"
+    "uglify-js": "^3.19.3",
+    "ws": "^8.18.1"
   }
 }
