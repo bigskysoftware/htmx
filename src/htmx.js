@@ -2179,7 +2179,7 @@ var htmx = (function() {
               triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA)
             } else if (token === 'rootMargin' && tokens[0] === ':') {
               tokens.shift()
-              triggerSpec[token] = consumeUntil(tokens, WHITESPACE).replace(/_/g, ' ')
+              triggerSpec[token] = consumeUntil(tokens, /,|(root)|(threshold)/).replace(/_/g, ' ')
             } else {
               triggerErrorEvent(elt, 'htmx:syntax:error', { token: tokens.shift() })
             }
