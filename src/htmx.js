@@ -1468,7 +1468,7 @@ var htmx = (function() {
     oobElement.removeAttribute('data-hx-swap-oob')
 
     const targets = querySelectorAllExt(rootNode, selector, false)
-    if (targets) {
+    if (targets && targets.length > 0) {
       forEach(
         targets,
         function(target) {
@@ -1498,6 +1498,11 @@ var htmx = (function() {
     } else {
       oobElement.parentNode.removeChild(oobElement)
       triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
+      if (settleInfo.elts && settleInfo.elts.length > 0) {
+        forEach(settleInfo.elts, function(target) {
+          triggerErrorEvent(target, 'htmx:oobErrorNoTarget', { content: oobElement })
+        })
+      }
     }
     return oobValue
   }
