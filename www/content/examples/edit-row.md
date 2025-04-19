@@ -71,7 +71,7 @@ Finally, here is what the row looks like when the data is being edited:
 
 ```html
 <tr hx-trigger='cancel' class='editing' hx-get="/contact/${contact.id}">
-  <td><input name='name' value='${contact.name}'></td>
+  <td><input autofocus name='name' value='${contact.name}'></td>
   <td><input name='email' value='${contact.email}'></td>
   <td>
     <button class="btn danger" hx-get="/contact/${contact.id}">
@@ -183,7 +183,7 @@ this makes things a bit nicer to deal with.
 
     function editTemplate(contact) {
       return `<tr hx-trigger='cancel' class='editing' hx-get="/contact/${contact.id}">
-      <td><input name='name' value='${contact.name}'</td>
+      <td><input autofocus name='name' value='${contact.name}'</td>
       <td><input name='email' value='${contact.email}'</td>
       <td>
         <button class="btn danger" hx-get="/contact/${contact.id}">
