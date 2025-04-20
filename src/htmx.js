@@ -3972,8 +3972,8 @@ var htmx = (function() {
    * @return {boolean}
    */
   function verifyPath(elt, path, requestConfig) {
-    const url = new URL(path, document.location.protocol !== 'about:' ? document.location.href : window.origin)
-    const origin = document.location.protocol !== 'about:' ? document.location.origin : window.origin
+    const url = new URL(path, location.protocol !== 'about:' ? location.href : window.origin)
+    const origin = location.protocol !== 'about:' ? location.origin : window.origin
     const sameHost = origin === url.origin
 
     if (htmx.config.selfRequestsOnly) {
