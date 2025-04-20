@@ -4025,7 +4025,7 @@ var htmx = (function() {
     } else {
     // IE11 doesn't support URL
       url = path
-      sameHost = startsWith(path, document.location.origin)
+      sameHost = startsWith(path, "/") || startsWith(path, document.location.origin)
     }
 
     if (htmx.config.selfRequestsOnly) {
