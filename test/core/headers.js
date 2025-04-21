@@ -367,8 +367,7 @@ describe('Core htmx AJAX headers', function() {
     htmx.off('bar', handlerBar)
   })
 
-  it.skip('should change body content on HX-Location', function(done) {
-    // this test is disabled because a bug is triggered by an earlier request where it does not remove endRequestLock() on errors blocking all future requests
+  it('should change body content on HX-Location', function(done) {
     this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#work-area"}' }, ''])
     this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
     var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
