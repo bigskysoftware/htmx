@@ -1885,16 +1885,12 @@ var htmx = (function() {
     // preserve focus and selection
     const activeElt = document.activeElement
     let selectionInfo = {}
-    try {
-      selectionInfo = {
-        elt: activeElt,
-        // @ts-ignore
-        start: activeElt ? activeElt.selectionStart : null,
-        // @ts-ignore
-        end: activeElt ? activeElt.selectionEnd : null
-      }
-    } catch (e) {
-      // safari issue - see https://github.com/microsoft/playwright/issues/5894
+    selectionInfo = {
+      elt: activeElt,
+      // @ts-ignore
+      start: activeElt ? activeElt.selectionStart : null,
+      // @ts-ignore
+      end: activeElt ? activeElt.selectionEnd : null
     }
     const settleInfo = makeSettleInfo(target)
 
