@@ -123,7 +123,7 @@ htmx extensions are split into two categories:
       <td>{% markdown() %}  The `safe-nonce` extension can be used to improve the security of the application/web-site and help avoid XSS issues by allowing you to return known trusted inline scripts safely  {% end %}</td>
     </tr>
     <tr>
-      <td>{% markdown() %}  [hx-drag](https://github.com/AjaniBilby/htmx-drag-examples/blob/main/readme.md)  {% end %}</td>
+      <td>{% markdown() %}  [hx-drag](https://www.npmjs.com/package/hx-drag)  {% end %}</td>
       <td>{% markdown() %}  This extension allows htmx requests to be sent for drag drop  {% end %}</td>
     </tr>
     <tr>
