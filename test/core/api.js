@@ -619,4 +619,9 @@ describe('Core htmx API test', function() {
     onLoadError.should.equal(true)
     htmx.off('htmx:onLoadError', handler)
   })
+
+  it('process api can process non elements fine', function() {
+    var div = make('<div>textNode</div>')
+    htmx.process(div.firstChild)
+  })
 })

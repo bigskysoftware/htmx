@@ -27,6 +27,16 @@ describe('security options', function() {
     btn.innerHTML.should.equal('Initial')
   })
 
+  it('can disable a child elt', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+
+    var div = make('<div><button id="b1" hx-disable hx-get="/test">Initial</button></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Initial')
+  })
+
   it('can disable a single elt dynamically', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 
