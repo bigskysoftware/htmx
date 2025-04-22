@@ -144,11 +144,17 @@ describe('security options', function() {
 
   it('can make a real local data uri request when selfRequestOnly false', function(done) {
     htmx.config.selfRequestsOnly = false
+    var pathVerifier = htmx.on('htmx:validateUrl', function(evt) {
+      if (evt.detail.sameHost === false && evt.detail.url.protocol !== 'data:') {
+        evt.preventDefault()
+      }
+    })
     this.server.restore() // use real xhrs
     var btn = make('<button hx-get="data:,foo">Initial</button>')
     btn.click()
     htmx.config.selfRequestsOnly = true
     setTimeout(function() {
+      htmx.off('htmx:validateUrl', pathVerifier)
       btn.innerHTML.should.equal('foo')
       done()
     }, 30)
@@ -211,31 +217,34 @@ describe('security options', function() {
 
   it('can cancel egress request based on htmx:validateUrl event', function(done) {
     this.timeout(4000)
+    htmx.config.selfRequestsOnly = false
     // should trigger send error, rather than reject
     var pathVerifier = htmx.on('htmx:validateUrl', function(evt) {
       evt.preventDefault()
-      htmx.off('htmx:validateUrl', pathVerifier)
     })
     var listener = htmx.on('htmx:invalidPath', function() {
       htmx.off('htmx:invalidPath', listener)
+      htmx.off('htmx:validateUrl', pathVerifier)
       done()
     })
     this.server.restore() // use real xhrs
     // will 404, but should respond
     var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
     btn.click()
+    htmx.config.selfRequestsOnly = true
   })
 
   it('can cancel egress request based on htmx:validateUrl event, sameHost is false', function(done) {
     this.timeout(4000)
+    htmx.config.selfRequestsOnly = false
     // should trigger send error, rather than reject
     var pathVerifier = htmx.on('htmx:validateUrl', function(evt) {
       if (evt.detail.sameHost === false) {
         evt.preventDefault()
       }
-      htmx.off('htmx:validateUrl', pathVerifier)
     })
     var listener = htmx.on('htmx:invalidPath', function() {
+      htmx.off('htmx:validateUrl', pathVerifier)
       htmx.off('htmx:invalidPath', listener)
       done()
     })
@@ -243,6 +252,31 @@ describe('security options', function() {
     // will 404, but should respond
     var btn = make('<button hx-get="https://hypermedia.systems/www/test">Initial</button>')
     btn.click()
+    htmx.config.selfRequestsOnly = true
+  })
+
+  it('can cancel egress request based on htmx:validateUrl event and then allow a request', function(done) {
+    htmx.config.selfRequestsOnly = false
+    var requestCount = 0
+    var pathVerifier = htmx.on('htmx:validateUrl', function(evt) {
+      requestCount = requestCount + 1
+      if (requestCount === 1) {
+        evt.preventDefault()
+      }
+    })
+    this.server.restore() // use real xhrs
+    var btn = make('<button hx-get="data:,foo">Initial</button>')
+    btn.click()
+    setTimeout(function() {
+      btn.innerHTML.should.not.equal('foo')
+      btn.click()
+      setTimeout(function() {
+        htmx.off('htmx:validateUrl', pathVerifier)
+        htmx.config.selfRequestsOnly = true
+        btn.innerHTML.should.equal('foo')
+        done()
+      }, 30)
+    }, 30)
   })
 
   it('can disable script tag support with htmx.config.allowScriptTags', function() {
