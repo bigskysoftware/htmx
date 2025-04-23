@@ -136,7 +136,7 @@ describe('hx-push-url attribute', function() {
     getWorkArea().textContent.should.equal('test1')
   })
 
-  it('cache miss should refresh whe refreshOnHistoryMiss true', function() {
+  it('cache miss should refresh when refreshOnHistoryMiss true', function() {
     htmx.config.refreshOnHistoryMiss = true
     var refresh = false
     htmx.location = { reload: function() { refresh = true } }
