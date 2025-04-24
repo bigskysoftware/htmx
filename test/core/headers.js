@@ -367,8 +367,7 @@ describe('Core htmx AJAX headers', function() {
     htmx.off('bar', handlerBar)
   })
 
-  it.skip('should change body content on HX-Location', function(done) {
-    // this test is disabled because a bug is triggered by an earlier request where it does not remove endRequestLock() on errors blocking all future requests
+  it('should change body content on HX-Location', function(done) {
     this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#work-area"}' }, ''])
     this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
     var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
@@ -381,13 +380,45 @@ describe('Core htmx AJAX headers', function() {
     }, 30)
   })
 
-  it('request to restore history should include the HX-Request header', function() {
+  it('should refresh page on HX-Refresh', function() {
+    var refresh = false
+    htmx.location = { reload: function() { refresh = true } }
+    this.server.respondWith('GET', '/test', [200, { 'HX-Refresh': 'true' }, ''])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    refresh.should.equal(true)
+    htmx.location = window.location
+  })
+
+  it('should update location.href on HX-Redirect', function() {
+    htmx.location = { href: window.location.href }
+    this.server.respondWith('GET', '/test', [200, { 'HX-Redirect': 'https://htmx.org/headers/hx-redirect/' }, ''])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    htmx.location.href.should.equal('https://htmx.org/headers/hx-redirect/')
+    htmx.location = window.location
+  })
+
+  it('request to restore history should include the HX-Request header when historyRestoreAsHxRequest true', function() {
     this.server.respondWith('GET', '/test', function(xhr) {
       xhr.requestHeaders['HX-Request'].should.be.equal('true')
       xhr.respond(200, {}, '')
     })
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
+  })
+
+  it('request to restore history should not include the HX-Request header when historyRestoreAsHxRequest false', function() {
+    htmx.config.historyRestoreAsHxRequest = false
+    this.server.respondWith('GET', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['HX-Request'], undefined)
+      xhr.respond(200, {}, '')
+    })
+    htmx._('loadHistoryFromServer')('/test')
+    this.server.respond()
+    htmx.config.historyRestoreAsHxRequest = true
   })
 
   it('request history from server with error status code throws error event', function() {
