@@ -4632,7 +4632,7 @@ var htmx = (function() {
     if (title) {
       const titleElt = find('title')
       if (titleElt) {
-        titleElt.innerHTML = title
+        titleElt.textContent = title
       } else {
         window.document.title = title
       }
