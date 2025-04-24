@@ -50,9 +50,7 @@ describe('hx-push-url attribute', function() {
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
-    cache[1].url.should.equal('abc123')
-    // the url should be normalized with a / but this code has an issue right now
-    // cache[1].url.should.equal('/abc123')
+    cache[1].url.should.equal('/abc123')
   })
 
   it('restore should return old value', function() {
@@ -199,13 +197,9 @@ describe('hx-push-url attribute', function() {
     htmx._('saveToHistoryCache')('url1', make('<div>'))
     var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
-    cache[0].url.should.equal('url3')
-    cache[1].url.should.equal('url2')
-    cache[2].url.should.equal('url1')
-    // the paths should be normalized with a / but normalization has a bug right now
-    // cache[0].url.should.equal('/url3')
-    // cache[1].url.should.equal('/url2')
-    // cache[2].url.should.equal('/url1')
+    cache[0].url.should.equal('/url3')
+    cache[1].url.should.equal('/url2')
+    cache[2].url.should.equal('/url1')
   })
 
   it('htmx:afterSettle is called when replacing outerHTML', function() {
