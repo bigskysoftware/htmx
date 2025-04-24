@@ -136,6 +136,17 @@ describe('hx-push-url attribute', function() {
     getWorkArea().textContent.should.equal('test1')
   })
 
+  it('cache miss should refresh when refreshOnHistoryMiss true', function() {
+    htmx.config.refreshOnHistoryMiss = true
+    var refresh = false
+    htmx.location = { reload: function() { refresh = true } }
+    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+    htmx._('restoreHistory')('/test3')
+    refresh.should.equal(true)
+    htmx.location = window.location
+    htmx.config.refreshOnHistoryMiss = false
+  })
+
   it('navigation should push an element into the cache  w/ data-* prefix', function() {
     this.server.respondWith('GET', '/test', 'second')
     getWorkArea().innerHTML.should.be.equal('')

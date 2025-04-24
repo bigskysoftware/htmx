@@ -275,6 +275,11 @@ var htmx = (function() {
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
+    /**
+     * proxy of window.location used for page reload functions
+     * @type location
+     */
+    location,
     /** @type {typeof internalEval} */
     _: null,
     version: '2.0.4'
@@ -2359,7 +2364,7 @@ var htmx = (function() {
         if (path == null || path === '') {
           // if there is no action attribute on the form set path to current href before the
           // following logic to properly clear parameters on a GET (not on a POST!)
-          path = getDocument().location.href
+          path = location.href
         }
         if (verb === 'get' && path.includes('?')) {
           path = path.replace(/\?[^#]+/, '')
@@ -3186,7 +3191,7 @@ var htmx = (function() {
       saveToHistoryCache(path, elt)
     }
 
-    if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, getDocument().title, window.location.href)
+    if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, getDocument().title, location.href)
   }
 
   /**
@@ -3233,7 +3238,7 @@ var htmx = (function() {
     request.open('GET', path, true)
     request.setRequestHeader('HX-Request', 'true')
     request.setRequestHeader('HX-History-Restore-Request', 'true')
-    request.setRequestHeader('HX-Current-URL', getDocument().location.href)
+    request.setRequestHeader('HX-Current-URL', location.href)
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
@@ -3282,7 +3287,7 @@ var htmx = (function() {
       if (htmx.config.refreshOnHistoryMiss) {
         // @ts-ignore: optional parameter in reload() function throws error
         // noinspection JSUnresolvedReference
-        window.location.reload(true)
+        htmx.location.reload(true)
       } else {
         loadHistoryFromServer(path)
       }
@@ -3614,7 +3619,7 @@ var htmx = (function() {
       'HX-Trigger': getRawAttribute(elt, 'id'),
       'HX-Trigger-Name': getRawAttribute(elt, 'name'),
       'HX-Target': getAttributeValue(target, 'id'),
-      'HX-Current-URL': getDocument().location.href
+      'HX-Current-URL': location.href
     }
     getValuesForElement(elt, 'hx-headers', false, headers)
     if (prompt !== undefined) {
@@ -4359,7 +4364,7 @@ var htmx = (function() {
 
     // behavior of anchors w/ empty href is to use the current URL
     if (path == null || path === '') {
-      path = getDocument().location.href
+      path = location.href
     }
 
     /**
@@ -4723,14 +4728,14 @@ var htmx = (function() {
 
     if (hasHeader(xhr, /HX-Redirect:/i)) {
       responseInfo.keepIndicators = true
-      location.href = xhr.getResponseHeader('HX-Redirect')
-      shouldRefresh && location.reload()
+      htmx.location.href = xhr.getResponseHeader('HX-Redirect')
+      shouldRefresh && htmx.location.reload()
       return
     }
 
     if (shouldRefresh) {
       responseInfo.keepIndicators = true
-      location.reload()
+      htmx.location.reload()
       return
     }
 
