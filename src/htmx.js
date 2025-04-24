@@ -1468,7 +1468,7 @@ var htmx = (function() {
     oobElement.removeAttribute('data-hx-swap-oob')
 
     const targets = querySelectorAllExt(rootNode, selector, false)
-    if (targets) {
+    if (targets.length) {
       forEach(
         targets,
         function(target) {
@@ -1687,12 +1687,12 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
   function swapOuterHTML(target, fragment, settleInfo) {
-    if (target instanceof Element && target.tagName === 'BODY') { // special case the body to innerHTML because DocumentFragments can't contain a body elt unfortunately
+    if (target.tagName === 'BODY') { // special case the body to innerHTML because DocumentFragments can't contain a body elt unfortunately
       return swapInnerHTML(target, fragment, settleInfo)
     }
     /** @type {Node} */
@@ -1718,15 +1718,11 @@ var htmx = (function() {
       newElt = newElt.nextSibling
     }
     cleanUpElement(target)
-    if (target instanceof Element) {
-      target.remove()
-    } else {
-      target.parentNode.removeChild(target)
-    }
+    target.remove()
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1735,7 +1731,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1744,7 +1740,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1753,7 +1749,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1762,7 +1758,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    */
   function swapDelete(target) {
     cleanUpElement(target)
@@ -1773,7 +1769,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1793,7 +1789,7 @@ var htmx = (function() {
   /**
    * @param {HtmxSwapStyle} swapStyle
    * @param {Element} elt
-   * @param {Node} target
+   * @param {Element} target
    * @param {ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    */
@@ -1889,16 +1885,12 @@ var htmx = (function() {
     // preserve focus and selection
     const activeElt = document.activeElement
     let selectionInfo = {}
-    try {
-      selectionInfo = {
-        elt: activeElt,
-        // @ts-ignore
-        start: activeElt ? activeElt.selectionStart : null,
-        // @ts-ignore
-        end: activeElt ? activeElt.selectionEnd : null
-      }
-    } catch (e) {
-      // safari issue - see https://github.com/microsoft/playwright/issues/5894
+    selectionInfo = {
+      elt: activeElt,
+      // @ts-ignore
+      start: activeElt ? activeElt.selectionStart : null,
+      // @ts-ignore
+      end: activeElt ? activeElt.selectionEnd : null
     }
     const settleInfo = makeSettleInfo(target)
 
@@ -2388,14 +2380,10 @@ var htmx = (function() {
 
   /**
    * @param {Event} evt
-   * @param {Node} node
+   * @param {Element} elt
    * @returns {boolean}
    */
-  function shouldCancel(evt, node) {
-    const elt = asElement(node)
-    if (!elt) {
-      return false
-    }
+  function shouldCancel(evt, elt) {
     if (evt.type === 'submit' || evt.type === 'click') {
       if (elt.tagName === 'FORM') {
         return true
@@ -2445,7 +2433,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {Node} elt
+   * @param {Element} elt
    * @param {TriggerHandler} handler
    * @param {HtmxNodeInternalData} nodeData
    * @param {HtmxTriggerSpecification} triggerSpec
@@ -2635,7 +2623,7 @@ var htmx = (function() {
         triggerSpecs.forEach(function(triggerSpec) {
           addTriggerHandler(elt, triggerSpec, nodeData, function(node, evt) {
             const elt = asElement(node)
-            if (closest(elt, htmx.config.disableSelector)) {
+            if (eltIsDisabled(elt)) {
               cleanUpElement(elt)
               return
             }
@@ -2649,12 +2637,12 @@ var htmx = (function() {
 
   /**
    * @callback TriggerHandler
-   * @param {Node} elt
+   * @param {Element} elt
    * @param {Event} [evt]
    */
 
   /**
-   * @param {Node} elt
+   * @param {Element} elt
    * @param {HtmxTriggerSpecification} triggerSpec
    * @param {HtmxNodeInternalData} nodeData
    * @param {TriggerHandler} handler
@@ -2823,9 +2811,6 @@ var htmx = (function() {
       return
     }
     const form = getRelatedForm(elt)
-    if (!form) {
-      return
-    }
     return getInternalData(form)
   }
 
@@ -2902,7 +2887,7 @@ var htmx = (function() {
    * @param {Element|HTMLInputElement} elt
    */
   function initNode(elt) {
-    if (closest(elt, htmx.config.disableSelector)) {
+    if (eltIsDisabled(elt)) {
       cleanUpElement(elt)
       return
     }
@@ -2951,7 +2936,7 @@ var htmx = (function() {
    */
   function processNode(elt) {
     elt = resolveTarget(elt)
-    if (closest(elt, htmx.config.disableSelector)) {
+    if (eltIsDisabled(elt)) {
       cleanUpElement(elt)
       return
     }
@@ -3402,7 +3387,8 @@ var htmx = (function() {
     return true
   }
 
-  /** @param {string} name
+  /**
+   * @param {string} name
    * @param {string|Array|FormDataEntryValue} value
    * @param {FormData} formData */
   function addValueToFormData(name, value, formData) {
@@ -3415,7 +3401,8 @@ var htmx = (function() {
     }
   }
 
-  /** @param {string} name
+  /**
+   * @param {string} name
    * @param {string|Array} value
    * @param {FormData} formData */
   function removeValueFromFormData(name, value, formData) {
@@ -3429,6 +3416,22 @@ var htmx = (function() {
       formData.delete(name)
       forEach(values, v => formData.append(name, v))
     }
+  }
+
+  /**
+   * @param {Element} elt
+   * @returns {string|Array}
+   */
+  function getValueFromInput(elt) {
+    if (elt instanceof HTMLSelectElement && elt.multiple) {
+      return toArray(elt.querySelectorAll('option:checked')).map(function(e) { return (/** @type HTMLOptionElement */(e)).value })
+    }
+    // include file inputs
+    if (elt instanceof HTMLInputElement && elt.files) {
+      return toArray(elt.files)
+    }
+    // @ts-ignore value will be undefined for non-input elements, which is fine
+    return elt.value
   }
 
   /**
@@ -3446,16 +3449,7 @@ var htmx = (function() {
     }
     if (shouldInclude(elt)) {
       const name = getRawAttribute(elt, 'name')
-      // @ts-ignore value will be undefined for non-input elements, which is fine
-      let value = elt.value
-      if (elt instanceof HTMLSelectElement && elt.multiple) {
-        value = toArray(elt.querySelectorAll('option:checked')).map(function(e) { return (/** @type HTMLOptionElement */(e)).value })
-      }
-      // include file inputs
-      if (elt instanceof HTMLInputElement && elt.files) {
-        value = toArray(elt.files)
-      }
-      addValueToFormData(name, value, formData)
+      addValueToFormData(name, getValueFromInput(elt), formData)
       if (validate) {
         validateElement(elt, errors)
       }
@@ -3466,7 +3460,7 @@ var htmx = (function() {
           // The input has already been processed and added to the values, but the FormData that will be
           //  constructed right after on the form, will include it once again. So remove that input's value
           //  now to avoid duplicates
-          removeValueFromFormData(input.name, input.value, formData)
+          removeValueFromFormData(input.name, getValueFromInput(input), formData)
         } else {
           processed.push(input)
         }
@@ -3484,7 +3478,6 @@ var htmx = (function() {
   }
 
   /**
-   *
    * @param {Element} elt
    * @param {HtmxElementValidationError[]} errors
    */
@@ -4127,8 +4120,6 @@ var htmx = (function() {
             return function() {
               return formData[name].apply(formData, arguments)
             }
-          } else {
-            return target[name]
           }
         }
         const array = formData.getAll(name)

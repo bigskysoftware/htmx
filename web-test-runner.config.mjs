@@ -29,7 +29,7 @@ const config = {
 
 <h2>web-test-runner Test Suite</h2>
 
-<script>${Math.random() < 0.5 ? 'window.onpopstate = function(event) {}' : ''}</script>
+<script>${Math.random() < 0.9 ? 'window.onpopstate = function(event) {}' : ''}</script>
 
 <script src="node_modules/chai/chai.js"></script>
 <script src="node_modules/chai-dom/chai-dom.js"></script>
