@@ -4446,6 +4446,7 @@ var htmx = (function() {
     if (!verifyPath(elt, finalPath, requestConfig)) {
       triggerErrorEvent(elt, 'htmx:invalidPath', requestConfig)
       maybeCall(reject)
+      endRequestLock()
       return promise
     }
 
@@ -4508,10 +4509,11 @@ var htmx = (function() {
           }
         }
         maybeCall(resolve)
-        endRequestLock()
       } catch (e) {
         triggerErrorEvent(elt, 'htmx:onLoadError', mergeObjects({ error: e }, responseInfo))
         throw e
+      } finally {
+        endRequestLock()
       }
     }
     xhr.onerror = function() {
