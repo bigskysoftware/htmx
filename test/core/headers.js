@@ -401,13 +401,24 @@ describe('Core htmx AJAX headers', function() {
     htmx.location = window.location
   })
 
-  it('request to restore history should include the HX-Request header', function() {
+  it('request to restore history should include the HX-Request header when historyRestoreAsHxRequest true', function() {
     this.server.respondWith('GET', '/test', function(xhr) {
       xhr.requestHeaders['HX-Request'].should.be.equal('true')
       xhr.respond(200, {}, '')
     })
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
+  })
+
+  it('request to restore history should not include the HX-Request header when historyRestoreAsHxRequest false', function() {
+    htmx.config.historyRestoreAsHxRequest = false
+    this.server.respondWith('GET', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['HX-Request'], undefined)
+      xhr.respond(200, {}, '')
+    })
+    htmx._('loadHistoryFromServer')('/test')
+    this.server.respond()
+    htmx.config.historyRestoreAsHxRequest = true
   })
 
   it('request history from server with error status code throws error event', function() {
