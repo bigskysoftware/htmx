@@ -205,9 +205,6 @@ describe('hx-include attribute', function() {
   })
 
   it('properly handles multiple select input referred to externally and then via a form then it will only be included once', function() {
-    // this test highlights a edge case that is not currently handled perfectly
-    // when it runs removeValueFromFormData to remove an input that will be
-    // included on a form it only removes the input value and not multiple values in array
     var values
     this.server.respondWith('Post', '/include', function(xhr) {
       values = getParameters(xhr)
@@ -234,9 +231,7 @@ describe('hx-include attribute', function() {
     byId('m3').selected = true
     div.click()
     this.server.respond()
-    values.should.deep.equal({ multiSelect: ['m3', 'm1', 'm3'] })
-    // the correct response should be:
-    // values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
+    values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
   })
 
   it('Two inputs can be referred to externally', function() {

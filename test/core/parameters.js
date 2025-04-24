@@ -362,6 +362,33 @@ describe('Core htmx Parameter Handling', function() {
     result.innerHTML.should.equal('OK')
   })
 
+  it('file is not uploaded with blank filename', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['Content-Type'], undefined)
+
+      const file = xhr.requestBody.get('file')
+      should.equal(file, null)
+
+      xhr.respond(200, {}, 'OK')
+    })
+
+    const form = make('<form hx-post="/test" hx-target="#result" hx-encoding="multipart/form-data">' +
+      '<input type="file" name="file">' +
+      '<button type="submit"></button>' +
+      '</form>')
+    const input = form.querySelector('input')
+    const file = new File(['Test'], '', { type: 'text/plain' })
+    const dataTransfer = new DataTransfer()
+    dataTransfer.items.add(file)
+    input.files = dataTransfer.files
+
+    const result = make('<div id="result"></div>')
+
+    form.querySelector('button').click()
+    this.server.respond()
+    result.innerHTML.should.equal('OK')
+  })
+
   it('file is correctly uploaded with htmx.ajax', function() {
     this.server.respondWith('POST', '/test', function(xhr) {
       should.equal(xhr.requestHeaders['Content-Type'], undefined)

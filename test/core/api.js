@@ -602,7 +602,7 @@ describe('Core htmx API test', function() {
     htmx.off('htmx:beforeSwap', handler)
   })
 
-  it('ajax api with can pass in custom handler', function() {
+  it('ajax api with can pass in custom handler and handle if it throws error', function() {
     var onLoadError = false
     var handler = htmx.on('htmx:onLoadError', function(event) {
       onLoadError = true
@@ -617,6 +617,20 @@ describe('Core htmx API test', function() {
     } catch (e) {}
     div.innerHTML.should.equal('')
     onLoadError.should.equal(true)
+
+    // repeat the error resonse a 2nd time to make sure request lock removed after error
+    onLoadError = false
+    try {
+      htmx.ajax('GET', '/test', { handler: function() { throw new Error('throw') } })
+      this.server.respond()
+    } catch (e) {}
+    div.innerHTML.should.equal('')
+    onLoadError.should.equal(true)
     htmx.off('htmx:onLoadError', handler)
+  })
+
+  it('process api can process non elements fine', function() {
+    var div = make('<div>textNode</div>')
+    htmx.process(div.firstChild)
   })
 })
