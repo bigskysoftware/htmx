@@ -4819,7 +4819,7 @@ var htmx = (function() {
           }
 
           swap(target, serverResponse, swapSpec, {
-            select: selectOverride || select,
+            select: selectOverride === 'unset' ? null : selectOverride || select,
             selectOOB,
             eventInfo: responseInfo,
             anchor: responseInfo.pathInfo.anchor,
