@@ -67,6 +67,10 @@
       "no-useless-call": 0,
       "no-useless-escape": 0,
       "no-unused-expressions": 0,
+      "no-restricted-properties": ["error", {
+        "property": "substr",
+        "message": "Use .slice or .substring instead of .substr"
+      }],
       "space-before-function-paren": [
         "error",
         "never"
