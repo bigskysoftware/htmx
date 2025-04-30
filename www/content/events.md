@@ -310,7 +310,7 @@ This event is triggered before the content is saved in the history api.
 
 ### Event - `htmx:load` {#htmx:load}
 
-This event is triggered when a new node is loaded into the DOM by htmx.
+This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
 
 ##### Details
 
