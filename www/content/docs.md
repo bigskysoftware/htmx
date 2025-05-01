@@ -117,19 +117,19 @@ If you are migrating to htmx from intercooler.js, please see the [intercooler mi
 Htmx is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>`
 tag to your document head.  There is no need for a build system to use it.
 
-### Via A CDN (e.g. unpkg.com)
+### Via A CDN (e.g. jsDelivr)
 
 The fastest way to get going with htmx is to load it via a CDN. You can simply add this to
 your head tag and get going:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
@@ -139,7 +139,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from unpkg.com](https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -1139,15 +1139,15 @@ You can see all available extensions on the [Extensions](/extensions) page.
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
-    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
     ...
 ```
-An unminified version is also available at `https://unpkg.com/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
+An unminified version is also available at `https://cdn.jsdelivr.net/npm/htmx-ext-extension-name/dist/extension-name.js` (replace `extension-name` with the name of the extension).
 
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install htmx extensions is to simply copy them into your project. Download the extension from `https://unpkg.com/htmx-ext-extension-name` (replace `extension-name` with the name of the extension) e.g., https://unpkg.com/htmx-ext-response-targets. Then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install htmx extensions is to simply copy them into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-extension-name` (replace `extension-name` with the name of the extension) e.g., https://cdn.jsdelivr.net/npm/htmx-ext-response-targets. Then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
 
 For npm-style build systems, you can install htmx extensions via [npm](https://www.npmjs.com/) (replace `extension-name` with the name of the extension):
 ```shell
@@ -1163,7 +1163,7 @@ import `htmx.org`;
 import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
 ```
 
-Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://unpkg.com/idiomorph` or `npm install idiomorph`.
+Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://cdn.jsdelivr.net/npm/idiomorph` or `npm install idiomorph`.
 
 Note: Community extensions hosted outside this repository might have different installation instructions. Please check the corresponding repository for set-up guidance.
 
