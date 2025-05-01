@@ -253,16 +253,36 @@ This event is triggered when an attempt to save the cache to `localStorage` fail
 
 * `detail.cause` - the `Exception` that was thrown when attempting to save history to `localStorage`
 
+### Event - `htmx:historyCacheHit` {#htmx:historyCacheHit}
+
+This event is triggered when a cache hit occurs when restoring history
+
+You can prevent the history restoration via `preventDefault()` to allow alternative restore handling.
+You can also override the details of the history restoration request in this event if required
+
+##### Details
+
+* `detail.historyElement` - the history element or body that will get replaced
+* `detail.item.content` - the content of the cache that will be swapped in
+* `detail.item.title` - the page title to update from the cache
+* `detail.path` - the path and query of the page being restored
+* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
+
 ### Event - `htmx:historyCacheMiss` {#htmx:historyCacheMiss}
 
 This event is triggered when a cache miss occurs when restoring history
 
+You can prevent the history restoration via `preventDefault()` to allow alternative restore handling.
+You can also modify the xhr request or other details before it makes the the request to restore history
+
 ##### Details
 
+* `detail.historyElement` - the history element or body that will get replaced
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
+* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
 
-### Event - `htmx:historyCacheMissError` {#htmx:historyCacheMissError}
+### Event - `htmx:historyCacheMissLoadError` {#htmx:historyCacheMissLoadError}
 
 This event is triggered when a cache miss occurs and a response has been retrieved from the server
 for the content to restore, but the response is an error (e.g. `404`)
@@ -277,10 +297,15 @@ for the content to restore, but the response is an error (e.g. `404`)
 This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server
 for the content to restore
 
+You can modify the details before it makes the swap to restore the history
+
 ##### Details
 
+* `detail.historyElement` - the history element or body that will get replaced
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
+* `detail.response` - the response text that will be swapped in
+* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
 
 ### Event - `htmx:historyRestore` {#htmx:historyRestore}
 
@@ -289,6 +314,9 @@ This event is triggered when htmx handles a history restoration action
 ##### Details
 
 * `detail.path` - the path and query of the page being restored
+* `detail.cacheMiss` - set `true` if restore was a cache miss
+* `detail.serverResponse` - with cache miss has the response text replaced
+* `detail.item` - with cache hit the cache details that was restored
 
 ### Event - `htmx:beforeHistorySave` {#htmx:beforeHistorySave}
 
