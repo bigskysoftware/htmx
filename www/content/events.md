@@ -262,7 +262,7 @@ You can also override the details of the history restoration request in this eve
 
 ##### Details
 
-* `detail.historyElement` - the history element or body that will get replaced
+* `detail.historyElt` - the history element or body that will get replaced
 * `detail.item.content` - the content of the cache that will be swapped in
 * `detail.item.title` - the page title to update from the cache
 * `detail.path` - the path and query of the page being restored
@@ -277,7 +277,7 @@ You can also modify the xhr request or other details before it makes the the req
 
 ##### Details
 
-* `detail.historyElement` - the history element or body that will get replaced
+* `detail.historyElt` - the history element or body that will get replaced
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
 * `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
@@ -301,7 +301,7 @@ You can modify the details before it makes the swap to restore the history
 
 ##### Details
 
-* `detail.historyElement` - the history element or body that will get replaced
+* `detail.historyElt` - the history element or body that will get replaced
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 * `detail.response` - the response text that will be swapped in
@@ -320,12 +320,14 @@ This event is triggered when htmx handles a history restoration action
 
 ### Event - `htmx:beforeHistorySave` {#htmx:beforeHistorySave}
 
-This event is triggered before the content is saved in the history api.
+This event is triggered before the content is saved in the history cache.
+
+You can modify the contents of the historyElt to remove 3rd party javascript changes so a clean copy of the content can be backed up to the history cache
 
 ##### Details
 
-* `detail.path` - the path and query of the page being restored
-* `detail.historyElt` - the history element being restored into
+* `detail.path` - the path and query of the page being saved
+* `detail.historyElt` - the history element about to be saved
 
 ##### Details
 
