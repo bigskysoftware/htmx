@@ -3202,7 +3202,7 @@ var htmx = (function() {
   function loadHistoryFromServer(path) {
     const request = new XMLHttpRequest()
     const swapSpec = { swapStyle: 'innerHTML', swapDelay: 0, settleDelay: 0 }
-    const details = { path, xhr: request, historyElement: getHistoryElement(), swapSpec }
+    const details = { path, xhr: request, historyElt: getHistoryElement(), swapSpec }
     request.open('GET', path, true)
     if (htmx.config.historyRestoreAsHxRequest) {
       request.setRequestHeader('HX-Request', 'true')
@@ -3213,8 +3213,8 @@ var htmx = (function() {
       if (this.status >= 200 && this.status < 400) {
         details.response = this.response
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
-        swap(details.historyElement, details.response, swapSpec, {
-          contextElement: details.historyElement,
+        swap(details.historyElt, details.response, swapSpec, {
+          contextElement: details.historyElt,
           historyRequest: true
         })
         currentPathForHistory = details.path
@@ -3237,10 +3237,10 @@ var htmx = (function() {
     const cached = getCachedHistory(path)
     if (cached) {
       const swapSpec = { swapStyle: 'innerHTML', swapDelay: 0, settleDelay: 0, scroll: cached.scroll }
-      const details = { path, item: cached, historyElement: getHistoryElement(), swapSpec }
+      const details = { path, item: cached, historyElt: getHistoryElement(), swapSpec }
       if (triggerEvent(getDocument().body, 'htmx:historyCacheHit', details)) {
-        swap(details.historyElement, cached.content, swapSpec, {
-          contextElement: details.historyElement,
+        swap(details.historyElt, cached.content, swapSpec, {
+          contextElement: details.historyElt,
           title: cached.title
         })
         currentPathForHistory = details.path

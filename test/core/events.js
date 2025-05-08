@@ -772,7 +772,7 @@ describe('Core htmx Events', function() {
   it('htmx:historyCacheMissLoad event can update history swap', function() {
     localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheMissLoad', function(evt) {
-      evt.detail.historyElement = byId('hist-re-target')
+      evt.detail.historyElt = byId('hist-re-target')
       evt.detail.swapSpec.swapStyle = 'outerHTML'
       evt.detail.response = '<div id="hist-re-target">Updated<div>'
       evt.detail.path = '/test3'
@@ -855,7 +855,7 @@ describe('Core htmx Events', function() {
   it('htmx:historyCacheHit event can update history swap', function() {
     localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheHit', function(evt) {
-      evt.detail.historyElement = byId('hist-re-target')
+      evt.detail.historyElt = byId('hist-re-target')
       evt.detail.swapSpec.swapStyle = 'outerHTML'
       evt.detail.item.content = '<div id="hist-re-target">Updated<div>'
       evt.detail.path = '/test3'
