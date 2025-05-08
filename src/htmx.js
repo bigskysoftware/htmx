@@ -82,7 +82,7 @@ var htmx = (function() {
        */
       historyEnabled: true,
       /**
-       * The number of pages to keep in **localStorage** for history support.
+       * The number of pages to keep in **sessionStorage** for history support.
        * @type number
        * @default 10
        */
@@ -819,10 +819,10 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function canAccessLocalStorage() {
-    const test = 'htmx:localStorageTest'
+    const test = 'htmx:sessionStorageTest'
     try {
-      localStorage.setItem(test, test)
-      localStorage.removeItem(test)
+      sessionStorage.setItem(test, test)
+      sessionStorage.removeItem(test)
       return true
     } catch (e) {
       return false
@@ -3033,7 +3033,7 @@ var htmx = (function() {
   //= ===================================================================
   // History Support
   //= ===================================================================
-  let currentPathForHistory = location.pathname + location.search
+  window.htmxCurrentPathForHistory = location.pathname + location.search
 
   /**
    * @returns {Element}
@@ -3059,13 +3059,13 @@ var htmx = (function() {
 
     if (htmx.config.historyCacheSize <= 0) {
       // make sure that an eventually already existing cache is purged
-      localStorage.removeItem('htmx-history-cache')
+      sessionStorage.removeItem('htmx-history-cache')
       return
     }
 
     url = normalizePath(url)
 
-    const historyCache = parseJSON(localStorage.getItem('htmx-history-cache')) || []
+    const historyCache = parseJSON(sessionStorage.getItem('htmx-history-cache')) || []
     for (let i = 0; i < historyCache.length; i++) {
       if (historyCache[i].url === url) {
         historyCache.splice(i, 1)
@@ -3086,7 +3086,7 @@ var htmx = (function() {
     // keep trying to save the cache until it succeeds or is empty
     while (historyCache.length > 0) {
       try {
-        localStorage.setItem('htmx-history-cache', JSON.stringify(historyCache))
+        sessionStorage.setItem('htmx-history-cache', JSON.stringify(historyCache))
         break
       } catch (e) {
         triggerErrorEvent(getDocument().body, 'htmx:historyCacheError', { cause: e, cache: historyCache })
@@ -3114,7 +3114,7 @@ var htmx = (function() {
 
     url = normalizePath(url)
 
-    const historyCache = parseJSON(localStorage.getItem('htmx-history-cache')) || []
+    const historyCache = parseJSON(sessionStorage.getItem('htmx-history-cache')) || []
     for (let i = 0; i < historyCache.length; i++) {
       if (historyCache[i].url === url) {
         return historyCache[i]
@@ -3142,13 +3142,13 @@ var htmx = (function() {
 
   function saveCurrentPageToHistory() {
     const elt = getHistoryElement()
-    const path = currentPathForHistory || location.pathname + location.search
+    const path = htmxCurrentPathForHistory || location.pathname + location.search
 
     // Allow history snapshot feature to be disabled where hx-history="false"
     // is present *anywhere* in the current document we're about to save,
     // so we can prevent privileged data entering the cache.
     // The page will still be reachable as a history entry, but htmx will fetch it
-    // live from the server onpopstate rather than look in the localStorage cache
+    // live from the server onpopstate rather than look in the sessionStorage cache
     const disableHistoryCache = getDocument().querySelector('[hx-history="false" i],[data-hx-history="false" i]')
     if (!disableHistoryCache) {
       triggerEvent(getDocument().body, 'htmx:beforeHistorySave', { path, historyElt: elt })
@@ -3172,7 +3172,7 @@ var htmx = (function() {
     if (htmx.config.historyEnabled) {
       history.pushState({ htmx: true }, '', path)
     }
-    currentPathForHistory = path
+    htmxCurrentPathForHistory = path
   }
 
   /**
@@ -3180,7 +3180,7 @@ var htmx = (function() {
    */
   function replaceUrlInHistory(path) {
     if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, '', path)
-    currentPathForHistory = path
+    htmxCurrentPathForHistory = path
   }
 
   /**
@@ -3219,7 +3219,7 @@ var htmx = (function() {
         swapInnerHTML(historyElement, content, settleInfo)
         restorePreservedElements()
         settleImmediately(settleInfo.tasks)
-        currentPathForHistory = path
+        htmxCurrentPathForHistory = path
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
       } else {
         triggerErrorEvent(getDocument().body, 'htmx:historyCacheMissLoadError', details)
@@ -3247,7 +3247,7 @@ var htmx = (function() {
       getWindow().setTimeout(function() {
         window.scrollTo(0, cached.scroll)
       }, 0) // next 'tick', so browser has time to render layout
-      currentPathForHistory = path
+      htmxCurrentPathForHistory = path
       triggerEvent(getDocument().body, 'htmx:historyRestore', { path, item: cached })
     } else {
       if (htmx.config.refreshOnHistoryMiss) {
