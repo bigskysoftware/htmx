@@ -4,12 +4,12 @@ describe('hx-history attribute', function() {
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
 
   it('history cache should not contain embargoed content', function() {
@@ -32,8 +32,8 @@ describe('hx-history attribute', function() {
     this.server.respond()
     workArea.textContent.should.equal('test3')
 
-    // embargoed content should NOT be in the localStorage cache
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    // embargoed content should NOT be in the sessionStorage cache
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
 
     // on history navigation, embargoed content is retrieved from server
