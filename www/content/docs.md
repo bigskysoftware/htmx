@@ -287,6 +287,7 @@ htmx provides a few special events for use in [hx-trigger](@/attributes/hx-trigg
 * `revealed` - fires once when an element first scrolls into the viewport
 * `intersect` - fires once when an element first intersects the viewport.  This supports two additional options:
     * `root:<selector>` - a CSS selector of the root element for intersection
+    * `from:<selector>` - a CSS selector of the element whose intersection should trigger the event
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire the event on
 
 You can also use custom events to trigger requests if you have an advanced use case.
