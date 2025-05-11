@@ -816,8 +816,8 @@ clients would be able to hit the enter key and still search.  Even better, you c
 You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
 
-You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
+You would need to check htmx request headers on the server side to differentiate between an htmx-driven and a
+regular request, to determine exactly what to render to the client. See [below](#response-html) for more details.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
 
@@ -865,7 +865,8 @@ issue a hard browser refresh.
 
 **NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
 A user could copy and paste the URL into an email, or new tab.  Additionally, htmx will need the entire page when restoring
-history if the page is not in the history cache.
+history if the page is not in the history cache. See [below](#response-html) for
+more details.
 
 ### Specifying History Snapshot Element
 
@@ -934,9 +935,38 @@ event, which you can handle.
 
 In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) event will be triggered.
 
+### Rendering Response HTML {#response-html}
+
+As mentioned above, htmx expects responses to be fragments of HTML. However, when
+you use htmx, not all requests from your site to its backend server will actually
+be from htmx. Some will be from the browser itself, ie normal HTTP requests for
+full page loads. In this case the browser will be loading the response HTML as a
+full page, not as a fragment to be swapped in. This happens eg when you use
+[history support](#history) or [boosting](#boosting); the fetched URL gets pushed
+into the URL bar. Once there, it can be bookmarked and loaded later, copied and
+pasted, suspended/resumed by the browser, etc.
+
+When this happens, the server needs to render a _full page,_ not just a fragment.
+Because if only a fragment were loaded, it would have no styling and no context.
+It would be a confusing user experience.
+
+Fortunately, you can render either a fragment or a full page for any given path
+with a small amount of server-side logic that checks the request headers:
+
+- Render fragment if `HX-Request` header is _present_ and
+  `HX-History-Restore-Request` header is _absent._
+- Render full page otherwise.
+
+With this rendered response (either fragment or full), be sure to set the
+`Vary: HX-Request, HX-History-Restore-Request` response header so that the
+correct response will be cached for each request.
+
+Now, for any given URL, it will be loaded correctly (either a fragment swapped in
+by htmx, or a full page loaded by the browser).
+
 ### Configuring Response Handling {#response-handling}
 
-You can configure the above behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
+You can configure the response handling behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
 object is a collection of JavaScript objects defined like so:
 
 ```js
