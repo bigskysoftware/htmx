@@ -1444,7 +1444,7 @@ var htmx = (function() {
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
     rootNode = rootNode || getDocument()
-    let selector = '#' + getRawAttribute(oobElement, 'id')
+    let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
     if (oobValue === 'true') {
