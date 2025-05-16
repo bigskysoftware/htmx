@@ -937,14 +937,15 @@ In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:send
 
 ### Rendering Response HTML {#response-html}
 
-As mentioned above, htmx expects responses to be fragments of HTML. However, when
-you use htmx, not all requests from your site to its backend server will actually
-be from htmx. Some will be from the browser itself, ie normal HTTP requests for
-full page loads. In this case the browser will be loading the response HTML as a
-full page, not as a fragment to be swapped in. This happens eg when you use
-[history support](#history) or [boosting](#boosting); the fetched URL gets pushed
-into the URL bar. Once there, it can be bookmarked and loaded later, copied and
-pasted, suspended/resumed by the browser, etc.
+As mentioned [above](#requests), htmx normally expects responses to be fragments
+of HTML. However, when you use htmx, not all requests from your site to its
+backend server will actually be from htmx. Some will be from the browser itself,
+ie normal HTTP requests for full page loads. In this case the browser will be
+loading the response HTML as a full page, and htmx will not be touching it at all.
+This can happen eg when you use [history support](#history) or
+[boosting](#boosting); the fetched URL gets pushed into the URL bar. Once there,
+it can be bookmarked and loaded later, copied and pasted, suspended/resumed by
+the browser, etc.
 
 When this happens, the server needs to render a _full page,_ not just a fragment.
 Because if only a fragment were loaded, it would have no styling and no context.
@@ -959,7 +960,8 @@ with a small amount of server-side logic that checks the request headers:
 
 With this rendered response (either fragment or full), be sure to set the
 `Vary: HX-Request, HX-History-Restore-Request` response header so that the
-correct response will be cached for each request.
+correct response will be cached for each request. (This is not something specific
+to htmx, it's just part of the HTTP [caching](#caching) mechanism.)
 
 Now, for any given URL, it will be loaded correctly (either a fragment swapped in
 by htmx, or a full page loaded by the browser).
@@ -1587,14 +1589,12 @@ If your server adds the
 [`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified)
 HTTP response header to the response for a given URL, the browser will automatically add the
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
-request HTTP header to the next requests to the same URL. Be mindful that if
-your server can render different content for the same URL depending on some other
+request HTTP header to the next requests to the same URL.
+
+Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
-response HTTP header. For example, if your server renders the full HTML when the
-`HX-Request` header is missing or `false`, and it renders a fragment of that HTML
-when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be
-keyed based on a composite of the response URL and the `HX-Request` request header —
-rather than being based just on the response URL.
+response HTTP header. For example, if your server renders an HTML fragment or the
+full HTML depending on htmx headers. See [above](#response-html) for details.
 
 If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
 `getCacheBusterParam` to `true`.  If this configuration variable is set, htmx will include a cache-busting parameter
