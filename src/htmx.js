@@ -4355,6 +4355,7 @@ var htmx = (function() {
       unfilteredFormData: allFormData,
       unfilteredParameters: formDataProxy(allFormData),
       headers,
+      elt,
       target,
       verb,
       errors,
@@ -5164,6 +5165,7 @@ var htmx = (function() {
  * @property {FormData} unfilteredFormData
  * @property {Object} unfilteredParameters unfilteredFormData proxy
  * @property {HtmxHeaderSpecification} headers
+ * @property {Element} elt
  * @property {Element} target
  * @property {HttpVerb} verb
  * @property {HtmxElementValidationError[]} errors
