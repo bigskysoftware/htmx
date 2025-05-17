@@ -937,6 +937,11 @@ In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:send
 
 ### Rendering Response HTML {#response-html}
 
+Warning: the logic described below will not work if you use
+[hx-select](@/attributes/hx-select.md) because there is no way for the backend
+server to automatically tell if a full page or a fragment should be rendered.
+Only you, the developer, know.
+
 As mentioned [above](#requests), htmx normally expects responses to be fragments
 of HTML. However, when you use htmx, not all requests from your site to its
 backend server will actually be from htmx. Some will be from the browser itself,
@@ -954,14 +959,16 @@ It would be a confusing user experience.
 Fortunately, you can render either a fragment or a full page for any given path
 with a small amount of server-side logic that checks the request headers:
 
-- Render fragment if `HX-Request` header is _present_ and
-  `HX-History-Restore-Request` header is _absent._
+- Render fragment if
+  - `HX-Request` header is _present_
+  - `HX-Target` header is _present_
+  - `HX-History-Restore-Request` header is _absent._
 - Render full page otherwise.
 
 With this rendered response (either fragment or full), be sure to set the
-`Vary: HX-Request, HX-History-Restore-Request` response header so that the
-correct response will be cached for each request. (This is not something specific
-to htmx, it's just part of the HTTP [caching](#caching) mechanism.)
+`Vary: HX-Request, HX-Target, HX-History-Restore-Request` response header so that
+the correct response will be cached for each request. (This is not something
+specific to htmx, it's just part of the HTTP [caching](#caching) mechanism.)
 
 Now, for any given URL, it will be loaded correctly (either a fragment swapped in
 by htmx, or a full page loaded by the browser).
