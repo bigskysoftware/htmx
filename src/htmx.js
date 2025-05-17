@@ -5237,7 +5237,7 @@ var htmx = (function() {
  * @see https://github.com/bigskysoftware/htmx-extensions/blob/main/README.md
  * @typedef {Object} HtmxExtension
  * @property {(api: any) => void} init
- * @property {(name: string, event: Event|CustomEvent) => boolean} onEvent
+ * @property {(name: string, event: CustomEvent) => boolean} onEvent
  * @property {(text: string, xhr: XMLHttpRequest, elt: Element) => string} transformResponse
  * @property {(swapStyle: HtmxSwapStyle) => boolean} isInlineSwap
  * @property {(swapStyle: HtmxSwapStyle, target: Node, fragment: Node, settleInfo: HtmxSettleInfo) => boolean|Node[]} handleSwap
