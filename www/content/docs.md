@@ -816,8 +816,8 @@ clients would be able to hit the enter key and still search.  Even better, you c
 You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
 
-You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
+You would need to check htmx request headers on the server side to differentiate between an htmx-driven and a
+regular request, to determine exactly what to render to the client. See [below](#response-html) for more details.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
 
@@ -865,7 +865,8 @@ issue a hard browser refresh.
 
 **NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
 A user could copy and paste the URL into an email, or new tab.  Additionally, htmx will need the entire page when restoring
-history if the page is not in the history cache.
+history if the page is not in the history cache. See [below](#response-html) for
+more details.
 
 ### Specifying History Snapshot Element
 
@@ -934,9 +935,47 @@ event, which you can handle.
 
 In the event of a connection error, the [`htmx:sendError`](@/events.md#htmx:sendError) event will be triggered.
 
+### Rendering Response HTML {#response-html}
+
+Warning: the logic described below will not work if you use
+[hx-select](@/attributes/hx-select.md) because there is no way for the backend
+server to automatically tell if a full page or a fragment should be rendered.
+Only you, the developer, know.
+
+As mentioned [above](#requests), htmx normally expects responses to be fragments
+of HTML. However, when you use htmx, not all requests from your site to its
+backend server will actually be from htmx. Some will be from the browser itself,
+ie normal HTTP requests for full page loads. In this case the browser will be
+loading the response HTML as a full page, and htmx will not be touching it at all.
+This can happen eg when you use [history support](#history) or
+[boosting](#boosting); the fetched URL gets pushed into the URL bar. Once there,
+it can be bookmarked and loaded later, copied and pasted, suspended/resumed by
+the browser, etc.
+
+When this happens, the server needs to render a _full page,_ not just a fragment.
+Because if only a fragment were loaded, it would have no styling and no context.
+It would be a confusing user experience.
+
+Fortunately, you can render either a fragment or a full page for any given path
+with a small amount of server-side logic that checks the request headers:
+
+- Render fragment if
+  - `HX-Request` header is _present_
+  - `HX-Target` header is _present_
+  - `HX-History-Restore-Request` header is _absent._
+- Render full page otherwise.
+
+With this rendered response (either fragment or full), be sure to set the
+`Vary: HX-Request, HX-Target, HX-History-Restore-Request` response header so that
+the correct response will be cached for each request. (This is not something
+specific to htmx, it's just part of the HTTP [caching](#caching) mechanism.)
+
+Now, for any given URL, it will be loaded correctly (either a fragment swapped in
+by htmx, or a full page loaded by the browser).
+
 ### Configuring Response Handling {#response-handling}
 
-You can configure the above behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
+You can configure the response handling behavior of htmx by mutating or replacing the `htmx.config.responseHandling` array.  This
 object is a collection of JavaScript objects defined like so:
 
 ```js
@@ -1557,14 +1596,12 @@ If your server adds the
 [`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified)
 HTTP response header to the response for a given URL, the browser will automatically add the
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
-request HTTP header to the next requests to the same URL. Be mindful that if
-your server can render different content for the same URL depending on some other
+request HTTP header to the next requests to the same URL.
+
+Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
-response HTTP header. For example, if your server renders the full HTML when the
-`HX-Request` header is missing or `false`, and it renders a fragment of that HTML
-when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be
-keyed based on a composite of the response URL and the `HX-Request` request header —
-rather than being based just on the response URL.
+response HTTP header. For example, if your server renders an HTML fragment or the
+full HTML depending on htmx headers. See [above](#response-html) for details.
 
 If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
 `getCacheBusterParam` to `true`.  If this configuration variable is set, htmx will include a cache-busting parameter
