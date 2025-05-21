@@ -76,7 +76,7 @@
   "devDependencies": {
     "@types/node": "20.0.0",
     "@types/parse5": "^7.0.0",
-    "@web/test-runner": "^0.20.1",
+    "@web/test-runner": "^0.20.2",
     "@web/test-runner-playwright": "^0.11.0",
     "chai": "^4.5.0",
     "chai-dom": "^1.12.1",
