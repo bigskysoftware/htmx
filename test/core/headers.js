@@ -299,6 +299,16 @@ describe('Core htmx AJAX headers', function() {
     div.innerHTML.should.equal('<div id="d2">bar</div>')
   })
 
+  it('should handle HX-Reselect unset', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Reselect': 'unset' }, 'bar'])
+
+    var div = make('<div hx-get="/test" hx-select="#d2"></div>')
+    div.click()
+    this.server.respond()
+
+    div.innerHTML.should.equal('bar')
+  })
+
   it('should handle simple string HX-Trigger-After-Swap response header properly w/ outerHTML swap', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Trigger-After-Swap': 'foo' }, ''])
 
