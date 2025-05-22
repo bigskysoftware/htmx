@@ -37,6 +37,7 @@ You can find the htmx webring [here](@/webring.md)
 ## Training
 
 [HTMX + Flask: Modern Python Web Apps, Hold the JavaScript Course by Michael Kennedy](https://training.talkpython.fm/courses/htmx-flask-modern-python-web-apps-hold-the-javascript)
+[HTMX + Django: Modern Python Web Apps, Hold the JavaScript Course by Christopher Trudeau](https://training.talkpython.fm/courses/htmx-django-modern-python-web-apps-hold-the-javascript)
 
 ## Atom Feed (Announcements & Essays)
 
