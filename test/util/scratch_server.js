@@ -1,5 +1,5 @@
 var server = makeServer()
-var autoRespond = localStorage.getItem('hx-scratch-autorespond') == 'true'
+var autoRespond = sessionStorage.getItem('hx-scratch-autorespond') == 'true'
 server.autoRespond = autoRespond
 ready(function() {
   if (autoRespond) {
@@ -8,10 +8,10 @@ ready(function() {
 })
 function toggleAutoRespond() {
   if (server.autoRespond) {
-    localStorage.removeItem('hx-scratch-autorespond')
+    sessionStorage.removeItem('hx-scratch-autorespond')
     server.autoRespond = false
   } else {
-    localStorage.setItem('hx-scratch-autorespond', 'true')
+    sessionStorage.setItem('hx-scratch-autorespond', 'true')
     server.autoRespond = true
   }
 }

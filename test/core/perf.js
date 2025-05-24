@@ -5,12 +5,12 @@ describe('Core htmx perf Tests', function() {
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
 
   function stringRepeat(str, num) {
@@ -39,8 +39,8 @@ describe('Core htmx perf Tests', function() {
     }
     var start = performance.now()
     var string = JSON.stringify(array)
-    localStorage.setItem(HTMX_HISTORY_CACHE_NAME, string)
-    var reReadString = localStorage.getItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.setItem(HTMX_HISTORY_CACHE_NAME, string)
+    var reReadString = sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME)
     var finalJson = JSON.parse(reReadString)
     var end = performance.now()
     var timeInMs = end - start
