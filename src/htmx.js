@@ -1851,7 +1851,7 @@ var htmx = (function() {
   }
 
   /**
-   * Implements complete swapping pipeline, including: focus and selection preservation,
+   * Implements complete swapping pipeline, including: delay, view transitions, focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
    * @param {string} content
@@ -1862,6 +1862,12 @@ var htmx = (function() {
     if (!swapOptions) {
       swapOptions = {}
     }
+    // optional transition API promise callbacks
+    let settleResolve = null
+    let settleReject = null
+
+    let localSwap = function() {
+    maybeCall(swapOptions.beforeSwapCallback)
 
     target = resolveTarget(target)
     const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
@@ -1952,9 +1958,7 @@ var htmx = (function() {
       }
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
     })
-    if (swapOptions.afterSwapCallback) {
-      swapOptions.afterSwapCallback()
-    }
+    maybeCall(swapOptions.afterSwapCallback)
 
     // merge in new title after swap but before settle
     if (!swapSpec.ignoreTitle) {
@@ -1981,15 +1985,53 @@ var htmx = (function() {
       }
 
       updateScrollState(settleInfo.elts, swapSpec)
-      if (swapOptions.afterSettleCallback) {
-        swapOptions.afterSettleCallback()
-      }
+      maybeCall(swapOptions.afterSettleCallback)
+      maybeCall(settleResolve)
     }
 
     if (swapSpec.settleDelay > 0) {
       getWindow().setTimeout(doSettle, swapSpec.settleDelay)
     } else {
       doSettle()
+    }
+    }
+    let shouldTransition = htmx.config.globalViewTransitions
+    if (swapSpec.hasOwnProperty('transition')) {
+      shouldTransition = swapSpec.transition
+    }
+
+    const elt = swapOptions.contextElement || getDocument()
+
+    if (shouldTransition &&
+            triggerEvent(elt, 'htmx:beforeTransition', swapOptions.eventInfo) &&
+            typeof Promise !== 'undefined' &&
+            // @ts-ignore experimental feature atm
+            document.startViewTransition) {
+      const settlePromise = new Promise(function(_resolve, _reject) {
+        settleResolve = _resolve
+        settleReject = _reject
+      })
+      // wrap the original localSwap() in a call to startViewTransition()
+      const innerDoSwap = localSwap
+      localSwap = function() {
+        // @ts-ignore experimental feature atm
+        document.startViewTransition(function() {
+          innerDoSwap()
+          return settlePromise
+        })
+      }
+    }
+
+    try {
+      if (swapSpec?.swapDelay && swapSpec.swapDelay > 0) {
+        getWindow().setTimeout(localSwap, swapSpec.swapDelay)
+      } else {
+        localSwap()
+      }
+    } catch (e) {
+      triggerErrorEvent(elt, 'htmx:swapError', swapOptions.eventInfo)
+      maybeCall(settleReject)
+      throw e
     }
   }
 
@@ -4789,10 +4831,6 @@ var htmx = (function() {
 
       target.classList.add(htmx.config.swappingClass)
 
-      // optional transition API promise callbacks
-      let settleResolve = null
-      let settleReject = null
-
       if (responseInfoSelect) {
         selectOverride = responseInfoSelect
       }
@@ -4803,20 +4841,6 @@ var htmx = (function() {
 
       const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
-
-      let doSwap = function() {
-        try {
-          // if we need to save history, do so, before swapping so that relative resources have the correct base URL
-          if (historyUpdate.type) {
-            triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
-            if (historyUpdate.type === 'push') {
-              pushUrlIntoHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', { path: historyUpdate.path })
-            } else {
-              replaceUrlInHistory(historyUpdate.path)
-              triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
-            }
-          }
 
           swap(target, serverResponse, swapSpec, {
             select: selectOverride || select,
@@ -4841,46 +4865,21 @@ var htmx = (function() {
                 }
                 handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
               }
-              maybeCall(settleResolve)
+            },
+            beforeSwapCallback: function() {
+              // if we need to save history, do so, before swapping so that relative resources have the correct base URL
+              if (historyUpdate.type) {
+                triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
+                if (historyUpdate.type === 'push') {
+                  pushUrlIntoHistory(historyUpdate.path)
+                  triggerEvent(getDocument().body, 'htmx:pushedIntoHistory', { path: historyUpdate.path })
+                } else {
+                  replaceUrlInHistory(historyUpdate.path)
+                  triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
+                }
+              }
             }
           })
-        } catch (e) {
-          triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
-          maybeCall(settleReject)
-          throw e
-        }
-      }
-
-      let shouldTransition = htmx.config.globalViewTransitions
-      if (swapSpec.hasOwnProperty('transition')) {
-        shouldTransition = swapSpec.transition
-      }
-
-      if (shouldTransition &&
-              triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
-              typeof Promise !== 'undefined' &&
-              // @ts-ignore experimental feature atm
-              document.startViewTransition) {
-        const settlePromise = new Promise(function(_resolve, _reject) {
-          settleResolve = _resolve
-          settleReject = _reject
-        })
-        // wrap the original doSwap() in a call to startViewTransition()
-        const innerDoSwap = doSwap
-        doSwap = function() {
-          // @ts-ignore experimental feature atm
-          document.startViewTransition(function() {
-            innerDoSwap()
-            return settlePromise
-          })
-        }
-      }
-
-      if (swapSpec.swapDelay > 0) {
-        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
     }
     if (isError) {
       triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
@@ -5081,6 +5080,7 @@ var htmx = (function() {
  * @property {Element} [contextElement]
  * @property {swapCallback} [afterSwapCallback]
  * @property {swapCallback} [afterSettleCallback]
+ * @property {swapCallback} [beforeSwapCallback]
  */
 
 /**
