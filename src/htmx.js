@@ -1885,7 +1885,11 @@ var htmx = (function() {
     } else {
       let fragment = makeFragment(content)
 
-      settleInfo.title = fragment.title
+      settleInfo.title = swapOptions.title || fragment.title
+      if (swapOptions.historyRequest) {
+        // @ts-ignore fragment can be a parentNode Element
+        fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
+      }
 
       // select-oob swaps
       if (swapOptions.selectOOB) {
@@ -3197,8 +3201,8 @@ var htmx = (function() {
    */
   function loadHistoryFromServer(path) {
     const request = new XMLHttpRequest()
-    const details = { path, xhr: request }
-    triggerEvent(getDocument().body, 'htmx:historyCacheMiss', details)
+    const swapSpec = { swapStyle: 'innerHTML', swapDelay: 0, settleDelay: 0 }
+    const details = { path, xhr: request, historyElt: getHistoryElement(), swapSpec }
     request.open('GET', path, true)
     if (htmx.config.historyRestoreAsHxRequest) {
       request.setRequestHeader('HX-Request', 'true')
@@ -3207,25 +3211,21 @@ var htmx = (function() {
     request.setRequestHeader('HX-Current-URL', location.href)
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
+        details.response = this.response
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
-        const fragment = makeFragment(this.response)
-        /** @type ParentNode */
-        const content = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
-        const historyElement = getHistoryElement()
-        const settleInfo = makeSettleInfo(historyElement)
-        handleTitle(fragment.title)
-
-        handlePreservedElements(fragment)
-        swapInnerHTML(historyElement, content, settleInfo)
-        restorePreservedElements()
-        settleImmediately(settleInfo.tasks)
-        currentPathForHistory = path
-        triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
+        swap(details.historyElt, details.response, swapSpec, {
+          contextElement: details.historyElt,
+          historyRequest: true
+        })
+        currentPathForHistory = details.path
+        triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: details.response })
       } else {
         triggerErrorEvent(getDocument().body, 'htmx:historyCacheMissLoadError', details)
       }
     }
-    request.send()
+    if (triggerEvent(getDocument().body, 'htmx:historyCacheMiss', details)) {
+      request.send() // only send request if event not prevented
+    }
   }
 
   /**
@@ -3236,19 +3236,16 @@ var htmx = (function() {
     path = path || location.pathname + location.search
     const cached = getCachedHistory(path)
     if (cached) {
-      const fragment = makeFragment(cached.content)
-      const historyElement = getHistoryElement()
-      const settleInfo = makeSettleInfo(historyElement)
-      handleTitle(cached.title)
-      handlePreservedElements(fragment)
-      swapInnerHTML(historyElement, fragment, settleInfo)
-      restorePreservedElements()
-      settleImmediately(settleInfo.tasks)
-      getWindow().setTimeout(function() {
-        window.scrollTo(0, cached.scroll)
-      }, 0) // next 'tick', so browser has time to render layout
-      currentPathForHistory = path
-      triggerEvent(getDocument().body, 'htmx:historyRestore', { path, item: cached })
+      const swapSpec = { swapStyle: 'innerHTML', swapDelay: 0, settleDelay: 0, scroll: cached.scroll }
+      const details = { path, item: cached, historyElt: getHistoryElement(), swapSpec }
+      if (triggerEvent(getDocument().body, 'htmx:historyCacheHit', details)) {
+        swap(details.historyElt, cached.content, swapSpec, {
+          contextElement: details.historyElt,
+          title: cached.title
+        })
+        currentPathForHistory = details.path
+        triggerEvent(getDocument().body, 'htmx:historyRestore', details)
+      }
     } else {
       if (htmx.config.refreshOnHistoryMiss) {
         // @ts-ignore: optional parameter in reload() function throws error
@@ -3762,6 +3759,11 @@ var htmx = (function() {
       if (swapSpec.scroll === 'bottom' && (last || target)) {
         target = target || last
         target.scrollTop = target.scrollHeight
+      }
+      if (typeof swapSpec.scroll === 'number') {
+        getWindow().setTimeout(function() {
+          window.scrollTo(0, /** @type number */ (swapSpec.scroll))
+        }, 0) // next 'tick', so browser has time to render layout
       }
     }
     if (swapSpec.show) {
@@ -5081,6 +5083,8 @@ var htmx = (function() {
  * @property {Element} [contextElement]
  * @property {swapCallback} [afterSwapCallback]
  * @property {swapCallback} [afterSettleCallback]
+ * @property {string} [title]
+ * @property {boolean} [historyRequest]
  */
 
 /**
@@ -5099,7 +5103,7 @@ var htmx = (function() {
  * @property {boolean} [transition]
  * @property {boolean} [ignoreTitle]
  * @property {string} [head]
- * @property {'top' | 'bottom'} [scroll]
+ * @property {'top' | 'bottom' | number } [scroll]
  * @property {string} [scrollTarget]
  * @property {string} [show]
  * @property {string} [showTarget]
@@ -5144,7 +5148,8 @@ var htmx = (function() {
  * @property {'true'} [HX-History-Restore-Request]
  */
 
-/** @typedef HtmxAjaxHelperContext
+/**
+ * @typedef HtmxAjaxHelperContext
  * @property {Element|string} [source]
  * @property {Event} [event]
  * @property {HtmxAjaxHandler} [handler]
