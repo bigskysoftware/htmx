@@ -146,34 +146,38 @@ and include it where necessary with a `<script>` tag:
 <script src="/path/to/htmx.min.js"></script>
 ```
 
-### npm
+### Via npm
 
+#### Package Installation
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
 npm install htmx.org@2.0.4
 ```
 
-and for extensions:
+and, for extensions:
 ```sh
 npm install htmx-ext-debug@2.0.1
 ```
 
+#### Importing
 
-After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx[.esm, .cjs, .amd].js` (or `.min.js`).
+After htmx and any extensions are installed, all you need to do is import `htmx` in your entry point file
+(like `index.js`).
 
-In the simplest case all you need to do is to add this import to your entry point (like `index.js`)
+
+The simplest option is:
 ```js
 import 'htmx.org';
 ```
 
-If you need access to methods like `htmx.onLoad` use the following import statement instead:
+If you need access to methods like `htmx.onLoad`, use the following import statement instead:
 
 ```js
 import htmx from "htmx.org";
 ```
 
-#### Example
+#### Examples
 
 ```js
 // Option 1
