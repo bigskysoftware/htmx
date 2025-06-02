@@ -8,7 +8,7 @@ useful as a backup for HTML escaping, when you include user generated content in
 prevent malicious scripting attacks.
 
 The value of the tag is ignored, and it cannot be reversed by any content beneath it.
- 
+
 ## Notes
 
 * `hx-disable` is inherited
