@@ -1347,6 +1347,16 @@ var htmx = (function() {
         return [findThisElement(elt, attrName)]
       } else {
         const result = querySelectorAllExt(elt, attrTarget)
+        // find `inherit` whole word in value, make sure it's surrounded by commas or is at the start/end of string
+        const shouldInherit = /(^|,)(\s*)inherit(\s*)($|,)/.test(attrTarget)
+        if (shouldInherit) {
+          const eltToInheritFrom = asElement(getClosestMatch(elt, function(parent) {
+            return parent !== elt && hasAttribute(asElement(parent), attrName)
+          }))
+          if (eltToInheritFrom) {
+            result.push(...findAttributeTargets(eltToInheritFrom, attrName))
+          }
+        }
         if (result.length === 0) {
           logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
           return [DUMMY_ELT]
@@ -1851,6 +1861,30 @@ var htmx = (function() {
   }
 
   /**
+   * Apply swapping class and then execute the swap with optional delay
+   * @param {string|Element} target
+   * @param {string} content
+   * @param {HtmxSwapSpecification} swapSpec
+   * @param {SwapOptions} [swapOptions]
+   */
+  function swap(target, content, swapSpec, swapOptions) {
+    if (!swapOptions) {
+      swapOptions = {}
+    }
+
+    target = resolveTarget(target)
+    target.classList.add(htmx.config.swappingClass)
+    const localSwap = function() {
+      runSwap(target, content, swapSpec, swapOptions)
+    }
+    if (swapSpec?.swapDelay && swapSpec.swapDelay > 0) {
+      getWindow().setTimeout(localSwap, swapSpec.swapDelay)
+    } else {
+      localSwap()
+    }
+  }
+
+  /**
    * Implements complete swapping pipeline, including: focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
@@ -1858,7 +1892,7 @@ var htmx = (function() {
    * @param {HtmxSwapSpecification} swapSpec
    * @param {SwapOptions} [swapOptions]
    */
-  function swap(target, content, swapSpec, swapOptions) {
+  function runSwap(target, content, swapSpec, swapOptions) {
     if (!swapOptions) {
       swapOptions = {}
     }
@@ -4168,7 +4202,7 @@ var htmx = (function() {
     }
     const target = etc.targetOverride || asElement(getTarget(elt))
     if (target == null || target == DUMMY_ELT) {
-      triggerErrorEvent(elt, 'htmx:targetError', { target: getAttributeValue(elt, 'hx-target') })
+      triggerErrorEvent(elt, 'htmx:targetError', { target: getClosestAttributeValue(elt, 'hx-target') })
       maybeCall(reject)
       return promise
     }
@@ -4790,8 +4824,6 @@ var htmx = (function() {
         swapSpec.ignoreTitle = ignoreTitle
       }
 
-      target.classList.add(htmx.config.swappingClass)
-
       // optional transition API promise callbacks
       let settleResolve = null
       let settleReject = null
@@ -4822,7 +4854,7 @@ var htmx = (function() {
           }
 
           swap(target, serverResponse, swapSpec, {
-            select: selectOverride || select,
+            select: selectOverride === 'unset' ? null : selectOverride || select,
             selectOOB,
             eventInfo: responseInfo,
             anchor: responseInfo.pathInfo.anchor,
@@ -4878,12 +4910,7 @@ var htmx = (function() {
           })
         }
       }
-
-      if (swapSpec.swapDelay > 0) {
-        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
+      doSwap()
     }
     if (isError) {
       triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
