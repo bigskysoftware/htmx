@@ -1347,6 +1347,16 @@ var htmx = (function() {
         return [findThisElement(elt, attrName)]
       } else {
         const result = querySelectorAllExt(elt, attrTarget)
+        // find `inherit` whole word in value, make sure it's surrounded by commas or is at the start/end of string
+        const shouldInherit = /(^|,)(\s*)inherit(\s*)($|,)/.test(attrTarget)
+        if (shouldInherit) {
+          const eltToInheritFrom = asElement(getClosestMatch(elt, function(parent) {
+            return parent !== elt && hasAttribute(asElement(parent), attrName)
+          }))
+          if (eltToInheritFrom) {
+            result.push(...findAttributeTargets(eltToInheritFrom, attrName))
+          }
+        }
         if (result.length === 0) {
           logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
           return [DUMMY_ELT]
@@ -1444,7 +1454,7 @@ var htmx = (function() {
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
     rootNode = rootNode || getDocument()
-    let selector = '#' + getRawAttribute(oobElement, 'id')
+    let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
     if (oobValue === 'true') {
@@ -2526,7 +2536,7 @@ var htmx = (function() {
             }
           }
           if (triggerSpec.changed) {
-            const node = event.target
+            const node = evt.target
             // @ts-ignore value will be undefined for non-input elements, which is fine
             const value = node.value
             const lastValue = elementData.lastValue.get(triggerSpec)
@@ -2913,46 +2923,52 @@ var htmx = (function() {
    * @param {Element|HTMLInputElement} elt
    */
   function initNode(elt) {
-    if (eltIsDisabled(elt)) {
-      cleanUpElement(elt)
-      return
-    }
-    // Ensure only valid Elements and not shadow DOM roots are inited
-    if (!(elt instanceof Element)) return
+    triggerEvent(elt, 'htmx:beforeProcessNode')
+
     const nodeData = getInternalData(elt)
-    const attrHash = attributeHash(elt)
-    if (nodeData.initHash !== attrHash) {
-      // clean up any previously processed info
-      deInitNode(elt)
+    const triggerSpecs = getTriggerSpecs(elt)
+    const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
 
-      nodeData.initHash = attrHash
-
-      triggerEvent(elt, 'htmx:beforeProcessNode')
-
-      const triggerSpecs = getTriggerSpecs(elt)
-      const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
-
-      if (!hasExplicitHttpAction) {
-        if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
-          boostElement(elt, nodeData, triggerSpecs)
-        } else if (hasAttribute(elt, 'hx-trigger')) {
-          triggerSpecs.forEach(function(triggerSpec) {
-            // For "naked" triggers, don't do anything at all
-            addTriggerHandler(elt, triggerSpec, nodeData, function() {
-            })
+    if (!hasExplicitHttpAction) {
+      if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
+        boostElement(elt, nodeData, triggerSpecs)
+      } else if (hasAttribute(elt, 'hx-trigger')) {
+        triggerSpecs.forEach(function(triggerSpec) {
+          // For "naked" triggers, don't do anything at all
+          addTriggerHandler(elt, triggerSpec, nodeData, function() {
           })
-        }
+        })
       }
-
-      // Handle submit buttons/inputs that have the form attribute set
-      // see https://developer.mozilla.org/docs/Web/HTML/Element/button
-      if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
-        initButtonTracking(elt)
-      }
-
-      nodeData.firstInitCompleted = true
-      triggerEvent(elt, 'htmx:afterProcessNode')
     }
+
+    // Handle submit buttons/inputs that have the form attribute set
+    // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+    if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
+      initButtonTracking(elt)
+    }
+
+    nodeData.firstInitCompleted = true
+    triggerEvent(elt, 'htmx:afterProcessNode')
+  }
+
+  /**
+   * @param {Element} elt
+   * @returns {boolean}
+   */
+  function maybeDeInitAndHash(elt) {
+    // Ensure only valid Elements and not shadow DOM roots are inited
+    if (!(elt instanceof Element)) {
+      return false
+    }
+
+    const nodeData = getInternalData(elt)
+    const hash = attributeHash(elt)
+    if (nodeData.initHash !== hash) {
+      deInitNode(elt)
+      nodeData.initHash = hash
+      return true
+    }
+    return false
   }
 
   /**
@@ -2968,9 +2984,23 @@ var htmx = (function() {
       cleanUpElement(elt)
       return
     }
-    initNode(elt)
-    forEach(findElementsToProcess(elt), function(child) { initNode(child) })
+
+    const elementsToInit = []
+    if (maybeDeInitAndHash(elt)) {
+      elementsToInit.push(elt)
+    }
+    forEach(findElementsToProcess(elt), function(child) {
+      if (eltIsDisabled(child)) {
+        cleanUpElement(child)
+        return
+      }
+      if (maybeDeInitAndHash(child)) {
+        elementsToInit.push(child)
+      }
+    })
+
     forEach(findHxOnWildcardElements(elt), processHxOnWildcard)
+    forEach(elementsToInit, initNode)
   }
 
   //= ===================================================================
@@ -3015,15 +3045,17 @@ var htmx = (function() {
 
   /**
    * `withExtensions` locates all active extensions for a provided element, then
-   * executes the provided function using each of the active extensions.  It should
+   * executes the provided function using each of the active extensions. You can filter
+   * the element's extensions by giving it a list of extensions to ignore. It should
    * be called internally at every extendable execution point in htmx.
    *
    * @param {Element} elt
    * @param {(extension:HtmxExtension) => void} toDo
+   * @param {string[]=} extensionsToIgnore
    * @returns void
    */
-  function withExtensions(elt, toDo) {
-    forEach(getExtensions(elt), function(extension) {
+  function withExtensions(elt, toDo, extensionsToIgnore) {
+    forEach(getExtensions(elt, [], extensionsToIgnore), function(extension) {
       try {
         toDo(extension)
       } catch (e) {
@@ -4208,7 +4240,7 @@ var htmx = (function() {
     }
     const target = etc.targetOverride || asElement(getTarget(elt))
     if (target == null || target == DUMMY_ELT) {
-      triggerErrorEvent(elt, 'htmx:targetError', { target: getAttributeValue(elt, 'hx-target') })
+      triggerErrorEvent(elt, 'htmx:targetError', { target: getClosestAttributeValue(elt, 'hx-target') })
       maybeCall(reject)
       return promise
     }
@@ -4397,6 +4429,7 @@ var htmx = (function() {
       unfilteredFormData: allFormData,
       unfilteredParameters: formDataProxy(allFormData),
       headers,
+      elt,
       target,
       verb,
       errors,
@@ -4701,6 +4734,23 @@ var htmx = (function() {
   }
 
   /**
+   * Updates the responseInfo's target property if an HX-Retarget header is present
+   *
+   * @param {XMLHttpRequest} xhr
+   * @param {HtmxResponseInfo} responseInfo
+   * @param {Element} elt
+   */
+  function handleRetargetHeader(xhr, responseInfo, elt) {
+    if (hasHeader(xhr, /HX-Retarget:/i)) {
+      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
+        responseInfo.target = elt
+      } else {
+        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
+      }
+    }
+  }
+
+  /**
    * @param {Element} elt
    * @param {HtmxResponseInfo} responseInfo
    */
@@ -4748,13 +4798,8 @@ var htmx = (function() {
       return
     }
 
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    // handle retargeting before determining history updates/resolving response handling
+    handleRetargetHeader(xhr, responseInfo, elt)
 
     const historyUpdate = determineHistoryUpdates(elt, responseInfo)
 
@@ -4772,13 +4817,8 @@ var htmx = (function() {
     }
 
     // response headers override response handling config
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    handleRetargetHeader(xhr, responseInfo, elt)
+
     if (hasHeader(xhr, /HX-Reswap:/i)) {
       swapOverride = xhr.getResponseHeader('HX-Reswap')
     }
@@ -5164,6 +5204,7 @@ var htmx = (function() {
  * @property {FormData} unfilteredFormData
  * @property {Object} unfilteredParameters unfilteredFormData proxy
  * @property {HtmxHeaderSpecification} headers
+ * @property {Element} elt
  * @property {Element} target
  * @property {HttpVerb} verb
  * @property {HtmxElementValidationError[]} errors

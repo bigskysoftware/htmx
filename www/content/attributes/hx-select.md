@@ -1,5 +1,6 @@
 +++
 title = "hx-select"
+description = "The hx-select attribute in htmx allows you to select the content you want swapped from a response."
 +++
 
 The `hx-select` attribute allows you to select the content you want swapped from a response.  The value of

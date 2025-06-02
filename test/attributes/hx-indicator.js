@@ -123,4 +123,68 @@ describe('hx-indicator attribute', function() {
     b2.classList.contains('htmx-request').should.equal(false)
     a1.classList.contains('htmx-request').should.equal(false)
   })
+
+  it('`inherit` can be used to expand parent hx-indicator', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+    make('<div hx-indicator="#a1">' +
+      '   <button id="btn" hx-get="/test" hx-indicator="inherit, #a2">Click Me!</button>' +
+      '</div>')
+    var btn = byId('btn')
+    var a1 = make('<a id="a1"></a>')
+    var a2 = make('<a id="a2"></a>')
+    btn.click()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(true)
+    a2.classList.contains('htmx-request').should.equal(true)
+    this.server.respond()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(false)
+    a2.classList.contains('htmx-request').should.equal(false)
+  })
+
+  it('`inherit` can be used to expand multiple parents hx-indicator', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+    make('<div hx-indicator="#a1">' +
+      '   <div hx-indicator="inherit, #a2">' +
+      '       <button id="btn" hx-get="/test" hx-indicator="inherit, #a3">Click Me!</button>' +
+      '   </div>' +
+      '</div>')
+    var btn = byId('btn')
+    var a1 = make('<a id="a1"></a>')
+    var a2 = make('<a id="a2"></a>')
+    var a3 = make('<a id="a3"></a>')
+    btn.click()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(true)
+    a2.classList.contains('htmx-request').should.equal(true)
+    a3.classList.contains('htmx-request').should.equal(true)
+    this.server.respond()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(false)
+    a2.classList.contains('htmx-request').should.equal(false)
+    a3.classList.contains('htmx-request').should.equal(false)
+  })
+
+  it('`inherit` chain breaks properly', function() {
+    this.server.respondWith('GET', '/test', 'Clicked!')
+    make('<div hx-indicator="#a1">' +
+      '   <div hx-indicator="#a2">' +
+      '       <button id="btn" hx-get="/test" hx-indicator="inherit, #a3">Click Me!</button>' +
+      '   </div>' +
+      '</div>')
+    var btn = byId('btn')
+    var a1 = make('<a id="a1"></a>')
+    var a2 = make('<a id="a2"></a>')
+    var a3 = make('<a id="a3"></a>')
+    btn.click()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(false)
+    a2.classList.contains('htmx-request').should.equal(true)
+    a3.classList.contains('htmx-request').should.equal(true)
+    this.server.respond()
+    btn.classList.contains('htmx-request').should.equal(false)
+    a1.classList.contains('htmx-request').should.equal(false)
+    a2.classList.contains('htmx-request').should.equal(false)
+    a3.classList.contains('htmx-request').should.equal(false)
+  })
 })

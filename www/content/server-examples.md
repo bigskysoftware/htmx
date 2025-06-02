@@ -63,6 +63,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## Java
 
+### Javalin
+
+- <https://github.com/AussieGuy0/java-htmx-todo/>
+- <https://github.com/erwindrsno/simple-to-do-list>
+
 ### Spring Boot
 
 - <https://github.com/wiverson/htmx-demo>
@@ -131,12 +136,14 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/paultuckey/example-todo-app-rust-htmx>
 
 ## Scala
-  
+
 ### http4s
+
 - <https://github.com/martinprobson/http4s-htmx-demo>
 - <https://github.com/eikek/htmx4s>
 
 ### zio-http
+
 - <https://github.com/rockthejvm/scalatags-htmx-demo>
 
 ## Kotlin
@@ -147,7 +154,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Http4k
 
-<https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/mikaelstaldal/htmx-http4k-thymeleaf>
 
 ## Julia
 
@@ -163,7 +171,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### CodeIgniter 4
 
 - <https://github.com/michalsn/codeigniter-htmx-demo>
-
 
 ### Laravel
 
@@ -225,3 +232,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/danieleteti/delphi-dmvcframework-htmx-todo>
 - <https://github.com/danieleteti/delphimvcframework/tree/master/samples/htmx>
+
+## FreePascal with Pas2JS
+
+- <https://github.com/zendrael/create_htmx_pascal_app>
