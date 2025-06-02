@@ -4704,10 +4704,10 @@ var htmx = (function() {
    */
   function handleRetargetHeader(xhr, responseInfo, elt) {
     if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader("HX-Retarget") === "this") {
+      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
         responseInfo.target = elt
       } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader("HX-Retarget")))
+        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
       }
     }
   }
