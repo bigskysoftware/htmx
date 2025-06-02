@@ -273,7 +273,7 @@ var htmx = (function() {
        */
       allowNestedOobSwaps: true,
       /**
-       * Whether to treat history cache miss full page relaod requests as a "HX-Request" by returning this response header
+       * Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header
        * This should always be disabled when using HX-Request header to optionally return partial responses
        * @type boolean
        * @default true
@@ -1444,7 +1444,7 @@ var htmx = (function() {
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
     rootNode = rootNode || getDocument()
-    let selector = '#' + getRawAttribute(oobElement, 'id')
+    let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
     if (oobValue === 'true') {
@@ -4355,6 +4355,7 @@ var htmx = (function() {
       unfilteredFormData: allFormData,
       unfilteredParameters: formDataProxy(allFormData),
       headers,
+      elt,
       target,
       verb,
       errors,
@@ -5164,6 +5165,7 @@ var htmx = (function() {
  * @property {FormData} unfilteredFormData
  * @property {Object} unfilteredParameters unfilteredFormData proxy
  * @property {HtmxHeaderSpecification} headers
+ * @property {Element} elt
  * @property {Element} target
  * @property {HttpVerb} verb
  * @property {HtmxElementValidationError[]} errors
@@ -5237,7 +5239,7 @@ var htmx = (function() {
  * @see https://github.com/bigskysoftware/htmx-extensions/blob/main/README.md
  * @typedef {Object} HtmxExtension
  * @property {(api: any) => void} init
- * @property {(name: string, event: Event|CustomEvent) => boolean} onEvent
+ * @property {(name: string, event: CustomEvent) => boolean} onEvent
  * @property {(text: string, xhr: XMLHttpRequest, elt: Element) => string} transformResponse
  * @property {(swapStyle: HtmxSwapStyle) => boolean} isInlineSwap
  * @property {(swapStyle: HtmxSwapStyle, target: Node, fragment: Node, settleInfo: HtmxSettleInfo) => boolean|Node[]} handleSwap
