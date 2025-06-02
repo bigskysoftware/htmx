@@ -235,7 +235,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         </a>
 </div>
 <div>
-      <a data-github-account="sekunho" href="https://twitter.com/sekunho_/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px"></a>
+      <a data-github-account="sekunho" href="https://tacohiro.systems/"><img src="/img/sekun-doggo.jpg" alt="Hiro The Doggo" style="border: 2px solid lightgray; border-radius:20px"></a>
 </div>
 <div>
         <a href="https://dasfilter.shop/pages/affiliates">
