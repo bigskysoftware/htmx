@@ -4696,6 +4696,23 @@ var htmx = (function() {
   }
 
   /**
+   * Updates the responseInfo's target property if an HX-Retarget header is present
+   *
+   * @param {XMLHttpRequest} xhr
+   * @param {HtmxResponseInfo} responseInfo
+   * @param {Element} elt
+   */
+  function handleRetargetHeader(xhr, responseInfo, elt) {
+    if (hasHeader(xhr, /HX-Retarget:/i)) {
+      if (xhr.getResponseHeader("HX-Retarget") === "this") {
+        responseInfo.target = elt
+      } else {
+        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader("HX-Retarget")))
+      }
+    }
+  }
+
+  /**
    * @param {Element} elt
    * @param {HtmxResponseInfo} responseInfo
    */
@@ -4743,13 +4760,8 @@ var htmx = (function() {
       return
     }
 
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    // handle retargeting before determining history updates/resolving response handling
+    handleRetargetHeader(xhr, responseInfo, elt)
 
     const historyUpdate = determineHistoryUpdates(elt, responseInfo)
 
@@ -4767,13 +4779,8 @@ var htmx = (function() {
     }
 
     // response headers override response handling config
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    handleRetargetHeader(xhr, responseInfo, elt)
+
     if (hasHeader(xhr, /HX-Reswap:/i)) {
       swapOverride = xhr.getResponseHeader('HX-Reswap')
     }
