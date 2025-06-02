@@ -30,7 +30,7 @@ values in the form submission (`POST` request):
       </tbody>
     </table>
     <input type="submit" value="Bulk Update" class="btn primary">
-    <span id="toast"></span>
+    <output id="toast"></output>
 </form>
 ```
 

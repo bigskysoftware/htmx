@@ -25,13 +25,13 @@
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
-    "dist": "./scripts/dist.sh && npm run types-generate",
-    "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/",
-    "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/",
+    "dist": "./scripts/dist.sh && npm run types-generate && npm run web-types-generate",
+    "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/ scripts/*.mjs",
+    "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/ scripts/*.mjs",
     "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
     "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
+    "web-types-generate": "node ./scripts/generate-web-types.mjs",
     "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
-    "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh",
     "sha": "bash ./scripts/sha.sh"
   },

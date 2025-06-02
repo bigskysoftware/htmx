@@ -111,6 +111,7 @@ This event is triggered before an AJAX request is issued.  If you call `preventD
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 
 ### Event - `htmx:beforeSend` {#htmx:beforeSend}
@@ -137,6 +138,7 @@ See the documentation on [configuring swapping](@/docs.md#modifying_swapping_beh
 
 * `detail.elt` - the target of the swap
 * `detail.xhr` - the `XMLHttpRequest`
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.requestConfig.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
@@ -157,6 +159,7 @@ happen instead.
 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
@@ -307,7 +310,7 @@ This event is triggered before the content is saved in the history api.
 
 ### Event - `htmx:load` {#htmx:load}
 
-This event is triggered when a new node is loaded into the DOM by htmx.
+This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
 
 ##### Details
 
