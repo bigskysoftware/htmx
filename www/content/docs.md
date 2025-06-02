@@ -154,6 +154,12 @@ For npm-style build systems, you can install htmx via [npm](https://www.npmjs.co
 npm install htmx.org@2.0.4
 ```
 
+and for extensions:
+```sh
+npm install htmx-ext-debug@2.0.1
+```
+
+
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx[.esm, .cjs, .amd].js` (or `.min.js`).
 
 In the simplest case all you need to do is to add this import to your entry point (like `index.js`)
@@ -161,69 +167,27 @@ In the simplest case all you need to do is to add this import to your entry poin
 import 'htmx.org';
 ```
 
-However, you will probably need the global `htmx` variable, which gives your code access to methods like
-`htmx.onLoad` and allow you to use npm-installed htmx plugins. You can use one of the following solutions
-to achieve this.
-
-
-#### Global variable 
-
-Create a local `htmx.js` with the following content:
+If you need access to methods like `htmx.onLoad` use the following import statement instead:
 
 ```js
 import htmx from "htmx.org";
-window.htmx = htmx;
 ```
 
-Import this file in your entry point (like `index.js`):
+#### Example
 
 ```js
-import './htmx.js';
+// Option 1
+// After htmx.org is imported you can import extensions.
+import 'htmx.org';
+import 'htmx-ext-debug';
 
-// now you can import extensions
-import 'htmx-ext-debug/debug.js';
-// and use htmx methods
+// Option 2
+// After htmx is imported from htmx.org you can import extensions and use the `htmx` object.
+import htmx from "htmx.org";
+import 'htmx-ext-debug';
 htmx.onLoad((content) => {
     console.log('Hello')
 });
-```
- 
-#### Webpack
-
-If you are using [webpack](https://webpack.js.org) to manage your javascript, the better option is 
-to add the following to your `webpack.config.js`
-
-```js
-import webpack from 'webpack';
-
-/** @type {import("webpack").Configuration} */
-export default {
-  entry: './src/index.js',
-  //[...]
-  plugins: [
-    new webpack.ProvidePlugin({
-      htmx: 'htmx.org',
-    }),
-  ],
-};
-```
-
-#### Vite
-
-If you are using [Vite](https://vitejs.dev) to manage your javascript, the better option is 
-to add the following to your [vite.config.js](https://vitejs.dev/guide/backend-integration.html):
-
-```js
-import inject from '@rollup/plugin-inject';
-
-export default defineConfig({
-  build: {...},
-  plugins: [
-    inject({
-      htmx: 'htmx.org',
-    }),
-  ],
-})
 ```
 
 Finally, rebuild your bundle.
