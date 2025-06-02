@@ -158,6 +158,13 @@ describe('Core htmx internals Tests', function() {
     htmx.off('htmx:restored', handler)
   })
 
+  it('scroll position is restored from history restore', function() {
+    make('<div style="height: 1000px;" hx-get="/test" hx-trigger="restored">Not Called</div>')
+    window.scrollTo(0, 50)
+    window.onpopstate({ state: { htmx: true } })
+    parseInt(window.scrollY).should.equal(50)
+  })
+
   it('calling onpopstate with no htmx state not true calls original popstate', function() {
     window.onpopstate({ state: { htmx: false } })
   })
@@ -189,5 +196,17 @@ describe('Core htmx internals Tests', function() {
   it('without meta config getMetaConfig returns null', function() {
     document.querySelector('meta[name="htmx-config"]').remove()
     should.equal(htmx._('getMetaConfig')(), null)
+  })
+
+  it('internalAPI settleImmediately completes settle tasks', function() {
+    // settleImmediately is no longer used internally and may no longer be needed at all
+    // as swapping without settleing does not seem via internalAPI
+    const fragment = htmx._('makeFragment')('<div>Content</div>')
+    const historyElement = htmx._('getHistoryElement')()
+    const settleInfo = htmx._('makeSettleInfo')(historyElement)
+    htmx._('swapInnerHTML')(historyElement, fragment, settleInfo)
+    historyElement.firstChild.className.should.equal('htmx-added')
+    htmx._('settleImmediately')(settleInfo.tasks)
+    historyElement.firstChild.className.should.equal('')
   })
 })
