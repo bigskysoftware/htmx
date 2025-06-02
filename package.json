@@ -31,7 +31,6 @@
     "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable",
     "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
     "test": "npm run lint && npm run types-check && mocha-chrome test/index.html",
-    "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "www": "bash ./scripts/www.sh",
     "sha": "bash ./scripts/sha.sh"
   },
