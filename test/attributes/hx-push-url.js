@@ -306,7 +306,7 @@ describe('hx-push-url attribute', function() {
     } finally {
       htmx.config.getCacheBusterParam = false
     }
-    htmx._('currentPathForHistory').should.equal('/test')
+    sessionStorage.getItem('htmx-current-path-for-history').should.equal('/test')
   })
 
   it('ensure history pushState called', function() {
