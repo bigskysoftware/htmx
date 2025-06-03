@@ -4883,7 +4883,7 @@ var htmx = (function() {
       const select = getClosestAttributeValue(elt, 'hx-select')
 
       swap(target, serverResponse, swapSpec, {
-        select: selectOverride || select,
+        select: selectOverride === 'unset' ? null : selectOverride || select,
         selectOOB,
         eventInfo: responseInfo,
         anchor: responseInfo.pathInfo.anchor,
