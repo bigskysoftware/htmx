@@ -3092,6 +3092,16 @@ var htmx = (function() {
   let currentPathForHistory = location.pathname + location.search
 
   /**
+   * @param {string} path
+   */
+  function setCurrentPathForHistory(path) {
+    currentPathForHistory = path
+    if (canAccessLocalStorage()) {
+      sessionStorage.setItem('htmx-current-path-for-history', path)
+    }
+  }
+
+  /**
    * @returns {Element}
    */
   function getHistoryElement() {
@@ -3198,7 +3208,11 @@ var htmx = (function() {
 
   function saveCurrentPageToHistory() {
     const elt = getHistoryElement()
-    const path = currentPathForHistory || location.pathname + location.search
+    let path = currentPathForHistory
+    if (canAccessLocalStorage()) {
+      path = sessionStorage.getItem('htmx-current-path-for-history')
+    }
+    path = path || location.pathname + location.search
 
     // Allow history snapshot feature to be disabled where hx-history="false"
     // is present *anywhere* in the current document we're about to save,
@@ -3228,7 +3242,7 @@ var htmx = (function() {
     if (htmx.config.historyEnabled) {
       history.pushState({ htmx: true }, '', path)
     }
-    currentPathForHistory = path
+    setCurrentPathForHistory(path)
   }
 
   /**
@@ -3236,7 +3250,7 @@ var htmx = (function() {
    */
   function replaceUrlInHistory(path) {
     if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, '', path)
-    currentPathForHistory = path
+    setCurrentPathForHistory(path)
   }
 
   /**
@@ -3275,7 +3289,7 @@ var htmx = (function() {
         swapInnerHTML(historyElement, content, settleInfo)
         restorePreservedElements()
         settleImmediately(settleInfo.tasks)
-        currentPathForHistory = path
+        setCurrentPathForHistory(path)
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: this.response })
       } else {
         triggerErrorEvent(getDocument().body, 'htmx:historyCacheMissLoadError', details)
@@ -3303,7 +3317,7 @@ var htmx = (function() {
       getWindow().setTimeout(function() {
         window.scrollTo(0, cached.scroll)
       }, 0) // next 'tick', so browser has time to render layout
-      currentPathForHistory = path
+      setCurrentPathForHistory(path)
       triggerEvent(getDocument().body, 'htmx:historyRestore', { path, item: cached })
     } else {
       if (htmx.config.refreshOnHistoryMiss) {
