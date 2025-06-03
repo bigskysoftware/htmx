@@ -306,7 +306,7 @@ describe('hx-push-url attribute', function() {
     } finally {
       htmx.config.getCacheBusterParam = false
     }
-    window.htmxCurrentPathForHistory.should.equal('/test')
+    htmx._('currentPathForHistory').should.equal('/test')
   })
 
   it('ensure history pushState called', function() {
