@@ -45,3 +45,4 @@ In this example, if `foo()` returns an object like `{name: "John", age: 30}`, bo
 * `hx-vals` is inherited and can be placed on a parent element.
 * A child declaration of a variable overrides a parent declaration.
 * Input values with the same name will be overridden by variable declarations.
+* When using `javascript:`, `this` refers to the element with the `hx-vals` attribute
