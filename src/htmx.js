@@ -3878,9 +3878,9 @@ var htmx = (function() {
       if (evaluateValue) {
         varsValues = maybeEval(elt, function() {
           if (event) {
-            return Function('event', 'return (' + str + ')')(event)
+            return Function('event', 'return (' + str + ')').call(elt, event)
           } else { // allow window.event to be accessible
-            return Function('return (' + str + ')')()
+            return Function('return (' + str + ')').call(elt)
           }
         }, {})
       } else {
