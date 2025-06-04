@@ -318,10 +318,11 @@ describe('hx-swap attribute', function() {
     )
     div.click()
     this.server.respond()
+    div.innerText.should.equal('')
     setTimeout(function() {
       div.innerText.should.equal('Clicked!')
       done()
-    }, 100)
+    }, 30)
   })
 
   it('works with a settle delay', function(done) {
@@ -538,8 +539,9 @@ describe('hx-swap attribute', function() {
 
   it('swapError fires if swap throws exception', function() {
     try {
-      htmx._('htmx.backupSwap = swap')
-      htmx._('swap = function() { throw new Error("throw") }')
+      // override makeSettleInfo to cause swap function to throw exception
+      htmx._('htmx.backupMakeSettleInfo = makeSettleInfo')
+      htmx._('makeSettleInfo = function() { throw new Error("throw") }')
       var error = false
       var handler = htmx.on('htmx:swapError', function(evt) {
         error = true
@@ -554,7 +556,7 @@ describe('hx-swap attribute', function() {
       div.innerHTML.should.equal('')
       error.should.equal(true)
       htmx.off('htmx:swapError', handler)
-      htmx._('swap = htmx.backupSwap')
+      htmx._('makeSettleInfo = htmx.backupMakeSettleInfo')
     }
   })
 })
