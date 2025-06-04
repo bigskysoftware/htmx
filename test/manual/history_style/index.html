@@ -7,9 +7,9 @@
     <script>
         htmx.on("htmx:beforeHistorySave", function(evt){
             console.log("Saving history : ", evt.detail);
-            console.log("History Cache Before:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+            console.log("History Cache Before:", JSON.parse(sessionStorage.getItem("htmx-history-cache")))
             setTimeout(function () {
-                console.log("History Cache After:", JSON.parse(localStorage.getItem("htmx-history-cache")))
+                console.log("History Cache After:", JSON.parse(sessionStorage.getItem("htmx-history-cache")))
             }, 10);
         })
     </script>
