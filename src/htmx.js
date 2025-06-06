@@ -2270,6 +2270,9 @@ var htmx = (function() {
             } else if (token === 'threshold' && tokens[0] === ':') {
               tokens.shift()
               triggerSpec[token] = consumeUntil(tokens, WHITESPACE_OR_COMMA)
+            } else if (token === 'rootMargin' && tokens[0] === ':') {
+              tokens.shift()
+              triggerSpec[token] = consumeUntil(tokens, /,|(root)|(threshold)/).replace(/_/g, ' ')
             } else {
               triggerErrorEvent(elt, 'htmx:syntax:error', { token: tokens.shift() })
             }
@@ -2677,6 +2680,9 @@ var htmx = (function() {
       }
       if (triggerSpec.threshold) {
         observerOptions.threshold = parseFloat(triggerSpec.threshold)
+      }
+      if (triggerSpec.rootMargin) {
+        observerOptions.rootMargin = triggerSpec.rootMargin
       }
       const observer = new IntersectionObserver(function(entries) {
         for (let i = 0; i < entries.length; i++) {
@@ -5182,6 +5188,7 @@ var htmx = (function() {
  * @property {string} [queue]
  * @property {string} [root]
  * @property {string} [threshold]
+ * @property {string} [rootMargin]
  */
 
 /**
