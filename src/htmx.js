@@ -4716,20 +4716,20 @@ var htmx = (function() {
   }
 
   /**
-   * Updates the responseInfo's target property if an HX-Retarget header is present
-   *
-   * @param {XMLHttpRequest} xhr
-   * @param {HtmxResponseInfo} responseInfo
+   * Resove the Retarget selector and throw if not found
    * @param {Element} elt
+   * @param {String} target
    */
-  function handleRetargetHeader(xhr, responseInfo, elt) {
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
+  function resolveRetarget(elt, target) {
+    if (target === 'this') {
+      return elt
     }
+    const resolvedTarget = asElement(querySelectorExt(elt, target))
+    if (resolvedTarget == null) {
+      triggerErrorEvent(elt, 'htmx:targetError', { target })
+      throw new Error(`Invalid re-target ${target}`)
+    }
+    return resolvedTarget
   }
 
   /**
@@ -4780,9 +4780,6 @@ var htmx = (function() {
       return
     }
 
-    // handle retargeting before determining history updates/resolving response handling
-    handleRetargetHeader(xhr, responseInfo, elt)
-
     const historyUpdate = determineHistoryUpdates(elt, responseInfo)
 
     const responseHandling = resolveResponseHandling(xhr)
@@ -4791,7 +4788,7 @@ var htmx = (function() {
     let ignoreTitle = htmx.config.ignoreTitle || responseHandling.ignoreTitle
     let selectOverride = responseHandling.select
     if (responseHandling.target) {
-      responseInfo.target = asElement(querySelectorExt(elt, responseHandling.target))
+      responseInfo.target = resolveRetarget(elt, responseHandling.target)
     }
     var swapOverride = etc.swapOverride
     if (swapOverride == null && responseHandling.swapOverride) {
@@ -4799,7 +4796,9 @@ var htmx = (function() {
     }
 
     // response headers override response handling config
-    handleRetargetHeader(xhr, responseInfo, elt)
+    if (hasHeader(xhr, /HX-Retarget:/i)) {
+      responseInfo.target = resolveRetarget(elt, xhr.getResponseHeader('HX-Retarget'))
+    }
 
     if (hasHeader(xhr, /HX-Reswap:/i)) {
       swapOverride = xhr.getResponseHeader('HX-Reswap')
