@@ -4719,6 +4719,7 @@ var htmx = (function() {
    * Resove the Retarget selector and throw if not found
    * @param {Element} elt
    * @param {String} target
+   * @returns {Element}
    */
   function resolveRetarget(elt, target) {
     if (target === 'this') {
