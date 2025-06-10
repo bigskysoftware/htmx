@@ -22,6 +22,7 @@
   ],
   "main": "dist/htmx.esm.js",
   "types": "dist/htmx.esm.d.ts",
+  "jsdelivr": "dist/htmx.min.js",
   "unpkg": "dist/htmx.min.js",
   "web-types": "editors/jetbrains/htmx.web-types.json",
   "scripts": {
