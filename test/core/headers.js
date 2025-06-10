@@ -280,6 +280,26 @@ describe('Core htmx AJAX headers', function() {
     div2.innerHTML.should.equal('')
   })
 
+  it('should handle report target:error when HX-Retarget invalid', function() {
+    try {
+      var error = false
+      var handler = htmx.on('htmx:targetError', function(evt) {
+        evt.detail.target.should.equal('#d2')
+        error = true
+      })
+      this.server.respondWith('GET', '/test', [200, { 'HX-Retarget': '#d2' }, 'Result'])
+
+      var div1 = make('<div id="d1" hx-get="/test"></div>')
+      div1.click()
+      this.server.respond()
+    } catch (e) {
+    } finally {
+      htmx.off('htmx:targetError', handler)
+      div1.innerHTML.should.equal('')
+      error.should.equal(true)
+    }
+  })
+
   it('should handle HX-Reswap', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Reswap': 'innerHTML' }, 'Result'])
 
