@@ -93,8 +93,19 @@ describe('Core htmx internals Tests', function() {
     var anchorThatShouldNotCancel = make("<a href='#foo'></a>")
     htmx._('shouldCancel')({ type: 'click' }, anchorThatShouldNotCancel).should.equal(false)
 
+    var divThatShouldNotCancel = make('<div></div>')
+    htmx._('shouldCancel')({ type: 'click' }, divThatShouldNotCancel).should.equal(false)
+
     var form = make('<form></form>')
-    htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'submit', target: form }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: form }, form).should.equal(true)
+
+    // falls back to check elt tag when target is not an element
+    htmx._('shouldCancel')({ type: 'click', target: null }, form).should.equal(true)
+
+    // check that events targeting elements that shouldn't cancel don't cancel
+    htmx._('shouldCancel')({ type: 'submit', target: anchorThatShouldNotCancel }, form).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click', target: divThatShouldNotCancel }, form).should.equal(false)
 
     form = make('<form id="f1">' +
         '<input id="insideInput" type="submit">' +

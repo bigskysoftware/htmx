@@ -2403,6 +2403,8 @@ var htmx = (function() {
    */
   function shouldCancel(evt, elt) {
     if (evt.type === 'submit' || evt.type === 'click') {
+      // use elt from event that was submitted/clicked where possible to determining if default form/link behavior should be canceled
+      elt = asElement(evt.target) || elt
       if (elt.tagName === 'FORM') {
         return true
       }
