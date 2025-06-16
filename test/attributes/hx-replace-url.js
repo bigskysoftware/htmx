@@ -4,12 +4,12 @@ describe('hx-replace-url attribute', function() {
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
 
   it('navigation should replace an element into the cache when true', function() {
@@ -21,7 +21,7 @@ describe('hx-replace-url attribute', function() {
     div.click()
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache[cache.length - 1].url.should.equal('/test')
   })
 
@@ -35,7 +35,7 @@ describe('hx-replace-url attribute', function() {
     div1.click()
     this.server.respond()
     div1.innerHTML.should.equal('Result')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
     path.should.equal('/pushpath')
     htmx.off('htmx:replacedInHistory', handler)

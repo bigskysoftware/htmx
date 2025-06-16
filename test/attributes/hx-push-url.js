@@ -5,12 +5,12 @@ describe('hx-push-url attribute', function() {
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
 
   it('navigation should push an element into the cache when true', function() {
@@ -22,7 +22,7 @@ describe('hx-push-url attribute', function() {
     div.click()
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache[cache.length - 1].url.should.equal('/test')
   })
 
@@ -35,7 +35,7 @@ describe('hx-push-url attribute', function() {
     div.click()
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     should.equal(cache, null)
   })
 
@@ -48,7 +48,7 @@ describe('hx-push-url attribute', function() {
     div.click()
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
     cache[1].url.should.equal('/abc123')
   })
@@ -68,7 +68,7 @@ describe('hx-push-url attribute', function() {
     this.server.respond()
     workArea.textContent.should.equal('test2')
 
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
 
     cache.length.should.equal(2)
     htmx._('restoreHistory')('/test1')
@@ -106,7 +106,7 @@ describe('hx-push-url attribute', function() {
       byId('d1').click()
       this.server.respond()
     }
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(10) // should only be 10 elements
   })
 
@@ -125,10 +125,10 @@ describe('hx-push-url attribute', function() {
     this.server.respond()
     workArea.textContent.should.equal('test2')
 
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
 
     cache.length.should.equal(2)
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
     htmx._('restoreHistory')('/test1')
     this.server.respond()
     getWorkArea().textContent.should.equal('test1')
@@ -138,7 +138,7 @@ describe('hx-push-url attribute', function() {
     htmx.config.refreshOnHistoryMiss = true
     var refresh = false
     htmx.location = { reload: function() { refresh = true } }
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
     htmx._('restoreHistory')('/test3')
     refresh.should.equal(true)
     htmx.location = window.location
@@ -152,20 +152,20 @@ describe('hx-push-url attribute', function() {
     div.click()
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
   })
 
   it('deals with malformed JSON in history cache when getting', function() {
-    localStorage.setItem(HTMX_HISTORY_CACHE_NAME, 'Invalid JSON')
+    sessionStorage.setItem(HTMX_HISTORY_CACHE_NAME, 'Invalid JSON')
     var history = htmx._('getCachedHistory')('url')
     should.equal(history, null)
   })
 
   it('deals with malformed JSON in history cache when saving', function() {
-    localStorage.setItem(HTMX_HISTORY_CACHE_NAME, 'Invalid JSON')
+    sessionStorage.setItem(HTMX_HISTORY_CACHE_NAME, 'Invalid JSON')
     htmx._('saveToHistoryCache')('url', make('<div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
   })
 
@@ -174,17 +174,17 @@ describe('hx-push-url attribute', function() {
     htmx._('saveToHistoryCache')('url2', make('<div>'))
     htmx._('saveToHistoryCache')('url3', make('<div>'))
     htmx._('saveToHistoryCache')('url2', make('<div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
   })
 
   it('setting history cache size to 0 clears cache', function() {
     htmx._('saveToHistoryCache')('url1', make('<div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
     htmx.config.historyCacheSize = 0
     htmx._('saveToHistoryCache')('url2', make('<div>'))
-    cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     should.equal(cache, null)
     htmx.config.historyCacheSize = 10
   })
@@ -195,7 +195,7 @@ describe('hx-push-url attribute', function() {
     htmx._('saveToHistoryCache')('url3', make('<div>'))
     htmx._('saveToHistoryCache')('url2', make('<div>'))
     htmx._('saveToHistoryCache')('url1', make('<div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
     cache[0].url.should.equal('/url3')
     cache[1].url.should.equal('/url2')
@@ -246,19 +246,19 @@ describe('hx-push-url attribute', function() {
       bigContent += bigContent
     }
     try {
-      localStorage.removeItem('htmx-history-cache')
+      sessionStorage.removeItem('htmx-history-cache')
       htmx._('saveToHistoryCache')('/dummy', make('<div>' + bigContent + '</div>'), 'Foo', 0)
-      should.equal(localStorage.getItem('htmx-history-cache'), null)
+      should.equal(sessionStorage.getItem('htmx-history-cache'), null)
     } finally {
       // clear history cache afterwards
-      localStorage.removeItem('htmx-history-cache')
+      sessionStorage.removeItem('htmx-history-cache')
     }
   })
 
   if (/chrome/i.test(navigator.userAgent)) {
-    it('when localStorage disabled history not saved fine', function() {
-      var setItem = localStorage.setItem
-      localStorage.setItem = undefined
+    it('when sessionStorage disabled history not saved fine', function() {
+      var setItem = sessionStorage.setItem
+      sessionStorage.setItem = undefined
       this.server.respondWith('GET', '/test', 'second')
       getWorkArea().innerHTML.should.be.equal('')
       var div = make('<div hx-push-url="true" hx-get="/test">first</div>')
@@ -269,7 +269,7 @@ describe('hx-push-url attribute', function() {
       getWorkArea().textContent.should.equal('second')
       var hist = htmx._('getCachedHistory')('/test')
       should.equal(hist, null)
-      localStorage.setItem = setItem
+      sessionStorage.setItem = setItem
     })
   }
 
@@ -277,7 +277,7 @@ describe('hx-push-url attribute', function() {
     // path normalization has a bug breaking it right now preventing this test
     htmx._('saveToHistoryCache')('http://', make('<div>'))
     htmx._('saveToHistoryCache')('http//', make('<div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
     cache[0].url.should.equal('http://') // no normalization as invalid
     cache[1].url.should.equal('/http') // can normalize this one
@@ -285,7 +285,7 @@ describe('hx-push-url attribute', function() {
 
   it('history cache clears out disabled attribute', function() {
     htmx._('saveToHistoryCache')('/url1', make('<div><div data-disabled-by-htmx disabled></div></div>'))
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
     cache[0].url.should.equal('/url1')
     cache[0].content.should.equal('<div data-disabled-by-htmx=""></div>')
@@ -337,7 +337,7 @@ describe('hx-push-url attribute', function() {
     div1.click()
     this.server.respond()
     div1.innerHTML.should.equal('Result')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
     path.should.equal('/pushpath')
     htmx.off('htmx:pushedIntoHistory', handler)
@@ -353,7 +353,7 @@ describe('hx-push-url attribute', function() {
     div1.click()
     this.server.respond()
     div1.innerHTML.should.equal('Result')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
     path.should.equal('/pushpath')
     htmx.off('htmx:pushedIntoHistory', handler)
@@ -369,7 +369,7 @@ describe('hx-push-url attribute', function() {
     div1.click()
     this.server.respond()
     div1.innerHTML.should.equal('Result')
-    var cache = JSON.parse(localStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     should.equal(cache, null)
     path.should.equal('')
     htmx.off('htmx:pushedIntoHistory', handler)
