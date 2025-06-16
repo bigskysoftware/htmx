@@ -741,7 +741,7 @@ describe('Core htmx Events', function() {
   })
 
   it('preventDefault() in htmx:historyCacheMiss stops the history request', function() {
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheMiss', function(evt) {
       evt.preventDefault()
     })
@@ -760,7 +760,7 @@ describe('Core htmx Events', function() {
       this.server.respond()
       workArea.textContent.should.equal('test2')
 
-      localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
       htmx._('restoreHistory')('/test1')
       this.server.respond()
       getWorkArea().textContent.should.equal('test2')
@@ -770,7 +770,7 @@ describe('Core htmx Events', function() {
   })
 
   it('htmx:historyCacheMissLoad event can update history swap', function() {
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheMissLoad', function(evt) {
       evt.detail.historyElt = byId('hist-re-target')
       evt.detail.swapSpec.swapStyle = 'outerHTML'
@@ -793,7 +793,7 @@ describe('Core htmx Events', function() {
       this.server.respond()
       workArea.textContent.should.equal('test2')
 
-      localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
       htmx._('restoreHistory')('/test1')
       this.server.respond()
       getWorkArea().textContent.should.equal('test2Updated')
@@ -805,7 +805,7 @@ describe('Core htmx Events', function() {
   })
 
   it('htmx:historyCacheMiss event can set custom request headers', function() {
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheMiss', function(evt) {
       evt.detail.xhr.setRequestHeader('CustomHeader', 'true')
     })
@@ -816,7 +816,7 @@ describe('Core htmx Events', function() {
     make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
 
     try {
-      localStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
       htmx._('restoreHistory')('/test1')
       this.server.respond()
       getWorkArea().textContent.should.equal('test1')
@@ -826,7 +826,7 @@ describe('Core htmx Events', function() {
   })
 
   it('preventDefault() in htmx:historyCacheHit stops the history action', function() {
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheHit', function(evt) {
       evt.preventDefault()
     })
@@ -853,7 +853,7 @@ describe('Core htmx Events', function() {
   })
 
   it('htmx:historyCacheHit event can update history swap', function() {
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
     var handler = htmx.on('htmx:historyCacheHit', function(evt) {
       evt.detail.historyElt = byId('hist-re-target')
       evt.detail.swapSpec.swapStyle = 'outerHTML'

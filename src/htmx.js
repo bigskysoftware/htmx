@@ -3116,6 +3116,16 @@ var htmx = (function() {
   let currentPathForHistory = location.pathname + location.search
 
   /**
+   * @param {string} path
+   */
+  function setCurrentPathForHistory(path) {
+    currentPathForHistory = path
+    if (canAccessLocalStorage()) {
+      sessionStorage.setItem('htmx-current-path-for-history', path)
+    }
+  }
+
+  /**
    * @returns {Element}
    */
   function getHistoryElement() {
@@ -3222,7 +3232,11 @@ var htmx = (function() {
 
   function saveCurrentPageToHistory() {
     const elt = getHistoryElement()
-    const path = currentPathForHistory || location.pathname + location.search
+    let path = currentPathForHistory
+    if (canAccessLocalStorage()) {
+      path = sessionStorage.getItem('htmx-current-path-for-history')
+    }
+    path = path || location.pathname + location.search
 
     // Allow history snapshot feature to be disabled where hx-history="false"
     // is present *anywhere* in the current document we're about to save,
@@ -3252,7 +3266,7 @@ var htmx = (function() {
     if (htmx.config.historyEnabled) {
       history.pushState({ htmx: true }, '', path)
     }
-    currentPathForHistory = path
+    setCurrentPathForHistory(path)
   }
 
   /**
@@ -3260,7 +3274,7 @@ var htmx = (function() {
    */
   function replaceUrlInHistory(path) {
     if (htmx.config.historyEnabled) history.replaceState({ htmx: true }, '', path)
-    currentPathForHistory = path
+    setCurrentPathForHistory(path)
   }
 
   /**
@@ -3293,7 +3307,7 @@ var htmx = (function() {
           contextElement: details.historyElt,
           historyRequest: true
         })
-        currentPathForHistory = details.path
+        setCurrentPathForHistory(details.path)
         triggerEvent(getDocument().body, 'htmx:historyRestore', { path, cacheMiss: true, serverResponse: details.response })
       } else {
         triggerErrorEvent(getDocument().body, 'htmx:historyCacheMissLoadError', details)
@@ -3319,7 +3333,7 @@ var htmx = (function() {
           contextElement: details.historyElt,
           title: cached.title
         })
-        currentPathForHistory = details.path
+        setCurrentPathForHistory(details.path)
         triggerEvent(getDocument().body, 'htmx:historyRestore', details)
       }
     } else {

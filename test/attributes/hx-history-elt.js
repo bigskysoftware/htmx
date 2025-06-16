@@ -4,12 +4,12 @@ describe('hx-history attribute', function() {
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
   })
 
   it('content of hx-history-elt is used during history replacment', function() {
@@ -29,7 +29,7 @@ describe('hx-history attribute', function() {
 
     this.server.respondWith('GET', '/test1', '<div>content outside of hx-history-elt not included</div><div id="work-area" hx-history-elt><div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test3</div></div>')
     // clear cache so it makes a full page request on history restore
-    localStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
 
     htmx._('restoreHistory')('/test1')
     this.server.respond()
