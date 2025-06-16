@@ -1,6 +1,6 @@
 +++
 title = "Experimental moveBefore() Support"
-insert_anchor_links = "left"
+insert_anchor_links = "heading"
 +++
 
 This page demonstrates the use of the experimental [`moveBefore()`](https://github.com/whatwg/dom/issues/1255) DOM

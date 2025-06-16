@@ -1,9 +1,13 @@
 +++
 title = "hx-swap-oob"
+description = """\
+  The hx-swap-oob attribute in htmx allows you to specify that some content in a response should be swapped into the \
+  DOM somewhere other than the target, that is 'out-of-band'. This allows you to piggyback updates to other elements \
+  on a response."""
 +++
 
 The `hx-swap-oob` attribute allows you to specify that some content in a response should be
-swapped into the DOM somewhere other than the target, that is "Out of Band".  This allows you to piggy back updates to other element updates on a response.
+swapped into the DOM somewhere other than the target, that is "Out of Band".  This allows you to piggyback updates to other element updates on a response.
 
 Consider the following response HTML:
 
@@ -72,7 +76,7 @@ A `<p>` can be encapsulated in `<div>` or `<span>`:
 Note that you can use a `template` tag to encapsulate types of elements that, by the HTML spec, can't stand on their own in the
 DOM (`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>`, `<col>` & `<li>`).
 
-Here is an example with an out of band swap of a table row being encapsulated in this way:
+Here is an example with an out-of-band swap of a table row being encapsulated in this way:
 
 ```html
 <div>
@@ -91,7 +95,7 @@ Note that these template tags will be removed from the final content of the page
 
 Some element types, like SVG, use a specific XML namespace for their child elements. This prevents internal elements from working correctly when swapped in, unless they are encapsulated within a `svg` tag. To modify the internal contents of an existing SVG, you can use both `template` and `svg` tags to encapsulate the elements, allowing them to get the correct namespace applied.
 
-Here is an example with an out of band swap of svg elements being encapsulated in this way:
+Here is an example with an out-of-band swap of svg elements being encapsulated in this way:
 
 ```html
 <div>
@@ -111,7 +115,7 @@ Note that these `template` and `svg` wrapping tags will be removed from the fina
 ## Nested OOB Swaps
 
 By default, any element with `hx-swap-oob=` attribute anywhere in the response is processed for oob swap behavior, including when an element is nested within the main response element.
-This can be problematic when using [template fragments](https://htmx.org/essays/template-fragments/) where a fragment may be reused as a oob-swap target and also as part of a bigger fragment. When the bigger fragment is the main response the inner fragment will still be processed as an oob swap, removing it from the dom.
+This can be problematic when using [template fragments](https://htmx.org/essays/template-fragments/) where a fragment may be reused as an oob-swap target and also as part of a bigger fragment. When the bigger fragment is the main response the inner fragment will still be processed as an oob swap, removing it from the dom.
 
 This behavior can be changed by setting the config `htmx.config.allowNestedOobSwaps` to `false`. If this config option is `false`, OOB swaps are only processed when the element is *adjacent to* the main response element, OOB swaps elsewhere will be ignored and oob-swap-related attributes stripped.
 

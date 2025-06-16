@@ -1,9 +1,14 @@
 +++
 title = "Codin' Dirty"
+description = """\
+  In this article, Carson Gross discusses an alternative approach to software development that challenges the \
+  principles outlined in 'Clean Code.' Carson advocates for allowing larger functions in certain cases, preferring \
+  integration tests over unit tests, and minimizing the number of classes and interfaces. He shares examples from \
+  successful software projects that demonstrate these practices can lead to maintainable, high-quality code."""
 date = 2024-11-24
 updated = 2024-11-24
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

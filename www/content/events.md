@@ -111,6 +111,7 @@ This event is triggered before an AJAX request is issued.  If you call `preventD
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 
 ### Event - `htmx:beforeSend` {#htmx:beforeSend}
@@ -126,19 +127,26 @@ This event is triggered right before a request is sent.  You may not cancel the 
 
 ### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
 
-This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).  If you call `preventDefault()` on the event to cancel it, no swap will occur.
+This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).
+Most values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.
+If you call `preventDefault()` on the event to cancel it, no swap will occur.
 
-You can modify the default swap behavior by modifying the `shouldSwap` and `target` properties of the event detail. See
-the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
+You can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.
+See the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
 * `detail.elt` - the target of the swap
 * `detail.xhr` - the `XMLHttpRequest`
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.requestConfig.elt` - the element that dispatched the request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.ignoreTitle` - if `true` any title tag in the response will be ignored
+* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events
+* `detail.serverResponse` - the server response as text to be used for the swap
+* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value
+* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value
 * `detail.target` - the target of the swap
 
 ### Event - `htmx:beforeTransition` {#htmx:beforeTransition}
@@ -151,6 +159,7 @@ happen instead.
 
 * `detail.elt` - the element that dispatched the request
 * `detail.xhr` - the `XMLHttpRequest`
+* `detail.boosted` - true if the request is via an element using boosting
 * `detail.requestConfig` - the configuration of the AJAX request
 * `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
 * `detail.target` - the target of the swap
@@ -329,13 +338,9 @@ You can modify the contents of the historyElt to remove 3rd party javascript cha
 * `detail.path` - the path and query of the page being saved
 * `detail.historyElt` - the history element about to be saved
 
-##### Details
-
-* `detail.config` - the config that will be passed to the `EventSource` constructor
-
 ### Event - `htmx:load` {#htmx:load}
 
-This event is triggered when a new node is loaded into the DOM by htmx.
+This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
 
 ##### Details
 

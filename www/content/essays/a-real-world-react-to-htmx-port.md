@@ -1,9 +1,14 @@
 +++
 title = "A Real World React -> htmx Port"
+description = """\
+  David Guillot at Contexte gave what we are calling 'The Mother of All htmx Demos' at DjangoCon 2022. This essay \
+  summarizes this real-world case study of replacing React with htmx in a SaaS product, demonstrating significant \
+  improvements in code size, performance, and development team efficiency through the adoption of a hypermedia-driven \
+  architecture."""
 date = 2022-09-29
 updated = 2022-10-15
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

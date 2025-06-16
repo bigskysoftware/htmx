@@ -1,9 +1,15 @@
 +++
 title = "Does Hypermedia Scale?"
+description = """\
+  In this essay, Carson Gross examines whether Hypermedia-Driven Applications (HDAs) can effectively scale across \
+  different dimensions of software development, including system nodes, application performance, feature count, \
+  feature complexity, and team size. The analysis explores both the strengths and limitations of hypermedia in each \
+  context, ultimately demonstrating that HDAs can scale well in most scenarios while acknowledging specific challenges \
+  with complex client-side features."""
 date = 2023-11-06
 updated = 2023-11-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -20,7 +26,7 @@ First of all, let's define the term "scaling" and then the contexts that word ca
 context, scaling typically means the ability of the software to handle "larger" things.  Those things can be:
 
 * More nodes in a general [system](https://hypermedia.systems)
-* More user requests (scaling your individual applications performance)
+* More user requests (scaling your individual application's performance)
 * More features  (scaling your codebase) 
 * More _complex_ features 
 * More developers (scaling your team size)

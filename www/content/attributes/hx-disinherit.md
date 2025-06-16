@@ -1,5 +1,9 @@
 +++
 title = "hx-disinherit"
+description = """\
+  The hx-disinherit attribute in htmx lets you control how child elements inherit attributes from their parents. This \
+  documentation explains how to selectively disable inheritance of specific htmx attributes or all attributes, \
+  allowing for more granular control over your web application's behavior."""
 +++
 
 The default behavior for htmx is to "inherit" many attributes automatically: that is, an attribute such as

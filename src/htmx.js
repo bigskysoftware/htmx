@@ -1347,6 +1347,16 @@ var htmx = (function() {
         return [findThisElement(elt, attrName)]
       } else {
         const result = querySelectorAllExt(elt, attrTarget)
+        // find `inherit` whole word in value, make sure it's surrounded by commas or is at the start/end of string
+        const shouldInherit = /(^|,)(\s*)inherit(\s*)($|,)/.test(attrTarget)
+        if (shouldInherit) {
+          const eltToInheritFrom = asElement(getClosestMatch(elt, function(parent) {
+            return parent !== elt && hasAttribute(asElement(parent), attrName)
+          }))
+          if (eltToInheritFrom) {
+            result.push(...findAttributeTargets(eltToInheritFrom, attrName))
+          }
+        }
         if (result.length === 0) {
           logError('The selector "' + attrTarget + '" on ' + attrName + ' returned no matches!')
           return [DUMMY_ELT]
@@ -1444,7 +1454,7 @@ var htmx = (function() {
    */
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
     rootNode = rootNode || getDocument()
-    let selector = '#' + getRawAttribute(oobElement, 'id')
+    let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
     if (oobValue === 'true') {
@@ -1851,7 +1861,7 @@ var htmx = (function() {
   }
 
   /**
-   * Implements complete swapping pipeline, including: focus and selection preservation,
+   * Implements complete swapping pipeline, including: delay, view transitions, focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
    * @param {string} content
@@ -1862,138 +1872,180 @@ var htmx = (function() {
     if (!swapOptions) {
       swapOptions = {}
     }
+    // optional transition API promise callbacks
+    let settleResolve = null
+    let settleReject = null
 
-    target = resolveTarget(target)
-    const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
+    let doSwap = function() {
+      maybeCall(swapOptions.beforeSwapCallback)
 
-    // preserve focus and selection
-    const activeElt = document.activeElement
-    let selectionInfo = {}
-    selectionInfo = {
-      elt: activeElt,
-      // @ts-ignore
-      start: activeElt ? activeElt.selectionStart : null,
-      // @ts-ignore
-      end: activeElt ? activeElt.selectionEnd : null
-    }
-    const settleInfo = makeSettleInfo(target)
+      target = resolveTarget(target)
+      const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
 
-    // For text content swaps, don't parse the response as HTML, just insert it
-    if (swapSpec.swapStyle === 'textContent') {
-      target.textContent = content
-    // Otherwise, make the fragment and process it
-    } else {
-      let fragment = makeFragment(content)
-
-      settleInfo.title = swapOptions.title || fragment.title
-      if (swapOptions.historyRequest) {
-        // @ts-ignore fragment can be a parentNode Element
-        fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
-      }
-
-      // select-oob swaps
-      if (swapOptions.selectOOB) {
-        const oobSelectValues = swapOptions.selectOOB.split(',')
-        for (let i = 0; i < oobSelectValues.length; i++) {
-          const oobSelectValue = oobSelectValues[i].split(':', 2)
-          let id = oobSelectValue[0].trim()
-          if (id.indexOf('#') === 0) {
-            id = id.substring(1)
-          }
-          const oobValue = oobSelectValue[1] || 'true'
-          const oobElement = fragment.querySelector('#' + id)
-          if (oobElement) {
-            oobSwap(oobValue, oobElement, settleInfo, rootNode)
-          }
-        }
-      }
-      // oob swaps
-      findAndSwapOobElements(fragment, settleInfo, rootNode)
-      forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-        if (template.content && findAndSwapOobElements(template.content, settleInfo, rootNode)) {
-          // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
-          template.remove()
-        }
-      })
-
-      // normal swap
-      if (swapOptions.select) {
-        const newFragment = getDocument().createDocumentFragment()
-        forEach(fragment.querySelectorAll(swapOptions.select), function(node) {
-          newFragment.appendChild(node)
-        })
-        fragment = newFragment
-      }
-      handlePreservedElements(fragment)
-      swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
-      restorePreservedElements()
-    }
-
-    // apply saved focus and selection information to swapped content
-    if (selectionInfo.elt &&
-      !bodyContains(selectionInfo.elt) &&
-      getRawAttribute(selectionInfo.elt, 'id')) {
-      const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
-      const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
-      if (newActiveElt) {
+      // preserve focus and selection
+      const activeElt = document.activeElement
+      let selectionInfo = {}
+      selectionInfo = {
+        elt: activeElt,
         // @ts-ignore
-        if (selectionInfo.start && newActiveElt.setSelectionRange) {
-          try {
-            // @ts-ignore
-            newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
-          } catch (e) {
-            // the setSelectionRange method is present on fields that don't support it, so just let this fail
+        start: activeElt ? activeElt.selectionStart : null,
+        // @ts-ignore
+        end: activeElt ? activeElt.selectionEnd : null
+      }
+      const settleInfo = makeSettleInfo(target)
+
+      // For text content swaps, don't parse the response as HTML, just insert it
+      if (swapSpec.swapStyle === 'textContent') {
+        target.textContent = content
+      // Otherwise, make the fragment and process it
+      } else {
+        let fragment = makeFragment(content)
+
+        settleInfo.title = swapOptions.title || fragment.title
+        if (swapOptions.historyRequest) {
+          // @ts-ignore fragment can be a parentNode Element
+          fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
+        }
+
+        // select-oob swaps
+        if (swapOptions.selectOOB) {
+          const oobSelectValues = swapOptions.selectOOB.split(',')
+          for (let i = 0; i < oobSelectValues.length; i++) {
+            const oobSelectValue = oobSelectValues[i].split(':', 2)
+            let id = oobSelectValue[0].trim()
+            if (id.indexOf('#') === 0) {
+              id = id.substring(1)
+            }
+            const oobValue = oobSelectValue[1] || 'true'
+            const oobElement = fragment.querySelector('#' + id)
+            if (oobElement) {
+              oobSwap(oobValue, oobElement, settleInfo, rootNode)
+            }
           }
         }
-        newActiveElt.focus(focusOptions)
+        // oob swaps
+        findAndSwapOobElements(fragment, settleInfo, rootNode)
+        forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
+          if (template.content && findAndSwapOobElements(template.content, settleInfo, rootNode)) {
+            // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
+            template.remove()
+          }
+        })
+
+        // normal swap
+        if (swapOptions.select) {
+          const newFragment = getDocument().createDocumentFragment()
+          forEach(fragment.querySelectorAll(swapOptions.select), function(node) {
+            newFragment.appendChild(node)
+          })
+          fragment = newFragment
+        }
+        handlePreservedElements(fragment)
+        swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
+        restorePreservedElements()
       }
-    }
 
-    target.classList.remove(htmx.config.swappingClass)
-    forEach(settleInfo.elts, function(elt) {
-      if (elt.classList) {
-        elt.classList.add(htmx.config.settlingClass)
+      // apply saved focus and selection information to swapped content
+      if (selectionInfo.elt &&
+        !bodyContains(selectionInfo.elt) &&
+        getRawAttribute(selectionInfo.elt, 'id')) {
+        const newActiveElt = document.getElementById(getRawAttribute(selectionInfo.elt, 'id'))
+        const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
+        if (newActiveElt) {
+          // @ts-ignore
+          if (selectionInfo.start && newActiveElt.setSelectionRange) {
+            try {
+              // @ts-ignore
+              newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
+            } catch (e) {
+              // the setSelectionRange method is present on fields that don't support it, so just let this fail
+            }
+          }
+          newActiveElt.focus(focusOptions)
+        }
       }
-      triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
-    })
-    if (swapOptions.afterSwapCallback) {
-      swapOptions.afterSwapCallback()
-    }
 
-    // merge in new title after swap but before settle
-    if (!swapSpec.ignoreTitle) {
-      handleTitle(settleInfo.title)
-    }
-
-    // settle
-    const doSettle = function() {
-      forEach(settleInfo.tasks, function(task) {
-        task.call()
-      })
+      target.classList.remove(htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
-          elt.classList.remove(htmx.config.settlingClass)
+          elt.classList.add(htmx.config.settlingClass)
         }
-        triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
+        triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
       })
+      maybeCall(swapOptions.afterSwapCallback)
 
-      if (swapOptions.anchor) {
-        const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
-        if (anchorTarget) {
-          anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
-        }
+      // merge in new title after swap but before settle
+      if (!swapSpec.ignoreTitle) {
+        handleTitle(settleInfo.title)
       }
 
-      updateScrollState(settleInfo.elts, swapSpec)
-      if (swapOptions.afterSettleCallback) {
-        swapOptions.afterSettleCallback()
+      // settle
+      const doSettle = function() {
+        forEach(settleInfo.tasks, function(task) {
+          task.call()
+        })
+        forEach(settleInfo.elts, function(elt) {
+          if (elt.classList) {
+            elt.classList.remove(htmx.config.settlingClass)
+          }
+          triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
+        })
+
+        if (swapOptions.anchor) {
+          const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
+          if (anchorTarget) {
+            anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
+          }
+        }
+
+        updateScrollState(settleInfo.elts, swapSpec)
+        maybeCall(swapOptions.afterSettleCallback)
+        maybeCall(settleResolve)
+      }
+
+      if (swapSpec.settleDelay > 0) {
+        getWindow().setTimeout(doSettle, swapSpec.settleDelay)
+      } else {
+        doSettle()
+      }
+    }
+    let shouldTransition = htmx.config.globalViewTransitions
+    if (swapSpec.hasOwnProperty('transition')) {
+      shouldTransition = swapSpec.transition
+    }
+
+    const elt = swapOptions.contextElement || getDocument()
+
+    if (shouldTransition &&
+            triggerEvent(elt, 'htmx:beforeTransition', swapOptions.eventInfo) &&
+            typeof Promise !== 'undefined' &&
+            // @ts-ignore experimental feature atm
+            document.startViewTransition) {
+      const settlePromise = new Promise(function(_resolve, _reject) {
+        settleResolve = _resolve
+        settleReject = _reject
+      })
+      // wrap the original doSwap() in a call to startViewTransition()
+      const innerDoSwap = doSwap
+      doSwap = function() {
+        // @ts-ignore experimental feature atm
+        document.startViewTransition(function() {
+          innerDoSwap()
+          return settlePromise
+        })
       }
     }
 
-    if (swapSpec.settleDelay > 0) {
-      getWindow().setTimeout(doSettle, swapSpec.settleDelay)
-    } else {
-      doSettle()
+    try {
+      if (swapSpec?.swapDelay && swapSpec.swapDelay > 0) {
+        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
+      } else {
+        doSwap()
+      }
+    } catch (e) {
+      triggerErrorEvent(elt, 'htmx:swapError', swapOptions.eventInfo)
+      maybeCall(settleReject)
+      throw e
     }
   }
 
@@ -2488,7 +2540,7 @@ var htmx = (function() {
             }
           }
           if (triggerSpec.changed) {
-            const node = event.target
+            const node = evt.target
             // @ts-ignore value will be undefined for non-input elements, which is fine
             const value = node.value
             const lastValue = elementData.lastValue.get(triggerSpec)
@@ -2875,46 +2927,52 @@ var htmx = (function() {
    * @param {Element|HTMLInputElement} elt
    */
   function initNode(elt) {
-    if (eltIsDisabled(elt)) {
-      cleanUpElement(elt)
-      return
-    }
-    // Ensure only valid Elements and not shadow DOM roots are inited
-    if (!(elt instanceof Element)) return
+    triggerEvent(elt, 'htmx:beforeProcessNode')
+
     const nodeData = getInternalData(elt)
-    const attrHash = attributeHash(elt)
-    if (nodeData.initHash !== attrHash) {
-      // clean up any previously processed info
-      deInitNode(elt)
+    const triggerSpecs = getTriggerSpecs(elt)
+    const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
 
-      nodeData.initHash = attrHash
-
-      triggerEvent(elt, 'htmx:beforeProcessNode')
-
-      const triggerSpecs = getTriggerSpecs(elt)
-      const hasExplicitHttpAction = processVerbs(elt, nodeData, triggerSpecs)
-
-      if (!hasExplicitHttpAction) {
-        if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
-          boostElement(elt, nodeData, triggerSpecs)
-        } else if (hasAttribute(elt, 'hx-trigger')) {
-          triggerSpecs.forEach(function(triggerSpec) {
-            // For "naked" triggers, don't do anything at all
-            addTriggerHandler(elt, triggerSpec, nodeData, function() {
-            })
+    if (!hasExplicitHttpAction) {
+      if (getClosestAttributeValue(elt, 'hx-boost') === 'true') {
+        boostElement(elt, nodeData, triggerSpecs)
+      } else if (hasAttribute(elt, 'hx-trigger')) {
+        triggerSpecs.forEach(function(triggerSpec) {
+          // For "naked" triggers, don't do anything at all
+          addTriggerHandler(elt, triggerSpec, nodeData, function() {
           })
-        }
+        })
       }
-
-      // Handle submit buttons/inputs that have the form attribute set
-      // see https://developer.mozilla.org/docs/Web/HTML/Element/button
-      if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
-        initButtonTracking(elt)
-      }
-
-      nodeData.firstInitCompleted = true
-      triggerEvent(elt, 'htmx:afterProcessNode')
     }
+
+    // Handle submit buttons/inputs that have the form attribute set
+    // see https://developer.mozilla.org/docs/Web/HTML/Element/button
+    if (elt.tagName === 'FORM' || (getRawAttribute(elt, 'type') === 'submit' && hasAttribute(elt, 'form'))) {
+      initButtonTracking(elt)
+    }
+
+    nodeData.firstInitCompleted = true
+    triggerEvent(elt, 'htmx:afterProcessNode')
+  }
+
+  /**
+   * @param {Element} elt
+   * @returns {boolean}
+   */
+  function maybeDeInitAndHash(elt) {
+    // Ensure only valid Elements and not shadow DOM roots are inited
+    if (!(elt instanceof Element)) {
+      return false
+    }
+
+    const nodeData = getInternalData(elt)
+    const hash = attributeHash(elt)
+    if (nodeData.initHash !== hash) {
+      deInitNode(elt)
+      nodeData.initHash = hash
+      return true
+    }
+    return false
   }
 
   /**
@@ -2930,9 +2988,23 @@ var htmx = (function() {
       cleanUpElement(elt)
       return
     }
-    initNode(elt)
-    forEach(findElementsToProcess(elt), function(child) { initNode(child) })
+
+    const elementsToInit = []
+    if (maybeDeInitAndHash(elt)) {
+      elementsToInit.push(elt)
+    }
+    forEach(findElementsToProcess(elt), function(child) {
+      if (eltIsDisabled(child)) {
+        cleanUpElement(child)
+        return
+      }
+      if (maybeDeInitAndHash(child)) {
+        elementsToInit.push(child)
+      }
+    })
+
     forEach(findHxOnWildcardElements(elt), processHxOnWildcard)
+    forEach(elementsToInit, initNode)
   }
 
   //= ===================================================================
@@ -2977,15 +3049,17 @@ var htmx = (function() {
 
   /**
    * `withExtensions` locates all active extensions for a provided element, then
-   * executes the provided function using each of the active extensions.  It should
+   * executes the provided function using each of the active extensions. You can filter
+   * the element's extensions by giving it a list of extensions to ignore. It should
    * be called internally at every extendable execution point in htmx.
    *
    * @param {Element} elt
    * @param {(extension:HtmxExtension) => void} toDo
+   * @param {string[]=} extensionsToIgnore
    * @returns void
    */
-  function withExtensions(elt, toDo) {
-    forEach(getExtensions(elt), function(extension) {
+  function withExtensions(elt, toDo, extensionsToIgnore) {
+    forEach(getExtensions(elt, [], extensionsToIgnore), function(extension) {
       try {
         toDo(extension)
       } catch (e) {
@@ -4168,7 +4242,7 @@ var htmx = (function() {
     }
     const target = etc.targetOverride || asElement(getTarget(elt))
     if (target == null || target == DUMMY_ELT) {
-      triggerErrorEvent(elt, 'htmx:targetError', { target: getAttributeValue(elt, 'hx-target') })
+      triggerErrorEvent(elt, 'htmx:targetError', { target: getClosestAttributeValue(elt, 'hx-target') })
       maybeCall(reject)
       return promise
     }
@@ -4357,6 +4431,7 @@ var htmx = (function() {
       unfilteredFormData: allFormData,
       unfilteredParameters: formDataProxy(allFormData),
       headers,
+      elt,
       target,
       verb,
       errors,
@@ -4661,6 +4736,23 @@ var htmx = (function() {
   }
 
   /**
+   * Updates the responseInfo's target property if an HX-Retarget header is present
+   *
+   * @param {XMLHttpRequest} xhr
+   * @param {HtmxResponseInfo} responseInfo
+   * @param {Element} elt
+   */
+  function handleRetargetHeader(xhr, responseInfo, elt) {
+    if (hasHeader(xhr, /HX-Retarget:/i)) {
+      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
+        responseInfo.target = elt
+      } else {
+        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
+      }
+    }
+  }
+
+  /**
    * @param {Element} elt
    * @param {HtmxResponseInfo} responseInfo
    */
@@ -4708,13 +4800,8 @@ var htmx = (function() {
       return
     }
 
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    // handle retargeting before determining history updates/resolving response handling
+    handleRetargetHeader(xhr, responseInfo, elt)
 
     const historyUpdate = determineHistoryUpdates(elt, responseInfo)
 
@@ -4732,13 +4819,8 @@ var htmx = (function() {
     }
 
     // response headers override response handling config
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
-      if (xhr.getResponseHeader('HX-Retarget') === 'this') {
-        responseInfo.target = elt
-      } else {
-        responseInfo.target = asElement(querySelectorExt(elt, xhr.getResponseHeader('HX-Retarget')))
-      }
-    }
+    handleRetargetHeader(xhr, responseInfo, elt)
+
     if (hasHeader(xhr, /HX-Reswap:/i)) {
       swapOverride = xhr.getResponseHeader('HX-Reswap')
     }
@@ -4791,10 +4873,6 @@ var htmx = (function() {
 
       target.classList.add(htmx.config.swappingClass)
 
-      // optional transition API promise callbacks
-      let settleResolve = null
-      let settleReject = null
-
       if (responseInfoSelect) {
         selectOverride = responseInfoSelect
       }
@@ -4806,8 +4884,31 @@ var htmx = (function() {
       const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
-      let doSwap = function() {
-        try {
+      swap(target, serverResponse, swapSpec, {
+        select: selectOverride === 'unset' ? null : selectOverride || select,
+        selectOOB,
+        eventInfo: responseInfo,
+        anchor: responseInfo.pathInfo.anchor,
+        contextElement: elt,
+        afterSwapCallback: function() {
+          if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+            let finalElt = elt
+            if (!bodyContains(elt)) {
+              finalElt = getDocument().body
+            }
+            handleTriggerHeader(xhr, 'HX-Trigger-After-Swap', finalElt)
+          }
+        },
+        afterSettleCallback: function() {
+          if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+            let finalElt = elt
+            if (!bodyContains(elt)) {
+              finalElt = getDocument().body
+            }
+            handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
+          }
+        },
+        beforeSwapCallback: function() {
           // if we need to save history, do so, before swapping so that relative resources have the correct base URL
           if (historyUpdate.type) {
             triggerEvent(getDocument().body, 'htmx:beforeHistoryUpdate', mergeObjects({ history: historyUpdate }, responseInfo))
@@ -4819,70 +4920,8 @@ var htmx = (function() {
               triggerEvent(getDocument().body, 'htmx:replacedInHistory', { path: historyUpdate.path })
             }
           }
-
-          swap(target, serverResponse, swapSpec, {
-            select: selectOverride || select,
-            selectOOB,
-            eventInfo: responseInfo,
-            anchor: responseInfo.pathInfo.anchor,
-            contextElement: elt,
-            afterSwapCallback: function() {
-              if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
-                let finalElt = elt
-                if (!bodyContains(elt)) {
-                  finalElt = getDocument().body
-                }
-                handleTriggerHeader(xhr, 'HX-Trigger-After-Swap', finalElt)
-              }
-            },
-            afterSettleCallback: function() {
-              if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
-                let finalElt = elt
-                if (!bodyContains(elt)) {
-                  finalElt = getDocument().body
-                }
-                handleTriggerHeader(xhr, 'HX-Trigger-After-Settle', finalElt)
-              }
-              maybeCall(settleResolve)
-            }
-          })
-        } catch (e) {
-          triggerErrorEvent(elt, 'htmx:swapError', responseInfo)
-          maybeCall(settleReject)
-          throw e
         }
-      }
-
-      let shouldTransition = htmx.config.globalViewTransitions
-      if (swapSpec.hasOwnProperty('transition')) {
-        shouldTransition = swapSpec.transition
-      }
-
-      if (shouldTransition &&
-              triggerEvent(elt, 'htmx:beforeTransition', responseInfo) &&
-              typeof Promise !== 'undefined' &&
-              // @ts-ignore experimental feature atm
-              document.startViewTransition) {
-        const settlePromise = new Promise(function(_resolve, _reject) {
-          settleResolve = _resolve
-          settleReject = _reject
-        })
-        // wrap the original doSwap() in a call to startViewTransition()
-        const innerDoSwap = doSwap
-        doSwap = function() {
-          // @ts-ignore experimental feature atm
-          document.startViewTransition(function() {
-            innerDoSwap()
-            return settlePromise
-          })
-        }
-      }
-
-      if (swapSpec.swapDelay > 0) {
-        getWindow().setTimeout(doSwap, swapSpec.swapDelay)
-      } else {
-        doSwap()
-      }
+      })
     }
     if (isError) {
       triggerErrorEvent(elt, 'htmx:responseError', mergeObjects({ error: 'Response Status Error Code ' + xhr.status + ' from ' + responseInfo.pathInfo.requestPath }, responseInfo))
@@ -5083,6 +5122,7 @@ var htmx = (function() {
  * @property {Element} [contextElement]
  * @property {swapCallback} [afterSwapCallback]
  * @property {swapCallback} [afterSettleCallback]
+ * @property {swapCallback} [beforeSwapCallback]
  * @property {string} [title]
  * @property {boolean} [historyRequest]
  */
@@ -5169,6 +5209,7 @@ var htmx = (function() {
  * @property {FormData} unfilteredFormData
  * @property {Object} unfilteredParameters unfilteredFormData proxy
  * @property {HtmxHeaderSpecification} headers
+ * @property {Element} elt
  * @property {Element} target
  * @property {HttpVerb} verb
  * @property {HtmxElementValidationError[]} errors

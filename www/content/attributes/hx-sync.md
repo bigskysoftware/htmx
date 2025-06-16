@@ -1,5 +1,6 @@
 +++
 title = "hx-sync"
+description = "The hx-sync attribute in htmx allows you to synchronize AJAX requests between multiple elements."
 +++
 
 The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.

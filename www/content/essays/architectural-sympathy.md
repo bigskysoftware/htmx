@@ -1,19 +1,25 @@
 +++
 title = "Architectural Sympathy"
+description = """\
+  In this essay, Carson Gross explores architectural sympathy as a software design principle where new software adopts \
+  and conforms to the architectural patterns of existing systems. Carson examines the application of architectural \
+  sympathy in web development through htmx, its advantages and tradeoffs, and drawing parallels with medieval \
+  cathedral construction to illustrate the balance between innovation and coherent design."""
 date = 2023-04-06
 updated = 2023-04-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
+tag = ["posts"]
 +++
 
 
 # Mechanical Sympathy & Architectural Sympathy
 
-> You don’t have to be an engineer to be be a racing driver, but you do have to have Mechanical Sympathy.
+> You don’t have to be an engineer to be a racing driver, but you do have to have Mechanical Sympathy.
 
 _-Jackie Stewart, racing driver_
 
-The term "mechanical sympathy" was originally coined by Jackie Steward to capture a characteristic
+The term "mechanical sympathy" was originally coined by Jackie Stewart to capture a characteristic
  of race car drivers, who needed a deep and intuitive understanding of how a race car worked in order
 to get the best possible performance out of the vehicle.
 
