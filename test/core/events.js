@@ -883,6 +883,8 @@ describe('Core htmx Events', function() {
       htmx._('currentPathForHistory').should.equal('/test3')
     } finally {
       htmx.off('htmx:historyCacheHit', handler)
+    }
+  })
 
   it('htmx:targetError should include the hx-target value', function() {
     var target = null
