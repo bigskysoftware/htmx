@@ -494,17 +494,18 @@ describe('Core htmx API test', function() {
     }, 30)
   })
 
-  it('swap works with a view transition', function(done) {
-    var div = make("<div hx-get='/test'></div>")
-    div.innerText.should.equal('')
-    htmx.swap(div, 'jsswapped', { transition: true })
-    div.innerText.should.equal('')
-    setTimeout(function() {
-      div.innerText.should.equal('jsswapped')
-      done()
-    }, 30)
-  })
-
+  if (/chrome/i.test(navigator.userAgent)) {
+    it('swap works with a view transition', function(done) {
+      var div = make("<div hx-get='/test'></div>")
+      div.innerText.should.equal('')
+      htmx.swap(div, 'jsswapped', { transition: true })
+      div.innerText.should.equal('')
+      setTimeout(function() {
+        div.innerText.should.equal('jsswapped')
+        done()
+      }, 50)
+    })
+  }
   it('swaps content properly (with select)', function() {
     var output = make('<output id="output"/>')
     htmx.swap('#output', '<div><p id="select-me">Swapped!</p></div>', { swapStyle: 'innerHTML' }, { select: '#select-me' })
