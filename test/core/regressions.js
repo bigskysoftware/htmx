@@ -271,7 +271,7 @@ describe('Core htmx Regression Tests', function() {
     }, 50)
   })
 
-  it('swap=outerHTML clears htmx-swapping class', function(done) {
+  it('swap=outerHTML clears htmx-swapping class when old node has a style attribute and no class', function(done) {
     this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
 
     var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
@@ -286,7 +286,7 @@ describe('Core htmx Regression Tests', function() {
     done()
   })
 
-  it('swap=outerHTML clears original user-defined classes', function(done) {
+  it('swap=outerHTML won\'t carry over user-defined classes when old node has a style attribute before the class attribute', function(done) {
     this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
 
     var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
