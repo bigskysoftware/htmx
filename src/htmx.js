@@ -1412,9 +1412,39 @@ var htmx = (function() {
    * @param {Element} mergeFrom
    */
   function cloneAttributes(mergeTo, mergeFrom) {
+    const mergeToAttributesCopy = []
+    for (const attribute of mergeTo.attributes) {
+      mergeToAttributesCopy.push(attribute)
+    }
+
+    const mergeFromAttributesCopy = []
+    for (const attribute of mergeFrom.attributes) {
+      mergeFromAttributesCopy.push(attribute)
+    }
+
     forEach(mergeTo.attributes, function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
-        mergeTo.removeAttribute(attr.name)
+        if (attr.name == 'class') {
+          const newClasses = []
+          if (mergeTo.classList.contains(htmx.config.swappingClass)) {
+            newClasses.push(htmx.config.swappingClass)
+          }
+          if (mergeTo.classList.contains(htmx.config.addedClass)) {
+            newClasses.push(htmx.config.addedClass)
+          }
+          if (mergeTo.classList.contains(htmx.config.settlingClass)) {
+            newClasses.push(htmx.config.settlingClass)
+          }
+
+          mergeTo.removeAttribute('class')
+          if (newClasses.length > 0) {
+            for (const newClass of newClasses) {
+              mergeTo.classList.add(newClass)
+            }
+          }
+        } else {
+          mergeTo.removeAttribute(attr.name)
+        }
       }
     })
     forEach(mergeFrom.attributes, function(attr) {
@@ -1972,6 +2002,7 @@ var htmx = (function() {
     target.classList.remove(htmx.config.swappingClass)
     forEach(settleInfo.elts, function(elt) {
       if (elt.classList) {
+        elt.classList.remove(htmx.config.swappingClass)
         elt.classList.add(htmx.config.settlingClass)
       }
       triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)

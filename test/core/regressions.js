@@ -270,4 +270,19 @@ describe('Core htmx Regression Tests', function() {
       done()
     }, 50)
   })
+
+  it('swap=outerHTML clears htmx-swapping class', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    const isSwappingThere = div.classList.contains('htmx-swapping')
+    isSwappingThere.should.equal(false)
+    done()
+  })
 })
