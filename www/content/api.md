@@ -141,7 +141,8 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `scrollIntoViewOnBoost:true` - boolean: whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.
 * `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
 * `htmx.config.responseHandling:[...]` - HtmxResponseHandlingConfig[]: the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error
-* `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).      
+* `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).
+* `htmx.config.historyRestoreAsHxRequest:true` -  Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header. This should always be disabled when using HX-Request header to optionally return partial responses
 
 ##### Example
 

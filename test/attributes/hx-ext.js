@@ -24,12 +24,27 @@ describe('hx-ext attribute', function() {
         if (name === 'htmx:afterRequest') {
           ext3Calls++
         }
+      },
+      isInlineSwap: function(swapStyle) {
+        if (swapStyle === 'invalid') throw new Error('simulate exception handling in isInlineSwap')
+      },
+      handleSwap: function(swapStyle) {
+        if (swapStyle === 'invalid') throw new Error('simulate exception handling in handleSwap')
       }
     })
     htmx.defineExtension('ext-4', {
       onEvent: function(name, evt) {
         if (name === 'namespace:example') {
           ext4Calls++
+        }
+      },
+      isInlineSwap: function(swapStyle) {
+        return swapStyle === 'inline'
+      },
+      handleSwap: function(swapStyle, target, fragment, settleInfo) {
+        if (swapStyle === 'inline') {
+          const swapOuterHTML = htmx._('swapOuterHTML')
+          swapOuterHTML(target, fragment, settleInfo)
         }
       }
     })
@@ -155,5 +170,29 @@ describe('hx-ext attribute', function() {
     ext3Calls.should.equal(0)
 
     ext5Calls.should.equal(1)
+  })
+
+  it('oob swap via swap extension uses isInlineSwap correctly', function() {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div id="b1" hx-swap-oob="inline">Bar</div>'
+    )
+    var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-4"><div id="b1">Foo</div></div>')
+    btn.click()
+    this.server.respond()
+    byId('b1').innerHTML.should.equal('Bar')
+  })
+
+  it('isInlineSwap/handleSwap handling catches, logs and ignores exceptions in extension code', function() {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div id="b1" hx-swap-oob="invalid">Bar</div>'
+    )
+    var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-3"><div id="b1">Foo</div></div>')
+    btn.click()
+    this.server.respond()
+    byId('b1').innerHTML.should.equal('Bar')
   })
 })

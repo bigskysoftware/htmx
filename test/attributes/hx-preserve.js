@@ -68,4 +68,12 @@ describe('hx-preserve attribute', function() {
     byId('d2').innerHTML.should.equal('')
     byId('d5').innerHTML.should.equal('<div id="d3" hx-preserve="">Old Content</div><div id="d4">New oob Content</div>')
   })
+
+  it('when moveBefore is disabled/missing preseved content is copied into fragment instead of pantry', function() {
+    var div = make("<div hx-get='/test'><div id='d1' hx-preserve>Old Content</div><div id='d2'>Old Content</div></div>")
+    var fragment = htmx._('makeFragment')('<div id="d1" hx-preserve>New Content</div>')
+    fragment.firstChild.moveBefore = undefined
+    htmx._('handlePreservedElements')(fragment)
+    fragment.firstChild.innerHTML.should.equal('Old Content')
+  })
 })

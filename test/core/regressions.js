@@ -271,6 +271,27 @@ describe('Core htmx Regression Tests', function() {
     }, 50)
   })
 
+  it('a modified click trigger on a form does not prevent the default behaviour of other elements - https://github.com/bigskysoftware/htmx/issues/2755', function(done) {
+    var defaultPrevented = 'unset'
+    make('<input type="date" id="datefield">')
+    make('<form hx-trigger="click from:body"></form>')
+
+    htmx.on('#datefield', 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(false)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    byId('datefield').click()
+  })
+
   it('swap=outerHTML clears htmx-swapping class when old node has a style attribute and no class', function(done) {
     this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
 
