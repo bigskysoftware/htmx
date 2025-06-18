@@ -1407,7 +1407,7 @@ var htmx = (function() {
     return false
   }
 
-   /**
+  /**
    * @param {Element} mergeTo
    * @param {Element} mergeFrom
    */
