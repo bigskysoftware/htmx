@@ -1407,7 +1407,7 @@ var htmx = (function() {
     return false
   }
 
-  /**
+   /**
    * @param {Element} mergeTo
    * @param {Element} mergeFrom
    */
@@ -1422,29 +1422,16 @@ var htmx = (function() {
       mergeFromAttributesCopy.push(attribute)
     }
 
+    const htmxClasses = []
+    for (const klass of mergeTo.classList) {
+      if (klass.startsWith('htmx-')) {
+        htmxClasses.push(klass)
+      }
+    }
+
     forEach(mergeToAttributesCopy, function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
-        if (attr.name == 'class') {
-          const newClasses = []
-          if (mergeTo.classList.contains(htmx.config.swappingClass)) {
-            newClasses.push(htmx.config.swappingClass)
-          }
-          if (mergeTo.classList.contains(htmx.config.addedClass)) {
-            newClasses.push(htmx.config.addedClass)
-          }
-          if (mergeTo.classList.contains(htmx.config.settlingClass)) {
-            newClasses.push(htmx.config.settlingClass)
-          }
-
-          mergeTo.removeAttribute('class')
-          if (newClasses.length > 0) {
-            for (const newClass of newClasses) {
-              mergeTo.classList.add(newClass)
-            }
-          }
-        } else {
-          mergeTo.removeAttribute(attr.name)
-        }
+        mergeTo.removeAttribute(attr.name)
       }
     })
     forEach(mergeFromAttributesCopy, function(attr) {
@@ -1452,6 +1439,10 @@ var htmx = (function() {
         mergeTo.setAttribute(attr.name, attr.value)
       }
     })
+
+    for (const htmxClass of htmxClasses) {
+      mergeTo.classList.add(htmxClass)
+    }
   }
 
   /**
