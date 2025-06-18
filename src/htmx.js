@@ -1478,8 +1478,11 @@ var htmx = (function() {
           fragment = getDocument().createDocumentFragment()
           fragment.appendChild(oobElementClone)
           if (!isInlineSwap(swapStyle, target)) {
-            fragment = asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
+            // @ts-ignore if elt is template content will be valid so use as inner content
+            fragment = oobElementClone.content || asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
           }
+          // outerHTMLStrip swapStyle will strip wrapping tag above but do outerHTML swap of inner contents
+          swapStyle = swapStyle.replace('Strip', '')
 
           const beforeSwapDetails = { shouldSwap: true, target, fragment }
           if (!triggerEvent(target, 'htmx:oobBeforeSwap', beforeSwapDetails)) return

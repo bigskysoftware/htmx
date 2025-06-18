@@ -128,6 +128,17 @@ describe('hx-swap-oob attribute', function() {
     byId('d1').innerHTML.should.equal('Swapped5')
   })
 
+  it('handles outerHTMLStrip response properly', function() {
+    this.server.respondWith('GET', '/test', "Clicked<div id='d1' hx-swap-oob='outerHTMLStrip'><div id='d2' foo='bar'>Swapped4.1</div></div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1"></div>')
+    div.click()
+    this.server.respond()
+    byId('d2').getAttribute('foo').should.equal('bar')
+    div.innerHTML.should.equal('Clicked')
+    byId('d2').innerHTML.should.equal('Swapped4.1')
+  })
+
   it('oob swaps can be nested in content with config {"allowNestedOobSwaps": true}', function() {
     htmx.config.allowNestedOobSwaps = true
     this.server.respondWith('GET', '/test', "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>")
@@ -386,5 +397,14 @@ describe('hx-swap-oob attribute', function() {
     swappedElements.forEach(function(element) {
       element.innerHTML.should.equal('Swapped11')
     })
+  })
+
+  it('handles using template as the encapsulating tag of an inner swap', function() {
+    this.server.respondWith('GET', '/test', '<tbody id="foo" hx-swap-oob="innerHTML"><tr><td>Swapped12</td></tr></tbody>')
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<table><tbody id="foo"></tbody></table>')
+    div.click()
+    this.server.respond()
+    byId('foo').innerHTML.should.equal('<tr><td>Swapped12</td></tr>')
   })
 })
