@@ -281,8 +281,8 @@ describe('Core htmx Regression Tests', function() {
     this.server.respond()
 
     var div = byId('test-div')
-    const isSwappingThere = div.classList.contains('htmx-swapping')
-    isSwappingThere.should.equal(false)
+    const isSwappingClassStillThere = div.classList.contains('htmx-swapping')
+    isSwappingClassStillThere.should.equal(false)
     done()
   })
 })
