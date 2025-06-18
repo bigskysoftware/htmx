@@ -1422,7 +1422,7 @@ var htmx = (function() {
       mergeFromAttributesCopy.push(attribute)
     }
 
-    forEach(mergeTo.attributes, function(attr) {
+    forEach(mergeToAttributesCopy, function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
         if (attr.name == 'class') {
           const newClasses = []
@@ -1447,7 +1447,7 @@ var htmx = (function() {
         }
       }
     })
-    forEach(mergeFrom.attributes, function(attr) {
+    forEach(mergeFromAttributesCopy, function(attr) {
       if (shouldSettleAttribute(attr.name)) {
         mergeTo.setAttribute(attr.name, attr.value)
       }
