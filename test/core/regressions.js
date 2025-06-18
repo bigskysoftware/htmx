@@ -285,4 +285,18 @@ describe('Core htmx Regression Tests', function() {
     isSwappingClassStillThere.should.equal(false)
     done()
   })
+
+  it('swap=outerHTML clear original user-defined classes', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style class="my-class"></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    div.classList.length.should.equal(0)
+    done()
+  })
 })
