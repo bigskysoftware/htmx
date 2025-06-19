@@ -25,6 +25,19 @@ Here is an example with a spinner adjacent to the button:
 </div>
 ```
 
+Note that you can also use the `inherit` keyword to inherit parent values for an indicator and add additional indicator
+CSS selectors:
+
+```html
+<main hx-indicator="#global-indicator">
+    ...
+    <button hx-post="/example" hx-indicator="inherit, #spinner">
+        Post It!
+    </button>
+    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
+</main>
+```
+
 When a request is in flight, this will cause the `htmx-request` class to be added to the `#spinner`
 image.  The image also has the `htmx-indicator` class on it, which defines an opacity transition
 that will show the spinner:
