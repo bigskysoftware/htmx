@@ -1,9 +1,16 @@
 # Changelog
 
-## [2.0.5] - 2025-??-??
+## [2.0.5] - 2025-06-20
 
+* 100% test coverage! (Thank you @MichaelWest22!)
+* The default recommended CDN is now jsDelivr
+* TODO `inherit` keyword
+* `hx-on` listeners are now added before processing nodes so events during processing can be captured
 * Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
 * Using `<button formmethod="dialog">` will no longer submit its associated form
+* Local history cache now uses `sessionStorage` rather than `localStorage` so cross-tab contamination doesn't occur
+* History restoration now follows the standard swapping code paths 
+* Many other smaller bug and documentation fixes
 
 ## [2.0.4] - 2024-12-13
 
