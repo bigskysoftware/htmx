@@ -123,13 +123,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js" integrity="sha384-t4DxZSyQK+0Uv4jzy5B0QyHyWQD2GFURUmxKMBVww9+e2EJ0ei/vCvv7+79z0fkr" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.js" integrity="sha384-5DNWP7/6VfmFjDrEgZ0MwJiuIz0/juUdZwgMAqxCaHBd/BH8MF4yWxDv+mo/o9CG" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
@@ -1141,7 +1141,7 @@ The fastest way to install htmx extensions created by others is to load them via
 ```HTML
 <head>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js" integrity="sha384-t4DxZSyQK+0Uv4jzy5B0QyHyWQD2GFURUmxKMBVww9+e2EJ0ei/vCvv7+79z0fkr" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-5DNWP7/6VfmFjDrEgZ0MwJiuIz0/juUdZwgMAqxCaHBd/BH8MF4yWxDv+mo/o9CG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
     ...
