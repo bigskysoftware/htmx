@@ -4,7 +4,8 @@
 
 * 100% test coverage! (Thank you @MichaelWest22!)
 * The default recommended CDN is now jsDelivr
-* TODO `inherit` keyword
+* The `inherit` keyword is now supported by `hx-include`, `hx-indicator` and `hx-disabled-elt` to allow you to inherit
+  the value from a parent and extend it.
 * `hx-on` listeners are now added before processing nodes so events during processing can be captured
 * Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
 * Using `<button formmethod="dialog">` will no longer submit its associated form
