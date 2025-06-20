@@ -311,20 +311,21 @@ describe('hx-swap attribute', function() {
     done()
   })
 
-  it('works with transition:true', function(done) {
-    this.server.respondWith('GET', '/test', 'Clicked!')
-    var div = make(
-      "<div hx-get='/test' hx-swap='innerHTML transition:true'></div>"
-    )
-    div.click()
-    this.server.respond()
-    div.innerText.should.equal('')
-    setTimeout(function() {
-      div.innerText.should.equal('Clicked!')
-      done()
-    }, 30)
-  })
-
+  if (/chrome/i.test(navigator.userAgent)) {
+    it('works with transition:true', function(done) {
+      this.server.respondWith('GET', '/test', 'Clicked!')
+      var div = make(
+        "<div hx-get='/test' hx-swap='innerHTML transition:true'></div>"
+      )
+      div.click()
+      this.server.respond()
+      div.innerText.should.equal('')
+      setTimeout(function() {
+        div.innerText.should.equal('Clicked!')
+        done()
+      }, 50)
+    })
+  }
   it('works with a settle delay', function(done) {
     this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>")
     var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>")

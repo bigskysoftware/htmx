@@ -1140,8 +1140,8 @@ You can see all available extensions on the [Extensions](/extensions) page.
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-rgDUNhY6z4THDY2kCpmYI4f0WFGAFfN30Byo3z/PjHF0/OxDN/EJ28TV8sYZ2W74" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-vUOEodGs2gFRTWstEF8qT0K41FEOcnzd0O0cP69j2pwZRleQcMQ1TAaG90A4m1O0" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-SUG/p27C6PgjnQC/89fkpr4HjNPrcZ0ye/Fy1IX0H2HeV4Amto6a157+SBuuZPw8" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
     ...
