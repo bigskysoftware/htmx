@@ -1413,16 +1413,37 @@ var htmx = (function() {
    * @param {Element} mergeFrom
    */
   function cloneAttributes(mergeTo, mergeFrom) {
-    forEach(mergeTo.attributes, function(attr) {
+    const mergeToAttributesCopy = []
+    for (const attribute of mergeTo.attributes) {
+      mergeToAttributesCopy.push(attribute)
+    }
+
+    const mergeFromAttributesCopy = []
+    for (const attribute of mergeFrom.attributes) {
+      mergeFromAttributesCopy.push(attribute)
+    }
+
+    const htmxClasses = []
+    for (const klass of mergeTo.classList) {
+      if (klass.startsWith('htmx-')) {
+        htmxClasses.push(klass)
+      }
+    }
+
+    forEach(mergeToAttributesCopy, function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
         mergeTo.removeAttribute(attr.name)
       }
     })
-    forEach(mergeFrom.attributes, function(attr) {
+    forEach(mergeFromAttributesCopy, function(attr) {
       if (shouldSettleAttribute(attr.name)) {
         mergeTo.setAttribute(attr.name, attr.value)
       }
     })
+
+    for (const htmxClass of htmxClasses) {
+      mergeTo.classList.add(htmxClass)
+    }
   }
 
   /**
@@ -1968,6 +1989,7 @@ var htmx = (function() {
       target.classList.remove(htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
+          elt.classList.remove(htmx.config.swappingClass)
           elt.classList.add(htmx.config.settlingClass)
         }
         triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
