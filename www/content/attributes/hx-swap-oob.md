@@ -31,7 +31,7 @@ The value of the `hx-swap-oob` can be:
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.
 
-If a swap value is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`.
+If a swap value is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`. There is also an additional swap value `outerHTMLStrip` that still strips the encapsulating tag but allows the replacment the whole target, like `outerHTML`, with all inner content nodes. 
 
 If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
 
@@ -69,6 +69,27 @@ A `<p>` can be encapsulated in `<div>` or `<span>`:
 <span hx-swap-oob="beforeend:#text">
 	<p>...</p>
 </span>
+```
+
+You can also now use `template` tag as this should work for nearly any tag type:
+```html
+<template hx-swap-oob="beforeend:#table tbody">
+	<tr>
+		...
+	</tr>
+</template>
+```
+
+Another new option is the `outerHTMLStrip` swap style that allows you to replace an element with multiple nodes:
+```html
+<div id="foo" hx-swap-oob="outerHTMLStrip">
+	<div id="foo2">
+		Replace original
+	</div>
+    <div>
+        And add something more
+    </div>
+</div>
 ```
 
 ### Troublesome Tables and lists
