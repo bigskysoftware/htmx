@@ -431,7 +431,7 @@
         },
         {
           "name": "historyCacheHit",
-          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheHit"
         },
         {
