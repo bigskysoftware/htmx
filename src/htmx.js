@@ -1465,20 +1465,20 @@ var htmx = (function() {
     } else {
       swapStyle = oobValue
     }
+    // @ts-ignore
+    var swapSpec = getSwapSpecification(oobElement, swapStyle.replace(';', ':'), {})
     oobElement.removeAttribute('hx-swap-oob')
     oobElement.removeAttribute('data-hx-swap-oob')
-
     const targets = querySelectorAllExt(rootNode, selector, false)
     if (targets.length) {
       forEach(
         targets,
         function(target) {
-          let fragment
           const oobElementClone = oobElement.cloneNode(true)
-          fragment = getDocument().createDocumentFragment()
+          const fragment = getDocument().createDocumentFragment()
           fragment.appendChild(oobElementClone)
-          if (!isInlineSwap(swapStyle, target)) {
-            fragment = asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
+          if (swapSpec.strip === undefined && !isInlineSwap(swapStyle, target)) {
+            swapSpec.strip = true
           }
 
           const beforeSwapDetails = { shouldSwap: true, target, fragment }
@@ -1486,9 +1486,7 @@ var htmx = (function() {
 
           target = beforeSwapDetails.target // allow re-targeting
           if (beforeSwapDetails.shouldSwap) {
-            handlePreservedElements(fragment)
-            swapWithStyle(swapStyle, target, target, fragment, settleInfo)
-            restorePreservedElements()
+            swap(target, fragment, swapSpec, { contextElement: target }, settleInfo)
           }
           forEach(settleInfo.elts, function(elt) {
             triggerEvent(elt, 'htmx:oobAfterSwap', beforeSwapDetails)
@@ -1864,11 +1862,12 @@ var htmx = (function() {
    * Implements complete swapping pipeline, including: delay, view transitions, focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
-   * @param {string} content
+   * @param {string|DocumentFragment} content
    * @param {HtmxSwapSpecification} swapSpec
    * @param {SwapOptions} [swapOptions]
+   * @param {HtmxSettleInfo} [oobSettleInfo]
    */
-  function swap(target, content, swapSpec, swapOptions) {
+  function swap(target, content, swapSpec, swapOptions, oobSettleInfo) {
     if (!swapOptions) {
       swapOptions = {}
     }
@@ -1892,45 +1891,56 @@ var htmx = (function() {
         // @ts-ignore
         end: activeElt ? activeElt.selectionEnd : null
       }
-      const settleInfo = makeSettleInfo(target)
+      const normalSwap = !oobSettleInfo // is this a normal swap or from an oobSwap
+      if (swapSpec.settleDelay !== undefined) {
+        oobSettleInfo = undefined // for oobSwaps with settle modifier make and perform own settleInfo
+      }
+      const settleInfo = oobSettleInfo || makeSettleInfo(target)
 
       // For text content swaps, don't parse the response as HTML, just insert it
-      if (swapSpec.swapStyle === 'textContent') {
+      if (typeof content === 'string' && swapSpec.swapStyle === 'textContent') {
         target.textContent = content
       // Otherwise, make the fragment and process it
       } else {
-        let fragment = makeFragment(content)
+        let fragment = typeof content === 'string' ? makeFragment(content) : content
 
+        // @ts-ignore if fragment is a ParentNode title will be undefined which is fine
         settleInfo.title = swapOptions.title || fragment.title
         if (swapOptions.historyRequest) {
           // @ts-ignore fragment can be a parentNode Element
           fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         }
-
-        // select-oob swaps
-        if (swapOptions.selectOOB) {
-          const oobSelectValues = swapOptions.selectOOB.split(',')
-          for (let i = 0; i < oobSelectValues.length; i++) {
-            const oobSelectValue = oobSelectValues[i].split(':', 2)
-            let id = oobSelectValue[0].trim()
-            if (id.indexOf('#') === 0) {
-              id = id.substring(1)
-            }
-            const oobValue = oobSelectValue[1] || 'true'
-            const oobElement = fragment.querySelector('#' + id)
-            if (oobElement) {
-              oobSwap(oobValue, oobElement, settleInfo, rootNode)
-            }
-          }
+        if (swapSpec.strip) {
+          // @ts-ignore
+          fragment = fragment.content || fragment.firstElementChild // if this is not an inline swap, we use the content of the node, not the node itself
         }
-        // oob swaps
-        findAndSwapOobElements(fragment, settleInfo, rootNode)
-        forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
-          if (template.content && findAndSwapOobElements(template.content, settleInfo, rootNode)) {
-            // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
-            template.remove()
+
+        if (normalSwap) {
+          // select-oob swaps
+          if (swapOptions.selectOOB) {
+            const oobSelectValues = swapOptions.selectOOB.split(',')
+            for (let i = 0; i < oobSelectValues.length; i++) {
+              const oobSelectValue = oobSelectValues[i].split(':', 2)
+              let id = oobSelectValue[0].trim()
+              if (id.indexOf('#') === 0) {
+                id = id.substring(1)
+              }
+              const oobValue = oobSelectValue[1] || 'true'
+              const oobElement = fragment.querySelector('#' + id)
+              if (oobElement) {
+                oobSwap(oobValue, oobElement, settleInfo, rootNode)
+              }
+            }
           }
-        })
+          // oob swaps
+          findAndSwapOobElements(fragment, settleInfo, rootNode)
+          forEach(findAll(fragment, 'template'), /** @param {HTMLTemplateElement} template */function(template) {
+            if (template.content && findAndSwapOobElements(template.content, settleInfo, rootNode)) {
+              // Avoid polluting the DOM with empty templates that were only used to encapsulate oob swap
+              template.remove()
+            }
+          })
+        }
 
         // normal swap
         if (swapOptions.select) {
@@ -1979,34 +1989,36 @@ var htmx = (function() {
         handleTitle(settleInfo.title)
       }
 
-      // settle
-      const doSettle = function() {
-        forEach(settleInfo.tasks, function(task) {
-          task.call()
-        })
-        forEach(settleInfo.elts, function(elt) {
-          if (elt.classList) {
-            elt.classList.remove(htmx.config.settlingClass)
-          }
-          triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
-        })
+      // settle unless this is a oobSwap that settles at the end of the normal swap
+      if (!oobSettleInfo) {
+        const doSettle = function() {
+          forEach(settleInfo.tasks, function(task) {
+            task.call()
+          })
+          forEach(settleInfo.elts, function(elt) {
+            if (elt.classList) {
+              elt.classList.remove(htmx.config.settlingClass)
+            }
+            triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
+          })
 
-        if (swapOptions.anchor) {
-          const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
-          if (anchorTarget) {
-            anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
+          if (swapOptions.anchor) {
+            const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
+            if (anchorTarget) {
+              anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
+            }
           }
+
+          updateScrollState(settleInfo.elts, swapSpec)
+          maybeCall(swapOptions.afterSettleCallback)
+          maybeCall(settleResolve)
         }
 
-        updateScrollState(settleInfo.elts, swapSpec)
-        maybeCall(swapOptions.afterSettleCallback)
-        maybeCall(settleResolve)
-      }
-
-      if (swapSpec.settleDelay > 0) {
-        getWindow().setTimeout(doSettle, swapSpec.settleDelay)
-      } else {
-        doSettle()
+        if (swapSpec.settleDelay > 0) {
+          getWindow().setTimeout(doSettle, swapSpec.settleDelay)
+        } else {
+          doSettle()
+        }
       }
     }
     let shouldTransition = htmx.config.globalViewTransitions
@@ -3731,17 +3743,18 @@ var htmx = (function() {
   /**
  * @param {Element} elt
  * @param {HtmxSwapStyle} [swapInfoOverride]
+ * @param {HtmxSwapSpecification} [defaults]
  * @returns {HtmxSwapSpecification}
  */
-  function getSwapSpecification(elt, swapInfoOverride) {
+  function getSwapSpecification(elt, swapInfoOverride, defaults) {
     const swapInfo = swapInfoOverride || getClosestAttributeValue(elt, 'hx-swap')
     /** @type HtmxSwapSpecification */
-    const swapSpec = {
+    const swapSpec = defaults || {
       swapStyle: getInternalData(elt).boosted ? 'innerHTML' : htmx.config.defaultSwapStyle,
       swapDelay: htmx.config.defaultSwapDelay,
       settleDelay: htmx.config.defaultSettleDelay
     }
-    if (htmx.config.scrollIntoViewOnBoost && getInternalData(elt).boosted && !isAnchorLink(elt)) {
+    if (!defaults && htmx.config.scrollIntoViewOnBoost && getInternalData(elt).boosted && !isAnchorLink(elt)) {
       swapSpec.show = 'top'
     }
     if (swapInfo) {
@@ -3775,6 +3788,8 @@ var htmx = (function() {
           } else if (value.indexOf('focus-scroll:') === 0) {
             const focusScrollVal = value.slice('focus-scroll:'.length)
             swapSpec.focusScroll = focusScrollVal == 'true'
+          } else if (value.indexOf('strip:') === 0) {
+            swapSpec.strip = value.slice(6) === 'true'
           } else if (i == 0) {
             swapSpec.swapStyle = value
           } else {
@@ -5164,6 +5179,7 @@ var htmx = (function() {
  * @property {string} [show]
  * @property {string} [showTarget]
  * @property {boolean} [focusScroll]
+ * @property {boolean} [strip]
  */
 
 /**
