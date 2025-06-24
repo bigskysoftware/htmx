@@ -26,22 +26,29 @@ The first div will be swapped into the target the usual manner.  The second div,
 The value of the `hx-swap-oob` can be:
 
 * `true`
-* any valid [`hx-swap`](@/attributes/hx-swap.md) value
-* any valid [`hx-swap`](@/attributes/hx-swap.md) value, followed by a colon, followed by a CSS selector
+* any valid basic [`hx-swap`](@/attributes/hx-swap.md) strategy (innerHTML, outerHTML, beforebegin, etc)
+* any valid basic [`hx-swap`](@/attributes/hx-swap.md) strategy, followed by a colon, followed by a CSS selector
+* any valid complex [`hx-swap`](@/attributes/hx-swap.md) value including modifiers
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.
 
-If a swap value is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`.
+If a swap strategy is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`. You can now use `strip:true` modifier to enable tag stripping for `outerHTML` or `strip:false` to disable it for the other strategies.
 
-If a selector is given, all elements matched by that selector will be swapped.  If not, the element with an ID matching the new content will be swapped.
+If a selector is given, all elements matched by that selector will be swapped.  If not, the element on the page with an ID matching that of the oob element will be swapped.
+
+If you include any [`hx-swap`](@/attributes/hx-swap.md) modifers like for example `innerHTML swap:1s` to delay the swap then you need to also use `target:<Selector>` if you want to target something other than the oob elements ID instead of using the basic colon followed by a selector. So `innerHTML:#foo` with a delay becomes `innerHTML swap:1s target:#foo`.
+
+You can include `strip:true` as a modifer to allow you to override the `outerHTML` swap strategy to remove the encapsulating tag pair and allow you to swap in just the inner nodes of the oob element instead
+
+You can include `strip:false` as a modifer to allow you to override an inner swap strategy like `innerHTML` or `beforeend` to keep the encapsulating tag pair and swap in the whole oob element instead of just its inner contents.
 
 ### Using alternate swap strategies
 
-As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to excapsulate the returned data with the correct tags for the context.
+As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped by default, as such you need to excapsulate the returned data with the correct tags for the context.
 
 When trying to insert a `<tr>` in a table that uses `<tbody>`:
 ```html
-<tbody hx-swap-oob="beforeend:#table tbody">
+<tbody hx-swap-oob="beforeend target:#table tbody">
 	<tr>
 		...
 	</tr>
@@ -50,7 +57,7 @@ When trying to insert a `<tr>` in a table that uses `<tbody>`:
 
 A "plain" table:
 ```html
-<table hx-swap-oob="beforeend:#table2">
+<table hx-swap-oob="beforeend target:#table2">
 	<tr>
 		...
 	</tr>
@@ -59,16 +66,37 @@ A "plain" table:
 
 A `<li>` may be encapsulated in `<ul>`, `<ol>`, `<div>` or `<span>`, for example:
 ```html
-<ul hx-swap-oob="beforeend:#list1">
+<ul hx-swap-oob="beforeend target:#list1">
 	<li>...</li>
 </ul>
 ```
 
 A `<p>` can be encapsulated in `<div>` or `<span>`:
 ```html
-<span hx-swap-oob="beforeend:#text">
+<span hx-swap-oob="beforeend target:#text">
 	<p>...</p>
 </span>
+```
+
+You can also now use `template` tag as this should work for nearly any tag type:
+```html
+<template hx-swap-oob="beforeend target:#table tbody">
+	<tr>
+		...
+	</tr>
+</template>
+```
+
+Another new option is the `strip:true` swap modifier that allows you to replace an element with multiple nodes:
+```html
+<div id="foo" hx-swap-oob="outerHTML strip:true">
+	<div id="foo2">
+		Replace original
+	</div>
+    <div>
+        And add something more
+    </div>
+</div>
 ```
 
 ### Troublesome Tables and lists
