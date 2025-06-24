@@ -16,6 +16,12 @@ extension.
 <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph-ext.min.js"></script>
 ```
 
+### Via Module Import
+
+```javascript
+import "idiomorph/htmx";
+```
+
 ## Usage
 
 Once you have referenced the idiomorph extension, you can register it with the name `morph` on the body and then being
