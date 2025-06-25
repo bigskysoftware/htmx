@@ -57,6 +57,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/cscortes/htmxflask>
 - <https://github.com/Konfuzian/htmx-examples-with-flask/>
 
+### Lua
+
+- Lua Server Pages: <https://realtimelogic.com/articles/LSP-htmx-A-Powerful-Duo-for-Embedded-Web-Apps>
+
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
