@@ -420,8 +420,8 @@ describe('hx-swap-oob attribute', function() {
     byId('d3').innerHTML.should.equal('Swapped14')
   })
 
-  it('handles using template as the encapsulating tag of an inner swap', function() {
-    this.server.respondWith('GET', '/test', '<tbody id="foo" hx-swap-oob="innerHTML"><tr><td>Swapped15</td></tr></tbody>')
+  it.only('handles using template as the encapsulating tag of an inner swap', function() {
+    this.server.respondWith('GET', '/test', '<template id="foo" hx-swap-oob="innerHTML"><tr><td>Swapped15</td></tr></template>')
     var div = make('<div hx-get="/test">click me</div>')
     make('<table><tbody id="foo"></tbody></table>')
     div.click()

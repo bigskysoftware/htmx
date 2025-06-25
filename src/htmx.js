@@ -1931,7 +1931,7 @@ var htmx = (function() {
                 id = id.substring(1)
               }
               const oobValue = oobSelectValue.length > 0 ? oobSelectValue.join(':') : 'true'
-              const oobElement = fragment.querySelector('#' + id)
+              const oobElement = fragment.querySelector('#' + CSS.escape(id))
               if (oobElement) {
                 oobSwap(oobValue, oobElement, settleInfo, rootNode)
               }
@@ -1948,8 +1948,8 @@ var htmx = (function() {
         }
 
         if (swapSpec.strip) {
-          // @ts-ignore if fragment is really a template tag we can safely use its content otherwise use first child
-          fragment = fragment.content || fragment.firstElementChild // if this is not an inline swap, we use the content of the node, not the node itself
+          // @ts-ignore if element is really a template tag we can safely use its content otherwise use first child
+          fragment = fragment.firstElementChild?.content || fragment.firstElementChild // if this is not an inline swap, we use the content of the node, not the node itself
         }
         // normal swap
         if (swapOptions.select) {
