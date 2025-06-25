@@ -3805,11 +3805,10 @@ var htmx = (function() {
             swapSpec.strip = value.slice(6) === 'true'
           } else if (value.indexOf('target:') === 0) {
             swapSpec.target = value.slice(7)
-            while (i + 1 < split.length && split[i + 1].indexOf(':') === -1) {
-              swapSpec.target += (' ' + split[++i])
-            }
           } else if (i == 0) {
             swapSpec.swapStyle = value
+          } else if (swapSpec.target) {
+            swapSpec.target += (' ' + value) // unfound modifers must be part of target selector
           } else {
             logError('Unknown modifier in hx-swap: ' + value)
           }

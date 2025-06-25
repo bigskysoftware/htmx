@@ -28,15 +28,15 @@ The value of the `hx-swap-oob` can be:
 * `true`
 * any valid basic [`hx-swap`](@/attributes/hx-swap.md) strategy (innerHTML, outerHTML, beforebegin, etc)
 * any valid basic [`hx-swap`](@/attributes/hx-swap.md) strategy, followed by a colon, followed by a CSS selector
-* any valid complex [`hx-swap`](@/attributes/hx-swap.md) value including modifiers
+* any valid complex [`hx-swap`](@/attributes/hx-swap.md) value including modifiers like `target:` to set the target of the swap
 
 If the value is `true` or `outerHTML` (which are equivalent) the element will be swapped inline.
 
 If a swap strategy is given, that swap strategy will be used and the encapsulating tag pair will be stripped for all strategies other than `outerHTML`. You can now use `strip:true` modifier to enable tag stripping for `outerHTML` or `strip:false` to disable it for the other strategies.
 
-If a selector is given, all elements matched by that selector will be swapped.  If not, the element on the page with an ID matching that of the oob element will be swapped.
+If a selector is given, all elements matched by that selector will be swapped.  If not, the element on the page with an ID matching that of the oob element will be swapped instead.
 
-If you include any [`hx-swap`](@/attributes/hx-swap.md) modifers like for example `innerHTML swap:1s` to delay the swap then you need to also use `target:<Selector>` if you want to target something other than the oob elements ID instead of using the basic colon followed by a selector. So `innerHTML:#foo` with a delay becomes `innerHTML swap:1s target:#foo`.
+If you include any [`hx-swap`](@/attributes/hx-swap.md) modifers (e.g. `innerHTML swap:1s` to delay the swap) then you need to also use `target:<Selector>` if you want to target something other than the oob elements ID instead of using the basic colon followed by a selector. So `innerHTML:#foo` with a delay becomes `innerHTML swap:1s target:#foo`.
 
 You can include `strip:true` as a modifer to allow you to override the `outerHTML` swap strategy to remove the encapsulating tag pair and allow you to swap in just the inner nodes of the oob element instead
 
