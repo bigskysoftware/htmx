@@ -27,8 +27,7 @@ This button will issue a `GET` to `/info` and then select the element with the i
 which will replace the entire button in the DOM, and, in addition, pick out an element with the id `alert` 
 in the response and swap it in for div in the DOM with the same ID.
 
-Each value in the comma separated list of values can specify any valid [`hx-swap`](@/attributes/hx-swap.md)
-strategy by separating the selector and the swap strategy with a `:`, with the strategy otherwise defaulting to `outerHTML`.
+Each value in the comma-separated list consists of a CSS selector used to locate an element in the response. Optionally, this can be followed by a colon `:` and any valid [`hx-swap-oob`](@/attributes/hx-swap-oob.md) value; if omitted, the swap strategy defaults to outerHTML. As with `hx-swap-oob`, the target element for the swap will default to the element’s ID, but this can be overridden if needed.
 
 For example, to prepend the alert content instead of replacing it:
 

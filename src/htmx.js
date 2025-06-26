@@ -1913,8 +1913,8 @@ var htmx = (function() {
       const settleInfo = oobSettleInfo || makeSettleInfo(target)
 
       // For text content swaps, don't parse the response as HTML, just insert it
-      if (typeof content === 'string' && swapSpec.swapStyle === 'textContent') {
-        target.textContent = content
+      if (swapSpec.swapStyle === 'textContent') {
+        target.textContent = typeof content === 'string' ? content : content.textContent
       // Otherwise, make the fragment and process it
       } else {
         /** @type DocumentFragment|ParentNode */

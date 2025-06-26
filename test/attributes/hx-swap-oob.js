@@ -481,4 +481,13 @@ describe('hx-swap-oob attribute', function() {
       done()
     }, 30)
   })
+
+  it('handles textContent swap style', function() {
+    this.server.respondWith('GET', '/test', '<div id="d2" hx-swap-oob="textContent"><p>Swapped16</p><p>!</p></div>')
+    var div = make('<div hx-get="/test">click me</div>')
+    var div2 = make('<div id="d2"><div>')
+    div.click()
+    this.server.respond()
+    div2.innerHTML.should.equal('Swapped16!')
+  })
 })
