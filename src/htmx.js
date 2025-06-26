@@ -1480,8 +1480,6 @@ var htmx = (function() {
         function(target) {
           let fragment
           const oobElementClone = oobElement.cloneNode(true)
-          fragment = getDocument().createDocumentFragment()
-          fragment.appendChild(oobElementClone)
           if (swapSpec.strip === undefined && !isInlineSwap(swapSpec.swapStyle, target)) {
             swapSpec.strip = true
           }
@@ -1489,6 +1487,9 @@ var htmx = (function() {
             // @ts-ignore if elt is template, content will be valid so use as inner content
             fragment = oobElementClone.content || asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
             swapSpec.strip = undefined
+          } else {
+            fragment = getDocument().createDocumentFragment()
+            fragment.appendChild(oobElementClone)
           }
 
           const beforeSwapDetails = { shouldSwap: true, target, fragment, swapSpec }
