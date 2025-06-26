@@ -1478,19 +1478,25 @@ var htmx = (function() {
       forEach(
         targets,
         function(target) {
+          let fragment
           const oobElementClone = oobElement.cloneNode(true)
-          const fragment = getDocument().createDocumentFragment()
+          fragment = getDocument().createDocumentFragment()
           fragment.appendChild(oobElementClone)
           if (swapSpec.strip === undefined && !isInlineSwap(swapSpec.swapStyle, target)) {
             swapSpec.strip = true
           }
+          if (swapSpec.strip) {
+            // @ts-ignore if elt is template, content will be valid so use as inner content
+            fragment = oobElementClone.content || asParentNode(oobElementClone) // if this is not an inline swap, we use the content of the node, not the node itself
+            swapSpec.strip = undefined
+          }
 
-          const beforeSwapDetails = { shouldSwap: true, target, fragment }
+          const beforeSwapDetails = { shouldSwap: true, target, fragment, swapSpec }
           if (!triggerEvent(target, 'htmx:oobBeforeSwap', beforeSwapDetails)) return
 
           target = beforeSwapDetails.target // allow re-targeting
           if (beforeSwapDetails.shouldSwap) {
-            swap(target, fragment, swapSpec, {
+            swap(target, fragment, beforeSwapDetails.swapSpec, {
               contextElement: target,
               afterSwapCallback: function(settleInfo) {
                 forEach(settleInfo.elts, function(elt) {
@@ -1846,7 +1852,7 @@ var htmx = (function() {
   }
 
   /**
-   * @param {DocumentFragment} fragment
+   * @param {DocumentFragment|ParentNode} fragment
    * @param {HtmxSettleInfo} settleInfo
    * @param {Node|Document} [rootNode]
    */
@@ -1870,7 +1876,7 @@ var htmx = (function() {
    * Implements complete swapping pipeline, including: delay, view transitions, focus and selection preservation,
    * title updates, scroll, OOB swapping, normal swapping and settling
    * @param {string|Element} target
-   * @param {string|DocumentFragment} content
+   * @param {string|ParentNode} content
    * @param {HtmxSwapSpecification} swapSpec
    * @param {SwapOptions} [swapOptions]
    * @param {HtmxSettleInfo} [oobSettleInfo]
@@ -1911,12 +1917,12 @@ var htmx = (function() {
         target.textContent = content
       // Otherwise, make the fragment and process it
       } else {
+        /** @type DocumentFragment|ParentNode */
         let fragment = typeof content === 'string' ? makeFragment(content) : content
 
         // @ts-ignore if fragment is a ParentNode title will be undefined which is fine
         settleInfo.title = swapOptions.title || fragment.title
         if (swapOptions.historyRequest) {
-          // @ts-ignore fragment can be a parentNode Element
           fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         }
 
@@ -1926,12 +1932,15 @@ var htmx = (function() {
             const oobSelectValues = swapOptions.selectOOB.split(',')
             for (let i = 0; i < oobSelectValues.length; i++) {
               const oobSelectValue = oobSelectValues[i].split(':')
-              let id = oobSelectValue.shift().trim()
-              if (id.indexOf('#') === 0) {
-                id = id.substring(1)
-              }
+              const selector = oobSelectValue.shift().trim()
               const oobValue = oobSelectValue.length > 0 ? oobSelectValue.join(':') : 'true'
-              const oobElement = fragment.querySelector('#' + CSS.escape(id))
+              let oobElement
+              if (selector.indexOf('#') !== 0) {
+                oobElement = fragment.querySelector('#' + CSS.escape(selector)) // check if selector is an id first
+              }
+              if (!oobElement) {
+                oobElement = fragment.querySelector(selector) // then support any full selector
+              }
               if (oobElement) {
                 oobSwap(oobValue, oobElement, settleInfo, rootNode)
               }
@@ -1947,10 +1956,6 @@ var htmx = (function() {
           })
         }
 
-        if (swapSpec.strip) {
-          // @ts-ignore if element is really a template tag we can safely use its content otherwise use first child
-          fragment = fragment.firstElementChild?.content || fragment.firstElementChild // if this is not an inline swap, we use the content of the node, not the node itself
-        }
         // normal swap
         if (swapOptions.select) {
           const newFragment = getDocument().createDocumentFragment()
@@ -1958,6 +1963,9 @@ var htmx = (function() {
             newFragment.appendChild(node)
           })
           fragment = newFragment
+        }
+        if (swapSpec.strip) {
+          fragment = fragment.firstElementChild
         }
         handlePreservedElements(fragment)
         swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
