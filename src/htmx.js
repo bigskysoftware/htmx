@@ -1890,7 +1890,7 @@ var htmx = (function() {
     let settleResolve = null
     let settleReject = null
 
-    const normalSwap = !oobSettleInfo // is this a normal swap or from an oobSwap
+    const isOOBSwap = !!oobSettleInfo // calls passing oobSettleInfo are from oobSwap function and can skip some logic
 
     let doSwap = function() {
       maybeCall(swapOptions.beforeSwapCallback)
@@ -1927,7 +1927,7 @@ var htmx = (function() {
           fragment = fragment.querySelector('[hx-history-elt],[data-hx-history-elt]') || fragment
         }
 
-        if (normalSwap) {
+        if (!isOOBSwap) {
           // select-oob swaps
           if (swapOptions.selectOOB) {
             const oobSelectValues = swapOptions.selectOOB.split(',')
@@ -1998,7 +1998,7 @@ var htmx = (function() {
         if (elt.classList) {
           elt.classList.add(htmx.config.settlingClass)
         }
-        if (normalSwap) {
+        if (!isOOBSwap) {
           triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
         }
       })
@@ -2043,7 +2043,7 @@ var htmx = (function() {
         }
       }
     }
-    let shouldTransition = normalSwap && htmx.config.globalViewTransitions
+    let shouldTransition = !isOOBSwap && htmx.config.globalViewTransitions
     if (swapSpec.hasOwnProperty('transition')) {
       shouldTransition = swapSpec.transition
     }
