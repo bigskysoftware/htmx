@@ -1908,8 +1908,8 @@ var htmx = (function() {
         // @ts-ignore
         end: activeElt ? activeElt.selectionEnd : null
       }
-      if (swapSpec.settleDelay !== undefined) {
-        oobSettleInfo = undefined // for oobSwaps with settle modifier make and perform own settleInfo
+      if (swapSpec.settleDelay !== undefined || swapSpec.swapDelay != undefined) {
+        oobSettleInfo = undefined // for oobSwaps with swap or settle modifier make and perform own settleInfo
       }
       const settleInfo = oobSettleInfo || makeSettleInfo(target)
 
