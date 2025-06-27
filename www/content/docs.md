@@ -123,13 +123,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-letifTFBDHi9rx8nQYggBy3ptAIO+3NkVsN2Ab/4N3SMF/PhyI/bJ7aCJyQGF0MS" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js" integrity="sha384-2DEvJAJIghIiKR92v4VHOyst762QNva3S6lAZo/aOCh4d7HGL7Mk+4x9LPcfA/Qn" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js" integrity="sha384-2ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
@@ -1140,7 +1140,7 @@ You can see all available extensions on the [Extensions](/extensions) page.
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-letifTFBDHi9rx8nQYggBy3ptAIO+3NkVsN2Ab/4N3SMF/PhyI/bJ7aCJyQGF0MS" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
