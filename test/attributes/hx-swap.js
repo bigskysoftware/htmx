@@ -285,6 +285,10 @@ describe('hx-swap attribute', function() {
 
     swapSpec(make("<div hx-swap='transition:true'/>")).transition.should.equal(true)
 
+    swapSpec(make("<div hx-swap='strip:true'/>")).strip.should.equal(true)
+
+    swapSpec(make("<div hx-swap='target:#table tbody'/>")).target.should.equal('#table tbody')
+
     swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal('customstyle')
   })
 
@@ -559,5 +563,16 @@ describe('hx-swap attribute', function() {
       htmx.off('htmx:swapError', handler)
       htmx._('makeSettleInfo = htmx.backupMakeSettleInfo')
     }
+  })
+
+  it('swap innerHTML with strip:true properly', function() {
+    this.server.respondWith('GET', '/test', '<a id="a1" hx-get="/test2">Clicked!</a>')
+
+    var div = make('<div id="d1" class="foo" hx-get="/test" hx-swap="innerHTML strip:true"></div>')
+    div.click()
+    should.equal(byId('d1'), div)
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    div.outerHTML.should.equal('<div id="d1" class="foo" hx-get="/test" hx-swap="innerHTML strip:true">Clicked!</div>')
   })
 })
