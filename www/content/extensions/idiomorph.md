@@ -41,6 +41,12 @@ import `htmx.org`;
 import `idiomorph`; 
 ```
 
+### Via Module Import
+
+```javascript
+import "idiomorph/htmx";
+```
+
 ## Usage
 
 Once you have referenced the idiomorph extension, you can register it with the name `morph` on the body and then being
