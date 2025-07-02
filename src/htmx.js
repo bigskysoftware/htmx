@@ -5060,12 +5060,14 @@ var htmx = (function() {
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {
       const nonceAttribute = htmx.config.inlineStyleNonce ? ` nonce="${htmx.config.inlineStyleNonce}"` : ''
+      const indicator = htmx.config.indicatorClass
+      const request = htmx.config.requestClass
       getDocument().head.insertAdjacentHTML('beforeend',
-        '<style' + nonceAttribute + '>\
-      .' + htmx.config.indicatorClass + '{opacity:0}\
-      .' + htmx.config.requestClass + ' .' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
-      .' + htmx.config.requestClass + '.' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
-      </style>')
+        `<style${nonceAttribute}>` +
+        `.${indicator}{opacity:0;visibility: hidden} ` +
+        `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}` +
+        '</style>'
+      )
     }
   }
 
