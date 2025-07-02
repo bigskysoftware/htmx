@@ -54,7 +54,7 @@ that will show the spinner:
         transition: opacity 200ms ease-in;
     }
 ```
-This default `htmx-indicator` CSS also sets the visiblity to hidden for better screen reader accessability and does a quick fade in of the opacity.
+This default `htmx-indicator` CSS also sets the visibility to hidden for better screen reader accessibility and does a quick fade in of the opacity.
 
 If you would prefer a different effect for showing the spinner you could define and use your own indicator
 CSS.  Here is an example that uses `display` rather than opacity (Note that we use `my-indicator` instead of `htmx-indicator`):
@@ -105,4 +105,4 @@ This simulates what a spinner might look like in that situation:
 ```html
 <meta name="htmx-config" content='{"inlineStyleNonce": "random-nonce"}'>
 ```
-* If your CSP needs to block all inline style tags then disable `includeIndicatorStyles` and host your own CSS file with a copy of your prefered `htmx-indicator` style from above
+* If your CSP needs to block all inline style tags then disable `includeIndicatorStyles` and host your own CSS file with a copy of your preferred `htmx-indicator` style from above
