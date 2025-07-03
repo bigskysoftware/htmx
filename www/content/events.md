@@ -375,6 +375,7 @@ This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) an
 * `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
 * `detail.target` - the target of the swap
 * `detail.fragment` - the response fragment
+* `detail.swapSpec` - the swapSpec to be used containing the swapStyle
 
 ### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
 
