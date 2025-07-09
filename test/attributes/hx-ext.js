@@ -56,6 +56,17 @@ describe('hx-ext attribute', function() {
         }
       }
     })
+    htmx.defineExtension('ext-6', {
+      isInlineSwap: function(swapStyle) {
+        return swapStyle === 'morph:outerHTML'
+      },
+      handleSwap: function(swapStyle, target, fragment, settleInfo) {
+        if (swapStyle === 'morph:outerHTML') {
+          const swapOuterHTML = htmx._('swapOuterHTML')
+          swapOuterHTML(target, fragment, settleInfo)
+        }
+      }
+    })
   })
 
   afterEach(function() {
@@ -66,6 +77,7 @@ describe('hx-ext attribute', function() {
     htmx.removeExtension('ext-3')
     htmx.removeExtension('ext-4')
     htmx.removeExtension('ext-5')
+    htmx.removeExtension('ext-6')
   })
 
   it('A simple extension is invoked properly', function() {
@@ -191,6 +203,30 @@ describe('hx-ext attribute', function() {
       '<div id="b1" hx-swap-oob="invalid">Bar</div>'
     )
     var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-3"><div id="b1">Foo</div></div>')
+    btn.click()
+    this.server.respond()
+    byId('b1').innerHTML.should.equal('Bar')
+  })
+
+  it('oob swap via swap extension can accept custom swap styles with ":" if it has a custom selector', function() {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div id="b1" hx-swap-oob="morph:outerHTML:#b1">Bar</div>'
+    )
+    var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-6"><div id="b1">Foo</div></div>')
+    btn.click()
+    this.server.respond()
+    byId('b1').innerHTML.should.equal('Bar')
+  })
+
+  it('oob swap via swap extension can accept custom swap styles with ":" if it is a complex style', function() {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div id="b1" hx-swap-oob="morph:outerHTML target:#b1">Bar</div>'
+    )
+    var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-6"><div id="b1">Foo</div></div>')
     btn.click()
     this.server.respond()
     byId('b1').innerHTML.should.equal('Bar')

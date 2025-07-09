@@ -1457,14 +1457,15 @@ var htmx = (function() {
     let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
     /** @type HtmxSwapStyle */
     let swapStyle = 'outerHTML'
+    const split = oobValue.lastIndexOf(':')
     if (oobValue === 'true') {
       // do nothing
-    } else if (oobValue.indexOf(':') > 0) {
-      swapStyle = oobValue.substring(0, oobValue.lastIndexOf(':'))
+    } else if (split > 0) {
+      swapStyle = oobValue.substring(0, split)
       if (WHITESPACE.test(swapStyle)) {
         swapStyle = oobValue // if whitespace then treat whole oobValue as a full swap spec with retarget: or other modifiers
       } else {
-        selector = oobValue.substring(oobValue.lastIndexOf(':') + 1) // otherwise treat anything after : as selector for old format
+        selector = oobValue.substring(split + 1) // otherwise treat anything after : as selector for old format
       }
     } else {
       swapStyle = oobValue
@@ -1937,7 +1938,7 @@ var htmx = (function() {
               const oobValue = oobSelectValue.length > 0 ? oobSelectValue.join(':') : 'true'
               let oobElement
               if (selector.indexOf('#') !== 0) {
-                oobElement = fragment.querySelector('#' + CSS.escape(selector)) // check if selector is an id first
+                oobElement = fragment.querySelector('#' + selector) // check if selector is an id first
               }
               if (!oobElement) {
                 oobElement = fragment.querySelector(selector) // then support any full selector
