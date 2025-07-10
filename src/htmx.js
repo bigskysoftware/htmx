@@ -3821,11 +3821,10 @@ var htmx = (function() {
           } else if (swapSpec.target) {
             swapSpec.target += (' ' + value) // unfound modifers must be part of target selector
           } else {
-            if (!defaults) {
-              logError('Unknown modifier in hx-swap: ' + value)
-            } else {
-              return
+            if (defaults) {
+              return // on invalid modifers allow oob swap to fall back to old style
             }
+            logError('Unknown modifier in hx-swap: ' + value)
           }
         }
       }
