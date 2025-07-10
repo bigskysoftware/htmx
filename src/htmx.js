@@ -1467,6 +1467,9 @@ var htmx = (function() {
         swapSpec = { swapStyle: oobValue === 'true' ? 'outerHTML' : oobValue }
       }
     }
+    if (WHITESPACE.test(swapSpec.swapStyle)) {
+      logError('invalid modifier in hx-swap-oob: ' + oobValue)
+    }
 
     oobElement.removeAttribute('hx-swap-oob')
     oobElement.removeAttribute('data-hx-swap-oob')
