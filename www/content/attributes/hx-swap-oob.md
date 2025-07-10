@@ -50,7 +50,7 @@ The following modifers from [`hx-swap`](@/attributes/hx-swap.md) can now be incl
 * `strip:` - Override the stripping or not of the oob elements encapsulating tag pair
 * `target:` - Set a custom CSS selector to use as the target
 
-Before modifers were supported the swap strategy value could not contain spaces and the target selector was placed after a colon like `innerHTML:#status`. Now when the swap value contains a space it is parsed as swap modifers and you have to be explicit and use the `target:<selector>` modifier like `innerHTML swap:1s target:#status`.
+Before modifers were supported the swap strategy value could not contain spaces and the target selector was placed after a colon like `innerHTML:#status`. Now when the `hx-swap-oob` value is parsed and checked to see if is a valid swap specification with modifers before using it. If this parsing fails it falls back to the old legacy way and treats the first `:` as a seperator between a swap style and CSS selector. Any invalid or incorrectly spelt modifers used will prevent it using a valid selector preventing the oob swap.
 
 ### Using alternate swap strategies
 

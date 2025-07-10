@@ -208,18 +208,6 @@ describe('hx-ext attribute', function() {
     byId('b1').innerHTML.should.equal('Bar')
   })
 
-  it('oob swap via swap extension can accept custom swap styles with ":" if it has a custom selector', function() {
-    this.server.respondWith(
-      'GET',
-      '/test',
-      '<div id="b1" hx-swap-oob="morph:outerHTML:#b1">Bar</div>'
-    )
-    var btn = make('<div hx-get="/test" hx-swap="none" data-hx-ext="ext-6"><div id="b1">Foo</div></div>')
-    btn.click()
-    this.server.respond()
-    byId('b1').innerHTML.should.equal('Bar')
-  })
-
   it('oob swap via swap extension can accept custom swap styles with ":" if it is a complex style', function() {
     this.server.respondWith(
       'GET',

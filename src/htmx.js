@@ -1455,23 +1455,19 @@ var htmx = (function() {
   function oobSwap(oobValue, oobElement, settleInfo, rootNode) {
     rootNode = rootNode || getDocument()
     let selector = '#' + CSS.escape(getRawAttribute(oobElement, 'id'))
-    /** @type HtmxSwapStyle */
-    let swapStyle = 'outerHTML'
-    const split = oobValue.lastIndexOf(':')
-    if (oobValue === 'true') {
-      // do nothing
-    } else if (split > 0) {
-      swapStyle = oobValue.substring(0, split)
-      if (WHITESPACE.test(swapStyle)) {
-        swapStyle = oobValue // if whitespace then treat whole oobValue as a full swap spec with retarget: or other modifiers
-      } else {
-        selector = oobValue.substring(split + 1) // otherwise treat anything after : as selector for old format
-      }
+    var swapSpec = getSwapSpecification(oobElement, oobValue, {})
+    if (swapSpec && Object.keys(swapSpec).length > 1) {
+      selector = swapSpec.target || selector // if it parses as a full swapSpec and is not a single value then use it
     } else {
-      swapStyle = oobValue
+      const split = oobValue.indexOf(':') // otherwise split as style:selector for legacy support
+      if (split !== -1) {
+        swapSpec = { swapStyle: oobValue.substring(0, split) }
+        selector = oobValue.substring(split + 1)
+      } else {
+        swapSpec = { swapStyle: oobValue === 'true' ? 'outerHTML' : oobValue }
+      }
     }
-    var swapSpec = getSwapSpecification(oobElement, swapStyle, { target: selector })
-    selector = swapSpec.target
+
     oobElement.removeAttribute('hx-swap-oob')
     oobElement.removeAttribute('data-hx-swap-oob')
     const targets = querySelectorAllExt(rootNode, selector, false)
@@ -3822,7 +3818,11 @@ var htmx = (function() {
           } else if (swapSpec.target) {
             swapSpec.target += (' ' + value) // unfound modifers must be part of target selector
           } else {
-            logError('Unknown modifier in hx-swap: ' + value)
+            if (!defaults) {
+              logError('Unknown modifier in hx-swap: ' + value)
+            } else {
+              return
+            }
           }
         }
       }
