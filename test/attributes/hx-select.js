@@ -34,4 +34,13 @@ describe('BOOTSTRAP - htmx AJAX Tests', function() {
     this.server.respond()
     div.innerHTML.should.equal('<div id="d1">foo</div>')
   })
+
+  it('properly handles a select with strip:true', function() {
+    var i = 1
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div id='d2'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-swap="innerHTML strip:true"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('foo')
+  })
 })
