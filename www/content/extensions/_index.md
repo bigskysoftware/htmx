@@ -116,7 +116,7 @@ htmx extensions are split into two categories:
     </tr>
     <tr>
       <td>{% markdown() %}  [restored](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/restored/README.md)  {% end %}</td>
-      <td>{% markdown() %}  Triggers an event whenever a back button even is detected while using `hx-boost`  {% end %}</td>
+      <td>{% markdown() %}  Triggers an event whenever a back button event is detected while using `hx-boost`  {% end %}</td>
     </tr>
     <tr>
       <td>{% markdown() %}  [safe-nonce](https://github.com/MichaelWest22/htmx-extensions/blob/main/src/safe-nonce/README.md)  {% end %}</td>
