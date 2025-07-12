@@ -23,7 +23,6 @@ The fastest way to install `idiomorph` is to load it via a CDN. Remember to alwa
 ```
 
 Unminified versions are also available at:
-<https://unpkg.com/idiomorph/dist/idiomorph.js>
 <https://unpkg.com/idiomorph/dist/idiomorph-ext.js>
 
 While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `idiomorph` is to simply copy it into your project. Download idiomorph and its htmx extension from `https://unpkg.com/idiomorph` and `https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js`, add them to the appropriate directory in your project and include them where necessary with `<script>` tags.
