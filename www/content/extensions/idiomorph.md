@@ -35,7 +35,7 @@ For npm-style build systems, you can install `idiomorph` via [npm](https://www.n
 npm install idiomorph
 ```
 
-After installing, you'll need to use appropriate tooling to bundle `node_modules/idiomorph/dist/idiomorph.js` (or `.min.js`) and `node_modules/idiomorph/dist/idiomorph-ext.js`. For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+After installing, you'll need to use appropriate tooling to bundle `node_modules/idiomorph/dist/idiomorph-ext.js` (or `node_modules/idiomorph/dist/idiomorph-ext.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
 
 If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
 
