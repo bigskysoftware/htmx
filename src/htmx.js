@@ -278,7 +278,14 @@ var htmx = (function() {
        * @type boolean
        * @default true
        */
-      historyRestoreAsHxRequest: true
+      historyRestoreAsHxRequest: true,
+      /**
+       * Weather to report input validation errors to the end user and update focus to the first input that fails validation.
+       * This should always be enabled as this matches default browser form submit behaviour
+       * @type boolean
+       * @default false
+       */
+      reportValidityOfForms: false
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -3546,8 +3553,10 @@ var htmx = (function() {
     if (element.willValidate) {
       triggerEvent(element, 'htmx:validation:validate')
       if (!element.checkValidity()) {
+        if (triggerEvent(element, 'htmx:validation:failed', { message: element.validationMessage, validity: element.validity }) && !errors.length) {
+          element.reportValidity()
+        }
         errors.push({ elt: element, message: element.validationMessage, validity: element.validity })
-        triggerEvent(element, 'htmx:validation:failed', { message: element.validationMessage, validity: element.validity })
       }
     }
   }

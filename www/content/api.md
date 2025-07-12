@@ -143,7 +143,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `htmx.config.responseHandling:[...]` - HtmxResponseHandlingConfig[]: the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error
 * `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).
 * `htmx.config.historyRestoreAsHxRequest:true` -  Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header. This should always be disabled when using HX-Request header to optionally return partial responses
-
+* `htmx.config.reportValidityOfForms:false` -  Weather to report input validation errors to the end user and update focus to the first input that fails validation. This should always be enabled as this matches default browser form submit behaviour
 ##### Example
 
 ```js

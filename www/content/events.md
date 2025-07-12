@@ -565,7 +565,7 @@ to implement custom validation rules.
 
 ### Event - `htmx:validation:failed` {#htmx:validation:failed}
 
-This event is triggered when an element fails validation.
+This event is triggered when an element fails validation. If `preventDefault()` is invoked on the event, the reportValidity() enabled by `htmx.config.reportValidityOfForms` will not be called.
 
 ##### Details
 
