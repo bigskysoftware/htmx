@@ -1,9 +1,15 @@
 +++
 title = "SPA Alternative"
+description = """\
+  In this essay, Carson Gross explores alternatives to Single Page Applications (SPAs), advocating for an \
+  'HTML-Centric' development approach. He highlights the drawbacks of SPA complexity and the benefits of embracing \
+  HTML as the core medium for web development, offering a simpler, more efficient way to build applications without \
+  sacrificing interactivity. Carson discusses how tools like htmx enhance HTML's capabilities and encourages \
+  developers to reconsider the dominant SPA paradigm with technical bravery."""
 date = 2020-10-29
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -74,7 +80,7 @@ This is in large part because HTML is a limited hypertext.  In particular:
 * Only `<a>` and `<form>` can make HTTP requests
 * Only `click` & `submit` events can trigger them
 * Only GET & POST [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) are widely available
-* A request must replace the entire screen, leading to a clunkly and sometimes jarring user experience
+* A request must replace the entire screen, leading to a clunky and sometimes jarring user experience
 
 Of course, none of the constraints are inherent in the concept of a hypertext, and the goal of [htmx](@/_index.md)
 is to remove each of them.

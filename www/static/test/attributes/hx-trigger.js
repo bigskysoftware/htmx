@@ -454,7 +454,7 @@ describe('hx-trigger attribute', function() {
       div.dispatchEvent(event)
       this.server.respond()
       div.innerHTML.should.equal('Not Called')
-      foo = true
+      window.foo = true
       div.dispatchEvent(event)
       this.server.respond()
       div.innerHTML.should.equal('Called!')
@@ -494,6 +494,47 @@ describe('hx-trigger attribute', function() {
     } finally {
       htmx.off('htmx:eventFilter:error', handler)
     }
+  })
+
+  it('filters properly with true for empty condition', function() {
+    this.server.respondWith('GET', '/test', 'Called!')
+    var form = make('<form hx-get="/test" hx-trigger="evt[]">Not Called</form>')
+    form.click()
+    form.innerHTML.should.equal('Not Called')
+    var event = htmx._('makeEvent')('evt')
+    form.dispatchEvent(event)
+    this.server.respond()
+    form.innerHTML.should.equal('Called!')
+  })
+
+  it('syntax error in condition issues error', function() {
+    this.server.respondWith('GET', '/test', 'Called!')
+    var errorEvent = null
+    var handler = htmx.on('htmx:syntax:error', function(event) {
+      errorEvent = event
+    })
+    var form = make('<form hx-get="/test" hx-trigger="evt[{]">Not Called</form>')
+    try {
+      var event = htmx._('makeEvent')('evt')
+      form.dispatchEvent(event)
+      should.not.equal(null, errorEvent)
+      should.not.equal(null, errorEvent.detail.source)
+      console.log(errorEvent.detail.source)
+    } finally {
+      htmx.off('htmx:syntax:error', handler)
+    }
+  })
+
+  it('filters properly with condition containing square backets', function() {
+    this.server.respondWith('GET', '/test', 'Called!')
+    var form = make('<form hx-get="/test" hx-trigger="evt[foo[0]]">Not Called</form>')
+    form.click()
+    form.innerHTML.should.equal('Not Called')
+    var event = htmx._('makeEvent')('evt')
+    event.foo = [true]
+    form.dispatchEvent(event)
+    this.server.respond()
+    form.innerHTML.should.equal('Called!')
   })
 
   it('from clause works', function() {
@@ -655,6 +696,26 @@ describe('hx-trigger attribute', function() {
     div2.click()
     this.server.respond()
     div1.innerHTML.should.equal('Requests: 2')
+  })
+
+  it('from clause works with multiple extended selectors', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    make('<button id="btn" type="button">Click me</button>' +
+      '<div hx-trigger="click from:(previous button, next a)" hx-target="#a1" hx-get="/test"></div>' +
+      '<a id="a1">Requests: 0</a>')
+    var btn = byId('btn')
+    var a1 = byId('a1')
+    a1.innerHTML.should.equal('Requests: 0')
+    btn.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 1')
+    a1.click()
+    this.server.respond()
+    a1.innerHTML.should.equal('Requests: 2')
   })
 
   it('event listeners can filter on target', function() {
@@ -962,6 +1023,60 @@ describe('hx-trigger attribute', function() {
     div2.innerHTML.should.equal('test 2')
   })
 
+  it('scrolling triggers revealed event', function(done) {
+    this.server.respondWith('GET', '/test', 'test')
+    this.server.autoRespond = true
+    this.server.autoRespondAfter = 0
+    var div = make('<div hx-get="/test" hx-trigger="revealed"></div>')
+    div.innerHTML.should.equal('')
+    div.scrollIntoView({ block: 'end', behavior: htmx.config.scrollBehavior })
+    htmx.trigger(document.body, 'scroll')
+
+    setTimeout(function() {
+      div.innerHTML.should.equal('test')
+      done()
+    }, 250)
+  })
+
+  if (window.__playwright__binding__) {
+    it('scrolling triggers intersect event', function(done) {
+      // test only works reliably with playwright
+      this.server.respondWith('GET', '/test', 'test')
+      this.server.autoRespond = true
+      this.server.autoRespondAfter = 0
+      var div = make('<div hx-get="/test" hx-trigger="intersect"></div>')
+      div.innerHTML.should.equal('')
+      div.scrollIntoView({ block: 'end', behavior: htmx.config.scrollBehavior })
+      htmx.trigger(document.body, 'scroll')
+
+      setTimeout(function() {
+        div.innerHTML.should.equal('test')
+        done()
+      }, 250)
+    })
+  }
+
+  it('triggering revealed while component not yet inited still works', function(done) {
+    this.server.respondWith('GET', '/test', 'test')
+    var div = make('<div hx-get="/test" hx-trigger="revealed"></div>')
+    var data = div['htmx-internal-data']
+    delete data.initHash // simulate not inited or revealed yet
+    div.removeAttribute('data-hx-revealed')
+    var server1 = this.server
+    div.innerHTML.should.equal('')
+    div.scrollIntoView({ block: 'end', behavior: htmx.config.scrollBehavior })
+    htmx.trigger(document.body, 'scroll')
+    setTimeout(function() {
+      server1.autoRespond = true
+      server1.autoRespondAfter = 0
+      htmx.process(div) // processing the div should also trigger revealed event now
+      setTimeout(function() {
+        div.innerHTML.should.equal('test')
+        done()
+      }, 10)
+    }, 250)
+  })
+
   it('reveal event works when triggered by window', function() {
     this.server.respondWith('GET', '/test1', 'test 1')
     var div = make('<div hx-get="/test1" hx-trigger="revealed" style="position: fixed; top: 1px; left: 1px; border: 3px solid red">foo</div>')
@@ -1043,6 +1158,28 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
+  it('fires the htmx:trigger event when the trigger is a load', function(done) {
+    this.server.respondWith(
+      'GET',
+      '/test',
+      '<div hx-trigger="load delay:50ms" hx-on::trigger="this.innerText = \'Done\'">Response</div>'
+    )
+
+    var div = make('<div hx-get="/test">Submit</div>')
+    div.click()
+    this.server.respond()
+    var response = div.children[0]
+    response.innerText.should.equal('Response')
+
+    setTimeout(function() {
+      try {
+        response.innerText.should.equal('Done')
+        done()
+      } finally {
+      }
+    }, 100)
+  })
+
   it('filters support "this" reference to the current element', function() {
     this.server.respondWith('GET', '/test', 'Called!')
     var form = make('<form hx-get="/test" hx-trigger="click[this.classList.contains(\'bar\')]">Not Called</form>')
@@ -1088,10 +1225,6 @@ describe('hx-trigger attribute', function() {
   it('correctly handles CSS descendant combinators in modifier target', function() {
     this.server.respondWith('GET', '/test', 'Called')
 
-    document.addEventListener('htmx:syntax:error', function(evt) {
-      chai.assert.fail('htmx:syntax:error')
-    })
-
     make('<div class="d1"><a id="a1" class="a1">Click me</a><a id="a2" class="a2">Click me</a></div>')
     var div = make('<div hx-trigger="click from:body target:(.d1 .a2)" hx-get="/test">Not Called</div>')
 
@@ -1106,12 +1239,52 @@ describe('hx-trigger attribute', function() {
 
   it('correctly handles CSS descendant combinators in modifier root', function() {
     this.server.respondWith('GET', '/test', 'Called')
-
-    document.addEventListener('htmx:syntax:error', function(evt) {
-      chai.assert.fail('htmx:syntax:error')
+    var errorEvent = null
+    var handler = htmx.on('htmx:syntax:error', function(event) {
+      errorEvent = event
     })
+    var form = make('<div hx-trigger="intersect root:{form input}" hx-get="/test">Not Called</div>')
+    try {
+      var event = htmx._('makeEvent')('evt')
+      form.dispatchEvent(event)
+      should.equal(null, errorEvent)
+    } finally {
+      htmx.off('htmx:syntax:error', handler)
+    }
+  })
 
-    make('<div hx-trigger="intersect root:{form input}" hx-get="/test">Not Called</div>')
+  it('correctly handles intersect with modifier threshold', function() {
+    this.server.respondWith('GET', '/test', 'Called')
+    var errorEvent = null
+    var handler = htmx.on('htmx:syntax:error', function(event) {
+      errorEvent = event
+    })
+    var form = make('<div hx-trigger="intersect threshold:0.5" hx-get="/test">Not Called</div>')
+    try {
+      var event = htmx._('makeEvent')('evt')
+      form.dispatchEvent(event)
+      should.equal(null, errorEvent)
+    } finally {
+      htmx.off('htmx:syntax:error', handler)
+    }
+  })
+
+  it('issues error with invalid trigger spec', function() {
+    this.server.respondWith('GET', '/test', 'Called')
+    var errorEvent = null
+    var handler = htmx.on('htmx:syntax:error', function(event) {
+      errorEvent = event
+    })
+    var form = make('<div hx-trigger="intersect invalid:0.5" hx-get="/test">Not Called</div>')
+    try {
+      var event = htmx._('makeEvent')('evt')
+      form.dispatchEvent(event)
+      should.not.equal(null, errorEvent)
+      should.not.equal(null, errorEvent.detail.source)
+      console.log(errorEvent.detail.source)
+    } finally {
+      htmx.off('htmx:syntax:error', handler)
+    }
   })
 
   it('uses trigger specs cache if defined', function() {
@@ -1180,5 +1353,21 @@ describe('hx-trigger attribute', function() {
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Requests: 2')
+  })
+
+  it('Removing polling trigger and processing node removes timeout', function(complete) {
+    this.server.respondWith('GET', '/test', 'Called!')
+    var div = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
+    div.removeAttribute('hx-trigger')
+    should.not.equal(div['htmx-internal-data'].timeout, undefined)
+    htmx.process(div)
+    should.equal(div['htmx-internal-data'].timeout, undefined)
+    this.server.autoRespond = true
+    this.server.autoRespondAfter = 0
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Called')
+      delete window.foo
+      complete()
+    }, 30)
   })
 })

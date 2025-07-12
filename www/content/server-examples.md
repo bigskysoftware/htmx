@@ -16,6 +16,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/rajasegar/awesome-htmx>
 
+## Julia
+
+- https://github.com/leephillips/juliaVortexWeb/
+- https://github.com/leephillips/pluckit
+
 ## JavaScript
 
 ### Node.js
@@ -52,11 +57,20 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/cscortes/htmxflask>
 - <https://github.com/Konfuzian/htmx-examples-with-flask/>
 
+### Lua
+
+- Lua Server Pages: <https://realtimelogic.com/articles/LSP-htmx-A-Powerful-Duo-for-Embedded-Web-Apps>
+
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
 
 ## Java
+
+### Javalin
+
+- <https://github.com/AussieGuy0/java-htmx-todo/>
+- <https://github.com/erwindrsno/simple-to-do-list>
 
 ### Spring Boot
 
@@ -85,6 +99,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/khalidabuhakmeh/Htmx.Net>
 - <https://github.com/khalidabuhakmeh/Htmx.Net#htmxtaghelpers>
 - <https://github.com/hlaueriksson/Markupolation/tree/main/samples>
+
+### Blazor
+
+- <https://github.com/grugBraid/haxor-contact-app>
 
 ## Prolog
 
@@ -122,11 +140,14 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/paultuckey/example-todo-app-rust-htmx>
 
 ## Scala
-  
+
 ### http4s
+
 - <https://github.com/martinprobson/http4s-htmx-demo>
+- <https://github.com/eikek/htmx4s>
 
 ### zio-http
+
 - <https://github.com/rockthejvm/scalatags-htmx-demo>
 
 ## Kotlin
@@ -137,7 +158,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### Http4k
 
-<https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/corlaez/todo-hda-kt>
+- <https://github.com/mikaelstaldal/htmx-http4k-thymeleaf>
 
 ## Julia
 
@@ -153,7 +175,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 ### CodeIgniter 4
 
 - <https://github.com/michalsn/codeigniter-htmx-demo>
-
 
 ### Laravel
 
@@ -205,9 +226,17 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
 - <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
 
+### htmgo
+
+- <https://htmgo.dev>
+
 ## Delphi
 
 ### DelphiMVCFramework
 
 - <https://github.com/danieleteti/delphi-dmvcframework-htmx-todo>
 - <https://github.com/danieleteti/delphimvcframework/tree/master/samples/htmx>
+
+## FreePascal with Pas2JS
+
+- <https://github.com/zendrael/create_htmx_pascal_app>

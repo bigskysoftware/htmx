@@ -10,18 +10,19 @@ describe('hx-request attribute', function() {
 
   it('basic hx-request timeout works', function(done) {
     var timedOut = false
-    this.server.respondWith('GET', '/test', 'Clicked!')
-    var div = make("<div hx-post='/vars' hx-request='\"timeout\":1'></div>")
+    htmx.config.selfRequestsOnly = false
+    var div = make("<div hx-post='https://hypermedia.systems/www/test' hx-request='\"timeout\":1'></div>")
     htmx.on(div, 'htmx:timeout', function() {
       timedOut = true
     })
+    this.server.restore() // use real xhrs
     div.click()
     setTimeout(function() {
+      htmx.config.selfRequestsOnly = true
       div.innerHTML.should.equal('')
-      // unfortunately it looks like sinon.js doesn't implement the timeout functionality
-      // timedOut.should.equal(true);
+      timedOut.should.equal(true)
       done()
-    }, 400)
+    }, 30)
   })
 
   it('hx-request header works', function() {

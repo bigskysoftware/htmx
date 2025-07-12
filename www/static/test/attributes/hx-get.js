@@ -64,6 +64,18 @@ describe('hx-get attribute', function() {
     form.innerHTML.should.equal('Clicked!')
   })
 
+  it('GET on form with anchor works properly and scrolls to anchor id', function() {
+    this.server.respondWith('GET', /\/test.*/, function(xhr) {
+      getParameters(xhr).foo.should.equal('bar')
+      getParameters(xhr).i1.should.equal('value')
+      xhr.respond(200, {}, '<div id="foo">Clicked</div>')
+    })
+    var form = make('<form hx-trigger="click" hx-get="/test?foo=bar#foo"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>')
+    form.click()
+    this.server.respond()
+    form.innerHTML.should.equal('<div id="foo">Clicked</div>')
+  })
+
   it('issues a GET request on click and swaps content w/ data-* prefix', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
 

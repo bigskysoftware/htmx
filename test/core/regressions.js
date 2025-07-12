@@ -270,4 +270,67 @@ describe('Core htmx Regression Tests', function() {
       done()
     }, 50)
   })
+
+  it('a modified click trigger on a form does not prevent the default behaviour of other elements - https://github.com/bigskysoftware/htmx/issues/2755', function(done) {
+    var defaultPrevented = 'unset'
+    make('<input type="date" id="datefield">')
+    make('<form hx-trigger="click from:body"></form>')
+
+    htmx.on('#datefield', 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(false)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    byId('datefield').click()
+  })
+
+  it('a button clicked inside an htmx enabled link will prevent the link from navigating on click', function(done) {
+    var defaultPrevented = 'unset'
+    var link = make('<a href="/foo" hx-get="/foo"><button>test</button></a>')
+    var button = link.firstChild
+
+    htmx.on(link, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    button.click()
+  })
+
+  it('a htmx enabled button clicked inside a link will prevent the link from navigating on click', function(done) {
+    var defaultPrevented = 'unset'
+    var link = make('<a href="/foo"><button hx-get="/foo">test</button></a>')
+    var button = link.firstChild
+
+    htmx.on(link, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    button.click()
+  })
 })

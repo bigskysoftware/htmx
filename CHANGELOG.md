@@ -1,5 +1,42 @@
 # Changelog
 
+## [2.0.6] - 2025-06-27
+
+* [Fix](https://github.com/bigskysoftware/htmx/pull/3357) a [regression](https://github.com/bigskysoftware/htmx/issues/3356) 
+  with htmx-powered links that contain other elements in them issuing full page refreshes
+
+## [2.0.5] - 2025-06-20
+
+* 100% test coverage! (Thank you @MichaelWest22!)
+* The default recommended CDN is now jsDelivr
+* The `inherit` keyword is now supported by `hx-include`, `hx-indicator` and `hx-disabled-elt` to allow you to inherit
+  the value from a parent and extend it.
+* `hx-on` listeners are now added before processing nodes so events during processing can be captured
+* Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
+* Using `<button formmethod="dialog">` will no longer submit its associated form
+* Local history cache now uses `sessionStorage` rather than `localStorage` so cross-tab contamination doesn't occur
+* History restoration now follows the standard swapping code paths 
+* Many other smaller bug and documentation fixes
+
+## [2.0.4] - 2024-12-13
+
+* Calling `htmx.ajax` with no target or source now defaults to body (previously did nothing)
+* Nested [shadow root](https://github.com/bigskysoftware/htmx/commit/5ab508f6523a37890932176f7dc54be9f7a281ff) fix
+* The `htmx:trigger` event now properly fires on the synthetic `load` event
+* The synthetic `load` event will not be re-called when an element is reinitialized via `htmx.process()`
+* Boosted `<form>` tags that issue a `GET` with no or empty `action` attributes will properly replace all existing query 
+  parameters
+* Events that are triggered on htmx-powered elements located outside a form, but that refer to a form via the`form` 
+  attribute, now properly cancel the submission of the referred-to form
+* Extension Updates
+  * `preload` extension was 
+    [completely reworked](https://github.com/bigskysoftware/htmx-extensions/commit/fb68dfb48063505d2d7420d717c24ac9a8dae244) 
+    by @marisst to be compatible with `hx-boost`, not cause side effect, etc. Thank you!
+  * `response-targets` was updated to not use deprecated methods
+  * A [small fix](https://github.com/bigskysoftware/htmx-extensions/commit/e87e1c3d0bf728b4e43861c7459f3f937883eb99) to
+    `ws` to avoid an error when closing in some cases
+  * The `head-support` extension was updated to work with the `sse` extension
+
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
   see the [demo page](/examples/move-before) for more information.

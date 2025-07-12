@@ -1,9 +1,15 @@
 +++
 title = "The #ViewSource Affordance"
+description = """\
+  In this essay, Carson Gross explores the significance of the #ViewSource affordance in preserving the open, \
+  collaborative culture of the early web. He examines the impact of digital and technical enclosure on this culture, \
+  highlights the importance of developer decisions in maintaining openness, and advocates for prioritizing \
+  #ViewSource-friendly practices in modern web development."""
 date = 2023-09-21
 updated = 2023-09-21
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
+tag = ["posts"]
 +++
 
 > Not for nothing, Hypercard presaged the web's critical "#ViewSource" affordance, which allowed people to copy,
@@ -18,7 +24,7 @@ When people talk about open source software, that conversation is often dominate
 [the Free Software Foundation's notion of free software](https://www.gnu.org/philosophy/free-sw.html):
 
 > “Free software” means software that respects users' freedom and community. Roughly, it means that the users have the 
-> freedom to run, copy, distribute, study, change and improve the software."
+> freedom to run, copy, distribute, study, change and improve the software.
 
 This definition of free software has been a useful one and, through advocating for it, the FSF has gifted the world a 
 lot of wonderful open source software.
@@ -98,7 +104,7 @@ technical decisions and how those decisions can also contribute to the disappear
 
 Inadvertently (for the most part) technical trends and decisions in web development in the last two decades have lead
 to what we term a "Technical Enclosure" of the web, a processes whereby technical decisions chip away at the #ViewSource
-affordance that Cory Doctrow discusses in the opening quote of this article, an affordance that existed as a commons
+affordance that Cory Doctorow discusses in the opening quote of this article, an affordance that existed as a commons
 for early web developers.
 
 To see a stark example of the decline of the [#ViewSource](https://en.wikipedia.org/wiki/View-source_URI_scheme) affordance
@@ -122,8 +128,8 @@ challenging for even the most seasoned web developer.
 
 A new web developer would have almost no chance of deriving any value from doing so.
 
-Now, this is not to criticize the google engineer's technical decisions that lead to this situation _as technical 
-decisions_: obviously, despite similar appearances, the google homepage of 2023 is far more sophisticated than the one 
+Now, this is not to criticize the Google engineer's technical decisions that lead to this situation _as technical 
+decisions_: obviously, despite similar appearances, the Google homepage of 2023 is far more sophisticated than the one 
 available in 2000.
 
 The 2023 google homepage is going to be a lot more complicated than the 2000 page and, given the zeitgeist, it is going to 

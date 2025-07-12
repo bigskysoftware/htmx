@@ -1,5 +1,9 @@
 +++
 title = "Javascript API"
+description = """\
+  This documentation describes the JavaScript API for htmx, including methods and properties for configuring the \
+  behavior of htmx, working with CSS classes, AJAX requests, event handling, and DOM manipulation. The API provides \
+  helper functions primarily intended for extension development and event management."""
 +++
 
 While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://htmx.org/extensions) or for working with [events](@/events.md).
@@ -126,6 +130,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `wsReconnectDelay:'full-jitter'` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
 * `wsBinaryType:'blob'` - string: the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection
 * `disableSelector:"[hx-disable], [data-hx-disable]"` - array of strings: htmx will not process elements with this attribute on it or a parent
+* `disableInheritance:false` - boolean: If it is set to `true`, the inheritance of attributes is completely disabled and you can explicitly specify the inheritance with the [hx-inherit](@/attributes/hx-inherit.md) attribute.
 * `scrollBehavior:'instant'` - string: the scroll behavior when using the [show](@/attributes/hx-swap.md#scrolling-scroll-show) modifier with `hx-swap`. The allowed values are `instant` (scrolling should happen instantly in a single jump), `smooth` (scrolling should animate smoothly) and `auto` (scroll behavior is determined by the computed value of [scroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior)).
 * `defaultFocusScroll:false` - boolean: if the focused element should be scrolled into view, can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier
 * `getCacheBusterParam:false` - boolean: if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`
@@ -136,7 +141,8 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `scrollIntoViewOnBoost:true` - boolean: whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.
 * `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
 * `htmx.config.responseHandling:[...]` - HtmxResponseHandlingConfig[]: the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error
-* `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).      
+* `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).
+* `htmx.config.historyRestoreAsHxRequest:true` -  Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header. This should always be disabled when using HX-Request header to optionally return partial responses
 
 ##### Example
 

@@ -144,8 +144,32 @@ describe('hx-boost attribute', function() {
     div.innerHTML.should.equal('Boosted!')
   })
 
-  it('form get with an unset action property', function() {
+  it('form get with an unset action properly submits', function() {
     this.server.respondWith('GET', /\/*/, function(xhr) {
+      xhr.respond(200, {}, 'Boosted!')
+    })
+
+    var div = make('<div hx-target="this" hx-boost="true"><form id="f1" method="get"><button id="b1">Submit</button></form></div>')
+    var btn = byId('b1')
+    btn.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Boosted!')
+  })
+
+  it('form get with no action properly clears existing parameters on submit', function() {
+    /// add a foo=bar to the current url
+    var path = location.href
+    if (!path.includes('foo=bar')) {
+      if (!path.includes('?')) {
+        path += '?foo=bar'
+      } else {
+        path += '&foo=bar'
+      }
+    }
+    history.replaceState({ htmx: true }, '', path)
+
+    this.server.respondWith('GET', /\/*/, function(xhr) {
+      // foo should not be present because the form is a get with no action
       should.equal(undefined, getParameters(xhr).foo)
       xhr.respond(200, {}, 'Boosted!')
     })
@@ -157,8 +181,20 @@ describe('hx-boost attribute', function() {
     div.innerHTML.should.equal('Boosted!')
   })
 
-  it('form get with an empty action property', function() {
+  it('form get with an empty action properly clears existing parameters on submit', function() {
+    /// add a foo=bar to the current url
+    var path = location.href
+    if (!path.includes('foo=bar')) {
+      if (!path.includes('?')) {
+        path += '?foo=bar'
+      } else {
+        path += '&foo=bar'
+      }
+    }
+    history.replaceState({ htmx: true }, '', path)
+
     this.server.respondWith('GET', /\/*/, function(xhr) {
+      // foo should not be present because the form is a get with no action
       should.equal(undefined, getParameters(xhr).foo)
       xhr.respond(200, {}, 'Boosted!')
     })
@@ -169,4 +205,17 @@ describe('hx-boost attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Boosted!')
   })
+
+  if (window.__playwright__binding__ && /chrome/i.test(navigator.userAgent)) {
+    it('ctrlKey mouse click does not boost', function() {
+      // Test only works well in playwright with chome for code coverage as otherwise it opens a new tab breaking things
+      this.server.respondWith('GET', '/test', 'Boosted')
+      var div = make('<div hx-target="this" hx-boost="true"><a id="a1" href="/test">Foo</a></div>')
+      var a = byId('a1')
+      var evt = new MouseEvent('click', { ctrlKey: true })
+      a.dispatchEvent(evt)
+      this.server.respond()
+      div.innerHTML.should.not.equal('Boosted')
+    })
+  }
 })

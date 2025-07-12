@@ -90,6 +90,32 @@ describe('htmx config test', function() {
     }
   })
 
+  it('non mapped responseHandling config will not swap', function() {
+    var originalResponseHandling = htmx.config.responseHandling
+    try {
+      htmx.config.responseHandling = [{ code: '200', swap: true }]
+
+      var responseCode = null
+      this.server.respondWith('GET', '/test', function(xhr, id) {
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
+      })
+
+      responseCode = 400 // 400 should not swap as not found in config
+      var btn = make('<button hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('Click Me!')
+
+      responseCode = 200 // 200 should cause a swap by default
+      var btn = make('<button hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('200')
+    } finally {
+      htmx.config.responseHandling = originalResponseHandling
+    }
+  })
+
   it('can change the target of a given response code', function() {
     var originalResponseHandling = htmx.config.responseHandling
     try {
@@ -108,6 +134,58 @@ describe('htmx config test', function() {
       this.server.respond()
       btn.innerHTML.should.equal('Click Me!')
       div.innerHTML.should.equal('444')
+    } finally {
+      htmx.config.responseHandling = originalResponseHandling
+    }
+  })
+
+  it('throws targetError if you the target in responseHandling is invalid', function() {
+    var originalResponseHandling = htmx.config.responseHandling
+    try {
+      var error = false
+      var handler = htmx.on('htmx:targetError', function(evt) {
+        evt.detail.target.should.equal('#a-div')
+        error = true
+      })
+      htmx.config.responseHandling = originalResponseHandling.slice()
+      htmx.config.responseHandling.unshift({ code: '444', swap: true, target: '#a-div' })
+
+      var responseCode = null
+      this.server.respondWith('GET', '/test', function(xhr, id) {
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
+      })
+
+      responseCode = 444
+      var btn = make('<button hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('Click Me!')
+    } catch (e) {
+    } finally {
+      htmx.config.responseHandling = originalResponseHandling
+      htmx.off('htmx:targetError', handler)
+      error.should.equal(true)
+    }
+  })
+
+  it('can change the target to "this" in a given response code', function() {
+    var originalResponseHandling = htmx.config.responseHandling
+    try {
+      htmx.config.responseHandling = originalResponseHandling.slice()
+      htmx.config.responseHandling.unshift({ code: '444', swap: true, target: 'this' })
+
+      var responseCode = null
+      this.server.respondWith('GET', '/test', function(xhr, id) {
+        xhr.respond(responseCode, { 'Content-Type': 'text/html' }, '' + responseCode)
+      })
+
+      responseCode = 444
+      var div = make('<div id="a-div">Another Div</div>')
+      var btn = make('<button hx-target="#a-div" hx-get="/test">Click Me!</button>')
+      btn.click()
+      this.server.respond()
+      btn.innerHTML.should.equal('444')
+      div.innerHTML.should.equal('Another Div')
     } finally {
       htmx.config.responseHandling = originalResponseHandling
     }

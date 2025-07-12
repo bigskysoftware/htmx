@@ -3,19 +3,25 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
+    <meta name="description" content="
+    {%- block description -%}
+    htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
 
-    htmx is small (~14k min.gz’d), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react">
+    htmx is small (~14k min.gz’d), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react
+    {%- endblock description -%}
+    ">
     {# This block should set html_title appropriately -#}
     {% block title %} {% endblock title -%}
     <title>{{ html_title | default(value=config.title) | safe }}</title>
-    <link rel="canonical" href="{{ current_url | safe }}">
+    {% if current_url %} <link rel="canonical" href="{{ current_url | safe }}"> {% endif %}
     {#TODO: only generate this for the home page #}
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
     <link rel="stylesheet" href="/css/site.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <script src="/js/htmx.js"></script>
     <script src="/js/class-tools.js"></script>
     <script src="/js/preload.js"></script>
+
     <script src="/js/_hyperscript.js"></script>
     <meta name="generator" content="Zola v.TODO">
 </head>
@@ -44,7 +50,7 @@
                     <div><a href="/talk/">talk</a></div>
                     <div><a href="/essays/">essays</a></div>
                     <div hx-disable>
-                        <form action="https://google.com/search">
+                        <form action="https://google.com/search" role="search" aria-label="Sitewide">
                             <input type="hidden" name="q" value="site:htmx.org">
                             <label>
                                 <span style="display:none;">Search</span>
@@ -54,7 +60,7 @@
                     </div>
                     <div>
                         <div class="github-stars" hx-preserve="true" id="github-stars">
-                            <a class="github-button" href="https://github.com/bigskysoftware/htmx" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">Star</a>
+                            <a class="github-button" href="https://github.com/bigskysoftware/htmx" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">star</a>
                         </div>
                     </div>
                 </div>

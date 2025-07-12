@@ -18,11 +18,32 @@ Use the following attributes to configure how WebSockets behave:
   event
   or the event specified by [`hx-trigger`])
 
-## Install
+## Installing
 
-```html
+The fastest way to install `ws` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
+```HTML
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.2" integrity="sha384-vuKxTKv5TX/b3lLzDKP2U363sOAoRo5wSvzzc3LJsbaQRSBSS+3rKKHcOx5J8doU" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="ws">
+```
+An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-ws/dist/ws.js.
 
-<script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `ws` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-ws`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install `ws` via [npm](https://www.npmjs.com/):
+```shell
+npm install htmx-ext-ws
+```
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-ws/dist/ws.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htmx-ext-ws` via npm
+- Import both packages to your `index.js`
+```JS
+import `htmx.org`;
+import `htmx-ext-ws`; 
 ```
 
 ## Usage
@@ -185,7 +206,7 @@ If the event is cancelled, no further processing will occur and no messages will
 
 * `detail.parameters` - the parameters that will be submitted in the request
 * `detail.unfilteredParameters` - the parameters that were found before filtering
-  by [`hx-select`](https://htmx.org/reference/hx-select.md)
+  by [`hx-params`](https://htmx.org/attributes/hx-params)
 * `detail.headers` - the request headers. Will be attached to the body in `HEADERS` property, if not falsy
 * `detail.errors` - validation errors. Will prevent sending and
   trigger [`htmx:validation:halted`](https://htmx.org/events#htmx:validation:halted) event if not empty
@@ -241,8 +262,9 @@ specified element, namely `htmx:wsBeforeSend` and `htmx:wsAfterSend` events when
 ### Testing with the Demo Server
 
 Htmx includes a demo WebSockets server written in Node.js that will help you to see WebSockets in action, and begin
-bootstrapping your own WebSockets code. It is located in the /test/ws-sse folder of the htmx distribution. Look at
-/test/ws-sse/README.md for instructions on running and using the test server.
+bootstrapping your own WebSockets code. It is located in the /test/ws-sse folder of
+the [`htmx-extensions`](https://github.com/bigskysoftware/htmx-extensions) repository. Look at /test/ws-sse/README.md
+for instructions on running and using the test server.
 
 ### Migrating from Previous Versions
 

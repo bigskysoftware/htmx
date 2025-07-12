@@ -1,8 +1,14 @@
 +++
 title = "Is htmx Just Another JavaScript Framework?"
+description = """\
+  Alexander Petros give a thoughtful exploration of htmx's relationship to traditional JavaScript frameworks, \
+  examining how its HTML-first approach and narrow focus on network requests sets it apart. He argues that while htmx \
+  exhibits framework-like qualities in how it shapes application architecture, its deep integration with HTML's native \
+  capabilities and lack of dependencies makes it a more sustainable choice for building long-lasting web \
+  applications."""
 date = 2024-01-10
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 
@@ -77,7 +83,7 @@ In short, while htmx can be used as a framework, it's a framework that [deviates
 <div style="text-align:center; width:100%">
   <img width=500
        src="/img/memes/istudiedhtml.png"
-       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audactiy to come to me for help?'"
+       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audacity to come to me for help?'"
       >
 </div>
 

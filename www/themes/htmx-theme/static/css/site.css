@@ -20,7 +20,7 @@
     --alertBackground: #161719;
     --alertBorder: #41464b;
     --alertShadow: rgba(0, 0, 0, 0.15);
-    --anchorColor: #e2dada;
+    --anchorColor: var(--midBlue);
     --bodyBackground: #1f1f1f;
     --footerBackground: #1a1d1e;
     --midBlue: #5b96d5;
@@ -392,6 +392,12 @@ th {
   border-bottom: 2px solid #eee;
 }
 
+tbody > tr > th[scope="rowgroup"] {
+  font-style: italic;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
 .btn {
   padding: 1em;
   letter-spacing: .1em;
@@ -419,8 +425,9 @@ transition: visibility 0s 1s, opacity 1s linear;
   padding:1em 0;
 }
 
-.github-stars {
-  margin-top: 5px;
+.github-stars span {
+    position: relative;
+    top: 4px;
 }
 
 /* Content */
@@ -451,7 +458,12 @@ h1,h2,h3,h4{
 
 @media(min-width:45em) {
 
-  /* Menu */
+    /* Avoid nav jump */
+  .github-stars {
+    width: 98px;
+  }
+
+    /* Menu */
   .menu,
   .navigation > div{
       display:flex;
@@ -569,11 +581,9 @@ pre[class|="language"] {
   color: lightgray;
 }
 .zola-anchor {
-  margin-left: -1.3rem;
-  margin-right: .3rem;
-  opacity: 40%;
-  color: var(--anchorColor);
+  color: var(--textColor);
 }
-.zola-anchor:hover {
-    opacity: 95%;
+
+.zola-anchor:hover::after {
+  content: ' #';
 }

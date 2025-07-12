@@ -1,5 +1,9 @@
 +++
 title = "hx-indicator"
+description = """\
+  The hx-indicator attribute in htmx allows you to specify the element that will have the `htmx-request` class added \
+  to it for the duration of the request. This can be used to show spinners or progress indicators while the request is \
+  in flight."""
 +++
 
 The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class
@@ -19,6 +23,19 @@ Here is an example with a spinner adjacent to the button:
     </button>
     <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
 </div>
+```
+
+Note that you can also use the `inherit` keyword to inherit parent values for an indicator and add additional indicator
+CSS selectors:
+
+```html
+<main hx-indicator="#global-indicator">
+    ...
+    <button hx-post="/example" hx-indicator="inherit, #spinner">
+        Post It!
+    </button>
+    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
+</main>
 ```
 
 When a request is in flight, this will cause the `htmx-request` class to be added to the `#spinner`

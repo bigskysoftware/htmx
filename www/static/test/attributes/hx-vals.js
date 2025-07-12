@@ -137,7 +137,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('multiple hx-vals works', function() {
+  it('multiple hx-vals works with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.v1.should.equal('test')
@@ -150,7 +150,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals can be on parents', function() {
+  it('hx-vals can be on parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('test')
@@ -163,7 +163,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals can override parents', function() {
+  it('hx-vals can override parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('best')
@@ -176,7 +176,7 @@ describe('hx-vals attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-vals overrides inputs', function() {
+  it('hx-vals overrides inputs with javascript', function() {
     this.server.respondWith('POST', '/include', function(xhr) {
       var params = getParameters(xhr)
       params.i1.should.equal('best')
@@ -314,6 +314,33 @@ describe('hx-vals attribute', function() {
     }
     calledEvent.should.equal(true)
   })
+
+  it('using js: with hx-vals has event available', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make('<div id="test" hx-post="/vars" hx-vals="js:i1:event.target.id"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('using js: with hx-vals has event available when used with a delay', function(done) {
+    var params = null
+    var div = make('<div id="test" hx-post="/vars" hx-vals="js:{i1:event.target.id}" hx-trigger="click delay:10ms"></div>')
+    htmx.on(div, 'htmx:configRequest', function(evt) {
+      evt.preventDefault()
+      params = evt.detail.parameters
+    }, { once: true })
+    div.click()
+    new Promise(resolve => setTimeout(resolve, 20)).then(function() {
+      params.i1.should.equal('test')
+      done()
+    }).catch(done)
+  })
+
   it('hx-vals works with null values', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       var params = getParameters(xhr)
@@ -321,6 +348,30 @@ describe('hx-vals attribute', function() {
       xhr.respond(200, {}, 'Clicked!')
     })
     var div = make("<div hx-post='/vars' hx-vals='{\"i1\": null }'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals works with object values', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('{"a":"b"}')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make("<div hx-post='/vars' hx-vals='{\"i1\": { \"a\": \"b\" } }'></div>")
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('js: this refers to the element with the hx-vals attribute', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    var div = make('<div hx-post="/vars" hx-vals="javascript:{ ...this.dataset }" data-i1="test"></div>')
     div.click()
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')

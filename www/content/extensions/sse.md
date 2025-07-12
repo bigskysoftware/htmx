@@ -10,7 +10,7 @@ your htmx webpage in real-time.
 SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through
 proxy servers and firewalls. Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE
 server once the connection has been established. If you need bi-directional communication, then you should consider
-using [WebSockets](@web-sockets.md) instead.
+using [WebSockets](@/extensions/ws.md) instead.
 
 This extension replaces the experimental `hx-sse` attribute built into previous versions of htmx. For help migrating
 from older versions, see the migration guide at the bottom of this page.
@@ -20,15 +20,36 @@ Use the following attributes to configure how SSE connections behave:
 * `sse-connect="<url>"` - The URL of the SSE server.
 * `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
 * `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using
-  the [`hx-trigger`](https://htmx.org/reference/hx-trigger.md) attribute.
+  the [`hx-trigger`](https://htmx.org/attributes/hx-trigger) attribute.
 * `sse-close=<message-name>` - To close the EventStream gracefully when that message is received. This might be helpful
   if you want to send information to a client that will eventually stop.
 
-## Install
+## Installing
 
-```html
+The fastest way to install `sse` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
+```HTML
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.2" integrity="sha384-Y4gc0CK6Kg+hmulDc6rZPJu0tqvk7EWlih0Oh+2OkAi1ZDlCbBDCQEE2uVk472Ky" crossorigin="anonymous"></script>
+</head>
+<body hx-ext="sse">
+```
+An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-sse/dist/sse.js.
 
-<script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `sse` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-sse`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+
+For npm-style build systems, you can install `sse` via [npm](https://www.npmjs.com/):
+```shell
+npm install htmx-ext-sse
+```
+After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-sse/dist/sse.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
+
+If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
+- Install `htmx.org` and `htmx-ext-sse` via npm
+- Import both packages to your `index.js`
+```JS
+import `htmx.org`;
+import `htmx-ext-sse`; 
 ```
 
 ## Usage
@@ -110,7 +131,7 @@ Multiple events in different elements (from the same source).
 ### Trigger Server Callbacks
 
 When a connection for server sent events has been established, child elements can listen for these events by using the
-special [`hx-trigger`](https://htmx.org/reference/hx-trigger.md) syntax `sse:<event_name>`. This, when combined with
+special [`hx-trigger`](https://htmx.org/attributes/hx-trigger) syntax `sse:<event_name>`. This, when combined with
 an `hx-get` or similar will trigger the element to make a request.
 
 Here is an example:
@@ -137,8 +158,9 @@ browser's automatic reconnection, so that your SSE streams will always be as rel
 ### Testing SSE Connections with the Demo Server
 
 Htmx includes a demo SSE server written in Node.js that will help you to see SSE in action, and begin bootstrapping your
-own SSE code. It is located in the /test/ws-sse folder of the htmx distribution. Look at /test/ws-sse/README.md for
-instructions on running and using the test server.
+own SSE code. It is located in the /test/ws-sse folder of
+the [`htmx-extensions`](https://github.com/bigskysoftware/htmx-extensions) repository. Look at /test/ws-sse/README.md
+for instructions on running and using the test server.
 
 ### Migrating from Previous Versions
 
@@ -180,7 +202,7 @@ This event is dispatched when an SSE connection could not be established.
 
 ##### Details
 
-* `detail.error` - The error that occured while creating
+* `detail.error` - The error that occurred while creating
   an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
 * `detail.source` - The [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
 

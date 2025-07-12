@@ -83,6 +83,15 @@ describe('hx-swap attribute', function() {
     byId('a1').innerHTML.should.equal('Clicked!')
   })
 
+  it('swap outerHTML on body falls back to innerHTML properly', function() {
+    var fakebody = htmx._('parseHTML')('<body id="b1">Old Content</body>')
+    var wa = getWorkArea()
+    var fragment = htmx._('makeFragment')('<body hx-get="/test" hx-swap="outerHTML">Changed!</body>')
+    wa.append(fakebody.querySelector('body'))
+    htmx._('swapOuterHTML')(byId('b1'), fragment, {})
+    byId('b1').innerHTML.should.equal('Changed!')
+  })
+
   it('swap beforebegin properly', function() {
     var i = 0
     this.server.respondWith('GET', '/test', function(xhr) {
@@ -274,6 +283,8 @@ describe('hx-swap attribute', function() {
     swapSpec(make("<div hx-swap='settle:0s swap:10'/>")).swapDelay.should.equal(10)
     swapSpec(make("<div hx-swap='settle:0s swap:10'/>")).settleDelay.should.equal(0)
 
+    swapSpec(make("<div hx-swap='transition:true'/>")).transition.should.equal(true)
+
     swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal('customstyle')
   })
 
@@ -300,6 +311,21 @@ describe('hx-swap attribute', function() {
     done()
   })
 
+  if (/chrome/i.test(navigator.userAgent)) {
+    it('works with transition:true', function(done) {
+      this.server.respondWith('GET', '/test', 'Clicked!')
+      var div = make(
+        "<div hx-get='/test' hx-swap='innerHTML transition:true'></div>"
+      )
+      div.click()
+      this.server.respond()
+      div.innerText.should.equal('')
+      setTimeout(function() {
+        div.innerText.should.equal('Clicked!')
+        done()
+      }, 50)
+    })
+  }
   it('works with a settle delay', function(done) {
     this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>")
     var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML settle:10ms'></div>")
@@ -321,6 +347,115 @@ describe('hx-swap attribute', function() {
     var div = make(
       "<div id='d1' hx-get='/test' hx-swap='outerHTML settle:0ms'></div>"
     )
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      done()
+    }, 30)
+  })
+
+  it('works with scroll:top', function(done) {
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML scroll:#container:top'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML scroll:#container:top'></div>")
+    var container = make('<div id="container" style="overflow: scroll; height: 150px; width: 150px;">' +
+      '<p>' +
+        'Far out in the uncharted backwaters of the unfashionable end of the western' +
+        'spiral arm of the Galaxy lies a small unregarded yellow sun. Orbiting this' +
+        'at a distance of roughly ninety-two million miles is an utterly' +
+        'insignificant little blue green planet whose ape-descended life forms are so' +
+        'amazingly primitive that they still think digital watches are a pretty neat' +
+        'idea.' +
+      '</p>' +
+    '</div>')
+    container.scrollTop = 10
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      container.scrollTop.should.equal(0)
+      done()
+    }, 30)
+  })
+
+  it('works with scroll:bottom', function(done) {
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML scroll:#container:bottom'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML scroll:#container:bottom'></div>")
+    var container = make('<div id="container" style="overflow: scroll; height: 150px; width: 150px;">' +
+      '<p>' +
+        'Far out in the uncharted backwaters of the unfashionable end of the western' +
+        'spiral arm of the Galaxy lies a small unregarded yellow sun. Orbiting this' +
+        'at a distance of roughly ninety-two million miles is an utterly' +
+        'insignificant little blue green planet whose ape-descended life forms are so' +
+        'amazingly primitive that they still think digital watches are a pretty neat' +
+        'idea.' +
+      '</p>' +
+    '</div>')
+    container.scrollTop = 10
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      container.scrollTop.should.not.equal(10)
+      done()
+    }, 30)
+  })
+
+  it('works with show:top', function(done) {
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML show:top'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML show:#d2:top'></div>")
+    var div2 = make("<div id='d2'></div>")
+    var scrollOptions
+    div2.scrollIntoView = function(options) { scrollOptions = options }
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      scrollOptions.block.should.equal('start')
+      done()
+    }, 30)
+  })
+
+  it('works with show:bottom', function(done) {
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML show:bottom'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML show:#d2:bottom'></div>")
+    var div2 = make("<div id='d2'></div>")
+    var scrollOptions
+    div2.scrollIntoView = function(options) { scrollOptions = options }
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      scrollOptions.block.should.equal('end')
+      done()
+    }, 30)
+  })
+
+  it('works with show:window:bottom', function(done) {
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML show:window:bottom'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML show:window:bottom'></div>")
+    var scrollOptions
+    document.body.scrollIntoView = function(options) { scrollOptions = options }
+    div.click()
+    this.server.respond()
+    div.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('d1').classList.contains('foo').should.equal(true)
+      scrollOptions.block.should.equal('end')
+      done()
+    }, 30)
+  })
+
+  it('works with focus-scroll:true', function(done) {
+    // no easy way to tell if the scroll worked as expected
+    this.server.respondWith('GET', '/test', "<div id='d1' class='foo' hx-get='/test' hx-swap='outerHTML focus-scroll:true'><input id='i2' type='text'></div>")
+    var div = make("<div id='d1' hx-get='/test' hx-swap='outerHTML focus-scroll:true'><input id='i2' type='text'></div>")
+    byId('i2').focus()
     div.click()
     this.server.respond()
     div.classList.contains('foo').should.equal(false)
@@ -401,5 +536,28 @@ describe('hx-swap attribute', function() {
     this.server.respond()
     btn.innerText.should.equal('Clicked!')
     window.document.title.should.equal('Test Title')
+  })
+
+  it('swapError fires if swap throws exception', function() {
+    try {
+      // override makeSettleInfo to cause swap function to throw exception
+      htmx._('htmx.backupMakeSettleInfo = makeSettleInfo')
+      htmx._('makeSettleInfo = function() { throw new Error("throw") }')
+      var error = false
+      var handler = htmx.on('htmx:swapError', function(evt) {
+        error = true
+      })
+
+      this.server.respondWith('GET', '/test', 'Clicked!')
+      var div = make("<div hx-get='/test'></div>")
+      div.click()
+      this.server.respond()
+    } catch (e) {
+    } finally {
+      div.innerHTML.should.equal('')
+      error.should.equal(true)
+      htmx.off('htmx:swapError', handler)
+      htmx._('makeSettleInfo = htmx.backupMakeSettleInfo')
+    }
   })
 })

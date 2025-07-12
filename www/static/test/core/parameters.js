@@ -3,6 +3,7 @@ describe('Core htmx Parameter Handling', function() {
     this.server = makeServer()
     clearWorkArea()
   })
+
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
@@ -288,6 +289,14 @@ describe('Core htmx Parameter Handling', function() {
     vals.foo.should.equal('null')
   })
 
+  it('formdata can be used to construct a URLSearchParams instance', function() {
+    var form = make('<input name="foo" value="bar"/>')
+    var vals = htmx._('getInputValues')(form, 'get').values
+    function makeSearchParams() { return new URLSearchParams(vals).toString() }
+    makeSearchParams.should.not.throw()
+    makeSearchParams().should.equal('foo=bar')
+  })
+
   it('order of parameters follows order of input elements', function() {
     this.server.respondWith('GET', '/test?foo=bar&bar=foo&foo=bar&foo2=bar2', function(xhr) {
       xhr.respond(200, {}, 'Clicked!')
@@ -342,6 +351,33 @@ describe('Core htmx Parameter Handling', function() {
       '</form>')
     const input = form.querySelector('input')
     const file = new File(['Test'], 'test.txt', { type: 'text/plain' })
+    const dataTransfer = new DataTransfer()
+    dataTransfer.items.add(file)
+    input.files = dataTransfer.files
+
+    const result = make('<div id="result"></div>')
+
+    form.querySelector('button').click()
+    this.server.respond()
+    result.innerHTML.should.equal('OK')
+  })
+
+  it('file is not uploaded with blank filename', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['Content-Type'], undefined)
+
+      const file = xhr.requestBody.get('file')
+      should.equal(file, null)
+
+      xhr.respond(200, {}, 'OK')
+    })
+
+    const form = make('<form hx-post="/test" hx-target="#result" hx-encoding="multipart/form-data">' +
+      '<input type="file" name="file">' +
+      '<button type="submit"></button>' +
+      '</form>')
+    const input = form.querySelector('input')
+    const file = new File(['Test'], '', { type: 'text/plain' })
     const dataTransfer = new DataTransfer()
     dataTransfer.items.add(file)
     input.files = dataTransfer.files
