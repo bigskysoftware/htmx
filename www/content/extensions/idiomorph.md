@@ -57,7 +57,9 @@ using `morph`, `morph:outerHTML` or `morph:innerHTML` as swap strategies.
 
 ```html
 <body hx-ext="morph">
-  <button hx-get="/example" hx-swap="morph">Morph My Outer HTML</button>
+  <button hx-get="/example" hx-swap="morph">
+    Morph My Outer HTML
+  </button>
 
   <button hx-get="/example" hx-swap="morph:outerHTML">
     Morph My Outer HTML
