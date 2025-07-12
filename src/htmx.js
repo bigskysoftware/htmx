@@ -3553,7 +3553,14 @@ var htmx = (function() {
     if (element.willValidate) {
       triggerEvent(element, 'htmx:validation:validate')
       if (!element.checkValidity()) {
-        if (triggerEvent(element, 'htmx:validation:failed', { message: element.validationMessage, validity: element.validity }) && !errors.length) {
+        if (
+          triggerEvent(element, 'htmx:validation:failed', {
+            message: element.validationMessage,
+            validity: element.validity
+          }) &&
+          !errors.length &&
+          htmx.config.reportValidityOfForms
+        ) {
           element.reportValidity()
         }
         errors.push({ elt: element, message: element.validationMessage, validity: element.validity })
