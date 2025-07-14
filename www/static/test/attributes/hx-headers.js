@@ -100,7 +100,7 @@ describe('hx-headers attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('multiple hx-headers works', function() {
+  it('multiple hx-headers works with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       xhr.requestHeaders.v1.should.equal('test')
       xhr.requestHeaders.v2.should.equal('42')
@@ -112,7 +112,7 @@ describe('hx-headers attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-headers can be on parents', function() {
+  it('hx-headers can be on parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       xhr.requestHeaders.i1.should.equal('test')
       xhr.respond(200, {}, 'Clicked!')
@@ -124,7 +124,7 @@ describe('hx-headers attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-headers can override parents', function() {
+  it('hx-headers can override parents with javascript', function() {
     this.server.respondWith('POST', '/vars', function(xhr) {
       xhr.requestHeaders.i1.should.equal('best')
       xhr.respond(200, {}, 'Clicked!')
@@ -136,7 +136,7 @@ describe('hx-headers attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
-  it('hx-headers overrides inputs', function() {
+  it('hx-headers overrides inputs with javascript', function() {
     this.server.respondWith('POST', '/include', function(xhr) {
       xhr.requestHeaders.i1.should.equal('best')
       xhr.respond(200, {}, 'Clicked!')

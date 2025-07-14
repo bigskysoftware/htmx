@@ -8,6 +8,9 @@ export type SwapOptions = {
     contextElement?: Element;
     afterSwapCallback?: swapCallback;
     afterSettleCallback?: swapCallback;
+    beforeSwapCallback?: swapCallback;
+    title?: string;
+    historyRequest?: boolean;
 };
 export type swapCallback = () => any;
 export type HtmxSwapStyle = "innerHTML" | "outerHTML" | "beforebegin" | "afterbegin" | "beforeend" | "afterend" | "delete" | "none" | string;
@@ -18,7 +21,7 @@ export type HtmxSwapSpecification = {
     transition?: boolean;
     ignoreTitle?: boolean;
     head?: string;
-    scroll?: "top" | "bottom";
+    scroll?: "top" | "bottom" | number;
     scrollTarget?: string;
     show?: string;
     showTarget?: string;
@@ -72,6 +75,7 @@ export type HtmxRequestConfig = {
      */
     unfilteredParameters: any;
     headers: HtmxHeaderSpecification;
+    elt: Element;
     target: Element;
     verb: HttpVerb;
     errors: HtmxElementValidationError[];
@@ -135,7 +139,7 @@ export type HtmxSettleInfo = {
 };
 export type HtmxExtension = {
     init: (api: any) => void;
-    onEvent: (name: string, event: Event | CustomEvent) => boolean;
+    onEvent: (name: string, event: CustomEvent) => boolean;
     transformResponse: (text: string, xhr: XMLHttpRequest, elt: Element) => string;
     isInlineSwap: (swapStyle: HtmxSwapStyle) => boolean;
     handleSwap: (swapStyle: HtmxSwapStyle, target: Node, fragment: Node, settleInfo: HtmxSettleInfo) => boolean | Node[];
@@ -199,8 +203,10 @@ declare namespace htmx {
         let disableInheritance: boolean;
         let responseHandling: HtmxResponseHandlingConfig[];
         let allowNestedOobSwaps: boolean;
+        let historyRestoreAsHxRequest: boolean;
     }
     let parseInterval: (str: string) => number | undefined;
+    let location: Location;
     let _: (str: string) => any;
     let version: string;
 }

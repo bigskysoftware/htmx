@@ -133,6 +133,20 @@ describe('hx-on:* attribute', function() {
     delete window.foo
   })
 
+  it('should fire when triggered by load', function() {
+    this.server.respondWith('POST', '/test', 'test')
+    make("<div hx-trigger='load' hx-post='/test' hx-on:htmx:config-request='foo = true'></div>")
+    window.foo.should.equal(true)
+    delete window.foo
+  })
+
+  it('should fire when triggered by revealed', function() {
+    this.server.respondWith('POST', '/test', 'test')
+    make("<div hx-trigger='revealed' hx-post='/test' hx-on:htmx:config-request='foo = true' style='position: fixed; top: 1px; left: 1px; border: 3px solid red'></div>")
+    window.foo.should.equal(true)
+    delete window.foo
+  })
+
   it('de-initializes hx-on-* content properly', function() {
     window.tempCount = 0
     this.server.respondWith('POST', '/test', function(xhr) {

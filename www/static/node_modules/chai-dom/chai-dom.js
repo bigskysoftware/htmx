@@ -350,7 +350,8 @@
 
   chai.Assertion.addProperty('displayed', function() {
     var el = flag(this, 'object'),
-        actual = el.getRootNode({ composed: true }) === document ? window.getComputedStyle(el).display : el.style.display
+        isAttached = el.getRootNode ? el.getRootNode({ composed: true }) === document : document.body.contains(el),
+        actual = isAttached ? window.getComputedStyle(el).display : el.style.display
 
     this.assert(
       actual !== 'none'
@@ -362,7 +363,8 @@
 
   chai.Assertion.addProperty('visible', function() {
     var el = flag(this, 'object'),
-        actual = document.body.contains(el) ? window.getComputedStyle(el).visibility : el.style.visibility
+        isAttached = el.getRootNode ? el.getRootNode({ composed: true }) === document : document.body.contains(el),
+        actual = isAttached ? window.getComputedStyle(el).visibility : el.style.visibility
 
     this.assert(
       actual !== 'hidden' && actual !== 'collapse'

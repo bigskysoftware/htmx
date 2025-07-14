@@ -31,7 +31,20 @@ Here is an example that includes a separate input value:
 This is a little contrived as you would typically enclose both of these elements in a `form` and submit
 the value automatically, but it demonstrates the concept.
 
-Note that if you include a non-input element, all input elements enclosed in that element will be included.
+Note that you can also use the `inherit` keyword to inherit parent values for inclusion and add additional values:
+
+```html
+<main hx-include="#hidden-input">
+    ...
+    <button hx-post="/example" hx-include="inherit, [name='email']">
+        Post It!
+    </button>
+    Enter email: <input name="email" type="email"/>
+</main>
+```
+
+
+Finally, note that if you include a non-input element, all input elements enclosed in that element will be included.
 
 ## Notes
 

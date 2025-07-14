@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
@@ -396,7 +396,7 @@
         },
         {
           "name": "beforeRequest",
-          "description": "This event is triggered before an AJAX request is issued.  If you call `preventDefault()` on the event to cancel it, no request will occur.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "description": "This event is triggered before an AJAX request is issued.  If you call `preventDefault()` on the event to cancel it, no request will occur.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
           "doc-url": "https://htmx.org/events/#htmx:beforeRequest"
         },
         {
@@ -406,12 +406,12 @@
         },
         {
           "name": "beforeSwap",
-          "description": "This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).\nMost values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.\nIf you call `preventDefault()` on the event to cancel it, no swap will occur.\n\nYou can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.\nSee the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.requestConfig.elt` - the element that dispatched the request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.ignoreTitle` - if `true` any title tag in the response will be ignored\n* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events\n* `detail.serverResponse` - the server response as text to be used for the swap\n* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value\n* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value\n* `detail.target` - the target of the swap\n\n",
+          "description": "This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).\nMost values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.\nIf you call `preventDefault()` on the event to cancel it, no swap will occur.\n\nYou can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.\nSee the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.requestConfig.elt` - the element that dispatched the request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.ignoreTitle` - if `true` any title tag in the response will be ignored\n* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events\n* `detail.serverResponse` - the server response as text to be used for the swap\n* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value\n* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value\n* `detail.target` - the target of the swap\n\n",
           "doc-url": "https://htmx.org/events/#htmx:beforeSwap"
         },
         {
           "name": "beforeTransition",
-          "description": "This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) \nwrapped swap occurs.  If you call `preventDefault()` on the event to cancel it, the View Transition will not occur and the normal swapping logic will\nhappen instead.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.target` - the target of the swap\n\n",
+          "description": "This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) \nwrapped swap occurs.  If you call `preventDefault()` on the event to cancel it, the View Transition will not occur and the normal swapping logic will\nhappen instead.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.target` - the target of the swap\n\n",
           "doc-url": "https://htmx.org/events/#htmx:beforeTransition"
         },
         {
@@ -430,33 +430,38 @@
           "doc-url": "https://htmx.org/events/#htmx:historyCacheError"
         },
         {
+          "name": "historyCacheHit",
+          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheHit"
+        },
+        {
           "name": "historyCacheMiss",
-          "description": "This event is triggered when a cache miss occurs when restoring history\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration\n* `detail.path` - the path and query of the page being restored\n\n",
+          "description": "This event is triggered when a cache miss occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also modify the xhr request or other details before it makes the the request to restore history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration\n* `detail.path` - the path and query of the page being restored\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheMiss"
         },
         {
-          "name": "historyCacheMissError",
+          "name": "historyCacheMissLoadError",
           "description": "This event is triggered when a cache miss occurs and a response has been retrieved from the server\nfor the content to restore, but the response is an error (e.g. `404`)\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n\n",
-          "doc-url": "https://htmx.org/events/#htmx:historyCacheMissError"
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheMissLoadError"
         },
         {
           "name": "historyCacheMissLoad",
-          "description": "This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server\nfor the content to restore\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n\n",
+          "description": "This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server\nfor the content to restore\n\nYou can modify the details before it makes the swap to restore the history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n* `detail.response` - the response text that will be swapped in\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheMissLoad"
         },
         {
           "name": "historyRestore",
-          "description": "This event is triggered when htmx handles a history restoration action\n\n##### Details\n\n* `detail.path` - the path and query of the page being restored\n\n",
+          "description": "This event is triggered when htmx handles a history restoration action\n\n##### Details\n\n* `detail.path` - the path and query of the page being restored\n* `detail.cacheMiss` - set `true` if restore was a cache miss\n* `detail.serverResponse` - with cache miss has the response text replaced\n* `detail.item` - with cache hit the cache details that was restored\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyRestore"
         },
         {
           "name": "beforeHistorySave",
-          "description": "This event is triggered before the content is saved in the history api.\n\n##### Details\n\n* `detail.path` - the path and query of the page being restored\n* `detail.historyElt` - the history element being restored into\n\n",
+          "description": "This event is triggered before the content is saved in the history cache.\n\nYou can modify the contents of the historyElt to remove 3rd party javascript changes so a clean copy of the content can be backed up to the history cache\n\n##### Details\n\n* `detail.path` - the path and query of the page being saved\n* `detail.historyElt` - the history element about to be saved\n\n",
           "doc-url": "https://htmx.org/events/#htmx:beforeHistorySave"
         },
         {
           "name": "load",
-          "description": "This event is triggered when a new node is loaded into the DOM by htmx.\n\n##### Details\n\n* `detail.elt` - the newly added element\n\n",
+          "description": "This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.\n\n##### Details\n\n* `detail.elt` - the newly added element\n\n",
           "doc-url": "https://htmx.org/events/#htmx:load"
         },
         {

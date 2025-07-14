@@ -28,6 +28,7 @@ describe('Core htmx tokenizer tests', function() {
     tokenizeTest(" && ) ',asdf'", [' ', '&', '&', ' ', ')', ' ', "',asdf'"])
     tokenizeTest('",asdf"', ['",asdf"'])
     tokenizeTest('&& ) ",asdf"', ['&', '&', ' ', ')', ' ', '",asdf"'])
+    tokenizeTest('",as\\"df"', ['",as\\"df"'])
   })
 
   it('generates conditionals property', function() {
