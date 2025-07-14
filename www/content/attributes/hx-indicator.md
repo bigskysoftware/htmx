@@ -43,17 +43,18 @@ image.  The image also has the `htmx-indicator` class on it, which defines an op
 that will show the spinner:
 
 ```css
-    .htmx-indicator{
-        opacity:0;
-        transition: opacity 500ms ease-in;
+    .htmx-indicator {
+        opacity: 0;
+        visibility: hidden;
     }
-    .htmx-request .htmx-indicator{
-        opacity:1;
-    }
-    .htmx-request.htmx-indicator{
-        opacity:1;
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 200ms ease-in;
     }
 ```
+This default `htmx-indicator` CSS also sets the visibility to hidden for better screen reader accessibility and does a quick fade in of the opacity.
 
 If you would prefer a different effect for showing the spinner you could define and use your own indicator
 CSS.  Here is an example that uses `display` rather than opacity (Note that we use `my-indicator` instead of `htmx-indicator`):
@@ -62,9 +63,7 @@ CSS.  Here is an example that uses `display` rather than opacity (Note that we u
     .my-indicator{
         display:none;
     }
-    .htmx-request .my-indicator{
-        display:inline;
-    }
+    .htmx-request .my-indicator,
     .htmx-request.my-indicator{
         display:inline;
     }
@@ -102,3 +101,8 @@ This simulates what a spinner might look like in that situation:
 ```html
 <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 ```
+* the `htmx-indicator` CSS added when this config is not disabled uses an inline style tag which may need you to set `inlineStyleNonce` config if you have a strict nonce based CSP policy for `style-src`
+```html
+<meta name="htmx-config" content='{"inlineStyleNonce": "random-nonce"}'>
+```
+* If your CSP needs to block all inline style tags then disable `includeIndicatorStyles` and host your own CSS file with a copy of your preferred `htmx-indicator` style from above
