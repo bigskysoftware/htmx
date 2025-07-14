@@ -292,6 +292,35 @@ describe('Core htmx Regression Tests', function() {
     byId('datefield').click()
   })
 
+  it('swap=outerHTML clears htmx-swapping class when old node has a style attribute and no class', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    const isSwappingClassStillThere = div.classList.contains('htmx-swapping')
+    isSwappingClassStillThere.should.equal(false)
+    done()
+  })
+
+  it('swap=outerHTML won\'t carry over user-defined classes when old node has a style attribute before the class attribute', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style class="my-class"></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    div.classList.length.should.equal(0)
+    done()
+  })
+  
   it('a button clicked inside an htmx enabled link will prevent the link from navigating on click', function(done) {
     var defaultPrevented = 'unset'
     var link = make('<a href="/foo" hx-get="/foo"><button>test</button></a>')
@@ -355,4 +384,5 @@ describe('Core htmx Regression Tests', function() {
 
     span.click()
   })
+
 })
