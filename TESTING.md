@@ -10,7 +10,7 @@ This guide outlines how to test htmx, focusing on running tests headlessly or in
    npm install
    npm run test
    ```
-During test runs it will auto install playwrite
+During test runs it will auto install playwright
 
 ## Running All Tests
 
