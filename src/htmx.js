@@ -2430,9 +2430,11 @@ var htmx = (function() {
       if (elt.tagName === 'FORM') {
         return true
       }
+      // find button wrapping the event elt
+      const btn = elt.closest('input[type="submit"], button')
       // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
       // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
-      if (elt.form && elt.type === 'submit') {
+      if (btn && btn.form && btn.type === 'submit') {
         return true
       }
       elt = elt.closest('a')

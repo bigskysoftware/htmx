@@ -363,4 +363,26 @@ describe('Core htmx Regression Tests', function() {
     button.click()
   })
 
+  it('a htmx enabled button containing sub elements will prevent the button submitting a form', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button hx-get="/foo"><span>test</span></button></form>')
+    var button = form.firstChild
+    var span = button.firstChild
+
+    htmx.on(button, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    span.click()
+  })
+
 })
