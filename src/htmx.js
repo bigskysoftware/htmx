@@ -1413,7 +1413,7 @@ var htmx = (function() {
    * @param {Element} mergeFrom
    */
   function cloneAttributes(mergeTo, mergeFrom) {
-    forEach(mergeTo.attributes, function(attr) {
+    forEach(Array.from(mergeTo.attributes), function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
         mergeTo.removeAttribute(attr.name)
       }
