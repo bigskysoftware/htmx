@@ -402,7 +402,7 @@ tbody > tr > th[scope="rowgroup"] {
   padding: 1em;
   letter-spacing: .1em;
   text-transform: uppercase;
-  background: white;
+  background: Canvas;
   border: solid;
   cursor:pointer;
   border-radius: 8px;
