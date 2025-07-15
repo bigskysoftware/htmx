@@ -89,7 +89,6 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 	@import "https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit-core.min.css";
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/hyperscript.org"></script>
 <script>
     //=========================================================================
     // Fake Server Side Code
