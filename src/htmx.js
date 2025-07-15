@@ -4053,7 +4053,8 @@ var htmx = (function() {
             targetOverride: resolvedTarget,
             swapOverride: context.swap,
             select: context.select,
-            returnPromise: true
+            returnPromise: true,
+            pushUrl: context.pushUrl
           })
       }
     } else {
@@ -4706,6 +4707,11 @@ var htmx = (function() {
         type: saveType,
         path
       }
+    } else if (responseInfo.etc.pushUrl) {
+      return {
+        type: 'push',
+        path: responsePath || requestPath
+      }
     } else {
       return {}
     }
@@ -4790,17 +4796,16 @@ var htmx = (function() {
     if (hasHeader(xhr, /HX-Location:/i)) {
       saveCurrentPageToHistory()
       let redirectPath = xhr.getResponseHeader('HX-Location')
-      /** @type {HtmxAjaxHelperContext&{path:string}} */
-      var redirectSwapSpec
+      /** @type {HtmxAjaxHelperContext&{path?:string}} */
+      var redirectSwapSpec = { pushUrl: true }
       if (redirectPath.indexOf('{') === 0) {
         redirectSwapSpec = parseJSON(redirectPath)
         // what's the best way to throw an error if the user didn't include this
         redirectPath = redirectSwapSpec.path
         delete redirectSwapSpec.path
+        redirectSwapSpec.pushUrl = true
       }
-      ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
-        pushUrlIntoHistory(redirectPath)
-      })
+      ajaxHelper('get', redirectPath, redirectSwapSpec)
       return
     }
 
@@ -5216,6 +5221,7 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
+ * @property {boolean} [pushUrl]
  */
 
 /**
@@ -5262,6 +5268,7 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
+ * @property {boolean} [pushUrl]
  */
 
 /**
