@@ -1,5 +1,9 @@
 +++
 title = "hx-boost"
+description = """\
+  The hx-boost attribute in htmx enables progressive enhancement by converting standard HTML anchors and forms into \
+  AJAX requests, maintaining graceful fallback for users without JavaScript while providing modern dynamic page \
+  updates for those with JavaScript enabled."""
 +++
 
 The `hx-boost` attribute allows you to "boost" normal anchors and form tags to use AJAX instead.  This
@@ -44,3 +48,4 @@ This form will issue an ajax `POST` to the given URL and replace the body's inne
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
 * To find out if the request results from a boosted anchor or form, look for [`HX-Boosted`](@/reference.md#request_headers) in the request header
 * Selectively disable boost on child elements with `hx-boost="false"`
+* Disable the replacement of elements via boost, and their children, with [`hx-preserve="true"`](@/attributes/hx-preserve.md)

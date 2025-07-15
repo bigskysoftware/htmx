@@ -1,5 +1,8 @@
 +++
 title = "hx-push-url"
+description = """\
+  The hx-push-url attribute in htmx allows you to push a URL into the browser location history. This creates a new \
+  history entry, allowing navigation with the browser's back and forward buttons."""
 +++
 
 The `hx-push-url` attribute allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).

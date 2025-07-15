@@ -1,8 +1,12 @@
 +++
 title = "Javascript API"
+description = """\
+  This documentation describes the JavaScript API for htmx, including methods and properties for configuring the \
+  behavior of htmx, working with CSS classes, AJAX requests, event handling, and DOM manipulation. The API provides \
+  helper functions primarily intended for extension development and event management."""
 +++
 
-While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](@/extensions/_index.md) or for working with [events](@/events.md).
+While it is not a focus of the library, htmx does provide a small API of helper methods, intended mainly for [extension development](https://htmx.org/extensions) or for working with [events](@/events.md).
 
 The [hyperscript](https://hyperscript.org) project is intended to provide more extensive scripting support
 for htmx-based applications.
@@ -53,7 +57,7 @@ or
 * `verb` - 'GET', 'POST', etc.
 * `path` - the URL path to make the AJAX
 * `context` - a context object that contains any of the following
-    * `source` - the source element of the request
+    * `source` - the source element of the request, `hx-*` attrs which affect the request will be resolved against that element and its ancestors
     * `event` - an event that "triggered" the request
     * `handler` - a callback that will handle the response HTML
     * `target` - the target to swap the response into
@@ -120,21 +124,25 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 * `allowEval:true` - boolean: allows the use of eval-like functionality in htmx, to enable `hx-vars`, trigger conditions & script tag evaluation.  Can be set to `false` for CSP compatibility.
 * `allowScriptTags:true` - boolean: allows script tags to be evaluated in new content
 * `inlineScriptNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline scripts
-* `useTemplateFragments:false` - boolean: use HTML template tags for parsing content from the server.  This allows you to use Out of Band content when returning things like table rows, but it is *not* IE11 compatible.
+* `inlineStyleNonce:''` - string: the [nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) to add to inline styles
 * `withCredentials:false` - boolean: allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates
 * `timeout:0` - int: the number of milliseconds a request can take before automatically being terminated
 * `wsReconnectDelay:'full-jitter'` - string/function: the default implementation of `getWebSocketReconnectDelay` for reconnecting after unexpected connection loss by the event code `Abnormal Closure`, `Service Restart` or `Try Again Later`
 * `wsBinaryType:'blob'` - string: the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection
 * `disableSelector:"[hx-disable], [data-hx-disable]"` - array of strings: htmx will not process elements with this attribute on it or a parent
-* `scrollBehavior:'smooth'` - string: the behavior for a boosted link on page transitions. The allowed values are `auto` and `smooth`. Smooth will smoothscroll to the top of the page while auto will behave like a vanilla link.
+* `disableInheritance:false` - boolean: If it is set to `true`, the inheritance of attributes is completely disabled and you can explicitly specify the inheritance with the [hx-inherit](@/attributes/hx-inherit.md) attribute.
+* `scrollBehavior:'instant'` - string: the scroll behavior when using the [show](@/attributes/hx-swap.md#scrolling-scroll-show) modifier with `hx-swap`. The allowed values are `instant` (scrolling should happen instantly in a single jump), `smooth` (scrolling should animate smoothly) and `auto` (scroll behavior is determined by the computed value of [scroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior)).
 * `defaultFocusScroll:false` - boolean: if the focused element should be scrolled into view, can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier
-* `getCacheBusterParam:false` - boolean: if set to true htmx will include a cache-busting parameter in `GET` requests to avoid caching partial responses by the browser
+* `getCacheBusterParam:false` - boolean: if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`
 * `globalViewTransitions:false` - boolean: if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.
-* `methodsThatUseUrlParams:["get"]` - array of strings: htmx will format requests with these methods by encoding their parameters in the URL, not the request body
-* `selfRequestsOnly:false` - boolean: if set to `true` will only allow AJAX requests to the same domain as the current document
+* `methodsThatUseUrlParams:["get", "delete"]` - array of strings: htmx will format requests with these methods by encoding their parameters in the URL, not the request body
+* `selfRequestsOnly:true` - boolean: whether to only allow AJAX requests to the same domain as the current document
 * `ignoreTitle:false` - boolean: if set to `true` htmx will not update the title of the document when a `title` tag is found in new content
 * `scrollIntoViewOnBoost:true` - boolean: whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top.
-* `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
+* `triggerSpecsCache:null` - object: the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+* `htmx.config.responseHandling:[...]` - HtmxResponseHandlingConfig[]: the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error
+* `htmx.config.allowNestedOobSwaps:true` -  boolean: whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps).
+* `htmx.config.historyRestoreAsHxRequest:true` -  Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header. This should always be disabled when using HX-Request header to optionally return partial responses
 
 ##### Example
 
@@ -145,7 +153,7 @@ Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for se
 
 ### Property - `htmx.createEventSource` {#createEventSource}
 
-A property used to create new [Server Sent Event](@/docs.md#sse) sources.  This can be updated
+A property used to create new [Server Sent Event](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/sse/README.md) sources.  This can be updated
 to provide custom SSE setup.
 
 ##### Value
@@ -163,7 +171,7 @@ to provide custom SSE setup.
 
 ### Property - `htmx.createWebSocket` {#createWebSocket}
 
-A property used to create new [WebSocket](@/docs.md#websockets).  This can be updated
+A property used to create new [WebSocket](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/ws/README.md).  This can be updated
 to provide custom WebSocket setup.
 
 ##### Value
@@ -181,7 +189,7 @@ to provide custom WebSocket setup.
 
 ### Method - `htmx.defineExtension()` {#defineExtension}
 
-Defines a new htmx [extension](@/extensions/_index.md).
+Defines a new htmx [extension](https://htmx.org/extensions).
 
 ##### Parameters
 
@@ -316,12 +324,14 @@ Adds an event listener to an element
 
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 or
 
 * `target` - the element to add the listener to
 * `eventName` - the event name to add the listener for
 * `listener` - the listener to add
+* `options` - an [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options) object (or a [useCapture](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture) boolean) to add to the event listener (optional)
 
 ##### Example
 
@@ -331,6 +341,9 @@ or
 
     // add a click listener to the given div
     var myEventListener = htmx.on("#my-div", "click", function(evt){ console.log(evt); });
+
+    // add a click listener to the given div that should only be invoked once
+    var myEventListener = htmx.on("#my-div", "click", function(evt){ console.log(evt); }, { once: true });
 ```
 
 ### Method - `htmx.onLoad()` {#onLoad}
@@ -447,6 +460,37 @@ Removes the given extension from htmx
 
 ```js
   htmx.removeExtension("my-extension");
+```
+
+### Method - `htmx.swap()` {#swap}
+
+Performs swapping (and settling) of HTML content
+
+##### Parameters
+
+* `target` - the HTML element or string selector of swap target
+* `content` - string representation of content to be swapped
+* `swapSpec` - swapping specification, representing parameters from `hx-swap`
+  * `swapStyle` (required) - swapping style (`innerHTML`, `outerHTML`, `beforebegin` etc)
+  * `swapDelay`, `settleDelay` (number) - delays before swapping and settling respectively
+  * `transition` (bool) - whether to use HTML transitions for swap
+  * `ignoreTitle` (bool) - disables page title updates
+  * `head` (string) - specifies `head` tag handling strategy (`merge` or `append`). Leave empty to disable head handling
+  * `scroll`, `scrollTarget`, `show`, `showTarget`, `focusScroll` - specifies scroll handling after swap
+* `swapOptions` - additional *optional* parameters for swapping
+  * `select` - selector for the content to be swapped (equivalent of `hx-select`)
+  * `selectOOB` - selector for the content to be swapped out-of-band (equivalent of `hx-select-oob`)
+  * `eventInfo` - an object to be attached to `htmx:afterSwap` and `htmx:afterSettle` elements
+  * `anchor` - an anchor element that triggered scroll, will be scrolled into view on settle. Provides simple alternative to full scroll handling
+  * `contextElement` - DOM element that serves as context to swapping operation. Currently used to find extensions enabled for specific element
+  * `afterSwapCallback`, `afterSettleCallback` - callback functions called after swap and settle respectively. Take no arguments
+
+
+##### Example
+
+```js
+    // swap #output element inner HTML with div element with "Swapped!" text
+    htmx.swap("#output", "<div>Swapped!</div>", {swapStyle: 'innerHTML'});
 ```
 
 ### Method - `htmx.takeClass()` {#takeClass}

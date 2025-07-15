@@ -12,15 +12,21 @@
   {% endif -%}
 {% endblock title %}
 
+{% block description %}
+  {%- if page.description -%}
+    {{- page.description | safe -}}
+  {%- else -%}
+    {{- super() -}}
+  {%- endif -%}
+{% endblock description %}
+
 {% block content %}
   {% if page.extra and page.extra.show_title is defined -%}
     {% set show_title = page.extra.show_title -%}
   {% else -%}
     {% set show_title = true -%}
   {% endif -%}
-  {% if page.path is starting_with("/extensions/") -%}
-    {% set page_title = "The <code>" ~ page.title ~ "</code> Extension" -%}
-  {% elif page.path is starting_with("/attributes") -%}
+  {% if page.path is starting_with("/attributes") -%}
     {% set page_title = "<code>" ~ page.title ~ "</code>" -%}
   {% else -%}
     {% set page_title = page.title -%}

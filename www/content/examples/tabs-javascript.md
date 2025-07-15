@@ -3,16 +3,16 @@ title = "Tabs (Using JavaScript)"
 template = "demo.html"
 +++
 
-This example shows how to load tab contents using htmx, and to select the "active" tab using Javascript.  This reduces 
-some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your 
+This example shows how to load tab contents using htmx, and to select the "active" tab using Javascript.  This reduces
+some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your
 clients' browsers.
 
 You may also consider [a more idiomatic approach](@/examples/tabs-hateoas.md) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
 
 ## Example Code
 
-The HTML below displays a list of tabs, with added HTMX to dynamically load each tab pane from the server.  A simple 
-JavaScript event handler uses the [`take` function](https://hyperscript.org/commands/take/) to switch the selected tab 
+The HTML below displays a list of tabs, with added HTMX to dynamically load each tab pane from the server.  A simple
+JavaScript event handler uses the [`take` function](https://hyperscript.org/commands/take/) to switch the selected tab
 when the content is swapped into the DOM.
 
 ```html
@@ -34,7 +34,7 @@ when the content is swapped into the DOM.
 
 {{ demoenv() }}
 
-<div id="tabs" hx-target="#tab-contents" role="tablist" 
+<div id="tabs" hx-target="#tab-contents" role="tablist"
      hx-on:htmx-after-on-load="console.log(event)
                                let currentTab = document.querySelector('[aria-selected=true]');
                                           currentTab.setAttribute('aria-selected', 'false')
@@ -49,7 +49,7 @@ when the content is swapped into the DOM.
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 
-<script src="https://unpkg.com/hyperscript.org"></script>
+<script src="https://cdn.jsdelivr.net/npm/hyperscript.org"></script>
 <script>
 	onGet("/tab1", function() {
 		return `
@@ -89,7 +89,6 @@ when the content is swapped into the DOM.
 	}
 
 	#tabs {
-		border-bottom: solid 3px #eee;
 	}
 
 	#tabs > button {
@@ -98,6 +97,8 @@ when the content is swapped into the DOM.
 		padding: 5px 10px;
 		cursor:pointer;
 		background-color: transparent;
+		border: solid 3px rgba(0,0,0,0);
+		border-bottom: solid 3px #eee;
 	}
 
 	#tabs > button:hover {
@@ -105,7 +106,7 @@ when the content is swapped into the DOM.
 	}
 
 	#tabs > button.selected {
-		background-color: #eee;
+		border: solid 3px var(--midBlue);
 	}
 
 	#tab-contents {

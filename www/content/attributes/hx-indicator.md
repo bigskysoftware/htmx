@@ -1,5 +1,9 @@
 +++
 title = "hx-indicator"
+description = """\
+  The hx-indicator attribute in htmx allows you to specify the element that will have the `htmx-request` class added \
+  to it for the duration of the request. This can be used to show spinners or progress indicators while the request is \
+  in flight."""
 +++
 
 The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class
@@ -21,6 +25,19 @@ Here is an example with a spinner adjacent to the button:
 </div>
 ```
 
+Note that you can also use the `inherit` keyword to inherit parent values for an indicator and add additional indicator
+CSS selectors:
+
+```html
+<main hx-indicator="#global-indicator">
+    ...
+    <button hx-post="/example" hx-indicator="inherit, #spinner">
+        Post It!
+    </button>
+    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
+</main>
+```
+
 When a request is in flight, this will cause the `htmx-request` class to be added to the `#spinner`
 image.  The image also has the `htmx-indicator` class on it, which defines an opacity transition
 that will show the spinner:
@@ -31,10 +48,10 @@ that will show the spinner:
         transition: opacity 500ms ease-in;
     }
     .htmx-request .htmx-indicator{
-        opacity:1
+        opacity:1;
     }
     .htmx-request.htmx-indicator{
-        opacity:1
+        opacity:1;
     }
 ```
 
@@ -81,7 +98,7 @@ This simulates what a spinner might look like in that situation:
 * `hx-indicator` is inherited and can be placed on a parent element
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
-* If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable `includeIndicatorStyles`. See [Configuring htmx](@/docs.md#config). The easiest way is to add this the `<head>` of your HTML:
+* If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable `includeIndicatorStyles`. See [Configuring htmx](@/docs.md#config). The easiest way is to add this to the `<head>` of your HTML:
 ```html
 <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 ```

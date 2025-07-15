@@ -1,5 +1,9 @@
 +++
 title = "hx-vars"
+description = """\
+  The hx-vars attribute in htmx allows you to dynamically add to the parameters that will be submitted with an AJAX \
+  request. This attribute has been deprecated. We recommend you use the hx-vals attribute that provides the same \
+  functionality with safer defaults."""
 +++
 
 **NOTE: `hx-vars` has been deprecated in favor of [`hx-vals`](@/attributes/hx-vals.md), which is safer by default.**

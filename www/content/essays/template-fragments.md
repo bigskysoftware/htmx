@@ -1,9 +1,16 @@
 +++
 title = "Template Fragments"
+description = """\
+  In this essay, Carson Gross explores the concept of template fragments, a feature in server-side rendering (SSR) \
+  that allows partial rendering of content within templates. He highlights the benefits of using template fragments in \
+  hypermedia-driven applications, providing a cleaner and more maintainable approach compared to traditional template \
+  decomposition. Carson showcases the use of template fragments in the Chill templating language and discusses how \
+  this feature improves the developer experience when working with htmx and other hypermedia-oriented libraries. He \
+  also includes examples and known implementations of template fragments in various programming languages."""
 date = 2022-08-03
 updated = 2023-03-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -140,6 +147,8 @@ Here are some known implementations of the fragment concept:
   * [Chill Templates (currently in early alpha)](https://github.com/bigskysoftware/chill/tree/master/chill-script)
   * [Quarkus Qute](https://quarkus.io/guides/qute-reference#fragments)
   * [JStachio (mustache)](https://jstach.io/doc/jstachio/current/apidocs/#mustache_fragments)
+* JavaScript
+  * [Jeasx](https://www.jeasx.dev) - see [example for htmx](https://expo.jeasx.dev/fragments)
 * PHP
   * [Latte](https://latte.nette.org/en/template-inheritance#toc-blocks) - Use the 3rd parameter to only render 1 block from the template -  `$Latte_Engine->render('path/to/template.latte', [ 'foo' => 'bar' ], 'content');`
   * [Laravel Blade](https://laravel.com/docs/10.x/blade#rendering-blade-fragments) - includes built-in support for template fragments as of v9.x
@@ -151,9 +160,12 @@ Here are some known implementations of the fragment concept:
   * [chameleon_partials package](https://github.com/mikeckennedy/chameleon_partials)
   * [htmlgenerator](https://github.com/basxsoftwareassociation/htmlgenerator)
   * [django-template-partials](https://pypi.org/project/django-template-partials/) ([repository](https://github.com/carltongibson/django-template-partials))
+  * [django-block-fragments](https://github.com/medihack/django-block-fragments)
 * .NET
   * [Giraffe.ViewEngine.Htmx](https://github.com/bit-badger/Giraffe.Htmx/tree/main/src/ViewEngine.Htmx)
 * Rust
   * [MiniJinja](https://docs.rs/minijinja/latest/minijinja/struct.State.html#method.render_block)
+* Raku
+  * [Cro Templates](https://github.com/croservices/cro-website/blob/main/docs/reference/cro-webapp-template-syntax.md#fragments)
 
 Please [let me know](/discord) if you know of others, so I can add them to this list.

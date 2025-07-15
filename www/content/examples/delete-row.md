@@ -47,7 +47,7 @@ row should be replaced with nothing.
   <td>angie@macdowell.org</td>
   <td>Active</td>
   <td>
-    <button class="btn btn-danger" hx-delete="/contact/1">
+    <button class="btn danger" hx-delete="/contact/1">
       Delete
     </button>
   </td>
@@ -108,7 +108,7 @@ tr.htmx-swapping td {
       <td>${contact["email"]}</td>
       <td>${contact["status"]}</td>
       <td>
-        <button class="btn btn-danger" hx-delete="/contact/${i}">
+        <button class="btn danger" hx-delete="/contact/${i}">
           Delete
         </button>
       </td>

@@ -8,7 +8,7 @@ In this example we show how to create a keyboard shortcut for an action.
 We start with a simple button that loads some content from the server:
 
 ```html
-<button hx-trigger="click, keyup[altKey&&shiftKey&&key=='D'] from:body"
+<button class="btn primary" hx-trigger="click, keyup[altKey&&shiftKey&&key=='D'] from:body"
         hx-post="/doit">Do It! (alt-shift-D)</button>
 ```
 
@@ -32,10 +32,10 @@ You can find out the conditions needed for a given keyboard shortcut here:
 
     // routes
     init("/init", function(request, params){
-        return "<button style='font-size:20pt' hx-trigger='click, keyup[altKey&&shiftKey&&key==\"D\"] from:body'" +
+        return "<button class='btn primary' style='font-size:20pt' hx-trigger='click, keyup[altKey&&shiftKey&&key==\"D\"] from:body'" +
                       " hx-post='/doit'>Do It! (alt-shift-D) </button>";
     });
-    
+
     onPost("/doit", function (request, params) {
         return "Did it!";
     });

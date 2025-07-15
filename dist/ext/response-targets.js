@@ -1,5 +1,10 @@
 (function(){
 
+    if (htmx.version && !htmx.version.startsWith("1.")) {
+        console.warn("WARNING: You are using an htmx 1 extension with htmx " + htmx.version +
+            ".  It is recommended that you move to the version of this extension found on https://htmx.org/extensions")
+    }
+
     /** @type {import("../htmx").HtmxInternalApi} */
     var api;
 
@@ -12,7 +17,7 @@
 
     /**
      * @param {HTMLElement} elt
-     * @param {number} respCode
+     * @param {number} respCodeNumber
      * @returns {HTMLElement | null}
      */
     function getRespCodeTarget(elt, respCodeNumber) {
@@ -58,7 +63,7 @@
                 }
             }
         }
-        
+
         return null;
     }
 

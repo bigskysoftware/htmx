@@ -8,17 +8,17 @@ This example actively searches a contacts database as the user enters text.
 We start with a search input and an empty table:
 
 ```html
-<h3> 
-  Search Contacts 
-  <span class="htmx-indicator"> 
-    <img src="/img/bars.svg"/> Searching... 
-   </span> 
+<h3>
+  Search Contacts
+  <span class="htmx-indicator">
+    <img src="/img/bars.svg"/> Searching...
+   </span>
 </h3>
-<input class="form-control" type="search" 
-       name="search" placeholder="Begin Typing To Search Users..." 
-       hx-post="/search" 
-       hx-trigger="input changed delay:500ms, search" 
-       hx-target="#search-results" 
+<input class="form-control" type="search"
+       name="search" placeholder="Begin Typing To Search Users..."
+       hx-post="/search"
+       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+       hx-target="#search-results"
        hx-indicator=".htmx-indicator">
 
 <table class="table">
@@ -34,18 +34,17 @@ We start with a search input and an empty table:
 </table>
 ```
 
-The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the body of the table to be the resulting content. Note that the `keyup` event could be used as well, but would not fire if the user pasted text with their mouse (or any other non-keyboard method).
+The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the body of the table to be the resulting content.
 
 We add the `delay:500ms` modifier to the trigger to delay sending the query until the user stops typing.  Additionally,
 we add the `changed` modifier to the trigger to ensure we don't send new queries when the user doesn't change the
-value of the input (e.g. they hit an arrow key, or pasted the same value).  
+value of the input (e.g. they hit an arrow key, or pasted the same value).
 
-Since we use a `search` type input we will get an `x` in the input field to clear the input. 
-To make this trigger a new `POST` we have to specify another trigger. We specify another trigger by using a comma to 
-separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override 
-the 500 ms `input` event delay by just pressing enter.
+We can use multiple triggers by separating them with a comma, this way we add 2 more triggers:
+- `keyup[key=='Enter']` triggers once enter is pressed. We use [event filters](/attributes/hx-trigger#standard-event-filters) here to check for [the key property in the KeyboardEvent object](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key).
+- `load` in order to show all results initially on load.
 
-Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute. 
+Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute.
 
 {{ demoenv() }}
 
@@ -75,11 +74,11 @@ Search Contacts
 </span>
 </h3>
 
-<input class="form-control" type="search" 
-       name="search" placeholder="Begin Typing To Search Users..." 
-       hx-post="/search" 
-       hx-trigger="input changed delay:500ms, search" 
-       hx-target="#search-results" 
+<input class="form-control" type="search"
+       name="search" placeholder="Begin Typing To Search Users..."
+       hx-post="/search"
+       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+       hx-target="#search-results"
        hx-indicator=".htmx-indicator">
 
 <table class="table">
@@ -113,7 +112,7 @@ Search Contacts
             { "FirstName": "William", "LastName": "Hale", "Email": "eu.dolor@risusodio.edu", "City": "Te Awamutu" },
             { "FirstName": "TaShya", "LastName": "Cash", "Email": "tincidunt.orci.quis@nuncnullavulputate.co.uk", "City": "Titagarh" },
             { "FirstName": "Kevyn", "LastName": "Hoover", "Email": "tristique.pellentesque.tellus@Cumsociis.co.uk", "City": "Cuenca" },
-            { "FirstName": "Jakeem", "LastName": "Walker", "Email": "Morbi.vehicula.Pellentesque@faucibusorci.org", "City": "St. AndrÃ¤" },
+            { "FirstName": "Jakeem", "LastName": "Walker", "Email": "Morbi.vehicula.Pellentesque@faucibusorci.org", "City": "St. Andrä" },
             { "FirstName": "Malcolm", "LastName": "Trujillo", "Email": "sagittis@velit.edu", "City": "Fort Resolution" },
             { "FirstName": "Wynne", "LastName": "Rice", "Email": "augue.id@felisorciadipiscing.edu", "City": "Kinross" },
             { "FirstName": "Evangeline", "LastName": "Klein", "Email": "adipiscing.lobortis@sem.org", "City": "San Giovanni in Galdo" },
@@ -133,9 +132,9 @@ Search Contacts
             { "FirstName": "Paloma", "LastName": "Alston", "Email": "cursus@metus.org", "City": "Cache Creek" },
             { "FirstName": "Freya", "LastName": "Dunn", "Email": "Vestibulum.accumsan@metus.co.uk", "City": "Heist-aan-Zee" },
             { "FirstName": "Griffin", "LastName": "Rice", "Email": "justo@tortordictumeu.net", "City": "Montpelier" },
-            { "FirstName": "Catherine", "LastName": "West", "Email": "malesuada.augue@elementum.com", "City": "TarnÃ³w" },
+            { "FirstName": "Catherine", "LastName": "West", "Email": "malesuada.augue@elementum.com", "City": "Tarnów" },
             { "FirstName": "Jena", "LastName": "Chambers", "Email": "erat.Etiam.vestibulum@quamelementumat.net", "City": "Konya" },
-            { "FirstName": "Neil", "LastName": "Rodriguez", "Email": "enim@facilisis.com", "City": "KrakÃ³w" },
+            { "FirstName": "Neil", "LastName": "Rodriguez", "Email": "enim@facilisis.com", "City": "Kraków" },
             { "FirstName": "Freya", "LastName": "Charles", "Email": "metus@nec.net", "City": "Arzano" },
             { "FirstName": "Anastasia", "LastName": "Strong", "Email": "sit@vitae.edu", "City": "Polpenazze del Garda" },
             { "FirstName": "Bell", "LastName": "Simon", "Email": "mollis.nec.cursus@disparturientmontes.ca", "City": "Caxias do Sul" },
@@ -143,7 +142,7 @@ Search Contacts
             { "FirstName": "Yoko", "LastName": "Dawson", "Email": "neque.sed@semper.net", "City": "Saint-Remy-Geest" },
             { "FirstName": "Nadine", "LastName": "Justice", "Email": "netus@et.edu", "City": "Calgary" },
             { "FirstName": "Hoyt", "LastName": "Rosa", "Email": "Nullam.ut.nisi@Aliquam.co.uk", "City": "Mold" },
-            { "FirstName": "Shafira", "LastName": "Noel", "Email": "tincidunt.nunc@non.edu", "City": "KitzbÃ¼hel" },
+            { "FirstName": "Shafira", "LastName": "Noel", "Email": "tincidunt.nunc@non.edu", "City": "Kitzbühel" },
             { "FirstName": "Jin", "LastName": "Nunez", "Email": "porttitor.tellus.non@venenatisamagna.net", "City": "Dreieich" },
             { "FirstName": "Barbara", "LastName": "Gay", "Email": "est.congue.a@elit.com", "City": "Overland Park" },
             { "FirstName": "Riley", "LastName": "Hammond", "Email": "tempor.diam@sodalesnisi.net", "City": "Smoky Lake" },
@@ -164,7 +163,7 @@ Search Contacts
             { "FirstName": "Giacomo", "LastName": "Cole", "Email": "aliquet.libero@urnaUttincidunt.ca", "City": "Donnas" },
             { "FirstName": "Mason", "LastName": "Hinton", "Email": "est@Nunc.co.uk", "City": "St. Asaph" },
             { "FirstName": "Katelyn", "LastName": "Koch", "Email": "velit.Aliquam@Suspendisse.edu", "City": "Cleveland" },
-            { "FirstName": "Olga", "LastName": "Spencer", "Email": "faucibus@Praesenteudui.net", "City": "KarapÄ±nar" },
+            { "FirstName": "Olga", "LastName": "Spencer", "Email": "faucibus@Praesenteudui.net", "City": "Karapınar" },
             { "FirstName": "Erasmus", "LastName": "Strong", "Email": "dignissim.lacus@euarcu.net", "City": "Passau" },
             { "FirstName": "Regan", "LastName": "Cline", "Email": "vitae.erat.vel@lacusEtiambibendum.co.uk", "City": "Pergola" },
             { "FirstName": "Stone", "LastName": "Holt", "Email": "eget.mollis.lectus@Aeneanegestas.ca", "City": "Houston" },
@@ -172,11 +171,11 @@ Search Contacts
             { "FirstName": "Rana", "LastName": "Green", "Email": "metus@conguea.edu", "City": "Onze-Lieve-Vrouw-Lombeek" },
             { "FirstName": "Caryn", "LastName": "Henson", "Email": "Donec.sollicitudin.adipiscing@sed.net", "City": "Kington" },
             { "FirstName": "Clarke", "LastName": "Stein", "Email": "nec@mollis.co.uk", "City": "Tenali" },
-            { "FirstName": "Kelsie", "LastName": "Porter", "Email": "Cum@gravidaAliquam.com", "City": "Ä°skenderun" },
+            { "FirstName": "Kelsie", "LastName": "Porter", "Email": "Cum@gravidaAliquam.com", "City": "İskenderun" },
             { "FirstName": "Cooper", "LastName": "Pugh", "Email": "Quisque.ornare.tortor@dictum.co.uk", "City": "Delhi" },
             { "FirstName": "Paul", "LastName": "Spencer", "Email": "ac@InfaucibusMorbi.com", "City": "Biez" },
             { "FirstName": "Cassady", "LastName": "Farrell", "Email": "Suspendisse.non@venenatisa.net", "City": "New Maryland" },
-            { "FirstName": "Sydnee", "LastName": "Velazquez", "Email": "mollis@loremfringillaornare.com", "City": "Strï¿½e" },
+            { "FirstName": "Sydnee", "LastName": "Velazquez", "Email": "mollis@loremfringillaornare.com", "City": "Strée" },
             { "FirstName": "Felix", "LastName": "Boyle", "Email": "id.libero.Donec@aauctor.org", "City": "Edinburgh" },
             { "FirstName": "Ryder", "LastName": "House", "Email": "molestie@natoquepenatibus.org", "City": "Copertino" },
             { "FirstName": "Hadley", "LastName": "Holcomb", "Email": "penatibus@nisi.ca", "City": "Avadi" },
@@ -192,10 +191,10 @@ Search Contacts
             { "FirstName": "Claudia", "LastName": "Spence", "Email": "Nunc.lectus.pede@aceleifend.co.uk", "City": "Augusta" },
             { "FirstName": "Genevieve", "LastName": "Parker", "Email": "ultrices@inaliquetlobortis.net", "City": "Forbach" },
             { "FirstName": "Marshall", "LastName": "Allison", "Email": "erat.semper.rutrum@odio.org", "City": "Landau" },
-            { "FirstName": "Reuben", "LastName": "Davis", "Email": "Donec@auctorodio.edu", "City": "Schï¿½nebeck" },
+            { "FirstName": "Reuben", "LastName": "Davis", "Email": "Donec@auctorodio.edu", "City": "Schönebeck" },
             { "FirstName": "Ralph", "LastName": "Doyle", "Email": "pede.Suspendisse.dui@Curabitur.org", "City": "Linkebeek" },
             { "FirstName": "Constance", "LastName": "Gilliam", "Email": "mollis@Nulla.edu", "City": "Enterprise" },
-            { "FirstName": "Serina", "LastName": "Jacobson", "Email": "dictum.augue@ipsum.net", "City": "HÃ©rouville-Saint-Clair" },
+            { "FirstName": "Serina", "LastName": "Jacobson", "Email": "dictum.augue@ipsum.net", "City": "Hérouville-Saint-Clair" },
             { "FirstName": "Charity", "LastName": "Byrd", "Email": "convallis.ante.lectus@scelerisquemollisPhasellus.co.uk", "City": "Brussegem" },
             { "FirstName": "Hyatt", "LastName": "Bird", "Email": "enim.Nunc.ut@nonmagnaNam.com", "City": "Gdynia" },
             { "FirstName": "Brent", "LastName": "Dunn", "Email": "ac.sem@nuncid.com", "City": "Hay-on-Wye" },

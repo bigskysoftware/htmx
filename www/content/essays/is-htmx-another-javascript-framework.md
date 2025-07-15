@@ -1,8 +1,14 @@
 +++
 title = "Is htmx Just Another JavaScript Framework?"
+description = """\
+  Alexander Petros give a thoughtful exploration of htmx's relationship to traditional JavaScript frameworks, \
+  examining how its HTML-first approach and narrow focus on network requests sets it apart. He argues that while htmx \
+  exhibits framework-like qualities in how it shapes application architecture, its deep integration with HTML's native \
+  capabilities and lack of dependencies makes it a more sustainable choice for building long-lasting web \
+  applications."""
 date = 2024-01-10
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 
@@ -10,7 +16,7 @@ One of the most common criticisms of htmx, usually from people hearing about it 
 
 >You're complaining about the complexity of modern frontend frameworks, but your solution is just another complex frontend framework.
 
-This is an excellent objection! It's the right to question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
+This is an excellent objection! It's the right question to ask about *any* third-party (3P) code that you introduce into your project. Even though you aren't writing the 3P code yourself, by including it in your project you are committed to understanding it—and refreshing that understanding if you want to upgrade it. That's a big commitment.
 
 Let's break this criticism down into its constituent parts, and determine exactly how much htmx indulges in the harms it claims to solve.
 
@@ -43,7 +49,7 @@ If you use htmx to handle a non-trivial number of your website's network request
 
 You can definitely use htmx in a library-like manner, to add dynamic functionality to just a few sections of your web page. But you can write [React in this library-like manner too](https://www.patterns.dev/vanilla/islands-architecture) and nobody argues that React isn't a framework. Suffice to say that many people who use htmx in their applications are doing so in a way that bends to the demands of htmx, as a framework for building hypermedia applications.
 
-As they should! Building with htmx works a lot better if you play to its strengths. You can send JSON-formatted form bodies, [if you really insist](@/extensions/json-enc.md). But you shouldn't! It's simpler to just use `application/x-www-form-urlencoded` bodies, and write an endpoint that accepts them. You can write an endpoint that is re-used across multiple different clients, [if you really insist](@/essays/why-tend-not-to-use-content-negotiation.md). But you shouldn't!  It's simpler to [split your data and your hypermedia APIs into separate URLs](@/essays/splitting-your-apis.md). Yes, htmx can be used as a library, but maybe let it be your framework too.
+As they should! Building with htmx works a lot better if you play to its strengths. You can send JSON-formatted form bodies, [if you really insist](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/json-enc/README.md). But you shouldn't! It's simpler to just use `application/x-www-form-urlencoded` bodies, and write an endpoint that accepts them. You can write an endpoint that is re-used across multiple different clients, [if you really insist](@/essays/why-tend-not-to-use-content-negotiation.md). But you shouldn't!  It's simpler to [split your data and your hypermedia APIs into separate URLs](@/essays/splitting-your-apis.md). Yes, htmx can be used as a library, but maybe let it be your framework too.
 
 That does not mean, however, that htmx is Just Another JavaScript Framework, because htmx has a huge advantage that the other frameworks do not: HTML.
 
@@ -66,7 +72,7 @@ Pushing the user to define the behavior of their application primarily in HTML, 
 
 No matter when you wrote your htmx application, however, the behavior of an htmx form has always been defined in largely the same way a regular HTML form is: with `<form>`. With htmx adding additional network functionality, you can finally use `PUT` requests and control where the response goes, but in all other respects—validation, inputs, labels, autocomplete—you have default `<form>` element behavior.
 
-Finally, because htmx simply extends HTML in a very narrow domain (network requests and DOM replacements), most of the "htmx" you write is just plain old HTML. When you have access to complex state management mechanisms, it's incredibly easy to implement a custom collapsable div; when you don't, you might stop long enough to search up the [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element. Whenever a problem can be solved by native HTML elements, the longevity of the code improves tremendously as a result. This is a much less alienating way to learn web development, because the bulk of your knowledge will remain relevant as long as HTML does.
+Finally, because htmx simply extends HTML in a very narrow domain (network requests and DOM replacements), most of the "htmx" you write is just plain old HTML. When you have access to complex state management mechanisms, it's incredibly easy to implement a custom collapsible div; when you don't, you might stop long enough to search up the [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element. Whenever a problem can be solved by native HTML elements, the longevity of the code improves tremendously as a result. This is a much less alienating way to learn web development, because the bulk of your knowledge will remain relevant as long as HTML does.
 
 In this respect, htmx is much more like JQuery than React (htmx's predecessor, [intercooler.js](https://intercoolerjs.org/), was a JQuery extension), but it improves on JQuery by using a declarative, HTML-based interface: where JQuery made you go to the `<script>` tag to specify AJAX behavior, htmx requires only a simple `hx-post` attribute.
 
@@ -77,7 +83,7 @@ In short, while htmx can be used as a framework, it's a framework that [deviates
 <div style="text-align:center; width:100%">
   <img width=500
        src="/img/memes/istudiedhtml.png"
-       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audactiy to come to me for help?'"
+       alt="A man holding a sword. He says: 'When you wrote class components, I studied HTML. When you were converting classes to hooks, I mastered the HTML. While you wasted time moving all your client-side logic to server components, I cultivated inner HTML. And now that the browser won't hydrate your thick client JSON API you have the audacity to come to me for help?'"
       >
 </div>
 
