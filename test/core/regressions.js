@@ -320,7 +320,7 @@ describe('Core htmx Regression Tests', function() {
     div.classList.length.should.equal(0)
     done()
   })
-  
+
   it('a button clicked inside an htmx enabled link will prevent the link from navigating on click', function(done) {
     var defaultPrevented = 'unset'
     var link = make('<a href="/foo" hx-get="/foo"><button>test</button></a>')
@@ -384,5 +384,4 @@ describe('Core htmx Regression Tests', function() {
 
     span.click()
   })
-
 })
