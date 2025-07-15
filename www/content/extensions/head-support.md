@@ -18,15 +18,15 @@ a feature of the library.  This extension addresses that shortcoming.
 The fastest way to install `head-support` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
-    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx-ext-head-support@2.0.2" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.2" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="head-support">
 ...
 ```
-An unminified version is also available at https://unpkg.com/htmx-ext-head-support/dist/head-support.js.
+An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-head-support/dist/head-support.js.
 
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `head-support` is to simply copy it into your project. Download the extension from `https://unpkg.com/htmx-ext-head-support`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
+While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `head-support` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-head-support`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
 
 For npm-style build systems, you can install `head-support` via [npm](https://www.npmjs.com/):
 ```shell

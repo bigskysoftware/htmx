@@ -93,22 +93,50 @@ describe('Core htmx internals Tests', function() {
     var anchorThatShouldNotCancel = make("<a href='#foo'></a>")
     htmx._('shouldCancel')({ type: 'click' }, anchorThatShouldNotCancel).should.equal(false)
 
+    var divThatShouldNotCancel = make('<div></div>')
+    htmx._('shouldCancel')({ type: 'click' }, divThatShouldNotCancel).should.equal(false)
+
     var form = make('<form></form>')
-    htmx._('shouldCancel')({ type: 'submit' }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'submit', target: form }, form).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: form }, form).should.equal(true)
 
-    form = make("<form><input id='i1' type='submit'></form>")
-    var input = byId('i1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
+    // falls back to check elt tag when target is not an element
+    htmx._('shouldCancel')({ type: 'click', target: null }, form).should.equal(true)
 
-    form = make("<form><button id='b1' type='submit'></form>")
-    var button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
+    // check that events targeting elements that shouldn't cancel don't cancel
+    htmx._('shouldCancel')({ type: 'submit', target: anchorThatShouldNotCancel }, form).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click', target: divThatShouldNotCancel }, form).should.equal(false)
 
-    form = make("<form id='f1'></form><input id='i1' form='f1' type='submit'><button id='b1' form='f1' type='submit'>")
-    input = byId('i1')
-    button = byId('b1')
-    htmx._('shouldCancel')({ type: 'click' }, input).should.equal(true)
-    htmx._('shouldCancel')({ type: 'click' }, button).should.equal(true)
+    // check elements inside links getting click events should cancel parent links
+    var anchorWithButton = make("<a href='/foo'><button></button></a>")
+    htmx._('shouldCancel')({ type: 'click', target: anchorWithButton.firstChild }, anchorWithButton).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click', target: anchorWithButton.firstChild }, anchorWithButton.firstChild).should.equal(true)
+
+    form = make('<form id="f1">' +
+        '<input id="insideInput" type="submit">' +
+        '<button id="insideFormBtn"></button>' +
+        '<button id="insideSubmitBtn" type="submit"></button>' +
+        '<button id="insideResetBtn" type="reset"></button>' +
+        '<button id="insideButtonBtn" type="button"></button>' +
+        '</form>' +
+        '<input id="outsideInput" form="f1" type="submit">' +
+        '<button id="outsideFormBtn" form="f1"></button>' +
+        '<button id="outsideSubmitBtn" form="f1" type="submit"></button>")' +
+        '<button id="outsideButtonBtn" form="f1" type="button"></button>")' +
+        '<button id="outsideResetBtn" form="f1" type="reset"></button>")' +
+        '<button id="outsideNoFormBtn"></button>")')
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideInput')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideFormBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideSubmitBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideResetBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('insideButtonBtn')).should.equal(false)
+
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideInput')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideFormBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideSubmitBtn')).should.equal(true)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideButtonBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideResetBtn')).should.equal(false)
+    htmx._('shouldCancel')({ type: 'click' }, byId('outsideNoFormBtn')).should.equal(false)
   })
 
   it('unset properly unsets a given attribute', function() {
@@ -133,5 +161,68 @@ describe('Core htmx internals Tests', function() {
     var form = make("<form enctype='multipart/form-data'></form>")
     var value = htmx._('encodeParamsForBody')(null, form, {});
     (value instanceof FormData).should.equal(true)
+  })
+
+  it('Calling onpopstate to trigger backup and restore of page triggers htmx:restored event', function() {
+    var restored
+    var handler = htmx.on('htmx:restored', function(event) {
+      restored = true
+    })
+    make('<div hx-get="/test" hx-trigger="restored">Not Called</div>')
+    window.onpopstate({ state: { htmx: true } })
+    restored.should.equal(true)
+    htmx.off('htmx:restored', handler)
+  })
+
+  it('scroll position is restored from history restore', function() {
+    make('<div style="height: 1000px;" hx-get="/test" hx-trigger="restored">Not Called</div>')
+    window.scrollTo(0, 50)
+    window.onpopstate({ state: { htmx: true } })
+    parseInt(window.scrollY).should.equal(50)
+  })
+
+  it('calling onpopstate with no htmx state not true calls original popstate', function() {
+    window.onpopstate({ state: { htmx: false } })
+  })
+
+  it('getPathFromResponse returns paths when valid', function() {
+    var path = htmx._('getPathFromResponse')({ responseURL: 'https://htmx.org/somepath?a=b#fragment' })
+    should.equal(path, '/somepath?a=b')
+    path = htmx._('getPathFromResponse')({ responseURL: 'notvalidurl' })
+    should.equal(path, undefined)
+  })
+
+  it('appendParam can process objects', function() {
+    var param = htmx._('appendParam')('a=b', 'jim', 'foo')
+    should.equal(param, 'a=b&jim=foo')
+    param = htmx._('appendParam')('a=b', 'jim', '{"foo":"bar"}')
+    should.equal(param, 'a=b&jim=%7B%22foo%22%3A%22bar%22%7D')
+    param = htmx._('appendParam')('a=b', 'jim', { foo: 'bar' })
+    should.equal(param, 'a=b&jim=%7B%22foo%22%3A%22bar%22%7D')
+  })
+
+  it('handleTitle falls back to setting document.title when no title head element', function() {
+    var oldTitle = window.document.title
+    document.querySelector('title').remove()
+    htmx._('handleTitle')('update title')
+    window.document.title.should.equal('update title')
+    window.document.title = oldTitle
+  })
+
+  it('without meta config getMetaConfig returns null', function() {
+    document.querySelector('meta[name="htmx-config"]').remove()
+    should.equal(htmx._('getMetaConfig')(), null)
+  })
+
+  it('internalAPI settleImmediately completes settle tasks', function() {
+    // settleImmediately is no longer used internally and may no longer be needed at all
+    // as swapping without settleing does not seem via internalAPI
+    const fragment = htmx._('makeFragment')('<div>Content</div>')
+    const historyElement = htmx._('getHistoryElement')()
+    const settleInfo = htmx._('makeSettleInfo')(historyElement)
+    htmx._('swapInnerHTML')(historyElement, fragment, settleInfo)
+    historyElement.firstChild.className.should.equal('htmx-added')
+    htmx._('settleImmediately')(settleInfo.tasks)
+    historyElement.firstChild.className.should.equal('')
   })
 })

@@ -48,6 +48,17 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('')
   })
 
+  it('remove element with delay properly', function(done) {
+    var div = make('<div><a></a></div>')
+    var a = htmx.find(div, 'a')
+    htmx.remove(a, 10)
+    div.innerHTML.should.not.equal('')
+    setTimeout(function() {
+      div.innerHTML.should.equal('')
+      done()
+    }, 30)
+  })
+
   it('should remove element properly w/ selector', function() {
     var div = make("<div><a id='a1'></a></div>")
     var a = htmx.find(div, 'a')
@@ -88,6 +99,10 @@ describe('Core htmx API test', function() {
     div.classList.contains('foo').should.equal(false)
   })
 
+  it('should not error if you remove class from invalid element', function() {
+    htmx.removeClass(null, 'foo')
+  })
+
   it('should remove class properly w/ selector', function() {
     var div = make("<div id='div1'></div>")
     htmx.addClass(div, 'foo')
@@ -96,7 +111,7 @@ describe('Core htmx API test', function() {
     div.classList.contains('foo').should.equal(false)
   })
 
-  it('should add class properly after delay', function(done) {
+  it('should remove class properly after delay', function(done) {
     var div = make('<div></div>')
     htmx.addClass(div, 'foo')
     div.classList.contains('foo').should.equal(true)
@@ -468,6 +483,29 @@ describe('Core htmx API test', function() {
     output.innerHTML.should.be.equal('<div>Swapped!</div>')
   })
 
+  it('swap works with a swap delay', function(done) {
+    var div = make("<div hx-get='/test'></div>")
+    div.innerText.should.equal('')
+    htmx.swap(div, 'jsswapped', { swapDelay: 10 })
+    div.innerText.should.equal('')
+    setTimeout(function() {
+      div.innerText.should.equal('jsswapped')
+      done()
+    }, 30)
+  })
+
+  if (/chrome/i.test(navigator.userAgent)) {
+    it('swap works with a view transition', function(done) {
+      var div = make("<div hx-get='/test'></div>")
+      div.innerText.should.equal('')
+      htmx.swap(div, 'jsswapped', { transition: true })
+      div.innerText.should.equal('')
+      setTimeout(function() {
+        div.innerText.should.equal('jsswapped')
+        done()
+      }, 50)
+    })
+  }
   it('swaps content properly (with select)', function() {
     var output = make('<output id="output"/>')
     htmx.swap('#output', '<div><p id="select-me">Swapped!</p></div>', { swapStyle: 'innerHTML' }, { select: '#select-me' })
@@ -512,5 +550,110 @@ describe('Core htmx API test', function() {
     parent.remove()
     this.server.respond()
     parent.children.length.should.equal(0)
+  })
+
+  it('values api returns formDataProxy with correct form data even if clicked button removed', function() {
+    make('<form id="valuesform" hx-post="/test">' +
+            '<input type="text" name="t1" value="textValue">' +
+            '<button id="submit" type="submit" name="b1" value="buttonValue">button</button>' +
+            '</form>')
+
+    var apiValues = htmx.values(byId('valuesform'), 'post')
+    apiValues.get('t1').should.equal('textValue')
+    should.equal(apiValues.get('b1'), null)
+    byId('submit').click()
+    apiValues = htmx.values(byId('valuesform'), 'post')
+    apiValues.get('t1').should.equal('textValue')
+    apiValues.get('b1').should.equal('buttonValue')
+    byId('submit').remove()
+    apiValues = htmx.values(byId('valuesform'), 'post')
+    JSON.stringify(apiValues).should.equal('{"t1":"textValue"}')
+    var assign = Object.assign({}, apiValues)
+    JSON.stringify(assign).should.equal('{"t1":"textValue"}')
+  })
+
+  it('tests for formDataProxy array updating and testing for loc coverage', function() {
+    var form = make('<form><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input id="i2" name="do" value="rey"/></form>')
+    var vals = htmx.values(form, 'post')
+    vals.foo.should.equal('bar')
+    vals.do.should.deep.equal(['rey', 'rey'])
+    should.equal(vals.do.toString(), undefined)
+    vals.do.push('test')
+    vals.do.should.deep.equal(['rey', 'rey', 'test'])
+    vals.do = ['bob', 'jim']
+    vals.do.should.deep.equal(['bob', 'jim'])
+    vals.do[0] = 'hi'
+    vals.do.should.deep.equal(['hi', 'jim'])
+    var arr = vals.do
+    arr[0] = ['override']
+    arr[0].should.equal('override')
+    vals.do.should.deep.equal(['override', 'jim'])
+    vals[Symbol.toStringTag].should.equal('FormData')
+    try {
+      vals[Symbol.toStringTag] = 'notFormData' // should do nothing
+    } catch (e) {}
+    vals[Symbol.toStringTag].should.equal('FormData')
+  })
+
+  it('logAll() and logNone() run without error', function() {
+    make('<div id="d1"></div>')
+    htmx.logAll()
+    htmx.trigger(byId('d1'), 'test-event')
+    htmx.logNone()
+  })
+
+  it('querySelectorExt internal extension api works with just string', function() {
+    make('<div id="d1">content</div>')
+    var div = htmx._('querySelectorExt("#d1")')
+    div.innerHTML.should.equal('content')
+  })
+
+  it('ajax api with no context works', function() {
+    // request would replace body so prevent ths with 204 response
+    var status
+    var handler = htmx.on('htmx:beforeSwap', function(event) {
+      status = event.detail.xhr.status
+    })
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.respond(204, {}, 'foo!')
+    })
+    var div = make('<div></div>')
+    htmx.ajax('GET', '/test')
+    this.server.respond()
+    div.innerHTML.should.equal('')
+    status.should.equal(204)
+    htmx.off('htmx:beforeSwap', handler)
+  })
+
+  it('ajax api with can pass in custom handler and handle if it throws error', function() {
+    var onLoadError = false
+    var handler = htmx.on('htmx:onLoadError', function(event) {
+      onLoadError = true
+    })
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.respond(204, {}, 'foo!')
+    })
+    var div = make('<div></div>')
+    try {
+      htmx.ajax('GET', '/test', { handler: function() { throw new Error('throw') } })
+      this.server.respond()
+    } catch (e) {}
+    div.innerHTML.should.equal('')
+    onLoadError.should.equal(true)
+
+    // repeat the error resonse a 2nd time to make sure request lock removed after error
+    onLoadError = false
+    try {
+      htmx.ajax('GET', '/test', { handler: function() { throw new Error('throw') } })
+      this.server.respond()
+    } catch (e) {}
+    div.innerHTML.should.equal('')
+    onLoadError.should.equal(true)
+    htmx.off('htmx:onLoadError', handler)
+  })
+
+  it('process api can process non elements fine', function() {
+    var div = make('<div>textNode</div>')
+    htmx.process(div.firstChild)
   })
 })

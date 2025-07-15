@@ -17,7 +17,7 @@
 
     /**
      * @param {HTMLElement} elt
-     * @param {number} respCode
+     * @param {number} respCodeNumber
      * @returns {HTMLElement | null}
      */
     function getRespCodeTarget(elt, respCodeNumber) {

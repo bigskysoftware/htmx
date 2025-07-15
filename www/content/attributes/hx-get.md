@@ -18,8 +18,9 @@ This example will cause the `button` to issue a `GET` to `/example` and swap the
 ### Notes
 
 * `hx-get` is not inherited
-* By default `hx-get` does not include any parameters.  You can use the [hx-params](@/attributes/hx-params.md)
+* By default `hx-get` usually does not include any parameters.  You can use the [hx-params](@/attributes/hx-params.md)
   attribute to change this
+    * NB: If the element with the `hx-get` attribute also has a value, this will be included as a parameter unless explicitly removed
 * You can control the target of the swap using the [hx-target](@/attributes/hx-target.md) attribute
 * You can control the swap strategy by using the [hx-swap](@/attributes/hx-swap.md) attribute
 * You can control what event triggers the request with the [hx-trigger](@/attributes/hx-trigger.md) attribute

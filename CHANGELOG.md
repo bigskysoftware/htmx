@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.6] - 2025-06-27
+
+* [Fix](https://github.com/bigskysoftware/htmx/pull/3357) a [regression](https://github.com/bigskysoftware/htmx/issues/3356) 
+  with htmx-powered links that contain other elements in them issuing full page refreshes
+
+## [2.0.5] - 2025-06-20
+
+* 100% test coverage! (Thank you @MichaelWest22!)
+* The default recommended CDN is now jsDelivr
+* The `inherit` keyword is now supported by `hx-include`, `hx-indicator` and `hx-disabled-elt` to allow you to inherit
+  the value from a parent and extend it.
+* `hx-on` listeners are now added before processing nodes so events during processing can be captured
+* Using `<button hx-verb="/endpoint" type="reset">` will now reset the associated form (after submitting to `/endpoint`)
+* Using `<button formmethod="dialog">` will no longer submit its associated form
+* Local history cache now uses `sessionStorage` rather than `localStorage` so cross-tab contamination doesn't occur
+* History restoration now follows the standard swapping code paths 
+* Many other smaller bug and documentation fixes
+
 ## [2.0.4] - 2024-12-13
 
 * Calling `htmx.ajax` with no target or source now defaults to body (previously did nothing)

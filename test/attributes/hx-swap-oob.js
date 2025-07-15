@@ -347,4 +347,44 @@ describe('hx-swap-oob attribute', function() {
       should.equal(badTarget.textContent, 'this should not get swapped')
     })
   }
+
+  it.skip('triggers htmx:oobErrorNoTarget when no targets found', function(done) {
+    // this test fails right now because when targets not found it returns an empty array which makes it miss the event as it should be if (targets.length)
+    this.server.respondWith('GET', '/test', "Clicked<div id='nonexistent' hx-swap-oob='true'>Swapped</div>")
+    var div = make('<div hx-get="/test">click me</div>')
+
+    // Define the event listener function so it can be removed later
+    var eventListenerFunction = function(event) {
+      event.detail.content.innerHTML.should.equal('Swapped')
+      document.body.removeEventListener('htmx:oobErrorNoTarget', eventListenerFunction)
+      done()
+    }
+
+    document.body.addEventListener('htmx:oobErrorNoTarget', eventListenerFunction)
+    div.click()
+    this.server.respond()
+  })
+
+  it('handles elements with IDs containing special characters properly', function() {
+    this.server.respondWith('GET', '/test', '<div id="foo-/bar/" hx-swap-oob="innerHTML">Swapped10</div>')
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="foo-/bar/">Existing Content</div>')
+    div.click()
+    this.server.respond()
+    var swappedElement = document.querySelector('[id="foo-/bar/"]')
+    swappedElement.innerHTML.should.equal('Swapped10')
+  })
+
+  it('handles one swap into multiple elements with the same ID properly', function() {
+    this.server.respondWith('GET', '/test', '<div id="foo-/bar/" hx-swap-oob="innerHTML">Swapped11</div>')
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="foo-/bar/">Existing Content 1</div>')
+    make('<div id="foo-/bar/">Existing Content 2</div>')
+    div.click()
+    this.server.respond()
+    var swappedElements = document.querySelectorAll('[id="foo-/bar/"]')
+    swappedElements.forEach(function(element) {
+      element.innerHTML.should.equal('Swapped11')
+    })
+  })
 })

@@ -1,4 +1,5 @@
 describe('Core htmx Events', function() {
+  var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
@@ -736,6 +737,184 @@ describe('Core htmx Events', function() {
     } finally {
       htmx.off('htmx:beforeSwap', beforeSwapHandler)
       htmx.off('htmx:afterSwap', afterSwapHandler)
+    }
+  })
+
+  it('preventDefault() in htmx:historyCacheMiss stops the history request', function() {
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    var handler = htmx.on('htmx:historyCacheMiss', function(evt) {
+      evt.preventDefault()
+    })
+    this.server.respondWith('GET', '/test1', '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>')
+    this.server.respondWith('GET', '/test2', '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>')
+
+    make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
+
+    try {
+      byId('d1').click()
+      this.server.respond()
+      var workArea = getWorkArea()
+      workArea.textContent.should.equal('test1')
+
+      byId('d2').click()
+      this.server.respond()
+      workArea.textContent.should.equal('test2')
+
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      htmx._('restoreHistory')('/test1')
+      this.server.respond()
+      getWorkArea().textContent.should.equal('test2')
+    } finally {
+      htmx.off('htmx:historyCacheMiss', handler)
+    }
+  })
+
+  it('htmx:historyCacheMissLoad event can update history swap', function() {
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    var handler = htmx.on('htmx:historyCacheMissLoad', function(evt) {
+      evt.detail.historyElt = byId('hist-re-target')
+      evt.detail.swapSpec.swapStyle = 'outerHTML'
+      evt.detail.response = '<div id="hist-re-target">Updated<div>'
+      evt.detail.path = '/test3'
+    })
+    this.server.respondWith('GET', '/test1', '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>')
+    this.server.respondWith('GET', '/test2', '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>')
+
+    make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
+    make('<div id="hist-re-target"></div>')
+
+    try {
+      byId('d1').click()
+      this.server.respond()
+      var workArea = getWorkArea()
+      workArea.textContent.should.equal('test1')
+
+      byId('d2').click()
+      this.server.respond()
+      workArea.textContent.should.equal('test2')
+
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      htmx._('restoreHistory')('/test1')
+      this.server.respond()
+      getWorkArea().textContent.should.equal('test2Updated')
+      byId('hist-re-target').textContent.should.equal('Updated')
+      htmx._('currentPathForHistory').should.equal('/test3')
+    } finally {
+      htmx.off('htmx:historyCacheMissLoad', handler)
+    }
+  })
+
+  it('htmx:historyCacheMiss event can set custom request headers', function() {
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    var handler = htmx.on('htmx:historyCacheMiss', function(evt) {
+      evt.detail.xhr.setRequestHeader('CustomHeader', 'true')
+    })
+    this.server.respondWith('GET', '/test1', function(xhr) {
+      should.equal(xhr.requestHeaders.CustomHeader, 'true')
+      xhr.respond(200, {}, '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>')
+    })
+    make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
+
+    try {
+      sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME) // clear cache
+      htmx._('restoreHistory')('/test1')
+      this.server.respond()
+      getWorkArea().textContent.should.equal('test1')
+    } finally {
+      htmx.off('htmx:historyCacheMiss', handler)
+    }
+  })
+
+  it('preventDefault() in htmx:historyCacheHit stops the history action', function() {
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    var handler = htmx.on('htmx:historyCacheHit', function(evt) {
+      evt.preventDefault()
+    })
+    this.server.respondWith('GET', '/test1', '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>')
+    this.server.respondWith('GET', '/test2', '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>')
+
+    make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
+
+    try {
+      byId('d1').click()
+      this.server.respond()
+      var workArea = getWorkArea()
+      workArea.textContent.should.equal('test1')
+
+      byId('d2').click()
+      this.server.respond()
+      workArea.textContent.should.equal('test2')
+
+      htmx._('restoreHistory')('/test1')
+      getWorkArea().textContent.should.equal('test2')
+    } finally {
+      htmx.off('htmx:historyCacheHit', handler)
+    }
+  })
+
+  it('htmx:historyCacheHit event can update history swap', function() {
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    var handler = htmx.on('htmx:historyCacheHit', function(evt) {
+      evt.detail.historyElt = byId('hist-re-target')
+      evt.detail.swapSpec.swapStyle = 'outerHTML'
+      evt.detail.item.content = '<div id="hist-re-target">Updated<div>'
+      evt.detail.path = '/test3'
+    })
+    this.server.respondWith('GET', '/test1', '<div id="d2" hx-push-url="true" hx-get="/test2" hx-swap="outerHTML settle:0">test1</div>')
+    this.server.respondWith('GET', '/test2', '<div id="d3" hx-push-url="true" hx-get="/test3" hx-swap="outerHTML settle:0">test2</div>')
+
+    make('<div id="d1" hx-push-url="true" hx-get="/test1" hx-swap="outerHTML settle:0">init</div>')
+    make('<div id="hist-re-target"></div>')
+
+    try {
+      byId('d1').click()
+      this.server.respond()
+      var workArea = getWorkArea()
+      workArea.textContent.should.equal('test1')
+
+      byId('d2').click()
+      this.server.respond()
+      workArea.textContent.should.equal('test2')
+
+      htmx._('restoreHistory')('/test1')
+      this.server.respond()
+      getWorkArea().textContent.should.equal('test2Updated')
+      byId('hist-re-target').textContent.should.equal('Updated')
+      htmx._('currentPathForHistory').should.equal('/test3')
+    } finally {
+      htmx.off('htmx:historyCacheHit', handler)
+    }
+  })
+
+  it('htmx:targetError should include the hx-target value', function() {
+    var target = null
+    var handler = htmx.on('htmx:targetError', function(evt) {
+      target = evt.detail.target
+    })
+    try {
+      this.server.respondWith('GET', '/test', '')
+      var div = make('<div hx-post="/test" hx-target="#non-existent"></div>')
+      div.click()
+      this.server.respond()
+      target.should.equal('#non-existent')
+    } finally {
+      htmx.off('htmx:targetError', handler)
+    }
+  })
+
+  it('htmx:targetError can include an inherited hx-target value', function() {
+    var target = null
+    var handler = htmx.on('htmx:targetError', function(evt) {
+      target = evt.detail.target
+    })
+    try {
+      this.server.respondWith('GET', '/test', '')
+      make('<div hx-target="#parent-target"><div id="child" hx-post="/test"></div></div>')
+      byId('child').click()
+      this.server.respond()
+      target.should.equal('#parent-target')
+    } finally {
+      htmx.off('htmx:targetError', handler)
     }
   })
 })

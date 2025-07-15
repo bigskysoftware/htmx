@@ -56,7 +56,7 @@ for a global symbol with the name `foo`
 Standard events can also have modifiers that change how they behave.  The modifiers are:
 
 * `once` - the event will only trigger once (e.g. the first click)
-* `changed` - the event will only change if the value of the element has changed. Please pay attention `change` is the name of the event and `changed` is the name of the modifier.
+* `changed` - the event will only fire if the value of the element has changed. Please pay attention `change` is the name of the event and `changed` is the name of the modifier.
 * `delay:<timing declaration>` - a delay will occur before an event triggers a request.  If the event
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur after an event triggers a request. If the event
@@ -86,12 +86,12 @@ but with a target filter for a child element
   * `all` - queue all events (issue a request for each event)
   * `none` - do not queue new events
 
-Here is an example of a search box that searches on `keyup`, but only if the search value has changed
+Here is an example of a search box that searches on `input`, but only if the search value has changed
 and the user hasn't typed anything new for 1 second:
 
 ```html
 <input name="q"
-       hx-get="/search" hx-trigger="keyup changed delay:1s"
+       hx-get="/search" hx-trigger="input changed delay:1s"
        hx-target="#search-results"/>
 ```
 

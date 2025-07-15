@@ -57,11 +57,20 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/cscortes/htmxflask>
 - <https://github.com/Konfuzian/htmx-examples-with-flask/>
 
+### Lua
+
+- Lua Server Pages: <https://realtimelogic.com/articles/LSP-htmx-A-Powerful-Duo-for-Embedded-Web-Apps>
+
 ### py4web
 
 - <https://github.com/jpsteil/py4web_htmx_demo>
 
 ## Java
+
+### Javalin
+
+- <https://github.com/AussieGuy0/java-htmx-todo/>
+- <https://github.com/erwindrsno/simple-to-do-list>
 
 ### Spring Boot
 
@@ -129,6 +138,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 ## Rust
 
 - <https://github.com/paultuckey/example-todo-app-rust-htmx>
+- <https://github.com/welshdave/actix-htmx>
 
 ## Scala
 

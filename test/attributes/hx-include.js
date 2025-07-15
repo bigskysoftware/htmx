@@ -136,6 +136,104 @@ describe('hx-include attribute', function() {
     div.innerHTML.should.equal('Clicked!')
   })
 
+  it('Input can be referred to externally and then via a form then it will only be included once', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<form id="f1"><input id="i1" name="i1" value="test"/></form>')
+    var div = make('<div hx-post="/include" hx-include="previous #i1,#f1"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('checkbox can be referred to externally', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('on')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input id="i1" name="i1" type="checkbox" checked/>')
+    var div = make('<div hx-post="/include" hx-include="#i1"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('files input can be referred to externally', function() {
+    // This test is just to make loc coverage complete and does not test that real file values are sent
+    this.server.respondWith('POST', '/include', function(xhr) {
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<input id="i1" name="i1" type="file" multiple/>')
+    var div = make('<div hx-post="/include" hx-include="#i1"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('properly handles multiple select input referred to externally', function() {
+    var values
+    this.server.respondWith('Post', '/include', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+    make('<select id="multiSelect" name="multiSelect" multiple="multiple">' +
+            '<option id="m1" value="m1">m1</option>' +
+            '<option id="m2" value="m2">m2</option>' +
+            '<option id="m3" value="m3">m3</option>' +
+            '<option id="m4" value="m4">m4</option>' +
+            '</select>')
+    var div = make('<div hx-post="/include" hx-include="#multiSelect"></div>')
+
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({})
+
+    byId('m1').selected = true
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({ multiSelect: 'm1' })
+
+    byId('m1').selected = true
+    byId('m3').selected = true
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
+  })
+
+  it('properly handles multiple select input referred to externally and then via a form then it will only be included once', function() {
+    var values
+    this.server.respondWith('Post', '/include', function(xhr) {
+      values = getParameters(xhr)
+      xhr.respond(204, {}, '')
+    })
+    make('<form id="f1"><select id="multiSelect" name="multiSelect" multiple="multiple">' +
+            '<option id="m1" value="m1">m1</option>' +
+            '<option id="m2" value="m2">m2</option>' +
+            '<option id="m3" value="m3">m3</option>' +
+            '<option id="m4" value="m4">m4</option>' +
+            '</select></form>')
+    var div = make('<div hx-post="/include" hx-include="previous #multiSelect,#f1"></div>')
+
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({})
+
+    byId('m1').selected = true
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({ multiSelect: 'm1' })
+
+    byId('m1').selected = true
+    byId('m3').selected = true
+    div.click()
+    this.server.respond()
+    values.should.deep.equal({ multiSelect: ['m1', 'm3'] })
+  })
+
   it('Two inputs can be referred to externally', function() {
     this.server.respondWith('POST', '/include', function(xhr) {
       var params = getParameters(xhr)
@@ -331,6 +429,90 @@ describe('hx-include attribute', function() {
       '<button id="btn" hx-post="/include" hx-include="closest <section, div/>"></button>' +
       '</div>' +
       '</section>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` can be used to expand parent hx-include', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <button id="btn" hx-include="inherit, #i2" hx-post="/include"></button>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` can be used to expand multiple parents hx-include', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="inherit, #i2">' +
+      '       <button id="btn" hx-include="inherit, #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` chain breaks properly', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      should.not.exist(params.i1)
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="#i2">' +
+      '       <button id="btn" hx-include="inherit, #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
+    var btn = byId('btn')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('`inherit` syntax regex properly catches keyword', function() {
+    this.server.respondWith('POST', '/include', function(xhr) {
+      var params = getParameters(xhr)
+      params.i1.should.equal('test1')
+      params.i2.should.equal('test2')
+      params.i3.should.equal('test3')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make('<div hx-include="#i1">' +
+      '   <div hx-include="#i2,   inherit,.nonexistent-class">' +
+      '       <button id="btn" hx-include="customtag,inherit   , #i3" hx-post="/include"></button>' +
+      '   </div>' +
+      '</div>' +
+      '<input id="i1" name="i1" value="test1"/>' +
+      '<input id="i2" name="i2" value="test2"/>' +
+      '<input id="i3" name="i3" value="test3"/>')
     var btn = byId('btn')
     btn.click()
     this.server.respond()

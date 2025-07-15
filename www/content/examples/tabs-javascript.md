@@ -49,7 +49,6 @@ when the content is swapped into the DOM.
 
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 
-<script src="https://unpkg.com/hyperscript.org"></script>
 <script>
 	onGet("/tab1", function() {
 		return `

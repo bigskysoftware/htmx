@@ -1,9 +1,11 @@
 describe('Core htmx AJAX headers', function() {
   const chai = window.chai
+
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
   })
+
   afterEach(function() {
     this.server.restore()
     clearWorkArea()
@@ -131,7 +133,7 @@ describe('Core htmx AJAX headers', function() {
     invokedEvent.should.equal(true)
   })
 
-  it('should handle JSON with array arg HX-Trigger response header properly', function() {
+  it('should handle JSON with object arg HX-Trigger response header properly', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Trigger': '{"foo":{"a":1, "b":2}}' }, ''])
 
     var div = make('<div hx-get="/test"></div>')
@@ -267,6 +269,37 @@ describe('Core htmx AJAX headers', function() {
     div2.innerHTML.should.equal('Result')
   })
 
+  it('should handle HX-Retarget override back to this', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Retarget': 'this' }, 'Result'])
+
+    var div1 = make('<div id="d1" hx-get="/test" hx-target="#d2"></div>')
+    var div2 = make('<div id="d2"></div>')
+    div1.click()
+    this.server.respond()
+    div1.innerHTML.should.equal('Result')
+    div2.innerHTML.should.equal('')
+  })
+
+  it('should handle report target:error when HX-Retarget invalid', function() {
+    try {
+      var error = false
+      var handler = htmx.on('htmx:targetError', function(evt) {
+        evt.detail.target.should.equal('#d2')
+        error = true
+      })
+      this.server.respondWith('GET', '/test', [200, { 'HX-Retarget': '#d2' }, 'Result'])
+
+      var div1 = make('<div id="d1" hx-get="/test"></div>')
+      div1.click()
+      this.server.respond()
+    } catch (e) {
+    } finally {
+      htmx.off('htmx:targetError', handler)
+      div1.innerHTML.should.equal('')
+      error.should.equal(true)
+    }
+  })
+
   it('should handle HX-Reswap', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Reswap': 'innerHTML' }, 'Result'])
 
@@ -284,6 +317,16 @@ describe('Core htmx AJAX headers', function() {
     this.server.respond()
 
     div.innerHTML.should.equal('<div id="d2">bar</div>')
+  })
+
+  it('should handle HX-Reselect unset', function() {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Reselect': 'unset' }, 'bar'])
+
+    var div = make('<div hx-get="/test" hx-select="#d2"></div>')
+    div.click()
+    this.server.respond()
+
+    div.innerHTML.should.equal('bar')
   })
 
   it('should handle simple string HX-Trigger-After-Swap response header properly w/ outerHTML swap', function() {
@@ -354,23 +397,73 @@ describe('Core htmx AJAX headers', function() {
     htmx.off('bar', handlerBar)
   })
 
-  it('should change body content on HX-Location', function() {
-    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#testdiv"}' }, ''])
+  it('should change body content on HX-Location', function(done) {
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#work-area"}' }, ''])
     this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
     var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
     div.click()
     this.server.respond()
     this.server.respond()
-    div.innerHTML.should.equal('<div>Yay! Welcome</div>')
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      done()
+    }, 30)
   })
 
-  it('request to restore history should include the HX-Request header', function() {
+  it('should refresh page on HX-Refresh', function() {
+    var refresh = false
+    htmx.location = { reload: function() { refresh = true } }
+    this.server.respondWith('GET', '/test', [200, { 'HX-Refresh': 'true' }, ''])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    refresh.should.equal(true)
+    htmx.location = window.location
+  })
+
+  it('should update location.href on HX-Redirect', function() {
+    htmx.location = { href: window.location.href }
+    this.server.respondWith('GET', '/test', [200, { 'HX-Redirect': 'https://htmx.org/headers/hx-redirect/' }, ''])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    htmx.location.href.should.equal('https://htmx.org/headers/hx-redirect/')
+    htmx.location = window.location
+  })
+
+  it('request to restore history should include the HX-Request header when historyRestoreAsHxRequest true', function() {
     this.server.respondWith('GET', '/test', function(xhr) {
       xhr.requestHeaders['HX-Request'].should.be.equal('true')
       xhr.respond(200, {}, '')
     })
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
+  })
+
+  it('request to restore history should not include the HX-Request header when historyRestoreAsHxRequest false', function() {
+    htmx.config.historyRestoreAsHxRequest = false
+    this.server.respondWith('GET', '/test', function(xhr) {
+      should.equal(xhr.requestHeaders['HX-Request'], undefined)
+      xhr.respond(200, {}, '')
+    })
+    htmx._('loadHistoryFromServer')('/test')
+    this.server.respond()
+    htmx.config.historyRestoreAsHxRequest = true
+  })
+
+  it('request history from server with error status code throws error event', function() {
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.requestHeaders['HX-Request'].should.be.equal('true')
+      xhr.respond(404, {}, '')
+    })
+    var invokedEvent = false
+    var handler = htmx.on('htmx:historyCacheMissLoadError', function(evt) {
+      invokedEvent = true
+    })
+    htmx._('loadHistoryFromServer')('/test')
+    this.server.respond()
+    invokedEvent.should.equal(true)
+    htmx.off('htmx:historyCacheMissLoadError', handler)
   })
 
   it('request to restore history should include the HX-History-Restore-Request header', function() {

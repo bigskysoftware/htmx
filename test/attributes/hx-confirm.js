@@ -85,23 +85,6 @@ describe('hx-confirm attribute', function() {
       htmx.off('htmx:confirm', handler)
     }
   })
-  it('should allow skipping built-in window.confirm when using issueRequest', function() {
-    this.server.respondWith('GET', '/test', 'Clicked!')
-    try {
-      var btn = make('<button hx-get="/test" hx-confirm="Sure?">Click Me!</button>')
-      var handler = htmx.on('htmx:confirm', function(evt) {
-        evt.detail.question.should.equal('Sure?')
-        evt.preventDefault()
-        evt.detail.issueRequest(true)
-      })
-      btn.click()
-      confirm.called.should.equal(false)
-      this.server.respond()
-      btn.innerHTML.should.equal('Clicked!')
-    } finally {
-      htmx.off('htmx:confirm', handler)
-    }
-  })
 
   it('should allow htmx:confirm even when no hx-confirm is set', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')

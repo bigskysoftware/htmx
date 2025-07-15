@@ -32,7 +32,6 @@
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/chai-dom/chai-dom.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/mocha-webdriver/dist/index.js"></script>
 <script src="../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../node_modules/mock-socket/dist/mock-socket.js"></script>
 <script src="../src/htmx.js"></script>
@@ -47,7 +46,15 @@
 </script>
 
 <script class="mocha-init">
-    mocha.setup('bdd');
+    mocha.setup({
+        ui: "bdd",
+        rootHooks: {
+            beforeEach(done) {
+                console.log(`${this?.currentTest?.parent?.title} - ${this?.currentTest?.title}`)
+                done()
+            },
+        },
+    })
     mocha.checkLeaks();
     window.should = window.chai.should()
 </script>
@@ -79,6 +86,7 @@
 <script src="attributes/hx-get.js"></script>
 <script src="attributes/hx-headers.js"></script>
 <script src="attributes/hx-history.js"></script>
+<script src="attributes/hx-history-elt.js"></script>
 <script src="attributes/hx-include.js"></script>
 <script src="attributes/hx-indicator.js"></script>
 <script src="attributes/hx-disabled-elt.js"></script>
@@ -89,8 +97,10 @@
 <script src="attributes/hx-patch.js"></script>
 <script src="attributes/hx-post.js"></script>
 <script src="attributes/hx-preserve.js"></script>
+<script src="attributes/hx-prompt.js"></script>
 <script src="attributes/hx-push-url.js"></script>
 <script src="attributes/hx-put.js"></script>
+<script src="attributes/hx-replace-url.js"></script>
 <script src="attributes/hx-request.js"></script>
 <script src="attributes/hx-select.js"></script>
 <script src="attributes/hx-select-oob.js"></script>
@@ -115,6 +125,7 @@
         mocha.run();
     })
 </script>
+<div hx-trigger="restored" hidden>just for htmx:restored event testing</div>
 <em>Work Area</em>
 <hr/>
 <div id="work-area" hx-history-elt>

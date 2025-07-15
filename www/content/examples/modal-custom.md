@@ -132,8 +132,6 @@ example.
 }
 ```
 
-<script src="https://unpkg.com/htmx.org"></script>
-<script src="https://unpkg.com/hyperscript.org"></script>
 <script type="text/javascript">
 
     //=========================================================================
