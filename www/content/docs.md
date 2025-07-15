@@ -1090,6 +1090,8 @@ Htmx fires events around validation that can be used to hook in custom validatio
 Non-form elements do not validate before they make requests by default, but you can enable validation by setting
 the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
+Normal browser form submission alerts the user of any validation errors automatically and auto focuses on the first invalid input. For backwards compatibility reasons htmx does not report the validation to the users by default and you should always enable this option by setting `htmx.config.reportValidityOfForms` to `true` to restore the default browser behavior.
+
 ### Validation Example
 
 Here is an example of an input that uses the [`hx-on`](/attributes/hx-on) attribute to catch the
