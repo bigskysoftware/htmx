@@ -149,6 +149,10 @@ htmx extensions are split into two categories:
       <td>{% markdown() %}  [json-enc-custom](https://github.com/Emtyloc/json-enc-custom/blob/main/README.md)  {% end %}</td>
       <td>{% markdown() %}  This extension works similarly to json-enc but allows for very complex structures, such as embedding JSON objects, lists, or handling indexes, just by using the name attribute.  {% end %}</td>
     </tr>
+    <tr>
+      <td>{% markdown() %}  [htmx-json](https://github.com/mariusGundersen/htmx-json)  {% end %}</td>
+      <td>{% markdown() %}  Support JSON response by transforming the html directly. This is a slightly different appreach than client-side-templates.  {% end %}</td>
+    </tr>
   </tbody>
   <tbody>
     <tr><th scope="rowgroup" colspan="2">Integrations</th></tr>
