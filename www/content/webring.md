@@ -112,6 +112,7 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://recipes.musicavis.ca">Recipya</a></td><td>A clean, simple and powerful recipe manager your whole family can enjoy.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://todo.dankstuff.net/">DankTodo</a></td><td>The First Ever HTMX C (Ulfius) Todo App in History!</td></tr>
 </tbody>
 </table>
 </div>
