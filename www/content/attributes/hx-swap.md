@@ -141,6 +141,22 @@ Alternatively, if you want the page to automatically scroll to the focused eleme
        hx-swap="outerHTML focus-scroll:false"/>
 ```
 
+#### hx-swap-oob: `strip` & `target`
+
+Designed for use with hx-swap-oob there are two modifers that have been added. `strip:true` allows you to override outerHTML swaps so that it will swap in the inner contents and not the outer tag. It can also be used with normal hx-swaps as well but here it will swap in the inner contents of the first Element in the response content but any later Elements will be lost.
+
+```html
+  <!-- this will get some content and remove the encasuplating tag of the first element and swap its inner contents into the div which acts like a outerHTML swap except only the inner content is updated -->
+  <div hx-get="/example" 
+       hx-swap="innerHTML strip:true">
+    Get Some Content
+  </div>
+```
+
+`strip:false` is used for hx-swap-oob inner style swap strategies to allow them to swap in the encapsulating tag.
+
+`target:<CSS selector>` is only usable with hx-swap-oob and not normal hx-swaps and it allows you to set a custom target selector to replace during the oob swap.
+
 ## Notes
 
 * `hx-swap` is inherited and can be placed on a parent element

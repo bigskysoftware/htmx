@@ -45,4 +45,47 @@ describe('hx-select-oob attribute', function() {
     var div2 = byId('d2')
     div2.innerHTML.should.equal('')
   })
+
+  it('hx-select-oob works with advanced swap style like strip:false and target:', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div id='d2'>bar</div>")
+    var div = make('<div id="d0" hx-get="/test" hx-select="#d1" hx-select-oob="#d2:afterend strip:false target:#d0"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+  })
+
+  it('hx-select-oob works with basic targeting selector', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div id='d2'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="#d2:outerHTML:#d3"></div>')
+    make('<div class="foo" id="d3"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+  })
+
+  it('basic hx-select-oob works with just an id without #', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div id='d2'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="d2"></div>')
+    make('<div id="d2"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+  })
+
+  it('basic hx-select-oob works with just a non id selector', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><span><div id='d2'>bar</div></span>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="span div"></div>')
+    make('<div id="d2"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+  })
 })
