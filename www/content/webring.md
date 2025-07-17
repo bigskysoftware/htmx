@@ -113,6 +113,8 @@ title = "htmx webring"
   <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://todo.dankstuff.net/">DankTodo</a></td><td>The First Ever HTMX C (Ulfius) Todo App in History!</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/">DankMuzikk</a></td><td>Create, share and play music playlists with the fully hypermedia music player.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://danklyrics.com/">DankLyrics</a></td><td>A lyrics finder API, Website and Go package.</td></tr>
 </tbody>
 </table>
 </div>
