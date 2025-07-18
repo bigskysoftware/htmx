@@ -34,7 +34,7 @@ The click to edit pattern provides a way to offer inline editing of all or part 
     <label>Email Address</label>
     <input type="email" name="email" value="joe@blow.com">
   </div>
-  <button class="btn">Submit</button>
+  <button class="btn" type="submit">Submit</button>
   <button class="btn" hx-get="/contact/1">Cancel</button>
 </form>
 ```
