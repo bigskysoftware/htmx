@@ -1936,7 +1936,7 @@ var htmx = (function() {
               const selector = oobSelectValue.shift().trim()
               const oobValue = oobSelectValue.join(':') || 'true'
               let oobElement
-              if (selector.indexOf('#') !== 0 && /^[A-Za-z\-_][A-Za-z0-9\-_]*$/.test(selector)) {
+              if (selector.indexOf('#') !== 0 && /^[a-z\-_][a-z0-9\-_]*$/i.test(selector)) {
                 oobElement = fragment.querySelector('#' + selector) // check if selector is an id first
               }
               if (!oobElement) {
