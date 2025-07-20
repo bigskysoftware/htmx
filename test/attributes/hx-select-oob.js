@@ -113,6 +113,17 @@ describe('hx-select-oob attribute', function() {
     div2.classList.contains('foo').should.equal(true)
   })
 
+  it('basic hx-select-oob works with CSS escaped id containing "."', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div id='my.div3'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="my\\.div3"></div>')
+    make('<div id="my.div3"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('my.div3')
+    div2.innerHTML.should.equal('bar')
+  })
+
   it('hx-select-oob can select multiple elements with a selector', function() {
     this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div class='foo' id='d2'>bar</div><div class='foo' id='d3'>baz</div>")
     var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob=".foo"></div>')

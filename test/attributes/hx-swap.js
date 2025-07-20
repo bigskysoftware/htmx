@@ -289,6 +289,8 @@ describe('hx-swap attribute', function() {
 
     swapSpec(make("<div hx-swap='target:#table tbody'/>")).target.should.equal('#table tbody')
 
+    swapSpec(make("<div hx-swap='target:#table tbody swap:10s'/>")).target.should.equal('#table tbody')
+
     swapSpec(make("<div hx-swap='customstyle settle:11 swap:10'/>")).swapStyle.should.equal('customstyle')
   })
 
