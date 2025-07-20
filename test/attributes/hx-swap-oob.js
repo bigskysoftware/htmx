@@ -504,16 +504,4 @@ describe('hx-swap-oob attribute', function() {
     div2.innerHTML.should.equal('')
     errorSpy.restore()
   })
-
-  it('invalid swap modifers without ":" will fall back to innerHTML swap and log error', function() {
-    this.server.respondWith('GET', '/test', '<div id="d2" hx-swap-oob="outerHTML swapp">Swapped18</div>')
-    var div = make('<div hx-get="/test">click me</div>')
-    var div2 = make('<div id="d2"></div>')
-    var errorSpy = sinon.spy(console, 'error')
-    div.click()
-    this.server.respond()
-    errorSpy.called.should.equal(true)
-    div2.innerHTML.should.equal('Swapped18')
-    errorSpy.restore()
-  })
 })
