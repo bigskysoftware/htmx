@@ -1935,16 +1935,16 @@ var htmx = (function() {
               const oobSelectValue = oobSelectValues[i].split(':')
               const selector = oobSelectValue.shift().trim()
               const oobValue = oobSelectValue.join(':') || 'true'
-              let oobElement
+              let oobElements
               if (selector.indexOf('#') !== 0 && /^[a-z\-_][a-z0-9\-_]*$/i.test(selector)) {
-                oobElement = fragment.querySelector('#' + selector) // check if selector is an id first
+                oobElements = fragment.querySelectorAll('#' + selector) // check if selector is an id first
               }
-              if (!oobElement) {
-                oobElement = fragment.querySelector(selector) // then support any full selector
+              if (!oobElements || !oobElements.length) {
+                oobElements = fragment.querySelectorAll(selector) // then support any full selector
               }
-              if (oobElement) {
-                oobSwap(oobValue, oobElement, settleInfo, rootNode)
-              }
+              forEach(oobElements, function(elt) {
+                oobSwap(oobValue, elt, settleInfo, rootNode)
+              })
             }
           }
           // oob swaps
