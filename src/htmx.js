@@ -2058,7 +2058,7 @@ var htmx = (function() {
     const triggerBody = xhr.getResponseHeader(header)
     if (triggerBody.indexOf('{') === 0) {
       const triggers = parseJSON(triggerBody)
-      for (const eventName of Object.keys(triggers)) {
+      for (const eventName of Object.keys(triggers || {})) {
         let detail = triggers[eventName]
         if (isRawObject(detail)) {
           // @ts-ignore
