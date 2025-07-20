@@ -46,3 +46,4 @@ For example, to prepend the alert content instead of replacing it:
 ## Notes
 
 * `hx-select-oob` is inherited and can be placed on a parent element
+* Each CSS selector value used will only find the first matching element in the response

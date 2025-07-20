@@ -88,4 +88,28 @@ describe('hx-select-oob attribute', function() {
     var div2 = byId('d2')
     div2.innerHTML.should.equal('bar')
   })
+
+  it('hx-select-oob can end with a blank swap style which is ignored', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div class='foo' id='d2'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob="#d2:"></div>')
+    make('<div id="d2"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+    div2.classList.contains('foo').should.equal(true)
+  })
+
+  it('basic hx-select-oob works supports non text based selectors', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1'>foo</div><div class='foo' id='d2'>bar</div>")
+    var div = make('<div hx-get="/test" hx-select="#d1" hx-select-oob=".foo"></div>')
+    make('<div id="d2"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div id="d1">foo</div>')
+    var div2 = byId('d2')
+    div2.innerHTML.should.equal('bar')
+    div2.classList.contains('foo').should.equal(true)
+  })
 })
