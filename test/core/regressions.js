@@ -333,4 +333,51 @@ describe('Core htmx Regression Tests', function() {
 
     button.click()
   })
+
+  it('[SECURITY][ReDoS] head-support regex should not hang on crafted <head> input', function(done) {
+    var attackString = "<head>".repeat(100000) + "\u0000";
+    var timedOut = false;
+
+    var timeout = setTimeout(function() {
+      timedOut = true;
+      done(new Error("ReDoS triggered - match took too long"));
+    }, 200);
+
+    try {
+      var result = attackString.match(/^<head(\s[^>]*>|>)([\s\S]*?)<\/head>/im);
+
+      if (!timedOut) {
+        clearTimeout(timeout);
+        done();
+      }
+    } catch (e) {
+      if (!timedOut) {
+        clearTimeout(timeout);
+        done(e);
+      }
+    }
+  });
+
+  it('[SECURITY][ReDoS] svg regex should not hang on crafted <svg> input', function(done) {
+    var attackString = "<svg ".repeat(100000) + ">";
+    var timedOut = false;
+  
+    var timeout = setTimeout(function() {
+      timedOut = true;
+      done(new Error("ReDoS triggered - match took too long"));
+    }, 1000);
+  
+    try {
+      var result = attackString.match(/<svg(\s(?:(?!<svg\s)[^>])*>|>)(?:(?!<svg\s?)[\s\S])*?<\/svg>/gim);
+      if (!timedOut) {
+        clearTimeout(timeout);
+        done();
+      }
+    } catch (e) {
+      if (!timedOut) {
+        clearTimeout(timeout);
+        done(e);
+      }
+    }
+  });
 })

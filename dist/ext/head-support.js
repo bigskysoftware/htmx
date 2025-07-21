@@ -21,9 +21,9 @@
         if (newContent && newContent.indexOf('<head') > -1) {
             const htmlDoc = document.createElement("html");
             // remove svgs to avoid conflicts
-            var contentWithSvgsRemoved = newContent.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, '');
+            var contentWithSvgsRemoved = newContent.replace(/<svg(\s(?:(?!<svg\s)[^>])*>|>)(?:(?!<svg\s?)[\s\S])*?<\/svg>/gim, '');
             // extract head tag
-            var headTag = contentWithSvgsRemoved.match(/(<head(\s[^>]*>|>)([\s\S]*?)<\/head>)/im);
+            var headTag = contentWithSvgsRemoved.match(/^<head(\s[^>]*>|>)([\s\S]*?)<\/head>/im);
 
             // if the  head tag exists...
             if (headTag) {
