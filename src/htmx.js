@@ -1508,11 +1508,10 @@ var htmx = (function() {
           }
         }
       )
-      oobElement.parentNode.removeChild(oobElement)
     } else {
-      oobElement.parentNode.removeChild(oobElement)
       triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
     }
+    oobElement.parentNode.removeChild(oobElement)
     return oobValue
   }
 
