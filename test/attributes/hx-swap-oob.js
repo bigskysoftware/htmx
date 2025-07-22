@@ -435,7 +435,7 @@ describe('hx-swap-oob attribute', function() {
     make('<table id="table"><tbody></tbody></table>')
     div.click()
     this.server.respond()
-    byId('table').innerHTML.should.equal('<tbody class=""><tr><td>Swapped15</td></tr></tbody>')
+    byId('table').innerHTML.should.equal('<tbody><tr><td>Swapped15</td></tr></tbody>')
   })
 
   it('works with a swap delay', function(done) {

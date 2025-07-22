@@ -1886,8 +1886,7 @@ var htmx = (function() {
       swapOptions = {}
     }
 
-    target = resolveTarget(target)
-    target.classList.add(htmx.config.swappingClass)
+    addClassToElement(target, htmx.config.swappingClass)
 
     // optional transition API promise callbacks
     let settleResolve = null
@@ -1898,6 +1897,7 @@ var htmx = (function() {
     let doSwap = function() {
       maybeCall(swapOptions.beforeSwapCallback)
 
+      target = resolveTarget(target)
       const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
 
       // preserve focus and selection
@@ -1995,7 +1995,7 @@ var htmx = (function() {
         }
       }
 
-      target.classList.remove(htmx.config.swappingClass)
+      removeClassFromElement(target, htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
           elt.classList.add(htmx.config.settlingClass)
@@ -2020,9 +2020,7 @@ var htmx = (function() {
             task.call()
           })
           forEach(settleInfo.elts, function(elt) {
-            if (elt.classList) {
-              elt.classList.remove(htmx.config.settlingClass)
-            }
+            removeClassFromElement(elt, htmx.config.settlingClass)
             triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
           })
 
