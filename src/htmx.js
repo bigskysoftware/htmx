@@ -4794,7 +4794,6 @@ var htmx = (function() {
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory()
       let redirectPath = xhr.getResponseHeader('HX-Location')
       /** @type {HtmxAjaxHelperContext&{path?:string}} */
       var redirectSwapSpec = { pushUrl: true }
