@@ -384,4 +384,15 @@ describe('Core htmx Regression Tests', function() {
 
     span.click()
   })
+
+  it('check deleting button during click does not trigger exception error in getRelatedFormData when button can no longer find form', function() {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button>delete</button></form>')
+    var button = form.firstChild
+    htmx.on(button, 'click', function(evt) {
+      evt.target.remove()
+    })
+
+    button.click()
+  })
 })
