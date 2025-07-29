@@ -387,4 +387,121 @@ describe('hx-swap-oob attribute', function() {
       element.innerHTML.should.equal('Swapped11')
     })
   })
+
+  it('swaps into all targets that match the selector with target: format', function() {
+    this.server.respondWith('GET', '/test', "<div>Clicked</div><div class='target' hx-swap-oob='innerHTML target:.target'>Swapped12</div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1">No swap</div>')
+    make('<div id="d2" class="target">Not swapped</div>')
+    make('<div id="d3" class="target">Not swapped</div>')
+    div.click()
+    this.server.respond()
+    byId('d1').innerHTML.should.equal('No swap')
+    byId('d2').innerHTML.should.equal('Swapped12')
+    byId('d3').innerHTML.should.equal('Swapped12')
+  })
+
+  it('swaps innerHTML including wrapping tag when strip:false', function() {
+    this.server.respondWith('GET', '/test', "<div>Clicked</div><div hx-swap-oob='innerHTML strip:false target:#d1'>Swapped13</div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1">Not swapped</div>')
+    div.click()
+    this.server.respond()
+    byId('d1').innerHTML.should.equal('<div>Swapped13</div>')
+  })
+
+  it('swaps outerHTML excluding wrapping tag when strip:true', function() {
+    this.server.respondWith('GET', '/test', "<div>Clicked</div><div hx-swap-oob='outerHTML strip:true target:#d1'><div id='d2'>Swapped14</div><div id='d3'>Swapped14</div></div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1" class="target">Not swapped</div>')
+    div.click()
+    this.server.respond()
+    byId('d2').innerHTML.should.equal('Swapped14')
+    byId('d3').innerHTML.should.equal('Swapped14')
+  })
+
+  it('handles using template as the encapsulating tag of an inner swap', function() {
+    this.server.respondWith('GET', '/test', '<template id="foo" hx-swap-oob="innerHTML"><tr><td>Swapped15</td></tr></template>')
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<table><tbody id="foo"></tbody></table>')
+    div.click()
+    this.server.respond()
+    byId('foo').innerHTML.should.equal('<tr><td>Swapped15</td></tr>')
+  })
+
+  it('handles taget: that includes spaces', function() {
+    this.server.respondWith('GET', '/test', '<tbody hx-swap-oob="beforeend target:#table tbody"><tr><td>Swapped15</td></tr></tbody>')
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<table id="table"><tbody></tbody></table>')
+    div.click()
+    this.server.respond()
+    byId('table').innerHTML.should.equal('<tbody><tr><td>Swapped15</td></tr></tbody>')
+  })
+
+  it('works with a swap delay', function(done) {
+    this.server.respondWith('GET', '/test', 'Clicked!<div id="foo" hx-swap-oob="innerHTML swap:10ms">delay swapped</div>')
+    var div = make("<div hx-get='/test'></div>")
+    var div2 = make("<div id='foo'></div>")
+    div.click()
+    this.server.respond()
+    div.innerText.should.equal('Clicked!')
+    div2.innerText.should.equal('')
+    setTimeout(function() {
+      div2.innerText.should.equal('delay swapped')
+      done()
+    }, 30)
+  })
+
+  if (/chrome/i.test(navigator.userAgent)) {
+    it('works with transition:true', function(done) {
+      this.server.respondWith('GET', '/test', 'Clicked!<div id="foo" hx-swap-oob="innerHTML transition:true">transition swapped</div>')
+      var div = make("<div hx-get='/test'></div>")
+      var div2 = make("<div id='foo'></div>")
+      div.click()
+      this.server.respond()
+      div.innerText.should.equal('Clicked!')
+      div2.innerText.should.equal('')
+      setTimeout(function() {
+        div2.innerText.should.equal('transition swapped')
+        done()
+      }, 50)
+    })
+  }
+
+  it('works with a settle delay', function(done) {
+    this.server.respondWith('GET', '/test', 'Clicked!<div id="foo" class="foo" hx-swap-oob="outerHTML settle:10ms">swapped</div>')
+    var div = make("<div id='d1' hx-get='/test'></div>")
+    var div2 = make("<div id='foo'></div>")
+    div.click()
+    this.server.respond()
+    div.innerText.should.equal('Clicked!')
+    div2.classList.contains('foo').should.equal(false)
+    setTimeout(function() {
+      byId('foo').classList.contains('foo').should.equal(true)
+      done()
+    }, 30)
+  })
+
+  it('handles textContent swap style', function() {
+    this.server.respondWith('GET', '/test', '<div id="d2" hx-swap-oob="textContent"><p>Swapped16</p><p>!</p></div>')
+    var div = make('<div hx-get="/test">click me</div>')
+    var div2 = make('<div id="d2"></div>')
+    div.click()
+    this.server.respond()
+    div2.innerHTML.should.equal('Swapped16!')
+  })
+
+  it('invalid swap modifers with ":" will prevent oob swap and log error', function() {
+    this.server.respondWith('GET', '/test', '<div id="d2" hx-swap-oob="innerHTML swapp:1s">Swapped17</div>')
+    var div = make('<div hx-get="/test">click me</div>')
+    var div2 = make('<div id="d2"></div>')
+    var errorSpy = sinon.spy(console, 'error')
+    try {
+      div.click()
+      this.server.respond()
+    } catch (e) {}
+    errorSpy.called.should.equal(true)
+    div2.innerHTML.should.equal('')
+    errorSpy.restore()
+  })
 })
