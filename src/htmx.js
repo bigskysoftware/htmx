@@ -5056,25 +5056,31 @@ var htmx = (function() {
   //= ===================================================================
   // Initialization
   //= ===================================================================
-  var isReady = false
-  getDocument().addEventListener('DOMContentLoaded', function() {
-    isReady = true
-  })
-
   /**
-   * Execute a function now if DOMContentLoaded has fired, otherwise listen for it.
+   * Execute a function once the DOM has loaded.
    *
-   * This function uses isReady because there is no reliable way to ask the browser whether
-   * the DOMContentLoaded event has already been fired; there's a gap between DOMContentLoaded
-   * firing and readystate=complete.
+   * If the DOM is still loading, the function will be run as a listener for
+   * the DOMContentLoaded event. Otherwise, the function will be synchronously
+   * executed now.
+   *
+   * This is tricky to get right since the DOMContentLoaded event only fires
+   * ones. We need to ensure we always wait for it if the DOM is still loading,
+   * but that we never wait for it if it's already been fired.
+   *
+   * This is extra tricky if HTMX was loaded using a script tag with the async
+   * attribute (and no defer attribute). In that case the script will execute as
+   * soon as it has been loaded from the network, regardless of the value
+   * of readyState or whether DOMContentLoaded has been fired or not. In
+   * paricular, there is a gap of time where DOMContentLoaded has been fired,
+   * but readyState is not "complete".
    */
   function ready(fn) {
-    // Checking readyState here is a failsafe in case the htmx script tag entered the DOM by
-    // some means other than the initial page load.
-    if (isReady || getDocument().readyState === 'complete') {
-      fn()
+    if (getDocument().readyState === "loading") {
+      // Loading hasn't finished yet
+      getDocument().addEventListener("DOMContentLoaded", fn);
     } else {
-      getDocument().addEventListener('DOMContentLoaded', fn)
+      // `DOMContentLoaded` has already fired
+      fn();
     }
   }
 
