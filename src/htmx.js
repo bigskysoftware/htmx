@@ -5075,12 +5075,12 @@ var htmx = (function() {
    * but readyState is not "complete".
    */
   function ready(fn) {
-    if (getDocument().readyState === "loading") {
+    if (getDocument().readyState === 'loading') {
       // Loading hasn't finished yet
-      getDocument().addEventListener("DOMContentLoaded", fn);
+      getDocument().addEventListener('DOMContentLoaded', fn)
     } else {
       // `DOMContentLoaded` has already fired
-      fn();
+      fn()
     }
   }
 
