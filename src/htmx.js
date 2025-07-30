@@ -2433,21 +2433,21 @@ var htmx = (function() {
   function shouldCancel(evt, elt) {
     if (evt.type === 'submit' || evt.type === 'click') {
       // use elt from event that was submitted/clicked where possible to determining if default form/link behavior should be canceled
-      elt = asElement(evt.target) || elt
-      if (elt.tagName === 'FORM') {
+      const target = asElement(evt.target) || elt
+      if (target.tagName === 'FORM') {
         return true
       }
       // find button wrapping the event elt
-      const btn = elt.closest('input[type="submit"], button')
+      const btn = target.closest('input[type="submit"], button')
       // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
       // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
       if (btn && btn.form && btn.type === 'submit') {
         return true
       }
-      elt = elt.closest('a')
-      // @ts-ignore check for a link wrapping the event elt or if elt is a link. elt will be link so href check is fine
-      if (elt && elt.href &&
-        (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf('#') !== 0)) {
+      const link = target.closest('a')
+      // @ts-ignore check for a link wrapping the event elt or if elt is a link and link is not a child. elt will be link so href check is fine
+      if (link && link.href && (elt === link || !elt.contains(link)) &&
+        (link.getAttribute('href') === '#' || link.getAttribute('href').indexOf('#') !== 0)) {
         return true
       }
     }

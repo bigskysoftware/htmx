@@ -112,6 +112,11 @@ describe('Core htmx internals Tests', function() {
     htmx._('shouldCancel')({ type: 'click', target: anchorWithButton.firstChild }, anchorWithButton).should.equal(true)
     htmx._('shouldCancel')({ type: 'click', target: anchorWithButton.firstChild }, anchorWithButton.firstChild).should.equal(true)
 
+    // check that links inside htmx elements should not cancel
+    var divWithLink = make("<div hx-get='/data'><a href='/page'>Link</a></div>")
+    var link = divWithLink.querySelector('a')
+    htmx._('shouldCancel')({ type: 'click', target: link }, divWithLink).should.equal(false)
+
     form = make('<form id="f1">' +
         '<input id="insideInput" type="submit">' +
         '<button id="insideFormBtn"></button>' +
