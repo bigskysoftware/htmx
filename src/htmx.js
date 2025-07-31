@@ -5064,7 +5064,7 @@ var htmx = (function() {
    * executed now.
    *
    * This is tricky to get right since the DOMContentLoaded event only fires
-   * ones. We need to ensure we always wait for it if the DOM is still loading,
+   * once. We need to ensure we always wait for it if the DOM is still loading,
    * but that we never wait for it if it's already been fired.
    *
    * This is extra tricky if HTMX was loaded using a script tag with the async
