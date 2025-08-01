@@ -2707,6 +2707,7 @@ var htmx = (function() {
       maybeReveal(asElement(elt))
     } else if (triggerSpec.trigger === 'intersect') {
       const observerOptions = {}
+      const from = triggerSpec.from ? querySelectorExt(elt, triggerSpec.from) : elt
       if (triggerSpec.root) {
         observerOptions.root = querySelectorExt(elt, triggerSpec.root)
       }
@@ -2717,12 +2718,12 @@ var htmx = (function() {
         for (let i = 0; i < entries.length; i++) {
           const entry = entries[i]
           if (entry.isIntersecting) {
-            triggerEvent(elt, 'intersect')
+            triggerEvent(from, 'intersect')
             break
           }
         }
       }, observerOptions)
-      observer.observe(asElement(elt))
+      observer.observe(asElement(from))
       addEventListener(asElement(elt), handler, nodeData, triggerSpec)
     } else if (!nodeData.firstInitCompleted && triggerSpec.trigger === 'load') {
       if (!maybeFilterEvent(triggerSpec, elt, makeEvent('load', { elt }))) {
