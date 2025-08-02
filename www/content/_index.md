@@ -334,6 +334,13 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
            <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
         </a>
 </div>
+<div></div>
+<div>
+        <a data-github-account="TrackityApp" alt="Trackity server side tracking" href="https://www.trackity.com">
+           <img class="dark-hidden" src="/img/trackity-light.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" src="/img/trackity-dark.png" style="width:100%;max-width:250px">
+        </a>
+</div>
 </div>
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>
