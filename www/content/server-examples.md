@@ -138,6 +138,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 ## Rust
 
 - <https://github.com/paultuckey/example-todo-app-rust-htmx>
+- <https://github.com/welshdave/actix-htmx>
 
 ## Scala
 

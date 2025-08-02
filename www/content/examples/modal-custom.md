@@ -132,8 +132,6 @@ example.
 }
 ```
 
-<script src="https://cdn.jsdelivr.net/npm/htmx.org"></script>
-<script src="https://cdn.jsdelivr.net/npm/hyperscript.org"></script>
 <script type="text/javascript">
 
     //=========================================================================

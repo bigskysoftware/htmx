@@ -258,7 +258,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div>
     <a data-github-account="tracebit-com" href="https://tracebit.com/?utm_source=htmx">
       <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png">
-      <img class="dark-visbile" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png">
+      <img class="dark-visible" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo-dark.png">
     </a>
 </div>
 <div>

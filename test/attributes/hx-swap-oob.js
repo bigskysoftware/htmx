@@ -349,7 +349,7 @@ describe('hx-swap-oob attribute', function() {
   }
 
   it.skip('triggers htmx:oobErrorNoTarget when no targets found', function(done) {
-    // this test fails right now because when targets not found it returns an empty array which makes it miss the event as it should be if (targets.lenght)
+    // this test fails right now because when targets not found it returns an empty array which makes it miss the event as it should be if (targets.length)
     this.server.respondWith('GET', '/test', "Clicked<div id='nonexistent' hx-swap-oob='true'>Swapped</div>")
     var div = make('<div hx-get="/test">click me</div>')
 
