@@ -115,6 +115,8 @@ title = "htmx webring"
   <tr><td><a rel="noopener" target="_blank" href="https://todo.dankstuff.net/">DankTodo</a></td><td>The First Ever HTMX C (Ulfius) Todo App in History!</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/">DankMuzikk</a></td><td>Create, share and play music playlists with the fully hypermedia music player.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://danklyrics.com/">DankLyrics</a></td><td>A lyrics finder API, Website and Go package.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://gitpatch.com/gitpatch/htmx-demo">Gitpatch</a></td><td>Fast version control for asynchronous teams.</td></tr>
+  
 </tbody>
 </table>
 </div>
