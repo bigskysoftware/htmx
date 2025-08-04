@@ -656,4 +656,34 @@ describe('Core htmx API test', function() {
     var div = make('<div>textNode</div>')
     htmx.process(div.firstChild)
   })
+
+  it('ajax api pushUrl should push an element into the cache when true', function() {
+    this.server.respondWith('POST', '/test123', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test123', {
+      target: '#d1',
+      swap: 'innerHTML',
+      pushUrl: 'true'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/test123')
+  })
+
+  it('ajax api pushUrl should push an element into the cache when string', function() {
+    this.server.respondWith('POST', '/test', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test', {
+      target: '#d1',
+      swap: 'innerHTML',
+      pushUrl: '/abc123'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/abc123')
+  })
 })

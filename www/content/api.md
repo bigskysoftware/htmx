@@ -65,6 +65,7 @@ or
     * `values` - values to submit with the request
     * `headers` - headers to submit with the request
     * `select` - allows you to select the content you want swapped from a response
+    * `pushUrl` - can be `'true'` or a path to push a URL into browser location history
 
 ##### Example
 
