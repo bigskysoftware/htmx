@@ -4054,7 +4054,8 @@ var htmx = (function() {
             swapOverride: context.swap,
             select: context.select,
             returnPromise: true,
-            pushUrl: context.pushUrl
+            push: context.push,
+            replace: context.replace
           })
       }
     } else {
@@ -4633,82 +4634,39 @@ var htmx = (function() {
    * @return {HtmxHistoryUpdate}
    */
   function determineHistoryUpdates(elt, responseInfo) {
-    const xhr = responseInfo.xhr
+    const { xhr, pathInfo, etc } = responseInfo
 
-    //= ==========================================
-    // First consult response headers
-    //= ==========================================
-    let pathFromHeaders = null
-    let typeFromHeaders = null
-    if (hasHeader(xhr, /HX-Push:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Push')
-      typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Push-Url:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Push-Url')
-      typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Replace-Url:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Replace-Url')
-      typeFromHeaders = 'replace'
-    }
+    let push = xhr.getResponseHeader('HX-Push') || xhr.getResponseHeader('HX-Push-Url')
+    let replace = xhr.getResponseHeader('HX-Replace-Url')
 
     // if there was a response header, that has priority
-    if (pathFromHeaders) {
-      if (pathFromHeaders === 'false') {
-        return {}
-      } else {
-        return {
-          type: typeFromHeaders,
-          path: pathFromHeaders
-        }
+    if (!push && !replace) {
+      // Next resolve via DOM values
+      push = getClosestAttributeValue(elt, 'hx-push-url') || etc.push
+      replace = getClosestAttributeValue(elt, 'hx-replace-url') || etc.replace
+      if (!push && !replace && getInternalData(elt).boosted) {
+        push = 'true'
       }
     }
 
-    //= ==========================================
-    // Next resolve via DOM values
-    //= ==========================================
-    const requestPath = responseInfo.pathInfo.finalRequestPath
-    const responsePath = responseInfo.pathInfo.responsePath
-
-    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url') || responseInfo.etc.pushUrl
-    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url')
-    const elementIsBoosted = getInternalData(elt).boosted
-
-    let saveType = null
-    let path = null
-
-    if (pushUrl) {
-      saveType = 'push'
-      path = pushUrl
-    } else if (replaceUrl) {
-      saveType = 'replace'
-      path = replaceUrl
-    } else if (elementIsBoosted) {
-      saveType = 'push'
-      path = responsePath || requestPath // if there is no response path, go with the original request path
-    }
-
-    if (path) {
-    // false indicates no push, return empty object
-      if (path === 'false') {
-        return {}
-      }
-
-      // true indicates we want to follow wherever the server ended up sending us
-      if (path === 'true') {
-        path = responsePath || requestPath // if there is no response path, go with the original request path
-      }
-
-      // restore any anchor associated with the request
-      if (responseInfo.pathInfo.anchor && path.indexOf('#') === -1) {
-        path = path + '#' + responseInfo.pathInfo.anchor
-      }
-
-      return {
-        type: saveType,
-        path
-      }
-    } else {
+    let path = push || replace
+    // unset or false indicates no push, return empty object
+    if (!path || path === 'false') {
       return {}
+    }
+
+    // true indicates we want to follow wherever the server ended up sending us
+    if (path === 'true') {
+      path = pathInfo.responsePath || pathInfo.finalRequestPath // if there is no response path, go with the original request path
+    }
+    // restore any anchor associated with the request
+    if (pathInfo.anchor && path.indexOf('#') === -1) {
+      path = path + '#' + pathInfo.anchor
+    }
+
+    return {
+      type: push ? 'push' : 'replace',
+      path
     }
   }
 
@@ -4798,7 +4756,7 @@ var htmx = (function() {
         redirectPath = redirectSwapSpec.path
         delete redirectSwapSpec.path
       }
-      redirectSwapSpec.pushUrl = redirectSwapSpec.pushUrl || 'true'
+      redirectSwapSpec.push = redirectSwapSpec.push || 'true'
       ajaxHelper('get', redirectPath, redirectSwapSpec)
       return
     }
@@ -5215,7 +5173,8 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
- * @property {string} [pushUrl]
+ * @property {string} [push]
+ * @property {string} [replace]
  */
 
 /**
@@ -5262,7 +5221,8 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
- * @property {string} [pushUrl]
+ * @property {string} [push]
+ * @property {string} [replace]
  */
 
 /**
