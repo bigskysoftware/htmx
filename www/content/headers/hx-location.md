@@ -31,7 +31,7 @@ Path is required and is url to load the response from. The rest of the data mirr
 * `headers` - headers to submit with the request
 * `select` - allows you to select the content you want swapped from a response
 * `push` - set to `'false'` or a path string to prevent or override the URL pushed to browser location history
-* `replace` - a path string to prevent or override the URL replaced in the browser location history
+* `replace` - a path string to replace the URL in the browser location history
 
 ## Notes
 
