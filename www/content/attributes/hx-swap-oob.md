@@ -37,7 +37,7 @@ If a selector is given, all elements matched by that selector will be swapped.  
 
 ### Using alternate swap strategies
 
-As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to excapsulate the returned data with the correct tags for the context.
+As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to encapsulate the returned data with the correct tags for the context.
 
 When trying to insert a `<tr>` in a table that uses `<tbody>`:
 ```html
