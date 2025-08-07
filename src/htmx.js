@@ -4638,9 +4638,10 @@ var htmx = (function() {
 
     let push = xhr.getResponseHeader('HX-Push') || xhr.getResponseHeader('HX-Push-Url')
     let replace = xhr.getResponseHeader('HX-Replace-Url')
+    const headerPath = push || replace
 
     // if there was a response header, that has priority
-    if (!push && !replace) {
+    if (!headerPath) {
       // Next resolve via DOM values
       push = getClosestAttributeValue(elt, 'hx-push-url') || etc.push
       replace = getClosestAttributeValue(elt, 'hx-replace-url') || etc.replace
@@ -4648,8 +4649,7 @@ var htmx = (function() {
         push = 'true'
       }
     }
-
-    let path = push || replace
+    let path = headerPath || push || replace
     // unset or false indicates no push, return empty object
     if (!path || path === 'false') {
       return {}
@@ -4659,8 +4659,8 @@ var htmx = (function() {
     if (path === 'true') {
       path = pathInfo.responsePath || pathInfo.finalRequestPath // if there is no response path, go with the original request path
     }
-    // restore any anchor associated with the request
-    if (pathInfo.anchor && path.indexOf('#') === -1) {
+    // restore any anchor associated with the request except for paths from respone headers to keep old behaviour
+    if ((!headerPath || headerPath === 'true') && pathInfo.anchor && path.indexOf('#') === -1) {
       path = path + '#' + pathInfo.anchor
     }
 
