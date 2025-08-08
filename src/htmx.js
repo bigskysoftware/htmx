@@ -4060,22 +4060,19 @@ var htmx = (function() {
           returnPromise: true
         })
       } else {
-        let resolvedTarget = resolveTarget(context.target)
+        const { target, swap, source, event, ...restContext } = context
+        let resolvedTarget = resolveTarget(target)
         // If target is supplied but can't resolve OR source is supplied but both target and source can't be resolved
         // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
-        if ((context.target && !resolvedTarget) || (context.source && !resolvedTarget && !resolveTarget(context.source))) {
+        if ((target && !resolvedTarget) || (source && !resolvedTarget && !resolveTarget(source))) {
           resolvedTarget = DUMMY_ELT
         }
-        return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
-          {
-            handler: context.handler,
-            headers: context.headers,
-            values: context.values,
-            targetOverride: resolvedTarget,
-            swapOverride: context.swap,
-            select: context.select,
-            returnPromise: true
-          })
+        return issueAjaxRequest(verb, path, resolveTarget(source), event, {
+          ...restContext,
+          targetOverride: resolvedTarget,
+          swapOverride: swap,
+          returnPromise: true
+        })
       }
     } else {
       return issueAjaxRequest(verb, path, null, null, {
@@ -4653,82 +4650,39 @@ var htmx = (function() {
    * @return {HtmxHistoryUpdate}
    */
   function determineHistoryUpdates(elt, responseInfo) {
-    const xhr = responseInfo.xhr
+    const { xhr, pathInfo, etc } = responseInfo
 
-    //= ==========================================
-    // First consult response headers
-    //= ==========================================
-    let pathFromHeaders = null
-    let typeFromHeaders = null
-    if (hasHeader(xhr, /HX-Push:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Push')
-      typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Push-Url:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Push-Url')
-      typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Replace-Url:/i)) {
-      pathFromHeaders = xhr.getResponseHeader('HX-Replace-Url')
-      typeFromHeaders = 'replace'
-    }
+    let push = xhr.getResponseHeader('HX-Push') || xhr.getResponseHeader('HX-Push-Url')
+    let replace = xhr.getResponseHeader('HX-Replace-Url')
+    const headerPath = push || replace
 
     // if there was a response header, that has priority
-    if (pathFromHeaders) {
-      if (pathFromHeaders === 'false') {
-        return {}
-      } else {
-        return {
-          type: typeFromHeaders,
-          path: pathFromHeaders
-        }
+    if (!headerPath) {
+      // Next resolve via DOM values
+      push = getClosestAttributeValue(elt, 'hx-push-url') || etc.push
+      replace = getClosestAttributeValue(elt, 'hx-replace-url') || etc.replace
+      if (!push && !replace && getInternalData(elt).boosted) {
+        push = 'true'
       }
     }
-
-    //= ==========================================
-    // Next resolve via DOM values
-    //= ==========================================
-    const requestPath = responseInfo.pathInfo.finalRequestPath
-    const responsePath = responseInfo.pathInfo.responsePath
-
-    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url')
-    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url')
-    const elementIsBoosted = getInternalData(elt).boosted
-
-    let saveType = null
-    let path = null
-
-    if (pushUrl) {
-      saveType = 'push'
-      path = pushUrl
-    } else if (replaceUrl) {
-      saveType = 'replace'
-      path = replaceUrl
-    } else if (elementIsBoosted) {
-      saveType = 'push'
-      path = responsePath || requestPath // if there is no response path, go with the original request path
-    }
-
-    if (path) {
-    // false indicates no push, return empty object
-      if (path === 'false') {
-        return {}
-      }
-
-      // true indicates we want to follow wherever the server ended up sending us
-      if (path === 'true') {
-        path = responsePath || requestPath // if there is no response path, go with the original request path
-      }
-
-      // restore any anchor associated with the request
-      if (responseInfo.pathInfo.anchor && path.indexOf('#') === -1) {
-        path = path + '#' + responseInfo.pathInfo.anchor
-      }
-
-      return {
-        type: saveType,
-        path
-      }
-    } else {
+    let path = headerPath || push || replace
+    // unset or false indicates no push, return empty object
+    if (!path || path === 'false') {
       return {}
+    }
+
+    // true indicates we want to follow wherever the server ended up sending us
+    if (path === 'true') {
+      path = pathInfo.responsePath || pathInfo.finalRequestPath // if there is no response path, go with the original request path
+    }
+    // restore any anchor associated with the request except for paths from respone headers to keep old behaviour
+    if ((!headerPath || headerPath === 'true') && pathInfo.anchor && path.indexOf('#') === -1) {
+      path = path + '#' + pathInfo.anchor
+    }
+
+    return {
+      type: push ? 'push' : 'replace',
+      path
     }
   }
 
@@ -4809,19 +4763,17 @@ var htmx = (function() {
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory()
       let redirectPath = xhr.getResponseHeader('HX-Location')
-      /** @type {HtmxAjaxHelperContext&{path:string}} */
-      var redirectSwapSpec
+      /** @type {HtmxAjaxHelperContext&{path?:string}} */
+      var redirectSwapSpec = {}
       if (redirectPath.indexOf('{') === 0) {
         redirectSwapSpec = parseJSON(redirectPath)
         // what's the best way to throw an error if the user didn't include this
         redirectPath = redirectSwapSpec.path
         delete redirectSwapSpec.path
       }
-      ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
-        pushUrlIntoHistory(redirectPath)
-      })
+      redirectSwapSpec.push = redirectSwapSpec.push || 'true'
+      ajaxHelper('get', redirectPath, redirectSwapSpec)
       return
     }
 
@@ -4920,7 +4872,7 @@ var htmx = (function() {
         selectOverride = xhr.getResponseHeader('HX-Reselect')
       }
 
-      const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
+      const selectOOB = etc.selectOOB || getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
       swap(target, serverResponse, swapSpec, {
@@ -5239,6 +5191,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
@@ -5285,6 +5240,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
