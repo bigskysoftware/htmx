@@ -319,6 +319,16 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('<div id="d2">bar</div>')
   })
 
+  it('ajax api works with selectOOB', function() {
+    this.server.respondWith('GET', '/test', "<div id='oob'>OOB Content</div><div>Main Content</div>")
+    var target = make("<div id='target'></div>")
+    var oobDiv = make("<div id='oob'></div>")
+    htmx.ajax('GET', '/test', { target: '#target', selectOOB: '#oob:innerHTML' })
+    this.server.respond()
+    target.innerHTML.should.equal('<div>Main Content</div>')
+    oobDiv.innerHTML.should.equal('OOB Content')
+  })
+
   it('ajax api works with Hx-Select overrides select', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Reselect': '#d2' }, "<div id='d1'>foo</div><div id='d2'>bar</div>"])
     var div = make("<div id='target'></div>")
@@ -715,5 +725,21 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('Clicked!')
     var path = sessionStorage.getItem('htmx-current-path-for-history')
     path.should.equal('/abc123')
+  })
+
+  it('ajax api passes custom context properties to htmx events', function() {
+    this.server.respondWith('GET', '/test', 'response')
+    var div = make("<div id='d1'></div>")
+    var customProp = null
+    var handler = htmx.on('htmx:beforeRequest', function(event) {
+      customProp = event.detail.etc.customProperty
+    })
+    htmx.ajax('GET', '/test', {
+      target: '#d1',
+      customProperty: 'testValue'
+    })
+    this.server.respond()
+    customProp.should.equal('testValue')
+    htmx.off('htmx:beforeRequest', handler)
   })
 })

@@ -4039,24 +4039,19 @@ var htmx = (function() {
           returnPromise: true
         })
       } else {
-        let resolvedTarget = resolveTarget(context.target)
+        const { target, swap, source, event, ...restContext } = context
+        let resolvedTarget = resolveTarget(target)
         // If target is supplied but can't resolve OR source is supplied but both target and source can't be resolved
         // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
-        if ((context.target && !resolvedTarget) || (context.source && !resolvedTarget && !resolveTarget(context.source))) {
+        if ((target && !resolvedTarget) || (source && !resolvedTarget && !resolveTarget(source))) {
           resolvedTarget = DUMMY_ELT
         }
-        return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
-          {
-            handler: context.handler,
-            headers: context.headers,
-            values: context.values,
-            targetOverride: resolvedTarget,
-            swapOverride: context.swap,
-            select: context.select,
-            returnPromise: true,
-            push: context.push,
-            replace: context.replace
-          })
+        return issueAjaxRequest(verb, path, resolveTarget(source), event, {
+          ...restContext,
+          targetOverride: resolvedTarget,
+          swapOverride: swap,
+          returnPromise: true
+        })
       }
     } else {
       return issueAjaxRequest(verb, path, null, null, {
@@ -4856,7 +4851,7 @@ var htmx = (function() {
         selectOverride = xhr.getResponseHeader('HX-Reselect')
       }
 
-      const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
+      const selectOOB = etc.selectOOB || getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
       swap(target, serverResponse, swapSpec, {
@@ -5175,6 +5170,7 @@ var htmx = (function() {
  * @property {string} [select]
  * @property {string} [push]
  * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
@@ -5223,6 +5219,7 @@ var htmx = (function() {
  * @property {number} [timeout]
  * @property {string} [push]
  * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**

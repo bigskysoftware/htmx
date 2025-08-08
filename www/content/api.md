@@ -65,8 +65,10 @@ or
     * `values` - values to submit with the request
     * `headers` - headers to submit with the request
     * `select` - allows you to select the content you want swapped from a response
+    * `selectOOB` - allows you to select content for out-of-band swaps from a response
     * `push` - can be `'true'` or a path to push a URL into browser location history
     * `replace` - can be `'true'` or a path to replace the URL in the browser location history
+    * *custom properties* - any additional properties will be passed to some htmx events via `event.detail.etc`
 
 ##### Example
 
