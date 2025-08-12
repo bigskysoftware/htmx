@@ -2431,23 +2431,22 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function shouldCancel(evt, elt) {
-    if (evt.type === 'submit' || evt.type === 'click') {
-      // use elt from event that was submitted/clicked where possible to determining if default form/link behavior should be canceled
-      const target = asElement(evt.target) || elt
-      if (target.tagName === 'FORM') {
-        return true
-      }
-      // find button wrapping the event elt
-      const btn = target.closest('input[type="submit"], button')
-      // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
-      // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
+    if (evt.type === 'submit' && elt.tagName === 'FORM') {
+      return true
+    } else if (evt.type === 'click') {
+      // find button wrapping the trigger element
+      const btn = /** @type {HTMLButtonElement|HTMLInputElement|null} */ (elt.closest('input[type="submit"], button'))
+      // Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
       if (btn && btn.form && btn.type === 'submit') {
         return true
       }
-      const link = target.closest('a')
-      // @ts-ignore check for a link wrapping the event elt or if elt is a link and link is not a child. elt will be link so href check is fine
-      if (link && link.href && (elt === link || !elt.contains(link)) &&
-        (link.getAttribute('href') === '#' || link.getAttribute('href').indexOf('#') !== 0)) {
+
+      // find link wrapping the trigger element
+      const link = elt.closest('a')
+      // Allow links with href="#fragment" (anchors with content after #) to perform normal fragment navigation.
+      // Cancel default action for links with href="#" (bare hash) to prevent scrolling to top and unwanted URL changes.
+      const SAME_PAGE_ANCHOR = /^#.+/
+      if (link && link.href && !SAME_PAGE_ANCHOR.test(link.getAttribute('href'))) {
         return true
       }
     }
@@ -2524,7 +2523,7 @@ var htmx = (function() {
         if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
           return
         }
-        if (explicitCancel || shouldCancel(evt, elt)) {
+        if (explicitCancel || shouldCancel(evt, eltToListenOn)) {
           evt.preventDefault()
         }
         if (maybeFilterEvent(triggerSpec, elt, evt)) {
