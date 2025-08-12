@@ -100,11 +100,11 @@ describe('Core htmx Regression Tests', function() {
   it('does not submit with a false condition on a form', function() {
     this.server.respondWith('POST', '/test', 'Submitted')
     var defaultPrevented = false
-    htmx.on('click', function(evt) {
+    htmx.on('submit', function(evt) {
       defaultPrevented = evt.defaultPrevented
     })
-    var form = make('<form hx-post="/test" hx-trigger="click[false]"></form>')
-    form.click()
+    var form = make('<form hx-post="/test" hx-trigger="submit[false]"><button id="b1">submit</button></form>')
+    byId('b1').click()
     this.server.respond()
     defaultPrevented.should.equal(true)
   })
@@ -383,6 +383,93 @@ describe('Core htmx Regression Tests', function() {
     })
 
     span.click()
+  })
+
+  it('a htmx enabled element inside a form button will prevent the button submitting a form', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button><span hx-get="/foo">test</span></button></form>')
+    var button = form.firstChild
+    var span = button.firstChild
+
+    htmx.on(button, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    span.click()
+  })
+
+  it('from: trigger on form prevents default form submission', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form id="test-form" action="/submit"><input type="submit" value="Submit"></form>')
+    var div = make('<div hx-post="/test" hx-trigger="submit from:#test-form"></div>')
+    var submitBtn = form.firstChild
+
+    htmx.on(form, 'submit', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent navigation in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    submitBtn.click()
+  })
+
+  it('from: trigger on button prevents default form submission', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button id="test-btn" type="submit">Submit</button></form>')
+    var div = make('<div hx-post="/test" hx-trigger="click from:#test-btn"></div>')
+    var button = byId('test-btn')
+
+    htmx.on(button, 'click', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent form submission in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    button.click()
+  })
+
+  it('from: trigger on link prevents default navigation', function(done) {
+    var defaultPrevented = 'unset'
+    var link = make('<a id="test-link" href="/page">Go to page</a>')
+    var div = make('<div hx-get="/test" hx-trigger="click from:#test-link"></div>')
+
+    htmx.on(link, 'click', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent navigation in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    link.click()
   })
 
   it('check deleting button during click does not trigger exception error in getRelatedFormData when button can no longer find form', function() {
