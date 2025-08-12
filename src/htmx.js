@@ -2863,6 +2863,9 @@ var htmx = (function() {
       return
     }
     const form = getRelatedForm(elt)
+    if (!form) {
+      return
+    }
     return getInternalData(form)
   }
 
