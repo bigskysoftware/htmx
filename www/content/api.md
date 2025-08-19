@@ -217,7 +217,7 @@ Finds an element matching the selector
 
 or
 
-* `elt` - the root element to search inside of (not including the root itself)
+* `elt` - the root element to find the matching element inside of (not including the root itself)
 * `selector` - the selector to match
 
 ##### Example
