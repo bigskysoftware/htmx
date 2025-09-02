@@ -1690,14 +1690,14 @@ This tells the browser "Only allow connections to the original (source) domain".
 `htmx.config.selfRequestsOnly`, but a layered approach to security is warranted and, in fact, ideal, when dealing
 with application security.
 
-A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provide a good jumping off point
+A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
 for exploring this topic.
 
 ### CSRF Prevention
 
 The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below. 
 
-Note: `hx-boost` does not not update the `<html>` or `<body>` tags; if using this feature with `hx-boost`, make sure to include the CSRF token on an element that _will_ get replaced. Many web frameworks support automatically inserting the CSRF token as a hidden input in HTML forms. This is encouraged whenever possible.
+Note: `hx-boost` does not update the `<html>` or `<body>` tags; if using this feature with `hx-boost`, make sure to include the CSRF token on an element that _will_ get replaced. Many web frameworks support automatically inserting the CSRF token as a hidden input in HTML forms. This is encouraged whenever possible.
 
 ```html
 <html lang="en" hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
