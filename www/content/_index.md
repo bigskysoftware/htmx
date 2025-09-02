@@ -64,7 +64,8 @@ if(window.location.search=="?ads=true") {
 
 <div class="ad" style="margin-bottom: 30px">
 <a href="https://swag.htmx.org">
-  <img src="/img/ads_top.png"/>
+  <img src="/img/ads_top.png" alt="Ad: MacMall PowerBooks as low as 1999$!
+    Call 888-932-1569. Get your FREE 64MB RAM with your PowerBook!"/>
 </a>
 </div>
 
@@ -75,19 +76,21 @@ if(window.location.search=="?ads=true") {
   </div>
   <div class="wuw">
      <a href="https://swag.htmx.org/products/shut-up-warren-tee">
-       <img src="/img/wuw.png">
+       <img src="/img/wuw.png" alt="shut up warren ⁺₊✦ uwu">
      </a>
   </div>
   <div class="uwu">
      <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
-       <img src="/img/kawaii.png">
+       <img src="/img/kawaii.png" alt="htmx エイチティーエムエックス uwu">
      </a>
   </div>
 
 </div>
 <div class="ad">
 <a href="https://swag.htmx.org">
-  <img src="/img/ads_bottom.png"/>
+  <img src="/img/ads_bottom.png" alt="Ads: Get Flash! FREE Microsoft Internet Explorer!
+    Netscape Now! (3.0) Site created with Microsoft&reg; FrontPage&trade;.
+    Powered by Microsoft BackOffice."/>
 </a>
 </div>
 
@@ -139,7 +142,7 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
 
 <div style="text-align: center;padding: 24px">
-<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="hypermedia systems"></a>
+<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="Hypermedia Systems hardcover edition"></a>
 </div>
 
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>

@@ -111,7 +111,8 @@ Here is a screenshot of the [htmx discord](/discord)'s HOWL subsection recently.
 that happen to have active traffic, there are many more.
 
 <div style="text-align: center; padding: 16px">
-<img src="/img/howl-channels.png">
+<img src="/img/howl-channels.png" alt="Django, alpine, bash, clojure, cobol,
+  deno, dotnet, go, java, node, ocaml, php, ruby, rust -- all active.">
 </div>
 
 You can see we have ongoing conversations in a bunch of different programming languages and frameworks: Java, Go, .NET, 

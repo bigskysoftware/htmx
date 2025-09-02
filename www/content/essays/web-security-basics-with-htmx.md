@@ -259,7 +259,7 @@ Unlike calling untrusted HTML routes, there are a lot of good reasons to let use
 What if, say, you want to let users link to an image?
 
 ```html
-<img src="{{ user.fav_img }}">
+<img src="{{ user.fav_img }}" alt="{{ user.fav_img_alt }}">
 ```
 
 Or link to their personal website?
@@ -272,7 +272,7 @@ The default "escape everything" approach escapes forward slashes, so it will bor
 You can fix this in a couple of ways. The simplest, and safest, trick is to let users customize these values, but don't let them define the literal text. In the image example, you might upload the image to your own server (or S3 bucket, or the like), generate the link yourself, and then include it, unescaped. In nunjucks, you use the [safe](https://mozilla.github.io/nunjucks/templating.html#safe) function:
 
 ```html
-<img src="{{ user.fav_img_s3_url | safe }}">
+<img src="{{ user.fav_img_s3_url | safe }}" alt="{{ user.fav_img_alt }}">
 ```
 
 Yes, you're including unescaped content, but it's a link that you generated, so you know it's safe.

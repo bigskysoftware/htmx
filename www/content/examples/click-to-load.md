@@ -12,7 +12,7 @@ the final row:
     <button class='btn primary' hx-get="/contacts/?page=2"
                         hx-target="#replaceMe"
                         hx-swap="outerHTML">
-         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
     </button>
   </td>
 </tr>
@@ -85,7 +85,7 @@ results (which will contain a button to load the *next* page of results).  And s
       <button class='btn primary' hx-get="/contacts/?page=${page + 1}"
                        hx-target="#replaceMe"
                        hx-swap="outerHTML">
-         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
        </button>
     </center>
   </td>
