@@ -11,7 +11,7 @@ We start with a search input and an empty table:
 <h3>
   Search Contacts
   <span class="htmx-indicator">
-    <img src="/img/bars.svg"/> Searching...
+    <img src="/img/bars.svg" alt=""/> Searching...
    </span>
 </h3>
 <input class="form-control" type="search"
@@ -70,7 +70,7 @@ Finally, we show an indicator when the search is in flight with the `hx-indicato
       return `  <h3>
 Search Contacts
 <span class="htmx-indicator">
-<img src="/img/bars.svg"/> Searching...
+<img src="/img/bars.svg" alt=""/> Searching...
 </span>
 </h3>
 

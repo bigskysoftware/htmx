@@ -343,7 +343,7 @@ on it to transition to an opacity of 1, showing the indicator.
 ```html
 <button hx-get="/click">
     Click Me!
-    <img class="htmx-indicator" src="/spinner.gif">
+    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
 </button>
 ```
 
@@ -373,7 +373,7 @@ attribute with a CSS selector to do so:
     <button hx-get="/click" hx-indicator="#indicator">
         Click Me!
     </button>
-    <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>
+    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
 </div>
 ```
 

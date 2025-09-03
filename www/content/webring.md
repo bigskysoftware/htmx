@@ -25,13 +25,13 @@ title = "htmx webring"
 <table id="nav-table" style="border: black 4px double; text-align: center">
 <tr>
   <td class="built-with-tds" style="border: 1px black solid">
-    <img width="200px" src="/img/createdwith.jpeg">
+    <img width="200px" src="/img/createdwith.jpeg" alt="Site created with htmx, The Right Way.">
   </td>
   <td  width="70%" style="text-align: center; font-size: 20px; border: 1px black solid">
      This Great <a href="https://htmx.org">htmx</a> Webring site is owned by <a href="https://bigsky.software">Your Name Here</a>.
   </td>
   <td class="built-with-tds" style="; border: 1px black solid"">
-    <img width="200px" src="/img/createdwith.jpeg">
+    <img width="200px" src="/img/createdwith.jpeg" alt="Site created with htmx, The Right Way.">
   </td>
 </tr>
 <tr>
@@ -81,7 +81,7 @@ title = "htmx webring"
              transition the #webring's opacity to 100%
              hide me then
              show #show-sites">Return To Webring</a>]
-   <img src="/img/navigator.gif"
+   <img src="/img/navigator.gif" alt=""
         _="on click from .nav-link
               log 'here'
               transition my opacity to 100%

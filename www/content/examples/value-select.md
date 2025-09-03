@@ -25,7 +25,7 @@ Here is the code:
       <option value="a1">A1</option>
       ...
     </select>
-    <img class="htmx-indicator" width="20" src="/img/bars.svg">
+    <img class="htmx-indicator" width="20" src="/img/bars.svg" alt="Saving...">
 </div>
 ```
 
@@ -76,7 +76,7 @@ And they become available in the `model` select.
       <option value="a3">A3</option>
       <option value="a6">A6</option>
     </select>
-    <img class="htmx-indicator" width="20" src="/img/bars.svg">    
+    <img class="htmx-indicator" width="20" src="/img/bars.svg" alt="Saving...">    
   </div>
 </form>`;
     }
