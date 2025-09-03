@@ -1341,4 +1341,64 @@ describe('Core htmx Shadow DOM Tests', function() {
     getWorkArea().innerHTML.should.equal('Clicked!')
     chai.expect(getWorkArea().shadowRoot).to.be.a('null')
   })
+
+  it('hx-sync works properly in shadow DOM', function() {
+    var count = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.respond(200, {}, 'Click ' + count++)
+    })
+    make('<div hx-sync="this:drop"><button id="b1" hx-get="/test">Initial</button>' +
+            '                                      <button id="b2" hx-get="/test">Initial</button></div>')
+    var b1 = byId('b1')
+    var b2 = byId('b2')
+    b1.click()
+    b2.click()
+    this.server.respond()
+    this.server.respond()
+    b1.innerHTML.should.equal('Click 0')
+    b2.innerHTML.should.equal('Initial')
+  })
+
+  it('can abort a request programmatically in shadow DOM', function() {
+    var count = 0
+    var abortedCount = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.respond(200, {}, 'Click ' + count++)
+    })
+    make('<div><button id="b1" hx-get="/test">Initial</button>' +
+            '             <button id="b2" hx-get="/test">Initial</button></div>')
+    var b1 = byId('b1')
+    var b2 = byId('b2')
+
+    // Listen for abort events to verify they're working
+    htmx.on(b1, 'htmx:abort', function() { abortedCount++ })
+
+    b1.click()
+    b2.click()
+
+    htmx.trigger(b1, 'htmx:abort')
+
+    this.server.respond()
+    this.server.respond()
+    b1.innerHTML.should.equal('Initial')
+    b2.innerHTML.should.equal('Click 0')
+    abortedCount.should.equal(1)
+  })
+
+  it('hx-sync abort strategy works in shadow DOM', function() {
+    var count = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      xhr.respond(200, {}, 'Click ' + count++)
+    })
+    make('<div hx-sync="this"><button hx-sync="closest div:abort" id="b1" hx-get="/test">Initial</button>' +
+            '                                      <button id="b2" hx-get="/test">Initial</button></div>')
+    var b1 = byId('b1')
+    var b2 = byId('b2')
+    b1.click()
+    b2.click()
+    this.server.respond()
+    this.server.respond()
+    b1.innerHTML.should.equal('Initial')
+    b2.innerHTML.should.equal('Click 0')
+  })
 })
