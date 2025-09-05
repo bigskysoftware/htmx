@@ -4074,7 +4074,10 @@ var htmx = (function() {
             targetOverride: resolvedTarget,
             swapOverride: context.swap,
             select: context.select,
-            returnPromise: true
+            returnPromise: true,
+            push: context.push,
+            replace: context.replace,
+            selectOOB: context.selectOOB
           })
       }
     } else {
@@ -4689,8 +4692,8 @@ var htmx = (function() {
     const requestPath = responseInfo.pathInfo.finalRequestPath
     const responsePath = responseInfo.pathInfo.responsePath
 
-    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url')
-    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url')
+    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url') || responseInfo.etc.push
+    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url') || responseInfo.etc.replace
     const elementIsBoosted = getInternalData(elt).boosted
 
     let saveType = null
@@ -4809,19 +4812,17 @@ var htmx = (function() {
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory()
       let redirectPath = xhr.getResponseHeader('HX-Location')
-      /** @type {HtmxAjaxHelperContext&{path:string}} */
-      var redirectSwapSpec
+      /** @type {HtmxAjaxHelperContext&{path?:string}} */
+      var redirectSwapSpec = {}
       if (redirectPath.indexOf('{') === 0) {
         redirectSwapSpec = parseJSON(redirectPath)
         // what's the best way to throw an error if the user didn't include this
         redirectPath = redirectSwapSpec.path
         delete redirectSwapSpec.path
       }
-      ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
-        pushUrlIntoHistory(redirectPath)
-      })
+      redirectSwapSpec.push = redirectSwapSpec.push || 'true'
+      ajaxHelper('get', redirectPath, redirectSwapSpec)
       return
     }
 
@@ -4920,7 +4921,7 @@ var htmx = (function() {
         selectOverride = xhr.getResponseHeader('HX-Reselect')
       }
 
-      const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
+      const selectOOB = etc.selectOOB || getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
       swap(target, serverResponse, swapSpec, {
@@ -5239,6 +5240,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
@@ -5285,6 +5289,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
