@@ -726,20 +726,4 @@ describe('Core htmx API test', function() {
     var path = sessionStorage.getItem('htmx-current-path-for-history')
     path.should.equal('/abc123')
   })
-
-  it('ajax api passes custom context properties to htmx events', function() {
-    this.server.respondWith('GET', '/test', 'response')
-    var div = make("<div id='d1'></div>")
-    var customProp = null
-    var handler = htmx.on('htmx:beforeRequest', function(event) {
-      customProp = event.detail.etc.customProperty
-    })
-    htmx.ajax('GET', '/test', {
-      target: '#d1',
-      customProperty: 'testValue'
-    })
-    this.server.respond()
-    customProp.should.equal('testValue')
-    htmx.off('htmx:beforeRequest', handler)
-  })
 })

@@ -4039,19 +4039,25 @@ var htmx = (function() {
           returnPromise: true
         })
       } else {
-        const { target, swap, source, event, ...restContext } = context
-        let resolvedTarget = resolveTarget(target)
+        let resolvedTarget = resolveTarget(context.target)
         // If target is supplied but can't resolve OR source is supplied but both target and source can't be resolved
         // then use DUMMY_ELT to abort the request with htmx:targetError to avoid it replacing body by mistake
-        if ((target && !resolvedTarget) || (source && !resolvedTarget && !resolveTarget(source))) {
+        if ((context.target && !resolvedTarget) || (context.source && !resolvedTarget && !resolveTarget(context.source))) {
           resolvedTarget = DUMMY_ELT
         }
-        return issueAjaxRequest(verb, path, resolveTarget(source), event, {
-          ...restContext,
-          targetOverride: resolvedTarget,
-          swapOverride: swap,
-          returnPromise: true
-        })
+        return issueAjaxRequest(verb, path, resolveTarget(context.source), context.event,
+          {
+            handler: context.handler,
+            headers: context.headers,
+            values: context.values,
+            targetOverride: resolvedTarget,
+            swapOverride: context.swap,
+            select: context.select,
+            returnPromise: true,
+            push: context.push,
+            replace: context.replace,
+            selectOOB: context.selectOOB
+          })
       }
     } else {
       return issueAjaxRequest(verb, path, null, null, {
@@ -4629,39 +4635,82 @@ var htmx = (function() {
    * @return {HtmxHistoryUpdate}
    */
   function determineHistoryUpdates(elt, responseInfo) {
-    const { xhr, pathInfo, etc } = responseInfo
+    const xhr = responseInfo.xhr
 
-    let push = xhr.getResponseHeader('HX-Push') || xhr.getResponseHeader('HX-Push-Url')
-    let replace = xhr.getResponseHeader('HX-Replace-Url')
-    const headerPath = push || replace
+    //= ==========================================
+    // First consult response headers
+    //= ==========================================
+    let pathFromHeaders = null
+    let typeFromHeaders = null
+    if (hasHeader(xhr, /HX-Push:/i)) {
+      pathFromHeaders = xhr.getResponseHeader('HX-Push')
+      typeFromHeaders = 'push'
+    } else if (hasHeader(xhr, /HX-Push-Url:/i)) {
+      pathFromHeaders = xhr.getResponseHeader('HX-Push-Url')
+      typeFromHeaders = 'push'
+    } else if (hasHeader(xhr, /HX-Replace-Url:/i)) {
+      pathFromHeaders = xhr.getResponseHeader('HX-Replace-Url')
+      typeFromHeaders = 'replace'
+    }
 
     // if there was a response header, that has priority
-    if (!headerPath) {
-      // Next resolve via DOM values
-      push = getClosestAttributeValue(elt, 'hx-push-url') || etc.push
-      replace = getClosestAttributeValue(elt, 'hx-replace-url') || etc.replace
-      if (!push && !replace && getInternalData(elt).boosted) {
-        push = 'true'
+    if (pathFromHeaders) {
+      if (pathFromHeaders === 'false') {
+        return {}
+      } else {
+        return {
+          type: typeFromHeaders,
+          path: pathFromHeaders
+        }
       }
     }
-    let path = headerPath || push || replace
-    // unset or false indicates no push, return empty object
-    if (!path || path === 'false') {
+
+    //= ==========================================
+    // Next resolve via DOM values
+    //= ==========================================
+    const requestPath = responseInfo.pathInfo.finalRequestPath
+    const responsePath = responseInfo.pathInfo.responsePath
+
+    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url') || responseInfo.etc.push
+    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url') || responseInfo.etc.replace
+    const elementIsBoosted = getInternalData(elt).boosted
+
+    let saveType = null
+    let path = null
+
+    if (pushUrl) {
+      saveType = 'push'
+      path = pushUrl
+    } else if (replaceUrl) {
+      saveType = 'replace'
+      path = replaceUrl
+    } else if (elementIsBoosted) {
+      saveType = 'push'
+      path = responsePath || requestPath // if there is no response path, go with the original request path
+    }
+
+    if (path) {
+    // false indicates no push, return empty object
+      if (path === 'false') {
+        return {}
+      }
+
+      // true indicates we want to follow wherever the server ended up sending us
+      if (path === 'true') {
+        path = responsePath || requestPath // if there is no response path, go with the original request path
+      }
+
+      // restore any anchor associated with the request
+      if (responseInfo.pathInfo.anchor && path.indexOf('#') === -1) {
+        path = path + '#' + responseInfo.pathInfo.anchor
+      }
+
+      return {
+        type: saveType,
+        path
+      }
+    } else {
       return {}
-    }
-
-    // true indicates we want to follow wherever the server ended up sending us
-    if (path === 'true') {
-      path = pathInfo.responsePath || pathInfo.finalRequestPath // if there is no response path, go with the original request path
-    }
-    // restore any anchor associated with the request except for paths from respone headers to keep old behaviour
-    if ((!headerPath || headerPath === 'true') && pathInfo.anchor && path.indexOf('#') === -1) {
-      path = path + '#' + pathInfo.anchor
-    }
-
-    return {
-      type: push ? 'push' : 'replace',
-      path
     }
   }
 
