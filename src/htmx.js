@@ -2445,8 +2445,8 @@ var htmx = (function() {
       const link = elt.closest('a')
       // Allow links with href="#fragment" (anchors with content after #) to perform normal fragment navigation.
       // Cancel default action for links with href="#" (bare hash) to prevent scrolling to top and unwanted URL changes.
-      const SAME_PAGE_ANCHOR = /^#.+/
-      if (link && link.href && !SAME_PAGE_ANCHOR.test(link.getAttribute('href'))) {
+      const samePageAnchor = /^#.+/
+      if (link && link.href && !samePageAnchor.test(link.getAttribute('href'))) {
         return true
       }
     }
