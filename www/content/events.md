@@ -275,7 +275,7 @@ You can also override the details of the history restoration request in this eve
 * `detail.item.content` - the content of the cache that will be swapped in
 * `detail.item.title` - the page title to update from the cache
 * `detail.path` - the path and query of the page being restored
-* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
+* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
 
 ### Event - `htmx:historyCacheMiss` {#htmx:historyCacheMiss}
 
@@ -289,7 +289,7 @@ You can also modify the xhr request or other details before it makes the the req
 * `detail.historyElt` - the history element or body that will get replaced
 * `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
 * `detail.path` - the path and query of the page being restored
-* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
+* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
 
 ### Event - `htmx:historyCacheMissLoadError` {#htmx:historyCacheMissLoadError}
 
@@ -314,7 +314,7 @@ You can modify the details before it makes the swap to restore the history
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.path` - the path and query of the page being restored
 * `detail.response` - the response text that will be swapped in
-* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
+* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
 
 ### Event - `htmx:historyRestore` {#htmx:historyRestore}
 

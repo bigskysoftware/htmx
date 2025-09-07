@@ -176,6 +176,17 @@ that "If something magically works, then it can also magically break."
 Despite this fact, I (Carson) still feel it is useful in many situations, and it is used on the <https://htmx.org>
 website.
 
+## Loading htmx asynchronously is unreliable
+
+htmx is designed to be loaded with a standard, blocking `<script>` tag, not one that is a [module](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script#module) or [deferred](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script#defer).
+Although we make a [best-effort attempt](https://github.com/bigskysoftware/htmx/blob/7ae66f9b33a5d39ad4084b0697ea34a6bf559cda/src/htmx.js#L5039-L5058) to initialize htmx regardless of when in the document lifecycle the script is loaded, there are some use-cases that slip through the cracks, typically ones that involve bundling or AJAX insertion of htmx itself.
+
+Our [past attempts](https://github.com/bigskysoftware/htmx/pull/3365#issuecomment-3065080028) to close this gap have all lead to unacceptable regressions.
+Therefore, although htmx can be loaded asynchronously, do so at your own risk.
+
+Keep in mind, also, that if your DOM content loads before htmx does, all the htmx-provided functionality will be nonfunctional until htmx loads.
+[Prefetching](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/prefetch) (or even "regular" fetching) htmx before you need it is one possible way to resolve this problem.
+
 ## The JavaScript API Is Not A Focus
 
 htmx is a hypermedia-oriented front end library.  This means that htmx enhances HTML via

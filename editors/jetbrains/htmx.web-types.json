@@ -431,12 +431,12 @@
         },
         {
           "name": "historyCacheHit",
-          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheHit"
         },
         {
           "name": "historyCacheMiss",
-          "description": "This event is triggered when a cache miss occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also modify the xhr request or other details before it makes the the request to restore history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration\n* `detail.path` - the path and query of the page being restored\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "description": "This event is triggered when a cache miss occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also modify the xhr request or other details before it makes the the request to restore history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration\n* `detail.path` - the path and query of the page being restored\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheMiss"
         },
         {
@@ -446,7 +446,7 @@
         },
         {
           "name": "historyCacheMissLoad",
-          "description": "This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server\nfor the content to restore\n\nYou can modify the details before it makes the swap to restore the history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n* `detail.response` - the response text that will be swapped in\n* `detial.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "description": "This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server\nfor the content to restore\n\nYou can modify the details before it makes the swap to restore the history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n* `detail.response` - the response text that will be swapped in\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
           "doc-url": "https://htmx.org/events/#htmx:historyCacheMissLoad"
         },
         {

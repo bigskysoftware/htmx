@@ -107,10 +107,14 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://xrss.infogulch.com">XRSS</a></td><td>A simple RSS reader inspired by Google Reader</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://openunited.com/">OpenUnited</a></td><td>A Digital Talent match-making platform</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://gophemeral.com">Gophemeral</a></td><td>Share secrets securely!</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://www.thomasricci.dev">thomasricci.dev</a></td><td>Super fast portfolio website</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://signup.casa">Signup Casa</a></td><td>Simple, convenient sign-up forms.</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://recipes.musicavis.ca">Recipya</a></td><td>A clean, simple and powerful recipe manager your whole family can enjoy.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
   <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://todo.dankstuff.net/">DankTodo</a></td><td>The First Ever HTMX C (Ulfius) Todo App in History!</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/">DankMuzikk</a></td><td>Create, share and play music playlists with the fully hypermedia music player.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://danklyrics.com/">DankLyrics</a></td><td>A lyrics finder API, Website and Go package.</td></tr>
 </tbody>
 </table>
 </div>
