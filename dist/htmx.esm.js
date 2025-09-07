@@ -278,7 +278,14 @@ var htmx = (function() {
        * @type boolean
        * @default true
        */
-      historyRestoreAsHxRequest: true
+      historyRestoreAsHxRequest: true,
+      /**
+       * Weather to report input validation errors to the end user and update focus to the first input that fails validation.
+       * This should always be enabled as this matches default browser form submit behaviour
+       * @type boolean
+       * @default false
+       */
+      reportValidityOfForms: false
     },
     /** @type {typeof parseInterval} */
     parseInterval: null,
@@ -289,7 +296,7 @@ var htmx = (function() {
     location,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.6'
+    version: '2.0.7'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -1413,7 +1420,7 @@ var htmx = (function() {
    * @param {Element} mergeFrom
    */
   function cloneAttributes(mergeTo, mergeFrom) {
-    forEach(mergeTo.attributes, function(attr) {
+    forEach(Array.from(mergeTo.attributes), function(attr) {
       if (!mergeFrom.hasAttribute(attr.name) && shouldSettleAttribute(attr.name)) {
         mergeTo.removeAttribute(attr.name)
       }
@@ -2424,21 +2431,22 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function shouldCancel(evt, elt) {
-    if (evt.type === 'submit' || evt.type === 'click') {
-      // use elt from event that was submitted/clicked where possible to determining if default form/link behavior should be canceled
-      elt = asElement(evt.target) || elt
-      if (elt.tagName === 'FORM') {
+    if (evt.type === 'submit' && elt.tagName === 'FORM') {
+      return true
+    } else if (evt.type === 'click') {
+      // find button wrapping the trigger element
+      const btn = /** @type {HTMLButtonElement|HTMLInputElement|null} */ (elt.closest('input[type="submit"], button'))
+      // Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
+      if (btn && btn.form && btn.type === 'submit') {
         return true
       }
-      // @ts-ignore Do not cancel on buttons that 1) don't have a related form or 2) have a type attribute of 'reset'/'button'.
-      // The properties will resolve to undefined for elements that don't define 'type' or 'form', which is fine
-      if (elt.form && elt.type === 'submit') {
-        return true
-      }
-      elt = elt.closest('a')
-      // @ts-ignore check for a link wrapping the event elt or if elt is a link. elt will be link so href check is fine
-      if (elt && elt.href &&
-        (elt.getAttribute('href') === '#' || elt.getAttribute('href').indexOf('#') !== 0)) {
+
+      // find link wrapping the trigger element
+      const link = elt.closest('a')
+      // Allow links with href="#fragment" (anchors with content after #) to perform normal fragment navigation.
+      // Cancel default action for links with href="#" (bare hash) to prevent scrolling to top and unwanted URL changes.
+      const samePageAnchor = /^#.+/
+      if (link && link.href && !samePageAnchor.test(link.getAttribute('href'))) {
         return true
       }
     }
@@ -2515,7 +2523,7 @@ var htmx = (function() {
         if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
           return
         }
-        if (explicitCancel || shouldCancel(evt, elt)) {
+        if (explicitCancel || shouldCancel(evt, eltToListenOn)) {
           evt.preventDefault()
         }
         if (maybeFilterEvent(triggerSpec, elt, evt)) {
@@ -2855,6 +2863,9 @@ var htmx = (function() {
       return
     }
     const form = getRelatedForm(elt)
+    if (!form) {
+      return
+    }
     return getInternalData(form)
   }
 
@@ -3546,8 +3557,17 @@ var htmx = (function() {
     if (element.willValidate) {
       triggerEvent(element, 'htmx:validation:validate')
       if (!element.checkValidity()) {
+        if (
+          triggerEvent(element, 'htmx:validation:failed', {
+            message: element.validationMessage,
+            validity: element.validity
+          }) &&
+          !errors.length &&
+          htmx.config.reportValidityOfForms
+        ) {
+          element.reportValidity()
+        }
         errors.push({ elt: element, message: element.validationMessage, validity: element.validity })
-        triggerEvent(element, 'htmx:validation:failed', { message: element.validationMessage, validity: element.validity })
       }
     }
   }
@@ -5060,12 +5080,14 @@ var htmx = (function() {
   function insertIndicatorStyles() {
     if (htmx.config.includeIndicatorStyles !== false) {
       const nonceAttribute = htmx.config.inlineStyleNonce ? ` nonce="${htmx.config.inlineStyleNonce}"` : ''
+      const indicator = htmx.config.indicatorClass
+      const request = htmx.config.requestClass
       getDocument().head.insertAdjacentHTML('beforeend',
-        '<style' + nonceAttribute + '>\
-      .' + htmx.config.indicatorClass + '{opacity:0}\
-      .' + htmx.config.requestClass + ' .' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
-      .' + htmx.config.requestClass + '.' + htmx.config.indicatorClass + '{opacity:1; transition: opacity 200ms ease-in;}\
-      </style>')
+        `<style${nonceAttribute}>` +
+        `.${indicator}{opacity:0;visibility: hidden} ` +
+        `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}` +
+        '</style>'
+      )
     }
   }
 

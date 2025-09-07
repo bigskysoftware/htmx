@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.7] - 2025-09-07
+
+* [Fix](https://github.com/bigskysoftware/htmx/pull/3357) a [regression](https://github.com/bigskysoftware/htmx/issues/3356) 
+  with htmx-powered links that contain other elements in them issuing full page refreshes
+
 ## [2.0.6] - 2025-06-27
 
 * [Fix](https://github.com/bigskysoftware/htmx/pull/3357) a [regression](https://github.com/bigskysoftware/htmx/issues/3356) 

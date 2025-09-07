@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
@@ -561,7 +561,7 @@
         },
         {
           "name": "validation:failed",
-          "description": "This event is triggered when an element fails validation.\n\n##### Details\n\n* `detail.elt` - the element that failed validation\n* `detail.message` - the validation error message\n* `detail.validity` - the validity object, which contains properties specifying how validation failed\n\n",
+          "description": "This event is triggered when an element fails validation. If `preventDefault()` is invoked on the event, the reportValidity() enabled by `htmx.config.reportValidityOfForms` will not be called.\n\n##### Details\n\n* `detail.elt` - the element that failed validation\n* `detail.message` - the validation error message\n* `detail.validity` - the validity object, which contains properties specifying how validation failed\n\n",
           "doc-url": "https://htmx.org/events/#htmx:validation:failed"
         },
         {

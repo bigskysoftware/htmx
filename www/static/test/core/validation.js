@@ -176,6 +176,72 @@ describe('Core htmx client side validation tests', function() {
     calledEvent.should.equal(true)
   })
 
+  it('foucuses on first invalid input and reports error to user when reportValidityOfForms true', function() {
+    htmx.config.reportValidityOfForms = true
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '<input id="i2" name="i2" required>' +
+            '</form>')
+    var calledEvent = false
+    var handler = htmx.on(form, 'htmx:validation:failed', function() {
+      calledEvent = true
+    })
+    try {
+      form.click()
+      this.server.respond()
+    } finally {
+      htmx.off(form, handler)
+    }
+    calledEvent.should.equal(true)
+    document.activeElement.should.equal(byId('i1'))
+    htmx.config.reportValidityOfForms = false
+  })
+
+  it('no focus on first invalid input or report errors when reportValidityOfForms false', function() {
+    htmx.config.reportValidityOfForms = false
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '<input id="i2" name="i2" required>' +
+            '</form>')
+    var calledEvent = false
+    var handler = htmx.on(form, 'htmx:validation:failed', function() {
+      calledEvent = true
+    })
+    try {
+      form.click()
+      this.server.respond()
+    } finally {
+      htmx.off(form, handler)
+    }
+    calledEvent.should.equal(true)
+    document.activeElement.should.equal(document.body)
+  })
+
+  it('can prevent reportValidity with preventDefault when reportValidityOfForms true', function() {
+    htmx.config.reportValidityOfForms = true
+    var form = make('<form hx-post="/test" hx-trigger="click">' +
+            'No Request' +
+            '<input id="i1" name="i1" required>' +
+            '<input id="i2" name="i2" required>' +
+            '</form>')
+    var calledEvent = false
+    var handler = htmx.on(form, 'htmx:validation:failed', function(evt) {
+      calledEvent = true
+      evt.preventDefault()
+    })
+    try {
+      form.click()
+      this.server.respond()
+    } finally {
+      htmx.off(form, handler)
+    }
+    calledEvent.should.equal(true)
+    document.activeElement.should.equal(document.body)
+    htmx.config.reportValidityOfForms = false
+  })
+
   it('calls htmx:validation:halted on failure', function() {
     var form = make('<form hx-post="/test" hx-trigger="click">' +
             'No Request' +

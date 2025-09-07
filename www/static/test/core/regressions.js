@@ -100,11 +100,11 @@ describe('Core htmx Regression Tests', function() {
   it('does not submit with a false condition on a form', function() {
     this.server.respondWith('POST', '/test', 'Submitted')
     var defaultPrevented = false
-    htmx.on('click', function(evt) {
+    htmx.on('submit', function(evt) {
       defaultPrevented = evt.defaultPrevented
     })
-    var form = make('<form hx-post="/test" hx-trigger="click[false]"></form>')
-    form.click()
+    var form = make('<form hx-post="/test" hx-trigger="submit[false]"><button id="b1">submit</button></form>')
+    byId('b1').click()
     this.server.respond()
     defaultPrevented.should.equal(true)
   })
@@ -292,6 +292,35 @@ describe('Core htmx Regression Tests', function() {
     byId('datefield').click()
   })
 
+  it('swap=outerHTML clears htmx-swapping class when old node has a style attribute and no class', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    const isSwappingClassStillThere = div.classList.contains('htmx-swapping')
+    isSwappingClassStillThere.should.equal(false)
+    done()
+  })
+
+  it('swap=outerHTML won\'t carry over user-defined classes when old node has a style attribute before the class attribute', function(done) {
+    this.server.respondWith('GET', '/test', '<div id="test-div">Test</div>')
+
+    var btn = make('<button hx-get="/test" hx-target="#test-div" hx-swap="outerHTML">Click Me!</button>')
+    var div = make('<div id="test-div" style class="my-class"></div>')
+    btn.click()
+
+    this.server.respond()
+
+    var div = byId('test-div')
+    div.classList.length.should.equal(0)
+    done()
+  })
+
   it('a button clicked inside an htmx enabled link will prevent the link from navigating on click', function(done) {
     var defaultPrevented = 'unset'
     var link = make('<a href="/foo" hx-get="/foo"><button>test</button></a>')
@@ -329,6 +358,126 @@ describe('Core htmx Regression Tests', function() {
           done(err)
         }
       }, 0)
+    })
+
+    button.click()
+  })
+
+  it('a htmx enabled button containing sub elements will prevent the button submitting a form', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button hx-get="/foo"><span>test</span></button></form>')
+    var button = form.firstChild
+    var span = button.firstChild
+
+    htmx.on(button, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    span.click()
+  })
+
+  it('a htmx enabled element inside a form button will prevent the button submitting a form', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button><span hx-get="/foo">test</span></button></form>')
+    var button = form.firstChild
+    var span = button.firstChild
+
+    htmx.on(button, 'click', function(evt) {
+      // we need to wait so the state of the evt is finalized
+      setTimeout(() => {
+        defaultPrevented = evt.defaultPrevented
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    span.click()
+  })
+
+  it('from: trigger on form prevents default form submission', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form id="test-form" action="/submit"><input type="submit" value="Submit"></form>')
+    var div = make('<div hx-post="/test" hx-trigger="submit from:#test-form"></div>')
+    var submitBtn = form.firstChild
+
+    htmx.on(form, 'submit', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent navigation in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    submitBtn.click()
+  })
+
+  it('from: trigger on button prevents default form submission', function(done) {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button id="test-btn" type="submit">Submit</button></form>')
+    var div = make('<div hx-post="/test" hx-trigger="click from:#test-btn"></div>')
+    var button = byId('test-btn')
+
+    htmx.on(button, 'click', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent form submission in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    button.click()
+  })
+
+  it('from: trigger on link prevents default navigation', function(done) {
+    var defaultPrevented = 'unset'
+    var link = make('<a id="test-link" href="/page">Go to page</a>')
+    var div = make('<div hx-get="/test" hx-trigger="click from:#test-link"></div>')
+
+    htmx.on(link, 'click', function(evt) {
+      defaultPrevented = evt.defaultPrevented // Capture state before our preventDefault
+      evt.preventDefault() // Prevent navigation in case test fails
+      setTimeout(() => {
+        try {
+          defaultPrevented.should.equal(true)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      }, 0)
+    })
+
+    link.click()
+  })
+
+  it('check deleting button during click does not trigger exception error in getRelatedFormData when button can no longer find form', function() {
+    var defaultPrevented = 'unset'
+    var form = make('<form><button>delete</button></form>')
+    var button = form.firstChild
+    htmx.on(button, 'click', function(evt) {
+      evt.target.remove()
     })
 
     button.click()

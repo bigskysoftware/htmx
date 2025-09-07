@@ -204,6 +204,7 @@ declare namespace htmx {
         let responseHandling: HtmxResponseHandlingConfig[];
         let allowNestedOobSwaps: boolean;
         let historyRestoreAsHxRequest: boolean;
+        let reportValidityOfForms: boolean;
     }
     let parseInterval: (str: string) => number | undefined;
     let location: Location;
