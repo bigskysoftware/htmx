@@ -3316,6 +3316,29 @@ var htmx = (function() {
       if (this.status >= 200 && this.status < 400) {
         details.response = this.response
         triggerEvent(getDocument().body, 'htmx:historyCacheMissLoad', details)
+        
+        if (hasHeader(request, /HX-Location:/i)) {
+          let redirectPath = request.getResponseHeader('HX-Location')
+          var redirectSwapSpec
+          if (redirectPath.indexOf('{') === 0) {
+            redirectSwapSpec = parseJSON(redirectPath)
+            redirectPath = redirectSwapSpec.path
+            delete redirectSwapSpec.path
+          }
+          ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
+            pushUrlIntoHistory(redirectPath)
+          })
+          return
+        }
+
+        const shouldRefresh = hasHeader(request, /HX-Refresh:/i) && request.getResponseHeader('HX-Refresh') === 'true'
+
+        if (hasHeader(request, /HX-Redirect:/i)) {
+          htmx.location.href = request.getResponseHeader('HX-Redirect')
+          shouldRefresh && htmx.location.reload()
+          return
+        }
+
         swap(details.historyElt, details.response, swapSpec, {
           contextElement: details.historyElt,
           historyRequest: true
