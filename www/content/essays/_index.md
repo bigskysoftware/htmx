@@ -34,6 +34,7 @@ page_template = "essay.html"
 * [htmx sucks](@/essays/htmx-sucks.md)
 * [Why Gumroad Didn't Choose htmx](@/essays/why-gumroad-didnt-choose-htmx.md)
 * [A Modest Critique of htmx](https://chrisdone.com/posts/htmx-critique/) [[Response]](https://news.ycombinator.com/item?id=41782080)
+* [I tried HTMX, then ditched it](https://ajmoon.com/posts/mesh-i-tried-htmx-then-ditched-it) 
 * [Alternatives](@/essays/alternatives.md)
 
 ### Building Hypermedia Applications
