@@ -3389,8 +3389,10 @@ var htmx = (function() {
     forEach(disabledElts, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
       internalData.requestCount = (internalData.requestCount || 0) + 1
-      disabledElement.setAttribute('disabled', '')
-      disabledElement.setAttribute('data-disabled-by-htmx', '')
+      if (!disabledElement.hasAttribute('disabled')) {
+        disabledElement.setAttribute('disabled', '')
+        disabledElement.setAttribute('data-disabled-by-htmx', '')
+      }
     })
     return disabledElts
   }
@@ -3412,7 +3414,7 @@ var htmx = (function() {
     })
     forEach(disabled, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
-      if (internalData.requestCount === 0) {
+      if (internalData.requestCount === 0 && disabledElement.hasAttribute('data-disabled-by-htmx')) {
         disabledElement.removeAttribute('disabled')
         disabledElement.removeAttribute('data-disabled-by-htmx')
       }
