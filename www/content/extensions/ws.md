@@ -24,7 +24,7 @@ The fastest way to install `ws` is to load it via a CDN. Remember to always incl
 ```HTML
 <head>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.2" integrity="sha384-vuKxTKv5TX/b3lLzDKP2U363sOAoRo5wSvzzc3LJsbaQRSBSS+3rKKHcOx5J8doU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.3/dist/ws.min.js" integrity="sha384-UQRM5X6/SG8fQYKt4K+MgCmlaxETMLkkEH8yiky5TdOZzNY0EQ8RjP/S0kMU+w6r" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="ws">
 ```
