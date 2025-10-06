@@ -49,7 +49,7 @@ It turns out there are quite a few:
 * Your entire project is checked in to your source repository, so no external systems beyond your source control need
   to be involved when building it
 * Vendoring dramatically improves dependency *visibility*: you can _see_ all the code your project depends on, so you
-  won't have a situation like we have in htmx, where we feel like we only have a few development dependencies, whe in
+  won't have a situation like we have in htmx, where we feel like we only have a few development dependencies, when in
   fact we may have a lot
 * This also means if you have a good debugger, you can step into the library code as easily as any other code.  You
   can also read it, learn from it and even modify it if necessary.
