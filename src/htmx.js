@@ -2648,7 +2648,7 @@ var htmx = (function() {
       if (!nodeData.loaded) {
         nodeData.loaded = true
         triggerEvent(elt, 'htmx:trigger')
-        handler(elt)
+        handler(elt, makeEvent('load', { elt }))
       }
     }
     if (delay > 0) {
@@ -3687,7 +3687,7 @@ var htmx = (function() {
  * @param {string} prompt
  * @returns {HtmxHeaderSpecification}
  */
-  function getHeaders(elt, target, prompt) {
+  function getHeaders(elt, target, prompt, event) {
     /** @type HtmxHeaderSpecification */
     const headers = {
       'HX-Request': 'true',
@@ -3696,7 +3696,7 @@ var htmx = (function() {
       'HX-Target': getAttributeValue(target, 'id'),
       'HX-Current-URL': location.href
     }
-    getValuesForElement(elt, 'hx-headers', false, headers)
+    getValuesForElement(elt, 'hx-headers', false, headers, event)
     if (prompt !== undefined) {
       headers['HX-Prompt'] = prompt
     }
@@ -4420,7 +4420,7 @@ var htmx = (function() {
       }
     }
 
-    let headers = getHeaders(elt, target, promptResponse)
+    let headers = getHeaders(elt, target, promptResponse, event)
 
     if (verb !== 'get' && !usesFormData(elt)) {
       headers['Content-Type'] = 'application/x-www-form-urlencoded'

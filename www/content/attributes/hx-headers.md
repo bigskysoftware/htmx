@@ -17,6 +17,12 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
   <div hx-get="/example" hx-headers='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Custom Header from Javascript in the Request</div>
 ```
 
+When using evaluated code you can access the `event` object. 
+
+```html
+  <div hx-get="/example" hx-headers='js:{"hx-trigger-event": event.type}'>Get Some HTML, Including a custom header indicating which event triggered the request</div>
+```
+
 ## Security Considerations
 
 * By default, the value of `hx-headers` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON).
