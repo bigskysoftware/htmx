@@ -3684,7 +3684,8 @@ var htmx = (function() {
   /**
  * @param {Element} elt
  * @param {Element} target
- * @param {string} prompt
+ * @param {string=} prompt
+ * @param {Event=} event
  * @returns {HtmxHeaderSpecification}
  */
   function getHeaders(elt, target, prompt, event) {

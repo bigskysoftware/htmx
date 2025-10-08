@@ -20,7 +20,7 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
 When using evaluated code you can access the `event` object. 
 
 ```html
-  <div hx-get="/example" hx-headers='js:{"hx-trigger-event": event.type}'>Get Some HTML, Including a custom header indicating which event triggered the request</div>
+  <div hx-get="/example" hx-headers='js:{"hx-trigger-event": event.type}'>Get some HTML, including a custom header indicating which event triggered the request.</div>
 ```
 
 ## Security Considerations
