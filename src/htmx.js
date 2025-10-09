@@ -2639,27 +2639,6 @@ var htmx = (function() {
 
   /**
    * @param {Element} elt
-   * @param {TriggerHandler} handler
-   * @param {HtmxNodeInternalData} nodeData
-   * @param {number} delay
-   */
-  function loadImmediately(elt, handler, nodeData, delay) {
-    const load = function() {
-      if (!nodeData.loaded) {
-        nodeData.loaded = true
-        triggerEvent(elt, 'htmx:trigger')
-        handler(elt, makeEvent('load', { elt }))
-      }
-    }
-    if (delay > 0) {
-      getWindow().setTimeout(load, delay)
-    } else {
-      load()
-    }
-  }
-
-  /**
-   * @param {Element} elt
    * @param {HtmxNodeInternalData} nodeData
    * @param {HtmxTriggerSpecification[]} triggerSpecs
    * @returns {boolean}
@@ -2724,9 +2703,10 @@ var htmx = (function() {
       observer.observe(asElement(elt))
       addEventListener(asElement(elt), handler, nodeData, triggerSpec)
     } else if (!nodeData.firstInitCompleted && triggerSpec.trigger === 'load') {
-      if (!maybeFilterEvent(triggerSpec, elt, makeEvent('load', { elt }))) {
-        loadImmediately(asElement(elt), handler, nodeData, triggerSpec.delay)
-      }
+      triggerSpec.once = true
+      addEventListener(elt, handler, nodeData, triggerSpec)
+      // dispatch a custom non bubbling load event to just trigger the load
+      elt.dispatchEvent(new CustomEvent('load', { detail: { elt } }))
     } else if (triggerSpec.pollInterval > 0) {
       nodeData.polling = true
       processPolling(asElement(elt), handler, triggerSpec)
