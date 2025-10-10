@@ -18,8 +18,6 @@ The fastest way to install `preload` is to load it via a CDN. Remember to always
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-preload@2.1.0" integrity="sha384-fkzubQiTB69M7XTToqW6tplvxAOJkqPl5JmLAbumV2EacmuJb8xEP9KnJafk/rg8" crossorigin="anonymous"></script>
 </head>
-<body hx-ext="preload">
-...
 ```
 An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-preload/dist/preload.js.
 
