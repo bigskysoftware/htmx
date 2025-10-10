@@ -206,7 +206,7 @@ describe('hx-boost attribute', function() {
     div.innerHTML.should.equal('Boosted!')
   })
 
-  if (window.__playwright__binding__ && /chrome/i.test(navigator.userAgent)) {
+  if (/headlesschrome/i.test(navigator.userAgent)) {
     it('ctrlKey mouse click does not boost', function() {
       // Test only works well in playwright with chome for code coverage as otherwise it opens a new tab breaking things
       this.server.respondWith('GET', '/test', 'Boosted')
