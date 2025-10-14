@@ -297,6 +297,9 @@ describe('hx-trigger attribute', function() {
       'event throttle:0s': [{ trigger: 'event', throttle: 0 }],
       'event throttle:0ms': [{ trigger: 'event', throttle: 0 }],
       'event throttle:1s, foo': [{ trigger: 'event', throttle: 1000 }, { trigger: 'foo' }],
+      'event hold:1s': [{ trigger: 'event', hold: 1000 }],
+      'event hold:0s': [{ trigger: 'event', hold: 0 }],
+      'event hold:0ms': [{ trigger: 'event', hold: 0 }],
       'event delay:1s': [{ trigger: 'event', delay: 1000 }],
       'event delay:1s, foo': [{ trigger: 'event', delay: 1000 }, { trigger: 'foo' }],
       'event delay:0s, foo': [{ trigger: 'event', delay: 0 }, { trigger: 'foo' }],
@@ -1369,5 +1372,138 @@ describe('hx-trigger attribute', function() {
       delete window.foo
       complete()
     }, 30)
+  })
+
+  it('hold does not trigger before time', function(done) {
+    this.server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var event = htmx._('makeEvent')('pointerdown')
+    div.dispatchEvent(event)
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Held')
+      done()
+    }, 25)
+  })
+
+  it('hold triggers after specified time', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var event = htmx._('makeEvent')('pointerdown')
+    div.dispatchEvent(event)
+    setTimeout(function() {
+      server.respond()
+      div.innerHTML.should.equal('Held!')
+      done()
+    }, 75)
+  })
+
+  it('hold cancels on pointerup before time', function(done) {
+    this.server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var downEvent = htmx._('makeEvent')('pointerdown')
+    var upEvent = htmx._('makeEvent')('pointerup')
+    div.dispatchEvent(downEvent)
+    setTimeout(function() {
+      div.dispatchEvent(upEvent)
+    }, 25)
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Held')
+      done()
+    }, 75)
+  })
+
+  it('hold cancels on pointercancel before time', function(done) {
+    this.server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var downEvent = htmx._('makeEvent')('pointerdown')
+    var cancelEvent = htmx._('makeEvent')('pointercancel')
+    div.dispatchEvent(downEvent)
+    setTimeout(function() {
+      div.dispatchEvent(cancelEvent)
+    }, 25)
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Held')
+      done()
+    }, 75)
+  })
+
+  it('hold started with touchstart cancels on pointerup', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var touchStart = htmx._('makeEvent')('touchstart')
+    var pointerUp = htmx._('makeEvent')('pointerup')
+    div.dispatchEvent(touchStart)
+    setTimeout(function() {
+      div.dispatchEvent(pointerUp)
+    }, 25)
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Held')
+      done()
+    }, 75)
+  })
+
+  it('hold started with mousedown cancels on pointerup', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var mouseDown = htmx._('makeEvent')('mousedown')
+    var pointerUp = htmx._('makeEvent')('pointerup')
+    div.dispatchEvent(mouseDown)
+    setTimeout(function() {
+      div.dispatchEvent(pointerUp)
+    }, 25)
+    setTimeout(function() {
+      div.innerHTML.should.equal('Not Held')
+      done()
+    }, 75)
+  })
+
+  it('hold works with mouse events', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var event = htmx._('makeEvent')('mousedown')
+    div.dispatchEvent(event)
+    setTimeout(function() {
+      server.respond()
+      div.innerHTML.should.equal('Held!')
+      done()
+    }, 75)
+  })
+
+  it('hold works with touch events', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var event = htmx._('makeEvent')('touchstart')
+    div.dispatchEvent(event)
+    setTimeout(function() {
+      server.respond()
+      div.innerHTML.should.equal('Held!')
+      done()
+    }, 75)
+  })
+
+  it('hold works with pointer events', function(done) {
+    var server = this.server
+    server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:50ms">Not Held</div>')
+    var event = htmx._('makeEvent')('pointerdown')
+    div.dispatchEvent(event)
+    setTimeout(function() {
+      server.respond()
+      div.innerHTML.should.equal('Held!')
+      done()
+    }, 75)
+  })
+
+  it('hold:0ms triggers immediately', function() {
+    this.server.respondWith('GET', '/test', 'Held!')
+    var div = make('<div hx-get="/test" hx-trigger="click hold:0ms">Not Held</div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Held!')
   })
 })
