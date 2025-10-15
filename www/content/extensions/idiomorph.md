@@ -47,7 +47,7 @@ import `idiomorph/htmx`;
 
 ## Usage
 
-Once you have referenced the idiomorph extension, you can register it with the name `morph` on the body and then being
+Once you have referenced the idiomorph extension, you can register it with the name `morph` on the body and then begin
 using `morph`, `morph:outerHTML` or `morph:innerHTML` as swap strategies.
 
 - `morph` & `morph:outerHTML` will morph the target element as well as it's children
