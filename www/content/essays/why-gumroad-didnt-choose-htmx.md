@@ -22,7 +22,7 @@ could be a good solution to keep our front-end super light.
 
 <figure>
 <a href="/img/gumroad-red.jpeg" target="_blank">
-<img alt="Gumroad Red" src="/img/gumroad-red.jpeg" style="width: 100%">
+<img alt="GitHub screenshot shows deleted files" src="/img/gumroad-red.jpeg" style="width: 100%">
 </a> 
 <figcaption>Source with htmx - Click Image To View</figcaption>
 </figure>
@@ -71,7 +71,7 @@ Here's why:
 
 <figure>
 <a href="/img/gumroad-green.jpeg" target="_blank">
-<img alt="Gumroad Green" src="/img/gumroad-green.jpeg" style="width: 100%">
+<img alt="GitHub: 1 added file" src="/img/gumroad-green.jpeg" style="width: 100%">
 </a> 
 <figcaption>Source with Next.js - Click Image To View</figcaption>
 </figure>
@@ -82,7 +82,9 @@ experiences, and leverage a wealth of existing tools and libraries.
 
 <figure>
 <a href="/img/gumroad-helper-before-after.png" target="_blank">
-<img alt="Gumroad Helper Before After" src="/img/gumroad-helper-before-after.png" style="width: 100%">
+<img alt="The old Gumroad Helper interface is quite basic with a single flat form,
+  while the new one has multiple levels of navigation and editable lists."
+  src="/img/gumroad-helper-before-after.png" style="width: 100%">
 </a> 
 <figcaption>Gumroad Helper Before & After - Click Image To View</figcaption>
 </figure>
