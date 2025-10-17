@@ -410,6 +410,56 @@ describe('Core htmx AJAX headers', function() {
     }, 30)
   })
 
+  it('should push new Url on HX-Location', function(done) {
+    sessionStorage.removeItem('htmx-current-path-for-history')
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#work-area"}' }, ''])
+    this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    this.server.respond()
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      var path = sessionStorage.getItem('htmx-current-path-for-history')
+      path.should.equal('/test2')
+      done()
+    }, 30)
+  })
+
+  it('should not push new Url on HX-Location if push Url false', function(done) {
+    sessionStorage.setItem('htmx-current-path-for-history', '/old')
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"push":"false", "path":"/test2", "target":"#work-area"}' }, ''])
+    this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    this.server.respond()
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      var path = sessionStorage.getItem('htmx-current-path-for-history')
+      path.should.equal('/old')
+      done()
+    }, 30)
+  })
+
+  it('should push different Url on HX-Location if push Url is string', function(done) {
+    sessionStorage.removeItem('htmx-current-path-for-history')
+    var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
+    sessionStorage.removeItem(HTMX_HISTORY_CACHE_NAME)
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"push":"/abc123", "path":"/test2", "target":"#work-area"}' }, ''])
+    this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    this.server.respond()
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      var path = sessionStorage.getItem('htmx-current-path-for-history')
+      path.should.equal('/abc123')
+      done()
+    }, 30)
+  })
+
   it('should refresh page on HX-Refresh', function() {
     var refresh = false
     htmx.location = { reload: function() { refresh = true } }
