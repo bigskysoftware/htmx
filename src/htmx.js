@@ -4671,8 +4671,8 @@ var htmx = (function() {
     const requestPath = responseInfo.pathInfo.finalRequestPath
     const responsePath = responseInfo.pathInfo.responsePath
 
-    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url') || responseInfo.etc.push
-    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url') || responseInfo.etc.replace
+    const pushUrl = responseInfo.etc.push || getClosestAttributeValue(elt, 'hx-push-url')
+    const replaceUrl = responseInfo.etc.replace || getClosestAttributeValue(elt, 'hx-replace-url')
     const elementIsBoosted = getInternalData(elt).boosted
 
     let saveType = null
