@@ -151,7 +151,7 @@ htmx extensions are split into two categories:
     </tr>
     <tr>
       <td>{% markdown() %}  [htmx-json](https://github.com/mariusGundersen/htmx-json)  {% end %}</td>
-      <td>{% markdown() %}  Support JSON response by transforming the html directly. This is a slightly different appreach than client-side-templates.  {% end %}</td>
+      <td>{% markdown() %}  Support JSON response by transforming the html directly. This is a slightly different approach than client-side-templates.  {% end %}</td>
     </tr>
   </tbody>
   <tbody>
