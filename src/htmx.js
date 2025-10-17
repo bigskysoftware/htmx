@@ -320,6 +320,7 @@ var htmx = (function() {
   htmx.logNone = logNone
   htmx.parseInterval = parseInterval
   htmx._ = internalEval
+  htmx.bootstrap = bootstrap
 
   const internalAPI = {
     addTriggerHandler,
@@ -5114,8 +5115,13 @@ var htmx = (function() {
     }
   }
 
-  // initialize the document
-  ready(function() {
+  let isBootstrapped = false
+  function bootstrap() {
+    if (isBootstrapped) {
+      return
+    }
+    isBootstrapped = true
+    // initialize the document
     mergeMetaConfig()
     insertIndicatorStyles()
     let body = getDocument().body
@@ -5152,7 +5158,9 @@ var htmx = (function() {
       triggerEvent(body, 'htmx:load', {}) // give ready handlers a chance to load up before firing this event
       body = null // kill reference for gc
     }, 0)
-  })
+  }
+
+  ready(bootstrap)
 
   return htmx
 })()
