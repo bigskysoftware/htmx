@@ -3126,7 +3126,7 @@ var htmx = (function() {
   //= ===================================================================
   // History Support
   //= ===================================================================
-  let currentPathForHistory = location.pathname + location.search
+  let currentPathForHistory
 
   /**
    * @param {string} path
@@ -3137,6 +3137,8 @@ var htmx = (function() {
       sessionStorage.setItem('htmx-current-path-for-history', path)
     }
   }
+
+  setCurrentPathForHistory(location.pathname + location.search)
 
   /**
    * @returns {Element}
