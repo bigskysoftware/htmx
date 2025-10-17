@@ -280,7 +280,7 @@ var htmx = (function() {
        */
       historyRestoreAsHxRequest: true,
       /**
-       * Weather to report input validation errors to the end user and update focus to the first input that fails validation.
+       * Whether to report input validation errors to the end user and update focus to the first input that fails validation.
        * This should always be enabled as this matches default browser form submit behaviour
        * @type boolean
        * @default false
