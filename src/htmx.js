@@ -802,14 +802,7 @@ var htmx = (function() {
    * @returns {T1 & T2}
    */
   function mergeObjects(obj1, obj2) {
-    for (const key in obj2) {
-      if (obj2.hasOwnProperty(key)) {
-        // @ts-ignore tsc doesn't seem to properly handle types merging
-        obj1[key] = obj2[key]
-      }
-    }
-    // @ts-ignore tsc doesn't seem to properly handle types merging
-    return obj1
+    return Object.assign({}, obj1, obj2)
   }
 
   /**
@@ -2067,18 +2060,16 @@ var htmx = (function() {
   function handleTriggerHeader(xhr, header, elt) {
     const triggerBody = xhr.getResponseHeader(header)
     if (triggerBody.indexOf('{') === 0) {
-      const triggers = parseJSON(triggerBody)
-      for (const eventName in triggers) {
-        if (triggers.hasOwnProperty(eventName)) {
-          let detail = triggers[eventName]
-          if (isRawObject(detail)) {
-            // @ts-ignore
-            elt = detail.target !== undefined ? detail.target : elt
-          } else {
-            detail = { value: detail }
-          }
-          triggerEvent(elt, eventName, detail)
+      const triggers = parseJSON(triggerBody) || {}
+      for (const eventName of Object.keys(triggers)) {
+        let detail = triggers[eventName]
+        if (isRawObject(detail)) {
+          // @ts-ignore
+          elt = detail.target !== undefined ? detail.target : elt
+        } else {
+          detail = { value: detail }
         }
+        triggerEvent(elt, eventName, detail)
       }
     } else {
       const eventNames = triggerBody.split(',')
@@ -2797,7 +2788,7 @@ var htmx = (function() {
       const boostedSelector = ', [hx-boost] a, [data-hx-boost] a, a[hx-boost], a[data-hx-boost]'
 
       const extensionSelectors = []
-      for (const e in extensions) {
+      for (const e of Object.keys(extensions)) {
         const extension = extensions[e]
         if (extension.getSelectors) {
           var selectors = extension.getSelectors()
@@ -3949,11 +3940,9 @@ var htmx = (function() {
       } else {
         varsValues = parseJSON(str)
       }
-      for (const key in varsValues) {
-        if (varsValues.hasOwnProperty(key)) {
-          if (values[key] == null) {
-            values[key] = varsValues[key]
-          }
+      for (const key of Object.keys(varsValues)) {
+        if (values[key] == null) {
+          values[key] = varsValues[key]
         }
       }
     }
@@ -4130,15 +4119,13 @@ var htmx = (function() {
   function formDataFromObject(obj) {
     if (obj instanceof FormData) return obj
     const formData = new FormData()
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        if (obj[key] && typeof obj[key].forEach === 'function') {
-          obj[key].forEach(function(v) { formData.append(key, v) })
-        } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Blob)) {
-          formData.append(key, JSON.stringify(obj[key]))
-        } else {
-          formData.append(key, obj[key])
-        }
+    for (const key of Object.keys(obj)) {
+      if (obj[key] && typeof obj[key].forEach === 'function') {
+        obj[key].forEach(function(v) { formData.append(key, v) })
+      } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Blob)) {
+        formData.append(key, JSON.stringify(obj[key]))
+      } else {
+        formData.append(key, obj[key])
       }
     }
     return formData
@@ -4545,11 +4532,8 @@ var htmx = (function() {
     if (requestAttrValues.noHeaders) {
     // ignore all headers
     } else {
-      for (const header in headers) {
-        if (headers.hasOwnProperty(header)) {
-          const headerValue = headers[header]
-          safelySetHeaderValue(xhr, header, headerValue)
-        }
+      for (const header of Object.keys(headers)) {
+        safelySetHeaderValue(xhr, header, headers[header])
       }
     }
 
