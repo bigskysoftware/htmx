@@ -63,6 +63,10 @@ htmx extensions are split into two categories:
       <td>{% markdown() %}  Adds an `X-Requested-With` header to all requests made by htmx  {% end %}</td>
     </tr>
     <tr>
+      <td>{% markdown() %}  [alpine-interop](https://github.com/fchtngr/htmx-ext-alpine-interop/blob/master/README.md)  {% end %}</td>
+      <td>{% markdown() %}  QOL features for integrating HTMX with AlpineJS, like automatic initialization of htmx on dynamic DOM nodes (e.g. x-if) and convenient mechanism to fetch data from JSON APIs and passing it to AlpineJS {% end %}</td>
+    </tr>
+    <tr>
       <td>{% markdown() %}  [alpine-morph](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/alpine-morph/README.md)  {% end %}</td>
       <td>{% markdown() %}  Alpine.js now has a lightweight [morph plugin](https://alpinejs.dev/plugins/morph) and this extension allows you to use it as the swapping mechanism in htmx which is necessary to retain Alpine state when you have entire Alpine components swapped by htmx.  {% end %}</td>
     </tr>
