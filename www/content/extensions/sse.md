@@ -39,7 +39,7 @@ An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext
 While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `sse` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-sse`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
 
 For npm-style build systems, you can install `sse` via [npm](https://www.npmjs.com/):
-```shell
+```sh
 npm install htmx-ext-sse
 ```
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-sse/dist/sse.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
