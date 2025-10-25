@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.7] - 2025-10-24
+## [2.0.8] - 2025-10-24
 
 * [Updated](https://github.com/bigskysoftware/htmx/commit/b9336a96fbdcf28550699971dc2218a90c7a4e01) `parseHTML` to use to use the (unfortunately named) [`Document.parseHTMLUnsafe()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/parseHTMLUnsafe_static) 
   method for better Web Components support
@@ -9,7 +9,7 @@
 * [Fixed](https://github.com/bigskysoftware/htmx/commit/04d6c7249b7fd7b8518ddca92e7a70fdcc651b34) a long-standing bug in history support with respect to relative paths [Issue 3449](https://github.com/bigskysoftware/htmx/issues/3449)
 * Once again, this is a release mainly done by @MichaelWest22's heroic work, thank you!
 
-## [2.0.8] - 2025-09-08
+## [2.0.7] - 2025-09-08
 
 * Fix not preventing link when inside htmx enabled element (fixes https://github.com/bigskysoftware/htmx/issues/3395)
 * Implement `reportValidity()` for reporting proper form validation errors behind config flag (fixes https://github.com/bigskysoftware/htmx/issues/2372)
