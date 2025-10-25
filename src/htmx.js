@@ -296,7 +296,7 @@ var htmx = (function() {
     location,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.7'
+    version: '2.0.8'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper

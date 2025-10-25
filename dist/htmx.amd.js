@@ -281,7 +281,7 @@ var htmx = (function() {
        */
       historyRestoreAsHxRequest: true,
       /**
-       * Weather to report input validation errors to the end user and update focus to the first input that fails validation.
+       * Whether to report input validation errors to the end user and update focus to the first input that fails validation.
        * This should always be enabled as this matches default browser form submit behaviour
        * @type boolean
        * @default false
@@ -297,7 +297,7 @@ var htmx = (function() {
     location,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.7'
+    version: '2.0.8'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -526,6 +526,9 @@ var htmx = (function() {
    * @returns {Document}
    */
   function parseHTML(resp) {
+    if ('parseHTMLUnsafe' in Document) {
+      return Document.parseHTMLUnsafe(resp)
+    }
     const parser = new DOMParser()
     return parser.parseFromString(resp, 'text/html')
   }
@@ -3127,7 +3130,7 @@ var htmx = (function() {
   //= ===================================================================
   // History Support
   //= ===================================================================
-  let currentPathForHistory = location.pathname + location.search
+  let currentPathForHistory
 
   /**
    * @param {string} path
@@ -3138,6 +3141,8 @@ var htmx = (function() {
       sessionStorage.setItem('htmx-current-path-for-history', path)
     }
   }
+
+  setCurrentPathForHistory(location.pathname + location.search)
 
   /**
    * @returns {Element}
@@ -4074,7 +4079,10 @@ var htmx = (function() {
             targetOverride: resolvedTarget,
             swapOverride: context.swap,
             select: context.select,
-            returnPromise: true
+            returnPromise: true,
+            push: context.push,
+            replace: context.replace,
+            selectOOB: context.selectOOB
           })
       }
     } else {
@@ -4689,8 +4697,8 @@ var htmx = (function() {
     const requestPath = responseInfo.pathInfo.finalRequestPath
     const responsePath = responseInfo.pathInfo.responsePath
 
-    const pushUrl = getClosestAttributeValue(elt, 'hx-push-url')
-    const replaceUrl = getClosestAttributeValue(elt, 'hx-replace-url')
+    const pushUrl = responseInfo.etc.push || getClosestAttributeValue(elt, 'hx-push-url')
+    const replaceUrl = responseInfo.etc.replace || getClosestAttributeValue(elt, 'hx-replace-url')
     const elementIsBoosted = getInternalData(elt).boosted
 
     let saveType = null
@@ -4809,19 +4817,17 @@ var htmx = (function() {
     }
 
     if (hasHeader(xhr, /HX-Location:/i)) {
-      saveCurrentPageToHistory()
       let redirectPath = xhr.getResponseHeader('HX-Location')
-      /** @type {HtmxAjaxHelperContext&{path:string}} */
-      var redirectSwapSpec
+      /** @type {HtmxAjaxHelperContext&{path?:string}} */
+      var redirectSwapSpec = {}
       if (redirectPath.indexOf('{') === 0) {
         redirectSwapSpec = parseJSON(redirectPath)
         // what's the best way to throw an error if the user didn't include this
         redirectPath = redirectSwapSpec.path
         delete redirectSwapSpec.path
       }
-      ajaxHelper('get', redirectPath, redirectSwapSpec).then(function() {
-        pushUrlIntoHistory(redirectPath)
-      })
+      redirectSwapSpec.push = redirectSwapSpec.push || 'true'
+      ajaxHelper('get', redirectPath, redirectSwapSpec)
       return
     }
 
@@ -4920,7 +4926,7 @@ var htmx = (function() {
         selectOverride = xhr.getResponseHeader('HX-Reselect')
       }
 
-      const selectOOB = getClosestAttributeValue(elt, 'hx-select-oob')
+      const selectOOB = etc.selectOOB || getClosestAttributeValue(elt, 'hx-select-oob')
       const select = getClosestAttributeValue(elt, 'hx-select')
 
       swap(target, serverResponse, swapSpec, {
@@ -5119,7 +5125,7 @@ var htmx = (function() {
       "[hx-trigger='restored'],[data-hx-trigger='restored']"
     )
     body.addEventListener('htmx:abort', function(evt) {
-      const target = evt.target
+      const target = (/** @type {CustomEvent} */(evt)).detail.elt || evt.target
       const internalData = getInternalData(target)
       if (internalData && internalData.xhr) {
         internalData.xhr.abort()
@@ -5239,6 +5245,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**
@@ -5285,6 +5294,9 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
+ * @property {string} [push]
+ * @property {string} [replace]
+ * @property {string} [selectOOB]
  */
 
 /**

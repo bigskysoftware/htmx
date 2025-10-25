@@ -60,6 +60,9 @@ export type HtmxAjaxHelperContext = {
     values?: any | FormData;
     headers?: Record<string, string>;
     select?: string;
+    push?: string;
+    replace?: string;
+    selectOOB?: string;
 };
 export type HtmxRequestConfig = {
     boosted: boolean;
@@ -111,6 +114,9 @@ export type HtmxAjaxEtc = {
     values?: any | FormData;
     credentials?: boolean;
     timeout?: number;
+    push?: string;
+    replace?: string;
+    selectOOB?: string;
 };
 export type HtmxResponseHandlingConfig = {
     code?: string;
