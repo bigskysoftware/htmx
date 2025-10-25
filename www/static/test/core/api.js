@@ -321,6 +321,16 @@ describe('Core htmx API test', function() {
     div.innerHTML.should.equal('<div id="d2">bar</div>')
   })
 
+  it('ajax api works with selectOOB', function() {
+    this.server.respondWith('GET', '/test', "<div id='oob'>OOB Content</div><div>Main Content</div>")
+    var target = make("<div id='target'></div>")
+    var oobDiv = make("<div id='oob'></div>")
+    htmx.ajax('GET', '/test', { target: '#target', selectOOB: '#oob:innerHTML' })
+    this.server.respond()
+    target.innerHTML.should.equal('<div>Main Content</div>')
+    oobDiv.innerHTML.should.equal('OOB Content')
+  })
+
   it('ajax api works with Hx-Select overrides select', function() {
     this.server.respondWith('GET', '/test', [200, { 'HX-Reselect': '#d2' }, "<div id='d1'>foo</div><div id='d2'>bar</div>"])
     var div = make("<div id='target'></div>")
@@ -657,5 +667,65 @@ describe('Core htmx API test', function() {
   it('process api can process non elements fine', function() {
     var div = make('<div>textNode</div>')
     htmx.process(div.firstChild)
+  })
+
+  it('ajax api push Url should push an element into the cache when true', function() {
+    this.server.respondWith('POST', '/test123', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test123', {
+      target: '#d1',
+      swap: 'innerHTML',
+      push: 'true'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/test123')
+  })
+
+  it('ajax api push Url should push an element into the cache when string', function() {
+    this.server.respondWith('POST', '/test', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test', {
+      target: '#d1',
+      swap: 'innerHTML',
+      push: '/abc123'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/abc123')
+  })
+
+  it('ajax api replace Url should replace an element into the cache when true', function() {
+    this.server.respondWith('POST', '/test123', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test123', {
+      target: '#d1',
+      swap: 'innerHTML',
+      replace: 'true'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/test123')
+  })
+
+  it('ajax api replace Url should replace an element into the cache when string', function() {
+    this.server.respondWith('POST', '/test', 'Clicked!')
+
+    var div = make("<div id='d1'></div>")
+    htmx.ajax('POST', '/test', {
+      target: '#d1',
+      swap: 'innerHTML',
+      replace: '/abc123'
+    })
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+    var path = sessionStorage.getItem('htmx-current-path-for-history')
+    path.should.equal('/abc123')
   })
 })

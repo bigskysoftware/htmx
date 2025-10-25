@@ -1038,7 +1038,7 @@ describe('hx-trigger attribute', function() {
     }, 250)
   })
 
-  if (window.__playwright__binding__) {
+  if (/headlesschrome/i.test(navigator.userAgent)) {
     it('scrolling triggers intersect event', function(done) {
       // test only works reliably with playwright
       this.server.respondWith('GET', '/test', 'test')
