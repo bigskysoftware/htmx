@@ -343,7 +343,7 @@ on it to transition to an opacity of 1, showing the indicator.
 ```html
 <button hx-get="/click">
     Click Me!
-    <img class="htmx-indicator" src="/spinner.gif">
+    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
 </button>
 ```
 
@@ -373,7 +373,7 @@ attribute with a CSS selector to do so:
     <button hx-get="/click" hx-indicator="#indicator">
         Click Me!
     </button>
-    <img id="indicator" class="htmx-indicator" src="/spinner.gif"/>
+    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
 </div>
 ```
 
@@ -1143,7 +1143,7 @@ The fastest way to install htmx extensions created by others is to load them via
 ```HTML
 <head>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2" integrity="sha384-UMuM7P2CPg9i2/dfvBlAeqjXITmEWe9k17Mp9X07Z4jXPN21Ychng569t+sUL8oa" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
     ...

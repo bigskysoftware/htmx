@@ -68,7 +68,7 @@ The last element of the results will itself contain the listener to load the *ne
     function tableTemplate(contacts) {
       return `<table hx-indicator=".htmx-indicator"><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
               ${rowsTemplate(1, contacts)}
-              </tbody></table><center><img class="htmx-indicator" width="60" src="/img/bars.svg"></center>`
+              </tbody></table><center><img class="htmx-indicator" width="60" src="/img/bars.svg" alt="Loading..."></center>`
     }
 
     function rowsTemplate(page, contacts) {
@@ -87,6 +87,3 @@ The last element of the results will itself contain the listener to load the *ne
       return txt;
     }
 </script>
-
-
-

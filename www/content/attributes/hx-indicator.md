@@ -21,7 +21,7 @@ Here is an example with a spinner adjacent to the button:
     <button hx-post="/example" hx-indicator="#spinner">
         Post It!
     </button>
-    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
+    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </div>
 ```
 
@@ -34,7 +34,7 @@ CSS selectors:
     <button hx-post="/example" hx-indicator="inherit, #spinner">
         Post It!
     </button>
-    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg"/>
+    <img  id="spinner" class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </main>
 ```
 
@@ -79,7 +79,7 @@ call it out with the `hx-indicator` attribute:
 ```html
 <button hx-post="/example">
     Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg"/>
+   <img  class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </button>
 ```
 
@@ -89,7 +89,7 @@ This simulates what a spinner might look like in that situation:
 
 <button class="btn" classes="toggle htmx-request:3s">
     Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg"/>
+   <img  class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </button>
 
 ## Notes

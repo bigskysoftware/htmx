@@ -64,7 +64,8 @@ if(window.location.search=="?ads=true") {
 
 <div class="ad" style="margin-bottom: 30px">
 <a href="https://swag.htmx.org">
-  <img src="/img/ads_top.png"/>
+  <img src="/img/ads_top.png" alt="Ad: MacMall PowerBooks as low as 1999$!
+    Call 888-932-1569. Get your FREE 64MB RAM with your PowerBook!"/>
 </a>
 </div>
 
@@ -75,19 +76,21 @@ if(window.location.search=="?ads=true") {
   </div>
   <div class="wuw">
      <a href="https://swag.htmx.org/products/shut-up-warren-tee">
-       <img src="/img/wuw.png">
+       <img src="/img/wuw.png" alt="shut up warren ⁺₊✦ uwu">
      </a>
   </div>
   <div class="uwu">
      <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
-       <img src="/img/kawaii.png">
+       <img src="/img/kawaii.png" alt="htmx エイチティーエムエックス uwu">
      </a>
   </div>
 
 </div>
 <div class="ad">
 <a href="https://swag.htmx.org">
-  <img src="/img/ads_bottom.png"/>
+  <img src="/img/ads_bottom.png" alt="Ads: Get Flash! FREE Microsoft Internet Explorer!
+    Netscape Now! (3.0) Site created with Microsoft&reg; FrontPage&trade;.
+    Powered by Microsoft BackOffice."/>
 </a>
 </div>
 
@@ -98,7 +101,7 @@ directly in HTML, using [attributes](@/reference.md#attributes), so you can buil
 [modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~14k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
+htmx is small ([~16k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
 [extendable](https://htmx.org/extensions) & has **reduced** code base sizes by [67% when compared with react](@/essays/a-real-world-react-to-htmx-port.md)
 
@@ -139,7 +142,7 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 [Hypermedia-Driven Applications](@/essays/hypermedia-driven-applications.md) using htmx & more:
 
 <div style="text-align: center;padding: 24px">
-<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="hypermedia systems"></a>
+<a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="Hypermedia Systems hardcover edition"></a>
 </div>
 
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
@@ -244,17 +247,10 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
       </a>
 </div>
 <div>
-        <a data-github-account="transloadit" href=" https://transloadit.com/?utm_source=htmx&utm_medium=referral&utm_campaign=sponsorship&utm_content=website/">
-          <img class="dark-hidden" alt="Transloadit" src="/img/logos-transloadit-default.svg">
-          <img class="dark-visible" alt="Transloadit" src="/img/transloadit-logo-dark.svg">
-        </a>
-</div>
-<div>
       <a data-github-account="uibakery" href="https://uibakery.io">
       <img class="dark-hidden" src="/img/ui-bakery.svg" alt="UI Bakery">
       <img class="dark-visible" src="/img/ui-bakery-dark.svg" alt="UI Bakery"></a>
 </div>
-
 <div>
     <a data-github-account="tracebit-com" href="https://tracebit.com/?utm_source=htmx">
       <img class="dark-hidden" alt="Tracebit Cloud Canaries" src="/img/tracebit-logo.png">
@@ -268,8 +264,6 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 <div>
       <a href="https://www.ohne-makler.net/"><img src="/img/ohne-makler.svg" alt="Ohne-Makler" style="width:100%;max-width:150px"></a>
 </div>
-
-
 <div>
         <a data-github-account="cased" href="https://cased.com///">
           <img class="dark-hidden" alt="Developer friendly DevOps" src="/img/Cased_Logo_DarkBlue.svg" style="width:100%;max-width:250px">
@@ -300,46 +294,17 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
            <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
         </a>
 </div>
-
-
-<div>
-        <a data-github-account="upstatebreaker" href="https://buymybreaker.com/">
-          <img class="dark-hidden" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-light.svg" style="min-width: 80px" >
-          <img class="dark-visible" alt="Electrical Equipment - BuyMyBreaker.com" src="/img/bmb-dark.svg" style="min-width: 80px">
-        </a>
-</div>
-<div>
-        <a data-github-account="Viralyft" alt="Buy YouTube views" href="https://viralyft.com/buy-youtube-views/">
-           <img class="dark-hidden" src="/img/Viralyft_light.png" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/Viralyft_dark.png" style="width:100%;max-width:250px">
-        </a>
-</div>
 <div>
         <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
            <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
            <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
         </a>
 </div>
-
-
 <div>
     <a data-github-account="ExchangeRate-API" alt="The Accurate & Reliable Exchange Rate API" href="https://www.exchangerate-api.com">
        <img class="dark-hidden" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
        <img class="dark-visible" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
     </a>
-</div>
-<div>
-        <a data-github-account="radioplusexperts" alt="Assignment Writing service" href="https://edubirdie.com/do-my-assignment">
-           <img class="dark-hidden" src="/img/edubirdie-light.png" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/edubirdie-dark.png" style="width:100%;max-width:250px">
-        </a>
-</div>
-<div></div>
-<div>
-        <a data-github-account="TrackityApp" alt="Trackity server side tracking" href="https://www.trackity.com">
-           <img class="dark-hidden" src="/img/trackity-light.png" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/trackity-dark.png" style="width:100%;max-width:250px">
-        </a>
 </div>
 </div>
 

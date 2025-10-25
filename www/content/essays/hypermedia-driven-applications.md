@@ -52,7 +52,7 @@ Consider the htmx [Active Search](@/examples/active-search.md) example:
 <h3> 
   Search Contacts 
   <span class="htmx-indicator"> 
-    <img src="/img/bars.svg"/> Searching... 
+    <img src="/img/bars.svg" alt=""/> Searching... 
    </span> 
 </h3>
 <input class="form-control" type="search" 

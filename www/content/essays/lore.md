@@ -13,7 +13,7 @@ tag = ["posts"]
 +++
 
 <center style="padding: 12px">
-<img src="/img/i-lied.png" alt="I lied." style="border-radius: 32px; max-width: 100%">
+<img src="/img/i-lied.png" alt="I lied, I don't have a Twitter account. Take off your shoes, we're going to learn about hypermedia." style="border-radius: 32px; max-width: 100%">
 </center>
 
 For better or [for worse](https://x.com/IroncladDev/status/1866185587616596356), htmx has collected a lot of lore, mainly around [the twitter account](https://twitter.com/htmx_org).

@@ -15,7 +15,7 @@ We start with this form:
   <div hx-target="this" hx-swap="outerHTML">
     <label>Email Address</label>
     <input name="email" hx-post="/contact/email" hx-indicator="#ind">
-    <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
+    <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
   </div>
   <div class="form-group">
     <label>First Name</label>
@@ -39,7 +39,7 @@ When a request occurs, it will return a partial to replace the outer div.  It mi
 <div hx-target="this" hx-swap="outerHTML" class="error">
   <label>Email Address</label>
   <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="test@foo.com">
-  <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
+  <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
   <div class='error-message'>That email is already taken.  Please enter another email.</div>
 </div>
 ```
@@ -115,7 +115,7 @@ Below is a working demo of this example.  The only email that will be accepted i
   <div hx-target="this" hx-swap="outerHTML">
     <label for="email">Email Address</label>
     <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
-    <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
+    <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
   </div>
   <div class="form-group">
     <label for="firstName">First Name</label>
@@ -133,7 +133,7 @@ Below is a working demo of this example.  The only email that will be accepted i
             return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
   <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
-  <img id="ind" src="/img/bars.svg" class="htmx-indicator"/>
+  <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
   ${errorMsg ? (`<div class='error-message' >${errorMsg}</div>`) : ""}
 </div>`;
         }
