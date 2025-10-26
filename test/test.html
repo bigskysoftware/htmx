@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx:config" content='{"sse":true,"logAll":true}'>
+    <title>htmx 4.0 Tests</title>
+
+    <!-- Mocha CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/mocha@11.7.4/mocha.css">
+
+    <style>
+        ::view-transition-group(*),
+        ::view-transition-old(*),
+        ::view-transition-new(*) {
+            animation-duration: 0s;
+        }
+
+        .playground-wrapper {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .playground-wrapper h3 {
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #4CAF50;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        #test-playground {
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+
+        .header {
+            padding: 20px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .run-all-btn {
+            display: inline-block;
+            margin: 0 20px 20px 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .run-all-btn:hover {
+            background-color: #45a049;
+        }
+
+        .run-all-btn:active {
+            background-color: #3d8b40;
+        }
+    </style>
+
+    <!-- Test infrastructure -->
+    <script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
+    <script src="https://unpkg.com/mocha@11.7.4/mocha.js"></script>
+
+    <script src="lib/fetch-mock.js"></script>
+    <script src="lib/sse-mock.js"></script>
+
+    <!-- htmx after mocks are set up -->
+    <script src="../src/htmx.js"></script>
+
+    <script>
+        // Initialize Mocha
+        mocha.setup({
+            ui: 'bdd',
+            fullTrace: true
+        });
+        window.assert = chai.assert;
+        window.should = chai.should();
+    </script>
+
+    <!-- Test helpers -->
+    <script src="lib/helpers.js"></script>
+
+    <!-- Unit tests first -->
+    <script src="tests/unit/core.js"></script>
+    <script src="tests/unit/find.js"></script>
+    <script src="tests/unit/shouldCancel.js"></script>
+
+    <!-- Attribute Tests -->
+    <script src="tests/attributes/hx-get.js"></script>
+    <script src="tests/attributes/hx-boost.js"></script>
+    <script src="tests/attributes/hx-config.js"></script>
+    <script src="tests/attributes/hx-include.js"></script>
+    <script src="tests/attributes/hx-on.js"></script>
+    <script src="tests/attributes/hx-preload.js"></script>
+    <script src="tests/attributes/hx-optimistic.js"></script>
+    <script src="tests/attributes/hx-preserve.js"></script>
+    <script src="tests/attributes/hx-select.js"></script>
+    <script src="tests/attributes/hx-swap.js"></script>
+    <script src="tests/attributes/hx-swap-oob.js"></script>
+    <script src="tests/attributes/hx-trigger.js"></script>
+    <script src="tests/attributes/hx-vals.js"></script>
+
+    <!-- E2E Tests -->
+    <script src="tests/e2e/cancel-behavior.js"></script>
+    <script src="tests/e2e/core.js"></script>
+    <script src="tests/e2e/oob.js"></script>
+    <script src="tests/e2e/sse.js"></script>
+
+    <!-- History Tests -->
+    <script src="tests/history/basic-history.js"></script>
+
+    <script>
+        // Run tests on load
+        window.addEventListener('load', () => {
+            mocha.run();
+        });
+    </script>
+
+</head>
+<body>
+    <div class="header">
+        <h1>htmx 4.0 Test Suite</h1>
+    </div>
+
+    <a href="test.html" class="run-all-btn">Run All</a>
+
+    <!-- Mocha test output -->
+    <div id="mocha"></div>
+
+    <!-- Test playground (hidden by default) -->
+    <div class="playground-wrapper">
+        <h3>Test Playground</h3>
+        <div id="test-playground"></div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "htmx-quirks-mode",
+  "version": "0.0.1-alpha",
+  "description": "Reverts htmx 4.0 behavior to be closer to 2.0 behavior",
+  "main": "dist/htmx-quirks-mode.js",
+  "module": "dist/htmx-quirks-mode.esm.js",
+  "scripts": {
+    "clean": "rm -f ./dist/*",
+    "copy": "cp src/htmxQuirks.js ./dist/htmx-quirks-mode.js",
+    "esm": "sh -c 'cat > dist/htmx-quirks-mode.esm.js << EOF\n$(cat src/htmxQuirks.js)\nexport default htmxQuirks\nEOF\n'",
+    "minify": "terser --compress --mangle -o ./dist/htmx-quirks-mode.min.js ./dist/htmx-quirks-mode.js",
+    "compress": "brotli ./dist/htmx-quirks-mode.js && brotli ./dist/htmx-quirks-mode.min.js",
+    "build": "npm run clean && npm run copy && npm run esm && npm run minify && npm run compress",
+    "dist": "npm run build",
+    "test": "npm run test:chrome",
+    "test:chrome": "playwright install chromium && web-test-runner --config test/web-test-runner.config.mjs --browsers chromium --playwright",
+    "test:firefox": "playwright install firefox && web-test-runner --config test/web-test-runner.config.mjs --concurrency 1 --browsers firefox --playwright",
+    "test:webkit": "playwright install webkit && web-test-runner --config test/web-test-runner.config.mjs --browsers webkit --playwright",
+    "test:all": "playwright install chromium firefox webkit && web-test-runner --config test/web-test-runner.config.mjs --concurrency 1 --browsers chromium firefox webkit --playwright"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigskysoftware/htmx"
+  },
+  "keywords": [
+    "hypermedia",
+    "htmx",
+    "ajax",
+    "sse"
+  ],
+  "author": "Big Sky Software",
+  "license": "BSD-0-Clause",
+  "dependencies": {
+    "htmx": "file:../.."
+  },
+  "devDependencies": {
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-playwright": "^0.11.0",
+    "chai": "^4.5.0",
+    "mocha": "^11.7.4",
+    "terser": "^5.36.0"
+  }
+}

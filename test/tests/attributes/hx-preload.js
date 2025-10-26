@@ -1,0 +1,69 @@
+describe('hx-preload attribute', function() {
+
+    beforeEach(() => {
+        setupTest(this.currentTest)
+    })
+
+    afterEach(() => {
+        cleanupTest(this.currentTest)
+    })
+
+    it('preloads on specified event', async function () {
+        mockResponse('GET', '/test', 'Preloaded')
+        let btn = initHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.isDefined(btn.__htmx.preload)
+    })
+
+    it('does not preload POST requests', async function () {
+        mockResponse('POST', '/test', 'Posted')
+        let btn = initHTML('<button hx-post="/test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.isUndefined(btn.__htmx.preload)
+    })
+
+    it('uses default 5s timeout', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = initHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.isTrue(btn.__htmx.preload.expiresAt > Date.now() + 4000)
+    })
+
+    it('respects custom timeout', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = initHTML('<button hx-get="/test" hx-preload="mouseenter timeout:100ms">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.isTrue(btn.__htmx.preload.expiresAt < Date.now() + 200)
+    })
+
+    it('skips duplicate preload events', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = initHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(10)
+        let firstPreload = btn.__htmx.preload
+        btn.dispatchEvent(new Event('mouseenter'))
+        assert.equal(btn.__htmx.preload, firstPreload)
+    })
+
+    it('works with different event types', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = initHTML('<button hx-get="/test" hx-preload="focus">Click</button>');
+        btn.dispatchEvent(new Event('focus'))
+        await htmx.timeout(20)
+        assert.isDefined(btn.__htmx.preload)
+    })
+
+    it('builds URL with form params', async function () {
+        mockResponse('GET', '/test?name=test', 'Response')
+        let form = initHTML('<form><input name="name" value="test"><button hx-get="/test" hx-preload="mouseenter">Click</button></form>');
+        let btn = form.querySelector('button')
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(btn.__htmx.preload.action, '/test?name=test')
+    })
+})

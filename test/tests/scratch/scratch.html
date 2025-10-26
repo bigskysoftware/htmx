@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+    <title>htmx scratch pad</title>
+    <script src="../../lib/fetch-mock.js"></script>
+    <script src="../../lib/sse-mock.js"></script>
+    <script src="../../../src/htmx.js"></script>
+    <script>
+        // installFetchMock();
+        installSSEMock();
+        fetchMock.mockResponse('GET', '/demo', new MockResponse('<div id="result">Success!</div>'));
+    </script>
+</head>
+<body>
+
+<form>
+    <input required>
+    <button  hx-post="/demo" hx-validate="true">Submit</button>
+</form>
+
+<button hx-get="demo.html">
+    Get it...
+</button>
+
+<button hx-action="js:alert('clicked!')">
+    Javascript Action
+</button>
+
+</body>
+</html>

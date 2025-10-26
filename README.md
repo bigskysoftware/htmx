@@ -61,7 +61,7 @@ Note there is an old broken package called `htmx`.  This is `htmx.org`.
 * <https://htmx.org/docs>
 
 ## contributing
-Want to contribute? Check out our [contribution guidelines](CONTRIBUTING.md)
+Want to contribute? Check out our [contribution guidelines](dev/CONTRIBUTING.md)
 
 No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
 
