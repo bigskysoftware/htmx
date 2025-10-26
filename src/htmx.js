@@ -243,11 +243,11 @@ var htmx = (() => {
             };
         }
 
-        __createRequestContext(sourceElement, evt) {
-            let {action, method} = this.__determineMethodAndAction(sourceElement, evt);
+        __createRequestContext(sourceElement, sourceEvent) {
+            let {action, method} = this.__determineMethodAndAction(sourceElement, sourceEvent);
             let cfg = {
                 sourceElement,
-                evt,
+                sourceEvent,
                 action,
                 validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                 select: this.__attributeValue(sourceElement, "hx-select"),
@@ -318,7 +318,7 @@ var htmx = (() => {
 
         async handleTriggerEvent(ctx) {
             let elt = ctx.sourceElement
-            let evt = ctx.evt
+            let evt = ctx.sourceEvent
             if (!elt.isConnected) return
 
             if (this.__isModifierKeyClick(evt)) return
