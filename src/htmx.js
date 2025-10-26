@@ -4,9 +4,9 @@ var htmx = (() => {
     class RequestQueue {
         #currentRequest = null
         #requestQueue = []
-        shouldIssueRequest(cfg, queueStrategy) {
+        shouldIssueRequest(ctx, queueStrategy) {
             if (!this.#currentRequest) {
-                this.#currentRequest = cfg
+                this.#currentRequest = ctx
                 return true
             } else {
                 if (queueStrategy === "replace") {
@@ -17,14 +17,18 @@ var htmx = (() => {
                     }
                     return true
                 } else if (queueStrategy === "queue all") {
-                    this.#requestQueue.push(cfg)
+                    this.#requestQueue.push(ctx)
+                    ctx.status = "queued";
                 } else if (queueStrategy === "drop") {
                     // ignore the request
+                    ctx.status = "dropped";
                 } else if (queueStrategy === "queue last") {
-                    this.#requestQueue = [cfg]
+                    this.#requestQueue = [ctx]
+                    ctx.status = "queued";
                 } else if (this.#requestQueue.length === 0) {
                     // default queue first
-                    this.#requestQueue.push(cfg)
+                    this.#requestQueue.push(ctx)
+                    ctx.status = "queued";
                 }
                 return false
             }
@@ -248,6 +252,7 @@ var htmx = (() => {
             let ctx = {
                 sourceElement,
                 sourceEvent,
+                status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 request: {
@@ -340,10 +345,7 @@ var htmx = (() => {
             // Setup abort controller and action
             let ac = new AbortController()
             let action = ctx.request.action.replace?.(/#.*$/, '')
-
-            ctx.response = null;
-
-            // TODO - consider how this works with hx-config
+            // TODO - consider how this works with hx-config, move most to __createRequestContext?
             Object.assign(ctx.request, {
                 originalAction: ctx.request.action,
                 action,
@@ -382,7 +384,7 @@ var htmx = (() => {
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
             if(requestQueue.shouldIssueRequest(cfg, syncStrategy)){
-
+                cfg.status = "issuing"
                 // establish timeout handler
                 this.__initTimeout(cfg);
                 let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
@@ -421,6 +423,7 @@ var htmx = (() => {
                         cancelled: false
                     }
                     cfg.text = await response.text();
+                    cfg.status = "response received"
 
                     if (!this.__trigger(elt, "htmx:after:request", {cfg})) return
                     if (!cfg.response.cancelled) {
@@ -433,8 +436,10 @@ var htmx = (() => {
                         if (anchor) {
                             document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'})
                         }
+                        cfg.status = "swapped"
                     }
                 } catch (error) {
+                    cfg.status = "error: " + error
                     // remove optimistic content
                     this.__removeOptimisticContent(cfg);
                     this.__trigger(elt, "htmx:error", {cfg, error})
@@ -444,6 +449,7 @@ var htmx = (() => {
                     this.__trigger(elt, "htmx:finally:request", {cfg})
                     let nextRequest = requestQueue.nextRequest();
                     if (nextRequest) {
+                        // TODO consider race condition of another request coming in on that tick
                         // on the next tick, issue the next request if any
                         setTimeout(()=> this.__issueRequest(nextRequest), 0)
                     }
