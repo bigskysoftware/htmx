@@ -235,36 +235,36 @@ var htmx = (() => {
         __createHtmxEventHandler(elt) {
             return async (evt) => {
                 try {
-                    let cfg = this.__createRequestConfig(elt, evt);
-                    await this.handleTriggerEvent(cfg);
+                    let ctx = this.__createRequestContext(elt, evt);
+                    await this.handleTriggerEvent(ctx);
                 } catch(e) {
                     console.error(e)
                 }
             };
         }
 
-        __createRequestConfig(elt, evt) {
-            let {action, method} = this.__determineMethodAndAction(elt, evt);
+        __createRequestContext(sourceElement, evt) {
+            let {action, method} = this.__determineMethodAndAction(sourceElement, evt);
             let cfg = {
-                elt,
+                sourceElement,
                 evt,
                 action,
-                validate: "true" === this.__attributeValue(elt, "hx-validate", elt.matches('form') ? "true" : "false"),
-                select: this.__attributeValue(elt, "hx-select"),
-                optimistic: this.__attributeValue(elt, "hx-optimistic"),
+                validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
+                select: this.__attributeValue(sourceElement, "hx-select"),
+                optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 options: {
                     method,
-                    headers: this.__determineHeaders(elt)
+                    headers: this.__determineHeaders(sourceElement)
                 },
                 swapCfg: {
-                    target: this.__attributeValue(elt, "hx-target"),
-                    swap: this.__attributeValue(elt, "hx-swap", "outerHTML"),
+                    target: this.__attributeValue(sourceElement, "hx-target"),
+                    swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
                     transition: this.config.viewTransitions
                 }
             };
 
             // Apply hx-config overrides
-            let configAttr = this.__attributeValue(elt, "hx-config");
+            let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 let configOverrides = JSON.parse(configAttr);
                 for (let key in configOverrides) {
@@ -316,9 +316,9 @@ var htmx = (() => {
             return elt.__htmx.boosted;
         }
 
-        async handleTriggerEvent(cfg) {
-            let elt = cfg.elt
-            let evt = cfg.evt
+        async handleTriggerEvent(ctx) {
+            let elt = ctx.sourceElement
+            let evt = ctx.evt
             if (!elt.isConnected) return
 
             if (this.__isModifierKeyClick(evt)) return
@@ -326,8 +326,8 @@ var htmx = (() => {
             if (this.__shouldCancel(evt)) evt.preventDefault()
 
             // Resolve swap target
-            Object.assign(cfg.swapCfg, {
-                target: this.__resolveTarget(elt, cfg.swapCfg.target),
+            Object.assign(ctx.swapCfg, {
+                target: this.__resolveTarget(elt, ctx.swapCfg.target),
                 elt
             })
 
@@ -338,10 +338,10 @@ var htmx = (() => {
 
             // Setup abort controller and action
             let ac = new AbortController()
-            let action = cfg.action.replace?.(/#.*$/, '')
+            let action = ctx.action.replace?.(/#.*$/, '')
 
-            Object.assign(cfg, {
-                originalAction: cfg.action,
+            Object.assign(ctx, {
+                originalAction: ctx.action,
                 action,
                 form,
                 submitter: evt.submitter,
@@ -350,35 +350,35 @@ var htmx = (() => {
             })
 
             // TODO - consider how this works with hx-config
-            Object.assign(cfg.options, {
+            Object.assign(ctx.options, {
                 body,
                 credentials: "same-origin",
                 signal: ac.signal,
                 ...(this.config.selfRequestsOnly && {mode: "same-origin"})
             })
 
-            if (!this.__trigger(elt, "htmx:config:request", {cfg})) return
-            if (!this.__verbs.includes(cfg.options.method.toLowerCase())) return
-            if (cfg.validate && cfg.form && !cfg.form.reportValidity()) return
+            if (!this.__trigger(elt, "htmx:config:request", {cfg: ctx})) return
+            if (!this.__verbs.includes(ctx.options.method.toLowerCase())) return
+            if (ctx.validate && ctx.form && !ctx.form.reportValidity()) return
 
-            let javascriptContent = this.__extractJavascriptContent(cfg.action);
-            if (!javascriptContent && /GET|DELETE/.test(cfg.options.method)) {
-                let params = new URLSearchParams(cfg.options.body)
-                if (params.size) cfg.action += (/\?/.test(cfg.action) ? "&" : "?") + params
-                cfg.options.body = null
+            let javascriptContent = this.__extractJavascriptContent(ctx.action);
+            if (!javascriptContent && /GET|DELETE/.test(ctx.options.method)) {
+                let params = new URLSearchParams(ctx.options.body)
+                if (params.size) ctx.action += (/\?/.test(ctx.action) ? "&" : "?") + params
+                ctx.options.body = null
             } else if(this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
-                cfg.options.body = new URLSearchParams(cfg.options.body)
+                ctx.options.body = new URLSearchParams(ctx.options.body)
             }
 
             if (javascriptContent) {
-                this.__executeJavaScript(cfg.elt, {}, javascriptContent, false);
+                this.__executeJavaScript(ctx.sourceElement, {}, javascriptContent, false);
             } else {
-                await this.__issueRequest(cfg);
+                await this.__issueRequest(ctx);
             }
         }
 
         async __issueRequest(cfg) {
-            let elt = cfg.elt
+            let elt = cfg.sourceElement
             // Don't check isConnected here - queued requests should complete even if element was swapped
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
@@ -673,7 +673,7 @@ var htmx = (() => {
                 if (elt.__htmx.preload) return;
 
                 // Create config and build full action URL with params
-                let cfg = this.__createRequestConfig(elt, evt);
+                let cfg = this.__createRequestContext(elt, evt);
                 let form = elt.form || elt.closest("form");
                 let body = this.__collectFormData(elt, form, evt.submitter);
                 this.__handleHxVals(elt, body);
@@ -1098,8 +1098,8 @@ var htmx = (() => {
         }
 
         __resolveSwapEventTarget(swapConfig) {
-            if (swapConfig.elt && document.contains(swapConfig.elt)) {
-                return swapConfig.elt;
+            if (swapConfig.sourceElement && document.contains(swapConfig.sourceElement)) {
+                return swapConfig.sourceElement;
             } else if (swapConfig.target && document.contains(swapConfig.target)) {
                 return swapConfig.target;
             } else {
@@ -1206,7 +1206,7 @@ var htmx = (() => {
         }
 
         __handleHistoryUpdate(cfg) {
-            let elt = cfg.elt
+            let elt = cfg.sourceElement
             let push = cfg.response.headers?.get?.('HX-Push') || cfg.response.headers?.get?.('HX-Push-Url');
             let replace = cfg.response.headers?.get?.('HX-Replace-Url');
             let headerPath = push || replace;
