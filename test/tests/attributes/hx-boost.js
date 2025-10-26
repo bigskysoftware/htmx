@@ -104,8 +104,8 @@ describe('hx-boost attribute', async function() {
         mockResponse('GET', '/test', "Boosted!")
         initHTML('<a hx-boost="true" hx-target="this" href="/test">Click Me!</a>')
         await clickAndWait("a")
-        fetchMock.getLastCall().options.headers["HX-Boosted"].should.equal("true")
-        fetchMock.getLastCall().options.headers["HX-Request"].should.equal("true")
+        fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
+        fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
         playground().innerHTML.should.equal('Boosted!')
     })
 

@@ -61,7 +61,7 @@ class FetchMock {
 
     // Record a fetch call
     recordCall(url, options) {
-        this.calls.push({ url, options });
+        this.calls.push({ url, request: options });
     }
 
     // Get all recorded calls
@@ -88,7 +88,7 @@ class FetchMock {
             method: upperCasedMethod,
             urlPattern: typeof urlPattern === 'string' ? new RegExp(urlPattern) : urlPattern,
             response,
-            options,
+            request: options,
             once: options.once || false,
             used: false
         });

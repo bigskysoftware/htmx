@@ -12,7 +12,7 @@ describe('hx-vals attribute', function() {
         mockResponse('POST', '/vars', "dummy")
         initHTML("<div hx-post='/vars' hx-vals='\"i1\":\"test\"'></div>")
         clickAndWait("div")
-        fetchMock.calls[0].options.body.get("i1").should.equal("test");
+        fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
     // it('basic hx-vals works with braces', function() {

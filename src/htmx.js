@@ -245,14 +245,14 @@ var htmx = (() => {
 
         __createRequestContext(sourceElement, sourceEvent) {
             let {action, method} = this.__determineMethodAndAction(sourceElement, sourceEvent);
-            let cfg = {
+            let ctx = {
                 sourceElement,
                 sourceEvent,
-                action,
                 validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 request: {
+                    action,
                     method,
                     headers: this.__determineHeaders(sourceElement)
                 },
@@ -267,21 +267,22 @@ var htmx = (() => {
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 let configOverrides = JSON.parse(configAttr);
+                let requestConfig = ctx.request;
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
                         let actualKey = key.substring(1);
-                        if (cfg[actualKey] && typeof cfg[actualKey] === 'object') {
-                            Object.assign(cfg[actualKey], configOverrides[key]);
+                        if (requestConfig[actualKey] && typeof ctx[actualKey] === 'object') {
+                            Object.assign(ctx[actualKey], configOverrides[key]);
                         } else {
-                            cfg[actualKey] = configOverrides[key];
+                            requestConfig[actualKey] = configOverrides[key];
                         }
                     } else {
-                        cfg[key] = configOverrides[key];
+                        requestConfig[key] = configOverrides[key];
                     }
                 }
             }
 
-            return cfg;
+            return ctx;
         }
 
         __determineHeaders(elt) {
@@ -338,19 +339,17 @@ var htmx = (() => {
 
             // Setup abort controller and action
             let ac = new AbortController()
-            let action = ctx.action.replace?.(/#.*$/, '')
+            let action = ctx.request.action.replace?.(/#.*$/, '')
 
-            Object.assign(ctx, {
-                originalAction: ctx.action,
-                action,
-                form,
-                submitter: evt.submitter,
-                response: null,
-                abort: ac.abort.bind(ac)
-            })
+            ctx.response = null;
 
             // TODO - consider how this works with hx-config
             Object.assign(ctx.request, {
+                originalAction: ctx.request.action,
+                action,
+                form,
+                submitter: evt.submitter,
+                abort: ac.abort.bind(ac),
                 body,
                 credentials: "same-origin",
                 signal: ac.signal,
@@ -359,12 +358,12 @@ var htmx = (() => {
 
             if (!this.__trigger(elt, "htmx:config:request", {cfg: ctx})) return
             if (!this.__verbs.includes(ctx.request.method.toLowerCase())) return
-            if (ctx.validate && ctx.form && !ctx.form.reportValidity()) return
+            if (ctx.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
-            let javascriptContent = this.__extractJavascriptContent(ctx.action);
+            let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (!javascriptContent && /GET|DELETE/.test(ctx.request.method)) {
                 let params = new URLSearchParams(ctx.request.body)
-                if (params.size) ctx.action += (/\?/.test(ctx.action) ? "&" : "?") + params
+                if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
                 ctx.request.body = null
             } else if(this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body)
@@ -405,7 +404,7 @@ var htmx = (() => {
                     // Check for valid preload
                     let response;
                     if (elt.__htmx.preload &&
-                        elt.__htmx.preload.action === cfg.action &&
+                        elt.__htmx.preload.action === cfg.request.action &&
                         Date.now() < elt.__htmx.preload.expiresAt) {
                         response = await elt.__htmx.preload.prefetch;
                         delete elt.__htmx.preload;
@@ -413,7 +412,7 @@ var htmx = (() => {
                         delete elt.__htmx.preload;
                         // insert optimistic content, hide in case of outerHTML or innerHTML targets
                         this.__insertOptimisticContent(cfg);
-                        response = await fetch(cfg.action, cfg.request);
+                        response = await fetch(cfg.request.action, cfg.request);
                     }
                     cfg.response = {
                         raw: response,
@@ -430,7 +429,7 @@ var htmx = (() => {
                         this.__removeOptimisticContent(cfg);
                         await this.__swapResponse(cfg);
                         // Scroll to anchor if present in original action
-                        let anchor = cfg.originalAction?.split('#')[1]
+                        let anchor = cfg.request.originalAction?.split('#')[1]
                         if (anchor) {
                             document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'})
                         }
@@ -455,7 +454,7 @@ var htmx = (() => {
         __initTimeout(cfg) {
             let timeoutInterval;
             if (cfg.request.timeout) {
-                timeoutInterval = this.parseInterval(cfg.request.timeout);
+                timeoutInterval = typeof cfg.request.timeout == "string" ? this.parseInterval(cfg.request.timeout) : cfg.request.timeout;
             } else {
                 timeoutInterval = htmx.config.defaultTimeout;
             }
@@ -678,7 +677,7 @@ var htmx = (() => {
                 let body = this.__collectFormData(elt, form, evt.submitter);
                 this.__handleHxVals(elt, body);
 
-                let action = cfg.action.replace?.(/#.*$/, '');
+                let action = cfg.request.action.replace?.(/#.*$/, '');
                 let params = new URLSearchParams(body);
                 if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
@@ -1223,7 +1222,7 @@ var htmx = (() => {
             if (!path || path === 'false') return;
 
             if (path === 'true') {
-                path = cfg.originalAction;
+                path = cfg.request.originalAction;
             }
 
             let type = push ? 'push' : 'replace';

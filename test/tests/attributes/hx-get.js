@@ -37,6 +37,7 @@ describe('hx-get attribute', function() {
         let form = initHTML('<form hx-get="/test?foo=bar"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         await submitAndWait(form);
         playground().innerHTML.should.equal('Clicked!')
+        console.log("*********", lastFetch().url, "/test?foo=bar&i1=value")
         lastFetch().url.should.equal("/test?foo=bar&i1=value");
     })
 
