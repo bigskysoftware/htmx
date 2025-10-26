@@ -16,30 +16,32 @@ Do not try to be "smart" about event types. Trust the user's `hx-trigger` specif
 
 ```javascript
 // Step 1: Early exit for modifier keys
-__isModifierKeyClick(evt) {
-    return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
+__isModifierKeyClick(sourceEvent)
+{
+    return sourceEvent.type === 'click' && (sourceEvent.ctrlKey || sourceEvent.metaKey || sourceEvent.shiftKey)
 }
 
 // Step 2: Determine if event should be cancelled
-__shouldCancel(evt) {
-    const elt = evt.currentTarget
-    
+__shouldCancel(sourceEvent)
+{
+    const elt = sourceEvent.currentTarget
+
     // Cancel submit events on forms
-    if (evt.type === 'submit' && elt?.tagName === 'FORM') {
+    if (sourceEvent.type === 'submit' && elt?.tagName === 'FORM') {
         return true
     }
-    
+
     // Cancel clicks on submit buttons that have a form
-    if (evt.type === 'click' && evt.button === 0) {
+    if (sourceEvent.type === 'click' && sourceEvent.button === 0) {
         const btn = elt?.closest?.('button, input[type="submit"], input[type="image"]')
         if (btn && !btn.disabled) {
             const form = btn.form || btn.closest('form')
-            if (form && (btn.type === 'submit' || btn.type === 'image' || 
-                        (!btn.type && btn.tagName === 'BUTTON'))) {
+            if (form && (btn.type === 'submit' || btn.type === 'image' ||
+                (!btn.type && btn.tagName === 'BUTTON'))) {
                 return true
             }
         }
-        
+
         // Cancel clicks on links (except fragment-only anchors)
         const link = elt?.closest?.('a')
         if (link && link.href) {
@@ -49,7 +51,7 @@ __shouldCancel(evt) {
             }
         }
     }
-    
+
     return false
 }
 ```
@@ -57,13 +59,15 @@ __shouldCancel(evt) {
 ### Usage in Event Handler
 
 ```javascript
-async handleTriggerEvent(elt, cfg, evt) {
+async
+handleTriggerEvent(elt, cfg, sourceEvent)
+{
     if (!elt.isConnected) return
-    
-    if (this.__isModifierKeyClick(evt)) return  // Let browser handle Ctrl+Click, etc.
-    
-    if (this.__shouldCancel(evt)) evt.preventDefault()  // Cancel default behavior
-    
+
+    if (this.__isModifierKeyClick(sourceEvent)) return  // Let browser handle Ctrl+Click, etc.
+
+    if (this.__shouldCancel(sourceEvent)) sourceEvent.preventDefault()  // Cancel default behavior
+
     // ... proceed with htmx request
 }
 ```
@@ -84,11 +88,14 @@ async handleTriggerEvent(elt, cfg, evt) {
 ### 2. No Keyboard Event Logic
 
 **Old htmx had:**
+
 ```javascript
-__isFormSubmissionKeyEvent(evt) {
-    return (evt.key === 'Enter') && 
-           evt.target.matches('input[type="text"]') &&
-           evt.target.closest('form') && ...
+__isFormSubmissionKeyEvent(sourceEvent)
+{
+    return (sourceEvent.key === 'Enter') &&
+        sourceEvent.target.matches('input[type="text"]') &&
+        sourceEvent.target.closest('form') &&
+...
 }
 ```
 
@@ -151,9 +158,10 @@ if (!isFragmentOnly) return true
 ### 5. Separation of Concerns
 
 **Modifier key check is separate:**
+
 ```javascript
-if (this.__isModifierKeyClick(evt)) return  // Early exit
-if (this.__shouldCancel(evt)) evt.preventDefault()  // Then cancel
+if (this.__isModifierKeyClick(sourceEvent)) return  // Early exit
+if (this.__shouldCancel(sourceEvent)) sourceEvent.preventDefault()  // Then cancel
 ```
 
 **Why better:**

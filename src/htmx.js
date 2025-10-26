@@ -252,7 +252,7 @@ var htmx = (() => {
                 validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
-                options: {
+                request: {
                     method,
                     headers: this.__determineHeaders(sourceElement)
                 },
@@ -350,7 +350,7 @@ var htmx = (() => {
             })
 
             // TODO - consider how this works with hx-config
-            Object.assign(ctx.options, {
+            Object.assign(ctx.request, {
                 body,
                 credentials: "same-origin",
                 signal: ac.signal,
@@ -358,16 +358,16 @@ var htmx = (() => {
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {cfg: ctx})) return
-            if (!this.__verbs.includes(ctx.options.method.toLowerCase())) return
+            if (!this.__verbs.includes(ctx.request.method.toLowerCase())) return
             if (ctx.validate && ctx.form && !ctx.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.action);
-            if (!javascriptContent && /GET|DELETE/.test(ctx.options.method)) {
-                let params = new URLSearchParams(ctx.options.body)
+            if (!javascriptContent && /GET|DELETE/.test(ctx.request.method)) {
+                let params = new URLSearchParams(ctx.request.body)
                 if (params.size) ctx.action += (/\?/.test(ctx.action) ? "&" : "?") + params
-                ctx.options.body = null
+                ctx.request.body = null
             } else if(this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
-                ctx.options.body = new URLSearchParams(ctx.options.body)
+                ctx.request.body = new URLSearchParams(ctx.request.body)
             }
 
             if (javascriptContent) {
@@ -413,7 +413,7 @@ var htmx = (() => {
                         delete elt.__htmx.preload;
                         // insert optimistic content, hide in case of outerHTML or innerHTML targets
                         this.__insertOptimisticContent(cfg);
-                        response = await fetch(cfg.action, cfg.options);
+                        response = await fetch(cfg.action, cfg.request);
                     }
                     cfg.response = {
                         raw: response,
@@ -454,8 +454,8 @@ var htmx = (() => {
 
         __initTimeout(cfg) {
             let timeoutInterval;
-            if (cfg.options.timeout) {
-                timeoutInterval = this.parseInterval(cfg.options.timeout);
+            if (cfg.request.timeout) {
+                timeoutInterval = this.parseInterval(cfg.request.timeout);
             } else {
                 timeoutInterval = htmx.config.defaultTimeout;
             }
@@ -684,7 +684,7 @@ var htmx = (() => {
 
                 // Store preload info
                 elt.__htmx.preload = {
-                    prefetch: fetch(action, cfg.options),
+                    prefetch: fetch(action, cfg.request),
                     action: action,
                     expiresAt: Date.now() + timeout
                 };
