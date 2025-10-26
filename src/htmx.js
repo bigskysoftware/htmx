@@ -248,10 +248,10 @@ var htmx = (() => {
             let ctx = {
                 sourceElement,
                 sourceEvent,
-                validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 request: {
+                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                     action,
                     method,
                     headers: this.__determineHeaders(sourceElement)
@@ -358,7 +358,7 @@ var htmx = (() => {
 
             if (!this.__trigger(elt, "htmx:config:request", {cfg: ctx})) return
             if (!this.__verbs.includes(ctx.request.method.toLowerCase())) return
-            if (ctx.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
+            if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (!javascriptContent && /GET|DELETE/.test(ctx.request.method)) {
