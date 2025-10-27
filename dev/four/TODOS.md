@@ -5,6 +5,7 @@
   * We could say just use morph
 * Support `hx-action="js:..."` and `js:` or `javascript:` broadly
   * Allow users to turn off eval
+* Need to make 203 - No Content not do the main swap once swapping settles down (lol)
 * quirks.js implementation
   * Move deprecated features into quirks.js?
     * out of band swaps?
