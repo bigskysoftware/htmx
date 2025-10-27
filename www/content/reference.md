@@ -20,19 +20,20 @@ The most common attributes when using htmx.
 
 <div class="info-table">
 
-| Attribute                                        | Description                                                                                                        |
-|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| [`hx-get`](@/attributes/hx-get.md)               | issues a `GET` to the specified URL                                                                                |
-| [`hx-post`](@/attributes/hx-post.md)             | issues a `POST` to the specified URL                                                                               |
-| [`hx-on*`](@/attributes/hx-on.md)                | handle events with inline scripts on elements                                                                      |
-| [`hx-push-url`](@/attributes/hx-push-url.md)     | push a URL into the browser location bar to create history                                                         |
-| [`hx-select`](@/attributes/hx-select.md)         | select content to swap in from a response                                                                          |
-| [`hx-select-oob`](@/attributes/hx-select-oob.md) | select content to swap in from a response, somewhere other than the target (out of band)                           |
-| [`hx-swap`](@/attributes/hx-swap.md)             | controls how content will swap in (`outerHTML`, `beforeend`, `afterend`, ...)                                      |
-| [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | mark element to swap in from a response (out of band)                                                              |
-| [`hx-target`](@/attributes/hx-target.md)         | specifies the target element to be swapped                                                                         |
-| [`hx-trigger`](@/attributes/hx-trigger.md)       | specifies the event that triggers the request                                                                      |
-| [`hx-vals`](@/attributes/hx-vals.md)             | add values to submit with the request (JSON format)                                                                |
+| Attribute                                    | Description                                                                                   |
+|----------------------------------------------|-----------------------------------------------------------------------------------------------|
+| [`hx-action`](@/attributes/hx-action.md)     | specifies the URL to issue the request to                                                     |
+| [`hx-method`](@/attributes/hx-method.md)     | specifies the HTTP method to use                                                              |
+| [`hx-get`](@/attributes/hx-get.md)           | issues a `GET` to the specified URL                                                           |
+| [`hx-post`](@/attributes/hx-post.md)         | issues a `POST` to the specified URL                                                          |
+| [`hx-on*`](@/attributes/hx-on.md)            | handle events with inline scripts on elements                                                 |
+| [`hx-push-url`](@/attributes/hx-push-url.md) | push a URL into the browser location bar to create history                                    |
+| [`hx-select`](@/attributes/hx-select.md)     | select content to swap in from a response                                                     |
+| [`hx-swap`](@/attributes/hx-swap.md)         | controls how content will swap in (`outerHTML`, `innerHTML`, `beforeend`, `afterend`, ...)    |
+| [`hx-swap-oob`](@/attributes/hx-swap-oob.md) | mark element to swap in from a response (out of band)                                         |
+| [`hx-target`](@/attributes/hx-target.md)     | specifies the target element to be swapped                                                    |
+| [`hx-trigger`](@/attributes/hx-trigger.md)   | specifies the event that triggers the request                                                 |
+| [`hx-vals`](@/attributes/hx-vals.md)         | add values to submit with the request (JSON format)                                           |
 
 </div>
 
@@ -42,32 +43,27 @@ All other attributes available in htmx.
 
 <div class="info-table">
 
-| Attribute                                          | Description                                                                                                                        |
-|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| [`hx-boost`](@/attributes/hx-boost.md)             | add [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms                           |
-| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confirm()` dialog before issuing a request                                                                                |
-| [`hx-delete`](@/attributes/hx-delete.md)           | issues a `DELETE` to the specified URL                                                                                             |
-| [`hx-ignore`](@/attributes/hx-ignore.md)           | disables htmx processing for the given node and any children nodes                                                                 |
-| [`hx-disable`](@/attributes/hx-disable.md)         | adds the `disabled` attribute to the specified elements while a request is in flight                                               |
-| [`hx-disinherit`](@/attributes/hx-disinherit.md)   | control and disable automatic attribute inheritance for child nodes                                                                |
-| [`hx-encoding`](@/attributes/hx-encoding.md)       | changes the request encoding type                                                                                                  |
-| [`hx-ext`](@/attributes/hx-ext.md)                 | extensions to use for this element                                                                                                 |
-| [`hx-headers`](@/attributes/hx-headers.md)         | adds to the headers that will be submitted with the request                                                                        |
-| [`hx-history`](@/attributes/hx-history.md)         | prevent sensitive data being saved to the history cache                                                                            |
-| [`hx-history-elt`](@/attributes/hx-history-elt.md) | the element to snapshot and restore during history navigation                                                                      |
-| [`hx-include`](@/attributes/hx-include.md)         | include additional data in requests                                                                                                |
-| [`hx-indicator`](@/attributes/hx-indicator.md)     | the element to put the `htmx-request` class on during the request                                                                  |
-| [`hx-inherit`](@/attributes/hx-inherit.md)         | control and enable automatic attribute inheritance for child nodes if it has been disabled by default                            |
-| [`hx-params`](@/attributes/hx-params.md)           | filters the parameters that will be submitted with a request                                                                       |
-| [`hx-patch`](@/attributes/hx-patch.md)             | issues a `PATCH` to the specified URL                                                                                              |
-| [`hx-preserve`](@/attributes/hx-preserve.md)       | specifies elements to keep unchanged between requests                                                                              |
-| [`hx-prompt`](@/attributes/hx-prompt.md)           | shows a `prompt()` before submitting a request                                                                                     |
-| [`hx-put`](@/attributes/hx-put.md)                 | issues a `PUT` to the specified URL                                                                                                |
-| [`hx-replace-url`](@/attributes/hx-replace-url.md) | replace the URL in the browser location bar                                                                                        |
-| [`hx-request`](@/attributes/hx-request.md)         | configures various aspects of the request                                                                                          |
-| [`hx-sync`](@/attributes/hx-sync.md)               | control how requests made by different elements are synchronized                                                                   |
-| [`hx-validate`](@/attributes/hx-validate.md)       | force elements to validate themselves before a request                                                                             |
-| [`hx-vars`](@/attributes/hx-vars.md)               | adds values dynamically to the parameters to submit with the request (deprecated, please use [`hx-vals`](@/attributes/hx-vals.md)) |
+| Attribute                                          | Description                                                                                                  |
+|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| [`hx-boost`](@/attributes/hx-boost.md)             | add [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms     |
+| [`hx-config`](@/attributes/hx-config.md)           | configure request behavior with JSON                                                                         |
+| [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confirm()` dialog or runs async confirmation before issuing a request                               |
+| [`hx-delete`](@/attributes/hx-delete.md)           | issues a `DELETE` to the specified URL                                                                       |
+| [`hx-disable`](@/attributes/hx-disable.md)         | adds the `disabled` attribute to the specified elements while a request is in flight                         |
+| [`hx-encoding`](@/attributes/hx-encoding.md)       | changes the request encoding type                                                                            |
+| [`hx-headers`](@/attributes/hx-headers.md)         | adds to the headers that will be submitted with the request                                                  |
+| [`hx-history`](@/attributes/hx-history.md)         | prevent sensitive data being saved to the history cache                                                      |
+| [`hx-ignore`](@/attributes/hx-ignore.md)           | disables htmx processing for the given node and any children nodes                                           |
+| [`hx-include`](@/attributes/hx-include.md)         | include additional data in requests                                                                          |
+| [`hx-indicator`](@/attributes/hx-indicator.md)     | the element to put the `htmx-request` class on during the request                                            |
+| [`hx-optimistic`](@/attributes/hx-optimistic.md)   | show optimistic content while request is in flight                                                           |
+| [`hx-patch`](@/attributes/hx-patch.md)             | issues a `PATCH` to the specified URL                                                                        |
+| [`hx-preload`](@/attributes/hx-preload.md)         | preload a request on a trigger event                                                                         |
+| [`hx-preserve`](@/attributes/hx-preserve.md)       | specifies elements to keep unchanged between requests                                                        |
+| [`hx-put`](@/attributes/hx-put.md)                 | issues a `PUT` to the specified URL                                                                          |
+| [`hx-replace-url`](@/attributes/hx-replace-url.md) | replace the URL in the browser location bar                                                                  |
+| [`hx-sync`](@/attributes/hx-sync.md)               | control how requests made by different elements are synchronized                                             |
+| [`hx-validate`](@/attributes/hx-validate.md)       | force elements to validate themselves before a request                                                       |
 
 </div>
 
@@ -94,13 +90,8 @@ All other attributes available in htmx.
 | Header | Description |
 |--------|-------------|
 | `HX-Boosted` | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)
-| `HX-Current-URL` | the current URL of the browser
-| `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache
-| `HX-Prompt` | the user response to an [hx-prompt](@/attributes/hx-prompt.md)
-| `HX-Request` | always "true"
-| `HX-Target` | the `id` of the target element if it exists
-| `HX-Trigger-Name` | the `name` of the triggered element if it exists
-| `HX-Trigger` | the `id` of the triggered element if it exists
+| `HX-History-Restore-Request` | "true" if the request is for history restoration
+| `HX-Request` | always "true" for htmx-initiated requests
 
 </div>
 
@@ -126,56 +117,40 @@ All other attributes available in htmx.
 
 ## Event Reference {#events}
 
+**Note:** htmx 4 uses a new event naming convention with the pattern `htmx:category:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
+
 <div class="info-table">
 
 | Event | Description |
 |-------|-------------|
 | [`htmx:abort`](@/events.md#htmx:abort) | send this event to an element to abort a request
-| [`htmx:afterOnLoad`](@/events.md#htmx:afterOnLoad) | triggered after an AJAX request has completed processing a successful response
-| [`htmx:afterProcessNode`](@/events.md#htmx:afterProcessNode) | triggered after htmx has initialized a node
-| [`htmx:afterRequest`](@/events.md#htmx:afterRequest)  | triggered after an AJAX request has completed
-| [`htmx:afterSettle`](@/events.md#htmx:afterSettle)  | triggered after the DOM has settled
-| [`htmx:afterSwap`](@/events.md#htmx:afterSwap)  | triggered after new content has been swapped in
-| [`htmx:beforeCleanupElement`](@/events.md#htmx:beforeCleanupElement)  | triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM
-| [`htmx:beforeOnLoad`](@/events.md#htmx:beforeOnLoad)  | triggered before any response processing occurs
-| [`htmx:beforeProcessNode`](@/events.md#htmx:beforeProcessNode) | triggered before htmx initializes a node
-| [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)  | triggered before an AJAX request is made
-| [`htmx:beforeSwap`](@/events.md#htmx:beforeSwap)  | triggered before a swap is done, allows you to configure the swap
-| [`htmx:beforeSend`](@/events.md#htmx:beforeSend)  | triggered just before an ajax request is sent
-| [`htmx:beforeTransition`](@/events.md#htmx:beforeTransition)  | triggered before the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) wrapped swap occurs
-| [`htmx:configRequest`](@/events.md#htmx:configRequest)  | triggered before the request, allows you to customize parameters, headers
-| [`htmx:confirm`](@/events.md#htmx:confirm)  | triggered after a trigger occurs on an element, allows you to cancel (or delay) issuing the AJAX request
-| [`htmx:historyCacheError`](@/events.md#htmx:historyCacheError)  | triggered on an error during cache writing
-| [`htmx:historyCacheHit`](@/events.md#htmx:historyCacheHit)  | triggered on a cache hit in the history subsystem
-| [`htmx:historyCacheMiss`](@/events.md#htmx:historyCacheMiss)  | triggered on a cache miss in the history subsystem
-| [`htmx:historyCacheMissLoadError`](@/events.md#htmx:historyCacheMissLoadError)  | triggered on a unsuccessful remote retrieval
-| [`htmx:historyCacheMissLoad`](@/events.md#htmx:historyCacheMissLoad)  | triggered on a successful remote retrieval
-| [`htmx:historyRestore`](@/events.md#htmx:historyRestore)  | triggered when htmx handles a history restoration action
-| [`htmx:beforeHistorySave`](@/events.md#htmx:beforeHistorySave)  | triggered before content is saved to the history cache
-| [`htmx:load`](@/events.md#htmx:load)  | triggered when new content is added to the DOM
-| [`htmx:noSSESourceError`](@/events.md#htmx:noSSESourceError)  | triggered when an element refers to a SSE event in its trigger, but no parent SSE source has been defined
-| [`htmx:onLoadError`](@/events.md#htmx:onLoadError)  | triggered when an exception occurs during the onLoad handling in htmx
-| [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an out of band element as been swapped in
-| [`htmx:oobBeforeSwap`](@/events.md#htmx:oobBeforeSwap)  | triggered before an out of band element swap is done, allows you to configure the swap
-| [`htmx:oobErrorNoTarget`](@/events.md#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
-| [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown
-| [`htmx:pushedIntoHistory`](@/events.md#htmx:pushedIntoHistory)  | triggered after a url is pushed into history
-| [`htmx:replacedInHistory`](@/events.md#htmx:replacedInHistory)  | triggered after a url is replaced in history
-| [`htmx:responseError`](@/events.md#htmx:responseError)  | triggered when an HTTP response error (non-`200` or `300` response code) occurs
-| [`htmx:sendAbort`](@/events.md#htmx:sendAbort)  | triggered when a request is aborted
-| [`htmx:sendError`](@/events.md#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
-| [`htmx:sseError`](@/events.md#htmx:sseError)  | triggered when an error occurs with a SSE source
-| [`htmx:sseOpen`](/events#htmx:sseOpen)  | triggered when a SSE source is opened
-| [`htmx:swapError`](@/events.md#htmx:swapError)  | triggered when an error occurs during the swap phase
-| [`htmx:targetError`](@/events.md#htmx:targetError)  | triggered when an invalid target is specified
-| [`htmx:timeout`](@/events.md#htmx:timeout)  | triggered when a request timeout occurs
-| [`htmx:validation:validate`](@/events.md#htmx:validation:validate)  | triggered before an element is validated
-| [`htmx:validation:failed`](@/events.md#htmx:validation:failed)  | triggered when an element fails validation
-| [`htmx:validation:halted`](@/events.md#htmx:validation:halted)  | triggered when a request is halted due to validation errors
-| [`htmx:xhr:abort`](@/events.md#htmx:xhr:abort)  | triggered when an ajax request aborts
-| [`htmx:xhr:loadend`](@/events.md#htmx:xhr:loadend)  | triggered when an ajax request ends
-| [`htmx:xhr:loadstart`](@/events.md#htmx:xhr:loadstart)  | triggered when an ajax request starts
-| [`htmx:xhr:progress`](@/events.md#htmx:xhr:progress)  | triggered periodically during an ajax request that supports progress events
+| [`htmx:before:init`](@/events.md#htmx:before:init) | triggered before htmx initializes a node
+| [`htmx:after:init`](@/events.md#htmx:after:init) | triggered after htmx has initialized a node
+| [`htmx:before:cleanup`](@/events.md#htmx:before:cleanup) | triggered before htmx cleans up an element
+| [`htmx:after:cleanup`](@/events.md#htmx:after:cleanup) | triggered after htmx has cleaned up an element
+| [`htmx:config:request`](@/events.md#htmx:config:request) | triggered before the request, allows you to customize parameters, headers
+| [`htmx:before:request`](@/events.md#htmx:before:request) | triggered before an AJAX request is made
+| [`htmx:after:request`](@/events.md#htmx:after:request) | triggered after an AJAX request has completed
+| [`htmx:finally:request`](@/events.md#htmx:finally:request) | triggered in the finally block after a request
+| [`htmx:before:swap`](@/events.md#htmx:before:swap) | triggered before a swap is done, allows you to configure the swap
+| [`htmx:after:swap`](@/events.md#htmx:after:swap) | triggered after new content has been swapped in
+| [`htmx:before:main:swap`](@/events.md#htmx:before:main:swap) | triggered before main content swap
+| [`htmx:after:main:swap`](@/events.md#htmx:after:main:swap) | triggered after main content swap
+| [`htmx:before:oob:swap`](@/events.md#htmx:before:oob:swap) | triggered before an out of band element swap
+| [`htmx:after:oob:swap`](@/events.md#htmx:after:oob:swap) | triggered after an out of band element swap
+| [`htmx:before:partial:swap`](@/events.md#htmx:before:partial:swap) | triggered before a partial element swap
+| [`htmx:after:partial:swap`](@/events.md#htmx:after:partial:swap) | triggered after a partial element swap
+| [`htmx:before:restore:history`](@/events.md#htmx:before:restore:history) | triggered before history restoration
+| [`htmx:before:history:update`](@/events.md#htmx:before:history:update) | triggered before history is updated
+| [`htmx:after:history:update`](@/events.md#htmx:after:history:update) | triggered after history has been updated
+| [`htmx:after:push:into:history`](@/events.md#htmx:after:push:into:history) | triggered after a url is pushed into history
+| [`htmx:after:replace:into:history`](@/events.md#htmx:after:replace:into:history) | triggered after a url is replaced in history
+| [`htmx:error`](@/events.md#htmx:error) | triggered when an error occurs (network, response, swap, etc.)
+| [`htmx:confirm`](@/events.md#htmx:confirm) | triggered after a trigger occurs on an element, allows you to cancel (or delay) issuing the AJAX request
+| [`htmx:validation:validate`](@/events.md#htmx:validation:validate) | triggered before an element is validated
+| [`htmx:validation:failed`](@/events.md#htmx:validation:failed) | triggered when an element fails validation
+| [`htmx:validation:halted`](@/events.md#htmx:validation:halted) | triggered when a request is halted due to validation errors
+| [`htmx:trigger`](@/events.md#htmx:trigger) | triggered when a trigger condition is met
 
 </div>
 
@@ -225,7 +200,7 @@ listed below:
 | `htmx.config.historyEnabled`           | defaults to `true`, really only useful for testing                                                                                                                         |
 | `htmx.config.historyCacheSize`         | defaults to 10                                                                                                                                                             |
 | `htmx.config.refreshOnHistoryMiss`     | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request                                                |
-| `htmx.config.defaultSwapStyle`         | defaults to `innerHTML`                                                                                                                                                    |
+| `htmx.config.defaultSwapStyle`         | defaults to `outerHTML` in htmx 4                                                                                                                                          |
 | `htmx.config.defaultSwapDelay`         | defaults to 0                                                                                                                                                              |
 | `htmx.config.defaultSettleDelay`       | defaults to 20                                                                                                                                                             |
 | `htmx.config.includeIndicatorStyles`   | defaults to `true` (determines if the indicator styles are loaded)                                                                                                         |
@@ -239,16 +214,14 @@ listed below:
 | `htmx.config.inlineScriptNonce`        | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
 | `htmx.config.inlineStyleNonce`         | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                     |
 | `htmx.config.attributesToSettle`       | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
-| `htmx.config.wsReconnectDelay`         | defaults to `full-jitter`                                                                                                                                                  |
-| `htmx.config.wsBinaryType`             | defaults to `blob`, the [the type of binary data](https://developer.mozilla.org/docs/Web/API/WebSocket/binaryType) being received over the WebSocket connection            |
 | `htmx.config.disableSelector`          | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
-| `htmx.config.disableInheritance`       | defaults to `false`. If it is set to `true`, the inheritance of attributes is completely disabled and you can explicitly specify the inheritance with the [hx-inherit](@/attributes/hx-inherit.md) attribute.
+| `htmx.config.disableInheritance`       | not applicable in htmx 4. Attribute inheritance is explicit using the `:inherited` modifier (e.g., `hx-confirm:inherited="Are you sure?"`)
 | `htmx.config.withCredentials`          | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                          |
 | `htmx.config.timeout`                  | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
 | `htmx.config.scrollBehavior`           | defaults to 'instant', the scroll behavior when using the [show](@/attributes/hx-swap.md#scrolling-scroll-show) modifier with `hx-swap`. The allowed values are `instant` (scrolling should happen instantly in a single jump), `smooth` (scrolling should animate smoothly) and `auto` (scroll behavior is determined by the computed value of [scroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior)). |
 | `htmx.config.defaultFocusScroll`       | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
 | `htmx.config.getCacheBusterParam`      | defaults to false, if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`                           |
-| `htmx.config.globalViewTransitions`    | if set to `true`, htmx will use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping in new content.             |
+| `htmx.config.viewTransitions`          | defaults to `true` in htmx 4, controls whether to use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping      |
 | `htmx.config.methodsThatUseUrlParams`  | defaults to `["get", "delete"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                |
 | `htmx.config.selfRequestsOnly`         | defaults to `true`, whether to only allow AJAX requests to the same domain as the current document                                                             |
 | `htmx.config.ignoreTitle`              | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
