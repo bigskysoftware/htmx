@@ -60,7 +60,6 @@ var htmx = (() => {
         __initInternals() {
             document.addEventListener("DOMContentLoaded", () => {
                 this.__mutationObserver.observe(document.body, {childList: true, subtree: true});
-                this.__maybeEstablishSSEConnection();
                 this.__initHistoryHandling();
                 this.process(document.body)
             })
@@ -82,27 +81,9 @@ var htmx = (() => {
             }
         };
 
-        // TODO harden the SSE implementation, implement a custom 'htmx:trigger' event to trigger an event
-        __maybeEstablishSSEConnection() {
-            if (this.config.sse) {
-                this.__eventSource = new EventSource(this.config.sseUrl);
-                this.__eventSource.onmessage = async (event) => {
-                    await this.swap({
-                        text: event.data,
-                        target: document.body,
-                        swap: 'innerHTML',
-                        sourceElement: document.body,
-                        transition: this.config.viewTransitions
-                    });
-                };
-            }
-        }
-
         // TODO make most of the things like default swap, etc configurable
         __initHtmxConfig() {
             this.config = {
-                sse: false,
-                sseUrl: "/events",
                 logAll: false,
                 viewTransitions: true,
                 historyEnabled: true,
@@ -292,7 +273,10 @@ var htmx = (() => {
         }
 
         __determineHeaders(elt) {
-            let headers = {"HX-Request": "true"};
+            let headers = {
+                "HX-Request": "true",
+                "Accept": "text/html, text/event-stream"
+            };
             if (this.__isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
@@ -418,23 +402,38 @@ var htmx = (() => {
                         raw: response,
                         status: response.status,
                         headers: response.headers,
-                        cancelled: false
+                        cancelled: false,
                     }
-                    ctx.text = await response.text();
-                    ctx.status = "response received"
 
                     if (!this.__trigger(elt, "htmx:after:request", {ctx})) return
-                    if (!ctx.response.cancelled) {
-                        this.__handleHistoryUpdate(ctx);
-                        // remove optimistic content
-                        this.__removeOptimisticContent(ctx);
-                        await this.swap(ctx);
-                        // Scroll to anchor if present in original action
-                        let anchor = ctx.request.originalAction?.split('#')[1]
-                        if (anchor) {
-                            document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'})
+
+                    const processChunk = async (chunk) => {
+                        if (!elt.isConnected) return;
+
+                        ctx.text = chunk;
+                        ctx.status = "response received";
+
+                        if (!ctx.response.cancelled) {
+                            this.__handleHistoryUpdate(ctx);
+                            this.__removeOptimisticContent(ctx);
+                            await this.swap(ctx);
+                            let anchor = ctx.request.originalAction?.split('#')[1];
+                            if (anchor) {
+                                document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
+                            }
+                            ctx.status = "swapped";
                         }
-                        ctx.status = "swapped"
+                    };
+
+                    let isSSE = response.headers.get("content-type")?.includes('text/event-stream');
+                    if (isSSE) {
+                        // Server-Sent Events - process multiple messages
+                        for await (let chunk of this.__parseSSEMessages(response.body, elt, ctx)) {
+                            await processChunk(chunk);
+                        }
+                    } else {
+                        // Regular HTTP response - process once
+                        await processChunk(await response.text());
                     }
                 } catch (error) {
                     ctx.status = "error: " + error
@@ -450,6 +449,33 @@ var htmx = (() => {
                         // TODO consider race condition of another request coming in on that tick
                         // on the next tick, issue the next request if any
                         setTimeout(()=> this.__issueRequest(nextRequest), 0)
+                    }
+                }
+            }
+        }
+
+        async* __parseSSEMessages(body, elt, ctx) {
+            let buffer = '', data = []
+            for await (let chunk of body.pipeThrough(new TextDecoderStream())) {
+                let lines = (buffer += chunk).split('\n')
+                buffer = lines.pop() || ''
+
+                for (let line of lines) {
+                    if (line.startsWith('data:')) {
+                        data.push(line.slice(6))
+                    } else if (line === '' && data.length) {
+                        let message = data.join('\n')
+                        data = []
+
+                        // Fire before event - allow cancellation
+                        let sseMessage = { text: message, cancelled: false }
+                        if (!this.__trigger(elt, "htmx:before:sse-message", {ctx, sseMessage}) || sseMessage.cancelled) {
+                            continue // Skip this message
+                        }
+
+                        yield sseMessage.text
+
+                        this.__trigger(elt, "htmx:after:sse-message", {ctx, sseMessage})
                     }
                 }
             }
@@ -1063,7 +1089,7 @@ var htmx = (() => {
         }
 
         // TODO - did we punt on other folks inserting scripts?
-       __processScripts(container) {
+        __processScripts(container) {
             container.querySelectorAll('script').forEach(oldScript => {
                 let newScript = document.createElement('script');
                 Array.from(oldScript.attributes).forEach(attr => {
