@@ -4262,7 +4262,7 @@ var htmx = (function() {
    * @param {Element} elt
    * @param {Event} event
    * @param {HtmxAjaxEtc} [etc]
-   * @param {boolean} [confirmed]
+   * @param {string|boolean} [confirmed]
    * @return {Promise<void>}
    */
   function issueAjaxRequest(verb, path, elt, event, etc, confirmed) {
@@ -4317,7 +4317,11 @@ var htmx = (function() {
     // allow event-based confirmation w/ a callback
     if (confirmed === undefined) {
       const issueRequest = function(skipConfirmation) {
-        return issueAjaxRequest(verb, path, elt, event, etc, !!skipConfirmation)
+        // convert non-empty strings to boolean
+        const skip = (typeof skipConfirmation === 'string' && skipConfirmation.length >  0)
+          ? skipConfirmation
+          : !!skipConfirmation;
+        return issueAjaxRequest(verb, path, elt, event, etc, skip)
       }
       const confirmDetails = { target, elt, path, verb, triggeringEvent: event, etc, issueRequest, question: confirmQuestion }
       if (triggerEvent(elt, 'htmx:confirm', confirmDetails) === false) {
@@ -4410,13 +4414,17 @@ var htmx = (function() {
     }
     const promptQuestion = getClosestAttributeValue(elt, 'hx-prompt')
     if (promptQuestion) {
-      var promptResponse = prompt(promptQuestion)
-      // prompt returns null if cancelled and empty string if accepted with no entry
-      if (promptResponse === null ||
-      !triggerEvent(elt, 'htmx:prompt', { prompt: promptResponse, target })) {
-        maybeCall(resolve)
-        endRequestLock()
-        return promise
+      if (confirmed) {
+        var promptResponse = confirmed
+      } else {
+        var promptResponse = prompt(promptQuestion)
+        // prompt returns null if cancelled and empty string if accepted with no entry
+        if (promptResponse === null ||
+        !triggerEvent(elt, 'htmx:prompt', { prompt: promptResponse, target })) {
+          maybeCall(resolve)
+          endRequestLock()
+          return promise
+        }
       }
     }
 
