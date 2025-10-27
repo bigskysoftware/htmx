@@ -82,20 +82,17 @@ var htmx = (() => {
             }
         };
 
-        // TODO harden the SSE implementation, implement a custom 'htmx:trigger' event to trigger an event
         __maybeEstablishSSEConnection() {
             if (this.config.sse) {
                 this.__eventSource = new EventSource(this.config.sseUrl);
                 this.__eventSource.onmessage = async (event) => {
-                    let ctx = {swapCfg: {swap: 'innerHTML'}};
-                    this.extractResponseContent(event.data, ctx);
-                    if (ctx.partialConfigs.length > 0) {
-                        if(!this.__trigger(document, "htmx:before:swap", {})) return;
-                        for (let swapCfg of ctx.partialConfigs) {
-                            await this.swap(swapCfg).catch(() => {});
-                        }
-                        this.__trigger(document, "htmx:after:swap", {});
-                    }
+                    await this.swap({
+                        text: event.data,
+                        target: document.body,
+                        swap: 'innerHTML',
+                        sourceElement: document.body,
+                        transition: this.config.viewTransitions
+                    });
                 };
             }
         }
@@ -260,16 +257,14 @@ var htmx = (() => {
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
+                target: this.__attributeValue(sourceElement, "hx-target"),
+                swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
+                transition: this.config.viewTransitions,
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                     action,
                     method,
                     headers: this.__determineHeaders(sourceElement)
-                },
-                swapCfg: {
-                    target: this.__attributeValue(sourceElement, "hx-target"),
-                    swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
-                    transition: this.config.viewTransitions
                 }
             };
 
@@ -337,10 +332,7 @@ var htmx = (() => {
             if (this.__shouldCancel(evt)) evt.preventDefault()
 
             // Resolve swap target
-            Object.assign(ctx.swapCfg, {
-                target: this.__resolveTarget(elt, ctx.swapCfg.target),
-                elt
-            })
+            ctx.target = this.__resolveTarget(elt, ctx.target);
 
             // Build request body
             let form = elt.form || elt.closest("form")
@@ -435,7 +427,7 @@ var htmx = (() => {
                         this.__handleHistoryUpdate(ctx);
                         // remove optimistic content
                         this.__removeOptimisticContent(ctx);
-                        await this.__swapResponse(ctx);
+                        await this.swap(ctx);
                         // Scroll to anchor if present in original action
                         let anchor = ctx.request.originalAction?.split('#')[1]
                         if (anchor) {
@@ -827,16 +819,9 @@ var htmx = (() => {
             return Document.parseHTMLUnsafe?.(resp) || new DOMParser().parseFromString(resp, 'text/html');
         }
 
-        __insertNodes(parent, before, fragment) {
-            if (before) {
-                before.before(...fragment.childNodes);
-            } else {
-                parent.append(...fragment.childNodes);
-            }
-        }
-
-        extractResponseContent(response, ctx = { swapCfg: {} }) {
-            response = response.replace(/<partial\b/gi, '<template partial').replace(/<\/partial>/gi, '</template>');
+        __makeFragment(text) {
+            // Replace <partial> tags with <template partial>
+            let response = text.replace(/<partial\b/gi, '<template partial').replace(/<\/partial>/gi, '</template>');
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -852,19 +837,27 @@ var htmx = (() => {
                 fragment = doc.body;
             }
 
-            ctx.partialConfigs = [];
+            return {
+                fragment,
+                title: doc.title
+            };
+        }
 
-            // Extract OOB elements as partials
+
+
+        __processOOB(fragment, elt) {
+            let tasks = [];
             let oobElements = Array.from(fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]'));
-            oobElements.forEach(elt => {
-                let oobValue = elt.getAttribute('hx-swap-oob') || elt.getAttribute('data-hx-swap-oob');
-                let target = '#' + elt.id;
+            
+            oobElements.forEach(oobElt => {
+                let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+                let target = '#' + oobElt.id;
                 let swapSpec;
 
                 if (oobValue === 'true') {
                     swapSpec = {style: 'outerHTML'};
                 } else if (oobValue.includes(' ')) {
-                    swapSpec = this.__parseSwapModifiers(oobValue);
+                    swapSpec = this.__parseSwapSpec(oobValue);
                     if (swapSpec.target) {
                         target = swapSpec.target;
                     }
@@ -873,16 +866,16 @@ var htmx = (() => {
                     if (colonIdx !== -1) {
                         let swapStyle = oobValue.substring(0, colonIdx);
                         target = oobValue.substring(colonIdx + 1);
-                        swapSpec = this.__parseSwapModifiers(swapStyle);
+                        swapSpec = this.__parseSwapSpec(swapStyle);
                     } else {
-                        swapSpec = this.__parseSwapModifiers(oobValue);
+                        swapSpec = this.__parseSwapSpec(oobValue);
                     }
                 }
 
-                elt.removeAttribute('hx-swap-oob');
-                elt.removeAttribute('data-hx-swap-oob');
+                oobElt.removeAttribute('hx-swap-oob');
+                oobElt.removeAttribute('data-hx-swap-oob');
 
-                const oobElementClone = elt.cloneNode(true);
+                const oobElementClone = oobElt.cloneNode(true);
                 let frag;
                 if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                     swapSpec.strip = true;
@@ -894,52 +887,32 @@ var htmx = (() => {
                     frag.appendChild(oobElementClone);
                 }
 
-                ctx.partialConfigs.push({
+                tasks.push({
+                    type: 'oob',
                     fragment: frag,
                     target,
                     swapSpec,
-                    type: 'oob'
+                    async: swapSpec.async === true,
+                    elt
                 });
-                elt.remove();
+                oobElt.remove();
             });
-
-            // Extract template partials
-            fragment.querySelectorAll('template[partial]').forEach(elt => {
-                let swapSpec = this.__parseSwapModifiers(elt.getAttribute('hx-swap') || 'outerHTML');
-                ctx.partialConfigs.push({
-                    fragment: elt.content.cloneNode(true),
-                    target: elt.getAttribute('hx-target'),
-                    swapSpec,
-                    type: 'partial'
-                });
-                elt.remove();
-            });
-
-            ctx.swapCfg.swapSpec = this.__parseSwapModifiers(ctx?.swapCfg?.swap || 'innerHTML');
-            ctx.swapCfg.title = doc.title;
-
-            let resultFragment = document.createDocumentFragment();
-            if (ctx?.select) {
-                let selected = fragment.querySelector(ctx.select);
-                if (selected) {
-                    if (ctx.swapCfg.swapSpec.strip === false) {
-                        resultFragment.append(selected);
-                    } else {
-                        resultFragment.append(...selected.childNodes);
-                    }
-                }
-            } else if (ctx.swapCfg.swapSpec.strip && fragment.firstElementChild) {
-                resultFragment.append(...fragment.firstElementChild.childNodes);
-            } else {
-                resultFragment.append(...fragment.childNodes);
-            }
-            ctx.swapCfg.fragment = resultFragment;
-            ctx.swapCfg.type = 'main';
-            return ctx;
+            
+            return tasks;
         }
 
+        __insertNodes(parent, before, fragment) {
+            if (before) {
+                before.before(...fragment.childNodes);
+            } else {
+                parent.append(...fragment.childNodes);
+            }
+        }
+
+
+
         // TODO can we reuse __parseTriggerSpecs here?
-        __parseSwapModifiers(swapStr) {
+        __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
             let config = {style: tokens[1] === ':' ? 'outerHTML' : (tokens[0] || 'outerHTML')};
             let startIdx = tokens[1] === ':' ? 0 : 1;
@@ -949,7 +922,7 @@ var htmx = (() => {
                     let key = tokens[i], value = tokens[i = i + 2];
                     if (key === 'swap') config.swapDelay = this.parseInterval(value);
                     else if (key === 'settle') config.settleDelay = this.parseInterval(value);
-                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip') config[key] = value === 'true';
+                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip' || key === 'async') config[key] = value === 'true';
                     else if (key === 'focus-scroll') config.focusScroll = value === 'true';
                     else if (key === 'scroll' || key === 'show') {
                         let parts = [value];
@@ -972,13 +945,73 @@ var htmx = (() => {
             return config;
         }
 
+        __processPartials(fragment, elt) {
+            let tasks = [];
+            
+            fragment.querySelectorAll('template[partial]').forEach(partialElt => {
+                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || 'outerHTML');
+                
+                tasks.push({
+                    type: 'partial',
+                    fragment: partialElt.content.cloneNode(true),
+                    target: partialElt.getAttribute('hx-target'),
+                    swapSpec,
+                    async: swapSpec.async === true,
+                    elt
+                });
+                partialElt.remove();
+            });
+            
+            return tasks;
+        }
+
+        async __executeSwapTask(task) {
+            if (task.swapSpec.swapDelay) {
+                if (task.async) {
+                    await this.timeout(task.swapSpec.swapDelay);
+                    return this.__performSwap(task);
+                } else {
+                    return new Promise(resolve => {
+                        setTimeout(() => {
+                            this.__performSwap(task);
+                            resolve();
+                        }, task.swapSpec.swapDelay);
+                    });
+                }
+            }
+            return this.__performSwap(task);
+        }
+
+        __performSwap(task) {
+            if (typeof task.target === 'string') {
+                task.target = this.find(task.target);
+            }
+            if (!task.target) return;
+            
+            this.__handlePreservedElements(task.fragment);
+            let eventTarget = this.__resolveSwapEventTarget(task);
+            
+            if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
+            
+            if (task.transition && document["startViewTransition"]) {
+                return document.startViewTransition(() => {
+                    this.__insertContent(task);
+                }).finished.then(() => {
+                    this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
+                });
+            } else {
+                this.__insertContent(task);
+                this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
+            }
+        }
+
         __insertOptimisticContent(ctx) {
             if (!ctx.optimistic) return;
 
             let sourceElt = document.querySelector(ctx.optimistic);
             if (!sourceElt) return;
 
-            let target = ctx.swapCfg.target;
+            let target = ctx.target;
             if (!target) return;
 
             if (typeof target === 'string') {
@@ -991,7 +1024,7 @@ var htmx = (() => {
             optimisticDiv.setAttribute('data-hx-optimistic', 'true');
             optimisticDiv.innerHTML = sourceElt.innerHTML;
 
-            let swapStyle = ctx.swapCfg.swap;
+            let swapStyle = ctx.swap;
 
             if (swapStyle === 'innerHTML') {
                 // Hide children of target
@@ -1047,89 +1080,111 @@ var htmx = (() => {
         // Public JS API
         //============================================================================================
 
-        async swap(swapConfig) {
-            if (typeof swapConfig.target === 'string') {
-                swapConfig.target = this.find(swapConfig.target);
+        async swap(ctx) {
+            let {fragment, title} = this.__makeFragment(ctx.text);
+            let tasks = [];
+            
+            // Process OOB and partials
+            let oobTasks = this.__processOOB(fragment, ctx.sourceElement);
+            let partialTasks = this.__processPartials(fragment, ctx.sourceElement);
+            tasks.push(...oobTasks, ...partialTasks);
+            
+            // Create main task if needed
+            let swapSpec = this.__parseSwapSpec(ctx.swap || 'outerHTML');
+            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
+                let resultFragment = document.createDocumentFragment();
+                if (ctx.select) {
+                    let selected = fragment.querySelector(ctx.select);
+                    if (selected) {
+                        if (swapSpec.strip === false) {
+                            resultFragment.append(selected);
+                        } else {
+                            resultFragment.append(...selected.childNodes);
+                        }
+                    }
+                } else {
+                    resultFragment.append(...fragment.childNodes);
+                }
+                
+                tasks.push({
+                    type: 'main',
+                    fragment: resultFragment,
+                    target: ctx.target,
+                    swapSpec,
+                    async: swapSpec.async !== false,
+                    elt: ctx.sourceElement,
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
+                    title
+                });
             }
-            if (!swapConfig.target) return; // TODO target error?
-            swapConfig.modifiers = swapConfig.swapSpec || this.__parseSwapModifiers(swapConfig.swap);
-            if (swapConfig.modifiers.swapDelay) {
-                await this.timeout(swapConfig.modifiers.swapDelay);
+            
+            if (tasks.length === 0) return;
+            
+            // Separate async/sync tasks
+            let asyncTasks = tasks.filter(t => t.async);
+            let syncTasks = tasks.filter(t => !t.async);
+            
+            // Execute sync tasks immediately
+            syncTasks.forEach(task => this.__executeSwapTask(task));
+            
+            // Execute async tasks in parallel
+            if (asyncTasks.length > 0) {
+                await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
-            let swapTask = () => {
-                this.__insertContent(swapConfig);
-            }
-            let eventTarget = this.__resolveSwapEventTarget(swapConfig);
-            if (!this.__trigger(eventTarget, "htmx:before:" + swapConfig.type + ":swap", {ctx: swapConfig})) return;
-            if (swapConfig.transition && document["startViewTransition"]) {
-                await document.startViewTransition(swapTask).finished;
-            } else {
-                swapTask();
-            }
-            eventTarget = this.__resolveSwapEventTarget(swapConfig);
-            this.__trigger(eventTarget, "htmx:after:" + swapConfig.type + ":swap", {ctx: swapConfig})
+            
+            // Fire general swap event after all tasks complete
+            // Use document to ensure event is fired even if source element was swapped
+            this.__trigger(document, "htmx:after:swap", {ctx});
         }
 
         __insertContent(swapConfig) {
-            let modifiers = swapConfig.modifiers;
+            let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
             this.__handlePreservedElements(swapConfig.fragment);
             const target = swapConfig.target, parentNode = target.parentNode;
-            if (modifiers.style === 'innerHTML') {
+            if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
-            } else if (modifiers.style === 'outerHTML') {
+            } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
                     this.__insertNodes(parentNode, target, swapConfig.fragment);
                     parentNode.removeChild(target);
                 }
-            } else if (modifiers.style === 'beforebegin') {
+            } else if (swapSpec.style === 'beforebegin') {
                 if (parentNode) {
                     this.__insertNodes(parentNode, target, swapConfig.fragment);
                 }
-            } else if (modifiers.style === 'afterbegin') {
+            } else if (swapSpec.style === 'afterbegin') {
                 this.__insertNodes(target, target.firstChild, swapConfig.fragment);
-            } else if (modifiers.style === 'beforeend') {
+            } else if (swapSpec.style === 'beforeend') {
                 this.__insertNodes(target, null, swapConfig.fragment);
-            } else if (modifiers.style === 'afterend') {
+            } else if (swapSpec.style === 'afterend') {
                 if (parentNode) {
                     this.__insertNodes(parentNode, target.nextSibling, swapConfig.fragment);
                 }
-            } else if (modifiers.style === 'delete') {
+            } else if (swapSpec.style === 'delete') {
                 if (parentNode) {
                     parentNode.removeChild(target);
                 }
                 return;
-            } else if (modifiers.style === 'none') {
+            } else if (swapSpec.style === 'none') {
                 return;
             } else {
-                throw new Error(`Unknown swap style: ${modifiers.style}`);
+                throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
             this.__restorePreserved();
-            if (modifiers.scroll) this.__handleScroll(target, modifiers.scroll);
+            if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
-        __resolveSwapEventTarget(swapConfig) {
-            if (swapConfig.sourceElement && document.contains(swapConfig.sourceElement)) {
-                return swapConfig.sourceElement;
-            } else if (swapConfig.target && document.contains(swapConfig.target)) {
-                return swapConfig.target;
+        __resolveSwapEventTarget(task) {
+            if (task.elt && document.contains(task.elt)) {
+                return task.elt;
+            } else if (task.target && document.contains(task.target)) {
+                return task.target;
             } else {
                 return document;
             }
         }
 
-        async __swapResponse(ctx) {
-            this.extractResponseContent(ctx.text, ctx);
-            // TODO - why this line?
-            if (ctx.partialConfigs.length > 0) ctx.swapCfg.transition = false;
-            let allConfigs = [ctx.swapCfg].concat(ctx.partialConfigs)
-            let eventTarget = this.__resolveSwapEventTarget(ctx.swapCfg);
-            if(!this.__trigger(eventTarget, "htmx:before:swap", {ctx})) return;
-            for (let currentConfig of allConfigs) {
-                await this.swap(currentConfig);
-            }
-            eventTarget = this.__resolveSwapEventTarget(ctx.swapCfg)
-            this.__trigger(eventTarget, "htmx:after:swap", {ctx})
-        }
+
 
         __trigger(on, eventName, detail = {}, bubbles = true) {
             if (this.config.logAll) {
@@ -1148,10 +1203,10 @@ var htmx = (() => {
                     on.removeEventListener(event, handler);
                     reject(new Error(`Timeout waiting for ${event}`));
                 }, timeout);
-                let handler = (event) => {
+                let handler = (evt) => {
                     clearTimeout(timeoutId);
                     on.removeEventListener(event, handler);
-                    resolve(event);
+                    resolve(evt);
                 };
                 on.addEventListener(event, handler);
             })

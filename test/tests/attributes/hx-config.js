@@ -185,7 +185,7 @@ describe('hx-config attribute', function() {
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"+swapCfg": {"transition": true}}\'>Click</button>');
         await clickAndWait(btn)
-        assert.isTrue(ctx.swapCfg.transition)
+        assert.isTrue(ctx.transition)
     })
 
     it('multiple elements with different configs work independently', async function () {

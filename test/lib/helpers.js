@@ -76,8 +76,9 @@ function sendSSE(content, eventType) {
 }
 
 async function sendSSEAndWait(content, eventType) {
+  let swapPromise = htmxSwappedEvent();
   sendSSE(content, eventType);
-  await htmxSwappedEvent();
+  await swapPromise;
 }
 
 function htmxSwappedEvent() {

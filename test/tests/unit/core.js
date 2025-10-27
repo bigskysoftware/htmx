@@ -1,55 +1,47 @@
 describe('Unit Tests', function() {
-    it("Test that partial parsing works as expected", function() {
-        var result = htmx.extractResponseContent("foo");
+    it("Test that fragment parsing works as expected", function() {
+        var result = htmx.__makeFragment("foo");
         var temp = document.createElement('div');
-        temp.appendChild(result.swapCfg.fragment.cloneNode(true));
-        assert.equal("foo", temp.innerHTML)
+        temp.appendChild(result.fragment.cloneNode(true));
+        assert.equal("foo", temp.textContent.trim())
 
-        result = htmx.extractResponseContent(`<partial hx-target="#test">foo</partial>`);
+        // Test that template partials are preserved in fragment
+        result = htmx.__makeFragment(`<template partial hx-target="#test">foo</template>`);
         temp = document.createElement('div');
-        temp.appendChild(result.swapCfg.fragment.cloneNode(true));
-        assert.equal("", temp.innerHTML)
-        temp = document.createElement('div');
-        temp.appendChild(result.partialConfigs[0].fragment.cloneNode(true));
-        assert.equal("foo", temp.innerHTML)
-        assert.equal("#test", result.partialConfigs[0].target)
+        temp.appendChild(result.fragment.cloneNode(true));
+        assert.include(temp.innerHTML, 'template')
     })
 
-    it("extractResponseContent handles multiple partials", function() {
-        var result = htmx.extractResponseContent(`
+    it("__makeFragment handles multiple partials", function() {
+        var result = htmx.__makeFragment(`
             <div>Main content</div>
-            <partial hx-target="#test1">Partial 1</partial>
-            <partial hx-target="#test2" hx-swap="innerHTML">Partial 2</partial>
+            <template partial hx-target="#test1">Partial 1</template>
+            <template partial hx-target="#test2" hx-swap="innerHTML">Partial 2</template>
         `);
-        assert.equal(2, result.partialConfigs.length)
         var temp = document.createElement('div');
-        temp.appendChild(result.partialConfigs[0].fragment.cloneNode(true));
-        assert.equal("Partial 1", temp.innerHTML)
-        assert.equal("#test1", result.partialConfigs[0].target)
-        temp = document.createElement('div');
-        temp.appendChild(result.partialConfigs[1].fragment.cloneNode(true));
-        assert.equal("Partial 2", temp.innerHTML)
-        assert.equal("innerHTML", result.partialConfigs[1].swapSpec.style)
+        temp.appendChild(result.fragment.cloneNode(true));
+        assert.include(temp.innerHTML, "Main content")
+        assert.include(temp.innerHTML, "template")
     })
 
-    it("extractResponseContent extracts title from HTML", function() {
-        var result = htmx.extractResponseContent(`
+    it("__makeFragment extracts title from HTML", function() {
+        var result = htmx.__makeFragment(`
             <html><head><title>Test Title</title></head><body>Content</body></html>
         `);
-        assert.equal("Test Title", result.swapCfg.title)
+        assert.equal("Test Title", result.title)
     })
 
-    it("extractResponseContent handles body tag response", function() {
-        var result = htmx.extractResponseContent(`<body><div>Content</div></body>`);
+    it("__makeFragment handles body tag response", function() {
+        var result = htmx.__makeFragment(`<body><div>Content</div></body>`);
         var temp = document.createElement('div');
-        temp.appendChild(result.swapCfg.fragment.cloneNode(true));
+        temp.appendChild(result.fragment.cloneNode(true));
         assert.include(temp.innerHTML, "Content")
     })
 
-    it("extractResponseContent handles fragment response", function() {
-        var result = htmx.extractResponseContent(`<div>Fragment</div><span>More</span>`);
+    it("__makeFragment handles fragment response", function() {
+        var result = htmx.__makeFragment(`<div>Fragment</div><span>More</span>`);
         var temp = document.createElement('div');
-        temp.appendChild(result.swapCfg.fragment.cloneNode(true));
+        temp.appendChild(result.fragment.cloneNode(true));
         assert.include(temp.innerHTML, "Fragment")
         assert.include(temp.innerHTML, "More")
     })
@@ -245,7 +237,6 @@ describe('Unit Tests', function() {
     it("public API surface remains stable", function() {
         // This test ensures the public API doesn't accidentally change
         const expectedPublicMethods = [
-            'extractResponseContent',
             'find',
             'findAll',
             'forEvent',
