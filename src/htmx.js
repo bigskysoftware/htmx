@@ -37,6 +37,10 @@ var htmx = (() => {
             this.#currentRequest = null
             return this.#requestQueue.shift()
         }
+
+        abortCurrentRequest() {
+            this.#currentRequest?.abort?.()
+        }
     }
 
     class Htmx {
@@ -231,6 +235,7 @@ var htmx = (() => {
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.__initializeTriggers(elt);
                 this.__initializePreload(elt);
+                this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
                 this.__trigger(elt, "load", {}, false)
             }
@@ -1494,6 +1499,13 @@ var htmx = (() => {
                     return string.substring(11);
                 }
             }
+        }
+
+        __initializeAbortListener(elt) {
+            elt.addEventListener("htmx:abort", ()=> {
+                let requestQueue = this.__getRequestQueue(elt);
+                requestQueue.abortCurrentRequest();
+            })
         }
     }
 
