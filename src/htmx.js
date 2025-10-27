@@ -506,7 +506,7 @@ var htmx = (() => {
             return !isFragmentOnly
         }
 
-        __initializeTriggers(elt) {
+        __initializeTriggers(elt, initialHandler = elt.__htmx.eventHandler) {
             let specString = this.__attributeValue(elt, "hx-trigger");
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
@@ -516,7 +516,7 @@ var htmx = (() => {
             elt.__htmx.triggerSpecs = this.__parseTriggerSpecs(specString)
             elt.__htmx.listeners = []
             for (let spec of elt.__htmx.triggerSpecs) {
-                spec.handler = elt.__htmx.eventHandler
+                spec.handler = initialHandler
                 spec.listeners = []
                 spec.values = {}
 

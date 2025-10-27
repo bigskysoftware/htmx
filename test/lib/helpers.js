@@ -135,6 +135,7 @@ function lastFetch() {
   return lastCall;
 }
 
+// TODO - use the playground here
 function parseHTML(html, appendToBody = false) {
   const div = document.createElement('div');
   div.innerHTML = html;
