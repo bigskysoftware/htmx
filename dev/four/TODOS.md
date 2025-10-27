@@ -12,7 +12,8 @@
     * out of band selects?
   * ~~revert to `innerHTML` swap~~
   * ~~revert to htmx 2.0 attribute resolution~~
-  * mode to log elements that should marked as `:inherited` 
+  * mode to log elements that should marked as `:inherited`
+* Unify __parseTriggerSpecs and __parseSwapModifiers somehow
 * An "upgrade report" tool for htmx 2.0 applications
   * Produces a report of all elements that need to be
     * Marked as `:inherited`
