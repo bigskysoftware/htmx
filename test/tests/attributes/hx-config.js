@@ -10,49 +10,49 @@ describe('hx-config attribute', function() {
 
     it('overrides action with JSON config', async function () {
         mockResponse('GET', '/override', 'Overridden!')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
         let btn = initHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"action": "/override"}\'>Click</button>');
         await clickAndWait(btn)
         playground().innerText.should.equal('Overridden!')
         assert.isTrue(lastFetch().url.startsWith('/override'))
-        assert.equal(cfg.request.action, '/override')
+        assert.equal(ctx.request.action, '/override')
     })
 
     it('overrides validate via config', async function () {
         mockResponse('POST', '/test', 'Submitted')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let form = initHTML('<form hx-post="/test" hx-config=\'{"validate": false}\'><input required name="test" value="filled"><button>Submit</button></form>');
         await submitAndWait(form)
         // Verify validate can be set via config (goes to request)
-        assert.isFalse(cfg.request.validate)
+        assert.isFalse(ctx.request.validate)
     })
 
     it('merges into options with + prefix', async function () {
         mockResponse('GET', '/test', 'Fetched')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"cache": "no-cache"}\'>Click</button>');
         await clickAndWait(btn)
         // Note: later Object.assign in handleTriggerEvent may override some options
-        assert.equal(cfg.request.cache, 'no-cache')
-        assert.equal(cfg.request.method, 'GET')
+        assert.equal(ctx.request.cache, 'no-cache')
+        assert.equal(ctx.request.method, 'GET')
     })
 
     it('can set custom property on config', async function () {
         mockResponse('GET', '/test', 'Done')
         let customValue = null
         document.addEventListener('htmx:config:request', function(e) {
-            customValue = e.detail.cfg.request.customProperty
+            customValue = e.detail.ctx.request.customProperty
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"customProperty": "myValue"}\'>Click</button>');
@@ -62,16 +62,16 @@ describe('hx-config attribute', function() {
 
     it('can set multiple custom properties', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"prop1": "value1", "prop2": "value2", "prop3": 123}\'>Click</button>');
         await clickAndWait(btn)
-        assert.equal(cfg.request.prop1, 'value1')
-        assert.equal(cfg.request.prop2, 'value2')
-        assert.equal(cfg.request.prop3, 123)
+        assert.equal(ctx.request.prop1, 'value1')
+        assert.equal(ctx.request.prop2, 'value2')
+        assert.equal(ctx.request.prop3, 123)
     })
 
     it('works with empty config object', async function () {
@@ -90,102 +90,102 @@ describe('hx-config attribute', function() {
 
     it('supports boolean values in config', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"myFlag": true, "otherFlag": false}\'>Click</button>');
         await clickAndWait(btn)
-        assert.isTrue(cfg.request.myFlag)
-        assert.isFalse(cfg.request.otherFlag)
+        assert.isTrue(ctx.request.myFlag)
+        assert.isFalse(ctx.request.otherFlag)
     })
 
     it('supports numeric values in config', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"timeout": 5000, "retries": 3}\'>Click</button>');
         await clickAndWait(btn)
-        assert.equal(cfg.request.timeout, 5000)
-        assert.equal(cfg.request.retries, 3)
+        assert.equal(ctx.request.timeout, 5000)
+        assert.equal(ctx.request.retries, 3)
     })
 
     it('supports null values in config', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-select="#foo" hx-config=\'{"select": null}\'>Click</button>');
         await clickAndWait(btn)
-        assert.isNull(cfg.request.select)
+        assert.isNull(ctx.request.select)
     })
 
     it('merges non-object values with + prefix', async function () {
         mockResponse('GET', '/newpath', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         // When using + on a non-object (action is a string), it should set it on request
         let btn = initHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"+action": "/newpath"}\'>Click</button>');
         await clickAndWait(btn)
-        assert.isTrue(cfg.request.action.startsWith('/newpath'))
+        assert.isTrue(ctx.request.action.startsWith('/newpath'))
     })
 
     it('handles complex nested JSON structures', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"custom": {"nested": {"deep": "value"}}}\'>Click</button>');
         await clickAndWait(btn)
-        assert.equal(cfg.request.custom.nested.deep, 'value')
+        assert.equal(ctx.request.custom.nested.deep, 'value')
     })
 
     it('merges arrays by replacement not concatenation', async function () {
         mockResponse('GET', '/test', 'Done')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         // Set an array on a custom property
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"myArray": [1, 2, 3]}\'>Click</button>');
         await clickAndWait(btn)
-        assert.deepEqual(cfg.request.myArray, [1, 2, 3])
+        assert.deepEqual(ctx.request.myArray, [1, 2, 3])
     })
 
     it('can override validation setting via config', async function () {
         mockResponse('POST', '/submit', 'Submitted')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let form = initHTML('<form hx-post="/submit" hx-validate="true" hx-config=\'{"validate": false}\'><input required name="test" value="test"><button>Submit</button></form>');
         await submitAndWait(form)
-        assert.isFalse(cfg.request.validate)
+        assert.isFalse(ctx.request.validate)
     })
 
     it('can set transition via config', async function () {
         mockResponse('GET', '/test', 'New content')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
 
         let btn = initHTML('<button hx-get="/test" hx-config=\'{"+swapCfg": {"transition": true}}\'>Click</button>');
         await clickAndWait(btn)
-        assert.isTrue(cfg.swapCfg.transition)
+        assert.isTrue(ctx.swapCfg.transition)
     })
 
     it('multiple elements with different configs work independently', async function () {
@@ -203,26 +203,26 @@ describe('hx-config attribute', function() {
 
     it('config can be inherited with :inherited suffix', async function () {
         mockResponse('GET', '/inherited', 'Inherited config')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
         initHTML('<div hx-config:inherited=\'{"action": "/inherited"}\'><button hx-get="/original" hx-trigger="click">Click</button></div>')
         await clickAndWait('button')
         playground().innerText.should.equal('Inherited config')
         assert.isTrue(lastFetch().url.startsWith('/inherited'))
-        assert.equal(cfg.request.action, '/inherited')
+        assert.equal(ctx.request.action, '/inherited')
     })
 
     it('child config takes precedence over inherited config', async function () {
         mockResponse('GET', '/child', 'Child wins')
-        let cfg = null
+        let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
-            cfg = e.detail.cfg
+            ctx = e.detail.ctx
         }, {once: true})
         initHTML('<div hx-config:inherited=\'{"action": "/parent"}\'><button hx-get="/original" hx-trigger="click" hx-config=\'{"action": "/child"}\'>Click</button></div>')
         await clickAndWait('button')
         assert.isTrue(lastFetch().url.startsWith('/child'))
-        assert.equal(cfg.request.action, '/child')
+        assert.equal(ctx.request.action, '/child')
     })
 })

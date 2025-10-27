@@ -87,11 +87,11 @@ var htmx = (() => {
             if (this.config.sse) {
                 this.__eventSource = new EventSource(this.config.sseUrl);
                 this.__eventSource.onmessage = async (event) => {
-                    let cfg = {swapCfg: {swap: 'innerHTML'}};
-                    this.extractResponseContent(event.data, cfg);
-                    if (cfg.partialConfigs.length > 0) {
+                    let ctx = {swapCfg: {swap: 'innerHTML'}};
+                    this.extractResponseContent(event.data, ctx);
+                    if (ctx.partialConfigs.length > 0) {
                         if(!this.__trigger(document, "htmx:before:swap", {})) return;
-                        for (let swapCfg of cfg.partialConfigs) {
+                        for (let swapCfg of ctx.partialConfigs) {
                             await this.swap(swapCfg).catch(() => {});
                         }
                         this.__trigger(document, "htmx:after:swap", {});
@@ -363,7 +363,7 @@ var htmx = (() => {
                 ...(this.config.selfRequestsOnly && {mode: "same-origin"})
             })
 
-            if (!this.__trigger(elt, "htmx:config:request", {cfg: ctx})) return
+            if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
             if (!this.__verbs.includes(ctx.request.method.toLowerCase())) return
             if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
@@ -383,15 +383,15 @@ var htmx = (() => {
             }
         }
 
-        async __issueRequest(cfg) {
-            let elt = cfg.sourceElement
+        async __issueRequest(ctx) {
+            let elt = ctx.sourceElement
             // Don't check isConnected here - queued requests should complete even if element was swapped
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
-            if(requestQueue.shouldIssueRequest(cfg, syncStrategy)){
-                cfg.status = "issuing"
+            if(requestQueue.shouldIssueRequest(ctx, syncStrategy)){
+                ctx.status = "issuing"
                 // establish timeout handler
-                this.__initTimeout(cfg);
+                this.__initTimeout(ctx);
                 let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
                 this.__showIndicators(indicatorsSelector);
                 let disableSelector = this.__attributeValue(elt, "hx-disable");
@@ -406,52 +406,52 @@ var htmx = (() => {
                             if (!result) return
                         }
                     }
-                    if (!this.__trigger(elt, "htmx:before:request", {cfg})) return
+                    if (!this.__trigger(elt, "htmx:before:request", {ctx})) return
 
                     // Check for valid preload
                     let response;
                     if (elt.__htmx.preload &&
-                        elt.__htmx.preload.action === cfg.request.action &&
+                        elt.__htmx.preload.action === ctx.request.action &&
                         Date.now() < elt.__htmx.preload.expiresAt) {
                         response = await elt.__htmx.preload.prefetch;
                         delete elt.__htmx.preload;
                     } else {
                         delete elt.__htmx.preload;
                         // insert optimistic content, hide in case of outerHTML or innerHTML targets
-                        this.__insertOptimisticContent(cfg);
-                        response = await fetch(cfg.request.action, cfg.request);
+                        this.__insertOptimisticContent(ctx);
+                        response = await fetch(ctx.request.action, ctx.request);
                     }
-                    cfg.response = {
+                    ctx.response = {
                         raw: response,
                         status: response.status,
                         headers: response.headers,
                         cancelled: false
                     }
-                    cfg.text = await response.text();
-                    cfg.status = "response received"
+                    ctx.text = await response.text();
+                    ctx.status = "response received"
 
-                    if (!this.__trigger(elt, "htmx:after:request", {cfg})) return
-                    if (!cfg.response.cancelled) {
-                        this.__handleHistoryUpdate(cfg);
+                    if (!this.__trigger(elt, "htmx:after:request", {ctx})) return
+                    if (!ctx.response.cancelled) {
+                        this.__handleHistoryUpdate(ctx);
                         // remove optimistic content
-                        this.__removeOptimisticContent(cfg);
-                        await this.__swapResponse(cfg);
+                        this.__removeOptimisticContent(ctx);
+                        await this.__swapResponse(ctx);
                         // Scroll to anchor if present in original action
-                        let anchor = cfg.request.originalAction?.split('#')[1]
+                        let anchor = ctx.request.originalAction?.split('#')[1]
                         if (anchor) {
                             document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'})
                         }
-                        cfg.status = "swapped"
+                        ctx.status = "swapped"
                     }
                 } catch (error) {
-                    cfg.status = "error: " + error
+                    ctx.status = "error: " + error
                     // remove optimistic content
-                    this.__removeOptimisticContent(cfg);
-                    this.__trigger(elt, "htmx:error", {cfg, error})
+                    this.__removeOptimisticContent(ctx);
+                    this.__trigger(elt, "htmx:error", {ctx, error})
                 } finally {
                     this.__hideIndicators(indicatorsSelector);
                     this.__enableElts(disableSelector);
-                    this.__trigger(elt, "htmx:finally:request", {cfg})
+                    this.__trigger(elt, "htmx:finally:request", {ctx})
                     let nextRequest = requestQueue.nextRequest();
                     if (nextRequest) {
                         // TODO consider race condition of another request coming in on that tick
@@ -462,14 +462,14 @@ var htmx = (() => {
             }
         }
 
-        __initTimeout(cfg) {
+        __initTimeout(ctx) {
             let timeoutInterval;
-            if (cfg.request.timeout) {
-                timeoutInterval = typeof cfg.request.timeout == "string" ? this.parseInterval(cfg.request.timeout) : cfg.request.timeout;
+            if (ctx.request.timeout) {
+                timeoutInterval = typeof ctx.request.timeout == "string" ? this.parseInterval(ctx.request.timeout) : ctx.request.timeout;
             } else {
                 timeoutInterval = htmx.config.defaultTimeout;
             }
-            cfg.requestTimeout = setTimeout(() => cfg.abort(), timeoutInterval);
+            ctx.requestTimeout = setTimeout(() => ctx.abort(), timeoutInterval);
         }
 
         __determineSyncStrategy(elt) {
@@ -683,18 +683,18 @@ var htmx = (() => {
                 if (elt.__htmx.preload) return;
 
                 // Create config and build full action URL with params
-                let cfg = this.__createRequestContext(elt, evt);
+                let ctx = this.__createRequestContext(elt, evt);
                 let form = elt.form || elt.closest("form");
                 let body = this.__collectFormData(elt, form, evt.submitter);
                 this.__handleHxVals(elt, body);
 
-                let action = cfg.request.action.replace?.(/#.*$/, '');
+                let action = ctx.request.action.replace?.(/#.*$/, '');
                 let params = new URLSearchParams(body);
                 if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
                 // Store preload info
                 elt.__htmx.preload = {
-                    prefetch: fetch(action, cfg.request),
+                    prefetch: fetch(action, ctx.request),
                     action: action,
                     expiresAt: Date.now() + timeout
                 };
@@ -835,7 +835,7 @@ var htmx = (() => {
             }
         }
 
-        extractResponseContent(response, cfg = { swapCfg: {} }) {
+        extractResponseContent(response, ctx = { swapCfg: {} }) {
             response = response.replace(/<partial\b/gi, '<template partial').replace(/<\/partial>/gi, '</template>');
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
@@ -852,7 +852,7 @@ var htmx = (() => {
                 fragment = doc.body;
             }
 
-            cfg.partialConfigs = [];
+            ctx.partialConfigs = [];
 
             // Extract OOB elements as partials
             let oobElements = Array.from(fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]'));
@@ -894,7 +894,7 @@ var htmx = (() => {
                     frag.appendChild(oobElementClone);
                 }
 
-                cfg.partialConfigs.push({
+                ctx.partialConfigs.push({
                     fragment: frag,
                     target,
                     swapSpec,
@@ -906,7 +906,7 @@ var htmx = (() => {
             // Extract template partials
             fragment.querySelectorAll('template[partial]').forEach(elt => {
                 let swapSpec = this.__parseSwapModifiers(elt.getAttribute('hx-swap') || 'outerHTML');
-                cfg.partialConfigs.push({
+                ctx.partialConfigs.push({
                     fragment: elt.content.cloneNode(true),
                     target: elt.getAttribute('hx-target'),
                     swapSpec,
@@ -915,27 +915,27 @@ var htmx = (() => {
                 elt.remove();
             });
 
-            cfg.swapCfg.swapSpec = this.__parseSwapModifiers(cfg?.swapCfg?.swap || 'innerHTML');
-            cfg.swapCfg.title = doc.title;
+            ctx.swapCfg.swapSpec = this.__parseSwapModifiers(ctx?.swapCfg?.swap || 'innerHTML');
+            ctx.swapCfg.title = doc.title;
 
             let resultFragment = document.createDocumentFragment();
-            if (cfg?.select) {
-                let selected = fragment.querySelector(cfg.select);
+            if (ctx?.select) {
+                let selected = fragment.querySelector(ctx.select);
                 if (selected) {
-                    if (cfg.swapCfg.swapSpec.strip === false) {
+                    if (ctx.swapCfg.swapSpec.strip === false) {
                         resultFragment.append(selected);
                     } else {
                         resultFragment.append(...selected.childNodes);
                     }
                 }
-            } else if (cfg.swapCfg.swapSpec.strip && fragment.firstElementChild) {
+            } else if (ctx.swapCfg.swapSpec.strip && fragment.firstElementChild) {
                 resultFragment.append(...fragment.firstElementChild.childNodes);
             } else {
                 resultFragment.append(...fragment.childNodes);
             }
-            cfg.swapCfg.fragment = resultFragment;
-            cfg.swapCfg.type = 'main';
-            return cfg;
+            ctx.swapCfg.fragment = resultFragment;
+            ctx.swapCfg.type = 'main';
+            return ctx;
         }
 
         // TODO can we reuse __parseTriggerSpecs here?
@@ -972,13 +972,13 @@ var htmx = (() => {
             return config;
         }
 
-        __insertOptimisticContent(cfg) {
-            if (!cfg.optimistic) return;
+        __insertOptimisticContent(ctx) {
+            if (!ctx.optimistic) return;
 
-            let sourceElt = document.querySelector(cfg.optimistic);
+            let sourceElt = document.querySelector(ctx.optimistic);
             if (!sourceElt) return;
 
-            let target = cfg.swapCfg.target;
+            let target = ctx.swapCfg.target;
             if (!target) return;
 
             if (typeof target === 'string') {
@@ -991,7 +991,7 @@ var htmx = (() => {
             optimisticDiv.setAttribute('data-hx-optimistic', 'true');
             optimisticDiv.innerHTML = sourceElt.innerHTML;
 
-            let swapStyle = cfg.swapCfg.swap;
+            let swapStyle = ctx.swapCfg.swap;
 
             if (swapStyle === 'innerHTML') {
                 // Hide children of target
@@ -1000,24 +1000,24 @@ var htmx = (() => {
                     child.setAttribute('data-hx-oh', 'true');
                 });
                 target.appendChild(optimisticDiv);
-                cfg.optimisticDiv = optimisticDiv;
+                ctx.optimisticDiv = optimisticDiv;
             } else if (['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(swapStyle)) {
                 target.insertAdjacentElement(swapStyle, optimisticDiv);
-                cfg.optimisticDiv = optimisticDiv;
+                ctx.optimisticDiv = optimisticDiv;
             } else {
                 // Assume outerHTML-like behavior, Hide target and insert div after it
                 target.style.display = 'none';
                 target.setAttribute('data-hx-oh', 'true');
                 target.insertAdjacentElement('afterend', optimisticDiv);
-                cfg.optimisticDiv = optimisticDiv;
+                ctx.optimisticDiv = optimisticDiv;
             }
         }
 
-        __removeOptimisticContent(cfg) {
-            if (!cfg.optimisticDiv) return;
+        __removeOptimisticContent(ctx) {
+            if (!ctx.optimisticDiv) return;
 
             // Remove optimistic div
-            cfg.optimisticDiv.remove();
+            ctx.optimisticDiv.remove();
 
             // Unhide any hidden elements
             document.querySelectorAll('[data-hx-oh]').forEach(elt => {
@@ -1060,14 +1060,14 @@ var htmx = (() => {
                 this.__insertContent(swapConfig);
             }
             let eventTarget = this.__resolveSwapEventTarget(swapConfig);
-            if (!this.__trigger(eventTarget, "htmx:before:" + swapConfig.type + ":swap", {cfg: swapConfig})) return;
+            if (!this.__trigger(eventTarget, "htmx:before:" + swapConfig.type + ":swap", {ctx: swapConfig})) return;
             if (swapConfig.transition && document["startViewTransition"]) {
                 await document.startViewTransition(swapTask).finished;
             } else {
                 swapTask();
             }
             eventTarget = this.__resolveSwapEventTarget(swapConfig);
-            this.__trigger(eventTarget, "htmx:after:" + swapConfig.type + ":swap", {cfg: swapConfig})
+            this.__trigger(eventTarget, "htmx:after:" + swapConfig.type + ":swap", {ctx: swapConfig})
         }
 
         __insertContent(swapConfig) {
@@ -1117,18 +1117,18 @@ var htmx = (() => {
             }
         }
 
-        async __swapResponse(cfg) {
-            this.extractResponseContent(cfg.text, cfg);
+        async __swapResponse(ctx) {
+            this.extractResponseContent(ctx.text, ctx);
             // TODO - why this line?
-            if (cfg.partialConfigs.length > 0) cfg.swapCfg.transition = false;
-            let allConfigs = [cfg.swapCfg].concat(cfg.partialConfigs)
-            let eventTarget = this.__resolveSwapEventTarget(cfg.swapCfg);
-            if(!this.__trigger(eventTarget, "htmx:before:swap", {cfg})) return;
+            if (ctx.partialConfigs.length > 0) ctx.swapCfg.transition = false;
+            let allConfigs = [ctx.swapCfg].concat(ctx.partialConfigs)
+            let eventTarget = this.__resolveSwapEventTarget(ctx.swapCfg);
+            if(!this.__trigger(eventTarget, "htmx:before:swap", {ctx})) return;
             for (let currentConfig of allConfigs) {
                 await this.swap(currentConfig);
             }
-            eventTarget = this.__resolveSwapEventTarget(cfg.swapCfg)
-            this.__trigger(eventTarget, "htmx:after:swap", {cfg})
+            eventTarget = this.__resolveSwapEventTarget(ctx.swapCfg)
+            this.__trigger(eventTarget, "htmx:after:swap", {ctx})
         }
 
         __trigger(on, eventName, detail = {}, bubbles = true) {
@@ -1215,10 +1215,10 @@ var htmx = (() => {
             }
         }
 
-        __handleHistoryUpdate(cfg) {
-            let elt = cfg.sourceElement
-            let push = cfg.response.headers?.get?.('HX-Push') || cfg.response.headers?.get?.('HX-Push-Url');
-            let replace = cfg.response.headers?.get?.('HX-Replace-Url');
+        __handleHistoryUpdate(ctx) {
+            let elt = ctx.sourceElement
+            let push = ctx.response.headers?.get?.('HX-Push') || ctx.response.headers?.get?.('HX-Push-Url');
+            let replace = ctx.response.headers?.get?.('HX-Replace-Url');
             let headerPath = push || replace;
 
             if (!headerPath) {
@@ -1233,7 +1233,7 @@ var htmx = (() => {
             if (!path || path === 'false') return;
 
             if (path === 'true') {
-                path = cfg.request.originalAction;
+                path = ctx.request.originalAction;
             }
 
             let type = push ? 'push' : 'replace';
@@ -1241,7 +1241,7 @@ var htmx = (() => {
             let historyDetail = {
                 history: {type, path},
                 elt,
-                response: cfg.response
+                response: ctx.response
             };
             if(!this.__trigger(document.body, "htmx:before:history:update", historyDetail)) return;
             if (type === 'push') {
