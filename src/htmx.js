@@ -94,6 +94,7 @@ var htmx = (() => {
                 viewTransitions: true,
                 historyEnabled: true,
                 selfRequestsOnly: true,
+                reloadOnHistoryNavigation: false,
                 defaultSwapStyle: "innerHTML",
                 defaultTimeout: 60000 /* 00 second default timeout */
             }
@@ -762,7 +763,10 @@ var htmx = (() => {
         }
 
         process(elt) {
-            if (this.__ignore(elt)) return
+            if (this.__ignore(elt)) return;
+            if (elt === document.body) {
+                this.__initializeRefreshListener(elt)
+            }
             if (elt.matches(this.__actionSelector)) {
                 this.__initializeElement(elt)
             }
@@ -1350,7 +1354,11 @@ var htmx = (() => {
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
             if (this.__trigger(document.body, "htmx:before:restore:history", {path, cacheMiss: true})) {
-                location.reload();
+                if (htmx.config.reloadOnHistoryNavigation) {
+                    location.reload();
+                } else {
+                    this.trigger(document.body, "htmx:refresh")
+                }
             }
         }
 
@@ -1644,6 +1652,26 @@ var htmx = (() => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abortCurrentRequest();
             })
+        }
+
+        __initializeRefreshListener(elt) {
+            if (!elt.__htmxRefreshListener) {
+                elt.__htmxRefreshListener = async (evt) => {
+                    try {
+                        let ctx = this.__createRequestContext(elt, evt);
+                        ctx.sourceElement = elt;
+                        ctx.sourceEvent = evt;
+                        ctx.request.action = location.href;
+                        ctx.request.method = "GET";
+                        ctx.target = "body";
+                        ctx.swap = "outerHTML";
+                        await this.handleTriggerEvent(ctx);
+                    } catch (e) {
+                        console.error(e)
+                    }
+                }
+                elt.addEventListener("htmx:refresh", elt.__htmxRefreshListener)
+            }
         }
     }
 
