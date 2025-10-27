@@ -1026,15 +1026,13 @@ var htmx = (() => {
 
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
             
-            const doSwap = () => {
-                this.__insertContent(task);
-                this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
-            };
+            const swapTask = () => this.__insertContent(task);
+            const afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
             if (task.transition && document["startViewTransition"]) {
-                document.startViewTransition(doSwap);
-            } else {
-                doSwap();
+                return document.startViewTransition(swapTask).finished.then(afterSwap);
             }
+            swapTask();
+            afterSwap();
         }
 
         __insertOptimisticContent(ctx) {
