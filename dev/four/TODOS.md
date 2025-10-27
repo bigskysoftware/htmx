@@ -3,12 +3,12 @@
 * Are we going to support CSS transitions? 
   * Maybe at least a simple version, wait on transition events?
   * We could say just use morph
-* Is SSE functionality going to be part of core? (Christian)
 * Are we going to add head tag merging support to core?
 * How should we handle response code mapping? (telroshan)
 
 # TODOs
 
+* SSE/streaming functionality (Christian)
 * Support `hx-action="js:..."` and `js:` or `javascript:` broadly
   * Allow users to turn off eval
 * Build out a "patterns" set of examples to replace examples, cleaned up, add more advanced cases
@@ -16,6 +16,8 @@
 * Need to make `203 - No Content` not do the main swap once swapping settles down (lol)
   * See "Open Questions"
 * quirks.js implementation
+  * retrigger historical events based on mapping
+  * revert to older API (esp `htmx.ajax`)
   * Move deprecated features into quirks.js?
     * out of band swaps?
     * out of band selects?
