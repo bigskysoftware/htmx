@@ -9,9 +9,11 @@ var htmx = (() => {
                 this.#currentRequest = ctx
                 return true
             } else {
+                // Update ctx.status properly for replaced request contexts
                 if (queueStrategy === "replace") {
                     this.#requestQueue = []
                     if (this.#currentRequest) {
+                        // TODO standardize on ctx.status
                         this.#currentRequest.cancelled = true;
                         this.#currentRequest.abort();
                     }
@@ -40,6 +42,10 @@ var htmx = (() => {
 
         abortCurrentRequest() {
             this.#currentRequest?.abort?.()
+        }
+
+        hasMore() {
+            return this.#requestQueue?.length
         }
     }
 
@@ -444,11 +450,11 @@ var htmx = (() => {
                     this.__hideIndicators(indicatorsSelector);
                     this.__enableElts(disableSelector);
                     this.__trigger(elt, "htmx:finally:request", {ctx})
-                    let nextRequest = requestQueue.nextRequest();
-                    if (nextRequest) {
-                        // TODO consider race condition of another request coming in on that tick
-                        // on the next tick, issue the next request if any
-                        setTimeout(()=> this.__issueRequest(nextRequest), 0)
+                    if (requestQueue.hasMore()) {
+                        setTimeout(()=>{
+                            let nextRequest = requestQueue.nextRequest();
+                            this.__issueRequest(nextRequest, 0)
+                        });
                     }
                 }
             }
