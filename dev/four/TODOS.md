@@ -1,11 +1,20 @@
+# Big Open Questions
+* Are we going support a morph swap out of the box? (Michael)
+* Are we going to support CSS transitions? 
+  * Maybe at least a simple version, wait on transition events?
+  * We could say just use morph
+* Is SSE functionality going to be part of core? (Christian)
+* Are we going to add head tag merging support to core?
+* How should we handle response code mapping? (telroshan)
+
 # TODOs
 
-* Are we gonna support a morph swap out of the box?
-* Are we going to support CSS transitions? (at least a simple version, wait on transition events?)
-  * We could say just use morph
 * Support `hx-action="js:..."` and `js:` or `javascript:` broadly
   * Allow users to turn off eval
-* Need to make 203 - No Content not do the main swap once swapping settles down (lol)
+* Build out a "patterns" set of examples to replace examples, cleaned up, add more advanced cases
+* Updated website design
+* Need to make `203 - No Content` not do the main swap once swapping settles down (lol)
+  * See "Open Questions"
 * quirks.js implementation
   * Move deprecated features into quirks.js?
     * out of band swaps?
@@ -34,8 +43,6 @@
 * Add a `:merge` option for things like `hx-indicator`, where you want to merge in parent attribute values?
   * hx-disable needs it too
 * Server Actions (Christian)
-* head tag merging support?  or keep as extension?
-* Need to make response code handling configurable (telroshan)
 * Request security configuration (disallow cross-site requests by default)
 * Handling `<script>` tags: should we avoid hoisting all inserted script tags?
 * Make attribute prefix configurable via `htmx.config.prefix` defaults to `hx-`
