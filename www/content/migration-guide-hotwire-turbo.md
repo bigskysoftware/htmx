@@ -41,7 +41,10 @@ addEventListener("htmx:afterOnLoad", (event) => {
 ## Events
 
 * Intercepting or Pausing Events. `htmx:config-request` is equivalent to `turbo:before-fetch-request` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#pausing-requests)
-  * `htmx:config-request` is the same as `htmx:configRequest` See: [Event Naming](@/docs.md#event_naming)
+  * `htmx:config-request` is the same as `htmx:configRequest` 
+
+TODO fix or remove
+See: [Event Naming](@/docs.md)
 
 ```javascript
 document.body.addEventListener('htmx:configRequest', (event) => {

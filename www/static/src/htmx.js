@@ -1290,14 +1290,14 @@ var htmx = (function() {
         target: getDocument().body,
         event: asString(arg1),
         listener: arg2,
-        options: arg3
+        request: arg3
       }
     } else {
       return {
         target: resolveTarget(arg1),
         event: asString(arg2),
         listener: arg3,
-        options: arg4
+        request: arg4
       }
     }
   }

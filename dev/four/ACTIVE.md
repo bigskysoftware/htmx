@@ -61,6 +61,7 @@
   * JavaScript API audit
   * Configuration options audit
 * Maybe add a `:merge` option for things like `hx-indicator`, where you want to merge in parent attribute values?
+  * hx-disable needs it too
 * Server Actions (Christian)
 * Would like to create a new attribute, `hx-config`, which allows a user to override any request config value
   * Consider making `__createRequestConfig` return a pure string-value object, with all non-string setup done in `handleTriggerEvent`, making
