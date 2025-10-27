@@ -36,7 +36,7 @@ addEventListener("htmx:afterOnLoad", (event) => {
 ## Turbo Streams
 
 * htmx combines all ideas of "Turbo Streams" into the base attributes. No `<turbo-stream>`, no `<template>` required.
-* Note: Turbo Streams can perform many actions anywhere on a page (similar to [hx-select-oob](@/attributes/hx-select-oob.md) and [hx-swap-oob](@/attributes/hx-swap-oob.md)) while Turbo Frames only update what is wrapped within `<turbo-frame> .. </turbo-frame>`
+* Note: Turbo Streams can perform many actions anywhere on a page while Turbo Frames only update what is wrapped within `<turbo-frame> .. </turbo-frame>`
 
 ## Events
 

@@ -181,7 +181,6 @@ than a single value.
 ##### Details
 
 * `detail.parameters` - the parameters that will be submitted in the request
-* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-params`](@/attributes/hx-params.md)
 * `detail.headers` - the request headers
 * `detail.elt` - the element that triggered the request
 * `detail.target` - the target of the request
@@ -399,7 +398,7 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 
 ### Event - `htmx:prompt` {#htmx:prompt}
 
-This event is triggered after a prompt has been shown to the user with the [`hx-prompt`](@/attributes/hx-prompt.md)
+This event is triggered after a prompt has been shown to the user with the `hx-prompt`
 attribute.  If this event is cancelled, the AJAX request will not occur.
 
 ##### Details
@@ -503,8 +502,6 @@ element ID without a preceding `#`)
 ### Event - `htmx:timeout` {#htmx:timeout}
 
 This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.
-
-Timeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](@/attributes/hx-request.md)
 
 ##### Details
 
@@ -613,3 +610,97 @@ This event is triggered periodically when an ajax request that supports progress
 ##### Details
 
 * `detail.elt` - the element that triggered the request
+
+---
+
+## New Events (htmx 4) {#new-events}
+
+The following events are new in htmx 4 and need documentation. They use the new `htmx:category:phase:action` naming convention.
+
+### Event - `htmx:before:init` {#htmx:before:init}
+
+TODO: Document this event
+
+### Event - `htmx:after:init` {#htmx:after:init}
+
+TODO: Document this event
+
+### Event - `htmx:before:cleanup` {#htmx:before:cleanup}
+
+TODO: Document this event
+
+### Event - `htmx:after:cleanup` {#htmx:after:cleanup}
+
+TODO: Document this event
+
+### Event - `htmx:config:request` {#htmx:config:request}
+
+TODO: Document this event
+
+### Event - `htmx:before:request` {#htmx:before:request}
+
+TODO: Document this event
+
+### Event - `htmx:after:request` {#htmx:after:request}
+
+TODO: Document this event
+
+### Event - `htmx:finally:request` {#htmx:finally:request}
+
+TODO: Document this event
+
+### Event - `htmx:before:swap` {#htmx:before:swap}
+
+TODO: Document this event
+
+### Event - `htmx:after:swap` {#htmx:after:swap}
+
+TODO: Document this event
+
+### Event - `htmx:before:main:swap` {#htmx:before:main:swap}
+
+TODO: Document this event
+
+### Event - `htmx:after:main:swap` {#htmx:after:main:swap}
+
+TODO: Document this event
+
+### Event - `htmx:before:oob:swap` {#htmx:before:oob:swap}
+
+TODO: Document this event
+
+### Event - `htmx:after:oob:swap` {#htmx:after:oob:swap}
+
+TODO: Document this event
+
+### Event - `htmx:before:partial:swap` {#htmx:before:partial:swap}
+
+TODO: Document this event
+
+### Event - `htmx:after:partial:swap` {#htmx:after:partial:swap}
+
+TODO: Document this event
+
+### Event - `htmx:before:restore:history` {#htmx:before:restore:history}
+
+TODO: Document this event
+
+### Event - `htmx:before:history:update` {#htmx:before:history:update}
+
+TODO: Document this event
+
+### Event - `htmx:after:history:update` {#htmx:after:history:update}
+
+TODO: Document this event
+
+### Event - `htmx:after:push:into:history` {#htmx:after:push:into:history}
+
+TODO: Document this event
+
+### Event - `htmx:after:replace:into:history` {#htmx:after:replace:into:history}
+
+TODO: Document this event
+
+### Event - `htmx:error` {#htmx:error}
+
+TODO: Document this event

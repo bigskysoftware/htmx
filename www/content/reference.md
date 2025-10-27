@@ -22,8 +22,6 @@ The most common attributes when using htmx.
 
 | Attribute                                    | Description                                                                                   |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------|
-| [`hx-action`](@/attributes/hx-action.md)     | specifies the URL to issue the request to                                                     |
-| [`hx-method`](@/attributes/hx-method.md)     | specifies the HTTP method to use                                                              |
 | [`hx-get`](@/attributes/hx-get.md)           | issues a `GET` to the specified URL                                                           |
 | [`hx-post`](@/attributes/hx-post.md)         | issues a `POST` to the specified URL                                                          |
 | [`hx-on*`](@/attributes/hx-on.md)            | handle events with inline scripts on elements                                                 |
@@ -33,7 +31,6 @@ The most common attributes when using htmx.
 | [`hx-swap-oob`](@/attributes/hx-swap-oob.md) | mark element to swap in from a response (out of band)                                         |
 | [`hx-target`](@/attributes/hx-target.md)     | specifies the target element to be swapped                                                    |
 | [`hx-trigger`](@/attributes/hx-trigger.md)   | specifies the event that triggers the request                                                 |
-| [`hx-vals`](@/attributes/hx-vals.md)         | add values to submit with the request (JSON format)                                           |
 
 </div>
 
@@ -45,6 +42,7 @@ All other attributes available in htmx.
 
 | Attribute                                          | Description                                                                                                  |
 |----------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| [`hx-action`](@/attributes/hx-action.md)     | specifies the URL to issue the request to                                                     |
 | [`hx-boost`](@/attributes/hx-boost.md)             | add [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) for links and forms     |
 | [`hx-config`](@/attributes/hx-config.md)           | configure request behavior with JSON                                                                         |
 | [`hx-confirm`](@/attributes/hx-confirm.md)         | shows a `confirm()` dialog or runs async confirmation before issuing a request                               |
@@ -52,10 +50,10 @@ All other attributes available in htmx.
 | [`hx-disable`](@/attributes/hx-disable.md)         | adds the `disabled` attribute to the specified elements while a request is in flight                         |
 | [`hx-encoding`](@/attributes/hx-encoding.md)       | changes the request encoding type                                                                            |
 | [`hx-headers`](@/attributes/hx-headers.md)         | adds to the headers that will be submitted with the request                                                  |
-| [`hx-history`](@/attributes/hx-history.md)         | prevent sensitive data being saved to the history cache                                                      |
 | [`hx-ignore`](@/attributes/hx-ignore.md)           | disables htmx processing for the given node and any children nodes                                           |
 | [`hx-include`](@/attributes/hx-include.md)         | include additional data in requests                                                                          |
 | [`hx-indicator`](@/attributes/hx-indicator.md)     | the element to put the `htmx-request` class on during the request                                            |
+| [`hx-method`](@/attributes/hx-method.md)     | specifies the HTTP method to use                                                              |
 | [`hx-optimistic`](@/attributes/hx-optimistic.md)   | show optimistic content while request is in flight                                                           |
 | [`hx-patch`](@/attributes/hx-patch.md)             | issues a `PATCH` to the specified URL                                                                        |
 | [`hx-preload`](@/attributes/hx-preload.md)         | preload a request on a trigger event                                                                         |

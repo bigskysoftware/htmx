@@ -61,11 +61,11 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | [`ic-get-from`](https://intercoolerjs.org/attributes/ic-get-from.html) | [`hx-get`](@/attributes/hx-get.md)
 | [`ic-global-include`](https://intercoolerjs.org/attributes/ic-global-include.html) | None. [`hx-include`](@/attributes/hx-include.md) can be used to achieve similar functionality
 | [`ic-global-indicator`](https://intercoolerjs.org/attributes/ic-global-indicator.html) | None. [`hx-indicator`](@/attributes/hx-indicator.md) can be used to achieve similar functionality
-| [`ic-history-elt`](https://intercoolerjs.org/attributes/ic-history-elt.html) | [`hx-history-elt`](@/attributes/hx-history-elt.md)
+| [`ic-history-elt`](https://intercoolerjs.org/attributes/ic-history-elt.html) | `hx-history-elt`
 | [`ic-include`](https://intercoolerjs.org/attributes/ic-include.html) | [`hx-include`](@/attributes/hx-include.md)
 | [`ic-indicator`](https://intercoolerjs.org/attributes/ic-indicator.html) | [`hx-indicator`](@/attributes/hx-indicator.md)
 | [`ic-limit-children`](https://intercoolerjs.org/attributes/ic-limit-children.html) | None. No direct equivalent functionality exists (TBC)
-| [`ic-local-vars`](https://intercoolerjs.org/attributes/ic-local-vars.html) | No direct equivalent. [`hx-vars`](@/attributes/hx-vars.md) could be used to facilitate.
+| [`ic-local-vars`](https://intercoolerjs.org/attributes/ic-local-vars.html) | No direct equivalent. `hx-vars` could be used to facilitate.
 | [`ic-on-beforeSend`](https://intercoolerjs.org/attributes/ic-on-beforeSend.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-on-beforeTrigger`](https://intercoolerjs.org/attributes/ic-on-beforeTrigger.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-on-complete`](https://intercoolerjs.org/attributes/ic-on-complete.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
@@ -78,7 +78,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | [`ic-post-errors-to`](https://intercoolerjs.org/attributes/ic-post-errors-to.html) | None. Errors can be trapped via events and logged via the [`htmx.logger` mechanism](@/docs.md#events)
 | [`ic-post-to`](https://intercoolerjs.org/attributes/ic-post-to.html) | [`hx-post`](@/attributes/hx-post.md)
 | [`ic-prepend-from`](https://intercoolerjs.org/attributes/ic-prepend-from.html) | The [`hx-swap` attribute](@/attributes/hx-swap.md) with value set to `beforeend` could be used to achieve the same outcome
-| [`ic-prompt`](https://intercoolerjs.org/attributes/ic-prompt.html) | [`hx-prompt`](@/attributes/hx-prompt.md)
+| [`ic-prompt`](https://intercoolerjs.org/attributes/ic-prompt.html) | `hx-prompt`
 | [`ic-push-url`](https://intercoolerjs.org/attributes/ic-push-url.html) | [`hx-push-url`](@/attributes/hx-push-url.md)
 | [`ic-push-params`](https://intercoolerjs.org/attributes/ic-push-params.html) | Parameters are automatically pushed in the case of a `GET` in htmx
 | [`ic-put-to`](https://intercoolerjs.org/attributes/ic-put-to.html) | [`hx-put`](@/attributes/hx-put.md)
