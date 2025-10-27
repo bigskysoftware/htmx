@@ -878,7 +878,7 @@ var htmx = (() => {
 
 
 
-        __processOOB(fragment, elt) {
+        __processOOB(fragment, sourceElement) {
             let tasks = [];
             let oobElements = Array.from(fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]'));
 
@@ -926,7 +926,7 @@ var htmx = (() => {
                     target,
                     swapSpec,
                     async: swapSpec.async === true,
-                    elt
+                    sourceElement
                 });
                 oobElt.remove();
             });
@@ -978,7 +978,7 @@ var htmx = (() => {
             return config;
         }
 
-        __processPartials(fragment, elt) {
+        __processPartials(fragment, sourceElement) {
             let tasks = [];
 
             fragment.querySelectorAll('template[partial]').forEach(partialElt => {
@@ -990,7 +990,7 @@ var htmx = (() => {
                     target: partialElt.getAttribute('hx-target'),
                     swapSpec,
                     async: swapSpec.async === true,
-                    elt
+                    sourceElement
                 });
                 partialElt.remove();
             });
@@ -1025,16 +1025,15 @@ var htmx = (() => {
             let eventTarget = this.__resolveSwapEventTarget(task);
 
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
-
-            if (task.transition && document["startViewTransition"]) {
-                return document.startViewTransition(() => {
-                    this.__insertContent(task);
-                }).finished.then(() => {
-                    this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
-                });
-            } else {
+            
+            const doSwap = () => {
                 this.__insertContent(task);
                 this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
+            };
+            if (task.transition && document["startViewTransition"]) {
+                document.startViewTransition(doSwap);
+            } else {
+                doSwap();
             }
         }
 
@@ -1145,7 +1144,7 @@ var htmx = (() => {
                     target: ctx.target,
                     swapSpec,
                     async: swapSpec.async !== false,
-                    elt: ctx.sourceElement,
+                    sourceElement: ctx.sourceElement,
                     transition: (ctx.transition !== false) && (swapSpec.transition !== false),
                     title
                 });
@@ -1164,9 +1163,6 @@ var htmx = (() => {
             if (asyncTasks.length > 0) {
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
-
-            // Fire general swap event after all tasks complete
-            // Use document to ensure event is fired even if source element was swapped
             this.__trigger(document, "htmx:after:swap", {ctx});
         }
 
@@ -1208,8 +1204,8 @@ var htmx = (() => {
         }
 
         __resolveSwapEventTarget(task) {
-            if (task.elt && document.contains(task.elt)) {
-                return task.elt;
+            if (task.sourceElement && document.contains(task.sourceElement)) {
+                return task.sourceElement;
             } else if (task.target && document.contains(task.target)) {
                 return task.target;
             } else {
