@@ -101,7 +101,7 @@ without users really needing to understand that concept: just return HTML.
 [Version 2](https://v2.htmx.org) (and [Version 1](https://v1.htmx.org)) of htmx are still supported, but the latest 
 version of htmx is 4.x.
 
-If you are migrating to htmx 4.x from [htmx 2.x](https://v1.htmx.org), please see the [htmx 2.x migration guide](#).
+If you are migrating to htmx 4.x from [htmx 2.x](https://v1.htmx.org), please see the [htmx 2.x migration guide](@/migration-guide-htmx-2.md).
 
 ## Installing
 
@@ -182,10 +182,10 @@ window.htmx = require('htmx.org');
 
 The core of htmx are two attributes that allow you to issue fetch()-based AJAX requests directly from HTML:
 
-| Attribute      | Description                                                                                             |
-|----------------|---------------------------------------------------------------------------------------------------------|
-| [hx-action](#) | Specifies a URL to issue the request to                                                                 |
-| [hx-method](#) | Specifies the [HTTP Method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods) to use |
+| Attribute                              | Description                                                                                             |
+|----------------------------------------|---------------------------------------------------------------------------------------------------------|
+| [hx-action](@/attributes/hx-action.md) | Specifies a URL to issue the request to                                                                 |
+| [hx-method](@/attributes/hx-method.md) | Specifies the [HTTP Method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods) to use |
 
 They can be used like so:
 
