@@ -8,6 +8,10 @@
   for special cases (e.g. the `quirks` htmx 2.0 compatibility extension)
 * Public methods are forever, be very careful with them
 * Use `let` rather than `const`
+* Publicly surfaced properties should not be shortened, _except_ "Configuration" which can be shortened to "Config"
+* Local variables should have descriptive names in most cases.  `ctx` and `elt` are acceptable.
+* Generally all state in the trigger -> request -> swap life cycle should be stored on ctx.  Try to avoid overwrighting 
+  an existing property, pick a new property name.  These properties are part of the public API and *must* be documented.
 
 ## AI Policy
 
