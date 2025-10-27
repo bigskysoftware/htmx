@@ -1,6 +1,8 @@
 # TODOs
 
 * Are we gonna support a morph swap out of the box?
+* Are we going to support CSS transitions? (at least a simple version, wait on transition events?)
+  * We could say just use morph
 * Support `hx-action="js:..."` and `js:` or `javascript:` broadly
   * Allow users to turn off eval
 * quirks.js implementation
