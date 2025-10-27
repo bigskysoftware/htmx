@@ -9,9 +9,11 @@ var htmx = (() => {
                 this.#currentRequest = ctx
                 return true
             } else {
+                // Update ctx.status properly for replaced request contexts
                 if (queueStrategy === "replace") {
                     this.#requestQueue = []
                     if (this.#currentRequest) {
+                        // TODO standardize on ctx.status
                         this.#currentRequest.cancelled = true;
                         this.#currentRequest.abort();
                     }
@@ -41,6 +43,10 @@ var htmx = (() => {
         abortCurrentRequest() {
             this.#currentRequest?.abort?.()
         }
+
+        hasMore() {
+            return this.#requestQueue?.length
+        }
     }
 
     class Htmx {
@@ -60,7 +66,6 @@ var htmx = (() => {
         __initInternals() {
             document.addEventListener("DOMContentLoaded", () => {
                 this.__mutationObserver.observe(document.body, {childList: true, subtree: true});
-                this.__maybeEstablishSSEConnection();
                 this.__initHistoryHandling();
                 this.process(document.body)
             })
@@ -82,26 +87,9 @@ var htmx = (() => {
             }
         };
 
-        __maybeEstablishSSEConnection() {
-            if (this.config.sse) {
-                this.__eventSource = new EventSource(this.config.sseUrl);
-                this.__eventSource.onmessage = async (event) => {
-                    await this.swap({
-                        text: event.data,
-                        target: document.body,
-                        swap: 'innerHTML',
-                        sourceElement: document.body,
-                        transition: this.config.viewTransitions
-                    });
-                };
-            }
-        }
-
         // TODO make most of the things like default swap, etc configurable
         __initHtmxConfig() {
             this.config = {
-                sse: false,
-                sseUrl: "/events",
                 logAll: false,
                 viewTransitions: true,
                 historyEnabled: true,
@@ -291,7 +279,10 @@ var htmx = (() => {
         }
 
         __determineHeaders(elt) {
-            let headers = {"HX-Request": "true"};
+            let headers = {
+                "HX-Request": "true",
+                "Accept": "text/html, text/event-stream"
+            };
             if (this.__isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
@@ -417,23 +408,38 @@ var htmx = (() => {
                         raw: response,
                         status: response.status,
                         headers: response.headers,
-                        cancelled: false
+                        cancelled: false,
                     }
-                    ctx.text = await response.text();
-                    ctx.status = "response received"
 
                     if (!this.__trigger(elt, "htmx:after:request", {ctx})) return
-                    if (!ctx.response.cancelled) {
-                        this.__handleHistoryUpdate(ctx);
-                        // remove optimistic content
-                        this.__removeOptimisticContent(ctx);
-                        await this.swap(ctx);
-                        // Scroll to anchor if present in original action
-                        let anchor = ctx.request.originalAction?.split('#')[1]
-                        if (anchor) {
-                            document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'})
+
+                    const processChunk = async (chunk) => {
+                        if (!elt.isConnected) return;
+
+                        ctx.text = chunk;
+                        ctx.status = "response received";
+
+                        if (!ctx.response.cancelled) {
+                            this.__handleHistoryUpdate(ctx);
+                            this.__removeOptimisticContent(ctx);
+                            await this.swap(ctx);
+                            let anchor = ctx.request.originalAction?.split('#')[1];
+                            if (anchor) {
+                                document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
+                            }
+                            ctx.status = "swapped";
                         }
-                        ctx.status = "swapped"
+                    };
+
+                    let isSSE = response.headers.get("content-type")?.includes('text/event-stream');
+                    if (isSSE) {
+                        // Server-Sent Events - process multiple messages
+                        for await (let chunk of this.__parseSSEMessages(response.body, elt, ctx)) {
+                            await processChunk(chunk);
+                        }
+                    } else {
+                        // Regular HTTP response - process once
+                        await processChunk(await response.text());
                     }
                 } catch (error) {
                     ctx.status = "error: " + error
@@ -444,11 +450,38 @@ var htmx = (() => {
                     this.__hideIndicators(indicatorsSelector);
                     this.__enableElts(disableSelector);
                     this.__trigger(elt, "htmx:finally:request", {ctx})
-                    let nextRequest = requestQueue.nextRequest();
-                    if (nextRequest) {
-                        // TODO consider race condition of another request coming in on that tick
-                        // on the next tick, issue the next request if any
-                        setTimeout(()=> this.__issueRequest(nextRequest), 0)
+                    if (requestQueue.hasMore()) {
+                        setTimeout(()=>{
+                            let nextRequest = requestQueue.nextRequest();
+                            this.__issueRequest(nextRequest, 0)
+                        });
+                    }
+                }
+            }
+        }
+
+        async* __parseSSEMessages(body, elt, ctx) {
+            let buffer = '', data = []
+            for await (let chunk of body.pipeThrough(new TextDecoderStream())) {
+                let lines = (buffer += chunk).split('\n')
+                buffer = lines.pop() || ''
+
+                for (let line of lines) {
+                    if (line.startsWith('data:')) {
+                        data.push(line.slice(6))
+                    } else if (line === '' && data.length) {
+                        let message = data.join('\n')
+                        data = []
+
+                        // Fire before event - allow cancellation
+                        let sseMessage = { text: message, cancelled: false }
+                        if (!this.__trigger(elt, "htmx:before:sse-message", {ctx, sseMessage}) || sseMessage.cancelled) {
+                            continue // Skip this message
+                        }
+
+                        yield sseMessage.text
+
+                        this.__trigger(elt, "htmx:after:sse-message", {ctx, sseMessage})
                     }
                 }
             }
@@ -505,7 +538,7 @@ var htmx = (() => {
             return !isFragmentOnly
         }
 
-        __initializeTriggers(elt) {
+        __initializeTriggers(elt, initialHandler = elt.__htmx.eventHandler) {
             let specString = this.__attributeValue(elt, "hx-trigger");
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
@@ -515,7 +548,7 @@ var htmx = (() => {
             elt.__htmx.triggerSpecs = this.__parseTriggerSpecs(specString)
             elt.__htmx.listeners = []
             for (let spec of elt.__htmx.triggerSpecs) {
-                spec.handler = elt.__htmx.eventHandler
+                spec.handler = initialHandler
                 spec.listeners = []
                 spec.values = {}
 
@@ -848,7 +881,7 @@ var htmx = (() => {
         __processOOB(fragment, elt) {
             let tasks = [];
             let oobElements = Array.from(fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]'));
-            
+
             oobElements.forEach(oobElt => {
                 let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 let target = '#' + oobElt.id;
@@ -897,7 +930,7 @@ var htmx = (() => {
                 });
                 oobElt.remove();
             });
-            
+
             return tasks;
         }
 
@@ -947,10 +980,10 @@ var htmx = (() => {
 
         __processPartials(fragment, elt) {
             let tasks = [];
-            
+
             fragment.querySelectorAll('template[partial]').forEach(partialElt => {
                 let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || 'outerHTML');
-                
+
                 tasks.push({
                     type: 'partial',
                     fragment: partialElt.content.cloneNode(true),
@@ -961,7 +994,7 @@ var htmx = (() => {
                 });
                 partialElt.remove();
             });
-            
+
             return tasks;
         }
 
@@ -987,12 +1020,12 @@ var htmx = (() => {
                 task.target = this.find(task.target);
             }
             if (!task.target) return;
-            
+
             this.__handlePreservedElements(task.fragment);
             let eventTarget = this.__resolveSwapEventTarget(task);
-            
+
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
-            
+
             if (task.transition && document["startViewTransition"]) {
                 return document.startViewTransition(() => {
                     this.__insertContent(task);
@@ -1065,7 +1098,7 @@ var htmx = (() => {
         }
 
         // TODO - did we punt on other folks inserting scripts?
-       __processScripts(container) {
+        __processScripts(container) {
             container.querySelectorAll('script').forEach(oldScript => {
                 let newScript = document.createElement('script');
                 Array.from(oldScript.attributes).forEach(attr => {
@@ -1083,12 +1116,12 @@ var htmx = (() => {
         async swap(ctx) {
             let {fragment, title} = this.__makeFragment(ctx.text);
             let tasks = [];
-            
+
             // Process OOB and partials
             let oobTasks = this.__processOOB(fragment, ctx.sourceElement);
             let partialTasks = this.__processPartials(fragment, ctx.sourceElement);
             tasks.push(...oobTasks, ...partialTasks);
-            
+
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || 'outerHTML');
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
@@ -1105,7 +1138,7 @@ var htmx = (() => {
                 } else {
                     resultFragment.append(...fragment.childNodes);
                 }
-                
+
                 tasks.push({
                     type: 'main',
                     fragment: resultFragment,
@@ -1117,21 +1150,21 @@ var htmx = (() => {
                     title
                 });
             }
-            
+
             if (tasks.length === 0) return;
-            
+
             // Separate async/sync tasks
             let asyncTasks = tasks.filter(t => t.async);
             let syncTasks = tasks.filter(t => !t.async);
-            
+
             // Execute sync tasks immediately
             syncTasks.forEach(task => this.__executeSwapTask(task));
-            
+
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
-            
+
             // Fire general swap event after all tasks complete
             // Use document to ensure event is fired even if source element was swapped
             this.__trigger(document, "htmx:after:swap", {ctx});

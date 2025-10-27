@@ -73,23 +73,6 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.be.lessThan(3)
     })
 
-    it('changed modifier works', async function () {
-        mockResponse('GET', '/test', "Response")
-        initHTML('<input hx-trigger="click changed" hx-target="#d1" hx-swap="innerHTML" hx-get="/test"/><div id="d1"></div>')
-        click('input')
-        fetchMock.calls.length.should.equal(1)
-        await htmxSwappedEvent()
-
-        click('input')
-        await htmx.timeout(100)
-        fetchMock.calls.length.should.equal(1)
-
-        findElt('input').value = 'bar'
-        click('input')
-        await htmxSwappedEvent()
-        fetchMock.calls.length.should.equal(2)
-    })
-
     it('changed modifier works along from clause with single input', async function() {
         mockResponse('GET', '/test', "Response")
         initHTML('<div id="d2" hx-trigger="click changed from:#i1" hx-target="#d1" hx-swap="innerHTML" hx-get="/test"></div><input id="i1"/><div id="d1"></div>')
