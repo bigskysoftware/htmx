@@ -94,6 +94,7 @@ var htmx = (() => {
                 viewTransitions: true,
                 historyEnabled: true,
                 selfRequestsOnly: true,
+                reloadOnHistoryNavigation: false,
                 defaultSwapStyle: "innerHTML",
                 defaultTimeout: 60000 /* 00 second default timeout */
             }
@@ -762,7 +763,7 @@ var htmx = (() => {
         }
 
         process(elt) {
-            if (this.__ignore(elt)) return
+            if (this.__ignore(elt)) return;
             if (elt.matches(this.__actionSelector)) {
                 this.__initializeElement(elt)
             }
@@ -1350,7 +1351,15 @@ var htmx = (() => {
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
             if (this.__trigger(document.body, "htmx:before:restore:history", {path, cacheMiss: true})) {
-                location.reload();
+                if (htmx.config.reloadOnHistoryNavigation) {
+                    location.reload();
+                } else {
+                    this.ajax('GET', path, {
+                        target: 'body',
+                        swap: 'outerHTML',
+                        request: {headers: {'HX-History-Restore-Request': 'true'}}
+                    });
+                }
             }
         }
 
