@@ -61,6 +61,7 @@ Standard events can also have modifiers that change how they behave.  The modifi
 is seen again it will reset the delay.
 * `throttle:<timing declaration>` - a throttle will occur after an event triggers a request. If the event
 is seen again before the delay completes, it is ignored, the element will trigger at the end of the delay.
+* `hold:<timing declaration>` - requires the user to hold the pointer down for the specified duration before triggering the request. Cancels on pointer up or cancel.
 * `from:<Extended CSS selector>` - allows the event that triggers a request to come from another element in the document (e.g. listening to a key event on the body, to support hot keys)
   * A standard CSS selector resolves to all elements matching that selector. Thus, `from:input` would listen on every input on the page.
   * The CSS selector is only evaluated once and is not re-evaluated when the page changes. If you need to detect dynamically added elements use a [standard event filter](#standard-event-filters), for example `hx-trigger="click[event.target.matches('button')] from:body"` which would [catch](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Event_bubbling) click events from every button on the page.

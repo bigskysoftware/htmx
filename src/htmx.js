@@ -702,6 +702,7 @@ var htmx = (function() {
    * @property {boolean} [triggeredOnce]
    * @property {number} [delayed]
    * @property {number|null} [throttle]
+   * @property {number|null} [holdTimer]
    * @property {WeakMap<HtmxTriggerSpecification,WeakMap<EventTarget,string>>} [lastValue]
    * @property {boolean} [loaded]
    * @property {string} [path]
@@ -2293,6 +2294,9 @@ var htmx = (function() {
             } else if (token === 'throttle' && tokens[0] === ':') {
               tokens.shift()
               triggerSpec.throttle = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA))
+            } else if (token === 'hold' && tokens[0] === ':') {
+              tokens.shift()
+              triggerSpec.hold = parseInterval(consumeUntil(tokens, WHITESPACE_OR_COMMA))
             } else if (token === 'queue' && tokens[0] === ':') {
               tokens.shift()
               triggerSpec.queue = consumeUntil(tokens, WHITESPACE_OR_COMMA)
@@ -2495,6 +2499,7 @@ var htmx = (function() {
    * @param {boolean} [explicitCancel]
    */
   function addEventListener(elt, handler, nodeData, triggerSpec, explicitCancel) {
+    /** @type {HtmxNodeInternalData} */
     const elementData = getInternalData(elt)
     /** @type {(Node|Window)[]} */
     let eltsToListenOn
@@ -2516,11 +2521,12 @@ var htmx = (function() {
         elementData.lastValue.get(triggerSpec).set(eltToListenOn, eltToListenOn.value)
       })
     }
+    const actualTrigger = triggerSpec.hold ? 'pointerdown' : triggerSpec.trigger
     forEach(eltsToListenOn, function(eltToListenOn) {
       /** @type EventListener */
       const eventListener = function(evt) {
         if (!bodyContains(elt)) {
-          eltToListenOn.removeEventListener(triggerSpec.trigger, eventListener)
+          eltToListenOn.removeEventListener(actualTrigger, eventListener)
           return
         }
         if (ignoreBoostedAnchorCtrlClick(elt, evt)) {
@@ -2571,7 +2577,23 @@ var htmx = (function() {
             return
           }
 
-          if (triggerSpec.throttle > 0) {
+          if (triggerSpec.hold > 0) {
+            if (elementData.holdTimer) clearTimeout(elementData.holdTimer)
+            elementData.holdTimer = getWindow().setTimeout(function() {
+              triggerEvent(elt, 'htmx:trigger')
+              handler(elt, evt)
+            }, triggerSpec.hold)
+            const cancelListener = function() {
+              if (elementData.holdTimer) {
+                clearTimeout(elementData.holdTimer)
+                elementData.holdTimer = null
+              }
+            }
+            eltToListenOn.addEventListener('pointerup', cancelListener, { once: true })
+            nodeData.listenerInfos.push({ trigger: 'pointerup', listener: cancelListener, on: eltToListenOn })
+            eltToListenOn.addEventListener('pointercancel', cancelListener, { once: true })
+            nodeData.listenerInfos.push({ trigger: 'pointercancel', listener: cancelListener, on: eltToListenOn })
+          } else if (triggerSpec.throttle > 0) {
             if (!elementData.throttle) {
               triggerEvent(elt, 'htmx:trigger')
               handler(elt, evt)
@@ -2594,11 +2616,29 @@ var htmx = (function() {
         nodeData.listenerInfos = []
       }
       nodeData.listenerInfos.push({
-        trigger: triggerSpec.trigger,
+        trigger: actualTrigger,
         listener: eventListener,
         on: eltToListenOn
       })
-      eltToListenOn.addEventListener(triggerSpec.trigger, eventListener)
+      eltToListenOn.addEventListener(actualTrigger, eventListener)
+      if (triggerSpec.hold) {
+        if (actualTrigger !== 'mousedown') {
+          nodeData.listenerInfos.push({
+            trigger: 'mousedown',
+            listener: eventListener,
+            on: eltToListenOn
+          })
+          eltToListenOn.addEventListener('mousedown', eventListener)
+        }
+        if (actualTrigger !== 'touchstart') {
+          nodeData.listenerInfos.push({
+            trigger: 'touchstart',
+            listener: eventListener,
+            on: eltToListenOn
+          })
+          eltToListenOn.addEventListener('touchstart', eventListener)
+        }
+      }
     })
   }
 
@@ -5215,6 +5255,7 @@ var htmx = (function() {
  * @property {string} [queue]
  * @property {string} [root]
  * @property {string} [threshold]
+ * @property {number} [hold]
  */
 
 /**
