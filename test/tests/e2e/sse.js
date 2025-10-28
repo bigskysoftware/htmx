@@ -160,17 +160,18 @@ describe('Server-Sent Events', function() {
         stream.close();
     });
 
-    it('SSE message parsing with multiple fields', async function() {
+    it('SSE message parsing with id field', async function() {
         const stream = mockStreamResponse('/parse');
         initHTML('<div id="target"></div><button hx-get="/parse" hx-target="#target">Go</button>');
 
         click('button');
         await htmx.waitATick();
 
-        stream.send('<div id="msg1">with event</div>', 'custom-event', '42');
+        // Send HTML with id field (no event field, so it swaps)
+        stream.send('<div id="msg1">message with id</div>', null, '42');
         await waitForEvent('htmx:after:sse:message');
 
-        assertTextContentIs('#msg1', 'with event');
+        assertTextContentIs('#msg1', 'message with id');
         stream.close();
     });
 
@@ -245,5 +246,131 @@ describe('Server-Sent Events', function() {
 
     it('pauseHidden configuration works', async function() {
         this.skip(); // Skip - complex visibility API testing
+    });
+
+    it('custom events trigger on element and bubble', async function() {
+        const stream = mockStreamResponse('/custom-events');
+        initHTML('<button hx-get="/custom-events" hx-swap="innerHTML">Connect</button>');
+
+        let customEventFired = false;
+        let customEventData = null;
+        let customEventId = null;
+
+        // Listen for custom event on the button
+        findElt('button').addEventListener('update', (e) => {
+            customEventFired = true;
+            customEventData = e.detail.data;
+            customEventId = e.detail.id;
+        });
+
+        click('button');
+        await htmx.waitATick();
+
+        stream.send('some data', 'update', 'event-123');
+        await htmx.waitATick();
+
+        assert.isTrue(customEventFired, 'Custom event should be triggered');
+        assert.equal(customEventData, 'some data', 'Event should include data');
+        assert.equal(customEventId, 'event-123', 'Event should include id');
+
+        stream.close();
+    });
+
+    it('custom events bubble to document', async function() {
+        const stream = mockStreamResponse('/bubble-test');
+        initHTML('<button hx-get="/bubble-test" hx-swap="innerHTML">Connect</button>');
+
+        let documentEventFired = false;
+        let eventTarget = null;
+
+        // Listen for custom event on document
+        document.addEventListener('notification', (e) => {
+            documentEventFired = true;
+            eventTarget = e.target;
+        }, { once: true });
+
+        click('button');
+        await htmx.waitATick();
+
+        stream.send('notification message', 'notification');
+        await htmx.waitATick();
+
+        assert.isTrue(documentEventFired, 'Event should bubble to document');
+        assert.equal(eventTarget, findElt('button'), 'Event target should be the button');
+
+        stream.close();
+    });
+
+    it('custom events work with hx-on attribute', async function() {
+        const stream = mockStreamResponse('/hx-on-test');
+        initHTML('<button hx-get="/hx-on-test" hx-swap="innerHTML" hx-on:progress="this.setAttribute(\'data-progress\', event.detail.data)">Connect</button>');
+
+        click('button');
+        await htmx.waitATick();
+
+        stream.send('50%', 'progress');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.equal(findElt('button').getAttribute('data-progress'), '50%', 'hx-on should handle custom event');
+
+        stream.send('100%', 'progress');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.equal(findElt('button').getAttribute('data-progress'), '100%', 'hx-on should handle multiple custom events');
+
+        stream.close();
+    });
+
+    it('custom events and HTML swaps can coexist', async function() {
+        const stream = mockStreamResponse('/mixed-test');
+        initHTML('<button hx-get="/mixed-test" hx-swap="innerHTML">Connect</button>');
+
+        let statusEventFired = false;
+
+        findElt('button').addEventListener('status', (e) => {
+            statusEventFired = true;
+        });
+
+        click('button');
+        await htmx.waitATick();
+
+        // Send a custom event (should NOT swap)
+        stream.send('processing', 'status');
+        await waitForEvent('htmx:after:sse:message');
+        assert.isTrue(statusEventFired, 'Custom event should fire');
+        assertTextContentIs('button', 'Connect', 'Content should NOT be swapped for custom events');
+
+        // Send HTML content (no event field, so it swaps normally)
+        stream.send('<div>Result</div>');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('button', 'Result');
+
+        stream.close();
+    });
+
+    it('custom events do not swap content', async function() {
+        const stream = mockStreamResponse('/event-only');
+        initHTML('<button hx-get="/event-only" hx-swap="innerHTML">Connect</button>');
+
+        let notifyFired = false;
+        let notifyData = null;
+
+        findElt('button').addEventListener('notify', (e) => {
+            notifyFired = true;
+            notifyData = e.detail.data;
+        });
+
+        click('button');
+        await htmx.waitATick();
+
+        // Send event - should trigger event but NOT swap
+        stream.send('notification data', 'notify');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.isTrue(notifyFired, 'Custom event should fire');
+        assert.equal(notifyData, 'notification data', 'Event should have data');
+        assertTextContentIs('button', 'Connect', 'Content should NOT be swapped');
+
+        stream.close();
     });
 });

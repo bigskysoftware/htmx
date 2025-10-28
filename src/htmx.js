@@ -541,6 +541,14 @@ var htmx = (() => {
 
                         if (sseMessage.id) lastEventId = sseMessage.id;
 
+                        // Trigger custom event if `event:` line is present
+                        if (sseMessage.event) {
+                            this.__trigger(elt, sseMessage.event, { data: sseMessage.data, id: sseMessage.id });
+                            // Skip swap for custom events
+                            this.__trigger(elt, "htmx:after:sse:message", { ctx, message: msg });
+                            continue;
+                        }
+
                         ctx.text = sseMessage.data;
                         ctx.status = "stream message received";
 
