@@ -294,7 +294,9 @@ var htmx = (() => {
         }
 
         __resolveTarget(elt, selector) {
-            if (selector === 'this') {
+            if (selector instanceof Element) {
+                return selector;
+            } else if (selector === 'this') {
                 if (elt.hasAttribute("hx-target")) {
                     return elt;
                 } else {
@@ -310,7 +312,7 @@ var htmx = (() => {
         }
 
         __isBoosted(elt) {
-            return elt.__htmx.boosted;
+            return elt.__htmx?.boosted;
         }
 
         async handleTriggerEvent(ctx) {
@@ -329,6 +331,12 @@ var htmx = (() => {
             let form = elt.form || elt.closest("form")
             let body = this.__collectFormData(elt, form, evt.submitter)
             this.__handleHxVals(elt, body)
+            if (ctx.values) {
+                for (let k in ctx.values) {
+                    body.delete(k);
+                    body.append(k, ctx.values[k]);
+                }
+            }
 
             // Setup abort controller and action
             let ac = new AbortController()
@@ -393,13 +401,13 @@ var htmx = (() => {
 
                     // Check for valid preload
                     let response;
-                    if (elt.__htmx.preload &&
+                    if (elt.__htmx?.preload &&
                         elt.__htmx.preload.action === ctx.request.action &&
                         Date.now() < elt.__htmx.preload.expiresAt) {
                         response = await elt.__htmx.preload.prefetch;
                         delete elt.__htmx.preload;
                     } else {
-                        delete elt.__htmx.preload;
+                        if (elt.__htmx) delete elt.__htmx.preload;
                         // insert optimistic content, hide in case of outerHTML or innerHTML targets
                         this.__insertOptimisticContent(ctx);
                         response = await fetch(ctx.request.action, ctx.request);
@@ -1262,6 +1270,32 @@ var htmx = (() => {
 
         async waitATick() {
             return this.timeout(1)
+        }
+
+        ajax(verb, path, context) {
+            // Normalize context to object
+            if (!context || context instanceof Element || typeof context === 'string') {
+                context = {target: context};
+            }
+            
+            let sourceElt = context.source && (typeof context.source === 'string' ? 
+                this.find(context.source) : context.source);
+            let targetElt = context.target ? 
+                this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
+            
+            if ((context.target && !targetElt) || (context.source && !sourceElt)) {
+                return Promise.reject(new Error('Target not found'));
+            }
+            
+            sourceElt = sourceElt || targetElt || document.body;
+            
+            let ctx = this.__createRequestContext(sourceElt, context.event || {});
+            Object.assign(ctx, context, {target: targetElt});
+            if (context.headers) Object.assign(ctx.request.headers, context.headers);
+            ctx.request.action = path;
+            ctx.request.method = verb.toUpperCase();
+            
+            return this.handleTriggerEvent(ctx) || Promise.resolve();
         }
 
         //============================================================================================

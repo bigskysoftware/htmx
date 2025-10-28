@@ -237,6 +237,7 @@ describe('Unit Tests', function() {
     it("public API surface remains stable", function() {
         // This test ensures the public API doesn't accidentally change
         const expectedPublicMethods = [
+            'ajax',
             'find',
             'findAll',
             'forEvent',
