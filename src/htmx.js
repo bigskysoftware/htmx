@@ -244,9 +244,12 @@ var htmx = (() => {
                 sourceEvent,
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
+                selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 target: this.__attributeValue(sourceElement, "hx-target"),
                 swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
+                push: this.__attributeValue(sourceElement, "hx-push-url"),
+                replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.viewTransitions,
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
@@ -884,58 +887,78 @@ var htmx = (() => {
             };
         }
 
-
-
-        __processOOB(fragment, sourceElement) {
-            let tasks = [];
-            let oobElements = Array.from(fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]'));
-
-            oobElements.forEach(oobElt => {
-                let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
-                let target = '#' + oobElt.id;
-                let swapSpec;
-
-                if (oobValue === 'true') {
-                    swapSpec = {style: 'outerHTML'};
-                } else if (oobValue.includes(' ')) {
-                    swapSpec = this.__parseSwapSpec(oobValue);
-                    if (swapSpec.target) {
-                        target = swapSpec.target;
-                    }
-                } else {
-                    let colonIdx = oobValue.indexOf(':');
-                    if (colonIdx !== -1) {
-                        let swapStyle = oobValue.substring(0, colonIdx);
-                        target = oobValue.substring(colonIdx + 1);
-                        swapSpec = this.__parseSwapSpec(swapStyle);
-                    } else {
-                        swapSpec = this.__parseSwapSpec(oobValue);
-                    }
+        __parseOOBSwap(oobValue, defaultTarget) {
+            // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
+            let target = defaultTarget;
+            if (oobValue !== 'true' && !oobValue.includes(' ')) {
+                const colonIdx = oobValue.indexOf(':');
+                if (colonIdx !== -1) {
+                    target = oobValue.substring(colonIdx + 1);
+                    oobValue = oobValue.substring(0, colonIdx);
                 }
+            }
+            if (oobValue === 'true') oobValue = 'outerHTML';
+            return {oobValue, target};
+        }
 
+        __createOOBTask(elt, oobValue, target, sourceElement) {
+            if (oobValue === 'true') oobValue = 'outerHTML';
+            const swapSpec = this.__parseSwapSpec(oobValue);
+            if (swapSpec.target) target = swapSpec.target;
+            
+            const oobElementClone = elt.cloneNode(true);
+            let frag;
+            if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
+                swapSpec.strip = true;
+            }
+            if (swapSpec.strip) {
+                frag = oobElementClone.content || oobElementClone;
+            } else {
+                frag = document.createDocumentFragment();
+                frag.appendChild(oobElementClone);
+            }
+            
+            return {
+                type: 'oob',
+                fragment: frag,
+                target,
+                swapSpec,
+                async: swapSpec.async === true,
+                sourceElement
+            };
+        }
+
+        __processOOB(fragment, sourceElement, selectOOB) {
+            let tasks = [];
+            
+            // Process hx-select-oob first (select elements from response)
+            if (selectOOB) {
+                selectOOB.split(',').forEach(spec => {
+                    const [selector, ...rest] = spec.split(':');
+                    const rawOobValue = rest.length ? rest.join(':') : 'true';
+                    
+                    fragment.querySelectorAll(selector).forEach(elt => {
+                        const defaultTarget = elt.id ? '#' + CSS.escape(elt.id) : null;
+                        const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
+                        
+                        if (target || oobValue.includes('target:')) {
+                            tasks.push(this.__createOOBTask(elt, oobValue, target, sourceElement));
+                            elt.remove();
+                        }
+                    });
+                });
+            }
+            
+            // Process elements with hx-swap-oob attribute
+            fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]').forEach(oobElt => {
+                const rawOobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
-
-                const oobElementClone = oobElt.cloneNode(true);
-                let frag;
-                if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
-                    swapSpec.strip = true;
-                }
-                if (swapSpec.strip) {
-                    frag = oobElementClone.content || oobElementClone;
-                } else {
-                    frag = document.createDocumentFragment();
-                    frag.appendChild(oobElementClone);
-                }
-
-                tasks.push({
-                    type: 'oob',
-                    fragment: frag,
-                    target,
-                    swapSpec,
-                    async: swapSpec.async === true,
-                    sourceElement
-                });
+                
+                const defaultTarget = '#' + CSS.escape(oobElt.id);
+                const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
+                
+                tasks.push(this.__createOOBTask(oobElt, oobValue, target, sourceElement));
                 oobElt.remove();
             });
 
@@ -949,8 +972,6 @@ var htmx = (() => {
                 parent.append(...fragment.childNodes);
             }
         }
-
-
 
         // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
@@ -1123,7 +1144,7 @@ var htmx = (() => {
             let tasks = [];
 
             // Process OOB and partials
-            let oobTasks = this.__processOOB(fragment, ctx.sourceElement);
+            let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
             let partialTasks = this.__processPartials(fragment, ctx.sourceElement);
             tasks.push(...oobTasks, ...partialTasks);
 
@@ -1332,20 +1353,19 @@ var htmx = (() => {
         }
 
         __handleHistoryUpdate(ctx) {
-            let elt = ctx.sourceElement
-            let push = ctx.response.headers?.get?.('HX-Push') || ctx.response.headers?.get?.('HX-Push-Url');
-            let replace = ctx.response.headers?.get?.('HX-Replace-Url');
-            let headerPath = push || replace;
-
-            if (!headerPath) {
-                push = this.__attributeValue(elt, "hx-push-url");
-                replace = this.__attributeValue(elt, "hx-replace-url");
-                if (!push && !replace && this.__isBoosted(elt)) {
-                    push = 'true';
-                }
+            let {sourceElement, push, replace, response} = ctx;
+            let headerPush = response.headers?.get?.('HX-Push') || response.headers?.get?.('HX-Push-Url');
+            let headerReplace = response.headers?.get?.('HX-Replace-Url');
+            if (headerPush || headerReplace) {
+                push = headerPush;
+                replace = headerReplace;
+            }
+            
+            if (!push && !replace && this.__isBoosted(sourceElement)) {
+                push = 'true';
             }
 
-            let path = headerPath || push || replace;
+            let path = push || replace;
             if (!path || path === 'false') return;
 
             if (path === 'true') {
@@ -1356,8 +1376,8 @@ var htmx = (() => {
 
             let historyDetail = {
                 history: {type, path},
-                elt,
-                response: ctx.response
+                sourceElement,
+                response
             };
             if(!this.__trigger(document.body, "htmx:before:history:update", historyDetail)) return;
             if (type === 'push') {
