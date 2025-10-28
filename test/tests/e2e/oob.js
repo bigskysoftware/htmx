@@ -18,9 +18,7 @@ describe('Out of Band Swaps', function() {
         `);
         // Click the button
         await clickAndWait('#btn1');
-
         // verify the oob swap occurred
-        assert.isNull(htmx.find("#d2"));
         assertTextContentIs('#d3', "Success OOB!");
     })
 })

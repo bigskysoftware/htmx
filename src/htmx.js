@@ -956,7 +956,7 @@ var htmx = (() => {
         // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
-            let config = {style: tokens[1] === ':' ? 'outerHTML' : (tokens[0] || 'outerHTML')};
+            let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
             let startIdx = tokens[1] === ':' ? 0 : 1;
 
             for (let i = startIdx; i < tokens.length; i++) {
@@ -991,7 +991,7 @@ var htmx = (() => {
             let tasks = [];
 
             fragment.querySelectorAll('template[partial]').forEach(partialElt => {
-                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || 'outerHTML');
+                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwapStyle);
 
                 tasks.push({
                     type: 'partial',
@@ -1129,7 +1129,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Create main task if needed
-            let swapSpec = this.__parseSwapSpec(ctx.swap || 'outerHTML');
+            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwapStyle);
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
                 let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
