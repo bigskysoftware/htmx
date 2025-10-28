@@ -1206,10 +1206,12 @@ Unfortunately, HTML only allows `on*` attributes for a fixed
 number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and
 doesn't provide a generalized mechanism for responding to arbitrary events on elements.
 
-In order to address this shortcoming, htmx offers [`hx-on:*`](/attributes/hx-on) attributes.  These attributes allow
-you to respond to any event in a manner that preserves the LoB of the standard `on*` properties.
+In order to address this shortcoming, htmx offers [`hx-on:*`](/attributes/hx-on) attributes.  
 
-If we wanted to respond to the `click` event using an `hx-on` attribute, we would write this:
+These attributes allow you to respond to any event in a manner that preserves the LoB of the standard `on*` properties,
+and provide some nice quality of life improvements over the standard javascript API.
+
+If you want to respond to the `click` event using an `hx-on` attribute, we would write this:
 
 ```html
 <button hx-on:click="alert('You clicked me!')">
@@ -1219,22 +1221,38 @@ If we wanted to respond to the `click` event using an `hx-on` attribute, we woul
 
 So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
 
-For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an
-htmx-powered button that wishes to add a parameter to a request using the `htmx:config:request` event.  This would not
-be possible using a standard `on*` property, but it can be done using the `hx-on:htmx:config:request` attribute:
+#### <a name="htmx-scripting-api"></a>[The Scripting API](#htmx-scripting-api)
 
-// TODO verify symbols
+htmx provides some top level helper methods in `hx-on` handlers that make async scripting more enjoyable:
+
+| function    | description                                                                                |
+|-------------|--------------------------------------------------------------------------------------------|
+| `timeout()` | allows you to wait for a given amount of time (e.g. `await timeout(100)` before continuing |
+
+
+#### <a name="htmx-scripting-examples"></a>[Scripting Examples](#htmx-scripting-examples)
+
+Here is an example that adds a parameter to an htmx request
+
+// TODO - verify symbols
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config-request="request.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config:request="ctx.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another usecase is to [reset user input](@/examples/reset-user-input.md) on successful requests using the `htmx:after:swap`
-event, avoiding the need for something like an out-of-band swap.
+Another use case is to [reset user input](@/examples/reset-user-input.md) on successful requests using the `htmx:after:swap`
+event:
+
+```html
+<button hx-post="/example"
+        hx-on:htmx:after:request="find('#form').reset()">
+    Post Me!
+</button>
+```
 
 ### 3rd Party Javascript {#3rd-party}
 
