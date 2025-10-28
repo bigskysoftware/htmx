@@ -1,9 +1,6 @@
 if (typeof installFetchMock !== 'undefined') {
   installFetchMock()
 }
-if (typeof installSSEMock !== 'undefined') {
-  installSSEMock()
-}
 
 let linkNavPreventer = (e) => {
   let anchor = e.target.closest('a');
@@ -69,20 +66,47 @@ function mockResponse(action, pattern, response) {
   fetchMock.mockResponse(action, pattern, response);
 }
 
-function sendSSE(content, eventType) {
-  let connection = sseMock.getLastConnection();
-  assert.exists(connection, 'SSE connection should be created');
-  sseMock.sendMessage(connection, content, eventType);
+function mockStreamResponse(url) {
+  const controllers = [];
+  const enc = new TextEncoder();
+
+  // Return a fresh stream each time the URL is fetched
+  fetchMock.mockResponse('GET', url, () => {
+    let ctrl;
+    const body = new ReadableStream({ start(c) { ctrl = c; controllers.push(c); } });
+    const response = new MockResponse(body, {
+      headers: { 'Content-Type': 'text/event-stream' }
+    });
+    response.body = body;
+    return response;
+  });
+
+  return {
+    send(data, event, id) {
+      // Send to the most recent active controller
+      const ctrl = controllers[controllers.length - 1];
+      if (!ctrl) return;
+      let msg = (event ? `event: ${event}\n` : '') + (id ? `id: ${id}\n` : '') + `data: ${data}\n\n`;
+      ctrl.enqueue(enc.encode(msg));
+    },
+    close: () => {
+      // Close the most recent controller
+      const ctrl = controllers[controllers.length - 1];
+      if (ctrl) ctrl.close();
+    },
+    error: (e) => {
+      const ctrl = controllers[controllers.length - 1];
+      if (ctrl) ctrl.error(e);
+    }
+  };
 }
 
-async function sendSSEAndWait(content, eventType) {
-  let swapPromise = htmxSwappedEvent();
-  sendSSE(content, eventType);
-  await swapPromise;
+function waitForEvent(eventName, timeout = 2000) {
+  return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
 }
 
 function htmxSwappedEvent() {
-  return htmx.forEvent("htmx:after:swap", testDebugging ? 0 : 2000);
+  return waitForEvent("htmx:after:swap");
 }
 
 function playground() {

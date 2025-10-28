@@ -18,7 +18,7 @@ The inheritance change, in particular, will likely affect most htmx applications
 
 * **Streaming Response Support** - By switching to `fetch()` we can now implement streaming response handling
 * **Optimistic Updates** - Built-in support for optimistic UI updates with `hx-optimistic`
-* **Server Actions (Partials)** - New `<partial>` element system for cleaner multi-target responses
+* **Server Actions (Partials)** - New `<htmx-action type="partial">` element system for cleaner multi-target responses
 * **Request Preloading** - Preload requests on events with `hx-preload` for better perceived performance
 * **View Transitions** - Enabled by default for smoother page updates
 * **Unified Request Context** - All events provide a consistent `ctx` object
@@ -45,18 +45,18 @@ In htmx 2, `hx-disable` disables htmx processing. In htmx 4, `hx-ignore` serves 
 
 The following attributes have been removed:
 
-| Removed Attribute | htmx 4 Alternative                                     |
-|-------------------|--------------------------------------------------------|
-| `hx-vars`         | Use `hx-vals` with `js:` prefix                        |
-| `hx-params`       | Use `htmx:config:request` event to filter parameters   |
-| `hx-prompt`       | Use `hx-confirm` with async JavaScript function        |
-| `hx-ext`          | Extensions now work via event listeners                |
-| `hx-disinherit`   | No longer needed (inheritance is explicit)             |
-| `hx-inherit`      | No longer needed (inheritance is explicit)             |
-| `hx-request`      | Use `hx-config`                                        |
-| `hx-history`      | Removed (history is no longer stored in local storage) |
-| `hx-history-elt`  | Removed (history uses target element)                  |
-| `hx-select-oob`   | Use `<partial>` elements or standard OOB swaps         |
+| Removed Attribute | htmx 4 Alternative                                                |
+|-------------------|-------------------------------------------------------------------|
+| `hx-vars`         | Use `hx-vals` with `js:` prefix                                   |
+| `hx-params`       | Use `htmx:config:request` event to filter parameters              |
+| `hx-prompt`       | Use `hx-confirm` with async JavaScript function                   |
+| `hx-ext`          | Extensions now work via event listeners                           |
+| `hx-disinherit`   | No longer needed (inheritance is explicit)                        |
+| `hx-inherit`      | No longer needed (inheritance is explicit)                        |
+| `hx-request`      | Use `hx-config`                                                   |
+| `hx-history`      | Removed (history is no longer stored in local storage)            |
+| `hx-history-elt`  | Removed (history uses target element)                             |
+| `hx-select-oob`   | Use `<htmx-action type="partial">` elements or standard OOB swaps |
 
 ### New Attributes
 

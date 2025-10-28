@@ -120,10 +120,10 @@ class FetchMock {
                 if (mock.once) {
                     if (!mock.used) {
                         mock.used = true;
-                        return mock.response;
+                        return typeof mock.response === 'function' ? mock.response() : mock.response;
                     }
                 } else {
-                    return mock.response;
+                    return typeof mock.response === 'function' ? mock.response() : mock.response;
                 }
             }
         }
