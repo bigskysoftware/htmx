@@ -95,6 +95,33 @@ const routes = {
 
         send();
         req.on('close', () => {});
+    },
+
+    '/progress-stream': (req, res) => {
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        });
+
+        let progress = 0;
+
+        const update = () => {
+            if (progress < 100) {
+                progress += Math.floor(Math.random() * 5) + 5;
+                if (progress > 100) progress = 100;
+
+                // Send custom event (no DOM swap, just triggers event listener)
+                res.write(`event: progress\ndata: ${progress}\n\n`);
+                setTimeout(update, 50);
+            } else {
+                res.write(`event: done\ndata: complete\n\n`);
+                res.end();
+            }
+        };
+
+        update();
+        req.on('close', () => {});
     }
 };
 
