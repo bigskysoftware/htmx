@@ -68,10 +68,10 @@ const routes = {
         let statusChangeTimer = Date.now() + 2000;
 
         // Send .events-active class
-        res.write(`data: <partial hx-target="#events-output" hx-swap="beforeend"><div class="events-active"></div></partial>\n\n`);
+        res.write(`data: <htmx-action type="partial" hx-target="#events-output" hx-swap="beforeend"><div class="events-active"></div></htmx-action>\n\n`);
 
         // Send initial status
-        res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
+        res.write(`data: <htmx-action type="partial" hx-target="#system-status" hx-swap="innerHTML">${status}</htmx-action>\n\n`);
 
         const send = () => {
             const now = Date.now();
@@ -80,7 +80,7 @@ const routes = {
             if (now >= statusChangeTimer) {
                 const available = statuses.filter(s => s !== status);
                 status = available[Math.floor(Math.random() * available.length)];
-                res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
+                res.write(`data: <htmx-action type="partial" hx-target="#system-status" hx-swap="innerHTML">${status}</htmx-action>\n\n`);
                 statusChangeTimer = now + 2000;
             }
 
@@ -88,7 +88,7 @@ const routes = {
 
             const delay = status === 'Overdrive' ? 100 : 500;
 
-            res.write(`data: <partial hx-target="#activity" hx-swap="beforeend"><div>${activities[Math.floor(Math.random() * activities.length)]}</div></partial>\n\n`);
+            res.write(`data: <htmx-action type="partial" hx-target="#activity" hx-swap="beforeend"><div>${activities[Math.floor(Math.random() * activities.length)]}</div></htmx-action>\n\n`);
 
             setTimeout(send, delay);
         };

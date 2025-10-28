@@ -981,8 +981,8 @@ var htmx = (() => {
         }
 
         __makeFragment(text) {
-            // Replace <partial> tags with <template partial>
-            let response = text.replace(/<partial\b/gi, '<template partial').replace(/<\/partial>/gi, '</template>');
+            // Replace <htmx-action type="partial"> tags with <template partial>
+            let response = text.replace(/<htmx-action\s+type=["']partial["']/gi, '<template partial').replace(/<\/htmx-action>/gi, '</template>');
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
