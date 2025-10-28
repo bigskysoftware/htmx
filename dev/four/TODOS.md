@@ -21,7 +21,6 @@
   * Move deprecated features into quirks.js?
     * out of band swaps?
     * out of band selects?
-  * ~~revert to `innerHTML` swap~~
   * ~~revert to htmx 2.0 attribute resolution~~
   * mode to log elements that should marked as `:inherited`
 * Unify __parseTriggerSpecs and __parseSwapModifiers somehow
