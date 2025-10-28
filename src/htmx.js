@@ -124,16 +124,6 @@ var htmx = (() => {
             return elt.closest("[hx-ignore]") != null
         }
 
-        __evaledAttributeValue(elt, name, defaultVal = null, scope = elt) {
-            let stringVal = this.__attributeValue(elt, name, defaultVal);
-            let jsContent = this.__extractJavascriptContent(stringVal)
-            if (jsContent) {
-                return this.__executeJavaScript(elt, scope, jsContent);
-            } else {
-                return stringVal;
-            }
-        }
-
         __attributeValue(elt, name, defaultVal) {
             let inheritName = name + ":inherited";
             if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
@@ -390,7 +380,7 @@ var htmx = (() => {
             }
 
             if (javascriptContent) {
-                this.__executeJavaScript(ctx.sourceElement, {}, javascriptContent, false);
+                await this.__executeJavaScriptAsync(ctx.sourceElement, {}, javascriptContent, false);
             } else {
                 await this.__issueRequest(ctx);
             }
@@ -413,13 +403,17 @@ var htmx = (() => {
 
             try {
                 // Confirm dialog
-                let confirmVal = this.__evaledAttributeValue(elt, 'hx-confirm')
+                let confirmVal = this.__attributeValue(elt, 'hx-confirm')
                 if (confirmVal) {
-                    if (confirmVal instanceof String) {
-                        window.confirm(confirmVal)
+                    let js = this.__extractJavascriptContent(confirmVal);
+                    if (js) {
+                        if(!await this.__executeJavaScriptAsync(ctx.elt, {}, js, true)){
+                            return
+                        }
                     } else {
-                        let result = await confirmVal;
-                        if (!result) return
+                        if (!window.confirm(confirmVal)) {
+                            return;
+                        }
                     }
                 }
 
@@ -750,7 +744,9 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
-                        if (this.__executeJavaScript(elt, evt, filter)) {
+                        let tmp = this.__executeJavaScript(elt, evt, filter);
+                        console.log("1", tmp)
+                        if (tmp) {
                             original(evt)
                         }
                     }
@@ -878,11 +874,21 @@ var htmx = (() => {
             return [match[1], match[2]];
         }
 
+        async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
+            let keys = Object.keys(obj);
+            let values = Object.values(obj);
+            let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+            let func = new AsyncFunction(...keys, expression ? `return (${code})` : code);
+            return await func.call(thisArg, ...values);
+        }
+
         __executeJavaScript(thisArg, obj, code, expression = true) {
             let keys = Object.keys(obj);
             let values = Object.values(obj);
             let func = new Function(...keys, expression ? `return (${code})` : code);
-            return func.call(thisArg, ...values);
+            let tmp = func.call(thisArg, ...values);
+            console.log("1", tmp)
+            return tmp;
         }
 
         process(elt) {
@@ -1534,8 +1540,12 @@ var htmx = (() => {
                 if (attr.startsWith("hx-on:")) {
                     let evtName = attr.substring(6)
                     let code = node.getAttribute(attr);
-                    node.addEventListener(evtName, (evt) => {
-                        this.__executeJavaScript(node, {"event": evt}, code, false)
+                    node.addEventListener(evtName, async (evt) => {
+                        try {
+                            await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
+                        } catch (e) {
+                            console.log(e);
+                        }
                     });
                 }
             }
