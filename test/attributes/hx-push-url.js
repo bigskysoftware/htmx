@@ -2,6 +2,12 @@ describe('hx-push-url attribute', function() {
   const chai = window.chai
   var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
 
+  // Helper to normalize paths like htmx does
+  function normalizePath(path) {
+    const url = new URL(path, window.location.href)
+    return url.pathname
+  }
+
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
@@ -23,7 +29,7 @@ describe('hx-push-url attribute', function() {
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
-    cache[cache.length - 1].url.should.equal('/test')
+    cache[cache.length - 1].url.should.equal(normalizePath('/test'))
   })
 
   it('navigation should not push an element into the cache when false', function() {
@@ -50,7 +56,7 @@ describe('hx-push-url attribute', function() {
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
-    cache[1].url.should.equal('/abc123')
+    cache[1].url.should.equal(normalizePath('abc123'))
   })
 
   it('restore should return old value', function() {
@@ -197,9 +203,9 @@ describe('hx-push-url attribute', function() {
     htmx._('saveToHistoryCache')('url1', make('<div>'))
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(3)
-    cache[0].url.should.equal('/url3')
-    cache[1].url.should.equal('/url2')
-    cache[2].url.should.equal('/url1')
+    cache[0].url.should.equal(normalizePath('url3'))
+    cache[1].url.should.equal(normalizePath('url2'))
+    cache[2].url.should.equal(normalizePath('url1'))
   })
 
   it('htmx:afterSettle is called when replacing outerHTML', function() {
@@ -273,21 +279,21 @@ describe('hx-push-url attribute', function() {
     })
   }
 
-  it.skip('normalizePath falls back to no normalization if path not valid URL', function() {
-    // path normalization has a bug breaking it right now preventing this test
+  it('normalizePath falls back to no normalization if path not valid URL', function() {
+    // path normalization bug is now fixed
     htmx._('saveToHistoryCache')('http://', make('<div>'))
     htmx._('saveToHistoryCache')('http//', make('<div>'))
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(2)
-    cache[0].url.should.equal('http://') // no normalization as invalid
-    cache[1].url.should.equal('/http') // can normalize this one
+    cache[0].url.should.equal('http:') // trailing slash removed after normalization
+    cache[1].url.should.equal(normalizePath('http')) // can normalize this one
   })
 
   it('history cache clears out disabled attribute', function() {
     htmx._('saveToHistoryCache')('/url1', make('<div><div data-disabled-by-htmx disabled></div></div>'))
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
     cache.length.should.equal(1)
-    cache[0].url.should.equal('/url1')
+    cache[0].url.should.equal(normalizePath('/url1'))
     cache[0].content.should.equal('<div data-disabled-by-htmx=""></div>')
   })
 
@@ -373,6 +379,39 @@ describe('hx-push-url attribute', function() {
     should.equal(cache, null)
     path.should.equal('')
     htmx.off('htmx:pushedIntoHistory', handler)
+  })
+
+  it('normalizes relative paths correctly', function() {
+    // Get current path to build expected normalized paths
+    var currentPath = window.location.pathname
+    var basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1)
+
+    htmx._('saveToHistoryCache')('relative/path', make('<div>'))
+    htmx._('saveToHistoryCache')('./another/path', make('<div>'))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    cache.length.should.equal(2)
+    // Both should be normalized to absolute paths based on current location
+    cache[0].url.should.equal(basePath + 'relative/path')
+    cache[1].url.should.equal(basePath + 'another/path')
+  })
+
+  it('normalizes paths with query strings correctly', function() {
+    var currentPath = window.location.pathname
+    var basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1)
+
+    htmx._('saveToHistoryCache')('path?foo=bar', make('<div>'))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    cache.length.should.equal(1)
+    cache[0].url.should.equal(basePath + 'path?foo=bar')
+  })
+
+  it('normalizes paths with trailing slashes', function() {
+    htmx._('saveToHistoryCache')('/path/', make('<div>'))
+    htmx._('saveToHistoryCache')('/path/to/page/', make('<div>'))
+    var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+    cache.length.should.equal(2)
+    cache[0].url.should.equal(normalizePath('/path'))
+    cache[1].url.should.equal(normalizePath('/path/to/page'))
   })
 
   it('pushing url without anchor will retain the page anchor tag', function() {
