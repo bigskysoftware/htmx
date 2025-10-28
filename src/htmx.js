@@ -528,7 +528,7 @@ var htmx = (() => {
                 attempt = 0; // Reset on successful connection
 
                 try {
-                    for await (const chunk of this.__parseSSE(currentResponse)) {
+                    for await (const sseMessage of this.__parseSSE(currentResponse)) {
                         if (!elt.isConnected) break;
 
                         if (config.pauseHidden && document.hidden) {
@@ -536,12 +536,12 @@ var htmx = (() => {
                             if (!elt.isConnected) break;
                         }
 
-                        const msg = { data: chunk.data, event: chunk.event, id: chunk.id, cancelled: false };
+                        const msg = { data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false };
                         if (!this.__trigger(elt, "htmx:before:sse:message", { ctx, message: msg }) || msg.cancelled) continue;
 
-                        if (chunk.id) lastEventId = chunk.id;
+                        if (sseMessage.id) lastEventId = sseMessage.id;
 
-                        ctx.text = chunk.data;
+                        ctx.text = sseMessage.data;
                         ctx.status = "stream message received";
 
                         if (!ctx.response.cancelled) {
