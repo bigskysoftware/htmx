@@ -2,7 +2,8 @@
 title = "Reference"
 +++
 
-## Contents
+<details id="contents">
+<summary><strong>Contents</strong></summary>
 
 * [htmx Core Attributes](#attributes)
 * [htmx Additional Attributes](#attributes-additional)
@@ -13,6 +14,8 @@ title = "Reference"
 * [htmx Extensions](/extensions)
 * [JavaScript API](#api)
 * [Configuration Options](#config)
+
+</details>
 
 ## Core Attribute Reference {#attributes}
 

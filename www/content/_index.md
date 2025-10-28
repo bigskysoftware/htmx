@@ -94,9 +94,9 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<div class="alert">
-<b>NEWS:</b> htmx 4 is coming!
-</div>
+<aside role="alert">
+  <strong>NEWS:</strong> htmx 4 is coming!
+</aside>
 
 <h2>introduction</h2>
 

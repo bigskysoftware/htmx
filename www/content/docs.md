@@ -1,14 +1,12 @@
 +++
 title = "Documentation"
 [extra]
-custom_classes = "wide-content"
 +++
 <div class="row">
 <div class="2 col nav">
 
-**Contents**
-
-<div id="contents">
+<details id="contents">
+<summary><strong>Contents</strong></summary>
 
 * [introduction](#introduction)
 * [installing](#installing)
@@ -45,7 +43,7 @@ custom_classes = "wide-content"
 * [security](#security)
 * [configuring](#config)
 
-</div>
+</details>
 
 </div>
 <div class="10 col">
@@ -55,18 +53,46 @@ custom_classes = "wide-content"
 htmx is a library that allows you to access modern browser features directly from HTML, rather than using
 javascript.
 
-To understand htmx, first let's take a look at an anchor tag:
+To understand htmx, first let's take a look at the two main _hypermedia controls_, or interactive elements
+of HTML, the [anchor tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a) and the 
+[form tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form):
 
 ```html
 <a href="/blog">Blog</a>
+
+<form method="post" action="/register">
+    <label>Email: <input type="email"></label>
+    <button type="submit">Submit</button>
+</form>
 ```
 
-This anchor tag tells a browser:
+The anchor tag tells a browser:
 
 > "When a user clicks on this link, issue an HTTP GET request to '/blog' and load the response content
 >  into the browser window".
 
-With that in mind, consider the following bit of HTML:
+The form tag tells a browser:
+
+> "When a user submits this form, issue an HTTP POST request to '/register' and load the response content
+>  into the browser window".
+
+Further, both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
+attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe):
+
+```html
+<form method="post" action="/register" target="iframe1">
+    <label>Email: <input type="email"></label>
+    <button type="submit">Submit</button>
+</form>
+<iframe name="iframe1">
+  <!-- The response will be placed here-->
+</iframe>
+```
+
+This is called [transclusion](https://en.wikipedia.org/wiki/Transclusion), where a document is included inside another
+document.
+
+With these ideas in mind, consider the following bit of HTML:
 
 ```html
 <button hx-post="/clicked"
@@ -77,24 +103,25 @@ With that in mind, consider the following bit of HTML:
 </button>
 ```
 
-This tells htmx:
+This is htmx-powered HTML.  Given these attribute, htmx will enable the following behavior:
 
 > "When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
 >  to replace the element with the id `parent-div` in the DOM"
 
-htmx extends and generalizes the core idea of HTML as a hypertext, opening up many more possibilities directly
-within the language:
+htmx [generalizes the idea of hypermedia controls](https://en.wikipedia.org/wiki/Transclusion) in HTML, which means that:
 
 * Any element can issue an HTTP request
 * Any event can trigger requests
 * Any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) can be used
 * Any element can be the target for update by the request
 
-Note that when you are using htmx the server typically responds with HTML, not *JSON*.  
+Like in the case of the link and form examples above, htmx expects the server to responds with HTML, not *JSON*.  
 
-htmx follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
-of the web, using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
-without users really needing to understand that concept: just return HTML.
+In this manner, htmx follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
+of the web, using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
+
+While this may seem a little academic (and the ideas are interesting!) it turns out that this small extension to HTML
+enables developers to create much more [sophisticated user experiences](@/examples/_index.md) using HTML.
 
 ## 2.x to 4.x Migration Guide
 
