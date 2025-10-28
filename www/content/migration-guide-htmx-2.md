@@ -9,15 +9,14 @@ backwards compatibility where possible, this upgrade will require more work than
 
 ## Biggest Changes
 
-The two most impactful changes in htmx 4 are:
+The two most impactful changes in htmx 4 are switching to `fetch()` for issuing ajax requests and the removal 
+of implicit inheritance - inheritance now requires the `:inherited` modifier
 
-1. **Default swap strategy changed from `innerHTML` to `outerHTML`**
-2. **Removal of implicit attribute inheritance** - inheritance now requires the `:inherited` modifier
-
-These will likely affect most htmx applications and should be addressed first.
+The inheritance change, in particular, will likely affect most htmx applications and should be addressed first.
 
 ## New Features
 
+* **Streaming Response Support** - By switching to `fetch()` we can now implement streaming response handling
 * **Optimistic Updates** - Built-in support for optimistic UI updates with `hx-optimistic`
 * **Server Actions (Partials)** - New `<partial>` element system for cleaner multi-target responses
 * **Request Preloading** - Preload requests on events with `hx-preload` for better perceived performance
@@ -46,17 +45,18 @@ In htmx 2, `hx-disable` disables htmx processing. In htmx 4, `hx-ignore` serves 
 
 The following attributes have been removed:
 
-| Removed Attribute | htmx 4 Alternative                                   |
-|-------------------|------------------------------------------------------|
-| `hx-vars`         | Use `hx-vals` with `js:` prefix                      |
-| `hx-params`       | Use `htmx:config:request` event to filter parameters |
-| `hx-prompt`       | Use `hx-confirm` with async JavaScript function      |
-| `hx-ext`          | Extensions now work via event listeners              |
-| `hx-disinherit`   | No longer needed (inheritance is explicit)           |
-| `hx-inherit`      | No longer needed (inheritance is explicit)           |
-| `hx-request`      | Use `hx-config`                                      |
-| `hx-history-elt`  | Removed (history uses target element)                |
-| `hx-select-oob`   | Use `<partial>` elements or standard OOB swaps       |
+| Removed Attribute | htmx 4 Alternative                                     |
+|-------------------|--------------------------------------------------------|
+| `hx-vars`         | Use `hx-vals` with `js:` prefix                        |
+| `hx-params`       | Use `htmx:config:request` event to filter parameters   |
+| `hx-prompt`       | Use `hx-confirm` with async JavaScript function        |
+| `hx-ext`          | Extensions now work via event listeners                |
+| `hx-disinherit`   | No longer needed (inheritance is explicit)             |
+| `hx-inherit`      | No longer needed (inheritance is explicit)             |
+| `hx-request`      | Use `hx-config`                                        |
+| `hx-history`      | Removed (history is no longer stored in local storage) |
+| `hx-history-elt`  | Removed (history uses target element)                  |
+| `hx-select-oob`   | Use `<partial>` elements or standard OOB swaps         |
 
 ### New Attributes
 
@@ -149,13 +149,11 @@ TBD
 
 | Config Option                                   | htmx 2.x Default | htmx 4.x Default |
 |-------------------------------------------------|------------------|------------------|
-| `defaultSwapStyle`                              | `innerHTML`      | `outerHTML`      |
 | `viewTransitions` (was `globalViewTransitions`) | `false`          | `true`           |
 
 To restore htmx 2 behavior:
 
 ```javascript
-htmx.config.defaultSwapStyle = 'innerHTML';
 htmx.config.viewTransitions = false;
 ```
 
@@ -172,5 +170,4 @@ These config options have been removed from core:
 
 This is the official htmx 2.x -> 4.x upgrade music:
 
-<iframe width="640" height="360" src="https://www.youtube.com/watch?v=NZf15xVrOW8" title="Zombie Hyperdrive - Red Eyes"
-        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="1023" height="644" src="https://www.youtube.com/embed/j4fFd0dejqk" title="Playtime Is Over" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

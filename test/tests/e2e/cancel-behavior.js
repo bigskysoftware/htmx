@@ -177,7 +177,7 @@ describe('Cancel behavior integration tests', function() {
         
         await clickAndWait('#btn');
         defaultPrevented.should.equal(true);
-        playground().innerHTML.should.equal('Submitted');
+        playground().innerText.should.equal('Submitted');
     });
 
     it('does not submit with false condition on form', async function() {

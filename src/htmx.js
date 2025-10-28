@@ -94,6 +94,7 @@ var htmx = (() => {
                 viewTransitions: true,
                 historyEnabled: true,
                 selfRequestsOnly: true,
+                defaultSwapStyle: "innerHTML",
                 defaultTimeout: 60000 /* 00 second default timeout */
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
@@ -247,7 +248,7 @@ var htmx = (() => {
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 target: this.__attributeValue(sourceElement, "hx-target"),
-                swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
+                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwapStyle),
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.viewTransitions,
@@ -905,7 +906,7 @@ var htmx = (() => {
             if (oobValue === 'true') oobValue = 'outerHTML';
             const swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
-            
+
             const oobElementClone = elt.cloneNode(true);
             let frag;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
@@ -917,7 +918,7 @@ var htmx = (() => {
                 frag = document.createDocumentFragment();
                 frag.appendChild(oobElementClone);
             }
-            
+
             return {
                 type: 'oob',
                 fragment: frag,
@@ -930,17 +931,17 @@ var htmx = (() => {
 
         __processOOB(fragment, sourceElement, selectOOB) {
             let tasks = [];
-            
+
             // Process hx-select-oob first (select elements from response)
             if (selectOOB) {
                 selectOOB.split(',').forEach(spec => {
                     const [selector, ...rest] = spec.split(':');
                     const rawOobValue = rest.length ? rest.join(':') : 'true';
-                    
+
                     fragment.querySelectorAll(selector).forEach(elt => {
                         const defaultTarget = elt.id ? '#' + CSS.escape(elt.id) : null;
                         const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-                        
+
                         if (target || oobValue.includes('target:')) {
                             tasks.push(this.__createOOBTask(elt, oobValue, target, sourceElement));
                             elt.remove();
@@ -948,16 +949,16 @@ var htmx = (() => {
                     });
                 });
             }
-            
+
             // Process elements with hx-swap-oob attribute
             fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]').forEach(oobElt => {
                 const rawOobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
-                
+
                 const defaultTarget = '#' + CSS.escape(oobElt.id);
                 const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-                
+
                 tasks.push(this.__createOOBTask(oobElt, oobValue, target, sourceElement));
                 oobElt.remove();
             });
@@ -976,7 +977,7 @@ var htmx = (() => {
         // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
-            let config = {style: tokens[1] === ':' ? 'outerHTML' : (tokens[0] || 'outerHTML')};
+            let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
             let startIdx = tokens[1] === ':' ? 0 : 1;
 
             for (let i = startIdx; i < tokens.length; i++) {
@@ -1011,7 +1012,7 @@ var htmx = (() => {
             let tasks = [];
 
             fragment.querySelectorAll('template[partial]').forEach(partialElt => {
-                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || 'outerHTML');
+                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwapStyle);
 
                 tasks.push({
                     type: 'partial',
@@ -1149,7 +1150,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Create main task if needed
-            let swapSpec = this.__parseSwapSpec(ctx.swap || 'outerHTML');
+            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwapStyle);
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
                 let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
@@ -1188,6 +1189,7 @@ var htmx = (() => {
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
+                // TODO offer modes where we don't await these?  Do them serially?
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
@@ -1360,7 +1362,7 @@ var htmx = (() => {
                 push = headerPush;
                 replace = headerReplace;
             }
-            
+
             if (!push && !replace && this.__isBoosted(sourceElement)) {
                 push = 'true';
             }
