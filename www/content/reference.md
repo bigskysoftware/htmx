@@ -118,7 +118,7 @@ All other attributes available in htmx.
 
 ## Event Reference {#events}
 
-**Note:** htmx 4 uses a new event naming convention with the pattern `htmx:category:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
+**Note:** htmx 4 uses a new event naming convention with the pattern `htmx:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
 
 <div class="info-table">
 

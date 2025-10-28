@@ -156,8 +156,6 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 htmx development can be supported via [GitHub Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
 
 
-Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">supporters</a>, including:
-
 {{ include(path="static/sponsors.html") }}
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>

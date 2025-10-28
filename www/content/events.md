@@ -615,7 +615,7 @@ This event is triggered periodically when an ajax request that supports progress
 
 ## New Events (htmx 4) {#new-events}
 
-The following events are new in htmx 4 and need documentation. They use the new `htmx:category:phase:action` naming convention.
+The following events are new in htmx 4 and need documentation. They use the new `htmx:phase:action` naming convention.
 
 ### Event - `htmx:before:init` {#htmx:before:init}
 
