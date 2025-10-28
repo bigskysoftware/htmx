@@ -1050,22 +1050,22 @@ var htmx = (() => {
             if (swapSpec.target) target = swapSpec.target;
 
             const oobElementClone = elt.cloneNode(true);
-            let frag;
+            let fragment;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                 swapSpec.strip = true;
             }
             if (swapSpec.strip) {
-                frag = oobElementClone.content || oobElementClone;
+                fragment = oobElementClone.content || oobElementClone;
             } else {
-                frag = document.createDocumentFragment();
-                frag.appendChild(oobElementClone);
+                fragment = document.createDocumentFragment();
+                fragment.appendChild(oobElementClone);
             }
             elt.remove();
             if (!target && !oobValue.includes('target:')) return;
 
             tasks.push({
                 type: 'oob',
-                fragment: frag,
+                fragment,
                 target,
                 swapSpec,
                 async: swapSpec.async === true,
