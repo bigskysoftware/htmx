@@ -51,6 +51,7 @@ var htmx = (() => {
 
     class Htmx {
 
+        #scriptingAPIMethods = ['timeout'];
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
         __actionSelector = "[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]";
         __boostSelector = "a,form";
@@ -103,7 +104,8 @@ var htmx = (() => {
                     initialDelay: 500,
                     maxDelay: 30000,
                     pauseHidden: false
-                }
+                },
+                scriptingAPI :  this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -131,6 +133,14 @@ var htmx = (() => {
             }
             let value = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}`)?.getAttribute(inheritName) || defaultVal;
             return value
+        }
+
+        __initScriptingAPI() {
+            let api = {}
+            for (let methodName of this.#scriptingAPIMethods) {
+                api[methodName] = this[methodName].bind(this)
+            }
+            return api
         }
 
         __tokenize(str) {
@@ -875,16 +885,22 @@ var htmx = (() => {
         }
 
         async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
-            let keys = Object.keys(obj);
-            let values = Object.values(obj);
+            let args = {}
+            Object.assign(args, this.config.scriptingAPI)
+            Object.assign(args, obj)
+            let keys = Object.keys(args);
+            let values = Object.values(args);
             let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
             let func = new AsyncFunction(...keys, expression ? `return (${code})` : code);
             return await func.call(thisArg, ...values);
         }
 
         __executeJavaScript(thisArg, obj, code, expression = true) {
-            let keys = Object.keys(obj);
-            let values = Object.values(obj);
+            let args = {}
+            Object.assign(args, this.config.scriptingAPI)
+            Object.assign(args, obj)
+            let keys = Object.keys(args);
+            let values = Object.values(args);
             let func = new Function(...keys, expression ? `return (${code})` : code);
             let tmp = func.call(thisArg, ...values);
             console.log("1", tmp)
