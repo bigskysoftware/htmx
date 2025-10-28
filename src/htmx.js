@@ -891,14 +891,14 @@ var htmx = (() => {
         __parseOOBSwap(oobValue, defaultTarget) {
             // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
             let target = defaultTarget;
-            if (oobValue !== 'true' && !oobValue.includes(' ')) {
+            if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
                 const colonIdx = oobValue.indexOf(':');
                 if (colonIdx !== -1) {
                     target = oobValue.substring(colonIdx + 1);
                     oobValue = oobValue.substring(0, colonIdx);
                 }
             }
-            if (oobValue === 'true') oobValue = 'outerHTML';
+            if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
             return {oobValue, target};
         }
 
