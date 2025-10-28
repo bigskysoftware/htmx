@@ -10,7 +10,7 @@ describe('hx-trigger attribute', function() {
         mockResponse('GET', '/test', 'Clicked!')
         initHTML('<form hx-get="/test" hx-trigger="click">Click Me!</form>')
         await clickAndWait("form")
-        playground().innerHTML.should.equal('Clicked!')
+        playground().innerText.should.equal('Clicked!')
     })
 
     it('works with multiple events', async function () {

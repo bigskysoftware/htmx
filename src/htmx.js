@@ -94,6 +94,7 @@ var htmx = (() => {
                 viewTransitions: true,
                 historyEnabled: true,
                 selfRequestsOnly: true,
+                defaultSwapStyle: "innerHTML",
                 defaultTimeout: 60000 /* 00 second default timeout */
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
@@ -246,7 +247,7 @@ var htmx = (() => {
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 target: this.__attributeValue(sourceElement, "hx-target"),
-                swap: this.__attributeValue(sourceElement, "hx-swap", "outerHTML"),
+                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwapStyle),
                 transition: this.config.viewTransitions,
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
@@ -1167,6 +1168,7 @@ var htmx = (() => {
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
+                // TODO offer modes where we don't await these?  Do them serially?
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
