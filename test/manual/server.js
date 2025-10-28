@@ -55,48 +55,47 @@ const routes = {
         req.on('close', () => {});
     },
 
-    // TODO: re-implement with <htmx-action>
-    // '/events': (req, res) => {
-    //     res.writeHead(200, {
-    //         'Content-Type': 'text/event-stream',
-    //         'Cache-Control': 'no-cache',
-    //         'Connection': 'keep-alive'
-    //     });
-    //
-    //     const activities = ['👤 User joined', '📁 File uploaded', '💬 Comment added', '✓ Task completed', '📨 Message sent'];
-    //     const statuses = ['Paused', 'Active', 'Overdrive'];
-    //     let status = 'Active';
-    //     let statusChangeTimer = Date.now() + 2000;
-    //
-    //     // Send .events-active class
-    //     res.write(`data: <partial hx-target="#events-output" hx-swap="beforeend"><div class="events-active"></div></partial>\n\n`);
-    //
-    //     // Send initial status
-    //     res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
-    //
-    //     const send = () => {
-    //         const now = Date.now();
-    //
-    //         // Change status every 2 seconds
-    //         if (now >= statusChangeTimer) {
-    //             const available = statuses.filter(s => s !== status);
-    //             status = available[Math.floor(Math.random() * available.length)];
-    //             res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
-    //             statusChangeTimer = now + 2000;
-    //         }
-    //
-    //         if (status === 'Paused') return setTimeout(send, 100);
-    //
-    //         const delay = status === 'Overdrive' ? 100 : 500;
-    //
-    //         res.write(`data: <partial hx-target="#activity" hx-swap="beforeend"><div>${activities[Math.floor(Math.random() * activities.length)]}</div></partial>\n\n`);
-    //
-    //         setTimeout(send, delay);
-    //     };
-    //
-    //     send();
-    //     req.on('close', () => {});
-    // }
+    '/events': (req, res) => {
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        });
+
+        const activities = ['👤 User joined', '📁 File uploaded', '💬 Comment added', '✓ Task completed', '📨 Message sent'];
+        const statuses = ['Paused', 'Active', 'Overdrive'];
+        let status = 'Active';
+        let statusChangeTimer = Date.now() + 2000;
+
+        // Send .events-active class
+        res.write(`data: <partial hx-target="#events-output" hx-swap="beforeend"><div class="events-active"></div></partial>\n\n`);
+
+        // Send initial status
+        res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
+
+        const send = () => {
+            const now = Date.now();
+
+            // Change status every 2 seconds
+            if (now >= statusChangeTimer) {
+                const available = statuses.filter(s => s !== status);
+                status = available[Math.floor(Math.random() * available.length)];
+                res.write(`data: <partial hx-target="#system-status" hx-swap="innerHTML">${status}</partial>\n\n`);
+                statusChangeTimer = now + 2000;
+            }
+
+            if (status === 'Paused') return setTimeout(send, 100);
+
+            const delay = status === 'Overdrive' ? 100 : 500;
+
+            res.write(`data: <partial hx-target="#activity" hx-swap="beforeend"><div>${activities[Math.floor(Math.random() * activities.length)]}</div></partial>\n\n`);
+
+            setTimeout(send, delay);
+        };
+
+        send();
+        req.on('close', () => {});
+    }
 };
 
 http.createServer(async (req, res) => {
