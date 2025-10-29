@@ -485,7 +485,10 @@ attempt to _merge_ new content into the existing DOM, rather than simply replaci
 preserving things like focus, video state, etc. by mutating existing nodes in-place during the swap operation, at the
 cost of more CPU.
 
-TODO: are we going to have a morph swap out of the box
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>are we going to have a morph swap out of the box</p>
+</aside>
 
 #### View Transitions {#view-transitions}
 
@@ -496,7 +499,10 @@ By default, htmx uses the viewTransition() API when swapping in content.
 
 View Transitions can be configured using CSS, as outlined in [the Chrome documentation for the feature](https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization).
 
-TODO: more docs on this
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>more docs on this</p>
+</aside>
 
 You can see a view transition example on the [Animation Examples](/examples/animations#view-transitions) page.
 
@@ -575,15 +581,24 @@ More examples and details can be found on the [`hx-sync` attribute page.](@/attr
 
 ### CSS Transitions {#css_transitions}
 
-TODO: are we going to support CSS transitions?
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>are we going to support CSS transitions?</p>
+</aside>
 
 ### Server Actions
 
-// TODO: do
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>do</p>
+</aside>
 
 ### Out of Band Swaps {#oob_swaps}
 
-// TODO: are we going to deprecate OOB in favor of server actions?
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>are we going to deprecate OOB in favor of server actions?</p>
+</aside>
 
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute in the *response* html:
@@ -616,7 +631,11 @@ To avoid this issue you can use a `template` tag to encapsulate these elements:
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
 attribute, which takes a CSS selector and selects the matching elements from the response.
 
-TODO need to implement
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>need to implement</p>
+</aside>
+
 You can also pick out pieces of content for an out-of-band swap by using the [hx-select-oob](#)
 attribute, which takes a list of element IDs to pick out and swap.
 
@@ -633,7 +652,10 @@ will include the values of all inputs within it.
 
 As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends.
 
-TODO: this may change
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>this may change</p>
+</aside>
 
 Additionally, if the element causes a non-`GET` request, the values of all the inputs of the associated form will be
 included (typically this is the nearest enclosing form, but could be different if e.g. `<button form="associated-form">` is used).
@@ -641,7 +663,11 @@ included (typically this is the nearest enclosing form, but could be different i
 If you wish to include the values of other elements, you can use the [hx-include](@/attributes/hx-include.md) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-TODO fix link
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>fix link</p>
+</aside>
+
 Finally, if you want to programmatically modify the parameters, you can use the [htmx:config:request](@/events.md#)
 event.
 
@@ -875,7 +901,7 @@ SSE `event:` lines trigger custom DOM events. When an `event:` line is present, 
 
 ```html
 <button hx-get="/progress"
-        hx-on:progress="htmx.find('#bar').style.width = event.detail.data + '%'">
+        hx-on:progress="find('#bar').style.width = event.detail.data + '%'">
     Start
 </button>
 ```
@@ -952,12 +978,15 @@ When a user hits the back button, htmx will retrieve the old content from the or
 simulating "going back" to the previous state.  
 
 An ajax request with the `HX-History-Restore-Request` set to true, and expects back the HTML needed
-for the entire page. 
+for the entire page.
 
-// TODO - need to revisit if this is an issue still
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>need to revisit if this is an issue still</p>
+</aside>
+
 You should always set `htmx.config.historyRestoreAsHxRequest` to false to prevent the `HX-Request` header
 which can then be safely used to respond with partials.
-// END TODO - need to revisit if this is an issue still
 
 Alternatively, if the `htmx.config.refreshOnHistoryMiss` config variable
 is set to true, it will issue a hard browser refresh.
@@ -979,16 +1008,26 @@ Sometimes you might want to do nothing in the swap, but still perhaps trigger a 
 For this situation, by default, you can return a `204 - No Content` response code, and htmx will ignore the content of
 the response.
 
-TODO fix link
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>fix link</p>
+</aside>
+
 In the event of a connection error, the [`htmx:error`](@/events.md) event will be triggered.
 
 ### Configuring Response Handling {#response-handling}
 
-TODO: need to figure out how we are gonna handle this (telroshan)
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>need to figure out how we are gonna handle this (telroshan)</p>
+</aside>
 
 ### CORS
 
-TODO: update for fetch()
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>update for fetch()</p>
+</aside>
 
 When using htmx in a cross origin context, remember to configure your web
 server to set Access-Control headers in order for htmx headers to be visible
@@ -1003,7 +1042,10 @@ on the client side.
 
 htmx includes a number of useful headers in requests:
 
-// TODO which are we going to keep?
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>which are we going to keep?</p>
+</aside>
 
 | Header                       | Description                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------|
@@ -1013,7 +1055,10 @@ htmx includes a number of useful headers in requests:
 
 ### Response Headers
 
-// TODO which are we going to keep?
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>which are we going to keep?</p>
+</aside>
 
 htmx supports some htmx-specific response headers:
 
@@ -1040,7 +1085,10 @@ Also, the response headers above are not provided to htmx for processing with 3x
 
 The order of operations in a htmx request are:
 
-// TODO - redo
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>redo</p>
+</aside>
 
 You can use the `htmx-swapping` and `htmx-settling` classes to create
 [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) between pages.
@@ -1062,7 +1110,10 @@ Please see the [Animation Guide](@/examples/animations.md) for more details on t
 
 ## Extensions
 
-// TODO is this true?
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>is this true?</p>
+</aside>
 
 In htmx 4, extensions are just libraries that hook into the standard events and use the public API.  There is no longer
 a need for an explicit extension API.
@@ -1190,9 +1241,13 @@ to see exactly what is going on with it.
 
 Note that this *only* works from the console, you cannot embed it in a script tag on your page.
 
-Finally, push come shove, you might want to just debug `htmx.js` by loading up the unminimized version.  
+Finally, push come shove, you might want to just debug `htmx.js` by loading up the unminimized version.
 
-// TODO finalize methods
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>finalize methods</p>
+</aside>
+
 You would most likely want to set a break point in the  methods to see what's going on.
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
@@ -1261,7 +1316,11 @@ htmx provides some top level helper methods in `hx-on` handlers that make async 
 
 Here is an example that adds a parameter to an htmx request
 
-// TODO - verify symbols
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>verify symbols</p>
+</aside>
+
 ```html
 <button hx-post="/example"
         hx-on:htmx:config:request="ctx.parameters.example = 'Hello Scripting!'">
@@ -1344,7 +1403,10 @@ keyed based on a composite of the response URL and the `HX-Request` request head
 rather than being based just on the response URL. Always disable `htmx.config.historyRestoreAsHxRequest`
 so that these history full HTML requests are not cached with partial fragment responses.
 
-// TODO - verify if still needed
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>verify if still needed</p>
+</aside>
 
 If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
 `getCacheBusterParam` to `true`.  If this configuration variable is set, htmx will include a cache-busting parameter
@@ -1429,7 +1491,10 @@ htmx event model.
 
 #### Events
 
-TODO: rewrite
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>rewrite</p>
+</aside>
 
 If you want to allow requests to some domains beyond the current host, but not leave things totally open, you can
 use the `htmx:validateUrl` event.  This event will have the request URL available in the `detail.url` slot, as well
@@ -1468,7 +1533,10 @@ for exploring this topic.
 
 ### CSRF Prevention
 
-TODO: verify
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>verify</p>
+</aside>
 
 The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below. 
 
@@ -1495,11 +1563,12 @@ Htmx has configuration options that can be accessed either programmatically or d
 
 They are listed below:
 
-TODO: audit
-
 <div class="info-table">
 
-// TODO need to clean up
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>need to clean up</p>
+</aside>
 
 | Config Variable                        | Info                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

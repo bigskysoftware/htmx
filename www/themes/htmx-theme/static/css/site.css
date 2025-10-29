@@ -18,6 +18,16 @@ blockquote:not(.dark-hero *) {
   font-family: 'Atkinson Hyperlegible', sans-serif;
 }
 
+/* Blockquote padding */
+blockquote {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
 /* Bold code elements */
 code {
   font-weight: bold;
@@ -43,9 +53,31 @@ aside[role="alert"] strong {
   color: #856404;
 }
 
+/* Under construction banner */
+.under-construction {
+  background: #ffff00;
+  border: 8px solid;
+  border-image: repeating-linear-gradient(
+    45deg,
+    #000,
+    #000 10px,
+    #ffcc00 10px,
+    #ffcc00 20px
+  ) 8;
+  padding: 10px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.under-construction strong {
+  color: #000;
+}
+
 /* Dark hero section */
 .dark-hero {
   background: url(/img/topo.svg), linear-gradient(#1f1f1f, #2d2d2d);
+  background-blend-mode: soft-light;
   height: 240px;
   line-height: 240px;
   text-align: center;
@@ -58,20 +90,33 @@ aside[role="alert"] strong {
   border-bottom: 1px solid var(--topNavBorder);
 }
 
+.dark-hero .main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  line-height: normal;
+}
+
 .dark-hero * {
   opacity: 0;
   transition: all 500ms ease-in;
 }
 
 .dark-hero sub {
-  display: inline-block;
+  display: block;
   position: relative;
   top: 40px;
+  left: 150px;
 }
 
 .dark-hero.appear * {
   opacity: 1;
-  top: 10px;
+}
+
+.dark-hero.appear sub {
+  top: 0px;
 }
 
 .dark-hero .logo {
@@ -107,7 +152,7 @@ nav {
   max-width: 1024px;
   margin: 0 auto;
   justify-content: center;
-  padding: 0.2rem 0;
+  padding: 0.75rem 1rem;
   position: relative;
 }
 
@@ -129,11 +174,11 @@ nav ul {
 }
 
 nav li {
-  padding: 0.2rem 0.5rem;
+  padding: 0 0.75rem;
 }
 
 nav > ul:first-child li {
-  padding: 0.2rem 0;
+  padding: 0 0.5rem;
 }
 
 nav a:not(.logo) {
@@ -155,10 +200,9 @@ nav [role=search] {
   font-size: 28px;
   font-weight: bold;
   white-space: nowrap;
-  vertical-align: middle;
   display: inline-flex;
   align-items: center;
-  margin-left: -14px;
+  margin-right: 0.5rem;
 }
 
 .logo b {
@@ -166,9 +210,14 @@ nav [role=search] {
   color: var(--midBlue);
 }
 
+.github-stars {
+  display: inline-flex;
+  align-items: center;
+}
+
 .github-stars span {
-  position: relative;
-  top: 4px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .search-box {

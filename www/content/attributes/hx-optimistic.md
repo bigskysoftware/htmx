@@ -20,8 +20,12 @@ The `hx-optimistic` attribute allows you to show optimistic content while a requ
 
 ## Examples
 
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Add comprehensive examples</p>
+</aside>
+
 ```html
-<!-- TODO: Add comprehensive examples -->
 <button hx-post="/like" hx-optimistic="true">
     Like
 </button>

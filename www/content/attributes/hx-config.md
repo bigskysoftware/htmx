@@ -16,7 +16,11 @@ The `hx-config` attribute allows you to configure request behavior using JSON.
 
 * Accepts a JSON object with configuration options
 * Can be used to override global configuration on a per-element basis
-* TODO: Document specific config options available via hx-config
+
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document specific config options available via hx-config</p>
+</aside>
 
 ## Examples
 

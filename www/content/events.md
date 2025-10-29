@@ -619,88 +619,154 @@ The following events are new in htmx 4 and need documentation. They use the new 
 
 ### Event - `htmx:before:init` {#htmx:before:init}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:init` {#htmx:after:init}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:cleanup` {#htmx:before:cleanup}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:cleanup` {#htmx:after:cleanup}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:config:request` {#htmx:config:request}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:request` {#htmx:before:request}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:request` {#htmx:after:request}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:finally:request` {#htmx:finally:request}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:swap` {#htmx:before:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:swap` {#htmx:after:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:main:swap` {#htmx:before:main:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:main:swap` {#htmx:after:main:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:oob:swap` {#htmx:before:oob:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:oob:swap` {#htmx:after:oob:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:partial:swap` {#htmx:before:partial:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:partial:swap` {#htmx:after:partial:swap}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:restore:history` {#htmx:before:restore:history}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:before:history:update` {#htmx:before:history:update}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:history:update` {#htmx:after:history:update}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:push:into:history` {#htmx:after:push:into:history}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:after:replace:into:history` {#htmx:after:replace:into:history}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
 
 ### Event - `htmx:error` {#htmx:error}
 
-TODO: Document this event
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>Document this event</p>
+</aside>
