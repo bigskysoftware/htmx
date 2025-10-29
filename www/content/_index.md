@@ -49,6 +49,23 @@ body.ads .ad img {
   max-width: 90vw;
 }
 
+.sponsor-button-container {
+  float: right;
+  margin: .5rem 0 1rem 1rem;
+}
+
+.sponsor-button-container .btn {
+  padding: 8px 20px !important;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sponsor-button-container .btn:hover {
+  text-decoration: none;
+}
+
 </style>
 <script type="application/javascript">
 if(window.location.search=="?wuw=true" || window.location.search=="?suw=true") {
@@ -139,11 +156,11 @@ htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 
 Read the [docs introduction](@/docs.md#introduction) for a more in-depth... introduction.
 
-<h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
+<div class="sponsor-button-container">
+  <a href="https://github.com/sponsors/bigskysoftware?o=esb" class="btn">❤️ Sponsor htmx</a>
+</div>
 
-
-htmx development can be supported via [GitHub Sponsors](https://github.com/sponsors/bigskysoftware?o=esb)
-
+## Sponsors
 
 {{ include(path="static/sponsors.html") }}
 

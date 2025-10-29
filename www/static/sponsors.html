@@ -48,9 +48,12 @@
   min-height: 100px;
 }
 
-.platinum-container img {
+.platinum-container .sponsor-cell img {
   height: 60px;
-  width: 60%;
+  width: 100% !important;
+  max-width: none !important;
+  object-fit: fill !important;
+    transform: scale(2, 2);
 }
 
 /* Gold sponsors - 2 columns */
@@ -84,8 +87,8 @@
     height: 40px;
   }
 
-  .platinum-container img {
-    width: 70%;
+  .platinum-container .sponsor-cell img {
+    width: 100% !important;
     height: 50px;
   }
 }
@@ -112,7 +115,7 @@
 
 </style>
 
-Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">supporters</a>, including:
+Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftware?o=esb">sponsors</a>, including:
 
 <div class="sponsor-section">
 <h1>Platinum Sponsor</h1>
