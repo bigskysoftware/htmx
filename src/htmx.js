@@ -1743,24 +1743,15 @@ var htmx = (() => {
         }
 
         __tokenizeExtendedSelector(selector) {
-            const parts = []
-            let angleBracketDepth = 0
-            let offset = 0
-            for (let i = 0; i < selector.length; i++) {
-                const char = selector[i]
-                if (char === ',' && angleBracketDepth === 0) {
-                    parts.push(selector.substring(offset, i))
-                    offset = i + 1
-                    continue
+            let parts = [], depth = 0, start = 0;
+            for (let i = 0; i <= selector.length; i++) {
+                let c = selector[i];
+                if (c === '<') depth++;
+                else if (c === '/' && selector[i + 1] === '>') depth--;
+                else if ((c === ',' && !depth) || i === selector.length) {
+                    if (i > start) parts.push(selector.substring(start, i));
+                    start = i + 1;
                 }
-                if (char === '<') {
-                    angleBracketDepth++
-                } else if (char === '/' && selector[i + 1] === '>') {
-                    angleBracketDepth--
-                }
-            }
-            if (offset < selector.length) {
-                parts.push(selector.substring(offset))
             }
             return parts;
         }
