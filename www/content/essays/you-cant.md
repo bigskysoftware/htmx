@@ -274,7 +274,7 @@ example, a standard action on the web is to show and hide things based on a butt
 show and hide elements with only CSS and HTML, for example, by using an HTML input checkbox to track state. We can style
 an HTML label as a button and give it a `for="checkboxID`" attribute, so clicking the label toggles the checkbox.
 
-```jsx
+```javascript
 <input id="published" class="hidden peer" type="checkbox"/>
 <label for="published" class="btn">toggle content</label>
 

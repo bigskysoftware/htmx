@@ -2,6 +2,12 @@
 title = "Reference"
 +++
 
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes_in_4">changes in htmx 4.0</a>
+</p>
+</aside>
+
 <details id="contents">
 <summary><strong>Contents</strong></summary>
 

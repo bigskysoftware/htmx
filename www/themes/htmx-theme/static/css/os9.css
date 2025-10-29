@@ -1,0 +1,294 @@
+/* Classic Mac OS 9 Platinum Theme */
+
+:root {
+  --os9-platinum: #ddd;
+  --os9-highlight: #fff;
+  --os9-shadow: #888;
+  --os9-dark-shadow: #555;
+  --os9-text: #000;
+  --os9-blue: #0063dc;
+  --os9-blue-light: #5a9cff;
+}
+
+/* Buttons */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.btn {
+  background: linear-gradient(to bottom, #fefefe 0%, #ddd 50%, #ccc 51%, #bbb 100%) !important;
+  border: 1px solid var(--os9-dark-shadow) !important;
+  border-radius: 4px !important;
+  box-shadow:
+    inset 1px 1px 0 var(--os9-highlight),
+    inset -1px -1px 0 var(--os9-shadow),
+    0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  color: var(--os9-text) !important;
+  font-family: "Lucida Grande", Geneva, Verdana, sans-serif !important;
+  font-size: 13px !important;
+  padding: 3px 12px !important;
+  margin: 0 !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  cursor: pointer;
+  height: auto !important;
+  min-height: auto !important;
+  line-height: 1.3 !important;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+.btn:hover {
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 50%, #d5d5d5 51%, #c5c5c5 100%);
+  opacity: 1;
+}
+
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+input[type="reset"]:active,
+.btn:active {
+  background: linear-gradient(to bottom, #bbb 0%, #ccc 50%, #ddd 51%, #e0e0e0 100%);
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2),
+    inset -1px -1px 0 var(--os9-highlight);
+}
+
+button:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+input[type="reset"]:focus,
+.btn:focus {
+  outline: 2px solid var(--os9-blue);
+  outline-offset: 2px;
+}
+
+/* Text inputs */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+  background: white !important;
+  border: 1px solid var(--os9-dark-shadow) !important;
+  border-bottom-color: var(--os9-shadow) !important;
+  border-right-color: var(--os9-shadow) !important;
+  border-radius: 3px !important;
+  box-shadow:
+    inset 2px 2px 3px rgba(0, 0, 0, 0.2),
+    inset -1px -1px 1px rgba(0, 0, 0, 0.05) !important;
+  color: var(--os9-text) !important;
+  font-family: "Lucida Grande", Geneva, Verdana, sans-serif !important;
+  font-size: 13px !important;
+  padding: 3px 5px !important;
+  margin: 0 !important;
+  height: auto !important;
+  min-height: auto !important;
+  line-height: 1.3 !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--os9-blue);
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.1),
+    0 0 0 2px var(--os9-blue-light);
+  outline: none;
+}
+
+/* Select dropdowns */
+select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23333" d="M1 1l5 5 5-5H1z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 24px;
+  cursor: pointer;
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  background: white;
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 2px;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  position: relative;
+  margin-right: 6px;
+}
+
+input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  top: -3px;
+  left: 1px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--os9-text);
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid var(--os9-blue);
+  outline-offset: 2px;
+}
+
+/* Radio buttons */
+input[type="radio"] {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  background: white;
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  position: relative;
+  margin-right: 6px;
+}
+
+input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 5px;
+  height: 5px;
+  background: var(--os9-text);
+  border-radius: 50%;
+}
+
+input[type="radio"]:focus {
+  outline: 2px solid var(--os9-blue);
+  outline-offset: 2px;
+}
+
+/* Textarea */
+textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.4;
+}
+
+/* Disabled state */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--os9-shadow);
+}
+
+/* Range slider */
+input[type="range"] {
+  appearance: none;
+  height: 16px;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-track {
+  height: 4px;
+  background: var(--os9-platinum);
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(to bottom, #fefefe 0%, #ddd 50%, #ccc 51%, #bbb 100%);
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 2px;
+  box-shadow:
+    inset 1px 1px 0 var(--os9-highlight),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--os9-platinum);
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(to bottom, #fefefe 0%, #ddd 50%, #ccc 51%, #bbb 100%);
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 2px;
+  box-shadow:
+    inset 1px 1px 0 var(--os9-highlight),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* Progress bar */
+progress {
+  appearance: none;
+  height: 16px;
+  border: 1px solid var(--os9-dark-shadow);
+  border-radius: 3px;
+  background: white;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+progress::-webkit-progress-bar {
+  background: white;
+  border-radius: 3px;
+}
+
+progress::-webkit-progress-value {
+  background: linear-gradient(to bottom,
+    var(--os9-blue-light) 0%,
+    var(--os9-blue) 50%,
+    #0055c0 100%);
+  border-radius: 2px;
+}
+
+progress::-moz-progress-bar {
+  background: linear-gradient(to bottom,
+    var(--os9-blue-light) 0%,
+    var(--os9-blue) 50%,
+    #0055c0 100%);
+  border-radius: 2px;
+}
+
+/* Fieldset */
+fieldset {
+  border: 1px solid var(--os9-shadow);
+  border-radius: 4px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: bold;
+  color: var(--os9-text);
+}

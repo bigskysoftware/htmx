@@ -57,7 +57,7 @@ from the server in a response.
 
 An example value of this header is:
 
-```http request
+```
 Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
 ```
 

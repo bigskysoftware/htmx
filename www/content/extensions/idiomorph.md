@@ -29,7 +29,7 @@ While the CDN approach is simple, you may want to consider [not using CDNs in pr
 
 For npm-style build systems, you can install `idiomorph` via [npm](https://www.npmjs.com/):
 
-```shell
+```bash
 npm install idiomorph
 ```
 

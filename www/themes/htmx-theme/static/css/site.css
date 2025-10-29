@@ -8,8 +8,99 @@
   color-scheme: light;
 }
 
+/* Basic Reset */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background: #fff;
+}
+
+/* Basic Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 1.5rem 0 1rem;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+p {
+  margin: 1rem 0;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+ul {
+  list-style: disc;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+/* Code */
+pre, code {
+  font-family: monospace;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+th, td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Forms */
+input, button, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 /* Atkinson Hyperlegible for paragraphs and quotes */
@@ -146,31 +237,38 @@ aside[role="alert"] strong {
 }
 
 /* Navigation */
-nav {
+header.site-header {
   background-image: var(--topNavBackground);
   box-shadow: 0px 4px 15px 0px var(--topNavShadow);
-  max-width: 1024px;
-  margin: 0 auto;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  position: relative;
+  border-bottom: 1px solid var(--topNavBorder);
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-nav::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  border-bottom: 1px solid var(--topNavBorder);
+nav {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 nav ul {
-  justify-content: center;
-  margin-bottom: 0;
-  margin-top: 0;
+  display: flex;
   align-items: center;
+  margin: 0;
+}
+
+nav > ul:first-child {
+  flex-shrink: 0;
+}
+
+nav > ul:nth-child(2) {
+  flex-grow: 1;
+  justify-content: flex-end;
 }
 
 nav li {
@@ -183,6 +281,7 @@ nav > ul:first-child li {
 
 nav a:not(.logo) {
   font-weight: bold;
+  font-size: 1.1rem;
 }
 
 nav form {
@@ -221,16 +320,17 @@ nav [role=search] {
 }
 
 .search-box {
-  width: 1.6rem;
-  padding: 3px 5px !important;
-  border: 2px solid var(--searchBorder) !important;
-  border-radius: 10px !important;
-  outline: 0 !important;
-  box-shadow: none !important;
+  width: 10rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--searchBorder);
+  border-radius: 6px;
+  outline: 0;
+  box-shadow: none;
+  font-size: 1rem;
 }
 
 .search-box::placeholder {
-  text-align: right;
+  text-align: left;
 }
 
 /* Content container */
@@ -285,22 +385,29 @@ ol li {
 .hamburger {
   display: none;
   background: transparent;
-  border: 1px solid #f5f5f5;
-  border-radius: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.4rem;
   margin-left: auto;
   transition: background 0.2s, border-color 0.2s;
+  width: 40px;
+  height: 40px;
 }
 
 .hamburger:hover {
-  background: #fafafa;
-  border-color: #eaeaea;
+  background: #f5f5f5;
+  border-color: #ccc;
 }
 
 .hamburger svg {
-  fill: #999;
+  fill: #333;
   display: block;
+  transition: transform 0.2s;
+}
+
+.hamburger.flip svg {
+  transform: rotate(180deg);
 }
 
 /* Mobile styles */
@@ -327,7 +434,7 @@ ol li {
   }
 
   nav ul#nav-menu {
-    display: none;
+    display: flex;
     position: absolute;
     top: 100%;
     left: 0;
@@ -337,10 +444,13 @@ ol li {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     flex-direction: column;
     z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-in-out;
   }
 
   nav ul#nav-menu.show {
-    display: flex;
+    max-height: 500px;
   }
 
   nav ul#nav-menu li {

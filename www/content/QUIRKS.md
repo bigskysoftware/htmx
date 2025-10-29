@@ -9,6 +9,13 @@ tag = ["posts"]
 
 This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQLite" page](https://www.sqlite.org/quirks.html).
 
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes_in_4">changes in htmx 4.0</a>
+</p>
+</aside>
+
+
 ## Attribute Inheritance
 
 Many attributes in htmx are [inherited](@/docs.md#inheritance): child elements can receive behavior from attributes located

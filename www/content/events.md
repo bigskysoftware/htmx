@@ -2,6 +2,12 @@
 title = "Events"
 +++
 
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes_in_4">changes in htmx 4.0</a>
+</p>
+</aside>
+
 Htmx provides an extensive events system that can be used to modify and enhance behavior.  Events
 are listed below.
 

@@ -1,0 +1,6 @@
+{% set data = load_data(path="content/help/podcasts.csv", format="csv") %}
+<ul>
+{%- for row in data.records -%}
+<li><a href="{{ row[1] }}">{{ row[0] }}</a></li>
+{%- endfor -%}
+</ul>

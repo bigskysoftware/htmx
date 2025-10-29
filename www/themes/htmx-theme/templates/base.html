@@ -17,7 +17,6 @@
     {% if current_url %} <link rel="canonical" href="{{ current_url | safe }}"> {% endif %}
     {#TODO: only generate this for the home page #}
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -32,43 +31,42 @@
     <meta name="generator" content="Zola v.TODO">
 </head>
 <body hx-ext="class-tools, preload">
-
-{% if page and page.path is starting_with("/examples") %}
-<nav>
-{% else %}
-<nav hx-boost="true">
-{% endif %}
-    <ul>
-        <li>
-            <a href="/" class="logo">&lt;<b>/</b>&gt; htm<b>x</b></a>
-        </li>
-    </ul>
-    <ul preload="mouseover" id="nav-menu">
-        <li><a href="/docs/">docs</a></li>
-        <li><a href="/reference/">reference</a></li>
-        <li><a href="/examples/">examples</a></li>
-        <li><a href="/talk/">talk</a></li>
-        <li><a href="/essays/">essays</a></li>
-        <li hx-disable>
-            <form action="https://google.com/search" role="search" aria-label="Sitewide">
-                <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
-                <input type="text" name="q" placeholder="🔍️" class="search-box" aria-label="Search">
-            </form>
-        </li>
-        <li>
-            <div class="github-stars" hx-preserve="true" id="github-stars">
-                <a class="github-button" href="https://github.com/bigskysoftware/htmx" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">star</a>
-            </div>
-        </li>
-    </ul>
-    <button class="hamburger" _="on click toggle .show on #nav-menu" aria-label="Toggle menu">
-        <svg viewBox="0 0 100 80" width="25" height="25">
-            <rect width="100" height="15" rx="8"></rect>
-            <rect y="30" width="100" height="15" rx="8"></rect>
-            <rect y="60" width="100" height="15" rx="8"></rect>
-        </svg>
-    </button>
-</nav>
+<header class="site-header">
+    {% set should_boost = not page or not page.path is starting_with("/examples") %}
+    <nav hx-boost="{{should_boost}}">
+        <ul>
+            <li>
+                <a href="/" class="logo">&lt;<b>/</b>&gt; htm<b>x</b></a>
+            </li>
+        </ul>
+        <ul preload="mouseover" id="nav-menu">
+            <li><a href="/docs/">docs</a></li>
+            <li><a href="/reference/">reference</a></li>
+            <li><a href="/examples/">examples</a></li>
+            <li><a href="/help/">help</a></li>
+            <li><a href="/essays/">essays</a></li>
+            <li><a href="https://hypermedia.systems">book</a></li>
+            <li hx-disable>
+                <form action="https://google.com/search" role="search" aria-label="Sitewide">
+                    <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
+                    <input type="text" name="q" placeholder="🔍️" class="search-box" aria-label="Search">
+                </form>
+            </li>
+            <li>
+                <div class="github-stars" hx-preserve="true" id="github-stars">
+                    <a class="github-button" href="https://github.com/bigskysoftware/htmx"
+                       data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star"
+                       data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">star</a>
+                </div>
+            </li>
+        </ul>
+        <button class="hamburger" _="on click toggle .show on #nav-menu then toggle .flip on me" aria-label="Toggle menu">
+            <svg viewBox="0 0 14 24" width="14" height="24">
+                <path d="M0 10l7 7 7-7z" fill="#666"/>
+            </svg>
+        </button>
+    </nav>
+</header>
 
 {% if page and page.extra and page.extra.custom_classes %}
     {% set disp_classes = page.extra.custom_classes %}
