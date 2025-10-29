@@ -527,7 +527,6 @@ var htmx = (() => {
                 // Core streaming logic
                 if (!this.__trigger(elt, "htmx:before:sse:stream", { ctx })) break;
                 ctx.status = "streaming";
-                let streamEndedCleanly = false;
 
                 attempt = 0; // Reset on successful connection
 
@@ -565,7 +564,6 @@ var htmx = (() => {
                         }
                         this.__trigger(elt, "htmx:after:sse:message", { ctx, message: msg });
                     }
-                    streamEndedCleanly = true;
                 } catch (e) {
                     ctx.status = "stream error";
                     this.__trigger(elt, "htmx:error", { ctx, error: e });
