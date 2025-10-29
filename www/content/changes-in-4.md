@@ -29,9 +29,8 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 
 ### History Storage
 - History no longer uses localStorage
-- History now uses sessionStorage for local cache
-- Prevents cross-tab contamination
-- More reliable history restoration
+- History now issues a full page refresh request on navigation
+- Much, much more reliable history restoration
 - This is more of a "fixing" change than a "breaking" change :)
 
 ## New Features
