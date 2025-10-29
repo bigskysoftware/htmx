@@ -2,6 +2,11 @@
 title = "Changes in htmx 4.0"
 +++
 
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux!</p>
+</aside>
+
 This document outlines the major changes between htmx 2.x and htmx 4.x.
 
 ## Major Breaking Changes
@@ -9,32 +14,36 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### fetch() API replaces XMLHttpRequest
 - All AJAX requests now use the native fetch() API instead of XMLHttpRequest
 - Enables streaming response support
-- Better integration with modern web platform features
-- May affect custom request/response interceptors
+- Simplifies implementation of htmx significantly
 
 ### Explicit Attribute Inheritance
-- Attribute inheritance now requires the `:inherited` modifier
-- In htmx 2.x, attributes were inherited automatically from parent elements
-- In htmx 4.x, use `hx-attribute:inherited="value"` syntax to inherit
+- Attribute inheritance is now _explicit_, using the `:inherited` modifier
+- In htmx 4.x use `hx-attribute:inherited="value"` syntax to inherit
 - Applies to all inheritable attributes: `hx-boost:inherited`, `hx-target:inherited`, `hx-confirm:inherited`, etc.
 - Improves locality of behavior by making inheritance explicit
-
-### Default Swap Style Changed
-- Default swap style changed from `innerHTML` to `outerHTML`
-- Affects elements without explicit `hx-swap` attribute
-- Set `htmx.config.defaultSwapStyle = "innerHTML"` to restore previous behavior
 
 ### Event Naming Convention Changed
 - New event naming convention: `htmx:phase:action` (colon-separated)
 - All event names updated (see Event Changes section below)
 - More consistent and predictable event naming
 
+### History Storage
+- History no longer uses localStorage
+- History now uses sessionStorage for local cache
+- Prevents cross-tab contamination
+- More reliable history restoration
+- This is more of a "fixing" change than a "breaking" change :)
+
 ## New Features
 
-### Built-in Server-Sent Events (SSE) Support
-- SSE functionality now built into core htmx (no extension needed)
-- Use `hx-sse` attribute for SSE connections
-- Improved event handling and reconnection logic
+### Morphing Swap
+- New `morph` swap is now available, based on the original `idiomorph` algorithm
+- Does a better job of preserving local state when targeting large DOM trees
+
+### Request Preloading
+- New `hx-preload` attribute
+- Preload requests on specified trigger events
+- Improves perceived performance
 
 ### Optimistic Updates
 - New `hx-optimistic` attribute for optimistic UI updates
@@ -44,12 +53,7 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### Server Actions (Partials)
 - New `<htmx-action type="partial">` element system
 - Cleaner approach for multi-target responses
-- Simplifies complex page updates
-
-### Request Preloading
-- New `hx-preload` attribute
-- Preload requests on specified trigger events
-- Improves perceived performance
+- Simplifies more complex page updates
 
 ### View Transitions
 - View Transitions API enabled by default
@@ -65,6 +69,10 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - All events now provide consistent `ctx` object
 - Easier to access request/response information
 - More predictable event handling
+
+### Built-in Streaming Response Support
+- Streaming functionality now built into core htmx
+- Improved event handling and reconnection logic
 
 ## Attribute Changes
 
@@ -128,81 +136,9 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `htmx:before:partial:swap`
 - `htmx:finally:request`
 
-## Configuration Changes
-
-### Changed Defaults
-- `viewTransitions` (formerly `globalViewTransitions`) now defaults to `true` (was `false`)
-
-### Removed Config Options
-- `wsReconnectDelay` - moved to WebSocket extension
-- `wsBinaryType` - moved to WebSocket extension
-
-## Extension System Changes
-
 ### Extensions Are Now Event-Based
 - Extensions no longer require explicit `hx-ext` attribute
 - Extensions now work by listening to standard htmx events
 - No explicit extension API - use public htmx API and events
 - Simpler extension architecture
 
-## History Management Changes
-
-### History Storage
-- History no longer uses localStorage
-- History now uses sessionStorage for local cache
-- Prevents cross-tab contamination
-- More reliable history restoration
-
-## SSE and WebSocket Changes
-
-### SSE Built Into Core
-- SSE functionality moved from extension to core
-- No longer need to include SSE extension
-- Better integration with htmx lifecycle
-
-### WebSocket Moved to Extension
-- WebSocket functionality remains in extension
-- Configuration options moved to extension
-
-## Behavioral Changes
-
-### Form Parameter Inclusion
-- Non-GET requests include enclosing form values
-- GET requests do not include form values by default
-- Use `hx-include` to include form values in GET requests
-
-### Error Response Handling
-- Error responses (4xx, 5xx) behavior may differ
-- Configure via `htmx.config.responseHandling`
-
-### DELETE Request Parameters
-- DELETE requests now use URL parameters (per HTTP spec)
-- Previously used form-encoded body in htmx 2.x
-- More standards-compliant behavior
-
-## Migration Recommendations
-
-### Step 1: Update Event Listeners
-- Search codebase for old event names
-- Update to new `htmx:phase:action` convention
-- Test all event-based functionality
-
-### Step 2: Add :inherited Modifiers
-- Audit all uses of inherited attributes
-- Add `:inherited` modifier where needed
-- This is likely the most time-consuming change
-
-### Step 3: Test Swap Behavior
-- Review elements relying on default swap
-- Add explicit `hx-swap="innerHTML"` if needed
-- Test all page updates
-
-### Step 4: Update Removed Attributes
-- Replace `hx-vars` with `hx-vals`
-- Replace `hx-request` with `hx-config`
-- Update other removed attributes per mapping
-
-### Step 5: Test Extensions
-- Update or replace custom extensions
-- Use new event-based extension model
-- Test extension functionality thoroughly
