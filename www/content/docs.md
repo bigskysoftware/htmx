@@ -27,7 +27,8 @@ title = "Documentation"
   * [confirming](#confirming)
 * [inheritance](#inheritance)
 * [boosting](#boosting)
-* [websockets & SSE](#)
+* [SSE](#SSE)
+* [WebSockets](#)
 * [history](#history)
 * [requests & responses](#requests)
 * [validation](#validation)
@@ -799,7 +800,135 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 
 ## SSE
 
-TODO: Christian, document new SSE functionality
+Unlike htmx 2, htmx 4 has **built-in support** for Server-Sent Events (SSE).
+
+Use the typical `hx-get`, `hx-post`, `hx-put`, `hx-patch`, or `hx-delete` attributes. When the server responds with `Content-Type: text/event-stream` instead of `Content-Type: text/html`, htmx automatically handles the stream. 
+
+Each SSE message with a `data:` line (and no `event:` line) is processed like a regular htmx response, respecting `hx-target`, `hx-select`, and `hx-swap` attributes.
+
+Like [fetch-event-source](https://github.com/Azure/fetch-event-source), htmx's custom SSE implementation supports request bodies, custom headers, and all HTTP methods (not just GET), and Page Visibility API integration (using the `pauseHidden` modifier).
+
+### Basic Usage
+
+```html
+<button hx-get="/stream" hx-target="#llm-output" hx-swap="innerHTML">
+    Stream LLM Response
+</button>
+
+<div id="llm-output"></div>
+```
+
+The server sends SSE messages with `data:` lines:
+```
+data: H
+
+data: He
+
+// ...
+
+data: Hello partner!
+
+```
+
+Each message replaces the target element's content. The stream processes until the connection closes, then stops. No reconnection occurs by default.
+
+### Stream Modes
+
+The `hx-stream` attribute controls reconnection behavior. The default mode is `once`, so it doesn't need to be specified.
+
+- `once` (default): Process stream until connection closes. No reconnection.
+- `continuous`: Reconnect automatically if connection drops. Retries with exponential backoff.
+
+```html
+<body hx-get="/updates" hx-stream="continuous" hx-trigger="load">
+    ...
+</body>
+```
+
+**Note:** `hx-stream="continuous"` is primarily intended for use with `<htmx-action type="partial">` to enable real-time updates to multiple parts of the page via a permanently open SSE connection.
+
+### Partial Updates
+
+Use `<htmx-action type="partial">` tags to update multiple targets from a single stream, similar to `hx-swap-oob`.
+
+```html
+<button hx-get="/activity" hx-stream="continuous">
+    Start Activity Stream
+</button>
+
+<div id="metrics">0</div>
+<div id="status">Idle</div>
+```
+
+Server sends multiple partials in one message:
+
+```
+data: <htmx-action type="partial" hx-target="#metrics">42</htmx-action>
+
+data: <htmx-action type="partial" hx-target="#status">Active</htmx-action>
+
+```
+
+### Custom Events
+
+SSE `event:` lines trigger custom DOM events. When an `event:` line is present, htmx fires that event instead of performing a normal swap. Use this for lightweight updates without swapping DOM elements.
+
+```html
+<button hx-get="/progress"
+        hx-on:progress="htmx.find('#bar').style.width = event.detail.data + '%'">
+    Start
+</button>
+```
+
+Server sends custom events:
+
+```
+event: progress
+data: 50
+
+event: progress
+data: 100
+
+```
+
+### Configuration
+
+Global stream config in `htmx.config.streams`:
+
+```html
+<meta name="htmx:config" content='{
+  "streams": {
+    "mode": "once",
+    "maxRetries": 3,
+    "initialDelay": 500,
+    "maxDelay": 30000,
+    "pauseHidden": false
+  }
+}'>
+```
+
+- `mode`: `'once'` or `'continuous'`
+- `maxRetries`: Maximum reconnection attempts (default: `Infinity`)
+- `initialDelay`: First reconnect delay in ms (default: `500`)
+- `maxDelay`: Max backoff delay in ms (default: `30000`)
+- `pauseHidden`: Pause stream when page is hidden (default: `false`). Uses the Page Visibility API to pause the stream when the browser window is minimized or the tab is in the background.
+
+
+You can override these settings per-element using the `hx-stream` attribute:
+```html
+<button hx-get="/stream"
+        hx-stream="continuous maxRetries:10 initialDelay:1s pauseHidden:true">
+    Start
+</button>
+```
+
+### Events
+
+- `htmx:before:sse:stream`: Fired before processing stream
+- `htmx:before:sse:message`: Fired before each message swap. Cancel with `event.detail.message.cancelled = true`
+- `htmx:after:sse:message`: Fired after each message swap
+- `htmx:after:sse:stream`: Fired when stream ends
+- `htmx:before:sse:reconnect`: Fired before reconnection attempt. Cancel with `event.detail.reconnect.cancelled = true`
 
 ## Web Sockets
 
@@ -1104,10 +1233,12 @@ Unfortunately, HTML only allows `on*` attributes for a fixed
 number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and
 doesn't provide a generalized mechanism for responding to arbitrary events on elements.
 
-In order to address this shortcoming, htmx offers [`hx-on:*`](/attributes/hx-on) attributes.  These attributes allow
-you to respond to any event in a manner that preserves the LoB of the standard `on*` properties.
+In order to address this shortcoming, htmx offers [`hx-on:*`](/attributes/hx-on) attributes.  
 
-If we wanted to respond to the `click` event using an `hx-on` attribute, we would write this:
+These attributes allow you to respond to any event in a manner that preserves the LoB of the standard `on*` properties,
+and provide some nice quality of life improvements over the standard javascript API.
+
+If you want to respond to the `click` event using an `hx-on` attribute, we would write this:
 
 ```html
 <button hx-on:click="alert('You clicked me!')">
@@ -1117,22 +1248,38 @@ If we wanted to respond to the `click` event using an `hx-on` attribute, we woul
 
 So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
 
-For a `click` event, of course, we would recommend sticking with the standard `onclick` attribute.  However, consider an
-htmx-powered button that wishes to add a parameter to a request using the `htmx:config:request` event.  This would not
-be possible using a standard `on*` property, but it can be done using the `hx-on:htmx:config:request` attribute:
+#### <a name="htmx-scripting-api"></a>[The Scripting API](#htmx-scripting-api)
 
-// TODO verify symbols
+htmx provides some top level helper methods in `hx-on` handlers that make async scripting more enjoyable:
+
+| function    | description                                                                                |
+|-------------|--------------------------------------------------------------------------------------------|
+| `timeout()` | allows you to wait for a given amount of time (e.g. `await timeout(100)` before continuing |
+
+
+#### <a name="htmx-scripting-examples"></a>[Scripting Examples](#htmx-scripting-examples)
+
+Here is an example that adds a parameter to an htmx request
+
+// TODO - verify symbols
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config-request="request.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config:request="ctx.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another usecase is to [reset user input](@/examples/reset-user-input.md) on successful requests using the `htmx:after:swap`
-event, avoiding the need for something like an out-of-band swap.
+Another use case is to [reset user input](@/examples/reset-user-input.md) on successful requests using the `htmx:after:swap`
+event:
+
+```html
+<button hx-post="/example"
+        hx-on:htmx:after:request="find('#form').reset()">
+    Post Me!
+</button>
+```
 
 ### 3rd Party Javascript {#3rd-party}
 
@@ -1351,6 +1498,8 @@ They are listed below:
 TODO: audit
 
 <div class="info-table">
+
+// TODO need to clean up
 
 | Config Variable                        | Info                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

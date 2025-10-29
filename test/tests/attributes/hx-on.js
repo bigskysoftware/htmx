@@ -38,4 +38,17 @@ describe('hx-on attribute', function() {
         delete window.foo
     })
 
+    it('htmx API works', async function () {
+        var btn = initHTML(
+            `<button hx-on:foo='await timeout(1); window.foo = 10'>
+                        Foo
+                       </button>`)
+        let evt = new CustomEvent("foo");
+        btn.dispatchEvent(evt)
+        assert.equal(window.foo, undefined);
+        await htmx.timeout(10);
+        assert.equal(window.foo, 10);
+        delete window.foo
+    })
+
 })

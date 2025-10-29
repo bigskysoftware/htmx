@@ -13,8 +13,7 @@ describe('Basic Functionality', () => {
         await clickAndWait("#test-btn");
 
         // Verify the swap occurred
-        assert.isNull(findElt('#target'));
-        assertTextContentIs("#result", "Success!");
+        assertTextContentIs("#target", "Success!");
     })
 
     it('validation errors prevent submission of a form', async function() {

@@ -7,9 +7,9 @@ describe('Out of Band Swaps', function() {
         // Set up mock response
         mockResponse('GET', '/demo', new MockResponse(
             `<div id="result">Success!</div>
-                   <partial hx-target="#d2">
+                   <htmx-action type="partial" hx-target="#d2">
                       <div id="d3">Success OOB!<p></p></div>
-                   </partial>`));
+                   </htmx-action>`));
         // Create test button
         initHTML(`
           <button id="btn1" hx-action="/demo">Button</button>
@@ -18,12 +18,7 @@ describe('Out of Band Swaps', function() {
         `);
         // Click the button
         await clickAndWait('#btn1');
-
-        // Verify the swap occurred
-        assert.isNull(htmx.find('#btn1'));
-
-        // verify the oob swap occured
-        assert.isNull(htmx.find("#d2"));
+        // verify the oob swap occurred
         assertTextContentIs('#d3', "Success OOB!");
     })
 })

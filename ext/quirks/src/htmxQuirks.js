@@ -1,10 +1,5 @@
 var htmxQuirks = (()=>{
 
-    function useInnerHTMLAsDefaultSwapStrategy() {
-        // revert default swap to innerHTML
-        htmx.config.defaultSwap = "innerHTML";
-    }
-
     function useHtmxTwoStyleInheritance() {
         let originalAttributeValue = htmx.__attributeValue.bind(htmx);
         htmx.__attributeValue = function (elt, name, defaultVal) {
@@ -18,7 +13,6 @@ var htmxQuirks = (()=>{
     }
 
     function enableAllQuirks() {
-        useInnerHTMLAsDefaultSwapStrategy()
         useHtmxTwoStyleInheritance()
     }
 

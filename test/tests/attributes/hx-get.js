@@ -26,7 +26,7 @@ describe('hx-get attribute', function() {
 
     it('GET on form includes its own data by default', async function () {
         mockResponse('GET', '/test', "Clicked!")
-        let form = initHTML('<form hx-get="/test"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        let form = initHTML('<form hx-get="/test" hx-swap="outerHTML"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         await submitAndWait(form);
         playground().innerHTML.should.equal('Clicked!')
         lastFetch().url.should.equal("/test?i1=value");
@@ -34,7 +34,7 @@ describe('hx-get attribute', function() {
 
     it('GET on form with existing parameters works properly', async function () {
         mockResponse('GET', '/test', "Clicked!")
-        let form = initHTML('<form hx-get="/test?foo=bar"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        let form = initHTML('<form hx-get="/test?foo=bar" hx-swap="outerHTML"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         await submitAndWait(form);
         playground().innerHTML.should.equal('Clicked!')
         console.log("*********", lastFetch().url, "/test?foo=bar&i1=value")
@@ -43,7 +43,7 @@ describe('hx-get attribute', function() {
 
     it('GET on form with existing parameters works properly', async function () {
         mockResponse('GET', '/test', "Clicked!")
-        let form = initHTML('<form hx-get="/test?foo=bar#foo"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        let form = initHTML('<form hx-get="/test?foo=bar#foo" hx-swap="outerHTML"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         await submitAndWait(form);
         playground().innerHTML.should.equal('Clicked!')
         lastFetch().url.should.equal("/test?foo=bar&i1=value");
@@ -51,7 +51,7 @@ describe('hx-get attribute', function() {
 
     it('GET on form with anchor works properly and scrolls to anchor id', async function() {
         mockResponse('GET', '/test', '<div id="foo">Clicked</div>')
-        let form = initHTML('<form hx-trigger="click" hx-get="/test?foo=bar#foo"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
+        let form = initHTML('<form hx-trigger="click" hx-get="/test?foo=bar#foo" hx-swap="outerHTML"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         await clickAndWait(form);
         playground().innerHTML.should.equal('<div id="foo">Clicked</div>')
         lastFetch().url.should.equal('/test?foo=bar&i1=value')
