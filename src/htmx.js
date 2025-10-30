@@ -1,206 +1,6 @@
 // noinspection ES6ConvertVarToLetConst
 var htmx = (() => {
 
-    // Idiomorph integration
-    const Idiomorph = (() => {
-
-        function morph(oldNode, fragment, innerHTML) {
-            const { persistentIds, idMap } = createIdMaps(oldNode, fragment);
-            const pantry = document.createElement("div");
-            pantry.hidden = true;
-            document.body.insertAdjacentElement("afterend", pantry);
-            const ctx = { target: oldNode, idMap, persistentIds, pantry };
-
-            if (innerHTML) {
-                morphChildren(ctx, oldNode, fragment);
-            } else {
-                morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
-            }
-            pantry.remove();
-        }
-
-        function morphChildren(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
-            if (oldParent instanceof HTMLTemplateElement && newParent instanceof HTMLTemplateElement) {
-                oldParent = oldParent.content;
-                newParent = newParent.content;
-            }
-            insertionPoint ||= oldParent.firstChild;
-
-            for (const newChild of newParent.childNodes) {
-                if (insertionPoint && insertionPoint != endPoint) {
-                    const bestMatch = findBestMatch(ctx, newChild, insertionPoint, endPoint);
-                    if (bestMatch) {
-                        if (bestMatch !== insertionPoint) {
-                            let cursor = insertionPoint;
-                            while (cursor && cursor !== bestMatch) {
-                                let tempNode = cursor;
-                                cursor = cursor.nextSibling;
-                                removeNode(ctx, tempNode);
-                            }
-                        }
-                        morphNode(bestMatch, newChild, ctx);
-                        insertionPoint = bestMatch.nextSibling;
-                        continue;
-                    }
-                }
-
-                if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
-                    const target = (ctx.target.id === newChild.id && ctx.target) ||
-                        ctx.target.querySelector(`[id="${newChild.id}"]`) ||
-                        ctx.pantry.querySelector(`[id="${newChild.id}"]`);
-                    const elementId = target.id;
-                    let element = target;
-                    while ((element = element.parentNode)) {
-                        let idSet = ctx.idMap.get(element);
-                        if (idSet) {
-                            idSet.delete(elementId);
-                            if (!idSet.size) ctx.idMap.delete(element);
-                        }
-                    }
-                    moveBefore(oldParent, target, insertionPoint);
-                    morphNode(target, newChild, ctx);
-                    insertionPoint = target.nextSibling;
-                    continue;
-                }
-
-                let tempChild;
-                if (ctx.idMap.has(newChild)) {
-                    tempChild = document.createElement(newChild.tagName);
-                    oldParent.insertBefore(tempChild, insertionPoint);
-                    morphNode(tempChild, newChild, ctx);
-                } else {
-                    tempChild = document.importNode(newChild, true);
-                    oldParent.insertBefore(tempChild, insertionPoint);
-                }
-                insertionPoint = tempChild.nextSibling;
-            }
-
-            while (insertionPoint && insertionPoint != endPoint) {
-                const tempNode = insertionPoint;
-                insertionPoint = insertionPoint.nextSibling;
-                removeNode(ctx, tempNode);
-            }
-        }
-
-        function findBestMatch(ctx, node, startPoint, endPoint) {
-            let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
-            const newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
-            let cursor = startPoint;
-            while (cursor && cursor != endPoint) {
-                const oldSet = ctx.idMap.get(cursor);
-                if (isSoftMatch(cursor, node)) {
-                    if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
-                    if (softMatch === null && !oldSet) {
-                        if (!nodeMatchCount) return cursor;
-                        else softMatch = cursor;
-                    }
-                }
-                displaceMatchCount += oldSet?.size || 0;
-                if (displaceMatchCount > nodeMatchCount) break;
-                if (softMatch === null && nextSibling && isSoftMatch(cursor, nextSibling)) {
-                    siblingSoftMatchCount++;
-                    nextSibling = nextSibling.nextSibling;
-                    if (siblingSoftMatchCount >= 2) softMatch = undefined;
-                }
-                if (cursor.contains(document.activeElement)) break;
-                cursor = cursor.nextSibling;
-            }
-            return softMatch || null;
-        }
-
-        function isSoftMatch(oldNode, newNode) {
-            return oldNode.nodeType === newNode.nodeType && oldNode.tagName === newNode.tagName &&
-                (!oldNode.id || oldNode.id === newNode.id);
-        }
-
-        function removeNode(ctx, node) {
-            if (ctx.idMap.has(node)) moveBefore(ctx.pantry, node, null);
-            else node.parentNode?.removeChild(node);
-        }
-
-        function moveBefore(parentNode, element, after) {
-            if (parentNode.moveBefore) {
-                try { parentNode.moveBefore(element, after); }
-                catch (e) { parentNode.insertBefore(element, after); }
-            } else parentNode.insertBefore(element, after);
-        }
-
-        function morphNode(oldNode, newNode, ctx) {
-            let type = newNode.nodeType;
-
-            if (type === 1) {
-                const noMorph = htmx.config.noMoprhAttributes || [];
-                for (const attr of newNode.attributes) {
-                    if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
-                        oldNode.setAttribute(attr.name, attr.value);
-                        if (attr.name === "value" && oldNode instanceof HTMLInputElement && oldNode.type !== "file") {
-                            oldNode.value = attr.value;
-                        }
-                    }
-                }
-                for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
-                    const attr = oldNode.attributes[i];
-                    if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
-                        oldNode.removeAttribute(attr.name);
-                    }
-                }
-                if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
-                    oldNode.value = newNode.value;
-                }
-            }
-
-            if ((type === 8 || type === 3) && oldNode.nodeValue !== newNode.nodeValue) {
-                oldNode.nodeValue = newNode.nodeValue;
-            }
-            if (!oldNode.isEqualNode(newNode)) morphChildren(ctx, oldNode, newNode);
-        }
-
-        function populateIdMapWithTree(idMap, persistentIds, root, elements) {
-            for (const elt of elements) {
-                if (persistentIds.has(elt.id)) {
-                    let current = elt;
-                    while (current && current !== root) {
-                        let idSet = idMap.get(current);
-                        if (idSet == null) {
-                            idSet = new Set();
-                            idMap.set(current, idSet);
-                        }
-                        idSet.add(elt.id);
-                        current = current.parentElement;
-                    }
-                }
-            }
-        }
-
-        function createIdMaps(oldNode, newContent) {
-            let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
-            if (oldNode.id) oldIdElements.push(oldNode);
-            const newIdElements = newContent.querySelectorAll("[id]");
-            const persistentIds = createPersistentIds(oldIdElements, newIdElements);
-            let idMap = new Map();
-            populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
-            populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
-            return { persistentIds, idMap };
-        }
-
-        function createPersistentIds(oldIdElements, newIdElements) {
-            let duplicateIds = new Set(), oldIdTagNameMap = new Map();
-            for (const { id, tagName } of oldIdElements) {
-                if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
-                else oldIdTagNameMap.set(id, tagName);
-            }
-            let persistentIds = new Set();
-            for (const { id, tagName } of newIdElements) {
-                if (persistentIds.has(id)) duplicateIds.add(id);
-                else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
-            }
-            for (const id of duplicateIds) persistentIds.delete(id);
-            return persistentIds;
-        }
-
-        return { morph };
-    })();
-
     class RequestQueue {
         #currentRequest = null
         #requestQueue = []
@@ -1184,11 +984,7 @@ var htmx = (() => {
                         pantry.style.display = 'none';
                         document.body.appendChild(pantry);
                     }
-                    if (pantry.moveBefore) {
-                        pantry.moveBefore(existingElement, null);
-                    } else {
-                        pantry.appendChild(existingElement);
-                    }
+                    this.__moveBefore(pantry, existingElement, null);
                 }
             });
         }
@@ -1547,9 +1343,9 @@ var htmx = (() => {
                     parentNode.removeChild(target);
                 }
             } else if (swapSpec.style === 'innerMorph') {
-                Idiomorph.morph(target, swapConfig.fragment, true);
+                this.__morph(target, swapConfig.fragment, true);
             } else if (swapSpec.style === 'outerMorph') {
-                Idiomorph.morph(target, swapConfig.fragment, false);
+                this.__morph(target, swapConfig.fragment, false);
             } else if (swapSpec.style === 'beforebegin') {
                 if (parentNode) {
                     this.__insertNodes(parentNode, target, swapConfig.fragment);
@@ -1991,6 +1787,200 @@ var htmx = (() => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abortCurrentRequest();
             })
+        }
+
+        __morph(oldNode, fragment, innerHTML) {
+            const { persistentIds, idMap } = this.__createIdMaps(oldNode, fragment);
+            const pantry = document.createElement("div");
+            pantry.hidden = true;
+            document.body.insertAdjacentElement("afterend", pantry);
+            const ctx = { target: oldNode, idMap, persistentIds, pantry };
+
+            if (innerHTML) {
+                this.__morphChildren(ctx, oldNode, fragment);
+            } else {
+                this.__morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
+            }
+            pantry.remove();
+        }
+
+        __morphChildren(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
+            if (oldParent instanceof HTMLTemplateElement && newParent instanceof HTMLTemplateElement) {
+                oldParent = oldParent.content;
+                newParent = newParent.content;
+            }
+            insertionPoint ||= oldParent.firstChild;
+
+            for (const newChild of newParent.childNodes) {
+                if (insertionPoint && insertionPoint != endPoint) {
+                    const bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    if (bestMatch) {
+                        if (bestMatch !== insertionPoint) {
+                            let cursor = insertionPoint;
+                            while (cursor && cursor !== bestMatch) {
+                                let tempNode = cursor;
+                                cursor = cursor.nextSibling;
+                                this.__removeNode(ctx, tempNode);
+                            }
+                        }
+                        this.__morphNode(bestMatch, newChild, ctx);
+                        insertionPoint = bestMatch.nextSibling;
+                        continue;
+                    }
+                }
+
+                if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                    const target = (ctx.target.id === newChild.id && ctx.target) ||
+                        ctx.target.querySelector(`[id="${newChild.id}"]`) ||
+                        ctx.pantry.querySelector(`[id="${newChild.id}"]`);
+                    const elementId = target.id;
+                    let element = target;
+                    while ((element = element.parentNode)) {
+                        let idSet = ctx.idMap.get(element);
+                        if (idSet) {
+                            idSet.delete(elementId);
+                            if (!idSet.size) ctx.idMap.delete(element);
+                        }
+                    }
+                    this.__moveBefore(oldParent, target, insertionPoint);
+                    this.__morphNode(target, newChild, ctx);
+                    insertionPoint = target.nextSibling;
+                    continue;
+                }
+
+                let tempChild;
+                if (ctx.idMap.has(newChild)) {
+                    tempChild = document.createElement(newChild.tagName);
+                    oldParent.insertBefore(tempChild, insertionPoint);
+                    this.__morphNode(tempChild, newChild, ctx);
+                } else {
+                    tempChild = document.importNode(newChild, true);
+                    oldParent.insertBefore(tempChild, insertionPoint);
+                }
+                insertionPoint = tempChild.nextSibling;
+            }
+
+            while (insertionPoint && insertionPoint != endPoint) {
+                const tempNode = insertionPoint;
+                insertionPoint = insertionPoint.nextSibling;
+                this.__removeNode(ctx, tempNode);
+            }
+        }
+
+        __findBestMatch(ctx, node, startPoint, endPoint) {
+            let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
+            const newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+            let cursor = startPoint;
+            while (cursor && cursor != endPoint) {
+                const oldSet = ctx.idMap.get(cursor);
+                if (this.__isSoftMatch(cursor, node)) {
+                    if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
+                    if (softMatch === null && !oldSet) {
+                        if (!nodeMatchCount) return cursor;
+                        else softMatch = cursor;
+                    }
+                }
+                displaceMatchCount += oldSet?.size || 0;
+                if (displaceMatchCount > nodeMatchCount) break;
+                if (softMatch === null && nextSibling && this.__isSoftMatch(cursor, nextSibling)) {
+                    siblingSoftMatchCount++;
+                    nextSibling = nextSibling.nextSibling;
+                    if (siblingSoftMatchCount >= 2) softMatch = undefined;
+                }
+                if (cursor.contains(document.activeElement)) break;
+                cursor = cursor.nextSibling;
+            }
+            return softMatch || null;
+        }
+
+        __isSoftMatch(oldNode, newNode) {
+            return oldNode.nodeType === newNode.nodeType && oldNode.tagName === newNode.tagName &&
+                (!oldNode.id || oldNode.id === newNode.id);
+        }
+
+        __removeNode(ctx, node) {
+            if (ctx.idMap.has(node)) this.__moveBefore(ctx.pantry, node, null);
+            else node.parentNode?.removeChild(node);
+        }
+
+        __moveBefore(parentNode, element, after) {
+            if (parentNode.moveBefore) {
+                try { parentNode.moveBefore(element, after); }
+                catch (e) { parentNode.insertBefore(element, after); }
+            } else parentNode.insertBefore(element, after);
+        }
+
+        __morphNode(oldNode, newNode, ctx) {
+            let type = newNode.nodeType;
+
+            if (type === 1) {
+                const noMorph = htmx.config.noMoprhAttributes || [];
+                for (const attr of newNode.attributes) {
+                    if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
+                        oldNode.setAttribute(attr.name, attr.value);
+                        if (attr.name === "value" && oldNode instanceof HTMLInputElement && oldNode.type !== "file") {
+                            oldNode.value = attr.value;
+                        }
+                    }
+                }
+                for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
+                    const attr = oldNode.attributes[i];
+                    if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
+                        oldNode.removeAttribute(attr.name);
+                    }
+                }
+                if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+                    oldNode.value = newNode.value;
+                }
+            }
+
+            if ((type === 8 || type === 3) && oldNode.nodeValue !== newNode.nodeValue) {
+                oldNode.nodeValue = newNode.nodeValue;
+            }
+            if (!oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
+        }
+
+        __populateIdMapWithTree(idMap, persistentIds, root, elements) {
+            for (const elt of elements) {
+                if (persistentIds.has(elt.id)) {
+                    let current = elt;
+                    while (current && current !== root) {
+                        let idSet = idMap.get(current);
+                        if (idSet == null) {
+                            idSet = new Set();
+                            idMap.set(current, idSet);
+                        }
+                        idSet.add(elt.id);
+                        current = current.parentElement;
+                    }
+                }
+            }
+        }
+
+        __createIdMaps(oldNode, newContent) {
+            let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
+            if (oldNode.id) oldIdElements.push(oldNode);
+            const newIdElements = newContent.querySelectorAll("[id]");
+            const persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
+            let idMap = new Map();
+            this.__populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
+            this.__populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
+            return { persistentIds, idMap };
+        }
+
+        __createPersistentIds(oldIdElements, newIdElements) {
+            let duplicateIds = new Set(), oldIdTagNameMap = new Map();
+            for (const { id, tagName } of oldIdElements) {
+                if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
+                else oldIdTagNameMap.set(id, tagName);
+            }
+            let persistentIds = new Set();
+            for (const { id, tagName } of newIdElements) {
+                if (persistentIds.has(id)) duplicateIds.add(id);
+                else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
+            }
+            for (const id of duplicateIds) persistentIds.delete(id);
+            return persistentIds;
         }
     }
 
