@@ -497,10 +497,10 @@ var htmx = (() => {
         }
 
         async __handleSSE(ctx, elt, response) {
-            const config = elt.__htmx?.streamConfig || {...this.config.streams};
+    let config = elt.__htmx?.streamConfig || {...this.config.streams};
 
-            const waitForVisible = () => new Promise(r => {
-                const onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
+    let waitForVisible = () => new Promise(r => {
+    let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
                 document.addEventListener('visibilitychange', onVisible);
             });
 
@@ -516,8 +516,8 @@ var htmx = (() => {
                         if (!elt.isConnected) break;
                     }
 
-                    const delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
-                    const reconnect = { attempt, delay, lastEventId, cancelled: false };
+    let delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
+    let reconnect = { attempt, delay, lastEventId, cancelled: false };
 
                     ctx.status = "reconnecting to stream";
                     if (!this.__trigger(elt, "htmx:before:sse:reconnect", { ctx, reconnect }) || reconnect.cancelled) break;
@@ -551,7 +551,7 @@ var htmx = (() => {
                             if (!elt.isConnected) break;
                         }
 
-                        const msg = { data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false };
+    let msg = { data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false };
                         if (!this.__trigger(elt, "htmx:before:sse:message", { ctx, message: msg }) || msg.cancelled) continue;
 
                         if (sseMessage.id) lastEventId = sseMessage.id;
@@ -686,7 +686,7 @@ var htmx = (() => {
                 }
 
                 if (eventName === 'intersect' || eventName === "revealed") {
-                    const observerOptions = {}
+    let observerOptions = {}
                     if (spec.opts['root']) {
                         observerOptions.root = this.__findExt(elt, spec.opts['root'])
                     }
@@ -695,7 +695,7 @@ var htmx = (() => {
                     }
                     let observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
-                            const entry = entries[i]
+    let entry = entries[i]
                             if (entry.isIntersecting) {
                                 setTimeout(()=> {
                                     this.trigger(elt, 'intersect')
@@ -1039,7 +1039,7 @@ var htmx = (() => {
             // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
             let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                const colonIdx = oobValue.indexOf(':');
+    let colonIdx = oobValue.indexOf(':');
                 if (colonIdx !== -1) {
                     target = oobValue.substring(colonIdx + 1);
                     oobValue = oobValue.substring(0, colonIdx);
@@ -1047,10 +1047,10 @@ var htmx = (() => {
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
-            const swapSpec = this.__parseSwapSpec(oobValue);
+    let swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
-            const oobElementClone = elt.cloneNode(true);
+    let oobElementClone = elt.cloneNode(true);
             let fragment;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                 swapSpec.strip = true;
@@ -1079,24 +1079,24 @@ var htmx = (() => {
 
             // Process hx-select-oob first (select elements from response)
             if (selectOOB) {
-                selectOOB.split(',').forEach(spec => {
-                    const [selector, ...rest] = spec.split(':');
-                    const oobValue = rest.length ? rest.join(':') : 'true';
+                for (let spec of selectOOB.split(',')) {
+    let [selector, ...rest] = spec.split(':');
+    let oobValue = rest.length ? rest.join(':') : 'true';
 
-                    fragment.querySelectorAll(selector).forEach(elt => {
+                    for (let elt of fragment.querySelectorAll(selector)) {
                         this.__createOOBTask(tasks, elt, oobValue, sourceElement);
-                    });
-                });
+                    }
+                }
             }
 
             // Process elements with hx-swap-oob attribute
-            fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]').forEach(oobElt => {
-                const oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+            for (let oobElt of fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]')) {
+    let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
 
                 this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
-            });
+            }
 
             return tasks;
         }
@@ -1145,7 +1145,7 @@ var htmx = (() => {
         __processPartials(fragment, sourceElement) {
             let tasks = [];
 
-            fragment.querySelectorAll('template[partial]').forEach(partialElt => {
+            for (let partialElt of fragment.querySelectorAll('template[partial]')) {
                 let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwapStyle);
 
                 tasks.push({
@@ -1157,7 +1157,7 @@ var htmx = (() => {
                     sourceElement
                 });
                 partialElt.remove();
-            });
+            }
 
             return tasks;
         }
@@ -1188,8 +1188,8 @@ var htmx = (() => {
             let eventTarget = this.__resolveSwapEventTarget(task);
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
 
-            const swapTask = () => this.__insertContent(task);
-            const afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
+    let swapTask = () => this.__insertContent(task);
+    let afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
             if (task.transition && document["startViewTransition"]) {
                 return document.startViewTransition(swapTask).finished.then(afterSwap);
             }
@@ -1220,10 +1220,10 @@ var htmx = (() => {
 
             if (swapStyle === 'innerHTML') {
                 // Hide children of target
-                Array.from(target.children).forEach(child => {
+                for (let child of target.children) {
                     child.style.display = 'none';
                     child.setAttribute('data-hx-oh', 'true');
-                });
+                }
                 target.appendChild(optimisticDiv);
                 ctx.optimisticDiv = optimisticDiv;
             } else if (['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(swapStyle)) {
@@ -1245,10 +1245,10 @@ var htmx = (() => {
             ctx.optimisticDiv.remove();
 
             // Unhide any hidden elements
-            document.querySelectorAll('[data-hx-oh]').forEach(elt => {
+            for (let elt of document.querySelectorAll('[data-hx-oh]')) {
                 elt.style.display = '';
                 elt.removeAttribute('data-hx-oh');
-            });
+            }
         }
 
         __handleScroll(target, scroll) {
@@ -1265,14 +1265,14 @@ var htmx = (() => {
 
         // TODO - did we punt on other folks inserting scripts?
         __processScripts(container) {
-            container.querySelectorAll('script').forEach(oldScript => {
+            for (let oldScript of container.querySelectorAll('script')) {
                 let newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => {
+                for (let attr of oldScript.attributes) {
                     newScript.setAttribute(attr.name, attr.value);
-                });
+                }
                 newScript.textContent = oldScript.textContent;
                 oldScript.replaceWith(newScript);
-            });
+            }
         }
 
         //============================================================================================
@@ -1324,7 +1324,9 @@ var htmx = (() => {
             let syncTasks = tasks.filter(t => !t.async);
 
             // Execute sync tasks immediately
-            syncTasks.forEach(task => this.__executeSwapTask(task));
+            for (let task of syncTasks) {
+                this.__executeSwapTask(task);
+            }
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
@@ -1336,7 +1338,7 @@ var htmx = (() => {
         __insertContent(swapConfig) {
             let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
             let pantry = this.__handlePreservedElements(swapConfig.fragment);
-            const target = swapConfig.target, parentNode = target.parentNode;
+    let target = swapConfig.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
@@ -1395,7 +1397,7 @@ var htmx = (() => {
 
         __triggerExtensions(elt, eventName, detail = {}) {
             detail.cancelled = false;
-            const methodName = eventName.replace(/:/g, '_');
+    let methodName = eventName.replace(/:/g, '_');
             for (const ext of this.#extensions) {
                 if (ext[methodName]?.(elt, detail) === false || detail.cancelled) {
                     detail.cancelled = true;
@@ -1686,7 +1688,7 @@ var htmx = (() => {
         }
 
         __stringHyperscriptStyleSelector(selector) {
-            const s = selector.trim();
+    let s = selector.trim();
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
@@ -1695,11 +1697,11 @@ var htmx = (() => {
             if (selector.startsWith('global ')) {
                 return this.__findAllExt(elt, selector.slice(7), true);
             }
-            const parts = this.__tokenizeExtendedSelector(selector);
-            const result = []
-            const unprocessedParts = []
+    let parts = this.__tokenizeExtendedSelector(selector);
+    let result = []
+    let unprocessedParts = []
             for (const part of parts) {
-                const selector = this.__stringHyperscriptStyleSelector(part)
+    let selector = this.__stringHyperscriptStyleSelector(part)
                 let item
                 if (selector.startsWith('closest ')) {
                     item = elt.closest(selector.slice(8))
@@ -1733,8 +1735,8 @@ var htmx = (() => {
             }
 
             if (unprocessedParts.length > 0) {
-                const standardSelector = unprocessedParts.join(',')
-                const rootNode = this.__getRootNode(elt, !!global)
+    let standardSelector = unprocessedParts.join(',')
+    let rootNode = this.__getRootNode(elt, !!global)
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 
@@ -1764,7 +1766,7 @@ var htmx = (() => {
         }
 
         __scanBackwardsQuery(start, match, global) {
-            const results = [...this.__getRootNode(start, global).querySelectorAll(match)].reverse()
+    let results = [...this.__getRootNode(start, global).querySelectorAll(match)].reverse()
             return this.__scanUntilComparison(results, start, Node.DOCUMENT_POSITION_FOLLOWING);
         }
 
@@ -1806,11 +1808,11 @@ var htmx = (() => {
         }
 
         __morph(oldNode, fragment, innerHTML) {
-            const { persistentIds, idMap } = this.__createIdMaps(oldNode, fragment);
-            const pantry = document.createElement("div");
+    let { persistentIds, idMap } = this.__createIdMaps(oldNode, fragment);
+    let pantry = document.createElement("div");
             pantry.hidden = true;
             document.body.insertAdjacentElement("afterend", pantry);
-            const ctx = { target: oldNode, idMap, persistentIds, pantry };
+    let ctx = { target: oldNode, idMap, persistentIds, pantry };
 
             if (innerHTML) {
                 this.__morphChildren(ctx, oldNode, fragment);
@@ -1829,7 +1831,7 @@ var htmx = (() => {
 
             for (const newChild of newParent.childNodes) {
                 if (insertionPoint && insertionPoint != endPoint) {
-                    const bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+    let bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
                     if (bestMatch) {
                         if (bestMatch !== insertionPoint) {
                             let cursor = insertionPoint;
@@ -1846,10 +1848,10 @@ var htmx = (() => {
                 }
 
                 if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
-                    const target = (ctx.target.id === newChild.id && ctx.target) ||
+    let target = (ctx.target.id === newChild.id && ctx.target) ||
                         ctx.target.querySelector(`[id="${newChild.id}"]`) ||
                         ctx.pantry.querySelector(`[id="${newChild.id}"]`);
-                    const elementId = target.id;
+    let elementId = target.id;
                     let element = target;
                     while ((element = element.parentNode)) {
                         let idSet = ctx.idMap.get(element);
@@ -1877,7 +1879,7 @@ var htmx = (() => {
             }
 
             while (insertionPoint && insertionPoint != endPoint) {
-                const tempNode = insertionPoint;
+    let tempNode = insertionPoint;
                 insertionPoint = insertionPoint.nextSibling;
                 this.__removeNode(ctx, tempNode);
             }
@@ -1885,10 +1887,10 @@ var htmx = (() => {
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
             let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
-            const newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+    let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
-                const oldSet = ctx.idMap.get(cursor);
+    let oldSet = ctx.idMap.get(cursor);
                 if (this.__isSoftMatch(cursor, node)) {
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
                     if (softMatch === null && !oldSet) {
@@ -1930,7 +1932,7 @@ var htmx = (() => {
             let type = newNode.nodeType;
 
             if (type === 1) {
-                const noMorph = htmx.config.noMoprhAttributes || [];
+    let noMorph = htmx.config.noMoprhAttributes || [];
                 for (const attr of newNode.attributes) {
                     if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
                         oldNode.setAttribute(attr.name, attr.value);
@@ -1940,7 +1942,7 @@ var htmx = (() => {
                     }
                 }
                 for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
-                    const attr = oldNode.attributes[i];
+    let attr = oldNode.attributes[i];
                     if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
                         oldNode.removeAttribute(attr.name);
                     }
@@ -1976,8 +1978,8 @@ var htmx = (() => {
         __createIdMaps(oldNode, newContent) {
             let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
             if (oldNode.id) oldIdElements.push(oldNode);
-            const newIdElements = newContent.querySelectorAll("[id]");
-            const persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
+    let newIdElements = newContent.querySelectorAll("[id]");
+    let persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
             let idMap = new Map();
             this.__populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
             this.__populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
