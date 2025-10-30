@@ -1032,9 +1032,9 @@ var htmx = (() => {
             };
         }
 
-        __parseOOBSwap(oobValue, defaultTarget) {
+        __createOOBTask(tasks, elt, oobValue, sourceElement) {
             // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
-            let target = defaultTarget;
+            let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
                 const colonIdx = oobValue.indexOf(':');
                 if (colonIdx !== -1) {
@@ -1043,34 +1043,32 @@ var htmx = (() => {
                 }
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
-            return {oobValue, target};
-        }
 
-        __createOOBTask(elt, oobValue, target, sourceElement) {
-            if (oobValue === 'true') oobValue = 'outerHTML';
             const swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
             const oobElementClone = elt.cloneNode(true);
-            let frag;
+            let fragment;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                 swapSpec.strip = true;
             }
             if (swapSpec.strip) {
-                frag = oobElementClone.content || oobElementClone;
+                fragment = oobElementClone.content || oobElementClone;
             } else {
-                frag = document.createDocumentFragment();
-                frag.appendChild(oobElementClone);
+                fragment = document.createDocumentFragment();
+                fragment.appendChild(oobElementClone);
             }
+            elt.remove();
+            if (!target && !oobValue.includes('target:')) return;
 
-            return {
+            tasks.push({
                 type: 'oob',
-                fragment: frag,
+                fragment,
                 target,
                 swapSpec,
                 async: swapSpec.async === true,
                 sourceElement
-            };
+            });
         }
 
         __processOOB(fragment, sourceElement, selectOOB) {
@@ -1080,31 +1078,21 @@ var htmx = (() => {
             if (selectOOB) {
                 selectOOB.split(',').forEach(spec => {
                     const [selector, ...rest] = spec.split(':');
-                    const rawOobValue = rest.length ? rest.join(':') : 'true';
+                    const oobValue = rest.length ? rest.join(':') : 'true';
 
                     fragment.querySelectorAll(selector).forEach(elt => {
-                        const defaultTarget = elt.id ? '#' + CSS.escape(elt.id) : null;
-                        const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-
-                        if (target || oobValue.includes('target:')) {
-                            tasks.push(this.__createOOBTask(elt, oobValue, target, sourceElement));
-                            elt.remove();
-                        }
+                        this.__createOOBTask(tasks, elt, oobValue, sourceElement);
                     });
                 });
             }
 
             // Process elements with hx-swap-oob attribute
             fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]').forEach(oobElt => {
-                const rawOobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+                const oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
 
-                const defaultTarget = '#' + CSS.escape(oobElt.id);
-                const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-
-                tasks.push(this.__createOOBTask(oobElt, oobValue, target, sourceElement));
-                oobElt.remove();
+                this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
             });
 
             return tasks;
