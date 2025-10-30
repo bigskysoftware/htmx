@@ -968,36 +968,30 @@ var htmx = (() => {
         }
 
         __handlePreservedElements(fragment) {
-            let preserved = fragment.querySelectorAll?.('[hx-preserve]') || [];
-            preserved.forEach(newElt => {
-                let id = newElt.getAttribute('id');
-                if (!id) return;
-                let existingElement = document.getElementById(id);
-                if (existingElement) {
-                    let pantry = document.getElementById('htmx-preserve-pantry');
-                    if (!pantry) {
-                        pantry = document.createElement('div');
-                        pantry.id = 'htmx-preserve-pantry';
-                        pantry.style.display = 'none';
-                        document.body.appendChild(pantry);
-                    }
-                    if (pantry.moveBefore) {
-                        pantry.moveBefore(existingElement, null);
-                    } else {
-                        pantry.appendChild(existingElement);
-                    }
+            let pantry = document.createElement('div');
+            pantry.style.display = 'none';
+            document.body.appendChild(pantry);
+            let newPreservedElts = fragment.querySelectorAll?.('[hx-preserve]') || [];
+            for (let preservedElt of newPreservedElts) {
+                let currentElt = document.getElementById(preservedElt.id);
+                if (pantry.moveBefore) {
+                    pantry.moveBefore(currentElt, null);
+                } else {
+                    pantry.appendChild(currentElt);
                 }
-            });
+            }
+            return pantry
         }
 
-        __restorePreserved() {
-            let pantry = document.getElementById('htmx-preserve-pantry');
-            if (!pantry) return;
-            for (let preservedElt of [...pantry.children]) {
-                let existingElement = document.getElementById(preservedElt.id);
-                if (existingElement) {
-                    existingElement.replaceWith(preservedElt);
+        __restorePreservedElements(pantry) {
+            for (let preservedElt of pantry.children) {
+                let newElt = document.getElementById(preservedElt.id);
+                if (newElt.parentNode.moveBefore) {
+                    newElt.parentNode.moveBefore(preservedElt, newElt);
+                } else {
+                    newElt.replaceWith(preservedElt);
                 }
+                newElt.remove()
             }
             pantry.remove();
         }
@@ -1180,9 +1174,7 @@ var htmx = (() => {
             }
             if (!task.target) return;
 
-            this.__handlePreservedElements(task.fragment);
             let eventTarget = this.__resolveSwapEventTarget(task);
-
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
 
             const swapTask = () => this.__insertContent(task);
@@ -1332,7 +1324,7 @@ var htmx = (() => {
 
         __insertContent(swapConfig) {
             let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
-            this.__handlePreservedElements(swapConfig.fragment);
+            let pantry = this.__handlePreservedElements(swapConfig.fragment);
             const target = swapConfig.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
@@ -1363,7 +1355,7 @@ var htmx = (() => {
             } else {
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
-            this.__restorePreserved();
+            this.__restorePreservedElements(pantry);
             if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
