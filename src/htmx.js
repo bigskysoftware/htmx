@@ -88,7 +88,6 @@ var htmx = (() => {
             }
         };
 
-        // TODO make most of the things like default swap, etc configurable
         __initHtmxConfig() {
             this.config = {
                 logAll: false,
@@ -105,6 +104,7 @@ var htmx = (() => {
                     maxDelay: 30000,
                     pauseHidden: false
                 },
+                ignoredStatuses : [204],
                 scriptingAPI :  this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
@@ -461,6 +461,7 @@ var htmx = (() => {
                     ctx.status = "response received";
 
                     if (!ctx.response.cancelled) {
+                        this.__handleResponseCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         this.__removeOptimisticContent(ctx);
                         await this.swap(ctx);
@@ -752,9 +753,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
-                        let tmp = this.__executeJavaScript(elt, evt, filter);
-                        console.log("1", tmp)
-                        if (tmp) {
+                        if (this.__executeJavaScript(elt, evt, filter)) {
                             original(evt)
                         }
                     }
@@ -900,15 +899,14 @@ var htmx = (() => {
             let keys = Object.keys(args);
             let values = Object.values(args);
             let func = new Function(...keys, expression ? `return (${code})` : code);
-            let tmp = func.call(thisArg, ...values);
-            console.log("1", tmp)
-            return tmp;
+            return func.call(thisArg, ...values);
         }
 
         process(elt) {
             if (this.__ignore(elt)) return;
+            if (!this.__trigger(elt, "htmx:before:process")) return
             if (elt.matches(this.__actionSelector)) {
-                this.__initializeElement(elt)
+                this.__initializeElement(elt);
             }
             for (let child of elt.querySelectorAll(this.__actionSelector)) {
                 this.__initializeElement(child);
@@ -923,7 +921,7 @@ var htmx = (() => {
             let iter = this.__hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
-
+            this.__trigger(elt, "htmx:after:process")
         }
 
         __maybeBoost(elt) {
@@ -1106,7 +1104,6 @@ var htmx = (() => {
             }
         }
 
-        // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
             let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
@@ -1328,7 +1325,6 @@ var htmx = (() => {
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
-                // TODO offer modes where we don't await these?  Do them serially?
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
@@ -1425,8 +1421,8 @@ var htmx = (() => {
         }
 
         trigger(on, eventName, detail = {}, bubbles = true) {
-            return on.dispatchEvent(new CustomEvent(eventName, {
-                detail, cancelable: true, bubbles, composed: true
+            return (on.isConnected ? on : document.body) .dispatchEvent(new CustomEvent(eventName, {
+                detail, cancelable: true, bubbles, composed: true, originalTarget: on
             }))
         }
 
@@ -1786,6 +1782,21 @@ var htmx = (() => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abortCurrentRequest();
             })
+        }
+
+        __handleResponseCodes(ctx) {
+            let status = ctx.response.raw.status;
+            if (this.config.ignoredStatuses.includes(status)) {
+                ctx.swap = "none";
+            }
+            let str = status + ""
+            for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
+                let swapSpec = this.__attributeValue(ctx.sourceElement,"hx-on:" + pattern);
+                if (swapSpec) {
+                    ctx.swap = this.__parseSwapSpec(swapSpec)
+                    return
+                }
+            }
         }
     }
 
