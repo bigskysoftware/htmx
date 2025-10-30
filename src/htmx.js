@@ -2,50 +2,50 @@
 var htmx = (() => {
 
     class RequestQueue {
-        #currentRequest = null
-        #requestQueue = []
+        #c = null
+        #q = []
         shouldIssueRequest(ctx, queueStrategy) {
-            if (!this.#currentRequest) {
-                this.#currentRequest = ctx
+            if (!this.#c) {
+                this.#c = ctx
                 return true
             } else {
                 // Update ctx.status properly for replaced request contexts
                 if (queueStrategy === "replace") {
-                    this.#requestQueue = []
-                    if (this.#currentRequest) {
+                    this.#q = []
+                    if (this.#c) {
                         // TODO standardize on ctx.status
-                        this.#currentRequest.cancelled = true;
-                        this.#currentRequest.abort();
+                        this.#c.cancelled = true;
+                        this.#c.abort();
                     }
                     return true
                 } else if (queueStrategy === "queue all") {
-                    this.#requestQueue.push(ctx)
+                    this.#q.push(ctx)
                     ctx.status = "queued";
                 } else if (queueStrategy === "drop") {
                     // ignore the request
                     ctx.status = "dropped";
                 } else if (queueStrategy === "queue last") {
-                    this.#requestQueue = [ctx]
+                    this.#q = [ctx]
                     ctx.status = "queued";
-                } else if (this.#requestQueue.length === 0) {
+                } else if (this.#q.length === 0) {
                     // default queue first
-                    this.#requestQueue.push(ctx)
+                    this.#q.push(ctx)
                     ctx.status = "queued";
                 }
                 return false
             }
         }
         nextRequest() {
-            this.#currentRequest = null
-            return this.#requestQueue.shift()
+            this.#c = null
+            return this.#q.shift()
         }
 
         abortCurrentRequest() {
-            this.#currentRequest?.abort?.()
+            this.#c?.abort?.()
         }
 
         hasMore() {
-            return this.#requestQueue?.length
+            return this.#q?.length
         }
     }
 
