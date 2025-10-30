@@ -88,7 +88,6 @@ var htmx = (() => {
             }
         };
 
-        // TODO make most of the things like default swap, etc configurable
         __initHtmxConfig() {
             this.config = {
                 logAll: false,
@@ -105,8 +104,9 @@ var htmx = (() => {
                     maxDelay: 30000,
                     pauseHidden: false
                 },
-                scriptingAPI :  this.__initScriptingAPI(),
-                noMoprhAttributes : ["data-htmx-powered"]
+                noMoprhAttributes : ["data-htmx-powered"],
+                ignoredStatuses : [204],
+                scriptingAPI :  this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -462,6 +462,7 @@ var htmx = (() => {
                     ctx.status = "response received";
 
                     if (!ctx.response.cancelled) {
+                        this.__handleResponseCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         this.__removeOptimisticContent(ctx);
                         await this.swap(ctx);
@@ -753,9 +754,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
-                        let tmp = this.__executeJavaScript(elt, evt, filter);
-                        console.log("1", tmp)
-                        if (tmp) {
+                        if (this.__executeJavaScript(elt, evt, filter)) {
                             original(evt)
                         }
                     }
@@ -901,15 +900,14 @@ var htmx = (() => {
             let keys = Object.keys(args);
             let values = Object.values(args);
             let func = new Function(...keys, expression ? `return (${code})` : code);
-            let tmp = func.call(thisArg, ...values);
-            console.log("1", tmp)
-            return tmp;
+            return func.call(thisArg, ...values);
         }
 
         process(elt) {
             if (this.__ignore(elt)) return;
+            if (!this.__trigger(elt, "htmx:before:process")) return
             if (elt.matches(this.__actionSelector)) {
-                this.__initializeElement(elt)
+                this.__initializeElement(elt);
             }
             for (let child of elt.querySelectorAll(this.__actionSelector)) {
                 this.__initializeElement(child);
@@ -924,7 +922,7 @@ var htmx = (() => {
             let iter = this.__hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
-
+            this.__trigger(elt, "htmx:after:process")
         }
 
         __maybeBoost(elt) {
@@ -971,32 +969,30 @@ var htmx = (() => {
         }
 
         __handlePreservedElements(fragment) {
-            let preserved = fragment.querySelectorAll?.('[hx-preserve]') || [];
-            preserved.forEach(newElt => {
-                let id = newElt.getAttribute('id');
-                if (!id) return;
-                let existingElement = document.getElementById(id);
-                if (existingElement) {
-                    let pantry = document.getElementById('htmx-preserve-pantry');
-                    if (!pantry) {
-                        pantry = document.createElement('div');
-                        pantry.id = 'htmx-preserve-pantry';
-                        pantry.style.display = 'none';
-                        document.body.appendChild(pantry);
-                    }
-                    this.__moveBefore(pantry, existingElement, null);
+            let pantry = document.createElement('div');
+            pantry.style.display = 'none';
+            document.body.appendChild(pantry);
+            let newPreservedElts = fragment.querySelectorAll?.('[hx-preserve]') || [];
+            for (let preservedElt of newPreservedElts) {
+                let currentElt = document.getElementById(preservedElt.id);
+                if (pantry.moveBefore) {
+                    pantry.moveBefore(currentElt, null);
+                } else {
+                    pantry.appendChild(currentElt);
                 }
-            });
+            }
+            return pantry
         }
 
-        __restorePreserved() {
-            let pantry = document.getElementById('htmx-preserve-pantry');
-            if (!pantry) return;
-            for (let preservedElt of [...pantry.children]) {
-                let existingElement = document.getElementById(preservedElt.id);
-                if (existingElement) {
-                    existingElement.replaceWith(preservedElt);
+        __restorePreservedElements(pantry) {
+            for (let preservedElt of pantry.children) {
+                let newElt = document.getElementById(preservedElt.id);
+                if (newElt.parentNode.moveBefore) {
+                    newElt.parentNode.moveBefore(preservedElt, newElt);
+                } else {
+                    newElt.replaceWith(preservedElt);
                 }
+                newElt.remove()
             }
             pantry.remove();
         }
@@ -1103,7 +1099,6 @@ var htmx = (() => {
             }
         }
 
-        // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
             let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
@@ -1180,9 +1175,7 @@ var htmx = (() => {
             }
             if (!task.target) return;
 
-            this.__handlePreservedElements(task.fragment);
             let eventTarget = this.__resolveSwapEventTarget(task);
-
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
 
             const swapTask = () => this.__insertContent(task);
@@ -1325,7 +1318,6 @@ var htmx = (() => {
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
-                // TODO offer modes where we don't await these?  Do them serially?
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
@@ -1333,7 +1325,7 @@ var htmx = (() => {
 
         __insertContent(swapConfig) {
             let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
-            this.__handlePreservedElements(swapConfig.fragment);
+            let pantry = this.__handlePreservedElements(swapConfig.fragment);
             const target = swapConfig.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
@@ -1368,7 +1360,7 @@ var htmx = (() => {
             } else {
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
-            this.__restorePreserved();
+            this.__restorePreservedElements(pantry);
             if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
@@ -1426,8 +1418,8 @@ var htmx = (() => {
         }
 
         trigger(on, eventName, detail = {}, bubbles = true) {
-            return on.dispatchEvent(new CustomEvent(eventName, {
-                detail, cancelable: true, bubbles, composed: true
+            return (on.isConnected ? on : document.body) .dispatchEvent(new CustomEvent(eventName, {
+                detail, cancelable: true, bubbles, composed: true, originalTarget: on
             }))
         }
 
@@ -1981,6 +1973,21 @@ var htmx = (() => {
             }
             for (const id of duplicateIds) persistentIds.delete(id);
             return persistentIds;
+        }
+
+        __handleResponseCodes(ctx) {
+            let status = ctx.response.raw.status;
+            if (this.config.ignoredStatuses.includes(status)) {
+                ctx.swap = "none";
+            }
+            let str = status + ""
+            for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
+                let swapSpec = this.__attributeValue(ctx.sourceElement,"hx-on:" + pattern);
+                if (swapSpec) {
+                    ctx.swap = this.__parseSwapSpec(swapSpec)
+                    return
+                }
+            }
         }
     }
 
