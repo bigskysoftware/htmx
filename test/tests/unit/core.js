@@ -246,6 +246,7 @@ describe('Unit Tests', function() {
             'process',
             'swap',
             'timeout',
+            'defineExtension',
             'trigger',
             'waitATick'
         ].sort();
