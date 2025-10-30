@@ -52,6 +52,8 @@ var htmx = (() => {
     class Htmx {
 
         #scriptingAPIMethods = ['timeout'];
+        #extensions = [];
+        #approvedExtensions = new Set();
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
         __actionSelector = "[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]";
         __boostSelector = "a,form";
@@ -98,6 +100,7 @@ var htmx = (() => {
                 reloadOnHistoryNavigation: false,
                 defaultSwapStyle: "innerHTML",
                 defaultTimeout: 60000, /* 00 second default timeout */
+                extensions: '',
                 streams: {
                     mode: 'once',
                     maxRetries: Infinity,
@@ -120,6 +123,13 @@ var htmx = (() => {
                     }
                 }
             }
+            this.#approvedExtensions = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
+        }
+
+        defineExtension(name, extension) {
+            if (!this.#approvedExtensions.delete(name)) return false;
+            extension.init?.(this);
+            this.#extensions.push(extension);
         }
 
         __ignore(elt) {
@@ -830,7 +840,7 @@ var htmx = (() => {
                 // Store preload info
                 elt.__htmx.preload = {
                     prefetch: fetch(action, ctx.request),
-                    action: action,
+                    action: action, 
                     expiresAt: Date.now() + timeout
                 };
 
@@ -1402,6 +1412,18 @@ var htmx = (() => {
             return this.trigger(on, eventName, detail, bubbles)
         }
 
+        __triggerExtensions(elt, eventName, detail = {}) {
+            detail.cancelled = false;
+            const methodName = eventName.replace(/:/g, '_');
+            for (const ext of this.#extensions) {
+                if (ext[methodName]?.(elt, detail) === false || detail.cancelled) {
+                    detail.cancelled = true;
+                    return false;
+                }
+            }
+            return true;
+        }
+
         timeout(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -1435,11 +1457,13 @@ var htmx = (() => {
             let v = parseFloat(n) * (m[u] || 1);
             return isNaN(v) ? undefined : v;
         }
-
+        
         trigger(on, eventName, detail = {}, bubbles = true) {
-            return on.dispatchEvent(new CustomEvent(eventName, {
+            this.__triggerExtensions(on, eventName, detail);
+            if (!detail.cancelled && !on.dispatchEvent(new CustomEvent(eventName, {
                 detail, cancelable: true, bubbles, composed: true
-            }))
+            }))) detail.cancelled = true;
+            return !detail.cancelled;
         }
 
         async waitATick() {
