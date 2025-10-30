@@ -3,102 +3,99 @@ title = "Click to Edit"
 template = "demo.html"
 +++
 
-The click to edit pattern provides a way to offer inline editing of all or part of a record without a page refresh.
+This pattern shows how to edit a record in place, without a page refresh. It works by providing two modes that the user can switch between:
 
-* This pattern starts with a UI that shows the details of a contact.  The div has a button that will get the editing UI for the contact from `/contact/1/edit`
+### 1. View Mode
+
+In view mode, display the current value(s) with a way to switch to **Edit Mode** (e.g. a button / icon / etc.).
 
 ```html
-<div hx-target="this" hx-swap="outerHTML">
-    <div><label>First Name</label>: Joe</div>
-    <div><label>Last Name</label>: Blow</div>
-    <div><label>Email</label>: joe@blow.com</div>
-    <button hx-get="/contact/1/edit" class="btn primary">
-    Click To Edit
+<div hx-target:inherited="this">
+
+    <p>Name: <span>{{ user.name }}</span></p>
+
+    <!-- On click, switch to edit mode -->
+    <button hx-get="/users/1/edit"
+            hx-swap="outerHTML">
+        Edit
     </button>
+
 </div>
 ```
+_The \<button\> `GET`s the edit form & replaces the parent `<div>` with it._
 
-* This returns a form that can be used to edit the contact
+
+### 2. Edit Mode
+
+In edit mode, show a form with **Save** & **Cancel** options.
 
 ```html
-<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
-  <div>
-    <label>First Name</label>
-    <input type="text" name="firstName" value="Joe">
-  </div>
-  <div class="form-group">
-    <label>Last Name</label>
-    <input type="text" name="lastName" value="Blow">
-  </div>
-  <div class="form-group">
-    <label>Email Address</label>
-    <input type="email" name="email" value="joe@blow.com">
-  </div>
-  <button class="btn" type="submit">Submit</button>
-  <button class="btn" hx-get="/contact/1">Cancel</button>
+<!-- On submit, save changes & return to view mode -->
+<form hx-put="/users/1"
+      hx-target:inherited="this"
+      hx-swap:inherited="outerHTML">
+
+    <p>Name: <input name="name" value="{{ user.name }}"></p>
+
+    <button type="submit">
+        Save
+    </button>
+
+    <!-- On click, return to view mode (without saving) -->
+    <button type="button" hx-get="/users/1">
+        Cancel
+    </button>
+
 </form>
 ```
+_The form `PUT`s the updated value to the server, which returns the updated view mode HTML to replace the form._
 
-* The form issues a `PUT` back to `/contact/1`, following the usual REST-ful pattern.
+### The REST-ful Pattern
+
+This pattern follows REST conventions:
+- `GET /users/1` - Retrieve the current view (**"View Mode"**)
+- `GET /users/1/edit` - Retrieve the edit form (**"Edit Mode"**)
+- `PUT /users/1` - Update the resource
+
+The URL represents the resource (`/users/1`), and the HTTP method indicates the action.
 
 {{ demoenv() }}
 
 <script>
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
+const user = { name: "Joe Smith" };
 
-    // data
-    var contact = {
-        "firstName" : "Joe",
-        "lastName" : "Blow",
-        "email" : "joe@blow.com"
-    };
+init("/users/1", () =>
+    `<div hx-target:inherited="this">
+        <p>Name: <span>${user.name}</span></p>
+        <button hx-get="/users/1/edit"
+                hx-swap="outerHTML">
+            Edit
+        </button>
+    </div>`
+);
 
-    // routes
-    init("/contact/1", function(request){
-        return displayTemplate(contact);
-    });
+onGet("/users/1/edit", () =>
+    `<form hx-put="/users/1"
+           hx-target:inherited="this"
+           hx-swap:inherited="outerHTML">
+        <p>Name: <input name="name" value="${user.name}"></p>
+        <button type="submit">
+            Save
+        </button>
+        <button type="button" hx-get="/users/1">
+            Cancel
+        </button>
+    </form>`
+);
 
-    onGet("/contact/1/edit", function(request){
-        return formTemplate(contact);
-    });
-
-    onPut("/contact/1", function (req, params) {
-        contact.firstName = params['firstName'];
-        contact.lastName = params['lastName'];
-        contact.email = params['email'];
-        return displayTemplate(contact);
-    });
-
-    // templates
-    function formTemplate(contact) {
-return `<form hx-put="/contact/1" hx-target="this" hx-swap="outerHTML">
-  <div>
-    <label for="firstName">First Name</label>
-    <input autofocus type="text" id="firstName" name="firstName" value="${contact.firstName}">
-  </div>
-  <div class="form-group">
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" name="lastName" value="${contact.lastName}">
-  </div>
-  <div class="form-group">
-    <label for="email">Email Address</label>
-    <input type="email" id="email" name="email" value="${contact.email}">
-  </div>
-  <button class="btn primary" type="submit">Submit</button>
-  <button class="btn danger" hx-get="/contact/1">Cancel</button>
-</form>`
-    }
-
-    function displayTemplate(contact) {
-        return `<div hx-target="this" hx-swap="outerHTML">
-    <div><label>First Name</label>: ${contact.firstName}</div>
-    <div><label>Last Name</label>: ${contact.lastName}</div>
-    <div><label>Email Address</label>: ${contact.email}</div>
-    <button hx-get="/contact/1/edit" class="btn primary">
-    Click To Edit
-    </button>
-</div>`;
-    }
+onPut("/users/1", (req, params) => {
+    user.name = params.name;
+    return `<div hx-target:inherited="this"
+                 hx-swap:inherited="outerHTML">
+                <p>Name: <span>${user.name}</span></p>
+                <button hx-get="/users/1/edit">
+                    Edit
+                </button>
+            </div>`;
+});
 </script>
