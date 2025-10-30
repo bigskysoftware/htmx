@@ -1441,13 +1441,10 @@ var htmx = (() => {
 
         trigger(on, eventName, detail = {}, bubbles = true) {
             this.__triggerExtensions(on, eventName, detail);
-            if (!detail.cancelled && !on.dispatchEvent(new CustomEvent(eventName, {
-                detail, cancelable: true, bubbles, composed: true
-            }))) detail.cancelled = true;
-            return !detail.cancelled;
-            return (on.isConnected ? on : document.body) .dispatchEvent(new CustomEvent(eventName, {
-                detail, cancelable: true, bubbles, composed: true, originalTarget: on
-            }))
+            let evt = new CustomEvent(eventName, {detail, cancelable: true, bubbles, composed: true, originalTarget: on});
+            let target = on.isConnected ? on : document.body;
+            let result = !detail.cancelled && target.dispatchEvent(evt);
+            return result
         }
 
         async waitATick() {
