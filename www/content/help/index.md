@@ -134,21 +134,21 @@ title = "Help"
 
 <div class="team-grid">
   <div class="team-card">
-    <img src="https://via.placeholder.com/120" alt="Team Member">
-    <div class="team-name">John Doe</div>
+    <img src="/img/team/latent.png" alt="Michael West">
+    <div class="team-name">Michael West</div>
     <div class="team-bio">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
   </div>
 
   <div class="team-card">
-    <img src="https://via.placeholder.com/120" alt="Team Member">
-    <div class="team-name">Jane Smith</div>
+    <img src="/img/team/scriptogre.png" alt="Christian Tanul">
+    <div class="team-name">Christian Tanul</div>
     <div class="team-bio">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
   </div>
 
   <div class="team-card">
-    <img src="https://via.placeholder.com/120" alt="Team Member">
-    <div class="team-name">Bob Johnson</div>
-    <div class="team-bio">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+    <img src="/img/team/grug.png" alt="Carson Gross">
+    <div class="team-name">Carson Gross</div>
+    <div class="team-bio">Carson is an <a href="https://www.cs.montana.edu/users/grug/">academic</a> with no real-world coding experience.</div>
   </div>
 </div>
 

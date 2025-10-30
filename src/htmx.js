@@ -90,7 +90,6 @@ var htmx = (() => {
             }
         };
 
-        // TODO make most of the things like default swap, etc configurable
         __initHtmxConfig() {
             this.config = {
                 logAll: false,
@@ -108,6 +107,8 @@ var htmx = (() => {
                     maxDelay: 30000,
                     pauseHidden: false
                 },
+                noMoprhAttributes : ["data-htmx-powered"],
+                ignoredStatuses : [204],
                 scriptingAPI :  this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
@@ -471,6 +472,7 @@ var htmx = (() => {
                     ctx.status = "response received";
 
                     if (!ctx.response.cancelled) {
+                        this.__handleResponseCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         this.__removeOptimisticContent(ctx);
                         await this.swap(ctx);
@@ -762,9 +764,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
-                        let tmp = this.__executeJavaScript(elt, evt, filter);
-                        console.log("1", tmp)
-                        if (tmp) {
+                        if (this.__executeJavaScript(elt, evt, filter)) {
                             original(evt)
                         }
                     }
@@ -840,7 +840,7 @@ var htmx = (() => {
                 // Store preload info
                 elt.__htmx.preload = {
                     prefetch: fetch(action, ctx.request),
-                    action: action, 
+                    action: action,
                     expiresAt: Date.now() + timeout
                 };
 
@@ -910,15 +910,14 @@ var htmx = (() => {
             let keys = Object.keys(args);
             let values = Object.values(args);
             let func = new Function(...keys, expression ? `return (${code})` : code);
-            let tmp = func.call(thisArg, ...values);
-            console.log("1", tmp)
-            return tmp;
+            return func.call(thisArg, ...values);
         }
 
         process(elt) {
             if (this.__ignore(elt)) return;
+            if (!this.__trigger(elt, "htmx:before:process")) return
             if (elt.matches(this.__actionSelector)) {
-                this.__initializeElement(elt)
+                this.__initializeElement(elt);
             }
             for (let child of elt.querySelectorAll(this.__actionSelector)) {
                 this.__initializeElement(child);
@@ -933,7 +932,7 @@ var htmx = (() => {
             let iter = this.__hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
-
+            this.__trigger(elt, "htmx:after:process")
         }
 
         __maybeBoost(elt) {
@@ -980,36 +979,30 @@ var htmx = (() => {
         }
 
         __handlePreservedElements(fragment) {
-            let preserved = fragment.querySelectorAll?.('[hx-preserve]') || [];
-            preserved.forEach(newElt => {
-                let id = newElt.getAttribute('id');
-                if (!id) return;
-                let existingElement = document.getElementById(id);
-                if (existingElement) {
-                    let pantry = document.getElementById('htmx-preserve-pantry');
-                    if (!pantry) {
-                        pantry = document.createElement('div');
-                        pantry.id = 'htmx-preserve-pantry';
-                        pantry.style.display = 'none';
-                        document.body.appendChild(pantry);
-                    }
-                    if (pantry.moveBefore) {
-                        pantry.moveBefore(existingElement, null);
-                    } else {
-                        pantry.appendChild(existingElement);
-                    }
+            let pantry = document.createElement('div');
+            pantry.style.display = 'none';
+            document.body.appendChild(pantry);
+            let newPreservedElts = fragment.querySelectorAll?.('[hx-preserve]') || [];
+            for (let preservedElt of newPreservedElts) {
+                let currentElt = document.getElementById(preservedElt.id);
+                if (pantry.moveBefore) {
+                    pantry.moveBefore(currentElt, null);
+                } else {
+                    pantry.appendChild(currentElt);
                 }
-            });
+            }
+            return pantry
         }
 
-        __restorePreserved() {
-            let pantry = document.getElementById('htmx-preserve-pantry');
-            if (!pantry) return;
-            for (let preservedElt of [...pantry.children]) {
-                let existingElement = document.getElementById(preservedElt.id);
-                if (existingElement) {
-                    existingElement.replaceWith(preservedElt);
+        __restorePreservedElements(pantry) {
+            for (let preservedElt of pantry.children) {
+                let newElt = document.getElementById(preservedElt.id);
+                if (newElt.parentNode.moveBefore) {
+                    newElt.parentNode.moveBefore(preservedElt, newElt);
+                } else {
+                    newElt.replaceWith(preservedElt);
                 }
+                newElt.remove()
             }
             pantry.remove();
         }
@@ -1042,9 +1035,9 @@ var htmx = (() => {
             };
         }
 
-        __parseOOBSwap(oobValue, defaultTarget) {
+        __createOOBTask(tasks, elt, oobValue, sourceElement) {
             // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
-            let target = defaultTarget;
+            let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
                 const colonIdx = oobValue.indexOf(':');
                 if (colonIdx !== -1) {
@@ -1053,34 +1046,32 @@ var htmx = (() => {
                 }
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
-            return {oobValue, target};
-        }
 
-        __createOOBTask(elt, oobValue, target, sourceElement) {
-            if (oobValue === 'true') oobValue = 'outerHTML';
             const swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
             const oobElementClone = elt.cloneNode(true);
-            let frag;
+            let fragment;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                 swapSpec.strip = true;
             }
             if (swapSpec.strip) {
-                frag = oobElementClone.content || oobElementClone;
+                fragment = oobElementClone.content || oobElementClone;
             } else {
-                frag = document.createDocumentFragment();
-                frag.appendChild(oobElementClone);
+                fragment = document.createDocumentFragment();
+                fragment.appendChild(oobElementClone);
             }
+            elt.remove();
+            if (!target && !oobValue.includes('target:')) return;
 
-            return {
+            tasks.push({
                 type: 'oob',
-                fragment: frag,
+                fragment,
                 target,
                 swapSpec,
                 async: swapSpec.async === true,
                 sourceElement
-            };
+            });
         }
 
         __processOOB(fragment, sourceElement, selectOOB) {
@@ -1090,31 +1081,21 @@ var htmx = (() => {
             if (selectOOB) {
                 selectOOB.split(',').forEach(spec => {
                     const [selector, ...rest] = spec.split(':');
-                    const rawOobValue = rest.length ? rest.join(':') : 'true';
+                    const oobValue = rest.length ? rest.join(':') : 'true';
 
                     fragment.querySelectorAll(selector).forEach(elt => {
-                        const defaultTarget = elt.id ? '#' + CSS.escape(elt.id) : null;
-                        const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-
-                        if (target || oobValue.includes('target:')) {
-                            tasks.push(this.__createOOBTask(elt, oobValue, target, sourceElement));
-                            elt.remove();
-                        }
+                        this.__createOOBTask(tasks, elt, oobValue, sourceElement);
                     });
                 });
             }
 
             // Process elements with hx-swap-oob attribute
             fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]').forEach(oobElt => {
-                const rawOobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+                const oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
 
-                const defaultTarget = '#' + CSS.escape(oobElt.id);
-                const {oobValue, target} = this.__parseOOBSwap(rawOobValue, defaultTarget);
-
-                tasks.push(this.__createOOBTask(oobElt, oobValue, target, sourceElement));
-                oobElt.remove();
+                this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
             });
 
             return tasks;
@@ -1128,7 +1109,6 @@ var htmx = (() => {
             }
         }
 
-        // TODO can we reuse __parseTriggerSpecs here?
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
             let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
@@ -1205,9 +1185,7 @@ var htmx = (() => {
             }
             if (!task.target) return;
 
-            this.__handlePreservedElements(task.fragment);
             let eventTarget = this.__resolveSwapEventTarget(task);
-
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
 
             const swapTask = () => this.__insertContent(task);
@@ -1350,7 +1328,6 @@ var htmx = (() => {
 
             // Execute async tasks in parallel
             if (asyncTasks.length > 0) {
-                // TODO offer modes where we don't await these?  Do them serially?
                 await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
@@ -1358,7 +1335,7 @@ var htmx = (() => {
 
         __insertContent(swapConfig) {
             let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
-            this.__handlePreservedElements(swapConfig.fragment);
+            let pantry = this.__handlePreservedElements(swapConfig.fragment);
             const target = swapConfig.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
@@ -1367,6 +1344,10 @@ var htmx = (() => {
                     this.__insertNodes(parentNode, target, swapConfig.fragment);
                     parentNode.removeChild(target);
                 }
+            } else if (swapSpec.style === 'innerMorph') {
+                this.__morph(target, swapConfig.fragment, true);
+            } else if (swapSpec.style === 'outerMorph') {
+                this.__morph(target, swapConfig.fragment, false);
             } else if (swapSpec.style === 'beforebegin') {
                 if (parentNode) {
                     this.__insertNodes(parentNode, target, swapConfig.fragment);
@@ -1389,7 +1370,7 @@ var htmx = (() => {
             } else {
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
-            this.__restorePreserved();
+            this.__restorePreservedElements(pantry);
             if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
@@ -1457,13 +1438,16 @@ var htmx = (() => {
             let v = parseFloat(n) * (m[u] || 1);
             return isNaN(v) ? undefined : v;
         }
-        
+
         trigger(on, eventName, detail = {}, bubbles = true) {
             this.__triggerExtensions(on, eventName, detail);
             if (!detail.cancelled && !on.dispatchEvent(new CustomEvent(eventName, {
                 detail, cancelable: true, bubbles, composed: true
             }))) detail.cancelled = true;
             return !detail.cancelled;
+            return (on.isConnected ? on : document.body) .dispatchEvent(new CustomEvent(eventName, {
+                detail, cancelable: true, bubbles, composed: true, originalTarget: on
+            }))
         }
 
         async waitATick() {
@@ -1822,6 +1806,215 @@ var htmx = (() => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abortCurrentRequest();
             })
+        }
+
+        __morph(oldNode, fragment, innerHTML) {
+            const { persistentIds, idMap } = this.__createIdMaps(oldNode, fragment);
+            const pantry = document.createElement("div");
+            pantry.hidden = true;
+            document.body.insertAdjacentElement("afterend", pantry);
+            const ctx = { target: oldNode, idMap, persistentIds, pantry };
+
+            if (innerHTML) {
+                this.__morphChildren(ctx, oldNode, fragment);
+            } else {
+                this.__morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
+            }
+            pantry.remove();
+        }
+
+        __morphChildren(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
+            if (oldParent instanceof HTMLTemplateElement && newParent instanceof HTMLTemplateElement) {
+                oldParent = oldParent.content;
+                newParent = newParent.content;
+            }
+            insertionPoint ||= oldParent.firstChild;
+
+            for (const newChild of newParent.childNodes) {
+                if (insertionPoint && insertionPoint != endPoint) {
+                    const bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    if (bestMatch) {
+                        if (bestMatch !== insertionPoint) {
+                            let cursor = insertionPoint;
+                            while (cursor && cursor !== bestMatch) {
+                                let tempNode = cursor;
+                                cursor = cursor.nextSibling;
+                                this.__removeNode(ctx, tempNode);
+                            }
+                        }
+                        this.__morphNode(bestMatch, newChild, ctx);
+                        insertionPoint = bestMatch.nextSibling;
+                        continue;
+                    }
+                }
+
+                if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                    const target = (ctx.target.id === newChild.id && ctx.target) ||
+                        ctx.target.querySelector(`[id="${newChild.id}"]`) ||
+                        ctx.pantry.querySelector(`[id="${newChild.id}"]`);
+                    const elementId = target.id;
+                    let element = target;
+                    while ((element = element.parentNode)) {
+                        let idSet = ctx.idMap.get(element);
+                        if (idSet) {
+                            idSet.delete(elementId);
+                            if (!idSet.size) ctx.idMap.delete(element);
+                        }
+                    }
+                    this.__moveBefore(oldParent, target, insertionPoint);
+                    this.__morphNode(target, newChild, ctx);
+                    insertionPoint = target.nextSibling;
+                    continue;
+                }
+
+                let tempChild;
+                if (ctx.idMap.has(newChild)) {
+                    tempChild = document.createElement(newChild.tagName);
+                    oldParent.insertBefore(tempChild, insertionPoint);
+                    this.__morphNode(tempChild, newChild, ctx);
+                } else {
+                    tempChild = document.importNode(newChild, true);
+                    oldParent.insertBefore(tempChild, insertionPoint);
+                }
+                insertionPoint = tempChild.nextSibling;
+            }
+
+            while (insertionPoint && insertionPoint != endPoint) {
+                const tempNode = insertionPoint;
+                insertionPoint = insertionPoint.nextSibling;
+                this.__removeNode(ctx, tempNode);
+            }
+        }
+
+        __findBestMatch(ctx, node, startPoint, endPoint) {
+            let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
+            const newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+            let cursor = startPoint;
+            while (cursor && cursor != endPoint) {
+                const oldSet = ctx.idMap.get(cursor);
+                if (this.__isSoftMatch(cursor, node)) {
+                    if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
+                    if (softMatch === null && !oldSet) {
+                        if (!nodeMatchCount) return cursor;
+                        else softMatch = cursor;
+                    }
+                }
+                displaceMatchCount += oldSet?.size || 0;
+                if (displaceMatchCount > nodeMatchCount) break;
+                if (softMatch === null && nextSibling && this.__isSoftMatch(cursor, nextSibling)) {
+                    siblingSoftMatchCount++;
+                    nextSibling = nextSibling.nextSibling;
+                    if (siblingSoftMatchCount >= 2) softMatch = undefined;
+                }
+                if (cursor.contains(document.activeElement)) break;
+                cursor = cursor.nextSibling;
+            }
+            return softMatch || null;
+        }
+
+        __isSoftMatch(oldNode, newNode) {
+            return oldNode.nodeType === newNode.nodeType && oldNode.tagName === newNode.tagName &&
+                (!oldNode.id || oldNode.id === newNode.id);
+        }
+
+        __removeNode(ctx, node) {
+            if (ctx.idMap.has(node)) this.__moveBefore(ctx.pantry, node, null);
+            else node.parentNode?.removeChild(node);
+        }
+
+        __moveBefore(parentNode, element, after) {
+            if (parentNode.moveBefore) {
+                try { parentNode.moveBefore(element, after); }
+                catch (e) { parentNode.insertBefore(element, after); }
+            } else parentNode.insertBefore(element, after);
+        }
+
+        __morphNode(oldNode, newNode, ctx) {
+            let type = newNode.nodeType;
+
+            if (type === 1) {
+                const noMorph = htmx.config.noMoprhAttributes || [];
+                for (const attr of newNode.attributes) {
+                    if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
+                        oldNode.setAttribute(attr.name, attr.value);
+                        if (attr.name === "value" && oldNode instanceof HTMLInputElement && oldNode.type !== "file") {
+                            oldNode.value = attr.value;
+                        }
+                    }
+                }
+                for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
+                    const attr = oldNode.attributes[i];
+                    if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
+                        oldNode.removeAttribute(attr.name);
+                    }
+                }
+                if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+                    oldNode.value = newNode.value;
+                }
+            }
+
+            if ((type === 8 || type === 3) && oldNode.nodeValue !== newNode.nodeValue) {
+                oldNode.nodeValue = newNode.nodeValue;
+            }
+            if (!oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
+        }
+
+        __populateIdMapWithTree(idMap, persistentIds, root, elements) {
+            for (const elt of elements) {
+                if (persistentIds.has(elt.id)) {
+                    let current = elt;
+                    while (current && current !== root) {
+                        let idSet = idMap.get(current);
+                        if (idSet == null) {
+                            idSet = new Set();
+                            idMap.set(current, idSet);
+                        }
+                        idSet.add(elt.id);
+                        current = current.parentElement;
+                    }
+                }
+            }
+        }
+
+        __createIdMaps(oldNode, newContent) {
+            let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
+            if (oldNode.id) oldIdElements.push(oldNode);
+            const newIdElements = newContent.querySelectorAll("[id]");
+            const persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
+            let idMap = new Map();
+            this.__populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
+            this.__populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
+            return { persistentIds, idMap };
+        }
+
+        __createPersistentIds(oldIdElements, newIdElements) {
+            let duplicateIds = new Set(), oldIdTagNameMap = new Map();
+            for (const { id, tagName } of oldIdElements) {
+                if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
+                else oldIdTagNameMap.set(id, tagName);
+            }
+            let persistentIds = new Set();
+            for (const { id, tagName } of newIdElements) {
+                if (persistentIds.has(id)) duplicateIds.add(id);
+                else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
+            }
+            for (const id of duplicateIds) persistentIds.delete(id);
+            return persistentIds;
+        }
+
+        __handleResponseCodes(ctx) {
+            let status = ctx.response.raw.status;
+            if (this.config.ignoredStatuses.includes(status)) {
+                ctx.swap = "none";
+            }
+            let str = status + ""
+            for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
+                let swapSpec = this.__attributeValue(ctx.sourceElement,"hx-on:" + pattern);
+                if (swapSpec) {
+                    ctx.swap = this.__parseSwapSpec(swapSpec)
+                    return
+                }
+            }
         }
     }
 
