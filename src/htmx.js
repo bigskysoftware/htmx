@@ -245,7 +245,7 @@ var htmx = (() => {
 
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                elt.__htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: []}
+                elt.__htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.__initializeTriggers(elt);
                 this.__initializePreload(elt);
