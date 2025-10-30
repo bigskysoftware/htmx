@@ -1,0 +1,3 @@
++++
+redirect_to = "/help/"
++++
