@@ -28,5 +28,5 @@ The event triggered by `hx-confirm` contains additional properties in its `detai
 ## Notes
 
 * `hx-confirm` is inherited and can be placed on a parent element
-* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as shown [in this example](@/examples/confirm.md).
+* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as shown [in this example](@/patterns/confirm.md).
 * a boolean `skipConfirmation` can be passed to the `issueRequest` callback; if true (defaults to false), the `window.confirm` will not be called and the AJAX request is issued directly

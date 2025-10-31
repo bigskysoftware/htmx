@@ -32,7 +32,7 @@
 </head>
 <body hx-ext="class-tools, preload">
 <header class="site-header">
-    {% set should_boost = not page or not page.path is starting_with("/examples") %}
+    {% set should_boost = not page or not page.path is starting_with("/patterns") %}
     <nav hx-boost="{{should_boost}}">
         <ul>
             <li>
@@ -42,7 +42,7 @@
         <ul preload="mouseover" id="nav-menu">
             <li><a href="/docs/">docs</a></li>
             <li><a href="/reference/">reference</a></li>
-            <li><a href="/examples/">examples</a></li>
+            <li><a href="/patterns/">patterns</a></li>
             <li><a href="/help/">help</a></li>
             <li><a href="/essays/">essays</a></li>
             <li><a href="https://hypermedia.systems">book</a></li>
@@ -92,7 +92,7 @@
             <div class="6 col footer-menu">
                 <div><a href="/docs/">docs</a></div>
                 <div><a href="/reference/">reference</a></div>
-                <div><a href="/examples/">examples</a></div>
+                <div><a href="/patterns/">patterns</a></div>
                 <div><a href="/talk/">talk</a></div>
                 <div><a href="/essays/">essays</a></div>
                 <div><a href="https://twitter.com/htmx_org">@htmx_org</a></div>

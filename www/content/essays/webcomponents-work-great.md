@@ -161,7 +161,7 @@ The default htmx swap style is to just set [`.innerHTML`](https://developer.mozi
 That's not to say that htmx doesn't have to accommodate weird Web Component edge cases.
 Our community member and resident WC expert [Katrina Scialdone](https://unmodernweb.com/) merged [Shadow DOM support for htmx 2.0](https://github.com/bigskysoftware/htmx/pull/2075), which lets htmx process the implementation details of a Web Component,
 and supporting that is [occasionally](https://github.com/bigskysoftware/htmx/pull/2846) [frustrating](https://github.com/bigskysoftware/htmx/pull/2866).
-But being able to work with both the [Shadow DOM](@/examples/web-components.md) and the ["Light DOM"](https://meyerweb.com/eric/thoughts/2023/11/01/blinded-by-the-light-dom/) is a nice feature for htmx, and it carries a relatively minimal support burden because htmx just isn't doing all that much.
+But being able to work with both the [Shadow DOM](@/patterns/web-components.md) and the ["Light DOM"](https://meyerweb.com/eric/thoughts/2023/11/01/blinded-by-the-light-dom/) is a nice feature for htmx, and it carries a relatively minimal support burden because htmx just isn't doing all that much.
 
 ## Bringing Behavior Back to the HTML
 

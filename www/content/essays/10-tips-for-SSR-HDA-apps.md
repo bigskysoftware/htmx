@@ -128,7 +128,7 @@ But this experience stinks compared to what people are used to: drag-and-drop.
 
 In cases like this, it is perfectly fine to use a front-end heavy approach as an "Island of Interactivity".  
 
-Consider the [SortableJS](@/examples/sortable.md) example.  Here you have a sophisticated area of interactivity that allows for
+Consider the [SortableJS](@/patterns/sortable.md) example.  Here you have a sophisticated area of interactivity that allows for
 drag-and-drop, and that integrates with htmx and the broader hypermedia-driven application via events.
 
 This is an excellent way to encapsulate richer UX within an HDA.
@@ -153,7 +153,7 @@ Finally, do not be dogmatic about using hypermedia.  At the end of the day, it i
 [strengths & weaknesses](@/essays/when-to-use-hypermedia.md).  If a particular part of an app, or if an entire app,
 demands something more interactive than what hypermedia can deliver, then go with a technology that can.  
 
-Just be familiar with [what hypermedia can do](@/examples/_index.md), so you can make that decision as an informed 
+Just be familiar with [what hypermedia can do](@/patterns/_index.md), so you can make that decision as an informed 
 developer.
 
 ## Conclusion

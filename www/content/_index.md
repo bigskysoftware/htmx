@@ -121,7 +121,7 @@ if(window.location.search=="?ads=true") {
 
 htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md) and [Server Sent Events](@/docs.md)
 directly in HTML, using [attributes](@/reference.md#attributes), so you can build
-[modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
+[modern user interfaces](@/patterns/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~16k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),

@@ -125,7 +125,7 @@ In this manner, htmx follows the [original web programming model](https://www.ic
 of the web, using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
 
 While this may seem a little academic (and the ideas are interesting!) it turns out that this small extension to HTML
-enables developers to create much more [sophisticated user experiences](@/examples/_index.md) using HTML.
+enables developers to create much more [sophisticated user experiences](@/patterns/_index.md) using HTML.
 
 ## 2.x to 4.x Migration Guide
 
@@ -292,7 +292,7 @@ issuing the request.  Unlike `delay` if a new event occurs before the time limit
 so the request will trigger at the end of the time period.
 *  `from:<CSS Selector>` - listen for the event on a different element.  This can be used for things like keyboard shortcuts. Note that this CSS selector is not re-evaluated if the page changes.
 
-You can use these attributes to implement many common UX patterns, such as [Active Search](@/examples/active-search.md):
+You can use these attributes to implement many common UX patterns, such as [Active Search](@/patterns/active-search.md):
 
 ```html
 <input type="text" name="q"
@@ -368,7 +368,7 @@ If the `/messages` end point keeps returning a div set up this way, it will keep
 second.
 
 Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
-when you are showing the user a [progress bar](@/examples/progress-bar.md).
+when you are showing the user a [progress bar](@/patterns/progress-bar.md).
 
 ### Request Indicators {#indicators}
 
@@ -507,7 +507,7 @@ View Transitions can be configured using CSS, as outlined in [the Chrome documen
   <p>more docs on this</p>
 </aside>
 
-You can see a view transition example on the [Animation Examples](/examples/animations#view-transitions) page.
+You can see a view transition example on the [Animation Patterns](/patterns/animations#view-transitions) page.
 
 #### Swap Options
 
@@ -683,7 +683,7 @@ in the request.
 Note that depending on your server-side technology, you may have to handle requests with this type of body content very
 differently.
 
-See the [examples section](@/examples/_index.md) for more advanced form patterns, including [progress bars](@/examples/file-upload.md) and [error handling](@/examples/file-upload-input.md).
+See the [patterns section](@/patterns/_index.md) for more advanced form patterns, including [progress bars](@/patterns/file-upload.md) and [error handling](@/patterns/file-upload-input.md).
 
 ### Confirming Requests {#confirming}
 
@@ -784,7 +784,7 @@ a wider audience to use your site's functionality.
 
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
-Consider the [active search](@/examples/active-search.md) example.  As it is written, it will not degrade gracefully:
+Consider the [active search](@/patterns/active-search.md) example.  As it is written, it will not degrade gracefully:
 someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity’s sake,
 to keep the example as brief as possible.
 
@@ -1109,7 +1109,7 @@ the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 Htmx allows you to use [CSS transitions](#css_transitions)
 in many situations using only HTML and CSS.
 
-Please see the [Animation Guide](@/examples/animations.md) for more details on the options available.
+Please see the [Animation Guide](@/patterns/animations.md) for more details on the options available.
 
 ## Extensions
 
@@ -1333,7 +1333,7 @@ Here is an example that adds a parameter to an htmx request
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another use case is to [reset user input](@/examples/reset-user-input.md) on successful requests using the `htmx:after:swap`
+Another use case is to [reset user input](@/patterns/reset-user-input.md) on successful requests using the `htmx:after:swap`
 event:
 
 ```html
@@ -1349,7 +1349,7 @@ Htmx integrates well with third party libraries.
 
 If the library fires events on the DOM, you can use those events to trigger requests from htmx.
 
-A good example of this is the [SortableJS demo](@/examples/sortable.md):
+A good example of this is the [SortableJS demo](@/patterns/sortable.md):
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
@@ -1384,7 +1384,7 @@ This will ensure that as new content is added to the DOM by htmx, sortable eleme
 
 #### Web Components {#web-components}
 
-Please see the [Web Components Examples](@/examples/web-components.md) page for examples on how to integrate htmx
+Please see the [Web Components Pattern](@/patterns/web-components.md) page for examples on how to integrate htmx
 with web components.
 
 ## Caching
@@ -1619,4 +1619,4 @@ And that's it!
 
 Have fun with htmx! 
 
-You can accomplish [quite a bit](@/examples/_index.md) without writing a lot of code!
+You can accomplish [quite a bit](@/patterns/_index.md) without writing a lot of code!
