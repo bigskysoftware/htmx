@@ -4,6 +4,7 @@ var htmx = (() => {
     class RequestQueue {
         #c = null
         #q = []
+
         shouldIssueRequest(ctx, queueStrategy) {
             if (!this.#c) {
                 this.#c = ctx
@@ -35,6 +36,7 @@ var htmx = (() => {
                 return false
             }
         }
+
         nextRequest() {
             this.#c = null
             return this.#q.shift()
@@ -107,9 +109,9 @@ var htmx = (() => {
                     maxDelay: 30000,
                     pauseHidden: false
                 },
-                noMoprhAttributes : ["data-htmx-powered"],
-                ignoredStatuses : [204],
-                scriptingAPI :  this.__initScriptingAPI()
+                noMoprhAttributes: ["data-htmx-powered"],
+                ignoredStatuses: [204],
+                scriptingAPI: this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -261,7 +263,7 @@ var htmx = (() => {
                 try {
                     let ctx = this.__createRequestContext(elt, evt);
                     await this.handleTriggerEvent(ctx);
-                } catch(e) {
+                } catch (e) {
                     console.error(e)
                 }
             };
@@ -396,7 +398,7 @@ var htmx = (() => {
                 let params = new URLSearchParams(ctx.request.body)
                 if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
                 ctx.request.body = null
-            } else if(this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+            } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body)
             }
 
@@ -428,7 +430,7 @@ var htmx = (() => {
                 if (confirmVal) {
                     let js = this.__extractJavascriptContent(confirmVal);
                     if (js) {
-                        if(!await this.__executeJavaScriptAsync(ctx.elt, {}, js, true)){
+                        if (!await this.__executeJavaScriptAsync(ctx.elt, {}, js, true)) {
                             return
                         }
                     } else {
@@ -497,10 +499,10 @@ var htmx = (() => {
         }
 
         async __handleSSE(ctx, elt, response) {
-    let config = elt.__htmx?.streamConfig || {...this.config.streams};
+            let config = elt.__htmx?.streamConfig || {...this.config.streams};
 
-    let waitForVisible = () => new Promise(r => {
-    let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
+            let waitForVisible = () => new Promise(r => {
+                let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
                 document.addEventListener('visibilitychange', onVisible);
             });
 
@@ -516,11 +518,14 @@ var htmx = (() => {
                         if (!elt.isConnected) break;
                     }
 
-    let delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
-    let reconnect = { attempt, delay, lastEventId, cancelled: false };
+                    let delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
+                    let reconnect = {attempt, delay, lastEventId, cancelled: false};
 
                     ctx.status = "reconnecting to stream";
-                    if (!this.__trigger(elt, "htmx:before:sse:reconnect", { ctx, reconnect }) || reconnect.cancelled) break;
+                    if (!this.__trigger(elt, "htmx:before:sse:reconnect", {
+                        ctx,
+                        reconnect
+                    }) || reconnect.cancelled) break;
 
                     await new Promise(r => setTimeout(r, reconnect.delay));
                     if (!elt.isConnected) break;
@@ -530,14 +535,14 @@ var htmx = (() => {
                         currentResponse = await fetch(ctx.request.action, ctx.request);
                     } catch (e) {
                         ctx.status = "stream error";
-                        this.__trigger(elt, "htmx:error", { ctx, error: e });
+                        this.__trigger(elt, "htmx:error", {ctx, error: e});
                         attempt++;
                         continue;
                     }
                 }
 
                 // Core streaming logic
-                if (!this.__trigger(elt, "htmx:before:sse:stream", { ctx })) break;
+                if (!this.__trigger(elt, "htmx:before:sse:stream", {ctx})) break;
                 ctx.status = "streaming";
 
                 attempt = 0; // Reset on successful connection
@@ -551,16 +556,19 @@ var htmx = (() => {
                             if (!elt.isConnected) break;
                         }
 
-    let msg = { data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false };
-                        if (!this.__trigger(elt, "htmx:before:sse:message", { ctx, message: msg }) || msg.cancelled) continue;
+                        let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
+                        if (!this.__trigger(elt, "htmx:before:sse:message", {
+                            ctx,
+                            message: msg
+                        }) || msg.cancelled) continue;
 
                         if (sseMessage.id) lastEventId = sseMessage.id;
 
                         // Trigger custom event if `event:` line is present
                         if (sseMessage.event) {
-                            this.__trigger(elt, sseMessage.event, { data: sseMessage.data, id: sseMessage.id });
+                            this.__trigger(elt, sseMessage.event, {data: sseMessage.data, id: sseMessage.id});
                             // Skip swap for custom events
-                            this.__trigger(elt, "htmx:after:sse:message", { ctx, message: msg });
+                            this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
                             continue;
                         }
 
@@ -574,33 +582,34 @@ var htmx = (() => {
                             this.__handleAnchorScroll(ctx);
                             ctx.status = "swapped";
                         }
-                        this.__trigger(elt, "htmx:after:sse:message", { ctx, message: msg });
+                        this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
                     }
                 } catch (e) {
                     ctx.status = "stream error";
-                    this.__trigger(elt, "htmx:error", { ctx, error: e });
+                    this.__trigger(elt, "htmx:error", {ctx, error: e});
                 }
 
                 if (!elt.isConnected) break;
-                this.__trigger(elt, "htmx:after:sse:stream", { ctx });
+                this.__trigger(elt, "htmx:after:sse:stream", {ctx});
 
                 attempt++;
             }
         }
 
         async* __parseSSE(res) {
-            let r = res.body.getReader(), d = new TextDecoder(), b = '', m = {data:'',event:'',id:'',retry:null}, ls, i, n, f, v;
+            let r = res.body.getReader(), d = new TextDecoder(), b = '', m = {data: '', event: '', id: '', retry: null},
+                ls, i, n, f, v;
             try {
                 while (1) {
                     let {done, value} = await r.read();
                     if (done) break;
-                    for (let l of (b += d.decode(value, {stream:1}), ls = b.split('\n'), b = ls.pop()||'', ls))
-                        !l || l === '\r' ? m.data && (yield m, m = {data:'',event:'',id:'',retry:null}) :
-                            (i = l.indexOf(':')) > 0 && (f = l.slice(0,i), v = l.slice(i+1).trimStart(),
-                                f === 'data' ? m.data += (m.data?'\n':'')+v :
+                    for (let l of (b += d.decode(value, {stream: 1}), ls = b.split('\n'), b = ls.pop() || '', ls))
+                        !l || l === '\r' ? m.data && (yield m, m = {data: '', event: '', id: '', retry: null}) :
+                            (i = l.indexOf(':')) > 0 && (f = l.slice(0, i), v = l.slice(i + 1).trimStart(),
+                                f === 'data' ? m.data += (m.data ? '\n' : '') + v :
                                     f === 'event' ? m.event = v :
                                         f === 'id' ? m.id = v :
-                                            f === 'retry' && (n = parseInt(v,10), !isNaN(n)) ? m.retry = n : 0);
+                                            f === 'retry' && (n = parseInt(v, 10), !isNaN(n)) ? m.retry = n : 0);
                 }
             } finally {
                 r.releaseLock();
@@ -686,7 +695,7 @@ var htmx = (() => {
                 }
 
                 if (eventName === 'intersect' || eventName === "revealed") {
-    let observerOptions = {}
+                    let observerOptions = {}
                     if (spec.opts['root']) {
                         observerOptions.root = this.__findExt(elt, spec.opts['root'])
                     }
@@ -695,9 +704,9 @@ var htmx = (() => {
                     }
                     let observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
-    let entry = entries[i]
+                            let entry = entries[i]
                             if (entry.isIntersecting) {
-                                setTimeout(()=> {
+                                setTimeout(() => {
                                     this.trigger(elt, 'intersect')
                                 }, 20)
                                 break
@@ -898,7 +907,8 @@ var htmx = (() => {
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
-            let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+            let AsyncFunction = Object.getPrototypeOf(async function () {
+            }).constructor;
             let func = new AsyncFunction(...keys, expression ? `return (${code})` : code);
             return await func.call(thisArg, ...values);
         }
@@ -1039,7 +1049,7 @@ var htmx = (() => {
             // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
             let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-    let colonIdx = oobValue.indexOf(':');
+                let colonIdx = oobValue.indexOf(':');
                 if (colonIdx !== -1) {
                     target = oobValue.substring(colonIdx + 1);
                     oobValue = oobValue.substring(0, colonIdx);
@@ -1047,10 +1057,10 @@ var htmx = (() => {
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
-    let swapSpec = this.__parseSwapSpec(oobValue);
+            let swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
-    let oobElementClone = elt.cloneNode(true);
+            let oobElementClone = elt.cloneNode(true);
             let fragment;
             if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
                 swapSpec.strip = true;
@@ -1080,8 +1090,8 @@ var htmx = (() => {
             // Process hx-select-oob first (select elements from response)
             if (selectOOB) {
                 for (let spec of selectOOB.split(',')) {
-    let [selector, ...rest] = spec.split(':');
-    let oobValue = rest.length ? rest.join(':') : 'true';
+                    let [selector, ...rest] = spec.split(':');
+                    let oobValue = rest.length ? rest.join(':') : 'true';
 
                     for (let elt of fragment.querySelectorAll(selector)) {
                         this.__createOOBTask(tasks, elt, oobValue, sourceElement);
@@ -1091,7 +1101,7 @@ var htmx = (() => {
 
             // Process elements with hx-swap-oob attribute
             for (let oobElt of fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]')) {
-    let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+                let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
                 oobElt.removeAttribute('data-hx-swap-oob');
 
@@ -1188,8 +1198,8 @@ var htmx = (() => {
             let eventTarget = this.__resolveSwapEventTarget(task);
             if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
 
-    let swapTask = () => this.__insertContent(task);
-    let afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
+            let swapTask = () => this.__insertContent(task);
+            let afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
             if (task.transition && document["startViewTransition"]) {
                 return document.startViewTransition(swapTask).finished.then(afterSwap);
             }
@@ -1338,7 +1348,7 @@ var htmx = (() => {
         __insertContent(swapConfig) {
             let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
             let pantry = this.__handlePreservedElements(swapConfig.fragment);
-    let target = swapConfig.target, parentNode = target.parentNode;
+            let target = swapConfig.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
                 target.replaceChildren(...swapConfig.fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
@@ -1387,7 +1397,6 @@ var htmx = (() => {
         }
 
 
-
         __trigger(on, eventName, detail = {}, bubbles = true) {
             if (this.config.logAll) {
                 console.log(eventName, detail, on)
@@ -1397,7 +1406,7 @@ var htmx = (() => {
 
         __triggerExtensions(elt, eventName, detail = {}) {
             detail.cancelled = false;
-    let methodName = eventName.replace(/:/g, '_');
+            let methodName = eventName.replace(/:/g, '_');
             for (const ext of this.#extensions) {
                 if (ext[methodName]?.(elt, detail) === false || detail.cancelled) {
                     detail.cancelled = true;
@@ -1443,7 +1452,13 @@ var htmx = (() => {
 
         trigger(on, eventName, detail = {}, bubbles = true) {
             this.__triggerExtensions(on, eventName, detail);
-            let evt = new CustomEvent(eventName, {detail, cancelable: true, bubbles, composed: true, originalTarget: on});
+            let evt = new CustomEvent(eventName, {
+                detail,
+                cancelable: true,
+                bubbles,
+                composed: true,
+                originalTarget: on
+            });
             let target = on.isConnected ? on : document.body;
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
@@ -1547,7 +1562,7 @@ var htmx = (() => {
                 sourceElement,
                 response
             };
-            if(!this.__trigger(document.body, "htmx:before:history:update", historyDetail)) return;
+            if (!this.__trigger(document.body, "htmx:before:history:update", historyDetail)) return;
             if (type === 'push') {
                 this.__pushUrlIntoHistory(path);
             } else {
@@ -1623,9 +1638,9 @@ var htmx = (() => {
         __collectFormData(elt, form, submitter) {
             let formData = new FormData()
             let included = new Set()
-            if (form){
+            if (form) {
                 this.__addInputValues(form, included, formData)
-            } else if(elt.name) {
+            } else if (elt.name) {
                 formData.append(elt.name, elt.value)
                 included.add(elt);
             }
@@ -1688,7 +1703,7 @@ var htmx = (() => {
         }
 
         __stringHyperscriptStyleSelector(selector) {
-    let s = selector.trim();
+            let s = selector.trim();
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
@@ -1697,11 +1712,11 @@ var htmx = (() => {
             if (selector.startsWith('global ')) {
                 return this.__findAllExt(elt, selector.slice(7), true);
             }
-    let parts = this.__tokenizeExtendedSelector(selector);
-    let result = []
-    let unprocessedParts = []
+            let parts = this.__tokenizeExtendedSelector(selector);
+            let result = []
+            let unprocessedParts = []
             for (const part of parts) {
-    let selector = this.__stringHyperscriptStyleSelector(part)
+                let selector = this.__stringHyperscriptStyleSelector(part)
                 let item
                 if (selector.startsWith('closest ')) {
                     item = elt.closest(selector.slice(8))
@@ -1735,8 +1750,8 @@ var htmx = (() => {
             }
 
             if (unprocessedParts.length > 0) {
-    let standardSelector = unprocessedParts.join(',')
-    let rootNode = this.__getRootNode(elt, !!global)
+                let standardSelector = unprocessedParts.join(',')
+                let rootNode = this.__getRootNode(elt, !!global)
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 
@@ -1766,7 +1781,7 @@ var htmx = (() => {
         }
 
         __scanBackwardsQuery(start, match, global) {
-    let results = [...this.__getRootNode(start, global).querySelectorAll(match)].reverse()
+            let results = [...this.__getRootNode(start, global).querySelectorAll(match)].reverse()
             return this.__scanUntilComparison(results, start, Node.DOCUMENT_POSITION_FOLLOWING);
         }
 
@@ -1780,7 +1795,7 @@ var htmx = (() => {
 
         __getRootNode(elt, global) {
             if (elt.isConnected && elt.getRootNode) {
-                return elt.getRootNode?.({ composed: global })
+                return elt.getRootNode?.({composed: global})
             } else {
                 return document
             }
@@ -1791,8 +1806,8 @@ var htmx = (() => {
         }
 
         __extractJavascriptContent(string) {
-            if(string != null){
-                if(string.startsWith("js:")) {
+            if (string != null) {
+                if (string.startsWith("js:")) {
                     return string.substring(3);
                 } else if (string.startsWith("javascript:")) {
                     return string.substring(11);
@@ -1801,18 +1816,18 @@ var htmx = (() => {
         }
 
         __initializeAbortListener(elt) {
-            elt.addEventListener("htmx:abort", ()=> {
+            elt.addEventListener("htmx:abort", () => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abortCurrentRequest();
             })
         }
 
         __morph(oldNode, fragment, innerHTML) {
-    let { persistentIds, idMap } = this.__createIdMaps(oldNode, fragment);
-    let pantry = document.createElement("div");
+            let {persistentIds, idMap} = this.__createIdMaps(oldNode, fragment);
+            let pantry = document.createElement("div");
             pantry.hidden = true;
             document.body.insertAdjacentElement("afterend", pantry);
-    let ctx = { target: oldNode, idMap, persistentIds, pantry };
+            let ctx = {target: oldNode, idMap, persistentIds, pantry};
 
             if (innerHTML) {
                 this.__morphChildren(ctx, oldNode, fragment);
@@ -1831,7 +1846,7 @@ var htmx = (() => {
 
             for (const newChild of newParent.childNodes) {
                 if (insertionPoint && insertionPoint != endPoint) {
-    let bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    let bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
                     if (bestMatch) {
                         if (bestMatch !== insertionPoint) {
                             let cursor = insertionPoint;
@@ -1848,10 +1863,10 @@ var htmx = (() => {
                 }
 
                 if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
-    let target = (ctx.target.id === newChild.id && ctx.target) ||
+                    let target = (ctx.target.id === newChild.id && ctx.target) ||
                         ctx.target.querySelector(`[id="${newChild.id}"]`) ||
                         ctx.pantry.querySelector(`[id="${newChild.id}"]`);
-    let elementId = target.id;
+                    let elementId = target.id;
                     let element = target;
                     while ((element = element.parentNode)) {
                         let idSet = ctx.idMap.get(element);
@@ -1879,7 +1894,7 @@ var htmx = (() => {
             }
 
             while (insertionPoint && insertionPoint != endPoint) {
-    let tempNode = insertionPoint;
+                let tempNode = insertionPoint;
                 insertionPoint = insertionPoint.nextSibling;
                 this.__removeNode(ctx, tempNode);
             }
@@ -1887,10 +1902,10 @@ var htmx = (() => {
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
             let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
-    let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+            let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
-    let oldSet = ctx.idMap.get(cursor);
+                let oldSet = ctx.idMap.get(cursor);
                 if (this.__isSoftMatch(cursor, node)) {
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
                     if (softMatch === null && !oldSet) {
@@ -1923,8 +1938,11 @@ var htmx = (() => {
 
         __moveBefore(parentNode, element, after) {
             if (parentNode.moveBefore) {
-                try { parentNode.moveBefore(element, after); }
-                catch (e) { parentNode.insertBefore(element, after); }
+                try {
+                    parentNode.moveBefore(element, after);
+                } catch (e) {
+                    parentNode.insertBefore(element, after);
+                }
             } else parentNode.insertBefore(element, after);
         }
 
@@ -1932,7 +1950,7 @@ var htmx = (() => {
             let type = newNode.nodeType;
 
             if (type === 1) {
-    let noMorph = htmx.config.noMoprhAttributes || [];
+                let noMorph = htmx.config.noMoprhAttributes || [];
                 for (const attr of newNode.attributes) {
                     if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
                         oldNode.setAttribute(attr.name, attr.value);
@@ -1942,7 +1960,7 @@ var htmx = (() => {
                     }
                 }
                 for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
-    let attr = oldNode.attributes[i];
+                    let attr = oldNode.attributes[i];
                     if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
                         oldNode.removeAttribute(attr.name);
                     }
@@ -1978,22 +1996,22 @@ var htmx = (() => {
         __createIdMaps(oldNode, newContent) {
             let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
             if (oldNode.id) oldIdElements.push(oldNode);
-    let newIdElements = newContent.querySelectorAll("[id]");
-    let persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
+            let newIdElements = newContent.querySelectorAll("[id]");
+            let persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
             let idMap = new Map();
             this.__populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
             this.__populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
-            return { persistentIds, idMap };
+            return {persistentIds, idMap};
         }
 
         __createPersistentIds(oldIdElements, newIdElements) {
             let duplicateIds = new Set(), oldIdTagNameMap = new Map();
-            for (const { id, tagName } of oldIdElements) {
+            for (const {id, tagName} of oldIdElements) {
                 if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
                 else oldIdTagNameMap.set(id, tagName);
             }
             let persistentIds = new Set();
-            for (const { id, tagName } of newIdElements) {
+            for (const {id, tagName} of newIdElements) {
                 if (persistentIds.has(id)) duplicateIds.add(id);
                 else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
             }
@@ -2008,7 +2026,7 @@ var htmx = (() => {
             }
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                let swapSpec = this.__attributeValue(ctx.sourceElement,"hx-on:" + pattern);
+                let swapSpec = this.__attributeValue(ctx.sourceElement, "hx-on:" + pattern);
                 if (swapSpec) {
                     ctx.swap = this.__parseSwapSpec(swapSpec)
                     return
