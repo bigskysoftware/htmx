@@ -53,7 +53,6 @@ var htmx = (() => {
 
     class Htmx {
 
-        #scriptingAPIMethods = ['timeout'];
         #extensions = [];
         #approvedExtensions = new Set();
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
@@ -111,7 +110,6 @@ var htmx = (() => {
                 },
                 noMoprhAttributes: ["data-htmx-powered"],
                 ignoredStatuses: [204],
-                scriptingAPI: this.__initScriptingAPI()
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -148,14 +146,6 @@ var htmx = (() => {
             }
             let value = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}`)?.getAttribute(inheritName) || defaultVal;
             return value
-        }
-
-        __initScriptingAPI() {
-            let api = {}
-            for (let methodName of this.#scriptingAPIMethods) {
-                api[methodName] = this[methodName].bind(this)
-            }
-            return api
         }
 
         __tokenize(str) {
@@ -904,9 +894,20 @@ var htmx = (() => {
             return [match[1], match[2]];
         }
 
+        __apiMethods() {
+            let bound = {};
+            let proto = Object.getPrototypeOf(this);
+            for (let name of Object.getOwnPropertyNames(proto)) {
+                if (name !== 'constructor' && typeof this[name] === 'function') {
+                    bound[name] = this[name].bind(this);
+                }
+            }
+            return bound;
+        }
+
         async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
             let args = {}
-            Object.assign(args, this.config.scriptingAPI)
+            Object.assign(args, this.__apiMethods())
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
@@ -918,7 +919,7 @@ var htmx = (() => {
 
         __executeJavaScript(thisArg, obj, code, expression = true) {
             let args = {}
-            Object.assign(args, this.config.scriptingAPI)
+            Object.assign(args, this.__apiMethods())
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
