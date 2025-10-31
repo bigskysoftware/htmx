@@ -1198,17 +1198,12 @@ var htmx = (() => {
                 task.target = this.find(task.target);
             }
             if (!task.target) return;
-
-            let eventTarget = this.__resolveSwapEventTarget(task);
-            if (!this.__trigger(eventTarget, `htmx:before:${task.type}:swap`, {ctx: task})) return;
-
             let swapTask = () => this.__insertContent(task);
-            let afterSwap = () => this.__trigger(eventTarget, `htmx:after:${task.type}:swap`, {ctx: task});
             if (task.transition && document["startViewTransition"]) {
-                return document.startViewTransition(swapTask).finished.then(afterSwap);
+                return document.startViewTransition(swapTask).finished;
+            } else {
+                swapTask();
             }
-            swapTask();
-            afterSwap();
         }
 
         __insertOptimisticContent(ctx) {

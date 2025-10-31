@@ -29,7 +29,7 @@ describe('htmx.ajax() API Tests', function() {
             await htmx.ajax('GET', '/test', '#d2');
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
@@ -43,7 +43,7 @@ describe('htmx.ajax() API Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
@@ -56,7 +56,7 @@ describe('htmx.ajax() API Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
