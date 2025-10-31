@@ -119,7 +119,7 @@ if(window.location.search=="?ads=true") {
 <h2>introduction</h2>
 
 
-htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md) and [Server Sent Events](@/docs.md)
+htmx gives you access to [`fetch()`](@/docs.md#ajax), [View Transitions](@/docs.md#view_transitions), [Streaming Responses](@/docs.md) and more
 directly in HTML, using [attributes](@/reference.md#attributes), so you can build
 [modern user interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext

@@ -827,9 +827,9 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 * Associate text labels with all form fields
 * Maximize the readability of your application with appropriate fonts, contrast, etc.
 
-## SSE
+## Streaming Responses
 
-Unlike htmx 2, htmx 4 has **built-in support** for Server-Sent Events (SSE).
+htmx 4 has built-in support for Streaming Responses Server-Sent Events (SSE).
 
 Use the typical `hx-get`, `hx-post`, `hx-put`, `hx-patch`, or `hx-delete` attributes. When the server responds with `Content-Type: text/event-stream` instead of `Content-Type: text/html`, htmx automatically handles the stream. 
 

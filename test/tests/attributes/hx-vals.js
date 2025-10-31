@@ -10,7 +10,7 @@ describe('hx-vals attribute', function() {
 
     it('basic hx-vals works', function() {
         mockResponse('POST', '/vars', "dummy")
-        initHTML("<div hx-post='/vars' hx-vals='\"i1\":\"test\"'></div>")
+        createProcessedHTML("<div hx-post='/vars' hx-vals='\"i1\":\"test\"'></div>")
         clickAndWait("div")
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })

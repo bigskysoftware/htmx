@@ -25,7 +25,6 @@ const config = {
 
 <script src="../../node_modules/chai/chai.js"></script>
 <script src="../../test/lib/fetch-mock.js"></script>
-<script src="../../test/lib/sse-mock.js"></script>
 <script src="../../src/htmx.js"></script>
 <script src="src/htmx-live.js"></script>
 

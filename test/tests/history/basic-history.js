@@ -27,7 +27,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         document.addEventListener('htmx:after:push:into:history', handler);
         
         try {
-            let btn = initHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
             await clickAndWait(btn);
             
             playground().textContent.should.equal('Test Response');
@@ -53,7 +53,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         document.addEventListener('htmx:after:replace:into:history', handler);
         
         try {
-            let btn = initHTML('<button hx-get="/test" hx-replace-url="true">Click me</button>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-replace-url="true">Click me</button>');
             await clickAndWait(btn);
             
             playground().textContent.should.equal('Test Response');
@@ -79,7 +79,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         document.addEventListener('htmx:after:push:into:history', handler);
         
         try {
-            let btn = initHTML('<button hx-get="/test" hx-push-url="/custom">Click me</button>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="/custom">Click me</button>');
             await clickAndWait(btn);
             
             playground().textContent.should.equal('Test Response');
@@ -103,7 +103,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         document.addEventListener('htmx:after:push:into:history', handler);
         
         try {
-            let btn = initHTML('<button hx-get="/test" hx-push-url="false">Click me</button>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="false">Click me</button>');
             await clickAndWait(btn);
             
             playground().textContent.should.equal('Test Response');
@@ -128,7 +128,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         document.addEventListener('htmx:before:history:update', handler);
         
         try {
-            let btn = initHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
             await clickAndWait(btn);
             
             playground().textContent.should.equal('Test Response');

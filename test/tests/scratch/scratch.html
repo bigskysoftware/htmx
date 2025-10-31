@@ -2,11 +2,9 @@
 <head>
     <title>htmx scratch pad</title>
     <script src="../../lib/fetch-mock.js"></script>
-    <script src="../../lib/sse-mock.js"></script>
     <script src="../../../src/htmx.js"></script>
     <script>
         // installFetchMock();
-        installSSEMock();
         fetchMock.mockResponse('GET', '/demo', new MockResponse('<div id="result">Success!</div>'));
     </script>
 </head>
@@ -24,6 +22,10 @@
 <button hx-action="js:alert('clicked!')">
     Javascript Action
 </button>
+
+<div hx-trigger="every 1s" hx-get="demo.html">
+    Test
+</div>
 
 </body>
 </html>

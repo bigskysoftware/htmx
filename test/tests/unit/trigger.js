@@ -1,14 +1,14 @@
 describe('__initializeTriggers behavior', function() {
 
     function mockTriggerButton(triggerSpec, callback) {
-        const btn = parseHTML(`<button hx-trigger="${triggerSpec}">Demo</button>`);
+        const btn = createHTMLNoProcessing(`<button hx-trigger="${triggerSpec}">Demo</button>`);
         btn.__htmx = {}
         htmx.__initializeTriggers(btn, callback)
         return btn;
     }
 
     function mockTriggerElement(html, callback) {
-        const elt = parseHTML(html);
+        const elt = createDisconnectedHTML(html);
         elt.__htmx = {}
         htmx.__initializeTriggers(elt, callback)
         return elt;
@@ -102,7 +102,7 @@ describe('__initializeTriggers behavior', function() {
 
     // it('target modifier filters events by target selector', function() {
     //     let called = 0
-    //     const container = parseHTML('<div><button class="target">Target</button><button>Other</button></div>');
+    //     const container = createDisconnectedHTML('<div><button class="target">Target</button><button>Other</button></div>');
     //     const div = container
     //     div.__htmx = {}
     //     htmx.__initializeTriggers(div, () => called++);
@@ -118,7 +118,7 @@ describe('__initializeTriggers behavior', function() {
     // it('consume modifier stops event propagation', function() {
     //     let innerCalled = 0
     //     let outerCalled = 0
-    //     const container = parseHTML('<div id="outer"><button id="inner">Test</button></div>');
+    //     const container = createDisconnectedHTML('<div id="outer"><button id="inner">Test</button></div>');
     //     document.body.appendChild(container)
     //
     //     const inner = container.querySelector('#inner')
@@ -167,7 +167,7 @@ describe('__initializeTriggers behavior', function() {
 
     it('from modifier listens on different element', function() {
         let called = 0
-        const container = parseHTML('<div><button id="source">Source</button><div id="target"></div></div>');
+        const container = createDisconnectedHTML('<div><button id="source">Source</button><div id="target"></div></div>');
         document.body.appendChild(container)
 
         const target = container.querySelector('#target')
@@ -197,19 +197,16 @@ describe('__initializeTriggers behavior', function() {
         assert.equal(2, called)
     });
 
-    // it('every trigger polls at interval', function(done) {
-    //     let called = 0
-    //     mockTriggerButton("every 50ms", () => called++);
-    //
-    //     setTimeout(() => {
-    //         assert.isAtLeast(called, 2)
-    //         done()
-    //     }, 150)
-    // });
+    it('every trigger polls at interval', async function () {
+        let called = 0
+        mockTriggerButton("every 10ms", () => called++);
+        await htmx.timeout(50);
+        assert.isAtLeast(called, 2)
+    });
 
     // it('revealed trigger fires once on intersection', function(done) {
     //     let called = 0
-    //     const div = parseHTML('<div style="height: 100px">Test</div>');
+    //     const div = createDisconnectedHTML('<div style="height: 100px">Test</div>');
     //     document.body.appendChild(div)
     //
     //     div.__htmx = {}
@@ -225,7 +222,7 @@ describe('__initializeTriggers behavior', function() {
 
     // it('intersect trigger fires on intersection', function(done) {
     //     let called = 0
-    //     const div = parseHTML('<div style="height: 100px">Test</div>');
+    //     const div = createDisconnectedHTML('<div style="height: 100px">Test</div>');
     //     document.body.appendChild(div)
     //
     //     div.__htmx = {}

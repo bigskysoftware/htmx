@@ -8,7 +8,7 @@ describe('Basic Functionality', () => {
         // Set up mock response
         mockResponse('GET', '/demo', '<div id="result">Success!</div>');
         // Create test button
-        initHTML('<button id="test-btn" hx-action="/demo" hx-target="#target">Click</button><div id="target">Original</div>');
+        createProcessedHTML('<button id="test-btn" hx-action="/demo" hx-target="#target">Click</button><div id="target">Original</div>');
         // Click the button
         await clickAndWait("#test-btn");
 
@@ -20,7 +20,7 @@ describe('Basic Functionality', () => {
         // Set up mock response
         mockResponse('POST', '/demo', '<div id="result">Success!</div>');
 
-        initHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="true">Demo</button></form>');
+        createProcessedHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="true">Demo</button></form>');
 
         click('#b1');
         assert.equal(fetchMock.pendingRequests.length, 0);
@@ -37,7 +37,7 @@ describe('Basic Functionality', () => {
         // Set up mock response
         mockResponse('POST', '/demo', new MockResponse('<div id="result">Success!</div>'));
         // Create test button
-        initHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="false">Demo</button></form>');
+        createProcessedHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="false">Demo</button></form>');
 
         // Click the button
         await clickAndWait('#b1');

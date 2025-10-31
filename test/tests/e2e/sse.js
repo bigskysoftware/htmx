@@ -5,7 +5,7 @@ describe('Server-Sent Events', function() {
 
     it('basic one-off SSE stream works', async function() {
         const stream = mockStreamResponse('/stream');
-        initHTML('<button hx-get="/stream" hx-swap="innerHTML">Stream</button>');
+        createProcessedHTML('<button hx-get="/stream" hx-swap="innerHTML">Stream</button>');
 
         click('button');
         await htmx.waitATick();
@@ -23,7 +23,7 @@ describe('Server-Sent Events', function() {
 
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
-        initHTML('<button hx-get="/reconnect" hx-stream="continuous initialDelay:50ms maxRetries:3" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/reconnect" hx-stream="continuous initialDelay:50ms maxRetries:3" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         let reconnectDelays = [];
@@ -61,7 +61,7 @@ describe('Server-Sent Events', function() {
     it('Last-Event-ID header sent on reconnect', async function() {
         this.timeout(5000);
         const stream = mockStreamResponse('/with-id');
-        initHTML('<button hx-get="/with-id" hx-stream="continuous initialDelay:50ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/with-id" hx-stream="continuous initialDelay:50ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
 
         let lastEventIdSent = null;
         document.addEventListener('htmx:before:sse:reconnect', (e) => {
@@ -95,7 +95,7 @@ describe('Server-Sent Events', function() {
 
     it('events fire correctly and can cancel operations', async function() {
         const stream = mockStreamResponse('/cancelable');
-        initHTML('<button hx-get="/cancelable" hx-swap="innerHTML">Go</button>');
+        createProcessedHTML('<button hx-get="/cancelable" hx-swap="innerHTML">Go</button>');
 
         let beforeStreamFired = false;
         let beforeMessageFired = false;
@@ -122,7 +122,7 @@ describe('Server-Sent Events', function() {
 
     it('element removal stops streaming', async function() {
         const stream = mockStreamResponse('/removable');
-        initHTML('<div id="container"><button hx-get="/removable" hx-stream="continuous initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
+        createProcessedHTML('<div id="container"><button hx-get="/removable" hx-stream="continuous initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
 
         click('button');
         await htmx.waitATick();
@@ -142,13 +142,13 @@ describe('Server-Sent Events', function() {
 
     it('HTTP vs SSE differentiation', async function() {
         mockResponse('GET', '/regular', 'HTTP response');
-        initHTML('<button id="http" hx-get="/regular" hx-swap="innerHTML">HTTP</button>');
+        createProcessedHTML('<button id="http" hx-get="/regular" hx-swap="innerHTML">HTTP</button>');
 
         await clickAndWait('#http');
         assertTextContentIs('#http', 'HTTP response');
 
         const stream = mockStreamResponse('/sse');
-        initHTML('<button id="sse" hx-get="/sse" hx-swap="innerHTML">SSE</button>');
+        createProcessedHTML('<button id="sse" hx-get="/sse" hx-swap="innerHTML">SSE</button>');
 
         click('#sse');
         await htmx.waitATick();
@@ -162,7 +162,7 @@ describe('Server-Sent Events', function() {
 
     it('SSE message parsing with id field', async function() {
         const stream = mockStreamResponse('/parse');
-        initHTML('<div id="target"></div><button hx-get="/parse" hx-target="#target">Go</button>');
+        createProcessedHTML('<div id="target"></div><button hx-get="/parse" hx-target="#target">Go</button>');
 
         click('button');
         await htmx.waitATick();
@@ -192,7 +192,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        initHTML('<button hx-get="/max-retries" hx-stream="continuous initialDelay:20ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-retries" hx-stream="continuous initialDelay:20ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         document.addEventListener('htmx:before:sse:reconnect', () => {
@@ -225,7 +225,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        initHTML('<button hx-get="/max-delay" hx-stream="continuous initialDelay:20ms maxDelay:60ms" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-delay" hx-stream="continuous initialDelay:20ms maxDelay:60ms" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
         document.addEventListener('htmx:before:sse:reconnect', (e) => {
@@ -250,7 +250,7 @@ describe('Server-Sent Events', function() {
 
     it('custom events trigger on element and bubble', async function() {
         const stream = mockStreamResponse('/custom-events');
-        initHTML('<button hx-get="/custom-events" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/custom-events" hx-swap="innerHTML">Connect</button>');
 
         let customEventFired = false;
         let customEventData = null;
@@ -278,7 +278,7 @@ describe('Server-Sent Events', function() {
 
     it('custom events bubble to document', async function() {
         const stream = mockStreamResponse('/bubble-test');
-        initHTML('<button hx-get="/bubble-test" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/bubble-test" hx-swap="innerHTML">Connect</button>');
 
         let documentEventFired = false;
         let eventTarget = null;
@@ -303,7 +303,7 @@ describe('Server-Sent Events', function() {
 
     it('custom events work with hx-on attribute', async function() {
         const stream = mockStreamResponse('/hx-on-test');
-        initHTML('<button hx-get="/hx-on-test" hx-swap="innerHTML" hx-on:progress="this.setAttribute(\'data-progress\', event.detail.data)">Connect</button>');
+        createProcessedHTML('<button hx-get="/hx-on-test" hx-swap="innerHTML" hx-on:progress="this.setAttribute(\'data-progress\', event.detail.data)">Connect</button>');
 
         click('button');
         await htmx.waitATick();
@@ -323,7 +323,7 @@ describe('Server-Sent Events', function() {
 
     it('custom events and HTML swaps can coexist', async function() {
         const stream = mockStreamResponse('/mixed-test');
-        initHTML('<button hx-get="/mixed-test" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/mixed-test" hx-swap="innerHTML">Connect</button>');
 
         let statusEventFired = false;
 
@@ -350,7 +350,7 @@ describe('Server-Sent Events', function() {
 
     it('custom events do not swap content', async function() {
         const stream = mockStreamResponse('/event-only');
-        initHTML('<button hx-get="/event-only" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/event-only" hx-swap="innerHTML">Connect</button>');
 
         let notifyFired = false;
         let notifyData = null;

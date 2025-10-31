@@ -11,7 +11,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('innerMorph', function() {
         it('morphs children while preserving element with matching id', async function() {
             mockResponse('GET', '/test', '<div id="child1">updated</div><div id="child2">new</div>');
-            const div = initHTML('<div id="target"><div id="child1">original</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="child1">original</div></div>');
             const child1 = div.querySelector('#child1');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
@@ -23,7 +23,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('morphs text content', async function() {
             mockResponse('GET', '/test', '<p>new text</p>');
-            const div = initHTML('<div id="target"><p>old text</p></div>');
+            const div = createProcessedHTML('<div id="target"><p>old text</p></div>');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
@@ -33,7 +33,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('morphs attributes', async function() {
             mockResponse('GET', '/test', '<div id="child" class="new-class" data-value="123">content</div>');
-            const div = initHTML('<div id="target"><div id="child" class="old-class">content</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="child" class="old-class">content</div></div>');
             const child = div.querySelector('#child');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
@@ -44,7 +44,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('removes old elements not in new content', async function() {
             mockResponse('GET', '/test', '<div id="keep">kept</div>');
-            const div = initHTML('<div id="target"><div id="keep">kept</div><div id="remove">removed</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="keep">kept</div><div id="remove">removed</div></div>');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
@@ -54,7 +54,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('adds new elements', async function() {
             mockResponse('GET', '/test', '<div id="old">old</div><div id="new">new</div>');
-            const div = initHTML('<div id="target"><div id="old">old</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="old">old</div></div>');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
@@ -64,7 +64,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('preserves element references with matching ids', async function() {
             mockResponse('GET', '/test', '<input id="input1" value="new"><input id="input2" value="added">');
-            const div = initHTML('<div id="target"><input id="input1" value="old"></div>');
+            const div = createProcessedHTML('<div id="target"><input id="input1" value="old"></div>');
             const input1 = div.querySelector('#input1');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
@@ -76,7 +76,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('handles nested elements with ids', async function() {
             mockResponse('GET', '/test', '<div id="outer"><div id="inner">updated</div></div>');
-            const div = initHTML('<div id="target"><div id="outer"><div id="inner">original</div></div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="outer"><div id="inner">original</div></div></div>');
             const outer = div.querySelector('#outer');
             const inner = div.querySelector('#inner');
             
@@ -89,7 +89,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('morphs without ids using tag matching', async function() {
             mockResponse('GET', '/test', '<p>new paragraph</p><span>new span</span>');
-            const div = initHTML('<div id="target"><p>old paragraph</p><span>old span</span></div>');
+            const div = createProcessedHTML('<div id="target"><p>old paragraph</p><span>old span</span></div>');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
@@ -101,7 +101,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('outerMorph', function() {
         it('morphs the target element itself', async function() {
             mockResponse('GET', '/test', '<div id="target" class="new-class">updated</div>');
-            const container = initHTML('<div><div id="target" class="old-class">original</div></div>');
+            const container = createProcessedHTML('<div><div id="target" class="old-class">original</div></div>');
             const target = container.querySelector('#target');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
@@ -114,7 +114,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('morphs target attributes', async function() {
             mockResponse('GET', '/test', '<div id="target" data-value="123" class="morphed">content</div>');
-            const container = initHTML('<div><div id="target" class="original">content</div></div>');
+            const container = createProcessedHTML('<div><div id="target" class="original">content</div></div>');
             const target = container.querySelector('#target');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
@@ -126,7 +126,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('morphs target children', async function() {
             mockResponse('GET', '/test', '<div id="target"><span id="child">new child</span></div>');
-            const container = initHTML('<div><div id="target"><span id="child">old child</span></div></div>');
+            const container = createProcessedHTML('<div><div id="target"><span id="child">old child</span></div></div>');
             const target = container.querySelector('#target');
             const child = target.querySelector('#child');
             
@@ -139,7 +139,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('preserves element identity during morph', async function() {
             mockResponse('GET', '/test', '<button id="btn" class="updated">Click Me</button>');
-            const container = initHTML('<div><button id="btn" class="original">Click</button></div>');
+            const container = createProcessedHTML('<div><button id="btn" class="original">Click</button></div>');
             const btn = container.querySelector('#btn');
             let clicked = false;
             btn.addEventListener('click', () => clicked = true);
@@ -158,7 +158,7 @@ describe('Morph Swap Styles Tests', function() {
             mockResponse('GET', '/test', '<input id="field" value="new">');
             
             // Test innerHTML
-            const div1 = initHTML('<div id="target1"><input id="field" value="old"></div>');
+            const div1 = createProcessedHTML('<div id="target1"><input id="field" value="old"></div>');
             const input1 = div1.querySelector('#field');
             await htmx.ajax('GET', '/test', {target: '#target1', swap: 'innerHTML'});
             const newInput1 = div1.querySelector('#field');
@@ -166,7 +166,7 @@ describe('Morph Swap Styles Tests', function() {
             
             // Test innerMorph
             mockResponse('GET', '/test', '<input id="field" value="new">');
-            const div2 = initHTML('<div id="target2"><input id="field" value="old"></div>');
+            const div2 = createProcessedHTML('<div id="target2"><input id="field" value="old"></div>');
             const input2 = div2.querySelector('#field');
             await htmx.ajax('GET', '/test', {target: '#target2', swap: 'innerMorph'});
             const newInput2 = div2.querySelector('#field');
@@ -179,7 +179,7 @@ describe('Morph Swap Styles Tests', function() {
             mockResponse('GET', '/test', '<div id="target" class="new">updated</div>');
             
             // Test outerHTML
-            const container1 = initHTML('<div><div id="target" class="old">original</div></div>');
+            const container1 = createProcessedHTML('<div><div id="target" class="old">original</div></div>');
             const target1 = container1.querySelector('#target');
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerHTML'});
             const newTarget1 = container1.querySelector('#target');
@@ -187,7 +187,7 @@ describe('Morph Swap Styles Tests', function() {
             
             // Test outerMorph
             mockResponse('GET', '/test', '<div id="target" class="new">updated</div>');
-            const container2 = initHTML('<div><div id="target" class="old">original</div></div>');
+            const container2 = createProcessedHTML('<div><div id="target" class="old">original</div></div>');
             const target2 = container2.querySelector('#target');
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
             const newTarget2 = container2.querySelector('#target');
@@ -198,7 +198,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('edge cases', function() {
         it('handles empty content', async function() {
             mockResponse('GET', '/test', '');
-            const div = initHTML('<div id="target"><p>content</p></div>');
+            const div = createProcessedHTML('<div id="target"><p>content</p></div>');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
@@ -208,7 +208,7 @@ describe('Morph Swap Styles Tests', function() {
         it('handles complex nested structures', async function() {
             mockResponse('GET', '/test', 
                 '<div id="a"><div id="b"><div id="c">updated</div></div></div>');
-            const div = initHTML(
+            const div = createProcessedHTML(
                 '<div id="target"><div id="a"><div id="b"><div id="c">original</div></div></div></div>');
             const a = div.querySelector('#a');
             const b = div.querySelector('#b');
@@ -225,7 +225,7 @@ describe('Morph Swap Styles Tests', function() {
         it('handles mixed content with and without ids', async function() {
             mockResponse('GET', '/test', 
                 '<div id="with-id">has id</div><div>no id</div><span id="another">another</span>');
-            const div = initHTML(
+            const div = createProcessedHTML(
                 '<div id="target"><div id="with-id">old</div><p>paragraph</p></div>');
             const withId = div.querySelector('#with-id');
             
@@ -238,7 +238,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('handles numeric ids', async function() {
             mockResponse('GET', '/test', '<div><hr id="1"></div>');
-            const div = initHTML('<div id="target"><hr id="1"></div>');
+            const div = createProcessedHTML('<div id="target"><hr id="1"></div>');
             const hr = div.querySelector('#\\31');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
@@ -250,7 +250,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('input value preservation', function() {
         it('preserves input value when attribute unchanged', async function() {
             mockResponse('GET', '/test', '<input id="field" value="old" class="updated">');
-            const div = initHTML('<div id="target"><input id="field" value="old"></div>');
+            const div = createProcessedHTML('<div id="target"><input id="field" value="old"></div>');
             const input = div.querySelector('#field');
             input.value = 'user-typed';
             
@@ -262,7 +262,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('updates input value when attribute changes', async function() {
             mockResponse('GET', '/test', '<input id="field" value="new">');
-            const div = initHTML('<div id="target"><input id="field" value="old"></div>');
+            const div = createProcessedHTML('<div id="target"><input id="field" value="old"></div>');
             const input = div.querySelector('#field');
             input.value = 'user-typed';
             
@@ -273,7 +273,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('preserves textarea value when content unchanged', async function() {
             mockResponse('GET', '/test', '<textarea id="field" class="updated">old</textarea>');
-            const div = initHTML('<div id="target"><textarea id="field">old</textarea></div>');
+            const div = createProcessedHTML('<div id="target"><textarea id="field">old</textarea></div>');
             const textarea = div.querySelector('#field');
             textarea.value = 'user-typed';
             
@@ -285,7 +285,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('updates textarea value when content changes', async function() {
             mockResponse('GET', '/test', '<textarea id="field">new</textarea>');
-            const div = initHTML('<div id="target"><textarea id="field">old</textarea></div>');
+            const div = createProcessedHTML('<div id="target"><textarea id="field">old</textarea></div>');
             const textarea = div.querySelector('#field');
             textarea.value = 'user-typed';
             
@@ -296,7 +296,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('preserves checkbox state when attribute unchanged', async function() {
             mockResponse('GET', '/test', '<input id="cb" type="checkbox" checked class="updated">');
-            const div = initHTML('<div id="target"><input id="cb" type="checkbox" checked></div>');
+            const div = createProcessedHTML('<div id="target"><input id="cb" type="checkbox" checked></div>');
             const checkbox = div.querySelector('#cb');
             checkbox.checked = false;
             
@@ -312,7 +312,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('element reordering with ids', function() {
         it('reorders elements with ids correctly', async function() {
             mockResponse('GET', '/test', '<div id="c">C</div><div id="b">B</div><div id="a">A</div>');
-            const div = initHTML('<div id="target"><div id="a">A</div><div id="b">B</div><div id="c">C</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="a">A</div><div id="b">B</div><div id="c">C</div></div>');
             const a = div.querySelector('#a');
             const b = div.querySelector('#b');
             const c = div.querySelector('#c');
@@ -329,7 +329,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('moves id node into nested div correctly', async function() {
             mockResponse('GET', '/test', '<div><input id="first"></div>');
-            const div = initHTML('<div id="target"><input id="first"></div>');
+            const div = createProcessedHTML('<div id="target"><input id="first"></div>');
             const input = div.querySelector('#first');
             
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
@@ -340,7 +340,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('handles complex id reordering with nesting', async function() {
             mockResponse('GET', '/test', '<br><a id="a"><b id="b"></b></a>');
-            const div = initHTML('<div id="target"><a id="a"></a><br><b id="b"></b></div>');
+            const div = createProcessedHTML('<div id="target"><a id="a"></a><br><b id="b"></b></div>');
             const a = div.querySelector('#a');
             const b = div.querySelector('#b');
             
@@ -356,7 +356,7 @@ describe('Morph Swap Styles Tests', function() {
         it('morphs multiple attributes correctly', async function() {
             mockResponse('GET', '/test', 
                 '<section id="s" class="thing" data-one="1" data-two="2" data-three="3" data-four="4" fizz="buzz" foo="bar">B</section>');
-            const container = initHTML('<div><section id="s" class="child">A</section></div>');
+            const container = createProcessedHTML('<div><section id="s" class="child">A</section></div>');
             const section = container.querySelector('#s');
             
             await htmx.ajax('GET', '/test', {target: '#s', swap: 'outerMorph'});
@@ -370,7 +370,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('removes attributes correctly', async function() {
             mockResponse('GET', '/test', '<section id="s" class="child">A</section>');
-            const container = initHTML(
+            const container = createProcessedHTML(
                 '<div><section id="s" class="thing" data-one="1" data-two="2" fizz="buzz">B</section></div>');
             const section = container.querySelector('#s');
             
@@ -384,7 +384,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('handles fieldset disabled property correctly', async function() {
             mockResponse('GET', '/test', '<fieldset id="fs">hello</fieldset>');
-            const container = initHTML('<div><fieldset id="fs" class="foo" disabled></fieldset></div>');
+            const container = createProcessedHTML('<div><fieldset id="fs" class="foo" disabled></fieldset></div>');
             const fieldset = container.querySelector('#fs');
             
             await htmx.ajax('GET', '/test', {target: '#fs', swap: 'outerMorph'});
@@ -398,7 +398,7 @@ describe('Morph Swap Styles Tests', function() {
     describe('htmx integration', function() {
         it('preserves data-htmx-powered attribute during innerMorph', async function() {
             mockResponse('GET', '/test', '<button id="btn" hx-get="/click">Updated</button>');
-            const div = initHTML('<div id="target"><button id="btn" hx-get="/click">Original</button></div>');
+            const div = createProcessedHTML('<div id="target"><button id="btn" hx-get="/click">Original</button></div>');
             const btn = div.querySelector('#btn');
             htmx.process(btn);
             
@@ -412,7 +412,7 @@ describe('Morph Swap Styles Tests', function() {
 
         it('preserves data-htmx-powered attribute during outerMorph', async function() {
             mockResponse('GET', '/test', '<button id="btn" hx-get="/click" class="new">Updated</button>');
-            const container = initHTML('<div><button id="btn" hx-get="/click">Original</button></div>');
+            const container = createProcessedHTML('<div><button id="btn" hx-get="/click">Original</button></div>');
             const btn = container.querySelector('#btn');
             htmx.process(btn);
             
@@ -429,7 +429,7 @@ describe('Morph Swap Styles Tests', function() {
         it('preserves htmx event listeners during morph', async function() {
             mockResponse('GET', '/click', 'Clicked!');
             mockResponse('GET', '/test', '<button id="btn" hx-get="/click" hx-target="#result">Updated</button><div id="result"></div>');
-            const div = initHTML('<div id="target"><button id="btn" hx-get="/click" hx-target="#result">Original</button><div id="result"></div></div>');
+            const div = createProcessedHTML('<div id="target"><button id="btn" hx-get="/click" hx-target="#result">Original</button><div id="result"></div></div>');
             const btn = div.querySelector('#btn');
             const result = div.querySelector('#result');
             htmx.process(btn);

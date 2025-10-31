@@ -691,28 +691,27 @@ var htmx = (() => {
 
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
-                    if (spec.opts['root']) {
-                        observerOptions.root = this.__findExt(elt, spec.opts['root'])
+                    if (spec.opts?.root) {
+                        observerOptions.root = this.__findExt(elt, spec.opts.root)
                     }
-                    if (spec.threshold) {
-                        observerOptions.threshold = parseFloat(spec.threshold)
+                    if (spec.opts?.threshold) {
+                        observerOptions.threshold = parseFloat(spec.opts.threshold)
                     }
+                    let isRevealed = eventName === "revealed"
                     let observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
                             let entry = entries[i]
                             if (entry.isIntersecting) {
-                                setTimeout(() => {
-                                    this.trigger(elt, 'intersect')
-                                }, 20)
-                                break
+                                this.trigger(elt, 'intersect')
+                                if (isRevealed) {
+                                    observer.disconnect()
+                                }
+                                break;
                             }
                         }
                     }, observerOptions)
+                    eventName = "revealed"
                     observer.observe(elt)
-                    if (eventName === "revealed") {
-                        eventName = 'intersect'; // revealed is handled by intersection observers as well
-                        spec.once = true;
-                    }
                 }
 
                 if (spec.delay) {
@@ -1380,7 +1379,7 @@ var htmx = (() => {
 
         timeout(time) {
             if (typeof time === "string") {
-                time = this.parseInterval(str)
+                time = this.parseInterval(time)
             }
             if (time > 0) {
                 return new Promise(resolve => setTimeout(resolve, time));
@@ -2026,6 +2025,8 @@ var htmx = (() => {
                 } else {
                     task();
                 }
+            } catch (e) {
+                // Transitions can be skipped/aborted - this is normal
             } finally {
                 this.__processingTransition = false;
                 resolve();

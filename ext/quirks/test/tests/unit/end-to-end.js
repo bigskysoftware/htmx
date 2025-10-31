@@ -19,7 +19,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('uses innerHTML as default when wrapped in container', async function() {
             mockResponse('GET', '/test', '<span id="result">New Content</span>')
-            initHTML('<div id="container"><button hx-get="/test" id="btn1">Click</button></div>')
+            createProcessedHTML('<div id="container"><button hx-get="/test" id="btn1">Click</button></div>')
             await clickAndWait('#btn1')
 
             // innerHTML swap replaces the button's content
@@ -29,7 +29,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('explicit outerHTML still works', async function() {
             mockResponse('GET', '/test', '<div id="replacement">Replaced</div>')
-            let btn = initHTML('<button hx-get="/test" hx-swap="outerHTML" id="btn1">Click</button>')
+            let btn = createProcessedHTML('<button hx-get="/test" hx-swap="outerHTML" id="btn1">Click</button>')
             await clickAndWait(btn)
 
             // Button should be replaced completely
@@ -94,7 +94,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('hx-swap Inheritance', function() {
         it('child inherits hx-swap from parent', async function() {
             mockResponse('GET', '/test', '<div id="new">Swapped</div>')
-            let btn = initHTML(`
+            let btn = createProcessedHTML(`
                 <div hx-swap="outerHTML">
                     <button hx-get="/test" id="btn1">Click</button>
                 </div>
@@ -108,7 +108,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('child hx-swap overrides parent', async function() {
             mockResponse('GET', '/test', '<span>Content</span>')
-            let btn = initHTML(`
+            let btn = createProcessedHTML(`
                 <div hx-swap="outerHTML">
                     <button hx-get="/test" hx-swap="innerHTML" id="btn1">Click</button>
                 </div>
@@ -122,7 +122,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('hx-swap beforeend inherited correctly', async function() {
             mockResponse('GET', '/test', '<li>Item 3</li>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-swap="beforeend">
                     <ul id="list">
                         <li>Item 1</li>
@@ -173,7 +173,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('hx-include Inheritance', function() {
         it('hx-include attribute is inherited', async function() {
             mockResponse('GET', '/test', '<div id="result">Response</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-include="[name='extra']" hx-target="#output">
                     <input name="extra" value="included"/>
                     <button hx-get="/test" id="btn1">Click</button>
@@ -195,7 +195,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('hx-indicator Inheritance', function() {
         it('hx-indicator attribute is inherited', async function() {
             mockResponse('GET', '/test', '<div id="result">Done</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-indicator=".spinner" hx-target="#output">
                     <div class="spinner">Loading...</div>
                     <button hx-get="/test" id="btn1">Click</button>
@@ -217,7 +217,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('hx-boost Inheritance', function() {
         it('child link inherits hx-boost from parent', async function() {
             mockResponse('GET', '/page', '<div id="boosted">Boosted Page</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-boost="true" hx-target="#output">
                     <a href="/page" id="link1">Link</a>
                     <div id="output"></div>
@@ -232,7 +232,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('hx-boost can be overridden on child', async function() {
             mockResponse('GET', '/page', '<div id="result">Page</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-boost="true" hx-target="#output">
                     <a href="/page" hx-boost="false" id="link1">Normal Link</a>
                     <a href="/page" id="link2">Boosted Link</a>
@@ -255,7 +255,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('Multiple Attribute Inheritance', function() {
         it('multiple attributes inherit from same parent', async function() {
             mockResponse('GET', '/test', 'Result')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-target="#output" hx-swap="beforeend" hx-params="*">
                     <form hx-get="/test" id="form1">
                         <input name="field1" value="v1"/>
@@ -275,7 +275,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('can mix inherited and direct attributes', async function() {
             mockResponse('GET', '/test', 'Mixed')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-target="#output" hx-swap="innerHTML">
                     <button hx-get="/test" hx-swap="beforeend" id="btn1">Click</button>
                     <div id="output">Start</div>
@@ -291,7 +291,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('all inherited attributes work together', async function() {
             mockResponse('GET', '/test', '<li id="new-item">New Item</li>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-target="#list"
                      hx-swap="beforeend">
                     <ul id="list"><li>Item 1</li></ul>
@@ -314,7 +314,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
     describe('Complex Inheritance Scenarios', function() {
         it('inheritance works with nested structures', async function() {
             mockResponse('GET', '/test', '<div id="result">Nested Result</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div hx-target="#output">
                     <section>
                         <article>
@@ -331,7 +331,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
 
         it('data- prefixed attributes also inherit', async function() {
             mockResponse('GET', '/test', '<div id="result">Data Prefix Works</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div data-hx-target="#output">
                     <button hx-get="/test" id="btn1">Click</button>
                     <div id="output">Original</div>
@@ -350,7 +350,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
             document.body.setAttribute('hx-target', '#body-target')
 
             try {
-                initHTML(`
+                createProcessedHTML(`
                     <div id="body-target">Body Target</div>
                     <button hx-get="/test" id="btn1">Click</button>
                 `)
@@ -371,7 +371,7 @@ describe('Quirks Mode - End-to-End Tests', function() {
         it('different children can inherit different combinations', async function() {
             mockResponse('GET', '/test1', '<div id="result1">Result 1</div>')
             mockResponse('GET', '/test2', '<div id="result2">Result 2</div>')
-            initHTML(`
+            createProcessedHTML(`
                 <div>
                     <div hx-target="#output1">
                         <button hx-get="/test1" id="btn1">Button 1</button>
