@@ -56,13 +56,13 @@ var htmx = (() => {
         #extensions = [];
         #approvedExtensions = new Set();
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
-        __actionSelector = "[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]";
         __boostSelector = "a,form";
         __verbs = ["get", "post", "put", "patch", "delete"];
-        __hxOnQuery = new XPathEvaluator().createExpression('.//*[@*[ starts-with(name(), "hx-on:")]]')
 
         constructor() {
             this.__initHtmxConfig();
+            this.__actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
+            this.__hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
             document.addEventListener("mx:process", (evt) => this.process(evt.target));
             this.__initInternals();
         }
@@ -137,11 +137,15 @@ var htmx = (() => {
         }
 
         __ignore(elt) {
-            return elt.closest("[hx-ignore]") != null
+            return elt.closest(`[${this.__prefix("hx-ignore")}]`) != null
+        }
+
+        __prefix(s) {
+            return this.config.prefix ? s.replace('hx-', this.config.prefix) : s;
         }
 
         __attributeValue(elt, name, defaultVal) {
-            name += this.config.prefix
+            name = this.__prefix(name);
             let inheritName = name + ":inherited";
             if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
                 return elt.getAttribute(name) || elt.getAttribute(inheritName);
@@ -326,10 +330,10 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector === 'this') {
-                if (elt.hasAttribute("hx-target")) {
+                if (elt.hasAttribute(this.__prefix("hx-target"))) {
                     return elt;
                 } else {
-                    return elt.closest("[hx-target\\:inherited='this']")
+                    return elt.closest(`[${this.__prefix("hx-target")}\\:inherited='this']`)
                 }
             } else if (selector != null) {
                 return document.querySelector(selector);
@@ -997,7 +1001,7 @@ var htmx = (() => {
             let pantry = document.createElement('div');
             pantry.style.display = 'none';
             document.body.appendChild(pantry);
-            let newPreservedElts = fragment.querySelectorAll?.('[hx-preserve]') || [];
+            let newPreservedElts = fragment.querySelectorAll?.(`[${this.__prefix('hx-preserve')}]`) || [];
             for (let preservedElt of newPreservedElts) {
                 let currentElt = document.getElementById(preservedElt.id);
                 if (pantry.moveBefore) {
@@ -1104,9 +1108,9 @@ var htmx = (() => {
             }
 
             // Process elements with hx-swap-oob attribute
-            for (let oobElt of fragment.querySelectorAll('[hx-swap-oob]')) {
-                let oobValue = oobElt.getAttribute('hx-swap-oob');
-                oobElt.removeAttribute('hx-swap-oob');
+            for (let oobElt of fragment.querySelectorAll(`[${this.__prefix('hx-swap-oob')}]`)) {
+                let oobValue = oobElt.getAttribute(this.__prefix('hx-swap-oob'));
+                oobElt.removeAttribute(this.__prefix('hx-swap-oob'));
                 this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
             }
 
@@ -1158,12 +1162,12 @@ var htmx = (() => {
             let tasks = [];
 
             for (let partialElt of fragment.querySelectorAll('template[partial]')) {
-                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwap);
+                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap);
 
                 tasks.push({
                     type: 'partial',
                     fragment: partialElt.content.cloneNode(true),
-                    target: partialElt.getAttribute('hx-target'),
+                    target: partialElt.getAttribute(this.__prefix('hx-target')),
                     swapSpec,
                     sourceElement
                 });
@@ -1545,8 +1549,8 @@ var htmx = (() => {
 
         __handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                if (attr.startsWith("hx-on:")) {
-                    let evtName = attr.substring(6)
+                if (attr.startsWith(this.__prefix("hx-on:"))) {
+                    let evtName = attr.substring(this.__prefix("hx-on:").length)
                     let code = node.getAttribute(attr);
                     node.addEventListener(evtName, async (evt) => {
                         try {
