@@ -1226,8 +1226,7 @@ var htmx = (() => {
 
             // Create optimistic div with reset styling
             let optimisticDiv = document.createElement('div');
-            optimisticDiv.style.cssText = 'all: initial; display: block;';
-            optimisticDiv.setAttribute('data-hx-optimistic', 'true');
+            optimisticDiv.style.cssText = 'all: initial';
             optimisticDiv.innerHTML = sourceElt.innerHTML;
 
             let swapStyle = ctx.swap;
