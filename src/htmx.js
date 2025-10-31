@@ -1104,11 +1104,9 @@ var htmx = (() => {
             }
 
             // Process elements with hx-swap-oob attribute
-            for (let oobElt of fragment.querySelectorAll('[hx-swap-oob], [data-hx-swap-oob]')) {
-                let oobValue = oobElt.getAttribute('hx-swap-oob') || oobElt.getAttribute('data-hx-swap-oob');
+            for (let oobElt of fragment.querySelectorAll('[hx-swap-oob]')) {
+                let oobValue = oobElt.getAttribute('hx-swap-oob');
                 oobElt.removeAttribute('hx-swap-oob');
-                oobElt.removeAttribute('data-hx-swap-oob');
-
                 this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
             }
 
@@ -1233,12 +1231,13 @@ var htmx = (() => {
             optimisticDiv.innerHTML = sourceElt.innerHTML;
 
             let swapStyle = ctx.swap;
+            ctx.optHidden = [];
 
             if (swapStyle === 'innerHTML') {
                 // Hide children of target
                 for (let child of target.children) {
                     child.style.display = 'none';
-                    child.setAttribute('data-hx-oh', 'true');
+                    ctx.optHidden.push(child)
                 }
                 target.appendChild(optimisticDiv);
                 ctx.optimisticDiv = optimisticDiv;
@@ -1248,8 +1247,7 @@ var htmx = (() => {
             } else {
                 // Assume outerHTML-like behavior, Hide target and insert div after it
                 target.style.display = 'none';
-                target.setAttribute('data-hx-oh', 'true');
-                target.insertAdjacentElement('afterend', optimisticDiv);
+                ctx.optHidden.push(target)
                 ctx.optimisticDiv = optimisticDiv;
             }
         }
@@ -1261,9 +1259,8 @@ var htmx = (() => {
             ctx.optimisticDiv.remove();
 
             // Unhide any hidden elements
-            for (let elt of document.querySelectorAll('[data-hx-oh]')) {
+            for (let elt of ctx.optHidden) {
                 elt.style.display = '';
-                elt.removeAttribute('data-hx-oh');
             }
         }
 
