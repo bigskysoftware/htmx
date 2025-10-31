@@ -163,7 +163,7 @@ function playground() {
 }
 
 function findElt(selector) {
-  return htmx.find(selector, playground())
+  return htmx.find(playground(), selector)
 }
 
 function invokeAction(cssOrElt, action) {

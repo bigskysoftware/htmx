@@ -70,7 +70,7 @@ describe('hx-optimistic attribute', function() {
         mockResponse('POST', '/submit', '')
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="delete" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
-        assert.isNull(findElt('#result'));
+        assert.isUndefined(findElt('#result'));
     })
 
     it('none swap uses default outerHTML-like behavior', async function () {

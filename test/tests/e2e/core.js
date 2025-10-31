@@ -29,7 +29,7 @@ describe('Basic Functionality', () => {
         findElt("#i1").value = "foo"
         await clickAndWait('#b1');
 
-        assert.isNull(findElt('#target'));
+        assert.isUndefined(findElt('#target'));
         assertTextContentIs("#result", "Success!");
     })
 
@@ -42,7 +42,7 @@ describe('Basic Functionality', () => {
         // Click the button
         await clickAndWait('#b1');
 
-        assert.isNull(findElt('#target'));
+        assert.isUndefined(findElt('#target'));
         assertTextContentIs("#result", "Success!");
     })
 

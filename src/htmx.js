@@ -112,7 +112,7 @@ var htmx = (() => {
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204],
             }
-            let metaConfig = this.find('meta[name="htmx:config"]');
+            let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
                 let overrides = JSON.parse(metaConfig.content);
                 // Deep merge nested config objects
@@ -1183,7 +1183,7 @@ var htmx = (() => {
             if (!target) return;
 
             if (typeof target === 'string') {
-                target = this.find(target);
+                target = document.querySelector(target);
             }
 
             // Create optimistic div with reset styling
@@ -1320,7 +1320,7 @@ var htmx = (() => {
 
         __insertContent(task) {
             if (typeof task.target === 'string') {
-                task.target = this.find(task.target);
+                task.target = document.querySelector(task.target);
             }
             if (!task.target) return;
             let swapSpec = task.swapSpec || task.modifiers;
@@ -1407,12 +1407,12 @@ var htmx = (() => {
             })
         }
 
-        find(selector, on = document) {
-            return on.querySelector(selector)
+        find(selectorOrElt, selector) {
+            return this.__findExt(selectorOrElt, selector)
         }
 
-        findAll(selector, on = document) {
-            return on.querySelectorAll(selector)
+        findAll(selectorOrElt, selector) {
+            return this.__findAllExt(selectorOrElt, selector)
         }
 
         parseInterval(str) {
@@ -1448,7 +1448,7 @@ var htmx = (() => {
             }
 
             let sourceElt = typeof context.source === 'string' ?
-                this.find(context.source) : context.source;
+                document.querySelector(context.source) : context.source;
             let targetElt = context.target ?
                 this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
@@ -1693,7 +1693,7 @@ var htmx = (() => {
                 if (selector.startsWith('closest ')) {
                     item = elt.closest(selector.slice(8))
                 } else if (selector.startsWith('find ')) {
-                    item = this.find(elt, selector.slice(5))
+                    item = document.querySelector(elt, selector.slice(5))
                 } else if (selector === 'next' || selector === 'nextElementSibling') {
                     item = elt.nextElementSibling
                 } else if (selector.startsWith('next ')) {
