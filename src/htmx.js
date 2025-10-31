@@ -1085,7 +1085,6 @@ var htmx = (() => {
                 fragment,
                 target,
                 swapSpec,
-                async: swapSpec.async === true,
                 sourceElement
             });
         }
@@ -1167,45 +1166,12 @@ var htmx = (() => {
                     fragment: partialElt.content.cloneNode(true),
                     target: partialElt.getAttribute('hx-target'),
                     swapSpec,
-                    async: swapSpec.async === true,
                     sourceElement
                 });
                 partialElt.remove();
             }
 
             return tasks;
-        }
-
-        async __executeSwapTask(task) {
-            // TODO I think the async flag should be used to determine if we await the swap only
-            if (task.swapSpec.swapDelay) {
-                if (task.async) {
-                    await this.timeout(task.swapSpec.swapDelay);
-                    return this.__performSwap(task);
-                } else {
-                    return new Promise(resolve => {
-                        setTimeout(() => {
-                            this.__performSwap(task);
-                            resolve();
-                        }, task.swapSpec.swapDelay);
-                    });
-                }
-            }
-            return this.__performSwap(task);
-        }
-
-        // TODO I think this function should be async
-        __performSwap(task) {
-            if (typeof task.target === 'string') {
-                task.target = this.find(task.target);
-            }
-            if (!task.target) return;
-            let swapTask = () => this.__insertContent(task);
-            if (task.transition && document["startViewTransition"]) {
-                return document.startViewTransition(swapTask).finished;
-            } else {
-                swapTask();
-            }
         }
 
         __insertOptimisticContent(ctx) {
@@ -1319,7 +1285,6 @@ var htmx = (() => {
                     fragment: resultFragment,
                     target: ctx.target,
                     swapSpec,
-                    async: swapSpec.async !== false, // should this be === true?
                     sourceElement: ctx.sourceElement,
                     transition: (ctx.transition !== false) && (swapSpec.transition !== false),
                     title
@@ -1329,47 +1294,58 @@ var htmx = (() => {
             if (tasks.length === 0) return;
 
             // Separate async/sync tasks
-            let asyncTasks = tasks.filter(t => t.async);
-            let syncTasks = tasks.filter(t => !t.async);
+            let transitionTasks = tasks.filter(t => t.transition);
+            let nonTransitionTasks = tasks.filter(t => !t.transition);
 
-            // Execute sync tasks immediately
-            for (let task of syncTasks) {
-                this.__executeSwapTask(task);
+            // insert non-transition tasks immediately
+            for (let task of nonTransitionTasks) {
+                for (let taskElement of task) {
+                    this.__insertContent(task)
+                }
             }
 
-            // Execute async tasks in parallel
-            if (asyncTasks.length > 0) {
-                await Promise.all(asyncTasks.map(task => this.__executeSwapTask(task)));
+            // insert transition tasks in the transition queue
+            if (transitionTasks.length > 0) {
+                let tasksWrapper = ()=> {
+                    for (const task of transitionTasks) {
+                        this.__insertContent(task)
+                    }
+                }
+                await this.__submitTransitionTask(tasksWrapper);
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
         }
 
-        __insertContent(swapConfig) {
-            let swapSpec = swapConfig.swapSpec || swapConfig.modifiers;
-            let pantry = this.__handlePreservedElements(swapConfig.fragment);
-            let target = swapConfig.target, parentNode = target.parentNode;
+        __insertContent(task) {
+            if (typeof task.target === 'string') {
+                task.target = this.find(task.target);
+            }
+            if (!task.target) return;
+            let swapSpec = task.swapSpec || task.modifiers;
+            let pantry = this.__handlePreservedElements(task.fragment);
+            let target = task.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
-                target.replaceChildren(...swapConfig.fragment.childNodes);
+                target.replaceChildren(...task.fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
-                    this.__insertNodes(parentNode, target, swapConfig.fragment);
+                    this.__insertNodes(parentNode, target, task.fragment);
                     parentNode.removeChild(target);
                 }
             } else if (swapSpec.style === 'innerMorph') {
-                this.__morph(target, swapConfig.fragment, true);
+                this.__morph(target, task.fragment, true);
             } else if (swapSpec.style === 'outerMorph') {
-                this.__morph(target, swapConfig.fragment, false);
+                this.__morph(target, task.fragment, false);
             } else if (swapSpec.style === 'beforebegin') {
                 if (parentNode) {
-                    this.__insertNodes(parentNode, target, swapConfig.fragment);
+                    this.__insertNodes(parentNode, target, task.fragment);
                 }
             } else if (swapSpec.style === 'afterbegin') {
-                this.__insertNodes(target, target.firstChild, swapConfig.fragment);
+                this.__insertNodes(target, target.firstChild, task.fragment);
             } else if (swapSpec.style === 'beforeend') {
-                this.__insertNodes(target, null, swapConfig.fragment);
+                this.__insertNodes(target, null, task.fragment);
             } else if (swapSpec.style === 'afterend') {
                 if (parentNode) {
-                    this.__insertNodes(parentNode, target.nextSibling, swapConfig.fragment);
+                    this.__insertNodes(parentNode, target.nextSibling, task.fragment);
                 }
             } else if (swapSpec.style === 'delete') {
                 if (parentNode) {
@@ -1404,8 +1380,13 @@ var htmx = (() => {
             return true;
         }
 
-        timeout(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        timeout(time) {
+            if (typeof time === "string") {
+                time = this.parseInterval(str)
+            }
+            if (time > 0) {
+                return new Promise(resolve => setTimeout(resolve, time));
+            }
         }
 
         forEvent(event, timeout, on = document) {
@@ -1457,6 +1438,7 @@ var htmx = (() => {
             return this.timeout(1)
         }
 
+        // TODO - make async
         ajax(verb, path, context) {
             // Normalize context to object
             if (!context || context instanceof Element || typeof context === 'string') {
@@ -2019,6 +2001,37 @@ var htmx = (() => {
                     ctx.swap = swap
                     return
                 }
+            }
+        }
+
+        __submitTransitionTask(task) {
+            return new Promise((resolve) => {
+                this.__transitionQueue ||= [];
+                this.__transitionQueue.push({ task, resolve });
+                if (!this.__processingTransition) {
+                    this.__processTransitionQueue();
+                }
+            });
+        }
+
+        async __processTransitionQueue() {
+            if (this.__transitionQueue.length === 0 || this.__processingTransition) {
+                return;
+            }
+
+            this.__processingTransition = true;
+            let { task, resolve } = this.__transitionQueue.shift();
+
+            try {
+                if (document.startViewTransition) {
+                    await document.startViewTransition(task).finished;
+                } else {
+                    task();
+                }
+            } finally {
+                this.__processingTransition = false;
+                resolve();
+                this.__processTransitionQueue();
             }
         }
     }
