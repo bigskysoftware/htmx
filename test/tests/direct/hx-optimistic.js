@@ -44,4 +44,13 @@ describe('direct hx-optimistic attribute test', function() {
         playground().innerText.should.equal("Initial\nOptimistic") // reverts to original
     })
 
+    it('works with new swap terminology: prepend', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-optimistic="#optimistic-source" hx-swap="prepend">Initial</button><div id="optimistic-source">Optimistic</div>');
+        let promise = directlyInvokeHandler(btn);
+        btn.innerText.should.equal("OptimisticInitial")
+        await promise
+        btn.innerText.should.equal("ResponseInitial")
+    })
+
 })

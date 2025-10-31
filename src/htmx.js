@@ -144,14 +144,38 @@ var htmx = (() => {
             return this.config.prefix ? s.replace('hx-', this.config.prefix) : s;
         }
 
+        __normalizeSwapStyle(style) {
+            return style === 'before' ? 'beforebegin' :
+                   style === 'after' ? 'afterend' :
+                   style === 'prepend' ? 'afterbegin' :
+                   style === 'append' ? 'beforeend' : style;
+        }
+
         __attributeValue(elt, name, defaultVal) {
             name = this.__prefix(name);
+            let appendName = name + ":append";
             let inheritName = name + ":inherited";
+            let inheritAppendName = name + ":inherited:append";
+
             if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
                 return elt.getAttribute(name) || elt.getAttribute(inheritName);
             }
-            let value = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}`)?.getAttribute(inheritName) || defaultVal;
-            return value
+
+            if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
+                let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
+                let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
+                if (parent) {
+                    let inheritedValue = this.__attributeValue(parent, name);
+                    return inheritedValue ? inheritedValue + "," + appendValue : appendValue;
+                }
+                return appendValue;
+            }
+
+            let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
+            if (parent) {
+                return this.__attributeValue(parent, name);
+            }
+            return defaultVal;
         }
 
         __tokenize(str) {
@@ -1128,6 +1152,7 @@ var htmx = (() => {
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
             let config = {style: tokens[1] === ':' ? this.config.defaultSwap : (tokens[0] || this.config.defaultSwap)};
+            config.style = this.__normalizeSwapStyle(config.style);
             let startIdx = tokens[1] === ':' ? 0 : 1;
 
             for (let i = startIdx; i < tokens.length; i++) {
@@ -1195,7 +1220,7 @@ var htmx = (() => {
             optimisticDiv.style.cssText = 'all: initial';
             optimisticDiv.innerHTML = sourceElt.innerHTML;
 
-            let swapStyle = ctx.swap;
+            let swapStyle = this.__normalizeSwapStyle(ctx.swap);
             ctx.optHidden = [];
 
             if (swapStyle === 'innerHTML') {
