@@ -1383,17 +1383,6 @@ var htmx = (() => {
             if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
-        __resolveSwapEventTarget(task) {
-            if (task.sourceElement && document.contains(task.sourceElement)) {
-                return task.sourceElement;
-            } else if (task.target && document.contains(task.target)) {
-                return task.target;
-            } else {
-                return document;
-            }
-        }
-
-
         __trigger(on, eventName, detail = {}, bubbles = true) {
             if (this.config.logAll) {
                 console.log(eventName, detail, on)
