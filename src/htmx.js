@@ -1481,24 +1481,23 @@ var htmx = (() => {
                 context = {target: context};
             }
 
-            let sourceElt = context.source && (typeof context.source === 'string' ?
-                this.find(context.source) : context.source);
+            let sourceElt = typeof context.source === 'string' ?
+                this.find(context.source) : context.source;
             let targetElt = context.target ?
                 this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
             if ((context.target && !targetElt) || (context.source && !sourceElt)) {
-                return Promise.reject(new Error('Target not found'));
+                return Promise.reject(new Error('Element not found'));
             }
 
             sourceElt = sourceElt || targetElt || document.body;
 
             let ctx = this.__createRequestContext(sourceElt, context.event || {});
             Object.assign(ctx, context, {target: targetElt});
+            Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (context.headers) Object.assign(ctx.request.headers, context.headers);
-            ctx.request.action = path;
-            ctx.request.method = verb.toUpperCase();
 
-            return this.handleTriggerEvent(ctx) || Promise.resolve();
+            return this.handleTriggerEvent(ctx);
         }
 
         //============================================================================================
