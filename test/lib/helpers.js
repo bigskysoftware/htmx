@@ -62,8 +62,8 @@ function cleanupTest() {
   history.replaceState(null, '', savedUrl);
 }
 
-function mockResponse(action, pattern, response) {
-  fetchMock.mockResponse(action, pattern, response);
+function mockResponse(action, pattern, response, options = {}) {
+  fetchMock.mockResponse(action, pattern, response, options);
 }
 
 function mockStreamResponse(url) {
@@ -168,6 +168,17 @@ function parseHTML(html, appendToBody = false) {
     document.body.appendChild(elt);
   }
   return elt;
+}
+
+async function directlyInvokeHandler(btn, evt ={type:'click'}) {
+    let htmx = btn.__htmx;
+    if(!htmx){
+        throw "element does not have an htmx property!"
+    }
+    let customEvent = new CustomEvent(evt.type);
+    delete evt.type;
+    Object.assign(customEvent, evt)
+    return await htmx.eventHandler(customEvent)
 }
 
 // ==============================================================================

@@ -82,7 +82,7 @@ class FetchMock {
         }
         if (typeof response === 'string') {
             let str = response;
-            response = new MockResponse(str);
+            response = new MockResponse(str, options);
         }
         this.responses.push({
             method: upperCasedMethod,
