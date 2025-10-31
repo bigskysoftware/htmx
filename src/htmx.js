@@ -1299,9 +1299,7 @@ var htmx = (() => {
 
             // insert non-transition tasks immediately
             for (let task of nonTransitionTasks) {
-                for (let taskElement of task) {
-                    this.__insertContent(task)
-                }
+                this.__insertContent(task)
             }
 
             // insert transition tasks in the transition queue
