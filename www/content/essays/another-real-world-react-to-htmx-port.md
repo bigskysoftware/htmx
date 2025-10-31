@@ -28,7 +28,7 @@ a React front end to an htmx front end: [OpenUnited](https://openunited.com/).
 Here is a graphic from the [original LinkedIn post](https://www.linkedin.com/feed/update/urn:li:activity:7109116330770878464/) 
 by Adrian McPhee, showing the total Lines of Code in the code base before and after the port:
 
-![Open United Before & After](/img/open_united_before_after_htmx.png)
+![Open United Before & After](/img/open-united-before-after-htmx.png)
 
 ### Before/After Source Code
 

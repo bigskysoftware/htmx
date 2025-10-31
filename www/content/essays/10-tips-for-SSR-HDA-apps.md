@@ -97,7 +97,7 @@ Unfortunately, [modal windows do not play well with much of the infrastructure o
 and introduce client-side state that can be difficult (though not impossible) to integrate cleanly with the hypermedia-based
 approach.
 
-Consider using alternatives such as [inline editing](https://htmx.org/examples/click-to-edit/), rather than modals.
+Consider using alternatives such as [inline editing](https://htmx.org/patterns/click-to-edit/), rather than modals.
 
 ### Tip 7: Accept "Good Enough" UX
 

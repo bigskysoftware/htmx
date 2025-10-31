@@ -1,74 +1,8 @@
 +++
 title = "Documentation"
 [extra]
+table_of_contents = true
 +++
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT guaranteed to be up to date with the latest htmx 4.0 changes and are in flux! See <a href="/htmx-4">changes in htmx 4.0</a> </p>
-</aside>
-
-<details id="contents">
-<summary><strong>Contents</strong></summary>
-
-* [Introduction](#introduction)
-* [2.x to 4.x Migration Guide](#2-x-to-4-x-migration-guide)
-* [Installing](#installing)
-* [AJAX](#ajax)
-  * [Configuring Requests](#configuring-requests)
-  * [Triggering Requests](#triggers)
-    * [Trigger Modifiers](#trigger-modifiers)
-    * [Trigger Filters](#trigger-filters)
-    * [Special Events](#special-events)
-    * [Polling](#polling)
-    * [Load Polling](#load_polling)
-  * [Request Indicators](#indicators)
-  * [Targets](#targets)
-    * [Extended CSS Selectors](#extended-css-selectors)
-  * [Swapping](#swapping)
-    * [Morph Swaps](#morphing)
-    * [View Transitions](#view-transitions)
-    * [Swap Options](#swap-options)
-  * [Synchronization](#synchronization)
-  * [CSS Transitions](#css_transitions)
-  * [Partial Tags](#partial-tags)
-  * [Out of Band Swaps](#oob_swaps)
-  * [Parameters](#parameters)
-    * [File Upload](#files)
-  * [Confirming Requests](#confirming)
-* [Attribute Inheritance](#inheritance)
-* [Boosting](#boosting)
-  * [Progressive Enhancement](#progressive_enhancement)
-* [Streaming Responses](#streaming-responses)
-* [Web Sockets](#web-sockets)
-* [History Support](#history)
-* [Requests & Responses](#requests)
-  * [Configuring Response Handling](#response-handling)
-  * [Request Headers](#request-headers)
-  * [Response Headers](#response-headers)
-* [Validation](#validation)
-* [Extensions](#extensions)
-* [Events & Logging](#events)
-  * [Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
-  * [Configure a Request With Events](#config_request_with_events)
-* [Debugging](#debugging)
-* [Scripting](#scripting)
-  * [The hx-on* Attributes](#hx-on)
-  * [The Scripting API](#htmx-scripting-api)
-  * [Scripting Examples](#htmx-scripting-examples)
-  * [3rd Party Javascript](#3rd-party)
-    * [Web Components](#web-components)
-* [Caching](#caching)
-  * [Etag Support](#etag-support)
-* [Security](#security)
-  * [Rule 1: Escape All User Content](#rule-1-escape-all-user-content)
-  * [htmx Security Tools](#htmx-security-tools)
-  * [CSP Options](#csp-options)
-  * [CSRF Prevention](#csrf-prevention)
-* [Configuring htmx](#configuring-htmx)
-
-</details>
-
 
 ## htmx in a Nutshell {#introduction}
 
@@ -90,13 +24,13 @@ of HTML, the [anchor tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Refe
 
 The anchor tag tells a browser:
 
-> "When a user clicks on this link, issue an HTTP GET request to '/blog' and load the response content
->  into the browser window".
+> When a user clicks on this link, issue an HTTP GET request to '/blog' and load the response content
+>  into the browser window
 
 The form tag tells a browser:
 
-> "When a user submits this form, issue an HTTP POST request to '/register' and load the response content
->  into the browser window".
+> When a user submits this form, issue an HTTP POST request to '/register' and load the response content
+>  into the browser window
 
 Both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
 attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)
@@ -130,8 +64,8 @@ With these ideas in mind, consider the following bit of htmx-powered HTML:
 
 Given these attribute, htmx will enable the following behavior:
 
-> "When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
->  to replace the element with the id `output-elt` in the DOM"
+> When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
+>  to replace the element with the id `output-elt` in the DOM
 
 htmx [generalizes the idea of hypermedia controls](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127) in HTML, which means that 
 any element can issue an any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) HTTP request in response to any 
@@ -761,6 +695,16 @@ Both partials and out-of-band swaps allow updating multiple targets from a singl
 Use partials when you want explicit control over targeting, and out-of-band swaps when you have a consistent `id` scheme.
 
 ### Out of Band Swaps {#oob_swaps}
+
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+In htmx 2.0, out of band swaps were the only way to send additional content with a response.  In htmx 4.0 the `<hx-partial>`
+tag provides a more general, cleaner mechanism for swapping new content in to targets.  Although the older syntax for
+more elaborate out-of-band swaps is still supported in htmx 4.0, we strongly recommend you only use out-of-band swaps
+for direct id replacement, and use `<hx-partial>` for your other needs.
+
+</details>
 
 <details class="migration-note">
 <summary>htmx 2.0 to 4.0 Changes</summary>
@@ -1414,10 +1358,9 @@ htmx provides some top level helper methods in `hx-on` handlers that make async 
 
 Here is an example that adds a parameter to an htmx request
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>verify symbols</p>
-</aside>
+{% construction_warning() %}
+ <p>Need to verify symbols</p>
+{% end %}
 
 ```html
 <button hx-post="/example"
@@ -1518,7 +1461,7 @@ When this div issues a poll-based request it will submit an `If-None-Match` head
 
 Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
-response HTTP header. 
+response HTTP header.
 
 For example, if your server renders the full HTML when the `HX-Request` header is missing or `false`, and it renders a 
 fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed 

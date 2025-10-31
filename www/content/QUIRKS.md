@@ -9,12 +9,7 @@ tag = ["posts"]
 
 This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQLite" page](https://www.sqlite.org/quirks.html).
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/htmx-4">changes in htmx 4.0</a>
-</p>
-</aside>
-
+{{ construction_warning() }}
 
 ## Attribute Inheritance
 
@@ -142,10 +137,7 @@ If you wish to include the values of the enclosing form when issuing an `GET` yo
 
 ## History Can Be Tricky
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>fix link</p>
-</aside>
+{{ construction_warning() }}
 
 htmx provides support for interacting with the browser's [history](@/docs.md).  This can be very powerful, but it
 can also be tricky, particularly if you are using 3rd party JavaScript libraries that modify the DOM.

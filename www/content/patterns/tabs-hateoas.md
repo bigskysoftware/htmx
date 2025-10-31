@@ -1,9 +1,17 @@
 +++
-title = "Tabs (Using HATEOAS)"
+title = "Tabs"
 template = "demo.html"
 +++
 
-This example shows how easy it is to implement tabs using htmx.  Following the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS), the selected tab is a part of the application state.  Therefore, to display and select tabs in your application, simply include the tab markup in the returned HTML.  If this does not suit your application server design, you can also use a little bit of [JavaScript to select tabs instead](@/patterns/tabs-javascript.md).
+This example shows how easy it is to implement tabs using htmx. There are two main approaches: server-driven (HATEOAS) and client-side (JavaScript).
+
+**Jump to:**
+1. [Server-Driven Tabs (HATEOAS)](#server-driven-tabs-hateoas)
+2. [Client-Side Tabs (JavaScript)](#client-side-tabs-javascript)
+
+## Server-Driven Tabs (HATEOAS)
+
+Following the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS), the selected tab is a part of the application state. Therefore, to display and select tabs in your application, simply include the tab markup in the returned HTML.
 
 ## Example Code (Main Page)
 The main page simply includes the following HTML to load the initial tab into the DOM.
@@ -135,3 +143,27 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 		margin-bottom:100px;
 	}
 </style>
+
+## Client-Side Tabs (JavaScript)
+
+This approach shows how to load tab contents using htmx, and to select the "active" tab using JavaScript. This reduces some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your clients' browsers.
+
+### Example Code
+
+The HTML below displays a list of tabs, with added htmx to dynamically load each tab pane from the server. A simple JavaScript event handler uses the `htmx:afterOnLoad` event to switch the selected tab when the content is swapped into the DOM.
+
+```html
+<div id="tabs-js" hx-target="#tab-contents" role="tablist"
+     hx-on:htmx-after-on-load="let currentTab = document.querySelector('[aria-selected=true]');
+                               currentTab.setAttribute('aria-selected', 'false')
+                               currentTab.classList.remove('selected')
+                               let newTab = event.target
+                               newTab.setAttribute('aria-selected', 'true')
+                               newTab.classList.add('selected')">
+    <button role="tab" aria-controls="tab-contents" aria-selected="true" hx-get="/tab1" class="selected">Tab 1</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab2">Tab 2</button>
+    <button role="tab" aria-controls="tab-contents" aria-selected="false" hx-get="/tab3">Tab 3</button>
+</div>
+
+<div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
+```

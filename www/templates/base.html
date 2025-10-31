@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="
+    {%- block description -%}
+    htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
+
+    htmx is small (~10k min.gz'd), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react
+    {%- endblock description -%}
+    ">
+    {# This block should set html_title appropriately -#}
+    {% block title %} {% endblock title -%}
+    <title>{{ html_title | default(value=config.title) | safe }}</title>
+    {% if current_url %} <link rel="canonical" href="{{ current_url | safe }}"> {% endif %}
+    {#TODO: only generate this for the home page #}
+    <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <script src="/js/htmx.js"></script>
+    <script src="/js/_hyperscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@3.0.0/dist/iconify-icon.min.js"></script>
+    {# Uncomment in development to be able to play with TailwindCSS utility classes directly from inspect #}
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="generator" content="Zola v.TODO">
+</head>
+<body class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
+
+{% set should_boost = not page or not page.path is starting_with("/patterns") %}
+{% set nav_names = ["docs", "reference", "patterns", "help", "essays"] %}
+{% set nav_descriptions = ["Complete guide and tutorials", "API reference (attributes, headers, etc.)", "Common patterns and examples", "Help and community questions", "Essays about hypermedia"] %}
+
+<!-- Header -->
+<header hx-boost:inherited="{{ should_boost }}" class="sticky top-0 z-20 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800">
+    <div class="z-10 flex items-center justify-between max-w-[1680px] mx-auto px-4 py-3 sm:px-6 lg:px-6 xl:px-8 sm:py-4 gap-3 sm:gap-6 lg:gap-6 xl:gap-8">
+        <!-- Logo -->
+        <a href="/" title="Return to homepage" class="text-[28px] font-sans font-bold whitespace-nowrap inline-flex items-center text-neutral-900 dark:text-neutral-100 scan-lines shrink-0 -translate-y-[2px] scale-[80%] sm:scale-[100%] lg:scale-[85%] xl:scale-[100%]">
+            &lt;<b class="text-blue-600 dark:brightness-125">/</b>&gt; htm<b class="text-blue-600 dark:brightness-125">x</b>
+        </a>
+        <!-- Desktop Navigation -->
+        <nav class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1">
+            <ul class="flex gap-3 xl:gap-4 justify-center text-base lg:text-base xl:text-lg font-os9 tracking-tight" preload="mouseover">
+                {% for name in nav_names %}
+                <li><a href="/{{ name }}/" class="block px-3 py-1 text-blue-600 dark:text-blue-400 hover:underline"
+                       title="{{ nav_descriptions[loop.index0] }}">{{ name }}</a></li>
+                {% endfor %}
+            </ul>
+        </nav>
+        <!-- OS9 Status Bar -->
+        <div id="os9-status-bar" class="hidden lg:block flex-1 text-center font-os9 text-xs xl:text-sm text-neutral-700 dark:text-neutral-300 translate-y-0.5 truncate min-w-0"
+             _="on mouseenter from <[title]/> put event.target's @title into me
+                    on mouseleave from <[title]/> put '' into me">
+        </div>
+        <!-- Right side actions -->
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <form action="https://google.com/search" role="search" aria-label="Sitewide" title="Search htmx.org (via Google)" class="hidden lg:flex group text-sm">
+                <label class="relative os9-input cursor-text">
+                    <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
+                    <input type="text" name="q" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer"
+                           _="on keydown[key=='Meta'] from document or keydown[key=='CTRL'] from document
+                            on keydown[key=='k'] from document
+                              call me.focus()">
+                    <iconify-icon icon="pixel:search" class="peer-placeholder-shown:opacity-50 opacity-0 absolute left-4 top-1/2 -translate-y-1/2 text-xs block pointer-events-none"></iconify-icon>
+                    <kbd class="absolute right-4 top-1/2 -translate-y-1/2 opacity-50 font-os9 text-xs block pointer-events-none delay-100 starting:opacity-0 group-has-focus:opacity-0 transition"
+                         _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me">
+                        Ctrl K
+                    </kbd>
+                </label>
+            </form>
+
+            <!-- GitHub stars (desktop only) -->
+            <a href="https://github.com/bigskysoftware/htmx" target="_blank" rel="noopener noreferrer" title="Source code and contributions" class="hidden lg:flex group relative font-os9 flex-col items-center gap-[3px] transition">
+                <iconify-icon icon="pixel:github" class="text-xl text-neutral-600 dark:text-neutral-300 group-hover:text-neutral-800 dark:group-hover:text-neutral-100 transition"></iconify-icon>
+                <span class="leading-none text-[0.625rem] text-neutral-600 dark:text-neutral-300 group-hover:text-neutral-800 dark:group-hover:text-neutral-100 transition">
+                    46.4k
+                </span>
+            </a>
+            <!-- Hamburger Button (mobile only) -->
+            <label class="lg:hidden flex items-center justify-center size-10 peer-has-checked/mobile-menu:rotate-180 transition duration-300 select-none cursor-pointer"
+                   for="mobile-menu-toggle"
+                   aria-label="Toggle menu">
+                <iconify-icon icon="mdi:menu" class="text-2xl"></iconify-icon>
+            </label>
+        </div>
+    </div>
+</header>
+
+<!-- Hamburger Menu (mobile only) -->
+<nav id="mobile-menu" class="z-10 peer/mobile-menu -translate-y-full opacity-0 has-checked:opacity-100 has-checked:translate-y-0 lg:hidden fixed inset-x-0 top-[98px] sm:top-[106px] text-lg bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 shadow-lg transition">
+    <input type="checkbox" class="hidden" id="mobile-menu-toggle"> <!-- determines open/closed state -->
+
+    <!-- Navigation Links -->
+    <ul class="flex flex-col p-4 gap-2 font-os9">
+        {% for name in nav_names %}
+        <li>
+            <a href="/{{ name }}/" class="block px-4 py-3 text-blue-600 dark:text-blue-400 hover:underline hover:bg-neutral-50 dark:hover:bg-neutral-800 active:bg-neutral-100 dark:active:bg-neutral-700 rounded transition">
+                {{ name }}
+            </a>
+        </li>
+        {% endfor %}
+        <!-- Search -->
+        <form action="https://google.com/search" role="search" aria-label="Sitewide" title="Search htmx.org (via Google)" class="text-base flex group py-2 mt-1">
+            <label class="relative os9-input cursor-text flex-1">
+                <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
+                <input type="text" name="q" id="search-input" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer" autofocus>
+                <iconify-icon icon="pixel:search" class="peer-placeholder-shown:opacity-50 opacity-0 absolute left-4 top-1/2 -translate-y-1/2 block pointer-events-none"></iconify-icon>
+            </label>
+        </form>
+    </ul>
+</nav>
+
+<!-- Construction Banner -->
+<a href="/htmx-4/" class="sticky top-[66px] sm:top-[74px] z-20 flex justify-center text-center px-4 py-1 text-xs sm:text-sm text-neutral-800 dark:text-neutral-900 bg-yellow-300 border-y-4 [border-image:repeating-linear-gradient(45deg,#000,#000_10px,#ffcc00_10px,#ffcc00_20px)_4] hover:bg-yellow-300 dark:hover:bg-yellow-400 transition group"
+   title="htmx 4.0 changes and migration guide">
+    <span>🚧 htmx 4.0 is under construction. <span class="font-bold no-underline group-hover:underline">Read changes →</span></span>
+</a>
+
+<!-- Main Content -->
+{% set use_table_of_contents = (page and page.extra.table_of_contents) or (section and section.extra.table_of_contents) %}
+
+<div class="group has-[#table-of-contents]:lg:flex has-[#table-of-contents]:lg:justify-center has-[#table-of-contents]:lg:gap-12 max-w-[1680px] mx-auto px-4 sm:px-8 mt-16 mb-8 sm:mt-20 sm:mb-16 min-w-0">
+
+    {% if use_table_of_contents %}
+        {% include "table_of_contents.html" %}
+    {% endif %}
+
+    <main class="group-has-[#table-of-contents]:lg:flex-1 not-group-has-[#table-of-contents]:mx-auto prose dark:prose-invert sm:prose-lg prose-h1:text-4xl prose-a:no-underline prose-a:hover:underline prose-code:before:content-none prose-code:after:content-none [&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-28 lg:[&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-36">
+
+        {% block content %}
+        <!--
+            Page content goes here
+        -->
+        {% endblock content -%}
+
+    </main>
+
+</div>
+
+<!-- Footer -->
+<footer hx-boost:inherited="{{ should_boost }}" class="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 mt-16 sm:mt-24">
+    <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <!-- Main footer grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+            <!-- Haiku section -->
+            <div class="sm:col-span-2 lg:col-span-1">
+                <h2 class="text-sm font-bold font-os9 tracking-wider uppercase text-neutral-900 dark:text-neutral-100 mb-4">
+                    Haiku
+                </h2>
+                <p class="text-sm italic text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                    javascript fatigue:<br>
+                    longing for a hypertext<br>
+                    already in hand
+                </p>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="lg:col-span-1" aria-label="Footer navigation">
+                <h2 class="text-sm font-bold font-os9 tracking-wider uppercase text-neutral-900 dark:text-neutral-100 mb-4">
+                    Navigation
+                </h2>
+                <ul class="space-y-2 font-os9 text-sm">
+                    {% for name in nav_names %}
+                    <li>
+                        <a href="/{{ name }}/" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition capitalize"
+                           title="{{ nav_descriptions[loop.index0] }}">
+                            {{ name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+
+            <!-- Community -->
+            <div class="lg:col-span-1">
+                <h2 class="text-sm font-bold font-os9 tracking-wider uppercase text-neutral-900 dark:text-neutral-100 mb-4">
+                    Community
+                </h2>
+                <ul class="space-y-2 font-os9 text-sm">
+                    <li>
+                        <a href="https://github.com/bigskysoftware/htmx" target="_blank" rel="noopener noreferrer" title="Source code and contributions" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition inline-flex items-center gap-2">
+                            <iconify-icon icon="pixel:github" class="text-base"></iconify-icon>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/discord" title="Join the 1.4K CEOs on Discord" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition inline-flex items-center gap-2">
+                            <iconify-icon icon="pixel:discord" class="text-base"></iconify-icon>
+                            Discord
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://x.com/htmx_org" target="_blank" rel="noopener noreferrer" title="@htmx_org on X (formerly Twitter)" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition inline-flex items-center gap-2">
+                            <iconify-icon icon="dinkie-icons:twitter-alt-small" class="text-base"></iconify-icon>
+                            @htmx_org
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="lg:col-span-1">
+                <h2 class="text-sm font-bold font-os9 tracking-wider uppercase text-neutral-900 dark:text-neutral-100 mb-4">
+                    Resources
+                </h2>
+                <ul class="space-y-2 font-os9 text-sm">
+                    <li>
+                        <a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" title="Hypermedia Systems book" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition inline-flex items-center gap-2">
+                            <iconify-icon icon="dinkie-icons:closed-book-filled" class="text-base"></iconify-icon>
+                            Book
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/atom.xml" title="htmx RSS feed" class="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition inline-flex items-center gap-2">
+                            <iconify-icon icon="pixel:rss" class="text-base"></iconify-icon>
+                            RSS Feed
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom section -->
+        <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-500">
+            <span class="font-os9 flex items-center gap-1.5">
+                &copy; {{ now() | date(format="%Y") }}
+                <a href="https://bigsky.software" target="_blank" rel="noopener noreferrer" title="Big Sky Software" class="group inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition">
+                    <img src="/img/bss-bars.png" class="size-3 mx-1 group-hover:brightness-125" alt="Big Sky Software" loading="lazy">
+                    Big Sky Software
+                </a>
+            </span>
+            <p>made with &hearts; / <span class="font-os9 text-[0.675rem]">hypertext</span> (same thing)</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

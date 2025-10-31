@@ -3,6 +3,32 @@ title = "Click to Edit"
 template = "demo.html"
 +++
 
+<style type="text/tailwindcss">
+/* macOS 9 Platinum Demo Window */
+.demo-window {
+  @apply mt-6 mb-8 mx-auto max-w-4xl;
+  @apply bg-gradient-to-b from-[#e8e8e8] to-[#d0d0d0];
+  @apply border border-[#999] rounded-[3px];
+  @apply p-[6px];
+  @apply shadow-[0_2px_6px_rgba(0,0,0,0.15)];
+}
+
+.demo-window-content {
+  @apply bg-white border border-[rgba(0,0,0,0.25)];
+  @apply shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)];
+  @apply rounded-[2px];
+  @apply p-8;
+  @apply min-h-[250px];
+  @apply flex items-center justify-center;
+}
+
+.demo-window h2 {
+  @apply text-xs font-semibold mb-3 text-[#555] uppercase tracking-wider;
+  @apply [text-shadow:0_1px_0_rgba(255,255,255,0.9)];
+  @apply font-[family-name:'Lucida_Grande',Geneva,Verdana,sans-serif];
+}
+</style>
+
 This pattern shows how to edit a record in place, without a page refresh.
 
 It works by providing two modes that the user can switch between: **View Mode** & **Edit Mode**.
@@ -37,7 +63,7 @@ In edit mode, show a form with **Save** & **Cancel** options.
       hx-target:inherited="this"
       hx-swap:inherited="outerHTML">
 
-    <p>Name: <input name="name" value="{{ user.name }}"></p>
+    <p>Name: <input name="name" value="{{ user.name }}" autofocus></p>
 
     <button type="submit">
         Save
@@ -79,7 +105,7 @@ onGet("/users/1/edit", () => `
 <form hx-put="/users/1"
       hx-target:inherited="this"
       hx-swap:inherited="outerHTML">
-    <p>Name: <input name="name" value="${user.name}"></p>
+    <p>Name: <input name="name" value="${user.name}" autofocus></p>
     <button type="submit">
         Save
     </button>
@@ -103,12 +129,12 @@ onPut("/users/1", (req, params) => {
 
 <style type="text/tailwindcss">
 #demo-content > div, #demo-content > form {
-    @apply p-4 border border-gray-300 rounded shadow max-w-md;
+    @apply p-4 border border-neutral-300 rounded shadow max-w-md;
 }
 #demo-content p {
     @apply h-[34px]
 }
 #demo-content input {
-    @apply px-2 py-0.5 border border-gray-400 rounded shadow-inner;
+    @apply px-2 py-0.5 border border-neutral-400 rounded shadow-inner;
 }
 </style>
