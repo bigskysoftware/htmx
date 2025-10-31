@@ -36,7 +36,9 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ## New Features
 
 ### Morphing Swap
-- New `morph` swap is now available, based on the original `idiomorph` algorithm
+- New morph swap styles are now available, based on the original `idiomorph` algorithm
+- `innerMorph` - morphs the children of the target element
+- `outerMorph` - morphs the target element itself
 - Does a better job of preserving local state when targeting large DOM trees
 
 ### Request Preloading
@@ -57,7 +59,7 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### View Transitions
 - View Transitions API enabled by default
 - Provides smooth animated transitions between DOM states
-- Set `htmx.config.viewTransitions = false` to disable
+- Set `htmx.config.transitions = false` to disable
 
 ### Scripting API
 - New unified scripting API for async operations
@@ -72,6 +74,30 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### Built-in Streaming Response Support
 - Streaming functionality now built into core htmx
 - Improved event handling and reconnection logic
+
+### Modern Swap Terminology
+- New modern swap style names supported alongside classic names
+- `before` (equivalent to `beforebegin`)
+- `after` (equivalent to `afterend`)
+- `prepend` (equivalent to `afterbegin`)
+- `append` (equivalent to `beforeend`)
+- Both old and new terminology work (backward compatible)
+- Example: `hx-swap="prepend"` works the same as `hx-swap="afterbegin"`
+
+### Attribute Modifiers
+- New `:append` modifier for attributes to append values to inherited values
+- Values are comma-separated when appended
+- Example: `hx-include:append=".child"` appends `.child` to any inherited `hx-include` value
+- Can be combined with `:inherited` for chaining: `hx-include:inherited:append=".parent"`
+- Works with all htmx attributes that accept value lists
+
+### HTTP Status Code Conditional Swapping
+- New `hx-status:XXX` attribute pattern for status-specific swap behaviors
+- Allows different swap strategies based on HTTP response status
+- Supports exact codes: `hx-status:404="none"`
+- Supports wildcards: `hx-status:2xx="innerHTML"`, `hx-status:5xx="#error"`
+- Example: `hx-status:404="#not-found"` swaps into different target on 404
+- Overrides default swap behavior when status code matches
 
 ## Attribute Changes
 
@@ -88,7 +114,6 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `hx-request` - use `hx-config` instead
 - `hx-history` - removed (history no longer uses local storage)
 - `hx-history-elt` - removed (history uses target element)
-- `hx-select-oob` - use server actions or standard OOB swaps
 
 ### New Attributes
 - `hx-action` - specifies URL for requests (use with `hx-method`)
@@ -96,7 +121,13 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `hx-config` - configure request behavior using JSON
 - `hx-optimistic` - enable optimistic updates
 - `hx-preload` - preload requests on trigger events
+- `hx-status:XXX` - conditional swap behavior based on HTTP status code (e.g., `hx-status:404="none"`)
 - `hx-ignore` - replaces htmx 2.x `hx-disable` for disabling htmx processing
+
+### Attribute Modifier Syntax
+- `:inherited` - explicitly inherit attribute value from parent (e.g., `hx-target:inherited="this"`)
+- `:append` - append value to inherited value (e.g., `hx-include:append=".child"`)
+- `:inherited:append` - combine inheritance and appending (e.g., `hx-vals:inherited:append='{"key":"value"}'`)
 
 ## Event Changes
 
@@ -129,15 +160,9 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### New Events
 - `htmx:after:cleanup`
 - `htmx:after:history:update`
-- `htmx:after:main:swap`
-- `htmx:after:partial:swap`
-- `htmx:before:main:swap`
-- `htmx:before:partial:swap`
 - `htmx:finally:request`
 
-### Extensions Are Now Event-Based
-- Extensions no longer require explicit `hx-ext` attribute
-- Extensions now work by listening to standard htmx events
-- No explicit extension API - use public htmx API and events
+### Extensions Are Now Globally Registered
+- Extensions no longer require an explicit `hx-ext` attribute
 - Simpler extension architecture
 

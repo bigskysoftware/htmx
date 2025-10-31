@@ -241,7 +241,6 @@ describe('Unit Tests', function() {
             'find',
             'findAll',
             'forEvent',
-            'handleTriggerEvent',
             'parseInterval',
             'process',
             'swap',

@@ -30,7 +30,7 @@ title = "Documentation"
   * [confirming](#confirming)
 * [inheritance](#inheritance)
 * [boosting](#boosting)
-* [SSE](#SSE)
+* [SSE](#)
 * [WebSockets](#)
 * [history](#history)
 * [requests & responses](#requests)
@@ -49,8 +49,6 @@ title = "Documentation"
 
 </details>
 
-</div>
-<div class="10 col">
 
 ## htmx in a Nutshell {#introduction}
 
@@ -80,8 +78,9 @@ The form tag tells a browser:
 > "When a user submits this form, issue an HTTP POST request to '/register' and load the response content
 >  into the browser window".
 
-Further, both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
-attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe):
+Both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
+attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)
+rather than replacing the entire page:
 
 ```html
 <form method="post" action="/register" target="iframe1">
@@ -96,7 +95,7 @@ attribute that allows you to place the response in an [`iframe`](https://develop
 This is called [transclusion](https://en.wikipedia.org/wiki/Transclusion), where a document is included inside another
 document.
 
-With these ideas in mind, consider the following bit of HTML:
+With these ideas in mind, consider the following bit of htmx-powered HTML:
 
 ```html
 <button hx-post="/clicked"
@@ -107,25 +106,20 @@ With these ideas in mind, consider the following bit of HTML:
 </button>
 ```
 
-This is htmx-powered HTML.  Given these attribute, htmx will enable the following behavior:
+Given these attribute, htmx will enable the following behavior:
 
 > "When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
 >  to replace the element with the id `parent-div` in the DOM"
 
-htmx [generalizes the idea of hypermedia controls](https://en.wikipedia.org/wiki/Transclusion) in HTML, which means that:
-
-* Any element can issue an HTTP request
-* Any event can trigger requests
-* Any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) can be used
-* Any element can be the target for update by the request
+htmx [generalizes the idea of hypermedia controls](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127) in HTML, which means that 
+any element can issue an any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) HTTP request in response to any 
+[event](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events), and the response content can
+be place anywhere in the page.
 
 Like in the case of the link and form examples above, htmx expects the server to responds with HTML, not *JSON*.  
 
 In this manner, htmx follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
 of the web, using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
-
-While this may seem a little academic (and the ideas are interesting!) it turns out that this small extension to HTML
-enables developers to create much more [sophisticated user experiences](@/examples/_index.md) using HTML.
 
 ## 2.x to 4.x Migration Guide
 
@@ -161,7 +155,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 ### Download a copy
 
-The next easiest way to install htmx is to simply copy it into your project.
+The next easiest way to install htmx is to simply copy it into your project, an option called [vendoring](@/essays/vendoring.md).
 
 Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha1/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
