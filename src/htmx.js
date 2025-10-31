@@ -94,12 +94,12 @@ var htmx = (() => {
         __initHtmxConfig() {
             this.config = {
                 logAll: false,
-                viewTransitions: true,
-                historyEnabled: true,
-                selfRequestsOnly: true,
-                reloadOnHistoryNavigation: false,
-                defaultSwapStyle: "innerHTML",
-                defaultTimeout: 60000, /* 00 second default timeout */
+                transitions: true,
+                history: true,
+                historyReload: false,
+                mode: 'same-origin',
+                defaultSwap: "innerHTML",
+                defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 streams: {
                     mode: 'once',
@@ -108,8 +108,8 @@ var htmx = (() => {
                     maxDelay: 30000,
                     pauseHidden: false
                 },
-                noMoprhAttributes: ["data-htmx-powered"],
-                ignoredStatuses: [204],
+                morphIgnore: ["data-htmx-powered"],
+                noSwap: [204],
             }
             let metaConfig = this.find('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -271,10 +271,10 @@ var htmx = (() => {
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
                 optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 target: this.__attributeValue(sourceElement, "hx-target"),
-                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwapStyle),
+                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
-                transition: this.config.viewTransitions,
+                transition: this.config.transitions,
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                     action,
@@ -378,7 +378,7 @@ var htmx = (() => {
                 body,
                 credentials: "same-origin",
                 signal: ac.signal,
-                ...(this.config.selfRequestsOnly && {mode: "same-origin"})
+                mode: this.config.mode
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
@@ -1123,7 +1123,7 @@ var htmx = (() => {
 
         __parseSwapSpec(swapStr) {
             let tokens = this.__tokenize(swapStr);
-            let config = {style: tokens[1] === ':' ? this.config.defaultSwapStyle : (tokens[0] || this.config.defaultSwapStyle)};
+            let config = {style: tokens[1] === ':' ? this.config.defaultSwap : (tokens[0] || this.config.defaultSwap)};
             let startIdx = tokens[1] === ':' ? 0 : 1;
 
             for (let i = startIdx; i < tokens.length; i++) {
@@ -1158,7 +1158,7 @@ var htmx = (() => {
             let tasks = [];
 
             for (let partialElt of fragment.querySelectorAll('template[partial]')) {
-                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwapStyle);
+                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute('hx-swap') || this.config.defaultSwap);
 
                 tasks.push({
                     type: 'partial',
@@ -1302,7 +1302,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Create main task if needed
-            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwapStyle);
+            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
                 let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
@@ -1502,7 +1502,7 @@ var htmx = (() => {
         //============================================================================================
 
         __initHistoryHandling() {
-            if (!this.config.historyEnabled) return;
+            if (!this.config.history) return;
             // Handle browser back/forward navigation
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
@@ -1512,13 +1512,13 @@ var htmx = (() => {
         }
 
         __pushUrlIntoHistory(path) {
-            if (!this.config.historyEnabled) return;
+            if (!this.config.history) return;
             history.pushState({htmx: true}, '', path);
             this.__trigger(document.body, "htmx:after:push:into:history", {path});
         }
 
         __replaceUrlInHistory(path) {
-            if (!this.config.historyEnabled) return;
+            if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
             this.__trigger(document.body, "htmx:after:replace:into:history", {path});
         }
@@ -1526,7 +1526,7 @@ var htmx = (() => {
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
             if (this.__trigger(document.body, "htmx:before:restore:history", {path, cacheMiss: true})) {
-                if (htmx.config.reloadOnHistoryNavigation) {
+                if (htmx.config.historyReload) {
                     location.reload();
                 } else {
                     this.ajax('GET', path, {
@@ -1953,7 +1953,7 @@ var htmx = (() => {
             let type = newNode.nodeType;
 
             if (type === 1) {
-                let noMorph = htmx.config.noMoprhAttributes || [];
+                let noMorph = htmx.config.morphIgnore || [];
                 for (const attr of newNode.attributes) {
                     if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
                         oldNode.setAttribute(attr.name, attr.value);
@@ -2024,7 +2024,7 @@ var htmx = (() => {
 
         __handleStatusCodes(ctx) {
             let status = ctx.response.raw.status;
-            if (this.config.ignoredStatuses.includes(status)) {
+            if (this.config.noSwap.includes(status)) {
                 ctx.swap = "none";
             }
             let str = status + ""
