@@ -94,6 +94,7 @@ var htmx = (() => {
         __initHtmxConfig() {
             this.config = {
                 logAll: false,
+                prefix: "",
                 transitions: true,
                 history: true,
                 historyReload: false,
@@ -140,6 +141,7 @@ var htmx = (() => {
         }
 
         __attributeValue(elt, name, defaultVal) {
+            name += this.config.prefix
             let inheritName = name + ":inherited";
             if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
                 return elt.getAttribute(name) || elt.getAttribute(inheritName);
