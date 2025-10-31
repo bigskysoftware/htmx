@@ -130,7 +130,9 @@ var htmx = (() => {
         }
 
         defineExtension(name, extension) {
-            if (!this.#approvedExtensions.delete(name)) return false;
+            if (!this.#approvedExtensions.delete(name)) {
+                return false;
+            }
             extension.init?.(this);
             this.#extensions.push(extension);
         }
@@ -474,7 +476,7 @@ var htmx = (() => {
                     ctx.status = "response received";
 
                     if (!ctx.response.cancelled) {
-                        this.__handleResponseCodes(ctx);
+                        this.__handleStatusCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         this.__removeOptimisticContent(ctx);
                         await this.swap(ctx);
@@ -493,7 +495,8 @@ var htmx = (() => {
                 this.__trigger(elt, "htmx:finally:request", {ctx})
 
                 if (requestQueue.hasMore()) {
-                    setTimeout(() => this.__issueRequest(requestQueue.nextRequest()))
+                    // is it OK to not await here?  try/catch?
+                    this.__issueRequest(requestQueue.nextRequest())
                 }
             }
         }
@@ -623,7 +626,7 @@ var htmx = (() => {
             } else {
                 timeoutInterval = htmx.config.defaultTimeout;
             }
-            ctx.requestTimeout = setTimeout(() => ctx.abort(), timeoutInterval);
+            ctx.requestTimeout = setTimeout(() => ctx.abort?.(), timeoutInterval);
         }
 
         __determineSyncStrategy(elt) {
@@ -1173,6 +1176,7 @@ var htmx = (() => {
         }
 
         async __executeSwapTask(task) {
+            // TODO I think the async flag should be used to determine if we await the swap only
             if (task.swapSpec.swapDelay) {
                 if (task.async) {
                     await this.timeout(task.swapSpec.swapDelay);
@@ -1189,6 +1193,7 @@ var htmx = (() => {
             return this.__performSwap(task);
         }
 
+        // TODO I think this function should be async
         __performSwap(task) {
             if (typeof task.target === 'string') {
                 task.target = this.find(task.target);
@@ -1320,7 +1325,7 @@ var htmx = (() => {
                     fragment: resultFragment,
                     target: ctx.target,
                     swapSpec,
-                    async: swapSpec.async !== false,
+                    async: swapSpec.async !== false, // should this be === true?
                     sourceElement: ctx.sourceElement,
                     transition: (ctx.transition !== false) && (swapSpec.transition !== false),
                     title
@@ -2019,16 +2024,16 @@ var htmx = (() => {
             return persistentIds;
         }
 
-        __handleResponseCodes(ctx) {
+        __handleStatusCodes(ctx) {
             let status = ctx.response.raw.status;
             if (this.config.ignoredStatuses.includes(status)) {
                 ctx.swap = "none";
             }
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                let swapSpec = this.__attributeValue(ctx.sourceElement, "hx-on:" + pattern);
-                if (swapSpec) {
-                    ctx.swap = this.__parseSwapSpec(swapSpec)
+                let swap = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
+                if (swap) {
+                    ctx.swap = swap
                     return
                 }
             }
