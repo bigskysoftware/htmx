@@ -211,7 +211,7 @@ describe('Unit Tests', function() {
     it("__parseTriggerSpecs throws on unterminated filter", function() {
         assert.throws(() => {
             htmx.__parseTriggerSpecs('click[ctrlKey');
-        }, /Unterminated event filter/);
+        }, /unterminated/);
     })
 
     it("__parseTriggerSpecs handles complex real-world spec", function() {

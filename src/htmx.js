@@ -53,8 +53,8 @@ var htmx = (() => {
 
     class Htmx {
 
-        #extensions = [];
-        #approvedExtensions = new Set();
+        #extMethods = new Map();
+        #approvedExt = new Set();
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
         __actionSelector = "[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]";
         __boostSelector = "a,form";
@@ -124,15 +124,14 @@ var htmx = (() => {
                     }
                 }
             }
-            this.#approvedExtensions = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
+            this.#approvedExt = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
         }
 
         defineExtension(name, extension) {
-            if (!this.#approvedExtensions.delete(name)) {
-                return false;
-            }
-            extension.init?.(this);
-            this.#extensions.push(extension);
+            if (!this.#approvedExt.delete(name)) return false;
+            Object.entries(extension).forEach(([key, value]) => {
+                if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
+            });
         }
 
         __ignore(elt) {
@@ -1392,9 +1391,9 @@ var htmx = (() => {
 
         __triggerExtensions(elt, eventName, detail = {}) {
             detail.cancelled = false;
-            let methodName = eventName.replace(/:/g, '_');
-            for (const ext of this.#extensions) {
-                if (ext[methodName]?.(elt, detail) === false || detail.cancelled) {
+            const methods = this.#extMethods.get(eventName.replace(/:/g, '_')) ?? [];
+            for (const fn of methods) {
+                if (fn(elt, detail) === false || detail.cancelled) {
                     detail.cancelled = true;
                     return false;
                 }
