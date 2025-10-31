@@ -1264,6 +1264,7 @@ var htmx = (() => {
 
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
+            // TODO explain this filter plz
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
                 let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
@@ -1282,7 +1283,7 @@ var htmx = (() => {
                 tasks.push({
                     type: 'main',
                     fragment: resultFragment,
-                    target: ctx.target,
+                    target: swapSpec.target || ctx.target,
                     swapSpec,
                     sourceElement: ctx.sourceElement,
                     transition: (ctx.transition !== false) && (swapSpec.transition !== false),
@@ -1295,6 +1296,10 @@ var htmx = (() => {
             // Separate async/sync tasks
             let transitionTasks = tasks.filter(t => t.transition);
             let nonTransitionTasks = tasks.filter(t => !t.transition);
+
+            if(!this.__trigger(document, "htmx:before:swap", {ctx, tasks})){
+                return
+            }
 
             // insert non-transition tasks immediately
             for (let task of nonTransitionTasks) {

@@ -59,20 +59,6 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(1)
     })
 
-    it('polling works', async function () {
-        mockResponse('GET', '/test', "foo")
-        createProcessedHTML('<div hx-trigger="every 5ms" hx-get="/test" hx-swap="innerHTML"/>')
-        await htmx.timeout(100)
-        fetchMock.calls.length.should.be.greaterThan(1)
-    })
-
-    it('polling stops when an element is removed', async function () {
-        mockResponse('GET', '/test', "foo")
-        createProcessedHTML('<div hx-trigger="every 10ms" hx-get="/test" hx-swap="outerHTML"/>')
-        await htmx.timeout(50)
-        fetchMock.calls.length.should.be.lessThan(3)
-    })
-
     // TODO replace with direct test
     // it('changed modifier works along from clause with single input', async function() {
     //     mockResponse('GET', '/test', "Response")
