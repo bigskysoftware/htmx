@@ -32,7 +32,7 @@ when the content is swapped into the DOM.
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 ```
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <div id="tabs" hx-target="#tab-contents" role="tablist"
      hx-on:htmx-after-on-load="console.log(event)

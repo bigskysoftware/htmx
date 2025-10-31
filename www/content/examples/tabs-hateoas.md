@@ -31,7 +31,7 @@ Subsequent tab pages display all tabs and highlight the selected one accordingly
 </div>
 ```
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <div id="tabs" hx-target="this" hx-swap="innerHTML">
 		<div class="tab-list" role="tablist">

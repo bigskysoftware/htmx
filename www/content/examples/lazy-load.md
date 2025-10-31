@@ -33,7 +33,7 @@ img {
 }
 </style>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     server.autoRespondAfter = 2000; // longer response for more drama

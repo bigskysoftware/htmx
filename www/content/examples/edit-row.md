@@ -91,7 +91,7 @@ there is an [`hx-include`](@/attributes/hx-include.md) that includes all the inp
 notoriously difficult to use with forms due to HTML constraints (you can't put a `form` directly inside a `tr`) so
 this makes things a bit nicer to deal with.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

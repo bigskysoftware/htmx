@@ -92,7 +92,7 @@ This example uses styling cribbed from the bootstrap progress bar:
 }
 ```
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <style>
 .progress {

@@ -34,7 +34,7 @@ The same principles generally apply to web components that don't use shadow DOM 
 won't be encapsulated like with shadow DOM, you'll still have to point HTMX to your component's content by
 calling `htmx.process`.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
   //=========================================================================

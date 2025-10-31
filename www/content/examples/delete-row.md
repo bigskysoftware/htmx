@@ -61,7 +61,7 @@ tr.htmx-swapping td {
 }
 </style>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     //=========================================================================

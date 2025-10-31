@@ -58,7 +58,7 @@ the item ids in the new order to `/items`, to be persisted by the server.
 
 That's it!
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>

@@ -22,7 +22,7 @@ The last element of the results will itself contain the listener to load the *ne
 
 > `revealed` - triggered when an element is scrolled into the viewport (also useful for lazy-loading). If you are using `overflow` in css like `overflow-y: scroll` you should use `intersect once` instead of `revealed`.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     server.autoRespondAfter = 1000; // longer response for more drama

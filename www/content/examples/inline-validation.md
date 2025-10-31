@@ -76,7 +76,7 @@ Below is a working demo of this example.  The only email that will be accepted i
    }
 </style>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
 
