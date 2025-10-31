@@ -192,7 +192,7 @@ var htmx = (() => {
                         token += tokens[++i];
                     }
                     if (token.includes("[") && !token.includes("]")) {
-                        throw "Unterminated event filter: " + token;
+                        throw "unterminated:" + token;
                     }
                     currentSpec = {name: token};
                     specs.push(currentSpec);
