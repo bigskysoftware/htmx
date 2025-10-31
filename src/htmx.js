@@ -1390,12 +1390,14 @@ var htmx = (() => {
         }
 
         __triggerExtensions(elt, eventName, detail = {}) {
-            detail.cancelled = false;
-            const methods = this.#extMethods.get(eventName.replace(/:/g, '_')) ?? [];
-            for (const fn of methods) {
-                if (fn(elt, detail) === false || detail.cancelled) {
-                    detail.cancelled = true;
-                    return false;
+            let methods = this.#extMethods.get(eventName.replace(/:/g, '_'))
+            if (methods) {
+                detail.cancelled = false;
+                for (const fn of methods) {
+                    if (fn(elt, detail) === false || detail.cancelled) {
+                        detail.cancelled = true;
+                        return false;
+                    }
                 }
             }
             return true;
