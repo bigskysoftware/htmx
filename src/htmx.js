@@ -1428,16 +1428,17 @@ var htmx = (() => {
 
         forEvent(event, timeout, on = document) {
             return new Promise((resolve, reject) => {
-                let timeoutId = timeout && setTimeout(() => {
-                    on.removeEventListener(event, handler);
-                    reject(new Error(`Timeout waiting for ${event}`));
-                }, timeout);
                 let handler = (evt) => {
                     clearTimeout(timeoutId);
-                    on.removeEventListener(event, handler);
                     resolve(evt);
                 };
-                on.addEventListener(event, handler);
+
+                let timeoutId = timeout && setTimeout(() => {
+                    on.removeEventListener(event, handler);
+                    resolve(null);
+                }, timeout);
+
+                on.addEventListener(event, handler, { once: true });
             })
         }
 
