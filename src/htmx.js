@@ -698,20 +698,20 @@ var htmx = (() => {
                         observerOptions.threshold = parseFloat(spec.opts.threshold)
                     }
                     let isRevealed = eventName === "revealed"
-                    let observer = new IntersectionObserver((entries) => {
+                    spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
                             let entry = entries[i]
                             if (entry.isIntersecting) {
-                                this.trigger(elt, 'intersect')
+                                this.trigger(elt, 'intersect', {}, false)
                                 if (isRevealed) {
-                                    observer.disconnect()
+                                    spec.observer.disconnect()
                                 }
                                 break;
                             }
                         }
                     }, observerOptions)
-                    eventName = "revealed"
-                    observer.observe(elt)
+                    eventName = "intersect"
+                    spec.observer.observe(elt)
                 }
 
                 if (spec.delay) {
