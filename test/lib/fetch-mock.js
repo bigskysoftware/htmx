@@ -112,6 +112,11 @@ class FetchMock {
         this.mockResponse(method, urlPattern, Promise.reject(error));
     }
 
+    // Mock a network failure (simpler alias)
+    mockFailure(method, urlPattern, message = 'Network failure') {
+        this.mockNetworkError(method, urlPattern, new Error(message));
+    }
+
     // Find matching response
     findResponse(method, url) {
         for (let i = this.responses.length - 1; i >= 0; i--) {

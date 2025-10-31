@@ -105,6 +105,10 @@ function mockResponse(action, pattern, response, options = {}) {
   fetchMock.mockResponse(action, pattern, response, options);
 }
 
+function mockFailure(action, pattern, message = 'Network failure') {
+  fetchMock.mockFailure(action, pattern, message);
+}
+
 function mockStreamResponse(url) {
   const controllers = [];
   const enc = new TextEncoder();

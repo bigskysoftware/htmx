@@ -1213,6 +1213,7 @@ var htmx = (() => {
                 // Assume outerHTML-like behavior, Hide target and insert div after it
                 target.style.display = 'none';
                 ctx.optHidden.push(target)
+                target.after(optimisticDiv)
                 ctx.optimisticDiv = optimisticDiv;
             }
         }
