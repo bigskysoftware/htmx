@@ -284,7 +284,7 @@ var htmx = (() => {
             return async (evt) => {
                 try {
                     let ctx = this.__createRequestContext(elt, evt);
-                    await this.handleTriggerEvent(ctx);
+                    await this.__handleTriggerEvent(ctx);
                 } catch (e) {
                     console.error(e)
                 }
@@ -372,7 +372,7 @@ var htmx = (() => {
             return elt.__htmx?.boosted;
         }
 
-        async handleTriggerEvent(ctx) {
+        async __handleTriggerEvent(ctx) {
             let elt = ctx.sourceElement
             let evt = ctx.sourceEvent
             if (!elt.isConnected) return
@@ -1493,7 +1493,7 @@ var htmx = (() => {
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (context.headers) Object.assign(ctx.request.headers, context.headers);
 
-            return this.handleTriggerEvent(ctx);
+            return this.__handleTriggerEvent(ctx);
         }
 
         //============================================================================================
