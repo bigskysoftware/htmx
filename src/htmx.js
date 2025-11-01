@@ -489,8 +489,30 @@ var htmx = (() => {
                     headers: response.headers,
                     cancelled: false,
                 }
+                
+                // Extract HX-* headers into ctx.hx
+                ctx.hx = {}
+                for (let [k, v] of response.headers) {
+                    if (k.toLowerCase().startsWith('hx-')) {
+                        ctx.hx[k.slice(3).toLowerCase().replace(/-/g, '')] = v
+                    }
+                }
 
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
+
+                if (ctx.hx.trigger) this.__handleTriggerHeader(ctx.hx.trigger, elt);
+                if (ctx.hx.refresh === 'true') return location.reload();
+                if (ctx.hx.redirect) return location.href = ctx.hx.redirect;
+                if (ctx.hx.location) {
+                    let path = ctx.hx.location, opts = {};
+                    if (path[0] === '{') {
+                        opts = JSON.parse(path);
+                        path = opts.path;
+                        delete opts.path;
+                    }
+                    opts.push = opts.push || 'true';
+                    return this.ajax('GET', path, opts);
+                }
 
                 let isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
                 if (isSSE) {
@@ -502,6 +524,9 @@ var htmx = (() => {
                     ctx.status = "response received";
 
                     if (!ctx.response.cancelled) {
+                        if (ctx.hx.retarget) ctx.target = this.__resolveTarget(elt, ctx.hx.retarget);
+                        if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
+                        if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                         this.__handleStatusCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         await this.swap(ctx);
@@ -879,6 +904,20 @@ var htmx = (() => {
             return [match[1], match[2]];
         }
 
+        __handleTriggerHeader(value, elt) {
+            if (!elt.isConnected) elt = document.body;
+            if (value[0] === '{') {
+                let triggers = JSON.parse(value);
+                for (let name in triggers) {
+                    let detail = triggers[name];
+                    if (detail?.target) elt = this.find(detail.target) || elt;
+                    this.trigger(elt, name, typeof detail === 'object' ? detail : {value: detail});
+                }
+            } else {
+                value.split(',').forEach(name => this.trigger(elt, name.trim(), {}));
+            }
+        }
+
         __apiMethods() {
             let bound = {};
             let proto = Object.getPrototypeOf(this);
@@ -1231,6 +1270,7 @@ var htmx = (() => {
                 }
             }
             this.__trigger(document, "htmx:after:restore", {ctx});
+            if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
         __processMainSwap(ctx, fragment, partialTasks, title) {
@@ -1480,12 +1520,10 @@ var htmx = (() => {
         }
 
         __handleHistoryUpdate(ctx) {
-            let {sourceElement, push, replace, response} = ctx;
-            let headerPush = response.headers?.get?.('HX-Push') || response.headers?.get?.('HX-Push-Url');
-            let headerReplace = response.headers?.get?.('HX-Replace-Url');
-            if (headerPush || headerReplace) {
-                push = headerPush;
-                replace = headerReplace;
+            let {sourceElement, push, replace, hx, response} = ctx;
+            if (hx?.push || hx?.pushurl || hx?.replaceurl) {
+                push = hx.push || hx.pushurl;
+                replace = hx.replaceurl;
             }
 
             if (!push && !replace && this.__isBoosted(sourceElement)) {
