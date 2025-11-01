@@ -271,7 +271,6 @@ var htmx = (() => {
                 elt.__htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.__initializeTriggers(elt);
-                this.__initializePreload(elt);
                 this.__initializeStreamConfig(elt);
                 this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
@@ -298,7 +297,6 @@ var htmx = (() => {
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
-                optimistic: this.__attributeValue(sourceElement, "hx-optimistic"),
                 target: this.__attributeValue(sourceElement, "hx-target"),
                 swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
@@ -463,18 +461,7 @@ var htmx = (() => {
 
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
-                // Fetch response (from preload cache or network)
-                let response;
-                if (elt.__htmx?.preload &&
-                    elt.__htmx.preload.action === ctx.request.action &&
-                    Date.now() < elt.__htmx.preload.expiresAt) {
-                    response = await elt.__htmx.preload.prefetch;
-                    delete elt.__htmx.preload;
-                } else {
-                    if (elt.__htmx) delete elt.__htmx.preload;
-                    this.__insertOptimisticContent(ctx);
-                    response = await fetch(ctx.request.action, ctx.request);
-                }
+                let response = await fetch(ctx.request.action, ctx.request);
 
                 ctx.response = {
                     raw: response,
@@ -497,7 +484,6 @@ var htmx = (() => {
                     if (!ctx.response.cancelled) {
                         this.__handleStatusCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
-                        this.__removeOptimisticContent(ctx);
                         await this.swap(ctx);
                         this.__handleAnchorScroll(ctx)
                         ctx.status = "swapped";
@@ -506,7 +492,6 @@ var htmx = (() => {
 
             } catch (error) {
                 ctx.status = "error: " + error;
-                this.__removeOptimisticContent(ctx);
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 this.__hideIndicators(indicatorsSelector);
@@ -599,7 +584,6 @@ var htmx = (() => {
 
                         if (!ctx.response.cancelled) {
                             this.__handleHistoryUpdate(ctx);
-                            this.__removeOptimisticContent(ctx);
                             await this.swap(ctx);
                             this.__handleAnchorScroll(ctx);
                             ctx.status = "swapped";
@@ -838,54 +822,6 @@ var htmx = (() => {
             }
         }
 
-        __initializePreload(elt) {
-            let preloadSpec = this.__attributeValue(elt, "hx-preload");
-            if (!preloadSpec) return;
-
-            let specs = this.__parseTriggerSpecs(preloadSpec);
-            if (specs.length === 0) return;
-
-            let spec = specs[0];
-            let eventName = spec.name;
-            let timeout = spec.timeout ? this.parseInterval(spec.timeout) : 5000;
-
-            let preloadListener = async (evt) => {
-                // Only preload GET requests
-                let {method} = this.__determineMethodAndAction(elt, evt);
-                if (method !== 'GET') return;
-
-                // Skip if already preloading
-                if (elt.__htmx.preload) return;
-
-                // Create config and build full action URL with params
-                let ctx = this.__createRequestContext(elt, evt);
-                let form = elt.form || elt.closest("form");
-                let body = this.__collectFormData(elt, form, evt.submitter);
-                this.__handleHxVals(elt, body);
-
-                let action = ctx.request.action.replace?.(/#.*$/, '');
-                let params = new URLSearchParams(body);
-                if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
-
-                // Store preload info
-                elt.__htmx.preload = {
-                    prefetch: fetch(action, ctx.request),
-                    action: action,
-                    expiresAt: Date.now() + timeout
-                };
-
-                try {
-                    await elt.__htmx.preload.prefetch;
-                } catch (error) {
-                    // Clear on error so actual trigger will retry
-                    delete elt.__htmx.preload;
-                }
-            };
-            elt.addEventListener(eventName, preloadListener);
-            elt.__htmx.preloadListener = preloadListener;
-            elt.__htmx.preloadEvent = eventName;
-        }
-
         __initializeStreamConfig(elt) {
             let streamSpec = this.__attributeValue(elt, 'hx-stream');
             if (!streamSpec) return;
@@ -1010,9 +946,6 @@ var htmx = (() => {
                 for (let listenerInfo of elt.__htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
                 }
-                if (elt.__htmx.preloadListener) {
-                    elt.removeEventListener(elt.__htmx.preloadEvent, elt.__htmx.preloadListener);
-                }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
             for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
@@ -1053,6 +986,7 @@ var htmx = (() => {
             return Document.parseHTMLUnsafe?.(resp) || new DOMParser().parseFromString(resp, 'text/html');
         }
 
+        // TODO - store any head tag content on the fragment?
         __makeFragment(text) {
             // Replace <htmx-action type="partial"> tags with <template partial>
             let response = text.replace(/<htmx-action\s+type=["']partial["']/gi, '<template partial').replace(/<\/htmx-action>/gi, '</template>');
@@ -1201,59 +1135,6 @@ var htmx = (() => {
             return tasks;
         }
 
-        __insertOptimisticContent(ctx) {
-            if (!ctx.optimistic) return;
-
-            let sourceElt = document.querySelector(ctx.optimistic);
-            if (!sourceElt) return;
-
-            let target = ctx.target;
-            if (!target) return;
-
-            if (typeof target === 'string') {
-                target = document.querySelector(target);
-            }
-
-            // Create optimistic div with reset styling
-            let optimisticDiv = document.createElement('div');
-            optimisticDiv.style.cssText = 'all: initial';
-            optimisticDiv.innerHTML = sourceElt.innerHTML;
-
-            let swapStyle = this.__normalizeSwapStyle(ctx.swap);
-            ctx.optHidden = [];
-
-            if (swapStyle === 'innerHTML') {
-                // Hide children of target
-                for (let child of target.children) {
-                    child.style.display = 'none';
-                    ctx.optHidden.push(child)
-                }
-                target.appendChild(optimisticDiv);
-                ctx.optimisticDiv = optimisticDiv;
-            } else if (['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(swapStyle)) {
-                target.insertAdjacentElement(swapStyle, optimisticDiv);
-                ctx.optimisticDiv = optimisticDiv;
-            } else {
-                // Assume outerHTML-like behavior, Hide target and insert div after it
-                target.style.display = 'none';
-                ctx.optHidden.push(target)
-                target.after(optimisticDiv)
-                ctx.optimisticDiv = optimisticDiv;
-            }
-        }
-
-        __removeOptimisticContent(ctx) {
-            if (!ctx.optimisticDiv) return;
-
-            // Remove optimistic div
-            ctx.optimisticDiv.remove();
-
-            // Unhide any hidden elements
-            for (let elt of ctx.optHidden) {
-                elt.style.display = '';
-            }
-        }
-
         __handleScroll(target, scroll) {
             if (scroll === 'top') target.scrollTop = 0;
             else if (scroll === 'bottom') target.scrollTop = target.scrollHeight;
@@ -1291,38 +1172,16 @@ var htmx = (() => {
             let partialTasks = this.__processPartials(fragment, ctx.sourceElement);
             tasks.push(...oobTasks, ...partialTasks);
 
-            // Create main task if needed
-            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // TODO explain this filter plz
-            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
-                let resultFragment = document.createDocumentFragment();
-                if (ctx.select) {
-                    let selected = fragment.querySelector(ctx.select);
-                    if (selected) {
-                        if (swapSpec.strip === false) {
-                            resultFragment.append(selected);
-                        } else {
-                            resultFragment.append(...selected.childNodes);
-                        }
-                    }
-                } else {
-                    resultFragment.append(...fragment.childNodes);
-                }
-
-                tasks.push({
-                    type: 'main',
-                    fragment: resultFragment,
-                    target: swapSpec.target || ctx.target,
-                    swapSpec,
-                    sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
-                    title
-                });
+            // Process main swap
+            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks, title);
+            if (mainSwap) {
+                tasks.push(mainSwap);
             }
 
+            // TODO - can we remove this and just let the function complete?
             if (tasks.length === 0) return;
 
-            // Separate async/sync tasks
+            // Separate transition/nonTransition tasks
             let transitionTasks = tasks.filter(t => t.transition);
             let nonTransitionTasks = tasks.filter(t => !t.transition);
 
@@ -1345,6 +1204,38 @@ var htmx = (() => {
                 await this.__submitTransitionTask(tasksWrapper);
             }
             this.__trigger(document, "htmx:after:swap", {ctx});
+        }
+
+        __processMainSwap(ctx, fragment, partialTasks, title) {
+            // Create main task if needed
+            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
+            // TODO explain this filter plz
+            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
+                let resultFragment = document.createDocumentFragment();
+                if (ctx.select) {
+                    let selected = fragment.querySelector(ctx.select);
+                    if (selected) {
+                        if (swapSpec.strip === false) {
+                            resultFragment.append(selected);
+                        } else {
+                            resultFragment.append(...selected.childNodes);
+                        }
+                    }
+                } else {
+                    resultFragment.append(...fragment.childNodes);
+                }
+
+                let mainSwap = {
+                    type: 'main',
+                    fragment: resultFragment,
+                    target: swapSpec.target || ctx.target,
+                    swapSpec,
+                    sourceElement: ctx.sourceElement,
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
+                    title
+                };
+                return mainSwap;
+            }
         }
 
         __insertContent(task) {
@@ -1829,7 +1720,7 @@ var htmx = (() => {
             let {persistentIds, idMap} = this.__createIdMaps(oldNode, fragment);
             let pantry = document.createElement("div");
             pantry.hidden = true;
-            document.body.insertAdjacentElement("afterend", pantry);
+            document.body.after( pantry);
             let ctx = {target: oldNode, idMap, persistentIds, pantry};
 
             if (innerHTML) {

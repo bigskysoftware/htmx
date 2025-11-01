@@ -8,14 +8,6 @@ describe('hx-optimistic attribute', function() {
         cleanupTest(this.currentTest)
     })
 
-    it('reads hx-optimistic attribute into config', async function () {
-        let ctx = null;
-        document.addEventListener('htmx:config:request', e => ctx = e.detail.ctx, {once: true});
-        mockResponse('POST', '/submit', 'Final')
-        createProcessedHTML('<div id="opt" style="display:none">Opt</div><button hx-post="/submit" hx-optimistic="#opt">Go</button>');
-        await clickAndWait('button')
-        assert.equal(ctx.optimistic, '#opt');
-    })
 
     it('innerHTML swap hides children and appends optimistic div', async function () {
         mockResponse('POST', '/submit', 'Final')

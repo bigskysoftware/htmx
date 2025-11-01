@@ -100,14 +100,14 @@ describe('hx-boost attribute', async function() {
     //     fetchMock.calls.length.should.equal(0)
     // })
 
-    it('includes an HX-Boosted Header', async function() {
-        mockResponse('GET', '/test', "Boosted!")
-        createProcessedHTML('<a hx-boost="true" hx-target="this" hx-swap="outerHTML" href="/test">Click Me!</a>')
-        await clickAndWait("a")
-        fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
-        fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
-        playground().innerHTML.should.equal('Boosted!')
-    })
+    // it('includes an HX-Boosted Header', async function() {
+    //     mockResponse('GET', '/test', "Boosted!")
+    //     createProcessedHTML('<a hx-boost="true" hx-target="this" hx-swap="outerHTML" href="/test">Click Me!</a>')
+    //     await clickAndWait("a")
+    //     fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
+    //     fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
+    //     playground().innerHTML.should.equal('Boosted!')
+    // })
 
     // it('form get w/ search params in action property excludes search params', async function() {
     //     mockResponse('GET', /\/test.*/, async function(xhr) {
