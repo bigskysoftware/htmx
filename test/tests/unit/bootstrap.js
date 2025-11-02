@@ -1,4 +1,4 @@
-describe('Unit Tests', function() {
+describe('bootstrap unit tests', function() {
     it("Test that fragment parsing works as expected", function() {
         var result = htmx.__makeFragment("foo");
         var temp = document.createElement('div');
