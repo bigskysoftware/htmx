@@ -12,10 +12,9 @@ var htmx = (() => {
             } else {
                 // Update ctx.status properly for replaced request contexts
                 if (queueStrategy === "replace") {
+                    this.#q.map(value => value.status = "dropped");
                     this.#q = []
                     if (this.#c) {
-                        // TODO standardize on ctx.status
-                        this.#c.cancelled = true;
                         this.#c.abort();
                     }
                     return true
@@ -26,12 +25,15 @@ var htmx = (() => {
                     // ignore the request
                     ctx.status = "dropped";
                 } else if (queueStrategy === "queue last") {
+                    this.#q.map(value => value.status = "dropped");
                     this.#q = [ctx]
                     ctx.status = "queued";
                 } else if (this.#q.length === 0) {
                     // default queue first
                     this.#q.push(ctx)
                     ctx.status = "queued";
+                } else {
+                    ctx.status = "dropped";
                 }
                 return false
             }
@@ -487,7 +489,6 @@ var htmx = (() => {
                     raw: response,
                     status: response.status,
                     headers: response.headers,
-                    cancelled: false,
                 }
 
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
@@ -499,9 +500,8 @@ var htmx = (() => {
                 } else {
                     // HTTP response
                     ctx.text = await response.text();
-                    ctx.status = "response received";
-
-                    if (!ctx.response.cancelled) {
+                    if (ctx.status === "issuing") {
+                        ctx.status = "response received";
                         this.__handleStatusCodes(ctx);
                         this.__handleHistoryUpdate(ctx);
                         await this.swap(ctx);

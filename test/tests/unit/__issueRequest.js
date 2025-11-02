@@ -135,7 +135,6 @@ describe('__issueRequest unit tests', function() {
 
         assert.equal(ctx.response.status, 201)
         assert.equal(ctx.response.headers, mockHeaders)
-        assert.equal(ctx.response.cancelled, false)
         assert.isDefined(ctx.response.raw)
     })
 
