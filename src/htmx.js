@@ -1197,13 +1197,22 @@ var htmx = (() => {
             // insert transition tasks in the transition queue
             if (transitionTasks.length > 0) {
                 let tasksWrapper = ()=> {
-                    for (const task of transitionTasks) {
+                    for (let task of transitionTasks) {
                         this.__insertContent(task)
                     }
                 }
                 await this.__submitTransitionTask(tasksWrapper);
             }
+
             this.__trigger(document, "htmx:after:swap", {ctx});
+            await this.timeout(1);
+            // invoke restore tasks
+            for (let task of tasks) {
+                for (let restore of task.restoreTasks) {
+                    restore()
+                }
+            }
+            this.__trigger(document, "htmx:after:restore", {ctx});
         }
 
         __processMainSwap(ctx, fragment, partialTasks, title) {
@@ -1247,9 +1256,11 @@ var htmx = (() => {
             let pantry = this.__handlePreservedElements(task.fragment);
             let target = task.target, parentNode = target.parentNode;
             if (swapSpec.style === 'innerHTML') {
+                this.__captureCSSTransitions(task, target);
                 target.replaceChildren(...task.fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
+                    this.__captureCSSTransitions(task, parentNode);
                     this.__insertNodes(parentNode, target, task.fragment);
                     parentNode.removeChild(target);
                 }
@@ -1845,20 +1856,7 @@ var htmx = (() => {
 
             if (type === 1) {
                 let noMorph = htmx.config.morphIgnore || [];
-                for (const attr of newNode.attributes) {
-                    if (!noMorph.includes(attr.name) && oldNode.getAttribute(attr.name) !== attr.value) {
-                        oldNode.setAttribute(attr.name, attr.value);
-                        if (attr.name === "value" && oldNode instanceof HTMLInputElement && oldNode.type !== "file") {
-                            oldNode.value = attr.value;
-                        }
-                    }
-                }
-                for (let i = oldNode.attributes.length - 1; i >= 0; i--) {
-                    let attr = oldNode.attributes[i];
-                    if (attr && !newNode.hasAttribute(attr.name) && !noMorph.includes(attr.name)) {
-                        oldNode.removeAttribute(attr.name);
-                    }
-                }
+                this.__copyAttributes(oldNode, newNode, noMorph);
                 if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
                     oldNode.value = newNode.value;
                 }
@@ -1868,6 +1866,23 @@ var htmx = (() => {
                 oldNode.nodeValue = newNode.nodeValue;
             }
             if (!oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
+        }
+
+        __copyAttributes(destination, source, attributesToIgnore = []) {
+            for (const attr of source.attributes) {
+                if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
+                    destination.setAttribute(attr.name, attr.value);
+                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
+                        destination.value = attr.value;
+                    }
+                }
+            }
+            for (let i = destination.attributes.length - 1; i >= 0; i--) {
+                let attr = destination.attributes[i];
+                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.includes(attr.name)) {
+                    destination.removeAttribute(attr.name);
+                }
+            }
         }
 
         __populateIdMapWithTree(idMap, persistentIds, root, elements) {
@@ -1958,6 +1973,23 @@ var htmx = (() => {
                 this.__processingTransition = false;
                 resolve();
                 this.__processTransitionQueue();
+            }
+        }
+
+        __captureCSSTransitions(task, root) {
+            let idElements = root.querySelectorAll("[id]");
+            let existingElementsById = Object.fromEntries([...idElements].map(e => [e.id, e]));
+            let newElementsWithIds = task.fragment.querySelectorAll("[id]");
+            task.restoreTasks = []
+            for (let elt of newElementsWithIds) {
+                let existing = existingElementsById[elt.id];
+                if (existing?.tagName === elt.tagName) {
+                    let clone = elt.cloneNode(false); // shallow clone node
+                    this.__copyAttributes(elt, existing, this.config.morphIgnore)
+                    task.restoreTasks.push(()=>{
+                        this.__copyAttributes(elt, clone, this.config.morphIgnore)
+                    })
+                }
             }
         }
     }
