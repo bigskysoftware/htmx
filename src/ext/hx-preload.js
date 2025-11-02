@@ -10,7 +10,7 @@
 
         let spec = specs[0];
         let eventName = spec.name;
-        let timeout = spec.timeout ? api.parseInterval(spec.timeout) : 5000;
+        let timeout = spec.timeout ? htmx.parseInterval(spec.timeout) : 5000;
 
         let preloadListener = async (evt) => {
             let {method} = api.determineMethodAndAction(elt, evt);
@@ -58,7 +58,7 @@
             if (elt.__htmx?.preload &&
                 elt.__htmx.preload.action === ctx.request.action &&
                 Date.now() < elt.__htmx.preload.expiresAt) {
-                ctx.cachedResponse = elt.__htmx.preload.prefetch;
+                ctx.fetchOverride = elt.__htmx.preload.prefetch;
                 delete elt.__htmx.preload;
             } else {
                 if (elt.__htmx) delete elt.__htmx.preload;

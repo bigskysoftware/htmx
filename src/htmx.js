@@ -483,7 +483,7 @@ var htmx = (() => {
                 ctx.fetch ||= window.fetch
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
-                let response = await (ctx.cachedResponse || ctx.fetch(ctx.request.action, ctx.request));
+                let response = await (ctx.fetchOverride || ctx.fetch(ctx.request.action, ctx.request));
 
                 ctx.response = {
                     raw: response,

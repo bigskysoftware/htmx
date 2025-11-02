@@ -10,7 +10,7 @@ const config = {
     <meta charset="utf-8" />
     <title>htmx Tests</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="htmx:config" content='{"logAll":true, "extensions": "hx-optimistic"}'>
+    <meta name="htmx:config" content='{"logAll":false, "extensions": "hx-optimistic,preload"}'>
     <style>
         ::view-transition-group(*),
         ::view-transition-old(*),
@@ -27,6 +27,7 @@ const config = {
 <script src="test/lib/fetch-mock.js"></script>
 <script src="src/htmx.js"></script>
 <script src="../src/ext/hx-optimistic.js"></script>
+<script src="../src/ext/hx-preload.js"></script>
 
 <script class="mocha-init">
     window.should = window.chai.should()
