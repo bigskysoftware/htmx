@@ -154,6 +154,14 @@ var htmx = (() => {
             return this.config.prefix ? s.replace('hx-', this.config.prefix) : s;
         }
 
+        __queryEltAndDescendants(elt, selector) {
+            let results = [...elt.querySelectorAll(selector)];
+            if (elt.matches?.(selector)) {
+                results.unshift(elt);
+            }
+            return results;
+        }
+
         __normalizeSwapStyle(style) {
             return style === 'before' ? 'beforebegin' :
                    style === 'after' ? 'afterend' :
@@ -905,16 +913,10 @@ var htmx = (() => {
         process(elt, processScripts = true) {
             if (!elt || this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
-            if (elt.matches(this.__actionSelector)) {
-                this.__initializeElement(elt);
-            }
-            for (let child of elt.querySelectorAll(this.__actionSelector)) {
+            for (let child of this.__queryEltAndDescendants(elt, this.__actionSelector)) {
                 this.__initializeElement(child);
             }
-            if (elt.matches(this.__boostSelector)) {
-                this.__maybeBoost(elt)
-            }
-            for (let child of elt.querySelectorAll(this.__boostSelector)) {
+            for (let child of this.__queryEltAndDescendants(elt, this.__boostSelector)) {
                 this.__maybeBoost(child);
             }
             this.__handleHxOnAttributes(elt);
@@ -962,7 +964,7 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
-            for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
+            for (let child of this.__queryEltAndDescendants(elt, '[data-htmx-powered]')) {
                 this.__cleanup(child);
             }
         }
@@ -1162,7 +1164,7 @@ var htmx = (() => {
         }
 
         __processScripts(container) {
-            let scripts = container.matches?.('script') ? [container] : container.querySelectorAll('script');
+            let scripts = this.__queryEltAndDescendants(container, 'script');
             for (let oldScript of scripts) {
                 let newScript = document.createElement('script');
                 for (let attr of oldScript.attributes) {
@@ -1599,8 +1601,7 @@ var htmx = (() => {
         }
 
         __addInputValues(elt, included, formData) {
-            // Get all form elements under this element
-            let inputs = elt.querySelectorAll('input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
+            let inputs = this.__queryEltAndDescendants(elt, 'input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
 
             for (let input of inputs) {
                 // Skip elements without a name or already seen
@@ -1945,8 +1946,7 @@ var htmx = (() => {
         }
 
         __createIdMaps(oldNode, newContent) {
-            let oldIdElements = Array.from(oldNode.querySelectorAll("[id]"));
-            if (oldNode.id) oldIdElements.push(oldNode);
+            let oldIdElements = this.__queryEltAndDescendants(oldNode, "[id]");
             let newIdElements = newContent.querySelectorAll("[id]");
             let persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
             let idMap = new Map();
