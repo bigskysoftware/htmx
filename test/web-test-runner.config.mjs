@@ -43,6 +43,10 @@ const config = {
 </html>`,
 
   nodeResolve: true,
+  coverage: true,
+  coverageConfig: {
+    include: ['src/htmx.js']
+  },
   files: [
     'test/tests/**/*.js'
   ],
