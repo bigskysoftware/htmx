@@ -190,7 +190,7 @@ describe('__issueRequest unit tests', function() {
         assert.include(statuses, 'swapped')
     })
 
-    it('uses cached response instead of calling fetch', async function () {
+    it('uses fetch override response instead of calling fetch', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
 
@@ -200,11 +200,7 @@ describe('__issueRequest unit tests', function() {
             return { status: 200, headers: new Headers(), text: async () => '' }
         }
 
-        ctx.cachedResponse = {
-            status: 200,
-            headers: new Headers(),
-            text: async () => 'cached'
-        }
+        ctx.fetchOverride = new Response('cached', { status: 200 })
 
         await htmx.__issueRequest(ctx)
 
