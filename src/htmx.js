@@ -55,6 +55,7 @@ var htmx = (() => {
 
         #extMethods = new Map();
         #approvedExt = new Set();
+        #internalAPI;
         __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
         __boostSelector = "a,form";
         __verbs = ["get", "post", "put", "patch", "delete"];
@@ -64,6 +65,14 @@ var htmx = (() => {
             this.__actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
             this.__hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
             document.addEventListener("mx:process", (evt) => this.process(evt.target));
+            this.#internalAPI = {
+                attributeValue: this.__attributeValue.bind(this),
+                parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
+                determineMethodAndAction: this.__determineMethodAndAction.bind(this),
+                createRequestContext: this.__createRequestContext.bind(this),
+                collectFormData: this.__collectFormData.bind(this),
+                handleHxVals: this.__handleHxVals.bind(this)
+            };
             this.__initInternals();
         }
 
@@ -130,6 +139,7 @@ var htmx = (() => {
 
         defineExtension(name, extension) {
             if (!this.#approvedExt.delete(name)) return false;
+            if (extension.init) extension.init(this.#internalAPI);
             Object.entries(extension).forEach(([key, value]) => {
                 if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
             });
@@ -460,8 +470,8 @@ var htmx = (() => {
                 }
 
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
-
-                let response = await fetch(ctx.request.action, ctx.request);
+                
+                let response = await (ctx.cachedResponse || fetch(ctx.request.action, ctx.request));
 
                 ctx.response = {
                     raw: response,
