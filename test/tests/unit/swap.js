@@ -176,6 +176,26 @@ describe('swap() unit tests', function() {
         delete window.testVar;
     })
 
+    it('swaps oob content', async function () {
+        createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
+        await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='true'>OOB</div>"})
+        findElt('#d1').innerText.should.equal("Main");
+        findElt('#d2').innerText.should.equal("OOB");
+    })
+
+    it('swaps oob with outerHTML', async function () {
+        createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
+        await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='outerHTML'>OOB</div>"})
+        findElt('#d2').innerText.should.equal("OOB");
+    })
+
+    it('swaps oob with innerHTML', async function () {
+        createProcessedHTML("<div id='d1'></div><div id='d2'><span>Old</span></div>")
+        await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='innerHTML'>OOB</div>"})
+        findElt('#d2').innerText.should.equal("OOB");
+        findElt('#d2').tagName.should.equal("DIV");
+    })
+
 
 
 })

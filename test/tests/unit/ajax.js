@@ -1,4 +1,4 @@
-describe('htmx.ajax() API Tests', function() {
+describe('ajax() unit Tests', function() {
     
     beforeEach(function() {
         setupTest();

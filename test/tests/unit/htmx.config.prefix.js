@@ -1,4 +1,4 @@
-describe('Prefix functionality', function() {
+describe('htmx.config.prefix functionality', function() {
 
     beforeEach(function() {
         setupTest(this);

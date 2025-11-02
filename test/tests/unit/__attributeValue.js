@@ -1,4 +1,4 @@
-describe('Attribute modifiers', function() {
+describe('__atributeValue() unit tests', function() {
 
     it(':append modifier appends to inherited value', function () {
         const container = createDisconnectedHTML(

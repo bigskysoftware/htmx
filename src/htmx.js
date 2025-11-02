@@ -147,7 +147,7 @@ var htmx = (() => {
         }
 
         __ignore(elt) {
-            return elt.closest(`[${this.__prefix("hx-ignore")}]`) != null
+            return !elt.closest || elt.closest(`[${this.__prefix("hx-ignore")}]`) != null
         }
 
         __prefix(s) {
@@ -903,7 +903,7 @@ var htmx = (() => {
         }
 
         process(elt, processScripts = true) {
-            if (this.__ignore(elt)) return;
+            if (!elt || this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
             if (elt.matches(this.__actionSelector)) {
                 this.__initializeElement(elt);
