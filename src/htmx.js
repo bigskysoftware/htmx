@@ -56,15 +56,14 @@ var htmx = (() => {
         #extMethods = new Map();
         #approvedExt = new Set();
         #internalAPI;
-        __mutationObserver = new MutationObserver((records) => this.__onMutation(records));
         __boostSelector = "a,form";
         __verbs = ["get", "post", "put", "patch", "delete"];
 
         constructor() {
             this.__initHtmxConfig();
+            this.__initRequestIndicatorCss();
             this.__actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
             this.__hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
-            document.addEventListener("mx:process", (evt) => this.process(evt.target));
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
@@ -78,27 +77,10 @@ var htmx = (() => {
 
         __initInternals() {
             document.addEventListener("DOMContentLoaded", () => {
-                this.__mutationObserver.observe(document.body, {childList: true, subtree: true});
                 this.__initHistoryHandling();
-                this.process(document.body)
+                this.process(document.body, false)
             })
         }
-
-        __onMutation(mutations) {
-            for (let mutation of mutations) {
-                for (let node of mutation.removedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        this.__cleanup(node);
-                    }
-                }
-                for (let node of mutation.addedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        this.__processScripts(node);
-                        this.process(node);
-                    }
-                }
-            }
-        };
 
         __initHtmxConfig() {
             this.config = {
@@ -109,6 +91,9 @@ var htmx = (() => {
                 historyReload: false,
                 mode: 'same-origin',
                 defaultSwap: "innerHTML",
+                indicatorClass: "htmx-indicator",
+                requestClass: "htmx-request",
+                includeIndicatorCSS: true,
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 streams: {
@@ -135,6 +120,22 @@ var htmx = (() => {
                 }
             }
             this.#approvedExt = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
+        }
+
+        __initRequestIndicatorCss() {
+            if (this.config.includeIndicatorCSS !== false) {
+                let nonceAttribute = "";
+                if (this.config.inlineStyleNonce) {
+                    nonceAttribute = ` nonce="${this.config.inlineStyleNonce}"`;
+                }
+                let indicator = this.config.indicatorClass
+                let request = this.config.requestClass
+                document.head.append(`<style${nonceAttribute}>` +
+                    `.${indicator}{opacity:0;visibility: hidden} ` +
+                    `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}` +
+                    '</style>'
+                )
+            }
         }
 
         defineExtension(name, extension) {
@@ -470,7 +471,7 @@ var htmx = (() => {
                 }
 
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
-                
+
                 let response = await (ctx.cachedResponse || fetch(ctx.request.action, ctx.request));
 
                 ctx.response = {
@@ -901,7 +902,7 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt) {
+        process(elt, processScripts = true) {
             if (this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
             if (elt.matches(this.__actionSelector)) {
@@ -920,7 +921,10 @@ var htmx = (() => {
             let iter = this.__hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
-            this.__trigger(elt, "htmx:after:process")
+            if (processScripts) {
+                this.__processScripts(elt)
+            }
+            this.__trigger(elt, "htmx:after:process");
         }
 
         __maybeBoost(elt) {
@@ -987,6 +991,7 @@ var htmx = (() => {
                 } else {
                     newElt.replaceWith(preservedElt);
                 }
+                this.__cleanup(newElt)
                 newElt.remove()
             }
             pantry.remove();
@@ -1265,13 +1270,18 @@ var htmx = (() => {
             let swapSpec = task.swapSpec || task.modifiers;
             let pantry = this.__handlePreservedElements(task.fragment);
             let target = task.target, parentNode = target.parentNode;
+            let newContent = [...task.fragment.childNodes]
             if (swapSpec.style === 'innerHTML') {
                 this.__captureCSSTransitions(task, target);
+                for (const child of target.children) {
+                    this.__cleanup(child)
+                }
                 target.replaceChildren(...task.fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
                     this.__captureCSSTransitions(task, parentNode);
                     this.__insertNodes(parentNode, target, task.fragment);
+                    this.__cleanup(target)
                     parentNode.removeChild(target);
                 }
             } else if (swapSpec.style === 'innerMorph') {
@@ -1292,7 +1302,8 @@ var htmx = (() => {
                 }
             } else if (swapSpec.style === 'delete') {
                 if (parentNode) {
-                    parentNode.removeChild(target);
+                    this.__cleanup(target)
+                    parentNode.removeChild(target)
                 }
                 return;
             } else if (swapSpec.style === 'none') {
@@ -1301,6 +1312,9 @@ var htmx = (() => {
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
             this.__restorePreservedElements(pantry);
+            for (const elt of newContent) {
+                this.process(elt); // maybe only if isConnected?
+            }
             if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
         }
 
@@ -1508,7 +1522,7 @@ var htmx = (() => {
                 for (const indicator of indicators) {
                     indicator.__htmxIndicatorRequests ||= 0
                     indicator.__htmxIndicatorRequests++
-                    indicator.classList.add("htmx-request")
+                    indicator.classList.add(this.config.requestClass)
                 }
             }
         }
@@ -1520,7 +1534,7 @@ var htmx = (() => {
                     indicator.__htmxIndicatorRequests ||= 1
                     indicator.__htmxIndicatorRequests--
                     if (indicator.__htmxIndicatorRequests === 0) {
-                        indicator.classList.remove("htmx-request");
+                        indicator.classList.remove(this.config.requestClass);
                     }
                 }
             }
@@ -1749,6 +1763,7 @@ var htmx = (() => {
             } else {
                 this.__morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
             }
+            this.__cleanup(pantry)
             pantry.remove();
         }
 
@@ -1847,18 +1862,24 @@ var htmx = (() => {
         }
 
         __removeNode(ctx, node) {
-            if (ctx.idMap.has(node)) this.__moveBefore(ctx.pantry, node, null);
-            else node.parentNode?.removeChild(node);
+            if (ctx.idMap.has(node)) {
+                this.__moveBefore(ctx.pantry, node, null);
+            } else {
+                this.__cleanup(node)
+                node.remove();
+            }
         }
 
         __moveBefore(parentNode, element, after) {
             if (parentNode.moveBefore) {
                 try {
                     parentNode.moveBefore(element, after);
+                    return
                 } catch (e) {
-                    parentNode.insertBefore(element, after);
+                    // ignore and insertBefore insteat
                 }
-            } else parentNode.insertBefore(element, after);
+            }
+            parentNode.insertBefore(element, after);
         }
 
         __morphNode(oldNode, newNode, ctx) {
