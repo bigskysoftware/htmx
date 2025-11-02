@@ -1161,7 +1161,6 @@ var htmx = (() => {
             }
         }
 
-        // TODO - did we punt on other folks inserting scripts?
         __processScripts(container) {
             let scripts = container.matches?.('script') ? [container] : container.querySelectorAll('script');
             for (let oldScript of scripts) {
@@ -2006,7 +2005,10 @@ var htmx = (() => {
 
             try {
                 if (document.startViewTransition) {
-                    await document.startViewTransition(task).finished;
+                    let finished = document.startViewTransition(task).finished;
+                    this.__trigger(document, "htmx:before:viewTransition", {task, finished})
+                    await finished;
+                    this.__trigger(document, "htmx:after:viewTransition", {task})
                 } else {
                     task();
                 }

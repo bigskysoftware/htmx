@@ -259,4 +259,24 @@ describe('swap() unit tests', function() {
         triggered.should.be.true;
     })
 
+    it('triggers view transition events with transition:true', async function () {
+        if (!document.startViewTransition) {
+            this.skip();
+            return;
+        }
+
+        let beforeTriggered = false;
+        let afterTriggered = false;
+        htmx.on('htmx:before:viewTransition', () => {
+            beforeTriggered = true;
+        });
+        htmx.on('htmx:after:viewTransition', () => {
+            afterTriggered = true;
+        });
+
+        await htmx.swap({"target":"#test-playground", "text":"<div id='d1'>Content</div>", "transition":true})
+        beforeTriggered.should.be.true;
+        afterTriggered.should.be.true;
+    })
+
 })
