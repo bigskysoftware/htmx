@@ -166,6 +166,83 @@ aside[role="alert"] strong {
   color: #000;
 }
 
+/* Migration note callout */
+.migration-note {
+  background: #e7f3ff;
+  border: 1px solid #3d72d7;
+  border-left: 4px solid #3d72d7;
+  padding: 0;
+  margin: 2em 0;
+  border-radius: 4px;
+}
+
+.migration-note summary {
+  padding: 1em 1.5em;
+  cursor: pointer;
+  font-weight: bold;
+  color: #1e4e8c;
+  user-select: none;
+}
+
+.migration-note summary:hover {
+  background: #d6e9ff;
+}
+
+.migration-note[open] summary {
+  border-bottom: 1px solid #3d72d7;
+}
+
+.migration-note > *:not(summary) {
+  padding: 0 2em;
+  line-height: 1.6;
+  color: #1a1a1a;
+}
+
+.migration-note > *:first-of-type:not(summary) {
+  padding-top: 1.25em;
+}
+
+.migration-note > *:last-child {
+  padding-bottom: 1.5em;
+}
+
+.migration-note p {
+  margin: 0.75em 0;
+}
+
+.migration-note ul, .migration-note ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.migration-note li {
+  margin: 0.25em 0;
+}
+
+.migration-note strong {
+  color: #1e4e8c;
+}
+
+.migration-note code {
+  background: #d6e9ff;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.migration-note pre {
+  background: #d6e9ff;
+  border: 1px solid #3d72d7;
+  padding: 0.75em;
+  margin: 0.75em 0;
+  border-radius: 4px;
+}
+
+.migration-note pre code {
+  background: none;
+  padding: 0;
+}
+
 /* Dark hero section */
 .dark-hero {
   background: url(/img/topo.svg), linear-gradient(#1f1f1f, #2d2d2d);

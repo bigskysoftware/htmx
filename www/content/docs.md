@@ -30,7 +30,7 @@ title = "Documentation"
   * [confirming](#confirming)
 * [inheritance](#inheritance)
 * [boosting](#boosting)
-* [SSE](#SSE)
+* [SSE](#)
 * [WebSockets](#)
 * [history](#history)
 * [requests & responses](#requests)
@@ -49,8 +49,6 @@ title = "Documentation"
 
 </details>
 
-</div>
-<div class="10 col">
 
 ## htmx in a Nutshell {#introduction}
 
@@ -80,8 +78,9 @@ The form tag tells a browser:
 > "When a user submits this form, issue an HTTP POST request to '/register' and load the response content
 >  into the browser window".
 
-Further, both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
-attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe):
+Both these elements support a [`target`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#target)
+attribute that allows you to place the response in an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)
+rather than replacing the entire page:
 
 ```html
 <form method="post" action="/register" target="iframe1">
@@ -96,7 +95,7 @@ attribute that allows you to place the response in an [`iframe`](https://develop
 This is called [transclusion](https://en.wikipedia.org/wiki/Transclusion), where a document is included inside another
 document.
 
-With these ideas in mind, consider the following bit of HTML:
+With these ideas in mind, consider the following bit of htmx-powered HTML:
 
 ```html
 <button hx-post="/clicked"
@@ -107,25 +106,20 @@ With these ideas in mind, consider the following bit of HTML:
 </button>
 ```
 
-This is htmx-powered HTML.  Given these attribute, htmx will enable the following behavior:
+Given these attribute, htmx will enable the following behavior:
 
 > "When a user clicks on this button, issue an HTTP POST request to '/clicked' and use the content from the response
 >  to replace the element with the id `parent-div` in the DOM"
 
-htmx [generalizes the idea of hypermedia controls](https://en.wikipedia.org/wiki/Transclusion) in HTML, which means that:
-
-* Any element can issue an HTTP request
-* Any event can trigger requests
-* Any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) can be used
-* Any element can be the target for update by the request
+htmx [generalizes the idea of hypermedia controls](https://dl.acm.org/doi/pdf/10.1145/3648188.3675127) in HTML, which means that 
+any element can issue an any [HTTP verb](https://en.wikipedia.org/wiki/HTTP_Verbs) HTTP request in response to any 
+[event](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events), and the response content can
+be place anywhere in the page.
 
 Like in the case of the link and form examples above, htmx expects the server to responds with HTML, not *JSON*.  
 
 In this manner, htmx follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
 of the web, using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
-
-While this may seem a little academic (and the ideas are interesting!) it turns out that this small extension to HTML
-enables developers to create much more [sophisticated user experiences](@/patterns/_index.md) using HTML.
 
 ## 2.x to 4.x Migration Guide
 
@@ -161,7 +155,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 ### Download a copy
 
-The next easiest way to install htmx is to simply copy it into your project.
+The next easiest way to install htmx is to simply copy it into your project, an option called [vendoring](@/essays/vendoring.md).
 
 Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha1/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
@@ -181,44 +175,23 @@ npm install htmx.org@4.0.0-alpha1
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
 For example, you might bundle htmx with some extensions and project-specific code.
 
-### Webpack
-
-If you are using webpack to manage your javascript:
-
-* Install `htmx` via your favourite package manager (like npm or yarn)
-* Add the import to your `index.js`
-
-```js
-import 'htmx.org';
-```
-
-If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
-
-* Create a custom JS file
-* Import this file to your `index.js` (below the import from step 2)
-
-```js
-import 'path/to/my_custom.js';
-```
-
-* Then add this code to the file:
-
-```js
-window.htmx = require('htmx.org');
-```
-
-* Finally, rebuild your bundle
-
 ## AJAX
 
-The core of htmx are two attributes that allow you to issue fetch()-based AJAX requests directly from HTML:
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<p>htmx 4.0 uses the <code>fetch()</code> API instead of XMLHttpRequest. This enables built-in streaming response support and simplifies the implementation of htmx, but does create some significant changes between the two versions.</p>
+
+</details>
+
+At the core of htmx are two attributes that allow you to issue fetch()-based AJAX requests directly from HTML:
 
 | Attribute                              | Description                                                                                             |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------|
 | [hx-action](@/attributes/hx-action.md) | Specifies a URL to issue the request to                                                                 |
 | [hx-method](@/attributes/hx-method.md) | Specifies the [HTTP Method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods) to use |
 
-They can be used like so:
+These attributes can be used like so:
 
 ```html
 <button hx-method="post" hx-action="/messages">
@@ -254,7 +227,7 @@ Here is the example above redone using `hx-post`:
 
 ### Triggering Requests {#triggers}
 
-By default requests are triggered by the "natural" event of an element:
+By default, requests are triggered by the "natural" event of an element:
 
 * `input`, `textarea` & `select` are triggered on the `change` event
 * `form` is triggered on the `submit` event
@@ -465,6 +438,24 @@ of `id` attributes.
 
 ### Swapping {#swapping}
 
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+ADD: New swap terminology (before, after, prepend, append) alongside classic names
+ADD: innerMorph and outerMorph swap styles are now built-in
+ADD: hx-status:XXX pattern for status-code conditional swapping
+REWRITE: Morph section to reflect built-in support
+REWRITE: View transitions config key (htmx.config.transitions not viewTransitions)
+-->
+
+**New Features:**
+- **Modern swap terminology:** You can now use `before` (beforebegin), `after` (afterend), `prepend` (afterbegin), and `append` (beforeend). Both old and new names work.
+- **Built-in morphing:** `innerMorph` and `outerMorph` swap styles are now available without extensions.
+- **Status-code swapping:** Use `hx-status:XXX` attributes for conditional swapping based on HTTP status codes (e.g., `hx-status:404="none"`).
+
+</details>
+
 htmx offers a few different ways to swap the HTML returned into the DOM.  By default, the content replaces the
 the target element, which is called an `outerHTML` swap.
 
@@ -474,12 +465,14 @@ You can modify this by using the [hx-swap](@/attributes/hx-swap.md) attribute wi
 |------|-------------
 | `outerHTML` | the default, replaces the entire target element with the returned content
 | `innerHTML` | puts the content inside the target element
-| `afterbegin` | prepends the content before the first child inside the target
-| `beforebegin` | prepends the content before the target in the target's parent element
-| `beforeend` | appends the content after the last child inside the target
-| `afterend` | appends the content after the target in the target's parent element
+| `beforebegin` (or `before`) | prepends the content before the target in the target's parent element
+| `afterbegin` (or `prepend`) | prepends the content before the first child inside the target
+| `beforeend` (or `append`) | appends the content after the last child inside the target
+| `afterend` (or `after`) | appends the content after the target in the target's parent element
 | `delete` | deletes the target element regardless of the response
 | `none` | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed)
+| `innerMorph` | morphs the children of the target element, preserving as much of the existing DOM as possible
+| `outerMorph` | morphs the target element itself, preserving as much of the existing DOM as possible
 
 #### Morph Swaps {#morphing}
 
@@ -650,6 +643,26 @@ attribute on the elements you wish to be preserved.
 
 ### Parameters
 
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REMOVE: hx-params attribute (removed in v4)
+ADD: Note to use htmx:config:request event instead for filtering parameters
+KEEP: hx-include, hx-vals remain unchanged
+-->
+
+**Removed:** `hx-params` attribute has been removed.
+
+**Migration:** Use the `htmx:config:request` event to filter or modify parameters instead:
+```javascript
+document.body.addEventListener('htmx:config:request', function(evt) {
+  // Modify evt.detail.ctx.request.body (FormData object)
+});
+```
+
+</details>
+
 By default, an element that causes a request will include its value if it has one.  If the element is a form it
 will include the values of all inputs within it.
 
@@ -687,6 +700,24 @@ See the [patterns section](@/patterns/_index.md) for more advanced form patterns
 
 ### Confirming Requests {#confirming}
 
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REMOVE: hx-prompt attribute (removed in v4)
+ADD: Note to use hx-confirm with js: prefix for prompts
+KEEP: hx-confirm with basic string works the same
+-->
+
+**Removed:** `hx-prompt` attribute has been removed.
+
+**Migration:** Use `hx-confirm` with the `js:` prefix for custom prompts:
+```html
+<button hx-confirm="js:prompt('Enter value')">Submit</button>
+```
+
+</details>
+
 Often you will want to confirm an action before issuing a request.  htmx supports the [`hx-confirm`](@/attributes/hx-confirm.md)
 attribute, which allows you to confirm an action using a simple javascript dialog:
 
@@ -721,6 +752,33 @@ resolves with a `true` value to continue
 ```
 
 ## Attribute Inheritance {#inheritance}
+
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REWRITE: Emphasize explicit vs implicit inheritance (already noted above)
+ADD: Document :append modifier for appending to inherited values
+ADD: Document :inherited:append combination
+REMOVE: References to hx-disinherit and hx-inherit (removed in v4)
+-->
+
+**Breaking Change:** Inheritance is now **explicit** using the `:inherited` modifier.
+
+**In htmx 2.x**, attributes automatically inherited from parent elements.
+
+**In htmx 4.x**, you must use `hx-attribute:inherited="value"` to inherit from parents.
+
+**New feature:** Use `:append` modifier to append values to inherited values:
+```html
+<div hx-include:inherited=".parent">
+  <button hx-include:append=".child">
+    <!-- Effective hx-include=".parent,.child" -->
+  </button>
+</div>
+```
+
+</details>
 
 Unlike htmx 2, in htmx 4 attribute inheritance is _explicit_, rather than _implicit_.
 
@@ -827,9 +885,36 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 * Associate text labels with all form fields
 * Maximize the readability of your application with appropriate fonts, contrast, etc.
 
-## SSE
+## Streaming Responses
 
-Unlike htmx 2, htmx 4 has **built-in support** for Server-Sent Events (SSE).
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+ADD: SSE (Server-Sent Events) is now built into core htmx
+REMOVE: No longer requires hx-sse extension
+ADD: Document hx-stream attribute for configuration
+ADD: Support for POST/PUT/PATCH/DELETE (not just GET)
+ADD: Automatic reconnection with exponential backoff
+-->
+
+**Major Change:** Server-Sent Events (SSE) are now **built-in** to htmx core.
+
+**In htmx 2.x**, SSE required the `hx-sse` extension.
+
+**In htmx 4.x**:
+- SSE is built-in, no extension needed
+- Any htmx request automatically handles SSE when server responds with `Content-Type: text/event-stream`
+- Supports all HTTP methods (GET, POST, PUT, PATCH, DELETE)
+- Configure with `hx-stream` attribute (modes: `once`, `continuous`)
+- Automatic reconnection with exponential backoff in `continuous` mode
+- Page Visibility API integration (pause when tab hidden)
+
+**No migration needed** if using standard htmx attributes - just remove the extension!
+
+</details>
+
+htmx 4 has built-in support for Streaming Responses Server-Sent Events (SSE).
 
 Use the typical `hx-get`, `hx-post`, `hx-put`, `hx-patch`, or `hx-delete` attributes. When the server responds with `Content-Type: text/event-stream` instead of `Content-Type: text/html`, htmx automatically handles the stream. 
 
@@ -965,6 +1050,31 @@ Web Sockets are supported via and extensions.  Please see the [WebSocket extensi
 page to learn more.
 
 ## History Support {#history}
+
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REWRITE: History no longer uses localStorage
+ADD: Full page requests are now issued for history restoration
+REMOVE: hx-history attribute (removed)
+REMOVE: hx-history-elt attribute (removed)
+REWRITE: Config options - historyRestoreAsHxRequest and related options may need updating
+-->
+
+**Major Change:** History no longer uses `localStorage` for caching.
+
+**In htmx 2.x**, history snapshots were stored in localStorage.
+
+**In htmx 4.x**, htmx issues a full page request when the user navigates back/forward. The server receives an `HX-History-Restore-Request` header and should return the full page HTML.
+
+**Removed attributes:**
+- `hx-history` (no longer needed)
+- `hx-history-elt` (no longer needed)
+
+This change makes history restoration much more reliable and reduces client-side complexity.
+
+</details>
 
 Htmx provides a simple mechanism for interacting with the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
 
@@ -1113,6 +1223,42 @@ Please see the [Animation Guide](@/patterns/animations.md) for more details on t
 
 ## Extensions
 
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REMOVE: hx-ext attribute (no longer needed for globally registered extensions)
+REWRITE: Extension API is now event-based
+ADD: Extensions register globally via htmx.config.extensions
+ADD: Extensions use defineExtension with event handlers
+-->
+
+**Major Change:** Extensions are now globally registered and event-based.
+
+**In htmx 2.x**, extensions required `hx-ext="extension-name"` on elements.
+
+**In htmx 4.x**, extensions:
+1. Register globally in `htmx.config.extensions` meta tag
+2. Use `htmx.defineExtension()` with event handler functions
+3. Listen to htmx events (no special extension API)
+
+**Removed:** `hx-ext` attribute is no longer needed for globally registered extensions.
+
+**Example:**
+```html
+<meta name="htmx:config" content='{"extensions": "my-extension"}'>
+```
+
+```javascript
+htmx.defineExtension('my-extension', {
+  'htmx_before_request': function(elt, detail) {
+    // Handle event
+  }
+});
+```
+
+</details>
+
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
   <p>is this true?</p>
@@ -1137,6 +1283,34 @@ You can see all available extensions on the [Extensions](/extensions) page.
 If you are interested in adding your own extension to htmx, please [see the extension docs](/extensions/building).
 
 ## Events & Logging {#events}
+
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+REWRITE: Event naming convention changed to htmx:phase:action
+ADD: Comprehensive event name mapping table
+ADD: New events introduced in v4
+REMOVE: Old event names no longer fire
+-->
+
+**Breaking Change:** Event naming convention changed to `htmx:phase:action` (colon-separated).
+
+**Examples of changed event names:**
+- `htmx:afterRequest` → `htmx:after:request`
+- `htmx:beforeSwap` → `htmx:before:swap`
+- `htmx:configRequest` → `htmx:config:request`
+- `htmx:load` → `htmx:after:init` (for element initialization)
+
+**New events in v4:**
+- `htmx:after:cleanup`
+- `htmx:finally:request` (fires after request completes, success or failure)
+
+See the full event mapping in the [Changes in htmx 4.0](/changes-in-4#event-changes) document.
+
+**Note:** All events now provide a consistent `ctx` object with request/response information.
+
+</details>
 
 Htmx has an extensive [events mechanism](@/reference.md#events), which doubles as the logging system.
 
@@ -1256,6 +1430,38 @@ You would most likely want to set a break point in the  methods to see what's go
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
 
 ## Scripting {#scripting}
+
+<details class="migration-note">
+<summary>htmx 2.0 to 4.0 Changes</summary>
+
+<!--
+ADD: New unified scripting API for hx-on handlers
+ADD: Helper methods like timeout(), forEvent(), find(), findAll()
+ADD: All public htmx methods available in hx-on handlers
+ADD: 'this' keyword refers to the element in JavaScript contexts
+KEEP: hx-on:* attributes work the same way
+-->
+
+**New Feature:** Unified scripting API for `hx-on` handlers.
+
+**In htmx 4.x**, all `hx-on:*` handlers have access to:
+- **Helper methods**: `timeout()`, `forEvent()`, `find()`, `findAll()`, `parseInterval()`, `trigger()`, `waitATick()`
+- **htmx API methods**: All public htmx methods like `ajax()`, `swap()`, `process()`
+- **Special symbols**:
+  - `this` - the element with the `hx-on` attribute
+  - `event` - the event object
+  - `ctx` - request context (in request-related events)
+
+**Example:**
+```html
+<button hx-on:click="await timeout(100); console.log(this)">
+  Click me
+</button>
+```
+
+See [Scripting API](#htmx-scripting-api) section below for all available methods.
+
+</details>
 
 While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting. Scripting is included in the REST-ful description of web architecture, see: [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web application:
 

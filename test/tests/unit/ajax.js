@@ -10,32 +10,32 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax works with element target', async function() {
         mockResponse('GET', '/test', 'foo!');
-        const div = initHTML('<div></div>');
+        const div = createProcessedHTML('<div></div>');
         await htmx.ajax('GET', '/test', {target: div, swap: 'innerHTML'});
         assert.equal(div.innerHTML, 'foo!');
     });
 
     it('ajax works with selector target', async function() {
         mockResponse('GET', '/test', 'foo!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('GET', '/test', {target: '#d1', swap: 'innerHTML'});
         assert.equal(div.innerHTML, 'foo!');
     });
 
     it('ajax rejects when target selector invalid', async function() {
         mockResponse('GET', '/test', 'foo!');
-        initHTML('<div id="d1"></div>');
+        createProcessedHTML('<div id="d1"></div>');
         try {
             await htmx.ajax('GET', '/test', '#d2');
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
     it('ajax rejects when target invalid even if source set', async function() {
         mockResponse('GET', '/test', 'foo!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         try {
             await htmx.ajax('GET', '/test', {
                 source: div,
@@ -43,26 +43,26 @@ describe('htmx.ajax() API Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
     it('ajax rejects when source invalid and no target set', async function() {
         mockResponse('GET', '/test', 'foo!');
-        initHTML('<div id="d1"></div>');
+        createProcessedHTML('<div id="d1"></div>');
         try {
             await htmx.ajax('GET', '/test', {
                 source: '#d2'
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Element not found');
         }
     });
 
     it('ajax targets source if target not set', async function() {
         mockResponse('GET', '/test', 'foo!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('GET', '/test', {
             source: div,
             swap: 'innerHTML'
@@ -72,7 +72,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax works with swap option', async function() {
         mockResponse('GET', '/test', '<p class="test">foo!</p>');
-        const container = initHTML('<div><div id="target"></div></div>');
+        const container = createProcessedHTML('<div><div id="target"></div></div>');
         await htmx.ajax('GET', '/test', {
             target: '#target',
             swap: 'outerHTML'
@@ -82,7 +82,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax works with select option', async function() {
         mockResponse('GET', '/test', '<div id="d1">foo</div><div id="d2">bar</div>');
-        const div = initHTML('<div id="target"></div>');
+        const div = createProcessedHTML('<div id="target"></div>');
         await htmx.ajax('GET', '/test', {
             target: '#target',
             swap: 'innerHTML',
@@ -94,7 +94,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax returns a promise', async function() {
         mockResponse('GET', '/test', 'foo!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         const promise = htmx.ajax('GET', '/test', {target: '#d1', swap: 'innerHTML'});
         assert.instanceOf(promise, Promise);
         await promise;
@@ -103,7 +103,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax can pass values', async function() {
         mockResponse('POST', '/test', 'Clicked!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('POST', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -117,7 +117,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax can pass custom headers', async function() {
         mockResponse('POST', '/test', 'Clicked!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('POST', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -133,7 +133,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax collects form data from source element', async function() {
         mockResponse('POST', '/test', 'Submitted!');
-        initHTML('<form id="myForm"><input name="field1" value="value1"/></form><div id="result"></div>');
+        createProcessedHTML('<form id="myForm"><input name="field1" value="value1"/></form><div id="result"></div>');
         const form = findElt('#myForm');
         const div = findElt('#result');
         await htmx.ajax('POST', '/test', {
@@ -149,7 +149,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax values override form data', async function() {
         mockResponse('POST', '/test', 'Submitted!');
-        initHTML('<form id="myForm"><input name="field1" value="original"/></form><div id="result"></div>');
+        createProcessedHTML('<form id="myForm"><input name="field1" value="original"/></form><div id="result"></div>');
         const form = findElt('#myForm');
         const div = findElt('#result');
         await htmx.ajax('POST', '/test', {
@@ -166,7 +166,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax works with GET and query parameters', async function() {
         mockResponse('GET', /\/test\?.*/, 'Got it!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('GET', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -180,7 +180,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax works with optimistic UI', async function() {
         mockResponse('POST', '/test', 'final!');
-        initHTML('<div id="loading">Loading...</div><div id="target">initial</div>');
+        createProcessedHTML('<div id="loading">Loading...</div><div id="target">initial</div>');
         const div = findElt('#target');
         
         // Just verify optimistic option doesn't break the request
@@ -195,7 +195,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax respects transition option', async function() {
         mockResponse('GET', '/test', 'content!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('GET', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -217,7 +217,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax case insensitive verb', async function() {
         mockResponse('POST', '/test', 'posted!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('post', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -228,14 +228,14 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax uppercase verb', async function() {
         mockResponse('DELETE', '/test', 'deleted!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('DELETE', '/test', {target: '#d1', swap: 'innerHTML'});
         assert.equal(div.innerHTML, 'deleted!');
     });
 
     it('ajax with event context', async function() {
         mockResponse('POST', '/test', 'clicked!');
-        initHTML('<button id="btn">Click</button><div id="result"></div>');
+        createProcessedHTML('<button id="btn">Click</button><div id="result"></div>');
         const div = findElt('#result');
         const clickEvent = new MouseEvent('click', { bubbles: true });
         
@@ -249,7 +249,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax triggers htmx events', async function() {
         mockResponse('GET', '/test', 'content!');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         
         let beforeRequestFired = false;
         let afterRequestFired = false;
@@ -270,7 +270,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax with multiple values', async function() {
         mockResponse('POST', '/test', 'OK');
-        const div = initHTML('<div id="d1"></div>');
+        const div = createProcessedHTML('<div id="d1"></div>');
         await htmx.ajax('POST', '/test', {
             target: '#d1',
             swap: 'innerHTML',
@@ -289,7 +289,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax with swap innerHTML', async function() {
         mockResponse('GET', '/test', '<span>inner</span>');
-        const div = initHTML('<div id="target"><p>old</p></div>');
+        const div = createProcessedHTML('<div id="target"><p>old</p></div>');
         await htmx.ajax('GET', '/test', {
             target: '#target',
             swap: 'innerHTML'
@@ -299,7 +299,7 @@ describe('htmx.ajax() API Tests', function() {
 
     it('ajax with swap beforeend', async function() {
         mockResponse('GET', '/test', '<span>new</span>');
-        const div = initHTML('<div id="target"><p>old</p></div>');
+        const div = createProcessedHTML('<div id="target"><p>old</p></div>');
         await htmx.ajax('GET', '/test', {
             target: '#target',
             swap: 'beforeend'

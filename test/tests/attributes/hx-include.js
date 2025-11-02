@@ -10,21 +10,21 @@ describe('hx-include attribute', function() {
 
     it('By default an input includes itself', async function () {
         mockResponse('POST', '/include', "Clicked!")
-        initHTML('<div hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
+        createProcessedHTML('<div hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
         await clickAndWait("#i1")
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
     it('non-GET includes closest form', async function () {
         mockResponse('POST', '/include', "Dummy")
-        initHTML('<form hx-target="this"><div id="d1" hx-post="/include"></div><input name="i1" value="test"/></form>')
+        createProcessedHTML('<form hx-target="this"><div id="d1" hx-post="/include"></div><input name="i1" value="test"/></form>')
         await clickAndWait('#d1')
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
     it('Single input not included twice when in form', async function () {
         mockResponse('POST', '/include', "Dummy")
-        initHTML('<form hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></form>')
+        createProcessedHTML('<form hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></form>')
         await clickAndWait('#i1')
         fetchMock.calls[0].request.body.getAll("i1").length.should.equal(1);
     })

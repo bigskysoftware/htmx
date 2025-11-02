@@ -2,6 +2,10 @@ if (typeof installFetchMock !== 'undefined') {
   installFetchMock()
 }
 
+//================================================================================
+// Code to prevent accidental navigation
+//================================================================================
+
 let linkNavPreventer = (e) => {
   let anchor = e.target.closest('a');
 
@@ -23,7 +27,15 @@ let submitPreventer = (e) => {
   console.warn('Form submission prevented:', e, new Error().stack);
 };
 
+//================================================================================
+// Test life cycle helpers
+//================================================================================
+
+// can be enabled for a test by calling debug(this)
+let testDebugging = false;
+
 const savedUrl = window.location.href;
+
 function setupTest(test) {
   if (test) {
     console.log("RUNNING TEST: ", test.title);
@@ -37,11 +49,29 @@ function setupTest(test) {
   }
 }
 
-// can be enabled for a test by calling debug(this)
-let testDebugging = false;
+function cleanupTest() {
+    let pg = playground()
+    if (pg && !testDebugging) {
+        pg.innerHTML = ''
+    }
+    testDebugging = false;
+    if (typeof fetchMock !== 'undefined' && fetchMock.reset) {
+        fetchMock.reset()
+    }
+    history.replaceState(null, '', savedUrl);
+}
 
-// Helper to initialize content in test playground
-function initHTML(innerHTML) {
+function debug(test) {
+    test.timeout(0);
+    testDebugging = true;
+}
+
+//================================================================================
+// HTML creation helpers
+//================================================================================
+
+// This function processes the content immediately (rather than waiting for the mutation observer)
+function createProcessedHTML(innerHTML) {
   let pg = playground();
   if (pg) {
     pg.innerHTML = innerHTML
@@ -50,20 +80,33 @@ function initHTML(innerHTML) {
   return pg.childNodes[0]
 }
 
-function cleanupTest() {
-  let pg = playground()
-  if (pg && !testDebugging) {
-    pg.innerHTML = ''
-  }
-  testDebugging = false;
-  if (typeof fetchMock !== 'undefined' && fetchMock.reset) {
-    fetchMock.reset()
-  }
-  history.replaceState(null, '', savedUrl);
+// This function waits for the mutation observer to process the new content
+function createHTMLNoProcessing(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const elt = div.firstElementChild;
+    playground().appendChild(elt);
+    return elt
 }
 
-function mockResponse(action, pattern, response) {
-  fetchMock.mockResponse(action, pattern, response);
+// This function creates a disconnected node
+function createDisconnectedHTML(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const elt = div.firstElementChild;
+    return elt
+}
+
+//================================================================================
+// Fetch mock response helpers
+//================================================================================
+
+function mockResponse(action, pattern, response, options = {}) {
+  fetchMock.mockResponse(action, pattern, response, options);
+}
+
+function mockFailure(action, pattern, message = 'Network failure') {
+  fetchMock.mockFailure(action, pattern, message);
 }
 
 function mockStreamResponse(url) {
@@ -101,6 +144,16 @@ function mockStreamResponse(url) {
   };
 }
 
+function lastFetch() {
+    let lastCall = fetchMock.getLastCall();
+    assert.isNotNull(lastCall, "No fetch call was made!")
+    return lastCall;
+}
+
+//======================================================================
+// General test helper utilities
+//======================================================================
+
 function waitForEvent(eventName, timeout = 2000) {
   return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
 }
@@ -114,7 +167,7 @@ function playground() {
 }
 
 function findElt(selector) {
-  return htmx.find(selector, playground())
+  return htmx.find(playground(), selector)
 }
 
 function invokeAction(cssOrElt, action) {
@@ -148,26 +201,15 @@ function submit(cssOrElt) {
   invokeAction(cssOrElt, "requestSubmit");
 }
 
-function debug(test) {
-  test.timeout(0);
-  testDebugging = true;
-}
-
-function lastFetch() {
-  let lastCall = fetchMock.getLastCall();
-  assert.isNotNull(lastCall, "No fetch call was made!")
-  return lastCall;
-}
-
-// TODO - use the playground here
-function parseHTML(html, appendToBody = false) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  const elt = div.firstElementChild;
-  if (appendToBody) {
-    document.body.appendChild(elt);
-  }
-  return elt;
+async function directlyInvokeHandler(btn, evt ={type:'click'}) {
+    let htmx = btn.__htmx;
+    if(!htmx){
+        throw "element does not have an htmx property!"
+    }
+    let customEvent = new CustomEvent(evt.type);
+    delete evt.type;
+    Object.assign(customEvent, evt)
+    return await htmx.eventHandler(customEvent)
 }
 
 // ==============================================================================

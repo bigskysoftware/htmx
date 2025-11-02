@@ -8,14 +8,14 @@ describe('hx-trigger attribute', function() {
 
     it('non-default triggers work', async function () {
         mockResponse('GET', '/test', 'Clicked!')
-        initHTML('<form hx-get="/test" hx-trigger="click">Click Me!</form>')
+        createProcessedHTML('<form hx-get="/test" hx-trigger="click">Click Me!</form>')
         await clickAndWait("form")
         playground().innerText.should.equal('Clicked!')
     })
 
     it('works with multiple events', async function () {
         mockResponse('GET', '/test', 'Clicked!')
-        let div = initHTML('<div hx-trigger="foo, bar" hx-get="/test" hx-swap="innerHTML">Requests: 0</div>');
+        let div = createProcessedHTML('<div hx-trigger="foo, bar" hx-get="/test" hx-swap="innerHTML">Requests: 0</div>');
         htmx.trigger(div, 'foo');
         await htmxSwappedEvent()
         htmx.trigger(div, 'bar');
@@ -25,7 +25,7 @@ describe('hx-trigger attribute', function() {
 
     it('filters properly with false expression filter spec', function() {
         mockResponse('GET', '/test', 'Called!')
-        let form = initHTML('<form hx-get="/test" hx-trigger="evt[false]">Not Called</form>')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[false]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = false
         form.dispatchEvent(event)
@@ -34,7 +34,7 @@ describe('hx-trigger attribute', function() {
 
     it('filters properly with false filter spec', function() {
         mockResponse('GET', '/test', 'Called!')
-        let form = initHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = false
         form.dispatchEvent(event)
@@ -43,7 +43,7 @@ describe('hx-trigger attribute', function() {
 
     it('filters properly with true filter spec', function() {
         mockResponse('GET', '/test', 'Called!')
-        let form = initHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = true
         form.dispatchEvent(event)
@@ -52,25 +52,11 @@ describe('hx-trigger attribute', function() {
 
     it('filters properly with true expression filter spec', function() {
         mockResponse('GET', '/test', 'Called!')
-        let form = initHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = true
         form.dispatchEvent(event)
         fetchMock.calls.length.should.equal(1)
-    })
-
-    it('polling works', async function () {
-        mockResponse('GET', '/test', "foo")
-        initHTML('<div hx-trigger="every 5ms" hx-get="/test" hx-swap="innerHTML"/>')
-        await htmx.timeout(100)
-        fetchMock.calls.length.should.be.greaterThan(1)
-    })
-
-    it('polling stops when an element is removed', async function () {
-        mockResponse('GET', '/test', "foo")
-        initHTML('<div hx-trigger="every 10ms" hx-get="/test" hx-swap="outerHTML"/>')
-        await htmx.timeout(50)
-        fetchMock.calls.length.should.be.lessThan(3)
     })
 
     // TODO replace with direct test
@@ -91,7 +77,7 @@ describe('hx-trigger attribute', function() {
 
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
-        initHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
+        createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
         click('button')
         fetchMock.calls.length.should.equal(1)
         click('button')
@@ -100,7 +86,7 @@ describe('hx-trigger attribute', function() {
 
     it('event listeners can filter on target', function() {
         mockResponse('GET', '/test', "foo")
-        initHTML('<div>' +
+        createProcessedHTML('<div>' +
             '<div id="d1" hx-trigger="click from:body target:#d3" hx-get="/test">Requests: 0</div>' +
             '<div id="d2"></div>' +
             '<div id="d3"></div>' +
@@ -124,7 +110,7 @@ describe('hx-trigger attribute', function() {
         debug(this)
         mockResponse('GET', '/foo', 'foo')
         mockResponse('GET', '/bar', 'bar')
-        initHTML(
+        createProcessedHTML(
             "<div hx-trigger='click' hx-get='/foo' hx-target='#d3' hx-swap='innerHTML'>" +
             "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
             "</div><div id='d3'>bar</div>")

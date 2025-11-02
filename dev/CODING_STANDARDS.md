@@ -1,6 +1,6 @@
 # htmx Coding Standards
 
-* Prefer `for` loop to `forEach` (easier to debug)
+* Prefer `for` loop to `forEach` (easier to debug, compresses better)
 * Assign complex expressions to a local variable rather than using them directly in statements (easier to debug)
 * Private methods should be prefixed with `__`.  The `dist` task will replace double underscore with `#` when it builds 
   the final script.  This allows us to unit test private methods.
@@ -10,8 +10,22 @@
 * Use `let` rather than `const`
 * Publicly surfaced properties should not be shortened, _except_ "Configuration" which can be shortened to "Config"
 * Local variables should have descriptive names in most cases.  `ctx` and `elt` are acceptable.
-* Generally all state in the trigger -> request -> swap life cycle should be stored on ctx.  Try to avoid overwrighting 
+  * Terser does a good job of minimizing names, so there is no benefit from a size perspective to using short variable names.
+* Generally all state in the trigger -> request -> swap life cycle should be stored on `ctx`.  Try to avoid overwriting 
   an existing property, pick a new property name.  These properties are part of the public API and *must* be documented.
+* There is size code benefit to naked if statements, use curlies to make debugging easier:
+   ```js
+    // terser turns these two forms into the same compressed code
+    if(bool) return;
+    if(bool) {
+       return;
+    }
+   ```
+* Please lets keep this thing under 10k please please please
+
+## Testing
+
+* TODO - outline testing standards
 
 ## AI Policy
 

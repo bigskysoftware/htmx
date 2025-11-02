@@ -47,32 +47,32 @@ describe('Unit Tests', function() {
     })
 
     it("__attributeValue returns direct attribute value", function() {
-        const div = parseHTML('<div hx-get="/test"></div>');
+        const div = createDisconnectedHTML('<div hx-get="/test"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
         assert.equal(result, '/test');
     })
 
     it("__attributeValue returns inherited attribute from element", function() {
-        const div = parseHTML('<div hx-get:inherited="/inherited"></div>');
+        const div = createDisconnectedHTML('<div hx-get:inherited="/inherited"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
         assert.equal(result, '/inherited');
     })
 
     it("__attributeValue prefers direct attribute over inherited", function() {
-        const div = parseHTML('<div hx-get="/direct" hx-get:inherited="/inherited"></div>');
+        const div = createDisconnectedHTML('<div hx-get="/direct" hx-get:inherited="/inherited"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
         assert.equal(result, '/direct');
     })
 
     it("__attributeValue finds inherited attribute on parent", function() {
-        const parent = parseHTML('<div hx-get:inherited="/parent"><div></div></div>');
+        const parent = createDisconnectedHTML('<div hx-get:inherited="/parent"><div></div></div>');
         const child = parent.firstElementChild;
         const result = htmx.__attributeValue(child, 'hx-get', 'default');
         assert.equal(result, '/parent');
     })
 
     it("__attributeValue returns default when attribute not found", function() {
-        const div = parseHTML('<div></div>');
+        const div = createDisconnectedHTML('<div></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
         assert.equal(result, 'default');
     })
@@ -211,7 +211,7 @@ describe('Unit Tests', function() {
     it("__parseTriggerSpecs throws on unterminated filter", function() {
         assert.throws(() => {
             htmx.__parseTriggerSpecs('click[ctrlKey');
-        }, /Unterminated event filter/);
+        }, /unterminated/);
     })
 
     it("__parseTriggerSpecs handles complex real-world spec", function() {
@@ -241,11 +241,11 @@ describe('Unit Tests', function() {
             'find',
             'findAll',
             'forEvent',
-            'handleTriggerEvent',
             'parseInterval',
             'process',
             'swap',
             'timeout',
+            'defineExtension',
             'trigger',
             'waitATick'
         ].sort();

@@ -82,7 +82,7 @@ class FetchMock {
         }
         if (typeof response === 'string') {
             let str = response;
-            response = new MockResponse(str);
+            response = new MockResponse(str, options);
         }
         this.responses.push({
             method: upperCasedMethod,
@@ -110,6 +110,11 @@ class FetchMock {
     // Mock a network error
     mockNetworkError(method, urlPattern, error = new Error('Network Error')) {
         this.mockResponse(method, urlPattern, Promise.reject(error));
+    }
+
+    // Mock a network failure (simpler alias)
+    mockFailure(method, urlPattern, message = 'Network failure') {
+        this.mockNetworkError(method, urlPattern, new Error(message));
     }
 
     // Find matching response

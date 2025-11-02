@@ -25,7 +25,6 @@ const config = {
 
 <script src="test/lib/chai.js"></script>
 <script src="test/lib/fetch-mock.js"></script>
-<script src="test/lib/sse-mock.js"></script>
 <script src="test/lib/htmx.js"></script>
 <script src="src/htmxQuirks.js"></script>
 

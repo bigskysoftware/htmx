@@ -57,7 +57,7 @@ describe('hx-swap modifiers', function() {
 
     it('swap with scroll:top modifier scrolls to top', async function () {
         mockResponse('GET', '/test', '<div style="height:2000px">Tall content</div>')
-        let div = initHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
         div.scrollTop = 500;
         await clickAndWait(div)
         assert.equal(div.scrollTop, 0)
@@ -65,14 +65,14 @@ describe('hx-swap modifiers', function() {
 
     it('swap with scroll:bottom modifier scrolls to bottom', async function () {
         mockResponse('GET', '/test', '<div style="height:2000px">Tall content</div>')
-        let div = initHTML('<div hx-get="/test" hx-swap="innerHTML scroll:bottom" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:bottom" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
         await clickAndWait(div)
         assert.isAbove(div.scrollTop, 0)
     })
 
     it('processes scripts in swapped content', async function () {
         mockResponse('GET', '/test', '<div><script>window.testScriptRan = true;</script></div>')
-        let div = initHTML('<div hx-get="/test">Old</div>');
+        let div = createProcessedHTML('<div hx-get="/test">Old</div>');
         window.testScriptRan = false;
         await clickAndWait(div)
         assert.isTrue(window.testScriptRan)
@@ -81,7 +81,7 @@ describe('hx-swap modifiers', function() {
 
     it('swap with delay (blocking - default behavior) waits for delay before completing request', async function () {
         mockResponse('GET', '/test', '<div>New Content</div>')
-        initHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms">Old Content</div>');
+        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms">Old Content</div>');
         
         await clickAndWait('#test-div')
         assertTextContentIs('#test-div', 'New Content')
@@ -89,16 +89,16 @@ describe('hx-swap modifiers', function() {
 
     it('swap with delay (non-blocking) completes request immediately but delays swap', async function () {
         mockResponse('GET', '/test', '<div>New Content</div>')
-        initHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms async:false">Old Content</div>');
-        
+        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms async:false">Old Content</div>');
+
         await clickAndWait('#test-div')
-        
+
         // Should still be old content immediately after request completes
         assertTextContentIs('#test-div', 'Old Content')
-        
+
         // Wait for the delayed swap to complete
         await new Promise(resolve => setTimeout(resolve, 150));
-        
+
         // Now should be updated
         assertTextContentIs('#test-div', 'New Content')
     })

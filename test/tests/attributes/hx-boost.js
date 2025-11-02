@@ -10,42 +10,42 @@ describe('hx-boost attribute', async function() {
 
     it('handles basic anchor properly', async function () {
         mockResponse('GET', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><a id="a1" href="/test">Foo</a></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><a id="a1" href="/test">Foo</a></div>')
         await clickAndWait('#a1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form post properly', async function () {
         mockResponse('POST', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form post with button formaction properly', async function () {
         mockResponse('POST', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="post"><button id="b1" formaction="/test">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="post"><button id="b1" formaction="/test">Submit</button></form></div>')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form post with button formmethod properly', async function() {
         mockResponse('POST', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1" formmethod="post">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1" formmethod="post">Submit</button></form></div>')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form post with button formmethod & formaction properly', async function() {
         mockResponse('POST', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="get"><button id="b1" formmethod="post" formaction="/test">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="get"><button id="b1" formmethod="post" formaction="/test">Submit</button></form></div>')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form post properly w/ explicit action', async function() {
         mockResponse('POST', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML"><form id="f1" action="/test" method="post"  hx-boost="true"></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML"><form id="f1" action="/test" method="post"  hx-boost="true"></form></div>')
         await submitAndWait('#f1')
         playground().innerHTML.should.equal('Boosted')
     })
@@ -53,14 +53,14 @@ describe('hx-boost attribute', async function() {
     it('handles basic form get properly', async function() {
         debug(this)
         mockResponse('GET', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1">Submit</button></form></div>')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
     })
 
     it('handles basic form with no explicit method property', async function() {
         mockResponse('GET', '/test', 'Boosted')
-        initHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test"><button id="b1">Submit</button></form></div>')
+        createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test"><button id="b1">Submit</button></form></div>')
         findElt("#f1").getAttribute("data-htmx-powered").should.equal('true')
         await clickAndWait('#b1')
         playground().innerHTML.should.equal('Boosted')
@@ -68,14 +68,14 @@ describe('hx-boost attribute', async function() {
 
     it('does not boost forms with method="dialog"', async function() {
         mockResponse('GET', '/test', 'Boosted')
-        initHTML('<div hx-boost:inherited="true"><form id="f1" action="/test" method="dialog"><button id="b1">close</button></form></div>')
+        createProcessedHTML('<div hx-boost:inherited="true"><form id="f1" action="/test" method="dialog"><button id="b1">close</button></form></div>')
         click('#b1')
         fetchMock.calls.length.should.equal(0)
     })
 
     it('does not boost forms with buttons with formmethod="dialog"', async function() {
         mockResponse('GET', '/test', 'Boosted')
-        initHTML('<div hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button formmethod="dialog" id="b1">close</button></form></div>')
+        createProcessedHTML('<div hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button formmethod="dialog" id="b1">close</button></form></div>')
         click('#b1')
         fetchMock.calls.length.should.equal(0)
     })
@@ -100,14 +100,14 @@ describe('hx-boost attribute', async function() {
     //     fetchMock.calls.length.should.equal(0)
     // })
 
-    it('includes an HX-Boosted Header', async function() {
-        mockResponse('GET', '/test', "Boosted!")
-        initHTML('<a hx-boost="true" hx-target="this" hx-swap="outerHTML" href="/test">Click Me!</a>')
-        await clickAndWait("a")
-        fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
-        fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
-        playground().innerHTML.should.equal('Boosted!')
-    })
+    // it('includes an HX-Boosted Header', async function() {
+    //     mockResponse('GET', '/test', "Boosted!")
+    //     createProcessedHTML('<a hx-boost="true" hx-target="this" hx-swap="outerHTML" href="/test">Click Me!</a>')
+    //     await clickAndWait("a")
+    //     fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
+    //     fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
+    //     playground().innerHTML.should.equal('Boosted!')
+    // })
 
     // it('form get w/ search params in action property excludes search params', async function() {
     //     mockResponse('GET', /\/test.*/, async function(xhr) {

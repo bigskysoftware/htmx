@@ -33,31 +33,22 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - Much, much more reliable history restoration
 - This is more of a "fixing" change than a "breaking" change :)
 
-## New Features
+## New Features (All Tentative!)
 
 ### Morphing Swap
-- New `morph` swap is now available, based on the original `idiomorph` algorithm
+- New morph swap styles are now available, based on the original `idiomorph` algorithm
+- `innerMorph` - morphs the children of the target element
+- `outerMorph` - morphs the target element itself
 - Does a better job of preserving local state when targeting large DOM trees
 
-### Request Preloading
-- New `hx-preload` attribute
-- Preload requests on specified trigger events
-- Improves perceived performance
-
-### Optimistic Updates
-- New `hx-optimistic` attribute for optimistic UI updates
-- Shows content immediately while request is in flight
-- Automatically reverts on request failure
-
-### Server Actions (Partials)
-- New `<htmx-action type="partial">` element system
-- Cleaner approach for multi-target responses
-- Simplifies more complex page updates
+### Built-in Streaming Response Support
+- Streaming functionality/SSE now built into core htmx
+- Improved event handling and reconnection logic
 
 ### View Transitions
-- View Transitions API enabled by default
+- View Transitions API enabled by default (maybe not!)
 - Provides smooth animated transitions between DOM states
-- Set `htmx.config.viewTransitions = false` to disable
+- Set `htmx.config.transitions = false` to disable
 
 ### Scripting API
 - New unified scripting API for async operations
@@ -69,14 +60,35 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - Easier to access request/response information
 - More predictable event handling
 
-### Built-in Streaming Response Support
-- Streaming functionality now built into core htmx
-- Improved event handling and reconnection logic
+### Modern Swap Terminology
+- New modern swap style names supported alongside classic names
+- `before` (equivalent to `beforebegin`)
+- `after` (equivalent to `afterend`)
+- `prepend` (equivalent to `afterbegin`)
+- `append` (equivalent to `beforeend`)
+- Both old and new terminology work (backward compatible)
+- Example: `hx-swap="prepend"` works the same as `hx-swap="afterbegin"`
+
+### Inheritance Attribute Modifiers
+- New `:append` modifier for attributes to append values to inherited values
+- Values are comma-separated when appended
+- Example: `hx-include:append=".child"` appends `.child` to any inherited `hx-include` value
+- Can be combined with `:inherited` for chaining: `hx-include:inherited:append=".parent"`
+- Works with all htmx attributes that accept value lists
+
+### HTTP Status Code Conditional Swapping
+- New `hx-status:XXX` attribute pattern for status-specific swap behaviors
+- Allows different swap strategies based on HTTP response status
+- Supports exact codes: `hx-status:404="none"`
+- Supports wildcards: `hx-status:2xx="innerHTML"`, `hx-status:5xx="#error"`
+- Example: `hx-status:404="#not-found"` swaps into different target on 404
+- Overrides default swap behavior when status code matches
 
 ## Attribute Changes
 
 ### Renamed Attributes
-- `hx-disabled-elt` renamed to `hx-disable`
+- `hx-disable` renamed to `hx-ignore`
+- `hx-disabled-elt` renamed to `hx-disable` :/
 
 ### Removed Attributes
 - `hx-vars` - use `hx-vals` with `js:` prefix instead
@@ -88,15 +100,18 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `hx-request` - use `hx-config` instead
 - `hx-history` - removed (history no longer uses local storage)
 - `hx-history-elt` - removed (history uses target element)
-- `hx-select-oob` - use server actions or standard OOB swaps
 
 ### New Attributes
 - `hx-action` - specifies URL for requests (use with `hx-method`)
 - `hx-method` - specifies HTTP method (use with `hx-action`)
 - `hx-config` - configure request behavior using JSON
-- `hx-optimistic` - enable optimistic updates
-- `hx-preload` - preload requests on trigger events
+- `hx-status:XXX` - conditional swap behavior based on HTTP status code (e.g., `hx-status:404="none"`)
 - `hx-ignore` - replaces htmx 2.x `hx-disable` for disabling htmx processing
+
+### Attribute Modifier Syntax
+- `:inherited` - explicitly inherit attribute value from parent (e.g., `hx-target:inherited="this"`)
+- `:append` - append value to inherited value (e.g., `hx-include:append=".child"`)
+- `:inherited:append` - combine inheritance and appending (e.g., `hx-vals:inherited:append='{"key":"value"}'`)
 
 ## Event Changes
 
@@ -129,15 +144,9 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### New Events
 - `htmx:after:cleanup`
 - `htmx:after:history:update`
-- `htmx:after:main:swap`
-- `htmx:after:partial:swap`
-- `htmx:before:main:swap`
-- `htmx:before:partial:swap`
 - `htmx:finally:request`
 
-### Extensions Are Now Event-Based
-- Extensions no longer require explicit `hx-ext` attribute
-- Extensions now work by listening to standard htmx events
-- No explicit extension API - use public htmx API and events
+### Extensions Are Now Globally Registered
+- Extensions no longer require an explicit `hx-ext` attribute
 - Simpler extension architecture
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="htmx:config" content='{"logAll":true}'>
+    <meta name="htmx:config" content='{"logAll":true, "extensions": "hx-optimistic"}'>
     <title>htmx 4.0 Tests</title>
 
     <!-- Mocha CSS -->
@@ -75,6 +75,7 @@
 
     <!-- htmx after mocks are set up -->
     <script src="../src/htmx.js"></script>
+    <script src="../src/ext/hx-optimistic.js"></script>
 
     <script>
         // Initialize Mocha
@@ -94,6 +95,11 @@
     <script src="tests/unit/find.js"></script>
     <script src="tests/unit/shouldCancel.js"></script>
     <script src="tests/unit/trigger.js"></script>
+
+    <!-- Fast attribute tests -->
+    <script src="tests/direct/hx-get.js"></script>
+    <script src="tests/direct/hx-on-xxx.js"></script>
+    <script src="tests/direct/hx-optimistic.js"></script>
 
     <!-- Attribute Tests -->
     <script src="tests/attributes/hx-get.js"></script>

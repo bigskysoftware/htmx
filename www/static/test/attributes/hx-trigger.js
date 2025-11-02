@@ -242,23 +242,6 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('Requests: 2')
   })
 
-  it('polling works', function(complete) {
-    var requests = 0
-    this.server.respondWith('GET', '/test', function(xhr) {
-      requests++
-      if (requests > 5) {
-        complete()
-        // cancel polling with a
-        xhr.respond(286, {}, 'Requests: ' + requests)
-      } else {
-        xhr.respond(200, {}, 'Requests: ' + requests)
-      }
-    })
-    this.server.autoRespond = true
-    this.server.autoRespondAfter = 0
-    make('<div hx-trigger="every 10ms" hx-get="/test"/>')
-  })
-
   it('non-default value works w/ data-* prefix', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
     var form = make('<form data-hx-get="/test" data-hx-trigger="click">Click Me!</form>')

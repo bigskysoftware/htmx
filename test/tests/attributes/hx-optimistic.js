@@ -8,88 +8,80 @@ describe('hx-optimistic attribute', function() {
         cleanupTest(this.currentTest)
     })
 
-    it('reads hx-optimistic attribute into config', async function () {
-        let ctx = null;
-        document.addEventListener('htmx:config:request', e => ctx = e.detail.ctx, {once: true});
-        mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="opt" style="display:none">Opt</div><button hx-post="/submit" hx-optimistic="#opt">Go</button>');
-        await clickAndWait('button')
-        assert.equal(ctx.optimistic, '#opt');
-    })
 
     it('innerHTML swap hides children and appends optimistic div', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('innerHTML swap with target as CSS selector string', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('outerHTML swap hides target and inserts optimistic div after', async function () {
         mockResponse('POST', '/submit', '<div id="result">Final</div>')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="outerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="outerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('beforebegin swap inserts optimistic div before target', async function () {
         mockResponse('POST', '/submit', '<span>New</span>')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="beforebegin" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="beforebegin" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.include(playground().textContent, 'New');
     })
 
     it('afterbegin swap inserts optimistic div at start of target', async function () {
         mockResponse('POST', '/submit', '<span>New</span>')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="afterbegin" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="afterbegin" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.include(findElt('#result').textContent, 'New');
     })
 
     it('beforeend swap inserts optimistic div at end of target', async function () {
         mockResponse('POST', '/submit', '<span>New</span>')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="beforeend" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="beforeend" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.include(findElt('#result').textContent, 'New');
     })
 
     it('afterend swap inserts optimistic div after target', async function () {
         mockResponse('POST', '/submit', '<span>New</span>')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="afterend" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="afterend" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.include(playground().textContent, 'New');
     })
 
     it('delete swap uses default outerHTML-like behavior', async function () {
         mockResponse('POST', '/submit', '')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="delete" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="delete" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
-        assert.isNull(findElt('#result'));
+        assert.isUndefined(findElt('#result'));
     })
 
     it('none swap uses default outerHTML-like behavior', async function () {
         mockResponse('POST', '/submit', 'ignored')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="none" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="none" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Original');
     })
 
     it('removes optimistic content after successful response', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.isNull(document.querySelector('[data-hx-optimistic]'));
     })
 
     it('removes optimistic content on error', async function () {
         fetchMock.mockResponse('POST', '/submit', () => Promise.reject(new Error('Network error')));
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         click('button')
         await htmx.forEvent('htmx:error', 2000);
         assert.isNull(document.querySelector('[data-hx-optimistic]'));
@@ -97,14 +89,14 @@ describe('hx-optimistic attribute', function() {
 
     it('unhides hidden elements after swap', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result"><span id="child">Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result"><span id="child">Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.isNull(document.querySelector('[data-hx-oh]'));
     })
 
     it('unhides hidden elements on error', async function () {
         fetchMock.mockResponse('POST', '/submit', () => Promise.reject(new Error('Network error')));
-        initHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         click('button')
         await htmx.forEvent('htmx:error', 2000);
         assert.isNull(document.querySelector('[data-hx-oh]'));
@@ -112,28 +104,28 @@ describe('hx-optimistic attribute', function() {
 
     it('does nothing when optimistic selector not found', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#nonexistent">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#nonexistent">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('does nothing when hx-optimistic not specified', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('does nothing when target not found', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#nonexistent" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#nonexistent" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.isNull(document.querySelector('[data-hx-optimistic]'));
     })
 
     it('works when target is resolved from CSS selector', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
@@ -146,7 +138,7 @@ describe('hx-optimistic attribute', function() {
                 optDiv = document.querySelector('[data-hx-optimistic]');
             }, 0);
         }, {once: true});
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         // Just verify it completed - styling check would happen during request
         assert.equal(findElt('#result').textContent.trim(), 'Final');
@@ -154,14 +146,14 @@ describe('hx-optimistic attribute', function() {
 
     it('copies innerHTML from source element', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none"><strong>Optimistic</strong></div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none"><strong>Optimistic</strong></div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('works with complex HTML in source', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none"><ul><li>Item 1</li><li>Item 2</li></ul></div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none"><ul><li>Item 1</li><li>Item 2</li></ul></div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
@@ -169,7 +161,7 @@ describe('hx-optimistic attribute', function() {
     it('multiple requests clean up independently', async function () {
         mockResponse('POST', '/submit1', 'Final1')
         mockResponse('POST', '/submit2', 'Final2')
-        initHTML('<div id="r1">A</div><div id="r2">B</div><div id="opt" style="display:none">Opt</div><button id="b1" hx-post="/submit1" hx-target="#r1" hx-swap="innerHTML" hx-optimistic="#opt">Go1</button><button id="b2" hx-post="/submit2" hx-target="#r2" hx-swap="innerHTML" hx-optimistic="#opt">Go2</button>');
+        createProcessedHTML('<div id="r1">A</div><div id="r2">B</div><div id="opt" style="display:none">Opt</div><button id="b1" hx-post="/submit1" hx-target="#r1" hx-swap="innerHTML" hx-optimistic="#opt">Go1</button><button id="b2" hx-post="/submit2" hx-target="#r2" hx-swap="innerHTML" hx-optimistic="#opt">Go2</button>');
         await clickAndWait('#b1')
         await clickAndWait('#b2')
         assert.isNull(document.querySelector('[data-hx-optimistic]'));
@@ -177,21 +169,21 @@ describe('hx-optimistic attribute', function() {
 
     it('works with hx-config override', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-config=\'{"optimistic": "#opt"}\'>Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-config=\'{"optimistic": "#opt"}\'>Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('hx-optimistic attribute takes precedence over hx-config', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div id="result">Original</div><div id="opt1" style="display:none">Opt1</div><div id="opt2" style="display:none">Opt2</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt1" hx-config=\'{"optimistic": "#opt2"}\'>Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt1" style="display:none">Opt1</div><div id="opt2" style="display:none">Opt2</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt1" hx-config=\'{"optimistic": "#opt2"}\'>Go</button>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
 
     it('works with inherited target', async function () {
         mockResponse('POST', '/submit', 'Final')
-        initHTML('<div hx-target:inherited="#result"><div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-swap="innerHTML" hx-optimistic="#opt">Go</button></div>');
+        createProcessedHTML('<div hx-target:inherited="#result"><div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-swap="innerHTML" hx-optimistic="#opt">Go</button></div>');
         await clickAndWait('button')
         assert.equal(findElt('#result').textContent.trim(), 'Final');
     })
