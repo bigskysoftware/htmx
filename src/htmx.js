@@ -478,9 +478,10 @@ var htmx = (() => {
                     }
                 }
 
+                ctx.fetch ||= window.fetch
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
-                let response = await (ctx.cachedResponse || fetch(ctx.request.action, ctx.request));
+                let response = await (ctx.cachedResponse || ctx.fetch(ctx.request.action, ctx.request));
 
                 ctx.response = {
                     raw: response,
@@ -659,8 +660,9 @@ var htmx = (() => {
         __getRequestQueue(elt) {
             let syncValue = this.__attributeValue(elt, "hx-sync");
             let syncElt = elt
-            if (syncValue != null && syncValue !== 'this') {
-                let selector = syncValue.split(":")[0];
+            if (syncValue && syncValue.includes(":")) {
+                let strings = syncValue.split(":");
+                let selector = strings[0];
                 syncElt = this.__findExt(selector);
             }
             return syncElt.__htmxRequestQueue ||= new RequestQueue()
