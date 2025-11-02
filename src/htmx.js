@@ -460,9 +460,9 @@ var htmx = (() => {
             this.__initTimeout(ctx);
 
             let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
-            this.__showIndicators(indicatorsSelector);
+            let indicators = this.__showIndicators(elt, indicatorsSelector);
             let disableSelector = this.__attributeValue(elt, "hx-disable");
-            this.__disableElts(disableSelector);
+            let disableElements = this.__disableElements(elt, disableSelector);
 
             try {
                 // Confirm dialog
@@ -539,12 +539,12 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
-                this.__hideIndicators(indicatorsSelector);
-                this.__enableElts(disableSelector);
+                this.__hideIndicators(indicators);
+                this.__enableElements(disableElements);
                 this.__trigger(elt, "htmx:finally:request", {ctx})
 
                 if (requestQueue.hasMore()) {
-                    // is it OK to not await here?  try/catch?
+                    // TODO is it OK to not await here?  try/catch?
                     this.__issueRequest(requestQueue.nextRequest())
                 }
             }
@@ -1569,49 +1569,51 @@ var htmx = (() => {
             }
         }
 
-        __showIndicators(indicatorsSelector) {
+        __showIndicators(elt, indicatorsSelector) {
+            let indicatorElements = []
             if (indicatorsSelector) {
-                let indicators = this.__findAllExt(indicatorsSelector);
-                for (const indicator of indicators) {
-                    indicator.__htmxIndicatorRequests ||= 0
-                    indicator.__htmxIndicatorRequests++
+                indicatorElements = [elt, ...this.__queryEltAndDescendants(elt, indicatorsSelector)];
+                for (const indicator of indicatorElements) {
+                    indicator.__htmxReqCount ||= 0
+                    indicator.__htmxReqCount++
                     indicator.classList.add(this.config.requestClass)
                 }
             }
+            return indicatorElements
         }
 
-        __hideIndicators(indicatorsSelector) {
-            if (indicatorsSelector) {
-                let indicators = this.__findAllExt(indicatorsSelector);
-                for (const indicator of indicators) {
-                    indicator.__htmxIndicatorRequests ||= 1
-                    indicator.__htmxIndicatorRequests--
-                    if (indicator.__htmxIndicatorRequests === 0) {
+        __hideIndicators(indicatorElements) {
+            for (let indicator of indicatorElements) {
+                if (indicator.__htmxReqCount) {
+                    indicator.__htmxReqCount--;
+                    if (indicator.__htmxReqCount <= 0) {
                         indicator.classList.remove(this.config.requestClass);
+                        delete indicator.__htmxReqCount
                     }
                 }
             }
         }
 
-        __disableElts(disabledSelector) {
+        __disableElements(elt, disabledSelector) {
+            let disabledElements = []
             if (disabledSelector) {
-                let indicators = this.__findAllExt(disabledSelector);
-                for (const indicator of indicators) {
-                    indicator.__htmxDisabledRequests ||= 0
-                    indicator.__htmxDisabledRequests++
+                disabledElements = this.__queryEltAndDescendants(elt, disabledSelector);
+                for (let indicator of disabledElements) {
+                    indicator.__htmxDisableCount ||= 0
+                    indicator.__htmxDisableCount++
                     indicator.disabled = true
                 }
             }
+            return disabledElements
         }
 
-        __enableElts(disabledSelector) {
-            if (disabledSelector) {
-                let indicators = this.__findAllExt(disabledSelector);
-                for (const indicator of indicators) {
-                    indicator.__htmxDisabledRequests ||= 1
-                    indicator.__htmxDisabledRequests--
-                    if (indicator.__htmxDisabledRequests === 0) {
+        __enableElements(disabledElements) {
+            for (const indicator of disabledElements) {
+                if (indicator.__htmxDisableCount) {
+                    indicator.__htmxDisableCount--
+                    if (indicator.__htmxDisableCount <= 0) {
                         indicator.disabled = false
+                        delete indicator.__htmxDisableCount
                     }
                 }
             }
