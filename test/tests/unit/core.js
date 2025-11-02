@@ -241,13 +241,13 @@ describe('Unit Tests', function() {
             'find',
             'findAll',
             'forEvent',
+            'on',
             'parseInterval',
             'process',
             'swap',
             'timeout',
             'defineExtension',
             'trigger',
-            'waitATick'
         ].sort();
 
         const expectedPublicProperties = [
