@@ -116,8 +116,8 @@ describe('Cancel behavior integration tests', function() {
         });
         
         click('#datefield');
-        await htmx.waitATick();
-        await htmx.waitATick();
+        await htmx.timeout(1);
+        await htmx.timeout(1);
         defaultPrevented.should.equal(false);
     });
 
@@ -131,7 +131,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         click('#test-link');
-        await htmx.waitATick();
+        await htmx.timeout(1);
         defaultPrevented.should.equal(false);
     });
 
@@ -160,7 +160,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         click('#test-link');
-        await htmx.waitATick();
+        await htmx.timeout(1);
         // Boosted links with fragment identifiers don't prevent default
         defaultPrevented.should.equal(false);
     });
@@ -190,8 +190,8 @@ describe('Cancel behavior integration tests', function() {
         });
         
         click('#btn');
-        await htmx.waitATick();
-        await htmx.waitATick();
+        await htmx.timeout(1);
+        await htmx.timeout(1);
         defaultPrevented.should.equal(true);
         // Should not have made a request
         fetchMock.calls.length.should.equal(0);
@@ -209,7 +209,7 @@ describe('Cancel behavior integration tests', function() {
         
         const evt = new MouseEvent('click', { ctrlKey: true, bubbles: true });
         link.dispatchEvent(evt);
-        await htmx.waitATick();
+        await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);
@@ -227,7 +227,7 @@ describe('Cancel behavior integration tests', function() {
         
         const evt = new MouseEvent('click', { metaKey: true, bubbles: true });
         link.dispatchEvent(evt);
-        await htmx.waitATick();
+        await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);
@@ -245,7 +245,7 @@ describe('Cancel behavior integration tests', function() {
         
         const evt = new MouseEvent('click', { shiftKey: true, bubbles: true });
         link.dispatchEvent(evt);
-        await htmx.waitATick();
+        await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);

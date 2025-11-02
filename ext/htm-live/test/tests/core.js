@@ -4,7 +4,7 @@ describe('Basic Live Functionality', function() {
         createProcessedHTML('<input id="foo"><div id="d1" hx-live="bind innerText to #foo.value">Original</div>');
         let input = htmx.find('#foo');
         input.value = "Bar";
-        await htmx.waitATick()
+        await htmx.timeout(1)
         let div = htmx.find('#d1');
         assert.exists(div);
         assert.equal(div.innerText, "Bar");

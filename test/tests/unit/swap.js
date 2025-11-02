@@ -196,6 +196,40 @@ describe('swap() unit tests', function() {
         findElt('#d2').tagName.should.equal("DIV");
     })
 
+    it('swaps partial with default target', async function () {
+        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#test-playground'>Partial</partial>"})
+        playground().innerText.should.equal("Partial");
+    })
 
+    it('swaps partial with custom target', async function () {
+        createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
+        await htmx.swap({"target":"#d1", "text":"<partial hx-target='#d2'>Partial</partial>"})
+        findElt('#d2').innerText.should.equal("Partial");
+    })
+
+    it('swaps partial with custom swap style', async function () {
+        createProcessedHTML("<div id='d1'>Existing</div>")
+        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#d1' hx-swap='beforeend'>Partial</partial>"})
+        findElt('#d1').innerText.should.equal("ExistingPartial");
+    })
+
+    it('replaces attributes when swapping element with same id', async function () {
+        createProcessedHTML("<div id='d1' class='old' data-value='1'></div>")
+        await htmx.swap({"target":"#d1", "text":"<div id='d1' class='new' data-value='2'>Content</div>", "swap":"outerHTML"})
+        let replaced = findElt('#d1');
+        replaced.getAttribute('class').should.equal('new');
+        replaced.getAttribute('data-value').should.equal('2');
+    })
+
+    it('triggers CSS transitions during swap', async function () {
+        createProcessedHTML("<style>#d1 { transition: opacity 100ms; }</style><div id='d1' style='opacity: 1;'>Old</div>")
+        let transitioned = false;
+        htmx.on('transitionstart', () => {
+            transitioned = true;
+        });
+        await htmx.swap({"target":"#d1", "text":"<div id='d1' style='opacity: 0.5;'>New</div>", "swap":"outerHTML"})
+        await htmx.timeout(50);
+        transitioned.should.be.true;
+    })
 
 })

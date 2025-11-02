@@ -1001,10 +1001,9 @@ var htmx = (() => {
             return Document.parseHTMLUnsafe?.(resp) || new DOMParser().parseFromString(resp, 'text/html');
         }
 
-        // TODO - store any head tag content on the fragment?
         __makeFragment(text) {
-            // Replace <htmx-action type="partial"> tags with <template partial>
-            let response = text.replace(/<htmx-action\s+type=["']partial["']/gi, '<template partial').replace(/<\/htmx-action>/gi, '</template>');
+            let response = text.replace(/<partial(\s+|>)/gi, '<template partial$1').replace(/<\/partial>/gi, '</template>');
+            // TODO - store any head tag content on the fragment for head extension
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -1365,6 +1364,22 @@ var htmx = (() => {
             })
         }
 
+        // on(elt, evt, callback)
+        // on(evt, callback)
+        on(eventOrElt, eventOrCallback, callback) {
+            let event;
+            let elt = document;
+            if (callback === undefined) {
+                event = eventOrElt;
+                callback =  eventOrCallback
+            } else {
+                elt = this.__normalizeElement(eventOrElt);
+                event = eventOrCallback;
+            }
+            elt.addEventListener(event, callback);
+            return callback;
+        }
+
         find(selectorOrElt, selector) {
             return this.__findExt(selectorOrElt, selector)
         }
@@ -1381,6 +1396,7 @@ var htmx = (() => {
         }
 
         trigger(on, eventName, detail = {}, bubbles = true) {
+            on = this.__normalizeElement(on)
             this.__triggerExtensions(on, eventName, detail);
             let evt = new CustomEvent(eventName, {
                 detail,
@@ -1389,15 +1405,10 @@ var htmx = (() => {
                 composed: true,
                 originalTarget: on
             });
-            let target = on.isConnected ? on : document.body;
+            let target = on.isConnected ? on : document;
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-
-        async waitATick() {
-            return this.timeout(1)
-        }
-
         // TODO - make async
         ajax(verb, path, context) {
             // Normalize context to object
@@ -1441,18 +1452,18 @@ var htmx = (() => {
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
             history.pushState({htmx: true}, '', path);
-            this.__trigger(document.body, "htmx:after:push:into:history", {path});
+            this.__trigger(document, "htmx:after:push:into:history", {path});
         }
 
         __replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
-            this.__trigger(document.body, "htmx:after:replace:into:history", {path});
+            this.__trigger(document, "htmx:after:replace:into:history", {path});
         }
 
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
-            if (this.__trigger(document.body, "htmx:before:restore:history", {path, cacheMiss: true})) {
+            if (this.__trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
                 if (htmx.config.historyReload) {
                     location.reload();
                 } else {
@@ -1492,13 +1503,13 @@ var htmx = (() => {
                 sourceElement,
                 response
             };
-            if (!this.__trigger(document.body, "htmx:before:history:update", historyDetail)) return;
+            if (!this.__trigger(document, "htmx:before:history:update", historyDetail)) return;
             if (type === 'push') {
                 this.__pushUrlIntoHistory(path);
             } else {
                 this.__replaceUrlInHistory(path);
             }
-            this.__trigger(document.body, "htmx:after:history:update", historyDetail);
+            this.__trigger(document, "htmx:after:history:update", historyDetail);
         }
 
         __handleHxOnAttributes(node) {
@@ -2022,6 +2033,14 @@ var htmx = (() => {
                         this.__copyAttributes(elt, clone, this.config.morphIgnore)
                     })
                 }
+            }
+        }
+
+        __normalizeElement(cssOrElement) {
+            if (typeof cssOrElement === "string") {
+                return this.find(cssOrElement);
+            } else {
+                return cssOrElement
             }
         }
     }
