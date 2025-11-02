@@ -490,29 +490,11 @@ var htmx = (() => {
                     status: response.status,
                     headers: response.headers,
                 }
-                
-                // Extract HX-* headers into ctx.hx
-                ctx.hx = {}
-                for (let [k, v] of response.headers) {
-                    if (k.toLowerCase().startsWith('hx-')) {
-                        ctx.hx[k.slice(3).toLowerCase().replace(/-/g, '')] = v
-                    }
-                }
-
+                this.__extractHxHeaders(ctx);
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
-                if (ctx.hx.trigger) this.__handleTriggerHeader(ctx.hx.trigger, elt);
-                if (ctx.hx.refresh === 'true') return location.reload();
-                if (ctx.hx.redirect) return location.href = ctx.hx.redirect;
-                if (ctx.hx.location) {
-                    let path = ctx.hx.location, opts = {};
-                    if (path[0] === '{') {
-                        opts = JSON.parse(path);
-                        path = opts.path;
-                        delete opts.path;
-                    }
-                    opts.push = opts.push || 'true';
-                    return this.ajax('GET', path, opts);
+                if(this.__handleHxHeadersAndMaybeReturnEarly(ctx)){
+                    return
                 }
 
                 let isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
@@ -547,6 +529,42 @@ var htmx = (() => {
                     // TODO is it OK to not await here?  try/catch?
                     this.__issueRequest(requestQueue.nextRequest())
                 }
+            }
+        }
+
+        // Extract HX-* headers into ctx.hx
+        __extractHxHeaders(ctx, response) {
+            ctx.hx = {}
+            for (let [k, v] of ctx.response.raw.headers) {
+                if (k.toLowerCase().startsWith('hx-')) {
+                    ctx.hx[k.slice(3).toLowerCase().replace(/-/g, '')] = v
+                }
+            }
+        }
+
+        // returns true if the header aborts the current response handling
+        __handleHxHeadersAndMaybeReturnEarly(ctx) {
+            if (ctx.hx.trigger) {
+                this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
+            }
+            if (ctx.hx.refresh === 'true') {
+                location.reload();
+                return true // TODO - necessary?  wouldn't it abort the current js?
+            }
+            if (ctx.hx.redirect) {
+                location.href = ctx.hx.redirect;
+                return true // TODO - same, necessary?
+            }
+            if (ctx.hx.location) {
+                let path = ctx.hx.location, opts = {};
+                if (path[0] === '{') {
+                    opts = JSON.parse(path);
+                    path = opts.path;
+                    delete opts.path;
+                }
+                opts.push = opts.push || 'true';
+                this.ajax('GET', path, opts);
+                return true // TODO this seems legit
             }
         }
 
