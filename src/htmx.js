@@ -923,7 +923,6 @@ var htmx = (() => {
         }
 
         __handleTriggerHeader(value, elt) {
-            if (!elt.isConnected) elt = document.body;
             if (value[0] === '{') {
                 let triggers = JSON.parse(value);
                 for (let name in triggers) {
@@ -1288,7 +1287,8 @@ var htmx = (() => {
                 }
             }
             this.__trigger(document, "htmx:after:restore", {ctx});
-            if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
+            // TODO this stuff should be an extension
+            // if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
         __processMainSwap(ctx, fragment, partialTasks, title) {
