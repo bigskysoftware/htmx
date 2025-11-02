@@ -232,4 +232,31 @@ describe('swap() unit tests', function() {
         transitioned.should.be.true;
     })
 
+    it('triggers htmx:before:swap event', async function () {
+        let triggered = false;
+        htmx.on('htmx:before:swap', () => {
+            triggered = true;
+        });
+        await htmx.swap({"target":"#test-playground", "text":"<div>Content</div>"})
+        triggered.should.be.true;
+    })
+
+    it('triggers htmx:after:swap event', async function () {
+        let triggered = false;
+        htmx.on('htmx:after:swap', () => {
+            triggered = true;
+        });
+        await htmx.swap({"target":"#test-playground", "text":"<div>Content</div>"})
+        triggered.should.be.true;
+    })
+
+    it('triggers htmx:after:restore event', async function () {
+        let triggered = false;
+        htmx.on('htmx:after:restore', () => {
+            triggered = true;
+        });
+        await htmx.swap({"target":"#test-playground", "text":"<div>Content</div>"})
+        triggered.should.be.true;
+    })
+
 })
