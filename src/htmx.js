@@ -1164,7 +1164,8 @@ var htmx = (() => {
 
         // TODO - did we punt on other folks inserting scripts?
         __processScripts(container) {
-            for (let oldScript of container.querySelectorAll('script')) {
+            let scripts = container.matches?.('script') ? [container] : container.querySelectorAll('script');
+            for (let oldScript of scripts) {
                 let newScript = document.createElement('script');
                 for (let attr of oldScript.attributes) {
                     newScript.setAttribute(attr.name, attr.value);
@@ -1223,7 +1224,7 @@ var htmx = (() => {
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
-                for (let restore of task.restoreTasks) {
+                for (let restore of task.restoreTasks || []) {
                     restore()
                 }
             }

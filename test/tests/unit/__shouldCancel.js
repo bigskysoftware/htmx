@@ -1,4 +1,4 @@
-describe('shouldCancel behavior', function() {
+describe('__shouldCancel() unit tests', function() {
 
     it('anchor with href should cancel click event', function() {
         const anchor = createDisconnectedHTML('<a href="/foo"></a>');

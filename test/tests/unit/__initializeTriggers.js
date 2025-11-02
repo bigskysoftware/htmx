@@ -1,4 +1,4 @@
-describe('__initializeTriggers behavior', function() {
+describe('__initializeTriggers unit tests', function() {
 
     function mockTriggerButton(triggerSpec, callback) {
         const btn = createHTMLNoProcessing(`<button hx-trigger="${triggerSpec}">Demo</button>`);
