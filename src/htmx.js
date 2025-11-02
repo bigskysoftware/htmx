@@ -395,7 +395,7 @@ var htmx = (() => {
 
             if (this.__isModifierKeyClick(evt)) return
 
-            if (this.__shouldCancel(evt)) evt.preventDefault()
+            if (this.__shouldCancel(evt, elt)) evt.preventDefault()
 
             // Resolve swap target
             ctx.target = this.__resolveTarget(elt, ctx.target);
@@ -432,19 +432,19 @@ var htmx = (() => {
             if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
-            if (!javascriptContent && /GET|DELETE/.test(ctx.request.method)) {
-                let params = new URLSearchParams(ctx.request.body)
+            if (javascriptContent) {
+                let data = Object.fromEntries(ctx.request.body);
+                await this.__executeJavaScriptAsync(ctx.sourceElement, data, javascriptContent, false);
+                return
+            } else if (/GET|DELETE/.test(ctx.request.method)) {
+                let params = new URLSearchParams(ctx.request.body);
                 if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
                 ctx.request.body = null
             } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
-                ctx.request.body = new URLSearchParams(ctx.request.body)
+                ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
-            if (javascriptContent) {
-                await this.__executeJavaScriptAsync(ctx.sourceElement, {}, javascriptContent, false);
-            } else {
-                await this.__issueRequest(ctx);
-            }
+            await this.__issueRequest(ctx);
         }
 
         async __issueRequest(ctx) {
@@ -670,8 +670,8 @@ var htmx = (() => {
             return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
         }
 
-        __shouldCancel(evt) {
-            let elt = evt.currentTarget
+        __shouldCancel(evt, elt) {
+            elt = elt || evt.currentTarget
             let isSubmit = evt.type === 'submit' && elt?.tagName === 'FORM'
             if (isSubmit) return true
 

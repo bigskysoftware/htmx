@@ -9,66 +9,66 @@ describe('process() unit tests', function() {
     });
 
     it('initializes element with hx-get', function () {
-        let div = createHTML('<div hx-get="/test"></div>')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
         htmx.process(div)
         assert.isTrue(div.hasAttribute('data-htmx-powered'))
     })
 
     it('initializes descendant elements', function () {
-        let container = createHTML('<div><button hx-get="/test"></button></div>')
+        let container = createProcessedHTML('<div><button hx-get="/test"></button></div>')
         htmx.process(container)
         let button = container.querySelector('button')
         assert.isTrue(button.hasAttribute('data-htmx-powered'))
     })
 
     it('initializes boosted elements', function () {
-        let a = createHTML('<a href="/test" hx-boost="true">Link</a>')
+        let a = createProcessedHTML('<a href="/test" hx-boost="true">Link</a>')
         htmx.process(a)
         assert.isTrue(a.hasAttribute('data-htmx-powered'))
     })
 
     it('processes scripts by default', function () {
-        let container = createHTML('<div><script>window.testProcessed = true</script></div>')
+        let container = createProcessedHTML('<div><script>window.testProcessed = true</script></div>')
         htmx.process(container)
         assert.isTrue(window.testProcessed)
         delete window.testProcessed
     })
 
     it('skips scripts when processScripts is false', function () {
-        let container = createHTML('<div><script>window.testSkipped = true</script></div>')
+        let container = createProcessedHTML('<div><script>window.testSkipped = true</script></div>')
         htmx.process(container, false)
         assert.isUndefined(window.testSkipped)
     })
 
     it('processes hx-on attributes', function () {
-        let div = createHTML('<div hx-on:custom="this.setAttribute(\'fired\', \'true\')"></div>')
+        let div = createProcessedHTML('<div hx-on:custom="this.setAttribute(\'fired\', \'true\')"></div>')
         htmx.process(div)
         div.dispatchEvent(new Event('custom'))
         assert.equal(div.getAttribute('fired'), 'true')
     })
 
     it('ignores elements with hx-ignore', function () {
-        let container = createHTML('<div hx-ignore><button hx-get="/test"></button></div>')
+        let container = createProcessedHTML('<div hx-ignore><button hx-get="/test"></button></div>')
         htmx.process(container)
         let button = container.querySelector('button')
         assert.isFalse(button.hasAttribute('data-htmx-powered'))
     })
 
     it('ignores descendants of hx-ignore', function () {
-        let container = createHTML('<div><div hx-ignore><button hx-get="/test"></button></div></div>')
+        let container = createProcessedHTML('<div><div hx-ignore><button hx-get="/test"></button></div></div>')
         htmx.process(container)
         let button = container.querySelector('button')
         assert.isFalse(button.hasAttribute('data-htmx-powered'))
     })
 
     it('processes element itself if it matches', function () {
-        let div = createHTML('<div hx-get="/test"></div>')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
         htmx.process(div)
         assert.isTrue(div.hasAttribute('data-htmx-powered'))
     })
 
     it('triggers htmx:before:process event', function () {
-        let div = createHTML('<div hx-get="/test"></div>')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
         let fired = false
         div.addEventListener('htmx:before:process', () => fired = true)
         htmx.process(div)
@@ -76,7 +76,7 @@ describe('process() unit tests', function() {
     })
 
     it('triggers htmx:after:process event', function () {
-        let div = createHTML('<div hx-get="/test"></div>')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
         let fired = false
         div.addEventListener('htmx:after:process', () => fired = true)
         htmx.process(div)
@@ -84,7 +84,7 @@ describe('process() unit tests', function() {
     })
 
     it('skips processing if htmx:before:process is cancelled', function () {
-        let div = createHTML('<div hx-get="/test"></div>')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
         div.addEventListener('htmx:before:process', (e) => e.preventDefault())
         htmx.process(div)
         assert.isFalse(div.hasAttribute('data-htmx-powered'))
