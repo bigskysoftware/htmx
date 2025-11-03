@@ -1,9 +1,17 @@
 {
-  "name": "htmx",
+  "name": "htmx.org",
   "version": "4.0.0-alpha1",
   "description": "A hypermedia-oriented JavaScript library",
   "main": "dist/htmx.js",
   "module": "dist/htmx.esm.js",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/*.js",
+    "dist/ext/*.js",
+    "dist/*.js.br",
+    "src/editors/jetbrains/htmx.web-types.json"
+  ],
   "scripts": {
     "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:compress",
     "build:iife": "sed 's/__/#/g' src/htmx.js > dist/htmx.js",
