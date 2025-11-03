@@ -129,7 +129,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.isNotOk(queue.more())
     })
 
-    it('nextRequest returns next queued request', function () {
+    it('finish returns next queued request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
@@ -139,6 +139,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
+        queue.finish()
         let next = queue.next()
 
         assert.equal(next, ctx2)
@@ -154,6 +155,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
+        queue.finish()
         queue.next()
 
         // Should now allow a new request

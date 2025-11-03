@@ -109,13 +109,13 @@ describe('__handleTriggerHeader unit tests', function() {
         let eventFired = false
         let disconnectedElt = document.createElement('div')
 
-        document.body.addEventListener('myEvent', () => { eventFired = true })
+        document.addEventListener('myEvent', () => { eventFired = true })
 
         try {
             htmx.__handleTriggerHeader('myEvent', disconnectedElt)
             assert.isTrue(eventFired)
         } finally {
-            document.body.removeEventListener('myEvent', () => {})
+            document.removeEventListener('myEvent', () => {})
         }
     })
 
