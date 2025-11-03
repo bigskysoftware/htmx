@@ -842,6 +842,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
+                        if (this.__shouldCancel(evt)) evt.preventDefault()
                         if (this.__executeJavaScript(elt, evt, filter)) {
                             original(evt)
                         }

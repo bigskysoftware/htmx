@@ -184,7 +184,7 @@ describe('Cancel behavior integration tests', function() {
         playground().innerText.should.equal('Submitted');
     });
 
-    it.skip('does not submit with false condition on form', async function() {
+    it('does not submit with false condition on form', async function() {
         let defaultPrevented = null;
         mockResponse('POST', '/test', 'Submitted')
         createProcessedHTML('<form hx-post="/test" hx-trigger="submit[false]"><button id="btn">submit</button></form>');
@@ -205,12 +205,11 @@ describe('Cancel behavior integration tests', function() {
     it('ctrl+click on link does not prevent default (allows open in new tab)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
-            evt.preventDefault();
         });
         
         const evt = new MouseEvent('click', { ctrlKey: true, bubbles: true });
@@ -224,12 +223,11 @@ describe('Cancel behavior integration tests', function() {
     it('meta+click on link does not prevent default (allows open in new tab on Mac)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
-            evt.preventDefault();
         });
         
         const evt = new MouseEvent('click', { metaKey: true, bubbles: true });
@@ -243,12 +241,11 @@ describe('Cancel behavior integration tests', function() {
     it('shift+click on link does not prevent default (allows open in new window)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
-            evt.preventDefault();
         });
         
         const evt = new MouseEvent('click', { shiftKey: true, bubbles: true });
