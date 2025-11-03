@@ -18,12 +18,12 @@
     "test:all": "web-test-runner --browsers chromium firefox webkit --config test/web-test-runner.config.mjs --playwright --concurrency 1",
     "test:manual": "node test/manual/server.js",
 
-    "publish": "npm run test:all # && npm publish --tag next",
+    "publish": "npm publish --tag next --dry-run",
     "merge": "  (echo \"src/** merge=ours\ndist/** merge=ours\ntest/** merge=ours\n\" > .gitattributes && git add .gitattributes && git merge master); git reset HEAD .gitattributes 2>/dev/null; rm .gitattributes 2>/dev/null\n"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bigskysoftware/htmx4"
+    "url": "https://github.com/bigskysoftware/htmx"
   },
   "keywords": [
     "hypermedia",
