@@ -27,6 +27,7 @@ describe('__handleTriggerEvent unit tests', function() {
     it('prevents default when shouldCancel returns true', async function () {
         let link = createProcessedHTML('<a href="/test" hx-get="js:">Link</a>')
         let evt = new MouseEvent('click', {bubbles: true, cancelable: true})
+        Object.defineProperty(evt, 'currentTarget', {value: link, writable: false})
         let ctx = htmx.__createRequestContext(link, evt)
         await htmx.__handleTriggerEvent(ctx)
         assert.isTrue(evt.defaultPrevented)
