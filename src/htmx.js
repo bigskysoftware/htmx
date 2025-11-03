@@ -1022,7 +1022,7 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
-            for (let child of this.__queryEltAndDescendants(elt, '[data-htmx-powered]')) {
+            for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
                 this.__cleanup(child);
             }
         }

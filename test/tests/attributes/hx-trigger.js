@@ -17,9 +17,9 @@ describe('hx-trigger attribute', function() {
         mockResponse('GET', '/test', 'Clicked!')
         let div = createProcessedHTML('<div hx-trigger="foo, bar" hx-get="/test" hx-swap="innerHTML">Requests: 0</div>');
         htmx.trigger(div, 'foo');
-        await htmxSwappedEvent()
+        await htmxRestoreEvent()
         htmx.trigger(div, 'bar');
-        await htmxSwappedEvent()
+        await htmxRestoreEvent()
         fetchMock.calls.length.should.equal(2)
     })
 

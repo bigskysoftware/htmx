@@ -158,8 +158,8 @@ function waitForEvent(eventName, timeout = 2000) {
   return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
 }
 
-function htmxSwappedEvent() {
-  return waitForEvent("htmx:after:swap");
+function htmxRestoreEvent() {
+  return waitForEvent("htmx:after:restore");
 }
 
 function playground() {
@@ -185,7 +185,7 @@ function invokeAction(cssOrElt, action) {
 
 async function clickAndWait(cssOrElt) {
   invokeAction(cssOrElt, "click");
-  await htmxSwappedEvent()
+  await htmxRestoreEvent()
 }
 
 function click(cssOrElt) {
@@ -194,7 +194,7 @@ function click(cssOrElt) {
 
 async function submitAndWait(cssOrElt) {
   invokeAction(cssOrElt, "requestSubmit");
-  await htmxSwappedEvent()
+  await htmxRestoreEvent()
 }
 
 function submit(cssOrElt) {
