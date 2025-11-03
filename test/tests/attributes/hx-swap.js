@@ -14,45 +14,17 @@ describe('hx-swap modifiers', function() {
         assert.equal(htmx.__parseSwapSpec('innerHTML swap:10').swapDelay, 10)
         assert.equal(htmx.__parseSwapSpec('innerHTML swap:0').swapDelay, 0)
         assert.equal(htmx.__parseSwapSpec('innerHTML swap:0ms').swapDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:10').settleDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:0').settleDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:0s').settleDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML swap:10 settle:11').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('innerHTML swap:10 settle:11').settleDelay, 11)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:11 swap:10').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:11 swap:10').settleDelay, 11)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:0 swap:0').settleDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML settle:0s swap:0ms').settleDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML nonsense settle:11 swap:10').settleDelay, 11)
-        assert.equal(htmx.__parseSwapSpec('innerHTML   nonsense   settle:11   swap:10  ').settleDelay, 11)
 
         assert.equal(htmx.__parseSwapSpec('swap:10').style, 'innerHTML')
         assert.equal(htmx.__parseSwapSpec('swap:10').swapDelay, 10)
         assert.equal(htmx.__parseSwapSpec('swap:0').swapDelay, 0)
         assert.equal(htmx.__parseSwapSpec('swap:0s').swapDelay, 0)
 
-        assert.equal(htmx.__parseSwapSpec('settle:10').style, 'innerHTML')
-        assert.equal(htmx.__parseSwapSpec('settle:10').settleDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('settle:0').settleDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('settle:0s').settleDelay, 0)
-
-        assert.equal(htmx.__parseSwapSpec('swap:10 settle:11').style, 'innerHTML')
-        assert.equal(htmx.__parseSwapSpec('swap:10 settle:11').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('swap:10 settle:11').settleDelay, 11)
-        assert.equal(htmx.__parseSwapSpec('swap:0s settle:0').swapDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('swap:0s settle:0').settleDelay, 0)
-
-        assert.equal(htmx.__parseSwapSpec('settle:11 swap:10').style, 'innerHTML')
-        assert.equal(htmx.__parseSwapSpec('settle:11 swap:10').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('settle:11 swap:10').settleDelay, 11)
-        assert.equal(htmx.__parseSwapSpec('settle:0s swap:10').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('settle:0s swap:10').settleDelay, 0)
-
         assert.equal(htmx.__parseSwapSpec('transition:true').transition, true)
         assert.equal(htmx.__parseSwapSpec('strip:true').strip, true)
         assert.equal(htmx.__parseSwapSpec('target:#table tbody').target, '#table tbody')
         assert.equal(htmx.__parseSwapSpec('target:#table tbody swap:10s').target, '#table tbody')
-        assert.equal(htmx.__parseSwapSpec('customstyle settle:11 swap:10').style, 'customstyle')
+        assert.equal(htmx.__parseSwapSpec('customstyle swap:10').style, 'customstyle')
     })
 
     it('swap with scroll:top modifier scrolls to top', async function () {
@@ -89,7 +61,7 @@ describe('hx-swap modifiers', function() {
 
     it('swap with delay (non-blocking) completes request immediately but delays swap', async function () {
         mockResponse('GET', '/test', '<div>New Content</div>')
-        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms async:false">Old Content</div>');
+        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms transition:false">Old Content</div>');
 
         await clickAndWait('#test-div')
 

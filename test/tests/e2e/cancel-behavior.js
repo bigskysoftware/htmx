@@ -128,6 +128,7 @@ describe('Cancel behavior integration tests', function() {
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
         });
         
         click('#test-link');
@@ -143,6 +144,7 @@ describe('Cancel behavior integration tests', function() {
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
         });
         
         await clickAndWait('#test-link');
@@ -157,6 +159,7 @@ describe('Cancel behavior integration tests', function() {
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
         });
         
         click('#test-link');
@@ -173,6 +176,7 @@ describe('Cancel behavior integration tests', function() {
         const form = findElt('#test-form');
         form.addEventListener('submit', (evt) => {
             defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
         });
         
         await clickAndWait('#btn');
@@ -187,6 +191,7 @@ describe('Cancel behavior integration tests', function() {
         
         document.addEventListener('submit', (evt) => {
             defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
         });
         
         click('#btn');
@@ -200,7 +205,7 @@ describe('Cancel behavior integration tests', function() {
     it('ctrl+click on link does not prevent default (allows open in new tab)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
@@ -218,7 +223,7 @@ describe('Cancel behavior integration tests', function() {
     it('meta+click on link does not prevent default (allows open in new tab on Mac)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {
@@ -236,7 +241,7 @@ describe('Cancel behavior integration tests', function() {
     it('shift+click on link does not prevent default (allows open in new window)', async function() {
         let defaultPrevented = null;
         mockResponse('GET', '/test', 'Response')
-        createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Link</a>');
+        createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
         const link = findElt('#test-link');
         link.addEventListener('click', (evt) => {

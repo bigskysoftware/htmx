@@ -27,19 +27,6 @@ describe('process() unit tests', function() {
         assert.isTrue(a.hasAttribute('data-htmx-powered'))
     })
 
-    it('processes scripts by default', function () {
-        let container = createProcessedHTML('<div><script>window.testProcessed = true</script></div>')
-        htmx.process(container)
-        assert.isTrue(window.testProcessed)
-        delete window.testProcessed
-    })
-
-    it('skips scripts when processScripts is false', function () {
-        let container = createProcessedHTML('<div><script>window.testSkipped = true</script></div>')
-        htmx.process(container, false)
-        assert.isUndefined(window.testSkipped)
-    })
-
     it('processes hx-on attributes', function () {
         let div = createProcessedHTML('<div hx-on:custom="this.setAttribute(\'fired\', \'true\')"></div>')
         htmx.process(div)
@@ -85,6 +72,8 @@ describe('process() unit tests', function() {
 
     it('skips processing if htmx:before:process is cancelled', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
+        div.removeAttribute('data-htmx-powered')
+        delete(div._htmx)
         div.addEventListener('htmx:before:process', (e) => e.preventDefault())
         htmx.process(div)
         assert.isFalse(div.hasAttribute('data-htmx-powered'))

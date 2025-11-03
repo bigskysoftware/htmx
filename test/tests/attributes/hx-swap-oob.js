@@ -51,14 +51,6 @@ describe('hx-swap-oob', function() {
         assertTextContentIs('.foo .bar', 'Multi Selector')
     })
 
-    it('swaps oob with target: modifier and other modifiers (blocking)', async function () {
-        mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:#tgt swap:100ms async:true">With Delay</div>')
-        createProcessedHTML('<div hx-get="/test">Click</div><div id="tgt">Original</div>');
-        
-        await clickAndWait('[hx-get]')
-        assertTextContentIs('#tgt', 'With Delay')
-    })
-
     it('swaps oob with target: modifier and other modifiers (non-blocking)', async function () {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:#tgt swap:100ms">With Delay</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="tgt">Original</div>');
