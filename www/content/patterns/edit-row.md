@@ -14,7 +14,7 @@ This example shows how to implement editable rows.  First let's look at the tabl
       <th></th>
     </tr>
   </thead>
-  <tbody hx-target="closest tr" hx-swap="outerHTML">
+  <tbody hx-target:inherited="closest tr" hx-swap:inherited="outerHTML">
     ...
   </tbody>
 </table>
@@ -212,7 +212,7 @@ this makes things a bit nicer to deal with.
       <th></th>
     </tr>
   </thead>
-  <tbody hx-target="closest tr" hx-swap="outerHTML">
+  <tbody hx-target:inherited="closest tr" hx-swap:inherited="outerHTML">
     ${rows}
   </tbody>
 </table>`;

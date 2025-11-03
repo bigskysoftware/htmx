@@ -1,20 +1,8 @@
-# Big Open Questions
-* Are we going support a morph swap out of the box? (Michael)
-* Are we going to support CSS transitions? 
-  * Maybe at least a simple version, wait on transition events?
-  * We could say just use morph
-* Are we going to add head tag merging support to core?
-* How should we handle response code mapping? (telroshan)
-
 # TODOs
 
 * SSE/streaming functionality (Christian)
-* Support `hx-action="js:..."` and `js:` or `javascript:` broadly
-  * Allow users to turn off eval
 * Build out a "patterns" set of examples to replace examples, cleaned up, add more advanced cases
 * Updated website design
-* Need to make `203 - No Content` not do the main swap once swapping settles down (lol)
-  * See "Open Questions"
 * quirks.js implementation
   * retrigger historical events based on mapping
   * revert to older API (esp `htmx.ajax`)
@@ -39,15 +27,6 @@
   * Configuration options audit
   * Headers: request & response
       * Michael has thoughts on request headers
-* I think we need to add the `htmx-request` to the element making the request as well as the indicators
-* Current `__resolveSwapEventTarget` logic is wrong: we should instead capture the parent hierarchy before swap and always
-  dispatch the event on the element and, if it is disconnected, dispatch it again on the first connected parent
-* Add a `:merge` option for things like `hx-indicator`, where you want to merge in parent attribute values?
-  * hx-disable needs it too
-* Server Actions (Christian)
-* Request security configuration (disallow cross-site requests by default)
-* Handling `<script>` tags: should we avoid hoisting all inserted script tags?
-* Make attribute prefix configurable via `htmx.config.prefix` defaults to `hx-`
 * ~~Optimistic response support (would be easy now)~~
 * ~~Preload support?~~
 * ~~Add in extended selectors (1cg)~~

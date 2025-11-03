@@ -5,7 +5,7 @@ title = "Documentation"
 
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes_in_4">changes in htmx 4.0</a> </p>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes-in-4/">changes in htmx 4.0</a> </p>
 </aside>
 
 <details id="contents">
@@ -577,23 +577,77 @@ More examples and details can be found on the [`hx-sync` attribute page.](@/attr
 
 ### CSS Transitions {#css_transitions}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>are we going to support CSS transitions?</p>
-</aside>
+htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without
+javascript.  Consider this HTML content:
 
-### Server Actions
+```html
+<div id="div1">Original Content</div>
+```
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>do</p>
-</aside>
+Imagine this content is replaced by htmx via an ajax request with this new content:
+
+```html
+<div id="div1" class="red">New Content</div>
+```
+
+Note two things:
+
+* The div has the *same* id in the original and in the new content
+* The `red` class has been added to the new content
+
+Given this situation, we can write a CSS transition from the old state to the new state:
+
+```css
+.red {
+    color: red;
+    transition: all ease-in 1s ;
+}
+```
+
+When htmx swaps in this new content, it will do so in such a way that the CSS transition will apply to the new content,
+giving you a nice, smooth transition to the new state.
+
+So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
+
+### Partial Tags
+
+The `<partial>` tag (internally represented as `<template partial>`) allows you to include multiple targeted content
+fragments in a single server response. This provides a cleaner, more explicit alternative to
+[out-of-band swaps](#oob_swaps) when you want to update multiple parts of the page from one request.
+
+#### Basic Usage
+
+A `<partial>` tag wraps content that should be swapped into a specific target on the page:
+
+```html
+<partial hx-target="#messages" hx-swap="beforeend">
+  <div>New message content</div>
+</partial>
+
+<partial hx-target="#notifications" hx-swap="innerHTML">
+  <span class="badge">5</span>
+</partial>
+```
+
+Each `<partial>` specifies:
+- `hx-target` - A CSS selector identifying where to place the content (required)
+- `hx-swap` - (optional) The swap strategy to use (defaults to `innerHTML`)
+
+The content inside the `<partial>` tag will be extracted and swapped into the specified target using the specified swap method.
+
+#### Comparison with Out-of-Band Swaps
+
+Both partials and out-of-band swaps allow updating multiple targets from a single response, but they differ in approach:
+
+- **Out-of-band swaps** rely on matching `id` attributes between the response and existing DOM elements
+- **Partial tags** explicitly specify their target via `hx-target`, providing more control and clarity
+
+Use partials when you want explicit control over targeting, and out-of-band swaps when you have a consistent `id` scheme.
 
 ### Out of Band Swaps {#oob_swaps}
 
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
-  <p>are we going to deprecate OOB in favor of server actions?</p>
 </aside>
 
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
@@ -626,11 +680,6 @@ To avoid this issue you can use a `template` tag to encapsulate these elements:
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
 attribute, which takes a CSS selector and selects the matching elements from the response.
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>need to implement</p>
-</aside>
 
 You can also pick out pieces of content for an out-of-band swap by using the [hx-select-oob](#)
 attribute, which takes a list of element IDs to pick out and swap.
@@ -668,21 +717,11 @@ will include the values of all inputs within it.
 
 As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends.
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>this may change</p>
-</aside>
-
 Additionally, if the element causes a non-`GET` request, the values of all the inputs of the associated form will be
 included (typically this is the nearest enclosing form, but could be different if e.g. `<button form="associated-form">` is used).
 
 If you wish to include the values of other elements, you can use the [hx-include](@/attributes/hx-include.md) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>fix link</p>
-</aside>
 
 Finally, if you want to programmatically modify the parameters, you can use the [htmx:config:request](@/events.md#)
 event.
@@ -1088,21 +1127,7 @@ to the browser's history, include the [hx-push-url](@/attributes/hx-push-url.md)
 When a user clicks on this link, htmx will push a new location onto the history stack.
 
 When a user hits the back button, htmx will retrieve the old content from the original URL and swap it back into the body,
-simulating "going back" to the previous state.  
-
-An ajax request with the `HX-History-Restore-Request` set to true, and expects back the HTML needed
-for the entire page.
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>need to revisit if this is an issue still</p>
-</aside>
-
-You should always set `htmx.config.historyRestoreAsHxRequest` to false to prevent the `HX-Request` header
-which can then be safely used to respond with partials.
-
-Alternatively, if the `htmx.config.refreshOnHistoryMiss` config variable
-is set to true, it will issue a hard browser refresh.
+simulating "going back" to the previous state.
 
 **NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
 A user could copy and paste the URL into an email, or new tab.  
@@ -1121,19 +1146,46 @@ Sometimes you might want to do nothing in the swap, but still perhaps trigger a 
 For this situation, by default, you can return a `204 - No Content` response code, and htmx will ignore the content of
 the response.
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>fix link</p>
-</aside>
-
 In the event of a connection error, the [`htmx:error`](@/events.md) event will be triggered.
 
 ### Configuring Response Handling {#response-handling}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>need to figure out how we are gonna handle this (telroshan)</p>
-</aside>
+By default, htmx will swap content for successful HTTP responses (2xx status codes) and will not swap content for error
+responses (4xx, 5xx status codes). However, you can customize this behavior using the `hx-status:XXX` attribute pattern.
+
+#### Status-Code Conditional Swapping
+
+The `hx-status:XXX` attribute allows you to specify different swap behaviors based on the HTTP status code of the response.
+This gives you fine-grained control over how different response statuses are handled.
+
+```html
+<button hx-get="/data"
+        hx-status:404="none"
+        hx-status:500="target:#error-container">
+    Load Data
+</button>
+```
+
+```html
+<form hx-post="/submit"
+      hx-target="#result"
+      hx-status:422="target:#validation-errors"
+      hx-status:500="target:#server-error"
+      hx-status:503="none">
+    <input name="email">
+    <button type="submit">Submit</button>
+</form>
+
+<div id="result"></div>
+<div id="validation-errors"></div>
+<div id="server-error"></div>
+```
+
+In this example:
+- Successful responses (2xx) swap into `#result` (default behavior)
+- 422 responses swap into `#validation-errors`
+- 500 responses swap into `#server-error`
+- 503 responses don't swap at all
 
 ### CORS
 

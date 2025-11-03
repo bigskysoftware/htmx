@@ -3,12 +3,11 @@ title = "Patterns"
 insert_anchor_links = "heading"
 +++
 
-## Server-side Integration Examples
 
-A list of [GitHub repositories showing examples of integration](@/server-examples.md) with a wide variety of
-server-side languages and platforms, including JavaScript, Python, Java, and many others.
-
-## UI Patterns
+<aside class="under-construction">
+  <strong>🚧 Pardon our dust 🚧</strong>
+  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes-in-4/">changes in htmx 4.0</a> </p>
+</aside>
 
 Below are a set of UX patterns implemented in htmx with minimal HTML and styling.
 
@@ -20,10 +19,21 @@ You can copy and paste them and then adjust them for your needs.
 | [Click To Load](@/patterns/click-to-load.md)                                | Demonstrates clicking to load more rows in a table                                                                                                 |
 | [Delete Row](@/patterns/delete-row.md)                                      | Demonstrates row deletion in a table                                                                                                               |
 | [Edit Row](@/patterns/edit-row.md)                                          | Demonstrates how to edit rows in a table                                                                                                           |
+| [Active Search](@/patterns/active-search.md)                                | Demonstrates the active search box pattern                                                                                                         |
+
+<!--
+TODO
+
+## Server-side Integration Examples
+
+A list of [GitHub repositories showing examples of integration](@/server-examples.md) with a wide variety of
+server-side languages and platforms, including JavaScript, Python, Java, and many others.
+
+
+| [Bulk Update](@/patterns/bulk-update.md)                                    | Demonstrates bulk updating of multiple rows of data                                                                                                |
 | [Lazy Loading](@/patterns/lazy-load.md)                                     | Demonstrates how to lazy load content                                                                                                              |
 | [Inline Validation](@/patterns/inline-validation.md)                        | Demonstrates how to do inline field validation                                                                                                     |
 | [Infinite Scroll](@/patterns/infinite-scroll.md)                            | Demonstrates infinite scrolling of a page                                                                                                          |
-| [Active Search](@/patterns/active-search.md)                                | Demonstrates the active search box pattern                                                                                                         |
 | [Progress Bar](@/patterns/progress-bar.md)                                  | Demonstrates a job-runner like progress bar                                                                                                        |
 | [Value Select](@/patterns/value-select.md)                                  | Demonstrates making the values of a select dependent on another select                                                                             |
 | [Animations](@/patterns/animations.md)                                      | Demonstrates various animation techniques                                                                                                          |
@@ -44,13 +54,9 @@ You can copy and paste them and then adjust them for your needs.
 | [Web Components](@/patterns/web-components.md)                              | Demonstrates how to integrate htmx with web components and shadow DOM                                                                              |
 | [(Experimental) moveBefore()-powered hx-preserve](/patterns/move-before)    | htmx will use the experimental [`moveBefore()`](https://cr-status.appspot.com/feature/5135990159835136) API for moving elements, if it is present. |
 
-<!--
-TODO
-
-| [Bulk Update](@/patterns/bulk-update.md)                                    | Demonstrates bulk updating of multiple rows of data                                                                                                |
-
--->
-
 ## Migrating from Hotwire / Turbo ?
 
 For common practices see the [Hotwire / Turbo to htmx Migration Guide](@/migration-guide-hotwire-turbo.md).
+
+-->
+

@@ -88,6 +88,22 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - Example: `hx-status:404="#not-found"` swaps into different target on 404
 - Overrides default swap behavior when status code matches
 
+### Partial Tags
+- New `<partial>` tag for multiple targeted swaps in one response
+- Provides explicit control over swap targets via `hx-target` attribute
+- Alternative to out-of-band swaps when you want explicit targeting
+- Example:
+  ```html
+  <partial hx-target="#messages" hx-swap="beforeend">
+    <div>New message</div>
+  </partial>
+  <partial hx-target="#notifications">
+    <span class="badge">5</span>
+  </partial>
+  ```
+- Each partial specifies its own target and swap strategy
+- More explicit than OOB swaps which rely on matching `id` attributes
+
 ## Attribute Changes
 
 ### Renamed Attributes

@@ -39,8 +39,11 @@ var htmx = (() => {
             }
         }
 
-        next() {
+        finish() {
             this.#c = null
+        }
+
+        next() {
             return this.#q.shift()
         }
 
@@ -525,6 +528,7 @@ var htmx = (() => {
                 this.__enableElements(disableElements);
                 this.__trigger(elt, "htmx:finally:request", {ctx})
 
+                requestQueue.finish()
                 if (requestQueue.more()) {
                     // TODO is it OK to not await here?  try/catch?
                     this.__issueRequest(requestQueue.next())
@@ -842,7 +846,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
-                        if (this.__executeJavaScript(elt, evt, filter)) {
+                        if (this.__executeFilter(elt, evt, filter)) {
                             original(evt)
                         }
                     }
@@ -850,7 +854,7 @@ var htmx = (() => {
 
                 let fromElts = [elt];
                 if (spec.from) {
-                    fromElts = this.__findAllExt(spec.from)
+                    fromElts = this.__findAllExt(elt, spec.from)
                 }
 
                 if (spec.consume) {
@@ -968,13 +972,15 @@ var htmx = (() => {
             return await func.call(thisArg, ...values);
         }
 
-        __executeJavaScript(thisArg, obj, code, expression = true) {
+        __executeFilter(thisArg, event, code) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
-            Object.assign(args, obj)
+            for (let key in event) {
+                args[key] = event[key];
+            }
             let keys = Object.keys(args);
             let values = Object.values(args);
-            let func = new Function(...keys, expression ? `return (${code})` : code);
+            let func = new Function(...keys, `return (${code})`);
             return func.call(thisArg, ...values);
         }
 
@@ -1662,7 +1668,7 @@ var htmx = (() => {
             }
             let includeSelector = this.__attributeValue(elt, "hx-include");
             if (includeSelector) {
-                let includeNodes = this.__findAllExt(includeSelector);
+                let includeNodes = this.__findAllExt(elt, includeSelector);
                 for (let node of includeNodes) {
                     this.__addInputValues(node, included, formData);
                 }
