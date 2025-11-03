@@ -22,12 +22,6 @@ describe('__parseSwapSpec unit tests', function() {
         assert.equal(spec.swapDelay, 100)
     })
 
-    it('parses settle delay modifier', function () {
-        let spec = htmx.__parseSwapSpec('innerHTML settle:200ms')
-        assert.equal(spec.style, 'innerHTML')
-        assert.equal(spec.settleDelay, 200)
-    })
-
     it('parses transition modifier', function () {
         assert.equal(htmx.__parseSwapSpec('innerHTML transition:true').transition, true)
         assert.equal(htmx.__parseSwapSpec('innerHTML transition:false').transition, false)
@@ -67,10 +61,9 @@ describe('__parseSwapSpec unit tests', function() {
     })
 
     it('parses multiple modifiers', function () {
-        let spec = htmx.__parseSwapSpec('innerHTML swap:100ms settle:200ms transition:true')
+        let spec = htmx.__parseSwapSpec('innerHTML swap:100ms transition:true')
         assert.equal(spec.style, 'innerHTML')
         assert.equal(spec.swapDelay, 100)
-        assert.equal(spec.settleDelay, 200)
         assert.equal(spec.transition, true)
     })
 

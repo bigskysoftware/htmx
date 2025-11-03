@@ -1173,8 +1173,7 @@ var htmx = (() => {
                 if (tokens[i + 1] === ':') {
                     let key = tokens[i], value = tokens[i = i + 2];
                     if (key === 'swap') config.swapDelay = this.parseInterval(value);
-                    else if (key === 'settle') config.settleDelay = this.parseInterval(value);
-                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip' || key === 'async') config[key] = value === 'true';
+                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip') config[key] = value === 'true';
                     else if (key === 'focus-scroll') config.focusScroll = value === 'true';
                     else if (key === 'scroll' || key === 'show') {
                         let parts = [value];
@@ -1273,9 +1272,13 @@ var htmx = (() => {
                 return
             }
 
-            // insert non-transition tasks immediately
+            // insert non-transition tasks immediately or with delay
             for (let task of nonTransitionTasks) {
-                this.__insertContent(task)
+                if (task.swapSpec?.swapDelay) {
+                    setTimeout(() => this.__insertContent(task), task.swapSpec.swapDelay);
+                } else {
+                    this.__insertContent(task)
+                }
             }
 
             // insert transition tasks in the transition queue
