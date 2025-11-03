@@ -42,7 +42,7 @@ describe('swap() unit tests', function() {
         let child = playground().children[0];
         child.tagName.should.equal("A");
         child.innerText.should.equal("Hello Swap")
-        assert.isNotNull(child.__htmx);
+        assert.isNotNull(child._htmx);
     })
 
     it('swaps in plain content properly w/outerHTML', async function () {

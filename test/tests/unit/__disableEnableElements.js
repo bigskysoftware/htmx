@@ -34,7 +34,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__disableElements(container, '.disable-me')
         htmx.__disableElements(container, '.disable-me')
 
-        assert.equal(button.__htmxDisableCount, 2)
+        assert.equal(button._htmxDisableCount, 2)
         assert.isTrue(button.disabled)
     })
 
@@ -46,7 +46,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         let elements2 = htmx.__disableElements(container, '.disable-me')
         htmx.__enableElements(elements1)
 
-        assert.equal(button.__htmxDisableCount, 1)
+        assert.equal(button._htmxDisableCount, 1)
         assert.isTrue(button.disabled)
     })
 
@@ -60,7 +60,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__enableElements(elements2)
 
         assert.isFalse(button.disabled)
-        assert.isUndefined(button.__htmxDisableCount)
+        assert.isUndefined(button._htmxDisableCount)
     })
 
     it('handles multiple elements', function () {
@@ -98,7 +98,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__enableElements([button])
 
         assert.isFalse(button.disabled)
-        assert.isUndefined(button.__htmxDisableCount)
+        assert.isUndefined(button._htmxDisableCount)
     })
 
     it('works with nested elements', function () {
@@ -125,8 +125,8 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__disableElements(container, 'button.disable-me')
         htmx.__disableElements(container, '.disable-me')
 
-        assert.equal(button.__htmxDisableCount, 2)
-        assert.equal(input.__htmxDisableCount, 1)
+        assert.equal(button._htmxDisableCount, 2)
+        assert.equal(input._htmxDisableCount, 1)
     })
 
 });

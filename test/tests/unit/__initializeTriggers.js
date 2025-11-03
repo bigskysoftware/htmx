@@ -2,14 +2,14 @@ describe('__initializeTriggers unit tests', function() {
 
     function mockTriggerButton(triggerSpec, callback) {
         const btn = createHTMLNoProcessing(`<button hx-trigger="${triggerSpec}">Demo</button>`);
-        btn.__htmx = {}
+        btn._htmx = {}
         htmx.__initializeTriggers(btn, callback)
         return btn;
     }
 
     function mockTriggerElement(html, callback) {
         const elt = createDisconnectedHTML(html);
-        elt.__htmx = {}
+        elt._htmx = {}
         htmx.__initializeTriggers(elt, callback)
         return elt;
     }
@@ -164,7 +164,7 @@ describe('__initializeTriggers unit tests', function() {
         const target = container.querySelector('#target')
         const source = container.querySelector('#source')
 
-        target.__htmx = {}
+        target._htmx = {}
         target.setAttribute('hx-trigger', 'click from:#source')
         htmx.__initializeTriggers(target, () => called++);
 

@@ -34,7 +34,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         htmx.__showIndicators(container, '.indicator')
         htmx.__showIndicators(container, '.indicator')
 
-        assert.equal(span.__htmxReqCount, 2)
+        assert.equal(span._htmxReqCount, 2)
         assert.isTrue(span.classList.contains('htmx-request'))
     })
 
@@ -46,7 +46,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let indicators2 = htmx.__showIndicators(container, '.indicator')
         htmx.__hideIndicators(indicators1)
 
-        assert.equal(span.__htmxReqCount, 1)
+        assert.equal(span._htmxReqCount, 1)
         assert.isTrue(span.classList.contains('htmx-request'))
     })
 
@@ -60,7 +60,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         htmx.__hideIndicators(indicators2)
 
         assert.isFalse(span.classList.contains('htmx-request'))
-        assert.isUndefined(span.__htmxReqCount)
+        assert.isUndefined(span._htmxReqCount)
     })
 
     it('handles multiple indicators', function () {
@@ -98,7 +98,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         htmx.__hideIndicators([span])
 
         assert.isFalse(span.classList.contains('htmx-request'))
-        assert.isUndefined(span.__htmxReqCount)
+        assert.isUndefined(span._htmxReqCount)
     })
 
     it('works with nested indicators', function () {
@@ -125,8 +125,8 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         htmx.__showIndicators(container, 'span.indicator')
         htmx.__showIndicators(container, '.indicator')
 
-        assert.equal(span.__htmxReqCount, 2)
-        assert.equal(div.__htmxReqCount, 1)
+        assert.equal(span._htmxReqCount, 2)
+        assert.equal(div._htmxReqCount, 1)
     })
 
 });

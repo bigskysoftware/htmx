@@ -202,7 +202,7 @@ function submit(cssOrElt) {
 }
 
 async function directlyInvokeHandler(btn, evt ={type:'click'}) {
-    let htmx = btn.__htmx;
+    let htmx = btn._htmx;
     if(!htmx){
         throw "element does not have an htmx property!"
     }

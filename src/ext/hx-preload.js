@@ -16,7 +16,7 @@
             let {method} = api.determineMethodAndAction(elt, evt);
             if (method !== 'GET') return;
 
-            if (elt.__htmx?.preload) return;
+            if (elt._htmx?.preload) return;
 
             let ctx = api.createRequestContext(elt, evt);
             let form = elt.form || elt.closest("form");
@@ -27,21 +27,21 @@
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
-            elt.__htmx.preload = {
+            elt._htmx.preload = {
                 prefetch: fetch(action, ctx.request),
                 action: action,
                 expiresAt: Date.now() + timeout
             };
 
             try {
-                await elt.__htmx.preload.prefetch;
+                await elt._htmx.preload.prefetch;
             } catch (error) {
-                delete elt.__htmx.preload;
+                delete elt._htmx.preload;
             }
         };
         elt.addEventListener(eventName, preloadListener);
-        elt.__htmx.preloadListener = preloadListener;
-        elt.__htmx.preloadEvent = eventName;
+        elt._htmx.preloadListener = preloadListener;
+        elt._htmx.preloadEvent = eventName;
     }
 
     htmx.defineExtension('preload', {
@@ -55,19 +55,19 @@
         
         htmx_before_request: (elt, detail) => {
             let {ctx} = detail;
-            if (elt.__htmx?.preload &&
-                elt.__htmx.preload.action === ctx.request.action &&
-                Date.now() < elt.__htmx.preload.expiresAt) {
-                ctx.fetchOverride = elt.__htmx.preload.prefetch;
-                delete elt.__htmx.preload;
+            if (elt._htmx?.preload &&
+                elt._htmx.preload.action === ctx.request.action &&
+                Date.now() < elt._htmx.preload.expiresAt) {
+                ctx.fetchOverride = elt._htmx.preload.prefetch;
+                delete elt._htmx.preload;
             } else {
-                if (elt.__htmx) delete elt.__htmx.preload;
+                if (elt._htmx) delete elt._htmx.preload;
             }
         },
         
         htmx_before_cleanup: (elt) => {
-            if (elt.__htmx?.preloadListener) {
-                elt.removeEventListener(elt.__htmx.preloadEvent, elt.__htmx.preloadListener);
+            if (elt._htmx?.preloadListener) {
+                elt.removeEventListener(elt._htmx.preloadEvent, elt._htmx.preloadListener);
             }
         }
     });

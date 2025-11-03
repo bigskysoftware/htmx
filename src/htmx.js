@@ -285,7 +285,7 @@ var htmx = (() => {
 
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                elt.__htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.__initializeTriggers(elt);
                 this.__initializeStreamConfig(elt);
@@ -383,7 +383,7 @@ var htmx = (() => {
         }
 
         __isBoosted(elt) {
-            return elt.__htmx?.boosted;
+            return elt._htmx?.boosted;
         }
 
         async __handleTriggerEvent(ctx) {
@@ -565,7 +565,7 @@ var htmx = (() => {
         }
 
         async __handleSSE(ctx, elt, response) {
-            let config = elt.__htmx?.streamConfig || {...this.config.streams};
+            let config = elt._htmx?.streamConfig || {...this.config.streams};
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
@@ -704,7 +704,7 @@ var htmx = (() => {
                 let selector = strings[0];
                 syncElt = this.__findExt(selector);
             }
-            return syncElt.__htmxRequestQueue ||= new ReqQ()
+            return syncElt._htmxRequestQueue ||= new ReqQ()
         }
 
         __isModifierKeyClick(evt) {
@@ -733,16 +733,16 @@ var htmx = (() => {
             return !isFragmentOnly
         }
 
-        __initializeTriggers(elt, initialHandler = elt.__htmx.eventHandler) {
+        __initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
             let specString = this.__attributeValue(elt, "hx-trigger");
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
                     elt.matches("input:not([type=button]),select,textarea") ? "change" :
                         "click";
             }
-            elt.__htmx.triggerSpecs = this.__parseTriggerSpecs(specString)
-            elt.__htmx.listeners = []
-            for (let spec of elt.__htmx.triggerSpecs) {
+            elt._htmx.triggerSpecs = this.__parseTriggerSpecs(specString)
+            elt._htmx.listeners = []
+            for (let spec of elt._htmx.triggerSpecs) {
                 spec.handler = initialHandler
                 spec.listeners = []
                 spec.values = {}
@@ -875,7 +875,7 @@ var htmx = (() => {
 
                 for (let fromElt of fromElts) {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler};
-                    elt.__htmx.listeners.push(listenerInfo)
+                    elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
                     fromElt.addEventListener(eventName, spec.handler);
                 }
@@ -908,8 +908,8 @@ var htmx = (() => {
                 }
             }
 
-            if (!elt.__htmx) elt.__htmx = {};
-            elt.__htmx.streamConfig = streamConfig;
+            if (!elt._htmx) elt._htmx = {};
+            elt._htmx.streamConfig = streamConfig;
         }
 
         __extractFilter(str) {
@@ -996,15 +996,15 @@ var htmx = (() => {
         __maybeBoost(elt) {
             if (this.__attributeValue(elt, "hx-boost") === "true") {
                 if (this.__shouldInitialize(elt)) {
-                    elt.__htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
+                    elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
                     elt.setAttribute('data-htmx-powered', 'true');
                     if (elt.matches('a') && !elt.hasAttribute("target")) {
                         elt.addEventListener('click', (click) => {
-                            elt.__htmx.eventHandler(click)
+                            elt._htmx.eventHandler(click)
                         })
                     } else {
                         elt.addEventListener('submit', (submit) => {
-                            elt.__htmx.eventHandler(submit)
+                            elt._htmx.eventHandler(submit)
                         })
                     }
                 }
@@ -1012,18 +1012,18 @@ var htmx = (() => {
         }
 
         __shouldInitialize(elt) {
-            return !elt.__htmx && !this.__ignore(elt);
+            return !elt._htmx && !this.__ignore(elt);
         }
 
         __cleanup(elt) {
-            if (elt.__htmx) {
+            if (elt._htmx) {
                 this.__trigger(elt, "htmx:before:cleanup")
-                if (elt.__htmx.interval) clearInterval(elt.__htmx.interval);
-                for (let spec of elt.__htmx.triggerSpecs || []) {
+                if (elt._htmx.interval) clearInterval(elt._htmx.interval);
+                for (let spec of elt._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                 }
-                for (let listenerInfo of elt.__htmx.listeners || []) {
+                for (let listenerInfo of elt._htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
@@ -1598,8 +1598,8 @@ var htmx = (() => {
             if (indicatorsSelector) {
                 indicatorElements = [elt, ...this.__queryEltAndDescendants(elt, indicatorsSelector)];
                 for (const indicator of indicatorElements) {
-                    indicator.__htmxReqCount ||= 0
-                    indicator.__htmxReqCount++
+                    indicator._htmxReqCount ||= 0
+                    indicator._htmxReqCount++
                     indicator.classList.add(this.config.requestClass)
                 }
             }
@@ -1608,11 +1608,11 @@ var htmx = (() => {
 
         __hideIndicators(indicatorElements) {
             for (let indicator of indicatorElements) {
-                if (indicator.__htmxReqCount) {
-                    indicator.__htmxReqCount--;
-                    if (indicator.__htmxReqCount <= 0) {
+                if (indicator._htmxReqCount) {
+                    indicator._htmxReqCount--;
+                    if (indicator._htmxReqCount <= 0) {
                         indicator.classList.remove(this.config.requestClass);
-                        delete indicator.__htmxReqCount
+                        delete indicator._htmxReqCount
                     }
                 }
             }
@@ -1623,8 +1623,8 @@ var htmx = (() => {
             if (disabledSelector) {
                 disabledElements = this.__queryEltAndDescendants(elt, disabledSelector);
                 for (let indicator of disabledElements) {
-                    indicator.__htmxDisableCount ||= 0
-                    indicator.__htmxDisableCount++
+                    indicator._htmxDisableCount ||= 0
+                    indicator._htmxDisableCount++
                     indicator.disabled = true
                 }
             }
@@ -1633,11 +1633,11 @@ var htmx = (() => {
 
         __enableElements(disabledElements) {
             for (const indicator of disabledElements) {
-                if (indicator.__htmxDisableCount) {
-                    indicator.__htmxDisableCount--
-                    if (indicator.__htmxDisableCount <= 0) {
+                if (indicator._htmxDisableCount) {
+                    indicator._htmxDisableCount--
+                    if (indicator._htmxDisableCount <= 0) {
                         indicator.disabled = false
-                        delete indicator.__htmxDisableCount
+                        delete indicator._htmxDisableCount
                     }
                 }
             }

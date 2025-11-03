@@ -13,7 +13,7 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.isDefined(btn.__htmx.preload)
+        assert.isDefined(btn._htmx.preload)
     })
 
     it('does not preload POST requests', async function () {
@@ -21,7 +21,7 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-post="/test" hx-preload="mouseenter">Click</button>');
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.isUndefined(btn.__htmx.preload)
+        assert.isUndefined(btn._htmx.preload)
     })
 
     it('uses default 5s timeout', async function () {
@@ -29,7 +29,7 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.isTrue(btn.__htmx.preload.expiresAt > Date.now() + 4000)
+        assert.isTrue(btn._htmx.preload.expiresAt > Date.now() + 4000)
     })
 
     it('respects custom timeout', async function () {
@@ -37,7 +37,7 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter timeout:100ms">Click</button>');
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.isTrue(btn.__htmx.preload.expiresAt < Date.now() + 200)
+        assert.isTrue(btn._htmx.preload.expiresAt < Date.now() + 200)
     })
 
     it('skips duplicate preload events', async function () {
@@ -45,9 +45,9 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(10)
-        let firstPreload = btn.__htmx.preload
+        let firstPreload = btn._htmx.preload
         btn.dispatchEvent(new Event('mouseenter'))
-        assert.equal(btn.__htmx.preload, firstPreload)
+        assert.equal(btn._htmx.preload, firstPreload)
     })
 
     it('works with different event types', async function () {
@@ -55,7 +55,7 @@ describe('hx-preload attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="focus">Click</button>');
         btn.dispatchEvent(new Event('focus'))
         await htmx.timeout(20)
-        assert.isDefined(btn.__htmx.preload)
+        assert.isDefined(btn._htmx.preload)
     })
 
     it('builds URL with form params', async function () {
@@ -64,6 +64,6 @@ describe('hx-preload attribute', function() {
         let btn = form.querySelector('button')
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.equal(btn.__htmx.preload.action, '/test?name=test')
+        assert.equal(btn._htmx.preload.action, '/test?name=test')
     })
 })
