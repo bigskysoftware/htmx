@@ -690,7 +690,7 @@ var htmx = (() => {
             if (ctx.request.timeout) {
                 timeoutInterval = typeof ctx.request.timeout == "string" ? this.parseInterval(ctx.request.timeout) : ctx.request.timeout;
             } else {
-                timeoutInterval = htmx.config.defaultTimeout;
+                timeoutInterval = this.config.defaultTimeout;
             }
             ctx.requestTimeout = setTimeout(() => ctx.abort?.(), timeoutInterval);
         }
@@ -1525,7 +1525,7 @@ var htmx = (() => {
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
             if (this.__trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
-                if (htmx.config.historyReload) {
+                if (this.config.historyReload) {
                     location.reload();
                 } else {
                     this.ajax('GET', path, {
@@ -1958,7 +1958,7 @@ var htmx = (() => {
             let type = newNode.nodeType;
 
             if (type === 1) {
-                let noMorph = htmx.config.morphIgnore || [];
+                let noMorph = this.config.morphIgnore || [];
                 this.__copyAttributes(oldNode, newNode, noMorph);
                 if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
                     oldNode.value = newNode.value;
