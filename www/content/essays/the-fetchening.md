@@ -116,7 +116,7 @@ I am sorry about that, and want to offer three things to address it:
 * We will create extensions that revert htmx 4 to htmx 2 behaviors as much as is feasible (e.g. Supporting the old implicit
   attribute inheritance model, at least)
 * We will roll htmx 4.0 out slowly, over a multi-year period.  As with the htmx 1.0 -> 2.0 upgrade, there will be a long
-  period where htmx 2.x is `latest` and htmx 3.x is `next`
+  period where htmx 2.x is `latest` and htmx 4.x is `next`
 
 ## New Features
 
