@@ -981,7 +981,7 @@ var htmx = (() => {
         process(elt, processScripts = true) {
             if (!elt || this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
-            for (let child of this.__queryEltAndDescendants(elt, this.__actionSelector)) {
+            for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
                 this.__initializeElement(child);
             }
             for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
