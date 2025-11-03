@@ -51,4 +51,36 @@ describe('hx-on attribute', function() {
         delete window.foo
     })
 
+    it('htmx find works relative to element', async function () {
+        var btn = createProcessedHTML(
+            `<button hx-on:foo="window.foo = find('next div');">
+                        Foo
+                       </button>
+                       <div id="foo"></div>
+                      `)
+        let evt = new CustomEvent("foo");
+        btn.dispatchEvent(evt)
+        let div = htmx.find("#foo");
+        assert.isNotNull(div)
+        assert.equal(window.foo, div);
+        delete window.foo
+    })
+
+    it('htmx find works relative to element passed in', async function () {
+        var btn = createProcessedHTML(
+            `<button hx-on:foo="window.foo = find('#foo', 'next div');">
+                        Foo
+                       </button>
+                       <div id="foo"></div>
+                       <div id="bar"></div>
+                      `)
+        let evt = new CustomEvent("foo");
+        btn.dispatchEvent(evt)
+        let div = htmx.find("#bar");
+        assert.isNotNull(div)
+        assert.equal(window.foo, div);
+        delete window.foo
+    })
+
+
 })

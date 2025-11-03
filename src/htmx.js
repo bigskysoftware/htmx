@@ -935,12 +935,22 @@ var htmx = (() => {
             }
         }
 
-        __apiMethods() {
+        __apiMethods(thisArg) {
             let bound = {};
             let proto = Object.getPrototypeOf(this);
             for (let name of Object.getOwnPropertyNames(proto)) {
                 if (name !== 'constructor' && typeof this[name] === 'function') {
-                    bound[name] = this[name].bind(this);
+                    if (["find", "findAll"].includes(name)) {
+                        bound[name] = (arg1, arg2) => {
+                            if (arg2 === undefined) {
+                                return this[name](thisArg, arg1)
+                            } else {
+                                return this[name](arg1, arg2)
+                            }
+                        }
+                    } else {
+                        bound[name] = this[name].bind(this);
+                    }
                 }
             }
             return bound;
@@ -948,7 +958,7 @@ var htmx = (() => {
 
         async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
             let args = {}
-            Object.assign(args, this.__apiMethods())
+            Object.assign(args, this.__apiMethods(thisArg))
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
@@ -960,7 +970,7 @@ var htmx = (() => {
 
         __executeJavaScript(thisArg, obj, code, expression = true) {
             let args = {}
-            Object.assign(args, this.__apiMethods())
+            Object.assign(args, this.__apiMethods(thisArg))
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
@@ -1760,7 +1770,11 @@ var htmx = (() => {
         }
 
         __normalizeElementAndSelector(eltOrSelector, selector) {
-            return typeof eltOrSelector === "string" ? [document, eltOrSelector] : [eltOrSelector, selector];
+            if (selector === undefined) {
+                return [document, eltOrSelector];
+            } else {
+                return [this.__normalizeElement(eltOrSelector), selector];
+            }
         }
 
         __tokenizeExtendedSelector(selector) {
