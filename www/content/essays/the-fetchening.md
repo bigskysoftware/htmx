@@ -181,7 +181,7 @@ an existing element by id.
 
 ### Improved View Transitions Support
 
-htmx 2.0 has have [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) support since
+htmx 2.0 has had [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) support since
 [April of 2023](https://github.com/bigskysoftware/htmx/blob/master/CHANGELOG.md#190---2023-04-11).  In the interceding
 two years, support for the feature has grown across browsers (c'mon, safari, you can do it) and we've gain experience
 with the feature.
