@@ -17,7 +17,6 @@ You can copy and paste them and then adjust them for your needs.
 | Pattern                                                                     | Description                                                                                                                                        |
 |-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | [Click To Edit](@/patterns/click-to-edit.md)                                | Demonstrates inline editing of a data object                                                                                                       |
-| [Bulk Update](@/patterns/bulk-update.md)                                    | Demonstrates bulk updating of multiple rows of data                                                                                                |
 | [Click To Load](@/patterns/click-to-load.md)                                | Demonstrates clicking to load more rows in a table                                                                                                 |
 | [Delete Row](@/patterns/delete-row.md)                                      | Demonstrates row deletion in a table                                                                                                               |
 | [Edit Row](@/patterns/edit-row.md)                                          | Demonstrates how to edit rows in a table                                                                                                           |
@@ -44,6 +43,13 @@ You can copy and paste them and then adjust them for your needs.
 | [Async Authentication](@/patterns/async-auth.md)                            | Demonstrates how to handle async authentication tokens in htmx                                                                                     |
 | [Web Components](@/patterns/web-components.md)                              | Demonstrates how to integrate htmx with web components and shadow DOM                                                                              |
 | [(Experimental) moveBefore()-powered hx-preserve](/patterns/move-before)    | htmx will use the experimental [`moveBefore()`](https://cr-status.appspot.com/feature/5135990159835136) API for moving elements, if it is present. |
+
+<!--
+TODO
+
+| [Bulk Update](@/patterns/bulk-update.md)                                    | Demonstrates bulk updating of multiple rows of data                                                                                                |
+
+-->
 
 ## Migrating from Hotwire / Turbo ?
 

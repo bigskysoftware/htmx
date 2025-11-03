@@ -16,7 +16,7 @@ table body:
       <th></th>
     </tr>
   </thead>
-  <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
+  <tbody hx-confirm:inherited="Are you sure?" hx-target:inherited="closest tr" hx-swap:inherited="outerHTML">
     ...
   </tbody>
 </table>
@@ -132,7 +132,7 @@ tr.htmx-swapping td {
       <th></th>
     </tr>
   </thead>
-  <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
+  <tbody hx-confirm:inherited="Are you sure?" hx-target:inherited="closest tr" hx-swap:inherited="outerHTML">
     ${rows}
   </tbody>
 </table>`;
