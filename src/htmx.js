@@ -74,10 +74,6 @@ var htmx = (() => {
                 collectFormData: this.__collectFormData.bind(this),
                 handleHxVals: this.__handleHxVals.bind(this)
             };
-            this.__initInternals();
-        }
-
-        __initInternals() {
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
                 this.process(document.body, false)
@@ -132,7 +128,7 @@ var htmx = (() => {
                 }
                 let indicator = this.config.indicatorClass
                 let request = this.config.requestClass
-                document.head.append(`<style${nonceAttribute}>` +
+                document.head.insertAdjacentHTML('beforeend', `<style${nonceAttribute}>` +
                     `.${indicator}{opacity:0;visibility: hidden} ` +
                     `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}` +
                     '</style>'
@@ -378,7 +374,7 @@ var htmx = (() => {
                     return elt.closest(`[${this.__prefix("hx-target")}\\:inherited='this']`)
                 }
             } else if (selector != null) {
-                return document.querySelector(selector);
+                return this.find(elt, selector);
             } else if (this.__isBoosted(elt)) {
                 return document.body
             } else {
@@ -1085,8 +1081,8 @@ var htmx = (() => {
                 doc = this.__parseHTML(responseWithNoHead);
                 fragment = doc.body;
             } else {
-                doc = this.__parseHTML(`<body>${responseWithNoHead}</body>`);
-                fragment = doc.body;
+                doc = this.__parseHTML(`<template>${responseWithNoHead}</template>`);
+                fragment = doc.querySelector('template').content;
             }
 
             return {
