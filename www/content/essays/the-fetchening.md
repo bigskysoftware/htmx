@@ -183,7 +183,7 @@ an existing element by id.
 
 htmx 2.0 has had [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) support since
 [April of 2023](https://github.com/bigskysoftware/htmx/blob/master/CHANGELOG.md#190---2023-04-11).  In the interceding
-two years, support for the feature has grown across browsers (c'mon, safari, you can do it) and we've gain experience
+two years, support for the feature has grown across browsers (c'mon, safari, you can do it) and we've gained experience
 with the feature.
 
 One thing that has become apparent to us while using them is that, to use them in a stable manner, it is important
