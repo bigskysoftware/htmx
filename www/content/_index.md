@@ -86,7 +86,7 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<div class="dark-hero full-width" classes="add appear">
+<div class="dark-hero full-width" _="init add .appear">
   <div class="main">
       <span class="logo dark">&lt;<span class="blue">/</span>&gt; <span class="no-mobile">htm<span class="blue">x</span></span></span>
       <sub class="no-mobile"><i>high power tools for HTML</i></sub>
@@ -119,10 +119,10 @@ if(window.location.search=="?ads=true") {
 <h2>introduction</h2>
 
 
-htmx gives you access to [`fetch()`](@/docs.md#ajax), [View Transitions](@/docs.md#), [Streaming Responses](@/docs.md) and more
+htmx gives you access to [fetch()](@/docs.md#ajax), [CSS](@/docs.md#css_transitions) & [View](@/docs.md#) Transitions, [SSE](@/docs.md) and more
 directly in HTML, using [attributes](@/reference.md#attributes), so you can build
 [interactive interfaces](@/patterns/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
-[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
+[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of HTML.
 
 htmx is small ([~10k min.br'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json),
