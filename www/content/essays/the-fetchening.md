@@ -34,8 +34,8 @@ Further, changing from ye olde [`XMLHttpRequest`](https://developer.mozilla.org/
 (a legacy of htmx 1.0 IE support) to [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) would
 be a pretty violent change, guaranteed to break at least *some* stuff.  
 
-So I began thinking: if we are going to consider moving to fetch, then maybe we should _also_ that this update as a
-chance address at least _some_ of the [quirks](https://htmx.org/quirks/) that htmx has acquired over its lifetime.
+So I began thinking: if we are going to consider moving to fetch, then maybe we should _also_ use this update as a
+chance address at least _some_ of the [quirks & cruft](https://htmx.org/quirks/) that htmx has acquired over its lifetime.
 
 So, eventually & reluctantly, I have changed my mind: there _will_ be another major version of htmx.
 
