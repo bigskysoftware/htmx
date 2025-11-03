@@ -5,8 +5,6 @@
   "main": "dist/htmx.js",
   "module": "dist/htmx.esm.js",
   "scripts": {
-    "postinstall": "playwright install --with-deps chromium firefox webkit",
-
     "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:compress",
     "build:iife": "sed 's/__/#/g' src/htmx.js > dist/htmx.js",
     "build:esm": "sed 's/this\\.__/this.#/g; s/^        __/        #/g' src/htmx.js > dist/htmx.esm.js && echo '' >> dist/htmx.esm.js && echo 'export default htmx' >> dist/htmx.esm.js",
