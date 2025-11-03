@@ -58,14 +58,18 @@ var htmx = (() => {
         #extMethods = new Map();
         #approvedExt = new Set();
         #internalAPI;
-        __boostSelector = "a,form";
-        __verbs = ["get", "post", "put", "patch", "delete"];
+        #actionSelector
+        #boostSelector = "a,form";
+        #verbs = ["get", "post", "put", "patch", "delete"];
+        #hxOnQuery
+        #transitionQueue
+        #processingTransition
 
         constructor() {
             this.__initHtmxConfig();
             this.__initRequestIndicatorCss();
-            this.__actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
-            this.__hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
+            this.#actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
@@ -259,7 +263,7 @@ var htmx = (() => {
                 let method = this.__attributeValue(elt, "hx-method") || "get";
                 let action = this.__attributeValue(elt, "hx-action");
                 if (!action) {
-                    for (let verb of this.__verbs) {
+                    for (let verb of this.#verbs) {
                         let verbAttribute = this.__attributeValue(elt, "hx-" + verb);
                         if (verbAttribute) {
                             action = verbAttribute;
@@ -426,7 +430,7 @@ var htmx = (() => {
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
-            if (!this.__verbs.includes(ctx.request.method.toLowerCase())) return
+            if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
             if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
@@ -980,11 +984,11 @@ var htmx = (() => {
             for (let child of this.__queryEltAndDescendants(elt, this.__actionSelector)) {
                 this.__initializeElement(child);
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.__boostSelector)) {
+            for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
                 this.__maybeBoost(child);
             }
             this.__handleHxOnAttributes(elt);
-            let iter = this.__hxOnQuery.evaluate(elt)
+            let iter = this.#hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
             if (processScripts) {
@@ -2057,21 +2061,21 @@ var htmx = (() => {
 
         __submitTransitionTask(task) {
             return new Promise((resolve) => {
-                this.__transitionQueue ||= [];
-                this.__transitionQueue.push({ task, resolve });
-                if (!this.__processingTransition) {
+                this.#transitionQueue ||= [];
+                this.#transitionQueue.push({ task, resolve });
+                if (!this.#processingTransition) {
                     this.__processTransitionQueue();
                 }
             });
         }
 
         async __processTransitionQueue() {
-            if (this.__transitionQueue.length === 0 || this.__processingTransition) {
+            if (this.#transitionQueue.length === 0 || this.#processingTransition) {
                 return;
             }
 
-            this.__processingTransition = true;
-            let { task, resolve } = this.__transitionQueue.shift();
+            this.#processingTransition = true;
+            let { task, resolve } = this.#transitionQueue.shift();
 
             try {
                 if (document.startViewTransition) {
@@ -2085,7 +2089,7 @@ var htmx = (() => {
             } catch (e) {
                 // Transitions can be skipped/aborted - this is normal
             } finally {
-                this.__processingTransition = false;
+                this.#processingTransition = false;
                 resolve();
                 this.__processTransitionQueue();
             }
