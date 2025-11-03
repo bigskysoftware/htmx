@@ -1,11 +1,11 @@
 // noinspection ES6ConvertVarToLetConst
 var htmx = (() => {
 
-    class RequestQueue {
+    class ReqQ {
         #c = null
         #q = []
 
-        shouldIssueRequest(ctx, queueStrategy) {
+        issue(ctx, queueStrategy) {
             if (!this.#c) {
                 this.#c = ctx
                 return true
@@ -39,16 +39,16 @@ var htmx = (() => {
             }
         }
 
-        nextRequest() {
+        next() {
             this.#c = null
             return this.#q.shift()
         }
 
-        abortCurrentRequest() {
+        abort() {
             this.#c?.abort?.()
         }
 
-        hasMore() {
+        more() {
             return this.#q?.length
         }
     }
@@ -454,7 +454,7 @@ var htmx = (() => {
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
 
-            if (!requestQueue.shouldIssueRequest(ctx, syncStrategy)) return
+            if (!requestQueue.issue(ctx, syncStrategy)) return
 
             ctx.status = "issuing"
             this.__initTimeout(ctx);
@@ -525,9 +525,9 @@ var htmx = (() => {
                 this.__enableElements(disableElements);
                 this.__trigger(elt, "htmx:finally:request", {ctx})
 
-                if (requestQueue.hasMore()) {
+                if (requestQueue.more()) {
                     // TODO is it OK to not await here?  try/catch?
-                    this.__issueRequest(requestQueue.nextRequest())
+                    this.__issueRequest(requestQueue.next())
                 }
             }
         }
@@ -708,7 +708,7 @@ var htmx = (() => {
                 let selector = strings[0];
                 syncElt = this.__findExt(selector);
             }
-            return syncElt.__htmxRequestQueue ||= new RequestQueue()
+            return syncElt.__htmxRequestQueue ||= new ReqQ()
         }
 
         __isModifierKeyClick(evt) {
@@ -1819,7 +1819,7 @@ var htmx = (() => {
         __initializeAbortListener(elt) {
             elt.addEventListener("htmx:abort", () => {
                 let requestQueue = this.__getRequestQueue(elt);
-                requestQueue.abortCurrentRequest();
+                requestQueue.abort();
             })
         }
 

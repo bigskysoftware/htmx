@@ -13,7 +13,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx = htmx.__createRequestContext(div, new Event('click'))
         let queue = htmx.__getRequestQueue(div)
 
-        let result = queue.shouldIssueRequest(ctx, 'queue first')
+        let result = queue.issue(ctx, 'queue first')
 
         assert.isTrue(result)
     })
@@ -24,11 +24,11 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         // Issue first request
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue all')
+        queue.issue(ctx1, 'queue all')
 
         // Queue second request
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx2, 'queue all')
+        let result = queue.issue(ctx2, 'queue all')
 
         assert.isFalse(result)
         assert.equal(ctx2.status, 'queued')
@@ -40,11 +40,11 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         // Issue first request
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'drop')
+        queue.issue(ctx1, 'drop')
 
         // Drop second request
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx2, 'drop')
+        let result = queue.issue(ctx2, 'drop')
 
         assert.isFalse(result)
         assert.equal(ctx2.status, 'dropped')
@@ -56,15 +56,15 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         // Issue first request
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue last')
+        queue.issue(ctx1, 'queue last')
 
         // Queue second request
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx2, 'queue last')
+        queue.issue(ctx2, 'queue last')
 
         // Queue third request (should drop ctx2)
         let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx3, 'queue last')
+        let result = queue.issue(ctx3, 'queue last')
 
         assert.isFalse(result)
         assert.equal(ctx2.status, 'dropped')
@@ -78,11 +78,11 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         // Issue first request
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
         ctx1.abort = () => { ctx1.aborted = true }
-        queue.shouldIssueRequest(ctx1, 'replace')
+        queue.issue(ctx1, 'replace')
 
         // Replace with second request
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx2, 'replace')
+        let result = queue.issue(ctx2, 'replace')
 
         assert.isTrue(result)
         assert.isTrue(ctx1.aborted)
@@ -94,15 +94,15 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         // Issue first request
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue first')
+        queue.issue(ctx1, 'queue first')
 
         // Queue second request
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx2, 'queue first')
+        queue.issue(ctx2, 'queue first')
 
         // Third request should be dropped (not queued)
         let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx3, 'queue first')
+        let result = queue.issue(ctx3, 'queue first')
 
         assert.isFalse(result)
         assert.equal(ctx2.status, 'queued')
@@ -114,19 +114,19 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue all')
+        queue.issue(ctx1, 'queue all')
 
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx2, 'queue all')
+        queue.issue(ctx2, 'queue all')
 
-        assert.isOk(queue.hasMore())
+        assert.isOk(queue.more())
     })
 
     it('hasMore returns falsey when queue is empty', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        assert.isNotOk(queue.hasMore())
+        assert.isNotOk(queue.more())
     })
 
     it('nextRequest returns next queued request', function () {
@@ -134,12 +134,12 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue all')
+        queue.issue(ctx1, 'queue all')
 
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx2, 'queue all')
+        queue.issue(ctx2, 'queue all')
 
-        let next = queue.nextRequest()
+        let next = queue.next()
 
         assert.equal(next, ctx2)
     })
@@ -149,16 +149,16 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx1, 'queue all')
+        queue.issue(ctx1, 'queue all')
 
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.shouldIssueRequest(ctx2, 'queue all')
+        queue.issue(ctx2, 'queue all')
 
-        queue.nextRequest()
+        queue.next()
 
         // Should now allow a new request
         let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.shouldIssueRequest(ctx3, 'queue first')
+        let result = queue.issue(ctx3, 'queue first')
 
         assert.isTrue(result)
     })
@@ -169,9 +169,9 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         let ctx = htmx.__createRequestContext(div, new Event('click'))
         ctx.abort = () => { ctx.aborted = true }
-        queue.shouldIssueRequest(ctx, 'queue first')
+        queue.issue(ctx, 'queue first')
 
-        queue.abortCurrentRequest()
+        queue.abort()
 
         assert.isTrue(ctx.aborted)
     })

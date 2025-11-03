@@ -2136,7 +2136,7 @@
         });
 
         _parser.addGrammarElement("nakedString", function (parser, runtime, tokens) {
-            if (tokens.hasMore()) {
+            if (tokens.more()) {
                 var tokenArr = tokens.consumeUntilWhitespace();
                 tokens.matchTokenType("WHITESPACE");
                 return {
@@ -3213,7 +3213,7 @@
         _parser.addGrammarElement("hyperscript", function (parser, runtime, tokens) {
             var features = [];
 
-            if (tokens.hasMore()) {
+            if (tokens.more()) {
                 while (parser.featureStart(tokens.currentToken()) || tokens.currentToken().value === "(") {
                     var feature = parser.requireElement("feature", tokens);
                     features.push(feature);
@@ -3877,7 +3877,7 @@
             var funcNames = [];
             var funcName = "";
             var expectFunctionDeclaration = false;
-            while (tokens.hasMore()) {
+            while (tokens.more()) {
                 jsLastToken = tokens.consumeToken();
                 var peek = tokens.currentToken(true);
                 if (peek.type === "IDENTIFIER" && peek.value === "end") {
@@ -3999,7 +3999,7 @@
             if (!tokens.matchToken("tell")) return;
             var value = parser.requireElement("expression", tokens);
             var body = parser.requireElement("commandList", tokens);
-            if (tokens.hasMore()) {
+            if (tokens.more()) {
                 tokens.requireToken("end");
             }
             var slot = "tell_" + startToken.start;
@@ -4539,7 +4539,7 @@
             if (tokens.matchToken("else")) {
                 var falseBranch = parser.parseElement("commandList", tokens);
             }
-            if (tokens.hasMore()) {
+            if (tokens.more()) {
                 tokens.requireToken("end");
             }
 
@@ -4619,7 +4619,7 @@
                 };
                 last.next = waitATick;
             }
-            if (tokens.hasMore()) {
+            if (tokens.more()) {
                 tokens.requireToken("end");
             }
 
