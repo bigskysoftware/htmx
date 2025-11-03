@@ -150,7 +150,7 @@ htmx 2.0 had already grown larger than I wanted.
 In 4.0, with the complexity savings we achieved by moving to `fetch()`, we can now comfortably fit a `morphInner` and
 `morphOuter` swap into core, thanks to the excellent work of Michael West.
 
-### Explicit <partial> Tag Support
+### Explicit &lt;partial&gt; Tag Support
 
 htmx has, since very early on, supported a concept of "Out-of-band" swaps: content that is removed from the main HTML
 response and swapped into the DOM elsewhere.  I have always been a bit ambivalent about them, because they move away
