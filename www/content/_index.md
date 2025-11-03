@@ -79,6 +79,7 @@ if(window.location.search=="?ads=true") {
 }
 </script>
 
+
 <div class="ad" style="margin-bottom: 30px">
 <a href="https://swag.htmx.org">
   <img src="/img/ads_top.png" alt="Ad: MacMall PowerBooks as low as 1999$!
