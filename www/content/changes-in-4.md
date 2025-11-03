@@ -44,6 +44,10 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 ### Built-in Streaming Response Support
 - Streaming functionality/SSE now built into core htmx
 - Improved event handling and reconnection logic
+- Configure via `hx-stream` attribute with options:
+  - `mode`: 'once' or 'continuous'
+  - `maxRetries`, `initialDelay`, `maxDelay`, `pauseHidden`
+- Example: `hx-stream="continuous maxRetries:5 initialDelay:1s"`
 
 ### View Transitions
 - View Transitions API enabled by default (maybe not!)
@@ -142,9 +146,22 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `htmx:timeout` → `htmx:error`
 
 ### New Events
-- `htmx:after:cleanup`
-- `htmx:after:history:update`
-- `htmx:finally:request`
+- `htmx:after:cleanup` - fires after element cleanup completes
+- `htmx:after:history:update` - fires after history state is updated
+- `htmx:after:process` - fires after element processing completes
+- `htmx:after:restore` - fires after restore tasks complete in swap
+- `htmx:finally:request` - fires in finally block after request (success or error)
+
+#### SSE/Streaming Events
+- `htmx:before:sse:stream` - fires before SSE stream begins
+- `htmx:after:sse:stream` - fires after SSE stream ends
+- `htmx:before:sse:message` - fires before processing SSE message
+- `htmx:after:sse:message` - fires after processing SSE message
+- `htmx:before:sse:reconnect` - fires before attempting SSE reconnection
+
+#### View Transition Events
+- `htmx:before:viewTransition` - fires before view transition starts
+- `htmx:after:viewTransition` - fires after view transition completes
 
 ### Extensions Are Now Globally Registered
 - Extensions no longer require an explicit `hx-ext` attribute
