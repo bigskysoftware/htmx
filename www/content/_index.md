@@ -121,7 +121,7 @@ if(window.location.search=="?ads=true") {
 
 htmx gives you access to [`fetch()`](@/docs.md#ajax), [View Transitions](@/docs.md#), [Streaming Responses](@/docs.md) and more
 directly in HTML, using [attributes](@/reference.md#attributes), so you can build
-[interactive interfaces](@/examples/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
+[interactive interfaces](@/patterns/_index.md) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~10k min.br'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),

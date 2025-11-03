@@ -72,7 +72,7 @@ You can see a working example of this code below.
 }
 </style>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     //=========================================================================

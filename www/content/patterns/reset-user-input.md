@@ -44,7 +44,7 @@ The following code is functionally equivalent:
 <ul id="notes"><!-- Response will go here --></ul>
 ```
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
 

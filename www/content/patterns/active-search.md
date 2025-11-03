@@ -46,7 +46,7 @@ We can use multiple triggers by separating them with a comma, this way we add 2 
 
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     

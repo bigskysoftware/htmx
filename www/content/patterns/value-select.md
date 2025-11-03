@@ -39,7 +39,7 @@ When a request is made to the `/models` end point, we return the models for that
 
 And they become available in the `model` select.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
 

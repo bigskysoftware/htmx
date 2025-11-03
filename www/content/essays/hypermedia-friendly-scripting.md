@@ -109,7 +109,7 @@ A JavaScript-based component that triggers events allows for hypermedia-oriented
 to listen for those events and trigger hypermedia exchanges.  This, in turn, makes any JavaScript library a potential
 _hypermedia control_, able to drive the Hypermedia-Driven Application via user-selected actions.
 
-A good example of this is the [Sortable.js](@/examples/sortable.md) example, in which htmx listens for
+A good example of this is the [Sortable.js](@/patterns/sortable.md) example, in which htmx listens for
 the `end` event triggered by Sortable.js:
 
 ```html

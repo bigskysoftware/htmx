@@ -83,7 +83,7 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 
 <div id="modals-here"></div>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <style>
 	@import "https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.9/css/uikit-core.min.css";

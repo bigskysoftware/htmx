@@ -7,7 +7,7 @@ This example shows how to load tab contents using htmx, and to select the "activ
 some duplication by offloading some of the work of re-rendering the tab HTML from your application server to your
 clients' browsers.
 
-You may also consider [a more idiomatic approach](@/examples/tabs-hateoas.md) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
+You may also consider [a more idiomatic approach](@/patterns/tabs-hateoas.md) that follows the principle of [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS).
 
 ## Example Code
 
@@ -32,7 +32,7 @@ when the content is swapped into the DOM.
 <div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
 ```
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <div id="tabs" hx-target="#tab-contents" role="tablist"
      hx-on:htmx-after-on-load="console.log(event)

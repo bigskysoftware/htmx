@@ -1,0 +1,153 @@
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/hyperscript.org@0.9.14/dist/template.js"></script>
+<script src="/js/fetch-mock.js"></script>
+<script>
+    function init(path, response) {
+        onGet(path, response);
+        _hyperscript.evaluate(`put \`<div hx-get="${path}" hx-trigger="load" hx-swap="outerHTML transition:false"></div>\` into #demo-content`)
+    }
+
+    const routes = [];
+    function onGet(path, handler) { routes.push({ method: 'GET', url: path, handler }); }
+    function onPost(path, handler) { routes.push({ method: 'POST', url: path, handler }); }
+    function onPut(path, handler) { routes.push({ method: 'PUT', url: path, handler }); }
+    function onDelete(path, handler) { routes.push({ method: 'DELETE', url: path, handler }); }
+</script>
+
+
+{# ======================================================================== #}
+{# DEMO SECTION                                                            #}
+{# ======================================================================== #}
+
+<h2 id="demo">
+    <a class="zola-anchor" href="#demo" aria-label="Anchor link for: demo">Demo</a>
+</h2>
+
+<div id="demo-content">
+    <!-- Dynamic content gets loaded here -->
+</div>
+
+
+{# ======================================================================== #}
+{# DEBUG TOOLBAR: Timeline + Request Details                                #}
+{# ======================================================================== #}
+
+<div id="debug-toolbar" class="fixed bottom-0 inset-x-0 z-50 translate-y-[calc(100%-2.5rem)] has-[[name*=toolbar-toggle]:checked]:translate-y-0 transition font-['Lucida_Grande',Geneva,Verdana,sans-serif]">
+
+    {# Header (click to expand/collapse) #}
+    <label class="block px-4 py-2 cursor-pointer select-none bg-[linear-gradient(to_bottom,#fefefe_0%,#ddd_50%,#ccc_51%,#bbb_100%)] border border-[rgba(0,0,0,0.4)] rounded-t shadow-[inset_1px_1px_0_rgba(255,255,255,0.9),inset_-1px_-1px_0_rgba(0,0,0,0.15),0_-2px_8px_rgba(0,0,0,0.15)]">
+        <input name="debug-toolbar-toggle" type="checkbox" class="hidden">
+        <span class="flex items-center gap-4">
+            <span class="font-semibold text-sm [text-shadow:0_1px_0_rgba(255,255,255,0.8)]">
+                Debug Toolbar
+            </span>
+            <span id="toolbar-status" class="text-xs text-[#666] truncate max-w-[60vw] translate-y-px">
+                test
+            </span>
+        </span>
+    </label>
+
+    {# Content #}
+    <div class="flex gap-3 py-3 px-4 max-h-[33vh] sm:px-12 lg:px-24 bg-[linear-gradient(to_bottom,#fefefe_0%,#ddd_50%,#ccc_51%,#bbb_100%)]">
+
+        {# Timeline: List of htmx requests #}
+        <ol id="timeline" class="list-decimal flex flex-col-reverse gap-2 w-fit max-w-1/3 p-4 !m-0 text-sm bg-white border border-[rgba(0,0,0,0.4)] rounded shadow-[inset_1px_1px_0_rgba(0,0,0,0.1)] overflow-y-auto"
+            _="on htmx:after:swap from document
+                 set req to event.detail.ctx.request
+                 set params to req.parameters or window.parseParams(req.method, req.action, req.body)
+                 set request to { method: req.method, action: req.action, parameters: params, headers: req.headers }
+                 set response to { status: event.detail.ctx.response.status, body: event.detail.ctx.response.raw.mockBody }
+                 render the first <template/> in me with (request: request, response: response)
+                 put it at the end of me
+                 call me.scrollTo({top: -me.scrollHeight})
+                 put `${request.method} ${request.action}` into #toolbar-status">
+
+            <template>
+                <li>
+                    <label class="has-checked:bg-[linear-gradient(to_bottom,#5a9eea_0%,#3d7fc9_100%)] has-checked:text-white has-checked:shadow-[inset_0_1px_1px_rgba(0,0,0,0.3)] cursor-pointer flex items-center gap-2 p-2 rounded hover:bg-[rgba(0,0,0,0.05)] transition-colors border border-transparent has-checked:border-[#2d5f9f]"
+                           data-request="${request as JSON}"
+                           data-response="${response as JSON}"
+                           _="on change
+                                render first <template/> in #current-request with (request: my.dataset.request as Object, response: my.dataset.response as Object)
+                                then put it into first <output/> in #current-request"
+                    >
+                        <input type="radio" name="current-request" class="hidden">
+                        <span class="font-semibold flex-1 truncate has-checked:[text-shadow:0_-1px_0_rgba(0,0,0,0.3)]">${request.method} ${request.action}</span>
+                        <span data-status="${response.status}"
+                              class="px-1.5 py-0.5 text-[10px] font-bold rounded [text-shadow:0_1px_0_rgba(255,255,255,0.5)]
+                                     data-[status^='2']:bg-[#c8e6c9] data-[status^='2']:text-[#2e7d32] data-[status^='2']:border-[#81c784]
+                                     data-[status^='3']:bg-[#fff9c4] data-[status^='3']:text-[#f57f17] data-[status^='3']:border-[#fff59d]
+                                     data-[status^='4']:bg-[#ffcdd2] data-[status^='4']:text-[#c62828] data-[status^='4']:border-[#ef9a9a]
+                                     data-[status^='5']:bg-[#ffcdd2] data-[status^='5']:text-[#c62828] data-[status^='5']:border-[#ef9a9a]
+                                     border shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                            ${response.status}
+                        </span>
+                    </label>
+                </li>
+            </template>
+        </ol>
+
+        {# Current Request: Parameters, headers, response #}
+        <div id="current-request" class="flex-1 p-6 bg-white border border-[rgba(0,0,0,0.4)] rounded overflow-auto shadow-[inset_1px_1px_0_rgba(0,0,0,0.1)]">
+
+            <template>
+                {# Response Section #}
+                @if response
+                <section class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="!m-0 text-xs font-semibold text-[#555] uppercase tracking-wider [text-shadow:0_1px_0_rgba(255,255,255,0.9)]">
+                            Response
+                        </h4>
+                        <span data-status="${response.status}"
+                              class="px-2 py-1 text-[11px] font-bold rounded [text-shadow:0_1px_0_rgba(255,255,255,0.5)]
+                                     data-[status^='2']:bg-[#c8e6c9] data-[status^='2']:text-[#2e7d32] data-[status^='2']:border-[#81c784]
+                                     data-[status^='3']:bg-[#fff9c4] data-[status^='3']:text-[#f57f17] data-[status^='3']:border-[#fff59d]
+                                     data-[status^='4']:bg-[#ffcdd2] data-[status^='4']:text-[#c62828] data-[status^='4']:border-[#ef9a9a]
+                                     data-[status^='5']:bg-[#ffcdd2] data-[status^='5']:text-[#c62828] data-[status^='5']:border-[#ef9a9a]
+                                     border shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                            ${response.status}
+                        </span>
+                    </div>
+                    <div class="text-[10px] font-semibold text-[#888] mb-1 uppercase tracking-wider">
+                        Body
+                    </div>
+                    <div class="bg-[#f8f8f8] border border-[rgba(0,0,0,0.2)] rounded p-2.5 overflow-x-auto">
+                        <pre class="!p-0 !m-0 !bg-transparent text-xs font-mono">${response.body}</pre>
+                    </div>
+                </section>
+                @end
+
+                {# Request Section #}
+                @if request.parameters or request.headers
+                <section class="pt-8 border-t border-[rgba(0,0,0,0.1)]">
+                    <h4 class="!m-0 !mb-4 text-xs font-semibold text-[#555] uppercase tracking-wider [text-shadow:0_1px_0_rgba(255,255,255,0.9)]">
+                        Request
+                    </h4>
+
+                    @repeat for section in [{title: 'Query Parameters', data: request.parameters}, {title: 'Headers', data: request.headers}]
+                    @if section.data
+                    <div class="mb-4 last:mb-0">
+                        <div class="text-[10px] font-semibold text-[#888] mb-1 uppercase tracking-wider">
+                            ${section.title}
+                        </div>
+                        <div class="space-y-1 bg-[#f8f8f8] border border-[rgba(0,0,0,0.2)] rounded p-2.5 text-xs font-mono overflow-auto">
+                            @repeat for entry in Object.entries(section.data)
+                            <div class="flex gap-2 whitespace-nowrap">
+                                <span class="text-[#666] font-semibold">${entry[0]}:</span>
+                                <span class="text-[#333]">${entry[1]}</span>
+                            </div>
+                            @end
+                        </div>
+                    </div>
+                    @end
+                    @end
+                </section>
+                @end
+            </template>
+
+            <output>
+                <!-- Rendered <template> goes here -->
+            </output>
+        </div>
+    </div>
+</div>

@@ -154,7 +154,7 @@ Let's consider another change: we want to add a graph of the number of contacts 
 template in our HTML-based web application.  It turns out that this graph is expensive to compute.
 
 We do not want to block the rendering of the `index.html` template on the graph generation, so we will use the 
-[Lazy Loading](@/examples/lazy-load.md) pattern for it instead.  To do this, we need to create a new endpoint, `/graph`, 
+[Lazy Loading](@/patterns/lazy-load.md) pattern for it instead.  To do this, we need to create a new endpoint, `/graph`, 
 that returns the HTML for that lazily loaded content:
 
 ```python

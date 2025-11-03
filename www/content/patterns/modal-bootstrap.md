@@ -60,7 +60,7 @@ tabindex="-1">
     </div>
 </div>
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <style>
 	@import "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.2/css/bootstrap.min.css";

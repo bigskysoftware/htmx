@@ -3,7 +3,7 @@ title = "Custom Modal Dialogs"
 template = "demo.html"
 +++
 
-While htmx works great with dialogs built into CSS frameworks (like [Bootstrap](@/examples/modal-bootstrap.md) and [UIKit](@/examples/modal-uikit.md)), htmx also makes
+While htmx works great with dialogs built into CSS frameworks (like [Bootstrap](@/patterns/modal-bootstrap.md) and [UIKit](@/patterns/modal-uikit.md)), htmx also makes
 it easy to build modal dialogs from scratch.  Here is a quick example of one way to build them.
 
 Click here to see a demo of the final result:

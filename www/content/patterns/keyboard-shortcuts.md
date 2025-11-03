@@ -22,7 +22,7 @@ You can find out the conditions needed for a given keyboard shortcut here:
 
 [https://javascript.info/keyboard-events](https://javascript.info/keyboard-events)
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
 

@@ -21,7 +21,7 @@ the final row:
 This row contains a button that will replace the entire row with the next page of
 results (which will contain a button to load the *next* page of results).  And so on.
 
-{{ demoenv() }}
+{{ demo_environment() }}
 
 <script>
     //=========================================================================
