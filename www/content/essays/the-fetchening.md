@@ -187,7 +187,7 @@ two years, support for the feature has grown across browsers (c'mon, safari, you
 with the feature.
 
 One thing that has become apparent to us while using them is that, to use them in a stable manner, it is important
-to establish a queue of transitions, so each can complete before the other begins.  If you don't do this, you can get
+to establish a _queue_ of transitions, so each can complete before the other begins.  If you don't do this, you can get
 visually ugly transition cancellations.
 
 So, in htmx 4.0 we have added this queue which will ensure that all view transitions complete smoothly.
