@@ -1,9 +1,16 @@
-# TODOs
+# Current
 
-* SSE/streaming functionality (Christian)
-* Build out a "patterns" set of examples to replace examples, cleaned up, add more advanced cases
-* Updated website design
-* quirks.js implementation
+* @latent - figure out our final conclusion on out-of-band swaps
+* @scriptogre - complete port of examples to patterns
+* @scriptogre - SSE cleanup (variable renaming)
+* @1cg - determine final test patterns for end-to-end tests
+* @1cg - allow changing "meta" character for compatibility w/ some platforms
+  * e.g. fastHTML, which uses pythong syntax and cannot support ':', need to be able to switch to '-'
+
+# Backlog
+
+* Updated website design (@scriptogre)
+* quirks.js implementation (@1cg)
   * retrigger historical events based on mapping
   * revert to older API (esp `htmx.ajax`)
   * Move deprecated features into quirks.js?
@@ -12,7 +19,7 @@
   * ~~revert to htmx 2.0 attribute resolution~~
   * mode to log elements that should marked as `:inherited`
 * Unify __parseTriggerSpecs and __parseSwapModifiers somehow
-* `htmx.onLoad()` function
+* `htmx.onLoad()` function (@1cg)
 * An "upgrade report" tool for htmx 2.0 applications
   * Produces a report of all elements that need to be
     * Marked as `:inherited`
