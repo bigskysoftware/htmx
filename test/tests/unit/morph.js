@@ -437,7 +437,7 @@ describe('Morph Swap Styles Tests', function() {
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
             btn.click();
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await htmx.forEvent('htmx:after:swap', 100);
             
             assert.equal(result.textContent, 'Clicked!', 'htmx functionality should still work');
         });

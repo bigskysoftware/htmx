@@ -1077,7 +1077,8 @@ var htmx = (() => {
 
         __makeFragment(text) {
             let response = text.replace(/<partial(\s+|>)/gi, '<template partial$1').replace(/<\/partial>/gi, '</template>');
-            // TODO - store any head tag content on the fragment for head extension
+            let title = '';
+            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (m, t) => (title = t, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -1092,10 +1093,11 @@ var htmx = (() => {
                 doc = this.__parseHTML(`<template>${responseWithNoHead}</template>`);
                 fragment = doc.querySelector('template').content;
             }
+            this.__processScripts(fragment);
 
             return {
                 fragment,
-                title: doc.title
+                title
             };
         }
 
@@ -1114,18 +1116,9 @@ var htmx = (() => {
             let swapSpec = this.__parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
-            let oobElementClone = elt.cloneNode(true);
-            let fragment;
-            if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
-                swapSpec.strip = true;
-            }
-            if (swapSpec.strip) {
-                fragment = oobElementClone.content || oobElementClone;
-            } else {
-                fragment = document.createDocumentFragment();
-                fragment.appendChild(oobElementClone);
-            }
-            elt.remove();
+            swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            let fragment = document.createDocumentFragment();
+            fragment.append(elt);
             if (!target && !oobValue.includes('target:')) return;
 
             tasks.push({
@@ -1255,6 +1248,7 @@ var htmx = (() => {
 
         async swap(ctx) {
             let {fragment, title} = this.__makeFragment(ctx.text);
+            ctx.title = title;
             let tasks = [];
 
             // Process OOB and partials
@@ -1263,7 +1257,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Process main swap
-            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks, title);
+            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
             if (mainSwap) {
                 tasks.push(mainSwap);
             }
@@ -1299,7 +1293,7 @@ var htmx = (() => {
             }
 
             this.__trigger(document, "htmx:after:swap", {ctx});
-            if (mainSwap?.title) document.title = mainSwap.title;
+            if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
@@ -1312,33 +1306,24 @@ var htmx = (() => {
             // if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
-        __processMainSwap(ctx, fragment, partialTasks, title) {
+        __processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
             // skip creating main swap if extracting partials resulted in empty response except for delete style
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML || '') || !partialTasks.length) {
-                let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
-                    let selected = fragment.querySelector(ctx.select);
-                    if (selected) {
-                        if (swapSpec.strip === false) {
-                            resultFragment.append(selected);
-                        } else {
-                            resultFragment.append(...selected.childNodes);
-                        }
-                    }
-                } else {
-                    resultFragment.append(...fragment.childNodes);
+                    let selected = fragment.querySelectorAll(ctx.select);
+                    fragment = document.createDocumentFragment();
+                    fragment.append(...selected);
                 }
 
                 let mainSwap = {
                     type: 'main',
-                    fragment: resultFragment,
+                    fragment,
                     target: swapSpec.target || ctx.target,
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
-                    title
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
                 };
                 return mainSwap;
             }
@@ -1350,8 +1335,13 @@ var htmx = (() => {
                 target = document.querySelector(target);
             }
             if (!target) return;
+            if (swapSpec.strip && fragment.firstElementChild) {
+                let strip = document.createDocumentFragment();
+                strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
+                fragment = strip;
+            }
+            
             let pantry = this.__handlePreservedElements(fragment);
-            this.__processScripts(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
             if (swapSpec.style === 'innerHTML') {

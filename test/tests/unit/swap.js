@@ -213,6 +213,21 @@ describe('swap() unit tests', function() {
         findElt('#d1').innerText.should.equal("ExistingPartial");
     })
 
+    it('executes script in oob swap', async function () {
+        window.testVar = 0;
+        createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
+        await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='true'><script>window.testVar = 7</script></div>"})
+        window.testVar.should.equal(7);
+        delete window.testVar;
+    })
+
+    it('executes script in partial', async function () {
+        window.testVar = 0;
+        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#test-playground'><script>window.testVar = 8</script></partial>"})
+        window.testVar.should.equal(8);
+        delete window.testVar;
+    })
+
     it('replaces attributes when swapping element with same id', async function () {
         createProcessedHTML("<div id='d1' class='old' data-value='1'></div>")
         await htmx.swap({"target":"#d1", "text":"<div id='d1' class='new' data-value='2'>Content</div>", "swap":"outerHTML"})
@@ -280,4 +295,58 @@ describe('swap() unit tests', function() {
         afterTriggered.should.be.true;
     })
 
+    it('sets document title from response', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<html><head><title>New Title</title></head><body><div>Content</div></body></html>"})
+        document.title.should.equal('New Title');
+        document.title = originalTitle;
+    })
+
+    it('ignores title when ignoreTitle:true modifier is set', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<html><head><title>Ignored Title</title></head><body><div>Content</div></body></html>", "swap":"innerHTML ignoreTitle:true"})
+        document.title.should.equal(originalTitle);
+    })
+
+    it('sets title from fragment without html/body tags', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<title>Fragment Title</title><div>Content</div>"})
+        document.title.should.equal('Fragment Title');
+        document.title = originalTitle;
+    })
+
+    it('does not set title when response has no title tag', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<div>Content without title</div>"})
+        document.title.should.equal(originalTitle);
+    })
+
+    it('sets title with oob swap', async function () {
+        let originalTitle = document.title;
+        createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
+        await htmx.swap({"target":"#d1", "text":"<title>OOB Title</title><div>Main</div><div id='d2' hx-swap-oob='true'>OOB</div>"})
+        document.title.should.equal('OOB Title');
+        document.title = originalTitle;
+    })
+
+    it('sets title with partial swap', async function () {
+        let originalTitle = document.title;
+        createProcessedHTML("<div id='d1'></div>")
+        await htmx.swap({"target":"#test-playground", "text":"<title>Partial Title</title><partial hx-target='#d1'>Partial Content</partial>"})
+        document.title.should.equal('Partial Title');
+        document.title = originalTitle;
+    })
+
+    it('sets title from body tag response', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<body><title>Body Title</title><div>Content</div></body>"})
+        document.title.should.equal('Body Title');
+        document.title = originalTitle;
+    })
+
+    it('does not swap title tag into page content', async function () {
+        await htmx.swap({"target":"#test-playground", "text":"<title>Test Title</title><div id='content'>Main Content</div>"})
+        assert.isNull(playground().querySelector('title'));
+        findElt('#content').innerText.should.equal('Main Content');
+    })
 })
