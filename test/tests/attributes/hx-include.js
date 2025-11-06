@@ -12,7 +12,7 @@ describe('hx-include attribute', function() {
         mockResponse('POST', '/include', "Clicked!")
         createProcessedHTML('<div hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></div>')
         find("#i1").click()
-        await htmxRestoreEvent()
+        await forRequest()
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
@@ -20,7 +20,7 @@ describe('hx-include attribute', function() {
         mockResponse('POST', '/include', "Dummy")
         createProcessedHTML('<form hx-target="this"><div id="d1" hx-post="/include"></div><input name="i1" value="test"/></form>')
         find('#d1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
@@ -28,7 +28,7 @@ describe('hx-include attribute', function() {
         mockResponse('POST', '/include', "Dummy")
         createProcessedHTML('<form hx-target="this"><input hx-post="/include" hx-trigger="click" id="i1" name="i1" value="test"/></form>')
         find('#i1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         fetchMock.calls[0].request.body.getAll("i1").length.should.equal(1);
     })
 

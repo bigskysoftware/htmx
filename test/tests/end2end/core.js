@@ -11,7 +11,7 @@ describe('Basic Functionality', () => {
         createProcessedHTML('<button id="test-btn" hx-action="/demo" hx-target="#target">Click</button><div id="target">Original</div>');
         // Click the button
         find("#test-btn").click()
-        await htmxRestoreEvent();
+        await forRequest();
 
         // Verify the swap occurred
         assertTextContentIs("#target", "Success!");
@@ -29,7 +29,7 @@ describe('Basic Functionality', () => {
         // fill in the required value
         find("#i1").value = "foo"
         find('#b1').click()
-        await htmxRestoreEvent();
+        await forRequest();
 
         assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");
@@ -43,7 +43,7 @@ describe('Basic Functionality', () => {
 
         // Click the button
         find('#b1').click()
-        await htmxRestoreEvent();
+        await forRequest();
 
         assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");

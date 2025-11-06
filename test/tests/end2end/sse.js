@@ -145,7 +145,7 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button id="http" hx-get="/regular" hx-swap="innerHTML">HTTP</button>');
 
         find('#http').click()
-        await htmxRestoreEvent();
+        await forRequest();
         assertTextContentIs('#http', 'HTTP response');
 
         const stream = mockStreamResponse('/sse');

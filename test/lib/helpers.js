@@ -159,8 +159,8 @@ function waitForEvent(eventName, timeout = 2000) {
   return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
 }
 
-function htmxRestoreEvent() {
-  return waitForEvent("htmx:after:restore");
+function forRequest() {
+  return waitForEvent("htmx:finally:request");
 }
 
 function playground() {

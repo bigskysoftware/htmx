@@ -32,7 +32,7 @@ describe('hx-swap modifiers', function() {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
         div.scrollTop = 500;
         div.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(div.scrollTop, 0)
     })
 
@@ -40,7 +40,7 @@ describe('hx-swap modifiers', function() {
         mockResponse('GET', '/test', '<div style="height:2000px">Tall content</div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:bottom" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
         div.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isAbove(div.scrollTop, 0)
     })
 
@@ -49,7 +49,7 @@ describe('hx-swap modifiers', function() {
         let div = createProcessedHTML('<div hx-get="/test">Old</div>');
         window.testScriptRan = false;
         div.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isTrue(window.testScriptRan)
         delete window.testScriptRan;
     })
@@ -59,7 +59,7 @@ describe('hx-swap modifiers', function() {
         createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms">Old Content</div>');
         
         find('#test-div').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#test-div', 'New Content')
     })
 
@@ -68,7 +68,7 @@ describe('hx-swap modifiers', function() {
         createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms transition:false">Old Content</div>');
 
         find('#test-div').click()
-        await htmxRestoreEvent()
+        await forRequest()
 
         // Should still be old content immediately after request completes
         assertTextContentIs('#test-div', 'Old Content')

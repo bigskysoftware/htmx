@@ -18,7 +18,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -32,7 +32,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -46,7 +46,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#span').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -60,7 +60,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#span').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -76,7 +76,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#submit').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -92,7 +92,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#test-btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -107,7 +107,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#test-link').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -155,7 +155,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#test-link').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
     });
 
@@ -188,7 +188,7 @@ describe('Cancel behavior integration tests', function() {
         });
         
         find('#btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
         defaultPrevented.should.equal(true);
         playground().innerText.should.equal('Submitted');
     });

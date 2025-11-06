@@ -14,7 +14,7 @@ describe('htmx.config.metaCharacter functionality', function() {
         mockResponse('GET', '/test', 'Success');
         createProcessedHTML('<div hx-target-inherited="#output"><button hx-get="/test" id="btn">Click</button><output id="output"></output></div>');
         find('#btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
         var output = find("#output");
         output.innerText.should.equal("Success")
     });

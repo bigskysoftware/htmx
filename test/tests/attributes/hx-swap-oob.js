@@ -12,7 +12,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="oob1" hx-swap-oob="true">OOB Content</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="oob1">Original</div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#oob1', 'OOB Content')
     })
 
@@ -20,7 +20,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="oob2" hx-swap-oob="innerHTML">New Inner</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="oob2"><span>Old</span></div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#oob2', 'New Inner')
     })
 
@@ -28,7 +28,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="outerHTML:#target">OOB Target</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="target">Original Target</div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#x', 'OOB Target')
     })
 
@@ -36,7 +36,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="a" hx-swap-oob="true">A</div><div id="b" hx-swap-oob="true">B</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="a">Old A</div><div id="b">Old B</div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#a', 'A')
         assertTextContentIs('#b', 'B')
     })
@@ -45,7 +45,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:#custom">Target Content</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="custom">Original</div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#custom', 'Target Content')
     })
 
@@ -53,7 +53,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:.foo .bar">Multi Selector</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div class="foo"><div class="bar">Original</div></div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('.foo .bar', 'Multi Selector')
     })
 
@@ -62,7 +62,7 @@ describe('hx-swap-oob', function() {
         createProcessedHTML('<div hx-get="/test">Click</div><div id="tgt">Original</div>');
         
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         
         // Should still be original immediately after request completes
         assertTextContentIs('#tgt', 'Original')
@@ -78,7 +78,7 @@ describe('hx-swap-oob', function() {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML:#legacy">Legacy Format</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="legacy">Original</div>');
         find('[hx-get]').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assertTextContentIs('#legacy', 'Legacy Format')
     })
 })

@@ -16,7 +16,7 @@ describe('hx-config attribute', function() {
         }, {once: true})
         let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"action": "/override"}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerText.should.equal('Overridden!')
         assert.isTrue(lastFetch().url.startsWith('/override'))
         assert.equal(ctx.request.action, '/override')
@@ -31,7 +31,7 @@ describe('hx-config attribute', function() {
 
         let form = createProcessedHTML('<form hx-post="/test" hx-config=\'{"validate": false}\'><input required name="test" value="filled"><button>Submit</button></form>');
         form.requestSubmit()
-        await htmxRestoreEvent()
+        await forRequest()
         // Verify validate can be set via config (goes to request)
         assert.isFalse(ctx.request.validate)
     })
@@ -45,7 +45,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"cache": "no-cache"}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         // Note: later Object.assign in handleTriggerEvent may override some options
         assert.equal(ctx.request.cache, 'no-cache')
         assert.equal(ctx.request.method, 'GET')
@@ -60,7 +60,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"customProperty": "myValue"}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(customValue, 'myValue')
     })
 
@@ -73,7 +73,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"prop1": "value1", "prop2": "value2", "prop3": 123}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(ctx.request.prop1, 'value1')
         assert.equal(ctx.request.prop2, 'value2')
         assert.equal(ctx.request.prop3, 123)
@@ -83,7 +83,7 @@ describe('hx-config attribute', function() {
         mockResponse('GET', '/test', 'Done')
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerText.should.equal('Done')
     })
 
@@ -91,7 +91,7 @@ describe('hx-config attribute', function() {
         mockResponse('PUT', '/test', 'Put request')
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"method": "PUT"}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         lastFetch().request.method.should.equal('PUT')
     })
 
@@ -104,7 +104,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"myFlag": true, "otherFlag": false}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isTrue(ctx.request.myFlag)
         assert.isFalse(ctx.request.otherFlag)
     })
@@ -118,7 +118,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"timeout": 5000, "retries": 3}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(ctx.request.timeout, 5000)
         assert.equal(ctx.request.retries, 3)
     })
@@ -132,7 +132,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-select="#foo" hx-config=\'{"select": null}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isNull(ctx.request.select)
     })
 
@@ -146,7 +146,7 @@ describe('hx-config attribute', function() {
         // When using + on a non-object (action is a string), it should set it on request
         let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"+action": "/newpath"}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isTrue(ctx.request.action.startsWith('/newpath'))
     })
 
@@ -159,7 +159,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"custom": {"nested": {"deep": "value"}}}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(ctx.request.custom.nested.deep, 'value')
     })
 
@@ -173,7 +173,7 @@ describe('hx-config attribute', function() {
         // Set an array on a custom property
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"myArray": [1, 2, 3]}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.deepEqual(ctx.request.myArray, [1, 2, 3])
     })
 
@@ -186,7 +186,7 @@ describe('hx-config attribute', function() {
 
         let form = createProcessedHTML('<form hx-post="/submit" hx-validate="true" hx-config=\'{"validate": false}\'><input required name="test" value="test"><button>Submit</button></form>');
         form.requestSubmit()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isFalse(ctx.request.validate)
     })
 
@@ -199,7 +199,7 @@ describe('hx-config attribute', function() {
 
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"+swapCfg": {"transition": true}}\'>Click</button>');
         btn.click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isTrue(ctx.transition)
     })
 
@@ -210,11 +210,11 @@ describe('hx-config attribute', function() {
         createProcessedHTML('<button id="b1" hx-get="/test" hx-trigger="click" hx-swap="innerHTML" hx-config=\'{"action": "/path1"}\'>B1</button><button id="b2" hx-get="/test" hx-trigger="click" hx-swap="innerHTML" hx-config=\'{"action": "/path2"}\'>B2</button>')
 
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(playground().querySelector('#b1').innerText, 'Path 1')
 
         find('#b2').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.equal(playground().querySelector('#b2').innerText, 'Path 2')
     })
 
@@ -226,7 +226,7 @@ describe('hx-config attribute', function() {
         }, {once: true})
         createProcessedHTML('<div hx-config:inherited=\'{"action": "/inherited"}\'><button hx-get="/original" hx-trigger="click">Click</button></div>')
         find('button').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerText.should.equal('Inherited config')
         assert.isTrue(lastFetch().url.startsWith('/inherited'))
         assert.equal(ctx.request.action, '/inherited')
@@ -240,7 +240,7 @@ describe('hx-config attribute', function() {
         }, {once: true})
         createProcessedHTML('<div hx-config:inherited=\'{"action": "/parent"}\'><button hx-get="/original" hx-trigger="click" hx-config=\'{"action": "/child"}\'>Click</button></div>')
         find('button').click()
-        await htmxRestoreEvent()
+        await forRequest()
         assert.isTrue(lastFetch().url.startsWith('/child'))
         assert.equal(ctx.request.action, '/child')
     })

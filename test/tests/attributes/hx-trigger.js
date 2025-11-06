@@ -10,7 +10,7 @@ describe('hx-trigger attribute', function() {
         mockResponse('GET', '/test', 'Clicked!')
         createProcessedHTML('<form hx-get="/test" hx-trigger="click">Click Me!</form>')
         find("form").click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerText.should.equal('Clicked!')
     })
 
@@ -18,9 +18,9 @@ describe('hx-trigger attribute', function() {
         mockResponse('GET', '/test', 'Clicked!')
         let div = createProcessedHTML('<div hx-trigger="foo, bar" hx-get="/test" hx-swap="innerHTML">Requests: 0</div>');
         htmx.trigger(div, 'foo');
-        await htmxRestoreEvent()
+        await forRequest()
         htmx.trigger(div, 'bar');
-        await htmxRestoreEvent()
+        await forRequest()
         fetchMock.calls.length.should.equal(2)
     })
 
@@ -115,7 +115,7 @@ describe('hx-trigger attribute', function() {
             "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
             "</div><div id='d3'>bar</div>")
         find('#d1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         await htmx.timeout(100)
         // should not have been replaced by click
         find('#d3').innerText.should.equal('bar')

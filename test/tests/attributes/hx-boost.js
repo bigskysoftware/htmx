@@ -12,7 +12,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('GET', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><a id="a1" href="/test">Foo</a></div>')
         find('#a1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -20,7 +20,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('POST', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="post"><button id="b1">Submit</button></form></div>')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -28,7 +28,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('POST', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="post"><button id="b1" formaction="/test">Submit</button></form></div>')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -36,7 +36,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('POST', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1" formmethod="post">Submit</button></form></div>')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -44,7 +44,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('POST', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/bad" method="get"><button id="b1" formmethod="post" formaction="/test">Submit</button></form></div>')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -52,7 +52,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('POST', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML"><form id="f1" action="/test" method="post"  hx-boost="true"></form></div>')
         find('#f1').requestSubmit()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -61,7 +61,7 @@ describe('hx-boost attribute', async function() {
         mockResponse('GET', '/test', 'Boosted')
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test" method="get"><button id="b1">Submit</button></form></div>')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -70,7 +70,7 @@ describe('hx-boost attribute', async function() {
         createProcessedHTML('<div hx-target:inherited="this" hx-swap:inherited="outerHTML" hx-boost:inherited="true"><form id="f1" action="/test"><button id="b1">Submit</button></form></div>')
         find("#f1").getAttribute("data-htmx-powered").should.equal('true')
         find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
         playground().innerHTML.should.equal('Boosted')
     })
 
@@ -112,7 +112,7 @@ describe('hx-boost attribute', async function() {
     //     mockResponse('GET', '/test', "Boosted!")
     //     createProcessedHTML('<a hx-boost="true" hx-target="this" hx-swap="outerHTML" href="/test">Click Me!</a>')
     //     find("a").click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     fetchMock.getLastCall().request.headers["HX-Boosted"].should.equal("true")
     //     fetchMock.getLastCall().request.headers["HX-Request"].should.equal("true")
     //     playground().innerHTML.should.equal('Boosted!')
@@ -126,7 +126,7 @@ describe('hx-boost attribute', async function() {
     //
     //     initHTML('<div hx-target:inherited="this" hx-boost="true"><form id="f1" action="/test?foo=bar" method="get"><button id="b1">Submit</button></form></div>')
     //      find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     playground().innerHTML.should.equal('Boosted!')
     // })
     //
@@ -137,7 +137,7 @@ describe('hx-boost attribute', async function() {
     //     })
     //     initHTML('<div hx-target:inherited="this" hx-boost="true"><form id="f1" action="/test?foo=bar" method="post"><button id="b1">Submit</button></form></div>')
     //      find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     playground().innerHTML.should.equal('Boosted!')
     // })
     //
@@ -148,7 +148,7 @@ describe('hx-boost attribute', async function() {
     //
     //     initHTML('<div hx-target:inherited="this" hx-boost="true"><form id="f1" method="get"><button id="b1">Submit</button></form></div>')
     //      find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     playground().innerHTML.should.equal('Boosted!')
     // })
     //
@@ -172,7 +172,7 @@ describe('hx-boost attribute', async function() {
     //
     //     initHTML('<div hx-target:inherited="this" hx-boost="true"><form id="f1" method="get"><button id="b1">Submit</button></form></div>')
     //      find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     playground().innerHTML.should.equal('Boosted!')
     // })
     //
@@ -196,7 +196,7 @@ describe('hx-boost attribute', async function() {
     //
     //     initHTML('<div hx-target:inherited="this" hx-boost="true"><form id="f1" action="" method="get"><button id="b1">Submit</button></form></div>')
     //      find('#b1').click()
-        await htmxRestoreEvent()
+        await forRequest()
     //     playground().innerHTML.should.equal('Boosted!')
     // })
     //

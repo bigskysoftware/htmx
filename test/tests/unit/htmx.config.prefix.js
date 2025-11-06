@@ -14,7 +14,7 @@ describe('htmx.config.prefix functionality', function() {
 
         createProcessedHTML('<button id="btn" hx-get="/test">Click</button>');
         find('#btn').click()
-        await htmxRestoreEvent();
+        await forRequest();
 
         let lastCall = lastFetch();
         assert.equal(lastCall.url, '/test');
