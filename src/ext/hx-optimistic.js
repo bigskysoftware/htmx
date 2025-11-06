@@ -1,6 +1,7 @@
 (() =>{
 
-    // TODO - rebirth of the extension API?
+    // TODO - this needs to be updated to use the new internal API
+
     function normalizeSwapStyle(style) {
         return style === 'before' ? 'beforebegin' :
             style === 'after' ? 'afterend' :
