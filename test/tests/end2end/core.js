@@ -10,7 +10,8 @@ describe('Basic Functionality', () => {
         // Create test button
         createProcessedHTML('<button id="test-btn" hx-action="/demo" hx-target="#target">Click</button><div id="target">Original</div>');
         // Click the button
-        await clickAndWait("#test-btn");
+        find("#test-btn").click()
+        await htmxRestoreEvent();
 
         // Verify the swap occurred
         assertTextContentIs("#target", "Success!");
@@ -22,14 +23,15 @@ describe('Basic Functionality', () => {
 
         createProcessedHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="true">Demo</button></form>');
 
-        click('#b1');
+        find('#b1').click();
         assert.equal(fetchMock.pendingRequests.length, 0);
 
         // fill in the required value
-        findElt("#i1").value = "foo"
-        await clickAndWait('#b1');
+        find("#i1").value = "foo"
+        find('#b1').click()
+        await htmxRestoreEvent();
 
-        assert.isUndefined(findElt('#target'));
+        assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");
     })
 
@@ -40,9 +42,10 @@ describe('Basic Functionality', () => {
         createProcessedHTML('<form><input id="i1" required/><button id="b1" hx-post="/demo" hx-validate="false">Demo</button></form>');
 
         // Click the button
-        await clickAndWait('#b1');
+        find('#b1').click()
+        await htmxRestoreEvent();
 
-        assert.isUndefined(findElt('#target'));
+        assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");
     })
 
@@ -50,16 +53,16 @@ describe('Basic Functionality', () => {
 //         // Set up mock response
 //         fetchMock.mockResponse('/demo', new MockResponse('<div id="d1">Foo</div>'));
 //         // Add button dynamically
-//         const playground = htmx.find('#test-playground');
+//         const playground = find('#test-playground');
 //         playground.insertAdjacentHTML('beforeend', `<button hx-action="/demo">Button 1</button>`);
 //         // Wait for htmx to initialize the new element
 //         await htmx.forEvent("mx:init", 2000);
 //         // Click the button
-//         htmx.find('button').click();
+//         find('button').click();
 //         // Wait for the swap to complete
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //         // Verify the swap occurred
-//         const result = htmx.find('#d1');
+//         const result = find('#d1');
 //         assertExists(result);
 //         assertEquals("Foo", result.textContent);
 //     })
@@ -73,11 +76,11 @@ describe('Basic Functionality', () => {
 //             <output id="output1">Bar</output>
 //         `);
 //         // Click the button
-//         htmx.find('button').click();
+//         find('button').click();
 //         // Wait for the swap to complete
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //         // Verify the swap occurred in the target
-//         const result = htmx.find('#d1');
+//         const result = find('#d1');
 //         assertExists(result);
 //         assertEquals("Foo", result.textContent);
 //     })
@@ -89,12 +92,12 @@ describe('Basic Functionality', () => {
 //         await initLiveContent(`
 //                 <button id="b1" hx-action="/demo" hx-swap="afterend">Button 1</button>`);
 //         // Click the button
-//         htmx.find('button').click();
+//         find('button').click();
 //         // Wait for the swap to complete
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //
 //         // Verify the swap occurred after the target
-//         const btn = htmx.find('#b1');
+//         const btn = find('#b1');
 //         assertExists(btn);
 //         assertEquals("Button 1", btn.textContent);
 //
@@ -117,15 +120,15 @@ describe('Basic Functionality', () => {
 //            <div id="output"></div>
 //         `);
 //         // Click the button
-//         htmx.find('#b1').click();
+//         find('#b1').click();
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //
 //         // Verify the swap occurred after the target
-//         const output = htmx.find('#output');
+//         const output = find('#output');
 //         assertExists(output);
 //         assertEquals("Foo", output.textContent);
 //
-//         htmx.find('#b2').click();
+//         find('#b2').click();
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //
 //         assertEquals("FooBar", output.textContent);
@@ -146,12 +149,12 @@ describe('Basic Functionality', () => {
 //            <output id="output"></output>
 //         `);
 //         // Click the button
-//         let btn = htmx.find('#b1');
+//         let btn = find('#b1');
 //         htmx.trigger(btn, 'foo');
 //         await htmx.forEvent("htmx:after:swap", 2000);
 //
 //         // Verify the swap occurred after the target
-//         const output = htmx.find('#output');
+//         const output = find('#output');
 //         assertExists(output);
 //         assertEquals("Foo", output.textContent);
 //
@@ -167,7 +170,7 @@ describe('Basic Functionality', () => {
 //            <div id="d1" hx-action="/demo" hx-swap="innerHTML" hx-trigger="foo delay:1s">Div 1</div>
 //         `);
 //
-//         let div = htmx.find('#d1');
+//         let div = find('#d1');
 //         htmx.trigger(div, 'foo');
 //         // should still be Div 1
 //         await htmx.timeout(300);
@@ -184,7 +187,7 @@ describe('Basic Functionality', () => {
 //            <div id="d1" hx-action="/demo" hx-swap="innerHTML" hx-trigger="foo delay:1s">Div 1</div>
 //         `);
 //
-//         let div = htmx.find('#d1');
+//         let div = find('#d1');
 //         htmx.trigger(div, 'foo');
 //         // should still be Div 1
 //         await htmx.timeout(600);
@@ -206,7 +209,7 @@ describe('Basic Functionality', () => {
 //            <div id="d1" hx-action="/demo" hx-swap="innerHTML" hx-trigger="every 1s">Div 1</div>
 //         `);
 //
-//         let div = htmx.find('#d1');
+//         let div = find('#d1');
 //
 //         // should still be Div 1
 //         await htmx.timeout(600);

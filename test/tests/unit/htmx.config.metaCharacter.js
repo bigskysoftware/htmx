@@ -13,8 +13,9 @@ describe('htmx.config.metaCharacter functionality', function() {
     it('works with inherited modifier using custom meta character', async function() {
         mockResponse('GET', '/test', 'Success');
         createProcessedHTML('<div hx-target-inherited="#output"><button hx-get="/test" id="btn">Click</button><output id="output"></output></div>');
-        await clickAndWait('#btn');
-        var output = htmx.find("#output");
+        find('#btn').click()
+        await htmxRestoreEvent();
+        var output = find("#output");
         output.innerText.should.equal("Success")
     });
 
@@ -46,7 +47,7 @@ describe('htmx.config.metaCharacter functionality', function() {
         let eventFired = false;
         createProcessedHTML('<button id="btn" hx-on-click="window.testEvent = true">Click</button>');
 
-        htmx.find('#btn').click();
+        find('#btn').click();
         await htmx.timeout(50);
 
         assert.equal(window.testEvent, true);

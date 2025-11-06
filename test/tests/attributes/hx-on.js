@@ -60,7 +60,7 @@ describe('hx-on attribute', function() {
                       `)
         let evt = new CustomEvent("foo");
         btn.dispatchEvent(evt)
-        let div = htmx.find("#foo");
+        let div = find("#foo");
         assert.isNotNull(div)
         assert.equal(window.foo, div);
         delete window.foo
@@ -76,7 +76,7 @@ describe('hx-on attribute', function() {
                       `)
         let evt = new CustomEvent("foo");
         btn.dispatchEvent(evt)
-        let div = htmx.find("#bar");
+        let div = find("#bar");
         assert.isNotNull(div)
         assert.equal(window.foo, div);
         delete window.foo

@@ -7,7 +7,7 @@ describe('Server-Sent Events', function() {
         const stream = mockStreamResponse('/stream');
         createProcessedHTML('<button hx-get="/stream" hx-swap="innerHTML">Stream</button>');
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('message 1');
@@ -33,7 +33,7 @@ describe('Server-Sent Events', function() {
             reconnectDelays.push(e.detail.reconnect.delay);
         });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('first');
@@ -68,7 +68,7 @@ describe('Server-Sent Events', function() {
             lastEventIdSent = e.detail.reconnect.lastEventId;
         });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('first message', null, 'msg-123');
@@ -105,7 +105,7 @@ describe('Server-Sent Events', function() {
         document.addEventListener('htmx:before:sse:message', () => { beforeMessageFired = true; });
         document.addEventListener('htmx:after:sse:message', () => { afterMessageFired = true; });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         assert.isTrue(beforeStreamFired, 'before:sse:stream should fire');
@@ -124,13 +124,13 @@ describe('Server-Sent Events', function() {
         const stream = mockStreamResponse('/removable');
         createProcessedHTML('<div id="container"><button hx-get="/removable" hx-stream="continuous initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('message 1');
         await waitForEvent('htmx:after:sse:message');
 
-        findElt('#container').innerHTML = '';
+        find('#container').innerHTML = '';
         await htmx.timeout(1);
 
         stream.send('message 2');
@@ -144,13 +144,14 @@ describe('Server-Sent Events', function() {
         mockResponse('GET', '/regular', 'HTTP response');
         createProcessedHTML('<button id="http" hx-get="/regular" hx-swap="innerHTML">HTTP</button>');
 
-        await clickAndWait('#http');
+        find('#http').click()
+        await htmxRestoreEvent();
         assertTextContentIs('#http', 'HTTP response');
 
         const stream = mockStreamResponse('/sse');
         createProcessedHTML('<button id="sse" hx-get="/sse" hx-swap="innerHTML">SSE</button>');
 
-        click('#sse');
+        find('#sse').click();
         await htmx.timeout(1);
 
         stream.send('SSE response');
@@ -164,7 +165,7 @@ describe('Server-Sent Events', function() {
         const stream = mockStreamResponse('/parse');
         createProcessedHTML('<div id="target"></div><button hx-get="/parse" hx-target="#target">Go</button>');
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         // Send HTML with id field (no event field, so it swaps)
@@ -199,7 +200,7 @@ describe('Server-Sent Events', function() {
             reconnectAttempts++;
         });
 
-        click('button');
+        find('button').click();
         await waitForEvent('htmx:after:sse:stream');
 
         await new Promise(r => setTimeout(r, 150));
@@ -232,7 +233,7 @@ describe('Server-Sent Events', function() {
             reconnectDelays.push(e.detail.reconnect.delay);
         });
 
-        click('button');
+        find('button').click();
         await waitForEvent('htmx:after:sse:stream');
 
         await new Promise(r => setTimeout(r, 350));
@@ -257,13 +258,13 @@ describe('Server-Sent Events', function() {
         let customEventId = null;
 
         // Listen for custom event on the button
-        findElt('button').addEventListener('update', (e) => {
+        find('button').addEventListener('update', (e) => {
             customEventFired = true;
             customEventData = e.detail.data;
             customEventId = e.detail.id;
         });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('some data', 'update', 'event-123');
@@ -289,14 +290,14 @@ describe('Server-Sent Events', function() {
             eventTarget = e.target;
         }, { once: true });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('notification message', 'notification');
         await htmx.timeout(1);
 
         assert.isTrue(documentEventFired, 'Event should bubble to document');
-        assert.equal(eventTarget, findElt('button'), 'Event target should be the button');
+        assert.equal(eventTarget, find('button'), 'Event target should be the button');
 
         stream.close();
     });
@@ -305,18 +306,18 @@ describe('Server-Sent Events', function() {
         const stream = mockStreamResponse('/hx-on-test');
         createProcessedHTML('<button hx-get="/hx-on-test" hx-swap="innerHTML" hx-on:progress="this.setAttribute(\'data-progress\', event.detail.data)">Connect</button>');
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         stream.send('50%', 'progress');
         await waitForEvent('htmx:after:sse:message');
 
-        assert.equal(findElt('button').getAttribute('data-progress'), '50%', 'hx-on should handle custom event');
+        assert.equal(find('button').getAttribute('data-progress'), '50%', 'hx-on should handle custom event');
 
         stream.send('100%', 'progress');
         await waitForEvent('htmx:after:sse:message');
 
-        assert.equal(findElt('button').getAttribute('data-progress'), '100%', 'hx-on should handle multiple custom events');
+        assert.equal(find('button').getAttribute('data-progress'), '100%', 'hx-on should handle multiple custom events');
 
         stream.close();
     });
@@ -327,11 +328,11 @@ describe('Server-Sent Events', function() {
 
         let statusEventFired = false;
 
-        findElt('button').addEventListener('status', (e) => {
+        find('button').addEventListener('status', (e) => {
             statusEventFired = true;
         });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         // Send a custom event (should NOT swap)
@@ -355,12 +356,12 @@ describe('Server-Sent Events', function() {
         let notifyFired = false;
         let notifyData = null;
 
-        findElt('button').addEventListener('notify', (e) => {
+        find('button').addEventListener('notify', (e) => {
             notifyFired = true;
             notifyData = e.detail.data;
         });
 
-        click('button');
+        find('button').click();
         await htmx.timeout(1);
 
         // Send event - should trigger event but NOT swap

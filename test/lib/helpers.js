@@ -71,6 +71,7 @@ function debug(test) {
 //================================================================================
 
 // This function processes the content immediately (rather than waiting for the mutation observer)
+// Prefer using this function for testing!
 function createProcessedHTML(innerHTML) {
   let pg = playground();
   if (pg) {
@@ -166,50 +167,8 @@ function playground() {
   return htmx.find("#test-playground");
 }
 
-function findElt(selector) {
+function find(selector) {
   return htmx.find(playground(), selector)
-}
-
-function invokeAction(cssOrElt, action) {
-  let elt;
-  if (typeof cssOrElt === "string") {
-    elt = findElt(cssOrElt);
-  } else {
-    elt = cssOrElt
-  }
-  if (!elt) {
-    assert.fail("Could not find element to " + action + " with css '" + cssOrElt + "' in :\n\n" + playground().innerHTML + "\n\n")
-  }
-  elt[action]();
-}
-
-async function clickAndWait(cssOrElt) {
-  invokeAction(cssOrElt, "click");
-  await htmxRestoreEvent()
-}
-
-function click(cssOrElt) {
-  invokeAction(cssOrElt, "click");
-}
-
-async function submitAndWait(cssOrElt) {
-  invokeAction(cssOrElt, "requestSubmit");
-  await htmxRestoreEvent()
-}
-
-function submit(cssOrElt) {
-  invokeAction(cssOrElt, "requestSubmit");
-}
-
-async function directlyInvokeHandler(btn, evt ={type:'click'}) {
-    let htmx = btn._htmx;
-    if(!htmx){
-        throw "element does not have an htmx property!"
-    }
-    let customEvent = new CustomEvent(evt.type);
-    delete evt.type;
-    Object.assign(customEvent, evt)
-    return await htmx.eventHandler(customEvent)
 }
 
 // ==============================================================================
@@ -217,7 +176,7 @@ async function directlyInvokeHandler(btn, evt ={type:'click'}) {
 // ==============================================================================
 
 function assertPropertyIs(css, property, content) {
-  let elt = findElt(css);
+  let elt = find(css);
   if (!elt) {
     assert.fail("Could not find element with css '" + css + "' in :\n\n" + playground().innerHTML + "\n\n")
   }

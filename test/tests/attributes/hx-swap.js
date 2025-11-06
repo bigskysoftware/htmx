@@ -31,14 +31,16 @@ describe('hx-swap modifiers', function() {
         mockResponse('GET', '/test', '<div style="height:2000px">Tall content</div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
         div.scrollTop = 500;
-        await clickAndWait(div)
+        div.click()
+        await htmxRestoreEvent()
         assert.equal(div.scrollTop, 0)
     })
 
     it('swap with scroll:bottom modifier scrolls to bottom', async function () {
         mockResponse('GET', '/test', '<div style="height:2000px">Tall content</div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:bottom" style="height:100px;overflow:auto"><div style="height:2000px">Old</div></div>');
-        await clickAndWait(div)
+        div.click()
+        await htmxRestoreEvent()
         assert.isAbove(div.scrollTop, 0)
     })
 
@@ -46,7 +48,8 @@ describe('hx-swap modifiers', function() {
         mockResponse('GET', '/test', '<div><script>window.testScriptRan = true;</script></div>')
         let div = createProcessedHTML('<div hx-get="/test">Old</div>');
         window.testScriptRan = false;
-        await clickAndWait(div)
+        div.click()
+        await htmxRestoreEvent()
         assert.isTrue(window.testScriptRan)
         delete window.testScriptRan;
     })
@@ -55,7 +58,8 @@ describe('hx-swap modifiers', function() {
         mockResponse('GET', '/test', '<div>New Content</div>')
         createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms">Old Content</div>');
         
-        await clickAndWait('#test-div')
+        find('#test-div').click()
+        await htmxRestoreEvent()
         assertTextContentIs('#test-div', 'New Content')
     })
 
@@ -63,7 +67,8 @@ describe('hx-swap modifiers', function() {
         mockResponse('GET', '/test', '<div>New Content</div>')
         createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms transition:false">Old Content</div>');
 
-        await clickAndWait('#test-div')
+        find('#test-div').click()
+        await htmxRestoreEvent()
 
         // Should still be old content immediately after request completes
         assertTextContentIs('#test-div', 'Old Content')

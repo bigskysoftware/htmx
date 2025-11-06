@@ -17,7 +17,8 @@ describe('Cancel behavior integration tests', function() {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        await clickAndWait('#btn');
+        find('#btn').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -30,7 +31,8 @@ describe('Cancel behavior integration tests', function() {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        await clickAndWait('#btn');
+        find('#btn').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -39,11 +41,12 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/foo', 'Response')
         const form = createProcessedHTML('<form><button id="btn" hx-get="/foo"><span id="span">test</span></button></form>');
         
-        findElt('#btn').addEventListener('click', (evt) => {
+        find('#btn').addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        await clickAndWait('#span');
+        find('#span').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -52,11 +55,12 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/foo', 'Response')
         const form = createProcessedHTML('<form><button id="btn"><span id="span" hx-get="/foo">test</span></button></form>');
         
-        findElt('#btn').addEventListener('click', (evt) => {
+        find('#btn').addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        await clickAndWait('#span');
+        find('#span').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -65,13 +69,14 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('POST', '/test', 'Response')
         createProcessedHTML('<form id="test-form" action="/submit"><input type="submit" id="submit" value="Submit"></form><div hx-post="/test" hx-trigger="submit from:#test-form"></div>');
         
-        const form = findElt('#test-form');
+        const form = find('#test-form');
         form.addEventListener('submit', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault(); // Prevent actual navigation
         });
         
-        await clickAndWait('#submit');
+        find('#submit').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -80,13 +85,14 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('POST', '/test', 'Response')
         createProcessedHTML('<form><button id="test-btn" type="submit">Submit</button></form><div hx-post="/test" hx-trigger="click from:#test-btn"></div>');
         
-        const button = findElt('#test-btn');
+        const button = find('#test-btn');
         button.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault(); // Prevent actual submission
         });
         
-        await clickAndWait('#test-btn');
+        find('#test-btn').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -95,12 +101,13 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Response')
         createProcessedHTML('<a id="test-link" href="#">Go to page</a><div hx-get="/test" hx-trigger="click from:#test-link"></div>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        await clickAndWait('#test-link');
+        find('#test-link').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -108,14 +115,14 @@ describe('Cancel behavior integration tests', function() {
         let defaultPrevented = null;
         createProcessedHTML('<input type="date" id="datefield"><form hx-trigger="click from:body"></form>');
         
-        const dateField = findElt('#datefield');
+        const dateField = find('#datefield');
         dateField.addEventListener('click', (evt) => {
             setTimeout(() => {
                 defaultPrevented = evt.defaultPrevented;
             }, 0);
         });
         
-        click('#datefield');
+        find('#datefield').click();
         await htmx.timeout(1);
         await htmx.timeout(1);
         defaultPrevented.should.equal(false);
@@ -125,13 +132,13 @@ describe('Cancel behavior integration tests', function() {
         let defaultPrevented = null;
         createProcessedHTML('<a id="test-link" href="#section" hx-get="/test">Jump to section</a>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault();
         });
         
-        click('#test-link');
+        find('#test-link').click();
         await htmx.timeout(1);
         defaultPrevented.should.equal(false);
     });
@@ -141,13 +148,14 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Response')
         createProcessedHTML('<a id="test-link" href="#" hx-get="/test">Click me</a>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault();
         });
         
-        await clickAndWait('#test-link');
+        find('#test-link').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
     });
 
@@ -156,13 +164,13 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Boosted')
         createProcessedHTML('<div hx-boost:inherited="true" hx-target:inherited="this"><a id="test-link" href="#test">Go</a></div>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault();
         });
         
-        click('#test-link');
+        find('#test-link').click();
         await htmx.timeout(1);
         // Boosted links with fragment identifiers don't prevent default
         defaultPrevented.should.equal(false);
@@ -173,13 +181,14 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('POST', '/test', 'Submitted')
         createProcessedHTML('<div hx-boost:inherited="true" hx-target:inherited="this"><form id="test-form" action="/test" method="post"><button id="btn">Submit</button></form></div>');
         
-        const form = findElt('#test-form');
+        const form = find('#test-form');
         form.addEventListener('submit', (evt) => {
             defaultPrevented = evt.defaultPrevented;
             evt.preventDefault();
         });
         
-        await clickAndWait('#btn');
+        find('#btn').click()
+        await htmxRestoreEvent();
         defaultPrevented.should.equal(true);
         playground().innerText.should.equal('Submitted');
     });
@@ -194,7 +203,7 @@ describe('Cancel behavior integration tests', function() {
             evt.preventDefault();
         });
         
-        click('#btn');
+        find('#btn').click();
         await htmx.timeout(1);
         await htmx.timeout(1);
         defaultPrevented.should.equal(true);
@@ -207,7 +216,7 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Response')
         createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });
@@ -225,7 +234,7 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Response')
         createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });
@@ -243,7 +252,7 @@ describe('Cancel behavior integration tests', function() {
         mockResponse('GET', '/test', 'Response')
         createProcessedHTML('<a id="test-link" href="javascript:void(0)" hx-get="/test">Link</a>');
         
-        const link = findElt('#test-link');
+        const link = find('#test-link');
         link.addEventListener('click', (evt) => {
             defaultPrevented = evt.defaultPrevented;
         });

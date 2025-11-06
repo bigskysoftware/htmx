@@ -134,8 +134,8 @@ describe('ajax() unit Tests', function() {
     it('ajax collects form data from source element', async function() {
         mockResponse('POST', '/test', 'Submitted!');
         createProcessedHTML('<form id="myForm"><input name="field1" value="value1"/></form><div id="result"></div>');
-        const form = findElt('#myForm');
-        const div = findElt('#result');
+        const form = find('#myForm');
+        const div = find('#result');
         await htmx.ajax('POST', '/test', {
             source: form,
             target: '#result',
@@ -150,8 +150,8 @@ describe('ajax() unit Tests', function() {
     it('ajax values override form data', async function() {
         mockResponse('POST', '/test', 'Submitted!');
         createProcessedHTML('<form id="myForm"><input name="field1" value="original"/></form><div id="result"></div>');
-        const form = findElt('#myForm');
-        const div = findElt('#result');
+        const form = find('#myForm');
+        const div = find('#result');
         await htmx.ajax('POST', '/test', {
             source: form,
             target: '#result',
@@ -181,7 +181,7 @@ describe('ajax() unit Tests', function() {
     it('ajax works with optimistic UI', async function() {
         mockResponse('POST', '/test', 'final!');
         createProcessedHTML('<div id="loading">Loading...</div><div id="target">initial</div>');
-        const div = findElt('#target');
+        const div = find('#target');
         
         // Just verify optimistic option doesn't break the request
         await htmx.ajax('POST', '/test', {
@@ -236,7 +236,7 @@ describe('ajax() unit Tests', function() {
     it('ajax with event context', async function() {
         mockResponse('POST', '/test', 'clicked!');
         createProcessedHTML('<button id="btn">Click</button><div id="result"></div>');
-        const div = findElt('#result');
+        const div = find('#result');
         const clickEvent = new MouseEvent('click', { bubbles: true });
         
         await htmx.ajax('POST', '/test', {

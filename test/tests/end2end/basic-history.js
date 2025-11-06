@@ -28,7 +28,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
-            await clickAndWait(btn);
+            btn.click()
+        await htmxRestoreEvent();
             
             playground().textContent.should.equal('Test Response');
             historyEventFired.should.equal(true);
@@ -54,7 +55,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-replace-url="true">Click me</button>');
-            await clickAndWait(btn);
+            btn.click()
+        await htmxRestoreEvent();
             
             playground().textContent.should.equal('Test Response');
             historyEventFired.should.equal(true);
@@ -80,7 +82,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="/custom">Click me</button>');
-            await clickAndWait(btn);
+            btn.click()
+        await htmxRestoreEvent();
             
             playground().textContent.should.equal('Test Response');
             historyEventFired.should.equal(true);
@@ -104,7 +107,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="false">Click me</button>');
-            await clickAndWait(btn);
+            btn.click()
+        await htmxRestoreEvent();
             
             playground().textContent.should.equal('Test Response');
             historyEventFired.should.equal(false);
@@ -129,7 +133,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
-            await clickAndWait(btn);
+            btn.click()
+        await htmxRestoreEvent();
             
             playground().textContent.should.equal('Test Response');
             beforeEventFired.should.equal(true);

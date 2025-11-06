@@ -9,7 +9,8 @@ describe('hx-trigger attribute', function() {
     it('non-default triggers work', async function () {
         mockResponse('GET', '/test', 'Clicked!')
         createProcessedHTML('<form hx-get="/test" hx-trigger="click">Click Me!</form>')
-        await clickAndWait("form")
+        find("form").click()
+        await htmxRestoreEvent()
         playground().innerText.should.equal('Clicked!')
     })
 
@@ -63,14 +64,14 @@ describe('hx-trigger attribute', function() {
     // it('changed modifier works along from clause with single input', async function() {
     //     mockResponse('GET', '/test', "Response")
     //     initHTML('<div id="d2" hx-trigger="click changed from:#i1" hx-target="#d1" hx-swap="innerHTML" hx-get="/test"></div><input id="i1"/><div id="d1"></div>')
-    //     click('#i1')
+    //     find('#i1').click()
     //     fetchMock.calls.length.should.equal(1)
-    //     click('#i1')
+    //     find('#i1').click()
     //     fetchMock.calls.length.should.equal(1)
     //     await htmxSwappedEvent()
     //
     //     findElt('input').value = 'bar'
-    //     click('#i1')
+    //     find('#i1').click()
     //     await htmxSwappedEvent()
     //     fetchMock.calls.length.should.equal(2)
     // })
@@ -78,9 +79,9 @@ describe('hx-trigger attribute', function() {
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
         createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
-        click('button')
+        find('button').click()
         fetchMock.calls.length.should.equal(1)
-        click('button')
+        find('button').click()
         fetchMock.calls.length.should.equal(1)
     })
 
@@ -95,13 +96,13 @@ describe('hx-trigger attribute', function() {
         document.body.click()
         fetchMock.calls.length.should.equal(0)
 
-        click('#d1')
+        find('#d1').click()
         fetchMock.calls.length.should.equal(0)
 
-        click('#d2')
+        find('#d2').click()
         fetchMock.calls.length.should.equal(0)
 
-        click('#d3')
+        find('#d3').click()
         fetchMock.calls.length.should.equal(1)
     })
 
@@ -113,10 +114,11 @@ describe('hx-trigger attribute', function() {
             "<div hx-trigger='click' hx-get='/foo' hx-target='#d3' hx-swap='innerHTML'>" +
             "   <div id='d1' hx-trigger='click consume' hx-get='/bar'></div>" +
             "</div><div id='d3'>bar</div>")
-        await clickAndWait('#d1')
+        find('#d1').click()
+        await htmxRestoreEvent()
         await htmx.timeout(100)
         // should not have been replaced by click
-        findElt('#d3').innerText.should.equal('bar')
+        find('#d3').innerText.should.equal('bar')
     })
 
     // TODO figure out how to test throttling

@@ -17,7 +17,8 @@ describe('Out of Band Swaps', function() {
           <div id="d2">Div 2</div>
         `);
         // Click the button
-        await clickAndWait('#btn1');
+        find('#btn1').click()
+        await htmxRestoreEvent();
         // verify the oob swap occurred
         assertTextContentIs('#d3', "Success OOB!");
     })

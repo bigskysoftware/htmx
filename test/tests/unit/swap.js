@@ -61,9 +61,9 @@ describe('swap() unit tests', function() {
 
     it('replaces target element w/outerHTML', async function () {
         createProcessedHTML("<div id='d1'></div>")
-        let original = findElt('#d1');
+        let original = find('#d1');
         await htmx.swap({"target":"#d1", "text":"<span id='d1'>Replaced</span>", "swap" : "outerHTML"})
-        let replaced = findElt('#d1');
+        let replaced = find('#d1');
         replaced.should.not.equal(original);
         replaced.tagName.should.equal("SPAN");
     })
@@ -81,13 +81,13 @@ describe('swap() unit tests', function() {
         createProcessedHTML("<div id='d1'>Target</div>")
         await htmx.swap({"target":"#d1", "text":"Before", "swap" : "beforebegin"})
         playground().childNodes[0].textContent.should.equal("Before");
-        findElt('#d1').innerText.should.equal("Target");
+        find('#d1').innerText.should.equal("Target");
     })
 
     it('prepends content inside target w/afterbegin', async function () {
         createProcessedHTML("<div id='d1'><span>Existing</span></div>")
         await htmx.swap({"target":"#d1", "text":"<span>First</span>", "swap" : "afterbegin"})
-        let children = findElt('#d1').children;
+        let children = find('#d1').children;
         children[0].innerText.should.equal("First");
         children[1].innerText.should.equal("Existing");
     })
@@ -95,13 +95,13 @@ describe('swap() unit tests', function() {
     it('prepends plain text inside target w/afterbegin', async function () {
         createProcessedHTML("<div id='d1'>Existing</div>")
         await htmx.swap({"target":"#d1", "text":"First", "swap" : "afterbegin"})
-        findElt('#d1').childNodes[0].textContent.should.equal("First");
+        find('#d1').childNodes[0].textContent.should.equal("First");
     })
 
     it('appends content inside target w/beforeend', async function () {
         createProcessedHTML("<div id='d1'><span>Existing</span></div>")
         await htmx.swap({"target":"#d1", "text":"<span>Last</span>", "swap" : "beforeend"})
-        let children = findElt('#d1').children;
+        let children = find('#d1').children;
         children[0].innerText.should.equal("Existing");
         children[1].innerText.should.equal("Last");
     })
@@ -109,7 +109,7 @@ describe('swap() unit tests', function() {
     it('appends plain text inside target w/beforeend', async function () {
         createProcessedHTML("<div id='d1'>Existing</div>")
         await htmx.swap({"target":"#d1", "text":"Last", "swap" : "beforeend"})
-        let target = findElt('#d1');
+        let target = find('#d1');
         target.childNodes[target.childNodes.length - 1].textContent.should.equal("Last");
     })
 
@@ -125,7 +125,7 @@ describe('swap() unit tests', function() {
     it('inserts plain text after target w/afterend', async function () {
         createProcessedHTML("<div id='d1'>Target</div>")
         await htmx.swap({"target":"#d1", "text":"After", "swap" : "afterend"})
-        findElt('#d1').innerText.should.equal("Target");
+        find('#d1').innerText.should.equal("Target");
         playground().childNodes[1].textContent.should.equal("After");
     })
 
@@ -179,21 +179,21 @@ describe('swap() unit tests', function() {
     it('swaps oob content', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
         await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='true'>OOB</div>"})
-        findElt('#d1').innerText.trim().should.equal("Main");
-        findElt('#d2').innerText.should.equal("OOB");
+        find('#d1').innerText.trim().should.equal("Main");
+        find('#d2').innerText.should.equal("OOB");
     })
 
     it('swaps oob with outerHTML', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
         await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='outerHTML'>OOB</div>"})
-        findElt('#d2').innerText.should.equal("OOB");
+        find('#d2').innerText.should.equal("OOB");
     })
 
     it('swaps oob with innerHTML', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'><span>Old</span></div>")
         await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='innerHTML'>OOB</div>"})
-        findElt('#d2').innerText.should.equal("OOB");
-        findElt('#d2').tagName.should.equal("DIV");
+        find('#d2').innerText.should.equal("OOB");
+        find('#d2').tagName.should.equal("DIV");
     })
 
     it('swaps partial with default target', async function () {
@@ -204,13 +204,13 @@ describe('swap() unit tests', function() {
     it('swaps partial with custom target', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
         await htmx.swap({"target":"#d1", "text":"<partial hx-target='#d2'>Partial</partial>"})
-        findElt('#d2').innerText.should.equal("Partial");
+        find('#d2').innerText.should.equal("Partial");
     })
 
     it('swaps partial with custom swap style', async function () {
         createProcessedHTML("<div id='d1'>Existing</div>")
         await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#d1' hx-swap='beforeend'>Partial</partial>"})
-        findElt('#d1').innerText.should.equal("ExistingPartial");
+        find('#d1').innerText.should.equal("ExistingPartial");
     })
 
     it('executes script in oob swap', async function () {
@@ -231,7 +231,7 @@ describe('swap() unit tests', function() {
     it('replaces attributes when swapping element with same id', async function () {
         createProcessedHTML("<div id='d1' class='old' data-value='1'></div>")
         await htmx.swap({"target":"#d1", "text":"<div id='d1' class='new' data-value='2'>Content</div>", "swap":"outerHTML"})
-        let replaced = findElt('#d1');
+        let replaced = find('#d1');
         replaced.getAttribute('class').should.equal('new');
         replaced.getAttribute('data-value').should.equal('2');
     })
@@ -347,6 +347,6 @@ describe('swap() unit tests', function() {
     it('does not swap title tag into page content', async function () {
         await htmx.swap({"target":"#test-playground", "text":"<title>Test Title</title><div id='content'>Main Content</div>"})
         assert.isNull(playground().querySelector('title'));
-        findElt('#content').innerText.should.equal('Main Content');
+        find('#content').innerText.should.equal('Main Content');
     })
 })

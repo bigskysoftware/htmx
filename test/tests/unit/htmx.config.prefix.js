@@ -13,7 +13,8 @@ describe('htmx.config.prefix functionality', function() {
         mockResponse('GET', '/test', 'Success');
 
         createProcessedHTML('<button id="btn" hx-get="/test">Click</button>');
-        await clickAndWait('#btn');
+        find('#btn').click()
+        await htmxRestoreEvent();
 
         let lastCall = lastFetch();
         assert.equal(lastCall.url, '/test');
