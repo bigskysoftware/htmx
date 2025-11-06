@@ -42,39 +42,25 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(0)
     })
 
-    it('filters properly with true filter spec', function() {
+    it('filters properly with true filter spec', async function() {
         mockResponse('GET', '/test', 'Called!')
         let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = true
         form.dispatchEvent(event)
         fetchMock.calls.length.should.equal(1)
+        await forRequest()
     })
 
-    it('filters properly with true expression filter spec', function() {
+    it('filters properly with true expression filter spec', async function() {
         mockResponse('GET', '/test', 'Called!')
         let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
         let event = new CustomEvent("evt");
         event.foo = true
         form.dispatchEvent(event)
         fetchMock.calls.length.should.equal(1)
+        await forRequest()
     })
-
-    // TODO replace with direct test
-    // it('changed modifier works along from clause with single input', async function() {
-    //     mockResponse('GET', '/test', "Response")
-    //     initHTML('<div id="d2" hx-trigger="click changed from:#i1" hx-target="#d1" hx-swap="innerHTML" hx-get="/test"></div><input id="i1"/><div id="d1"></div>')
-    //     find('#i1').click()
-    //     fetchMock.calls.length.should.equal(1)
-    //     find('#i1').click()
-    //     fetchMock.calls.length.should.equal(1)
-    //     await htmxSwappedEvent()
-    //
-    //     findElt('input').value = 'bar'
-    //     find('#i1').click()
-    //     await htmxSwappedEvent()
-    //     fetchMock.calls.length.should.equal(2)
-    // })
 
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
@@ -119,6 +105,14 @@ describe('hx-trigger attribute', function() {
         await htmx.timeout(100)
         // should not have been replaced by click
         find('#d3').innerText.should.equal('bar')
+    })
+
+    it('load event triggers on element creation', async function () {
+        debug(this)
+        mockResponse('GET', '/test', 'Loaded!')
+        createProcessedHTML('<div hx-get="/test" hx-trigger="load">Not Loaded</div>')
+        await forRequest()
+        playground().innerText.should.equal('Loaded!')
     })
 
     // TODO figure out how to test throttling

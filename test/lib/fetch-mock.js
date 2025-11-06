@@ -54,6 +54,14 @@ class FetchMock {
     }
 
     reset() {
+        // Abort all pending requests before clearing
+        if (this.pendingRequests) {
+            this.pendingRequests.forEach(({ controller }) => {
+                if (controller && !controller.signal.aborted) {
+                    controller.abort();
+                }
+            });
+        }
         this.calls = [];
         this.responses = [];
         this.pendingRequests = [];
@@ -141,7 +149,7 @@ class FetchMock {
         if (this.pendingRequests.length === 0) {
             return Promise.resolve();
         }
-        await Promise.all(this.pendingRequests);
+        await Promise.all(this.pendingRequests.map(req => req.promise));
     }
 
     // The actual fetch mock function
@@ -150,27 +158,51 @@ class FetchMock {
         options.method = options.method.toUpperCase()
         const response = this.findResponse(options.method, url);
 
+        // Create an AbortController for this request
+        const controller = new AbortController();
+
+        // Create a tracking object for this request
+        const pendingRequest = { controller, promise: null };
+
         // Create a promise to track this request
-        const requestPromise = (response instanceof Promise ? response : Promise.resolve(response))
-            .then(result => {
-                // Remove from pending requests when done
-                const index = this.pendingRequests.indexOf(requestPromise);
-                if (index > -1) {
-                    this.pendingRequests.splice(index, 1);
-                }
-                return result;
-            })
-            .catch(error => {
-                // Remove from pending requests when done (even on error)
-                const index = this.pendingRequests.indexOf(requestPromise);
-                if (index > -1) {
-                    this.pendingRequests.splice(index, 1);
-                }
-                throw error;
+        const requestPromise = new Promise((resolve, reject) => {
+            // Check if already aborted
+            if (controller.signal.aborted) {
+                reject(new DOMException('The operation was aborted', 'AbortError'));
+                return;
+            }
+
+            // Listen for abort
+            controller.signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'));
             });
 
+            // Process the response
+            Promise.resolve(response instanceof Promise ? response : response)
+                .then(result => {
+                    if (!controller.signal.aborted) {
+                        resolve(result);
+                    }
+                })
+                .catch(error => {
+                    if (!controller.signal.aborted) {
+                        reject(error);
+                    }
+                });
+        })
+        .finally(() => {
+            // Remove from pending requests when done
+            const index = this.pendingRequests.indexOf(pendingRequest);
+            if (index > -1) {
+                this.pendingRequests.splice(index, 1);
+            }
+        });
+
+        // Store the promise in the tracking object
+        pendingRequest.promise = requestPromise;
+
         // Track this pending request
-        this.pendingRequests.push(requestPromise);
+        this.pendingRequests.push(pendingRequest);
 
         return requestPromise;
     }

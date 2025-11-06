@@ -56,6 +56,10 @@ function cleanupTest() {
     }
     testDebugging = false;
     if (typeof fetchMock !== 'undefined' && fetchMock.reset) {
+        // Check for pending requests before cleaning up
+        if (fetchMock.pendingRequests && fetchMock.pendingRequests.length > 0) {
+            console.warn(`WARNING: Test is leaving ${fetchMock.pendingRequests.length} request(s) in flight. Tests should wait for all requests to complete.`);
+        }
         fetchMock.reset()
     }
     history.replaceState(null, '', savedUrl);
