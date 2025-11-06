@@ -12,21 +12,21 @@ describe('hx-select', function() {
         mockResponse('GET', '/test', '<div><div id="content">Selected</div><div id="other">Not selected</div></div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#content" hx-swap="innerHTML">Old</div>');
         await clickAndWait(div)
-        assert.equal(div.innerHTML, 'Selected')
+        assert.equal(div.innerHTML, '<div id="content">Selected</div>')
     })
 
     it('selects nested content from response', async function () {
         mockResponse('GET', '/test', '<html><body><nav>Nav</nav><main id="main">Main content</main><footer>Footer</footer></body></html>')
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#main" hx-swap="innerHTML">Old</div>');
         await clickAndWait(div)
-        assert.equal(div.innerHTML, 'Main content')
+        assert.equal(div.innerHTML, '<main id="main">Main content</main>')
     })
 
     it('does not affect OOB swaps', async function () {
         mockResponse('GET', '/test', '<div><div id="content">Selected</div><div id="oob" hx-swap-oob="true">OOB content</div></div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#content" hx-swap="innerHTML">Old</div><div id="oob">Old OOB</div>');
         await clickAndWait(div)
-        assert.equal(div.innerHTML, 'Selected')
+        assert.equal(div.innerHTML, '<div id="content">Selected</div>')
         assert.equal(document.getElementById('oob').innerHTML, 'OOB content')
     })
 
@@ -41,7 +41,7 @@ describe('hx-select', function() {
         mockResponse('GET', '/test', '<div><div class="selected">Selected</div><div class="other">Not selected</div></div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-select=".selected" hx-swap="innerHTML">Old</div>');
         await clickAndWait(div)
-        assert.equal(div.innerHTML, 'Selected')
+        assert.equal(div.innerHTML, '<div class="selected">Selected</div>')
     })
 
     it('works with complex selectors', async function () {
