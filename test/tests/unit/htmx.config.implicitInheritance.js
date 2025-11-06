@@ -18,7 +18,7 @@ describe('htmx.config.implicitInheritance test', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-target');
-        assert.equal(result.val, '#result');
+        assert.equal(result, '#result');
     });
 
     it('direct attribute takes precedence over inherited when implicitInheritance is true', function() {
@@ -29,7 +29,7 @@ describe('htmx.config.implicitInheritance test', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-target');
-        assert.equal(result.val, '#child');
+        assert.equal(result, '#child');
     });
 
     it('inherits through multiple levels when implicitInheritance is true', function() {
@@ -42,7 +42,7 @@ describe('htmx.config.implicitInheritance test', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-swap');
-        assert.equal(result.val, 'outerHTML');
+        assert.equal(result, 'outerHTML');
     });
 
     it(':append works with implicit inheritance', function() {
@@ -53,7 +53,7 @@ describe('htmx.config.implicitInheritance test', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-vals');
-        assert.equal(result.val, '{"a":1},{"b":2}');
+        assert.equal(result, '{"a":1},{"b":2}');
     });
 
 });

@@ -27,7 +27,7 @@ describe('htmx.config.metaCharacter functionality', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-vals');
-        assert.equal(result.val, '"a":1,"b":2');
+        assert.equal(result, '"a":1,"b":2');
     });
 
     it('works with inherited-append modifier using custom meta character', function() {
@@ -40,7 +40,7 @@ describe('htmx.config.metaCharacter functionality', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-vals');
-        assert.equal(result.val, '"a":1,"b":2,"c":3');
+        assert.equal(result, '"a":1,"b":2,"c":3');
     });
 
     it('works with hx-on events using custom meta character', async function() {

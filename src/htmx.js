@@ -175,43 +175,40 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        __attributeValue(elt, name, defaultVal) {
+        __attributeValue(elt, name, defaultVal, returnElt) {
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.__maybeAdjustMetaCharacter(":inherited:append");
 
             if (elt.hasAttribute(name)) {
-                return{ val: elt.getAttribute(name), src: elt };
+                return returnElt ? elt : elt.getAttribute(name);
             }
 
             if (elt.hasAttribute(inheritName)) {
-                return{ val: elt.getAttribute(inheritName), src: elt };
+                return returnElt ? elt : elt.getAttribute(inheritName);
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
-                    let inherited = this.__attributeValue(parent, name);
-                    return {
-                        val: inherited.val ? inherited.val + "," + appendValue : appendValue,
-                        src: elt
-                    };
+                    let inherited = this.__attributeValue(parent, name, undefined, returnElt);
+                    return returnElt ? inherited : (inherited ? inherited + "," + appendValue : appendValue);
                 } else {
-                    return {val: appendValue, src: elt};
+                    return returnElt ? elt : appendValue;
                 }
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let valAndSrc = this.__attributeValue(parent, name);
-                if (valAndSrc && this.config.implicitInheritance) {
-                    this.__trigger(elt, "htmx:after:implicitInheritance", {elt, parent})
+                let val = this.__attributeValue(parent, name, undefined, returnElt);
+                if (!returnElt && val && this.config.implicitInheritance) {
+                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, parent})
                 }
-                return valAndSrc;
+                return val;
             }
-            return{ val: defaultVal, src: elt };
+            return returnElt ? elt : defaultVal;
         }
 
         __tokenize(str) {
@@ -276,12 +273,11 @@ var htmx = (() => {
             if (this.__isBoosted(elt)) {
                 return this.__boostedMethodAndAction(elt, evt)
             } else {
-                let valueAndElt = this.__attributeValue(elt, "hx-method")
-                let method = valueAndElt.val || "GET"
-                let {val: action} = this.__attributeValue(elt, "hx-action") || {};
+                let method = this.__attributeValue(elt, "hx-method") || "GET"
+                let action = this.__attributeValue(elt, "hx-action");
                 if (!action) {
                     for (let verb of this.#verbs) {
-                        let {val: verbAction} = this.__attributeValue(elt, "hx-" + verb) || {};
+                        let verbAction = this.__attributeValue(elt, "hx-" + verb);
                         if (verbAction) {
                             action = verbAction;
                             method = verb;
@@ -333,15 +329,15 @@ var htmx = (() => {
                 sourceElement,
                 sourceEvent,
                 status: "created",
-                select: this.__attributeValue(sourceElement, "hx-select")?.val,
-                selectOOB: this.__attributeValue(sourceElement, "hx-select-oob")?.val,
-                target: this.__attributeValue(sourceElement, "hx-target")?.val,
-                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap)?.val,
-                push: this.__attributeValue(sourceElement, "hx-push-url")?.val,
-                replace: this.__attributeValue(sourceElement, "hx-replace-url")?.val,
+                select: this.__attributeValue(sourceElement, "hx-select"),
+                selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
+                target: this.__attributeValue(sourceElement, "hx-target"),
+                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
+                push: this.__attributeValue(sourceElement, "hx-push-url"),
+                replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.transitions,
                 request: {
-                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false")?.val,
+                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                     action,
                     method,
                     headers: this.__determineHeaders(sourceElement)
@@ -349,7 +345,7 @@ var htmx = (() => {
             };
 
             // Apply hx-config overrides
-            let {val: configAttr} = this.__attributeValue(sourceElement, "hx-config") || {};
+            let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 let configOverrides = JSON.parse(configAttr);
                 let requestConfig = ctx.request;
@@ -378,7 +374,7 @@ var htmx = (() => {
             if (this.__isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
-            let {val: headersAttribute} = this.__attributeValue(elt, "hx-headers") || {};
+            let headersAttribute = this.__attributeValue(elt, "hx-headers");
             if (headersAttribute) {
                 Object.assign(headers, JSON.parse(headersAttribute));
             }
@@ -389,7 +385,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector === 'this') {
-                return this.__attributeValue(elt, "hx-target").src
+                return this.__attributeValue(elt, "hx-target", undefined, true);
             } else if (selector != null) {
                 return this.find(elt, selector);
             } else if (this.__isBoosted(elt)) {
@@ -455,7 +451,7 @@ var htmx = (() => {
                 let params = new URLSearchParams(ctx.request.body);
                 if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
                 ctx.request.body = null
-            } else if (this.__attributeValue(elt, "hx-encoding")?.val !== "multipart/form-data") {
+            } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
@@ -472,14 +468,14 @@ var htmx = (() => {
             ctx.status = "issuing"
             this.__initTimeout(ctx);
 
-            let {val: indicatorsSelector} = this.__attributeValue(elt, "hx-indicator") || {};
+            let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
             let indicators = this.__showIndicators(elt, indicatorsSelector);
-            let {val: disableSelector} = this.__attributeValue(elt, "hx-disable") || {};
+            let disableSelector = this.__attributeValue(elt, "hx-disable");
             let disableElements = this.__disableElements(elt, disableSelector);
 
             try {
                 // Confirm dialog
-                let {val: confirmVal} = this.__attributeValue(elt, 'hx-confirm') || {};
+                let confirmVal = this.__attributeValue(elt, 'hx-confirm');
                 if (confirmVal) {
                     let js = this.__extractJavascriptContent(confirmVal);
                     if (js) {
@@ -710,12 +706,12 @@ var htmx = (() => {
         }
 
         __determineSyncStrategy(elt) {
-            let {val: syncValue} = this.__attributeValue(elt, "hx-sync") || {};
+            let syncValue = this.__attributeValue(elt, "hx-sync");
             return syncValue?.split(":")[1] || "queue first";
         }
 
         __getRequestQueue(elt) {
-            let {val: syncValue} = this.__attributeValue(elt, "hx-sync") || {};
+            let syncValue = this.__attributeValue(elt, "hx-sync");
             let syncElt = elt
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
@@ -752,7 +748,7 @@ var htmx = (() => {
         }
 
         __initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
-            let {val: specString} = this.__attributeValue(elt, "hx-trigger") || {};
+            let specString = this.__attributeValue(elt, "hx-trigger");
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
                     elt.matches("input:not([type=button]),select,textarea") ? "change" :
@@ -902,7 +898,7 @@ var htmx = (() => {
         }
 
         __initializeStreamConfig(elt) {
-            let {val: streamSpec} = this.__attributeValue(elt, 'hx-stream') || {};
+            let streamSpec = this.__attributeValue(elt, 'hx-stream');
             if (!streamSpec) return;
 
             // Start with global defaults
@@ -1012,7 +1008,7 @@ var htmx = (() => {
         }
 
         __maybeBoost(elt) {
-            if (this.__attributeValue(elt, "hx-boost")?.val === "true") {
+            if (this.__attributeValue(elt, "hx-boost") === "true") {
                 if (this.__shouldInitialize(elt)) {
                     elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
                     elt.setAttribute('data-htmx-powered', 'true');
@@ -1676,7 +1672,7 @@ var htmx = (() => {
                 formData.append(submitter.name, submitter.value)
                 included.add(submitter);
             }
-            let {val: includeSelector} = this.__attributeValue(elt, "hx-include") || {};
+            let includeSelector = this.__attributeValue(elt, "hx-include");
             if (includeSelector) {
                 let includeNodes = this.__findAllExt(elt, includeSelector);
                 for (let node of includeNodes) {
@@ -1717,7 +1713,7 @@ var htmx = (() => {
         }
 
         __handleHxVals(elt, body) {
-            let {val: hxValsValue} = this.__attributeValue(elt, "hx-vals") || {};
+            let hxValsValue = this.__attributeValue(elt, "hx-vals");
             if (hxValsValue) {
                 if (!hxValsValue.includes('{')) {
                     hxValsValue = `{${hxValsValue}}`
@@ -2067,7 +2063,7 @@ var htmx = (() => {
             }
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                let {val: swap} = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern) || {};
+                let swap = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (swap) {
                     ctx.swap = swap
                     return

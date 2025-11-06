@@ -2,7 +2,7 @@
     let api;
 
     function initializePreload(elt) {
-        let {val : preloadSpec} = api.attributeValue(elt, "hx-preload");
+        let preloadSpec = api.attributeValue(elt, "hx-preload");
         if (!preloadSpec) return;
 
         let specs = api.parseTriggerSpecs(preloadSpec);

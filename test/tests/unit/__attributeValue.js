@@ -8,13 +8,13 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.parent,.child');
+        assert.equal(result, '.parent,.child');
     });
 
     it(':append modifier works without inherited value', function () {
         const button = createDisconnectedHTML('<button hx-include:append=".child">Test</button>');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.child');
+        assert.equal(result, '.child');
     });
 
     it(':append modifier works with multiple inheritance levels', function () {
@@ -27,7 +27,7 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-vals');
-        assert.equal(result.val, '{"a":1},{"b":2}');
+        assert.equal(result, '{"a":1},{"b":2}');
     });
 
     it(':inherited still works normally', function () {
@@ -38,7 +38,7 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.parent');
+        assert.equal(result, '.parent');
     });
 
     it('direct attribute takes precedence over :append', function () {
@@ -49,7 +49,7 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.direct');
+        assert.equal(result, '.direct');
     });
 
     it(':inherited:append modifier works', function () {
@@ -62,7 +62,7 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.grandparent,.parent,.child');
+        assert.equal(result, '.grandparent,.parent,.child');
     });
 
     it(':inherited:append can be inherited by descendants', function () {
@@ -73,7 +73,7 @@ describe('__atributeValue() unit tests', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-include');
-        assert.equal(result.val, '.parent');
+        assert.equal(result, '.parent');
     });
 
 });
