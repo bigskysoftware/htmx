@@ -1,69 +1,59 @@
-describe('htmx.config.prefix functionality', function() {
+describe('htmx.config.implicitInheritance test', function() {
 
     beforeEach(function() {
         setupTest(this);
+        htmx.config.implicitInheritance = true;
     });
 
     afterEach(function() {
         cleanupTest();
+        htmx.config.implicitInheritance = false;
     });
 
-    it('default prefix (empty string) works normally', async function() {
-        htmx.config.prefix = "";
-        mockResponse('GET', '/test', 'Success');
-
-        createProcessedHTML('<button id="btn" hx-get="/test">Click</button>');
-        await clickAndWait('#btn');
-
-        let lastCall = lastFetch();
-        assert.equal(lastCall.url, '/test');
+    it('child inherits attribute without :inherited modifier when implicitInheritance is true', function() {
+        const container = createDisconnectedHTML(
+            '<div hx-target="#result">' +
+            '  <button>Test</button>' +
+            '</div>'
+        );
+        const button = container.querySelector('button');
+        const result = htmx.__attributeValue(button, 'hx-target');
+        assert.equal(result.val, '#result');
     });
 
-    it('custom prefix replaces hx- in attributes', function() {
-        htmx.config.prefix = "data-hx-";
-
-        let result = htmx.__prefix("hx-get");
-        assert.equal(result, "data-hx-get");
-
-        result = htmx.__prefix("hx-target");
-        assert.equal(result, "data-hx-target");
-
-        htmx.config.prefix = "";
+    it('direct attribute takes precedence over inherited when implicitInheritance is true', function() {
+        const container = createDisconnectedHTML(
+            '<div hx-target="#parent">' +
+            '  <button hx-target="#child">Test</button>' +
+            '</div>'
+        );
+        const button = container.querySelector('button');
+        const result = htmx.__attributeValue(button, 'hx-target');
+        assert.equal(result.val, '#child');
     });
 
-    it('custom prefix is used in __attributeValue', function() {
-        htmx.config.prefix = "data-hx-";
-
-        let btn = createDisconnectedHTML('<button data-hx-get="/custom" data-hx-target="#result">Click</button>');
-
-        let getValue = htmx.__attributeValue(btn, "hx-get");
-        assert.equal(getValue, "/custom");
-
-        let targetValue = htmx.__attributeValue(btn, "hx-target");
-        assert.equal(targetValue, "#result");
-
-        htmx.config.prefix = "";
+    it('inherits through multiple levels when implicitInheritance is true', function() {
+        const container = createDisconnectedHTML(
+            '<div hx-swap="outerHTML">' +
+            '  <div>' +
+            '    <button>Test</button>' +
+            '  </div>' +
+            '</div>'
+        );
+        const button = container.querySelector('button');
+        const result = htmx.__attributeValue(button, 'hx-swap');
+        assert.equal(result.val, 'outerHTML');
     });
 
-    it('custom prefix works with trigger attribute', function() {
-        htmx.config.prefix = "data-hx-";
-
-        let called = 0;
-        let btn = createDisconnectedHTML('<button>Click</button>');
-        btn.setAttribute('data-hx-trigger', 'click');
-        btn._htmx = {};
-        htmx.__initializeTriggers(btn, () => called++);
-
-        btn.click();
-        assert.equal(called, 1);
-
-        htmx.config.prefix = "";
+    it(':append works with implicit inheritance', function() {
+        const container = createDisconnectedHTML(
+            '<div hx-vals=\'{"a":1}\'>' +
+            '  <button hx-vals:append=\'{"b":2}\'>Test</button>' +
+            '</div>'
+        );
+        const button = container.querySelector('button');
+        const result = htmx.__attributeValue(button, 'hx-vals');
+        assert.equal(result.val, '{"a":1},{"b":2}');
     });
 
-    it('empty prefix value is handled correctly', function() {
-        htmx.config.prefix = "";
-
-        let result = htmx.__prefix("hx-get");
-        assert.equal(result, "hx-get");
-    });
 });

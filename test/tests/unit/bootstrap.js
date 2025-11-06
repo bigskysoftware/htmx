@@ -49,32 +49,37 @@ describe('bootstrap unit tests', function() {
     it("__attributeValue returns direct attribute value", function() {
         const div = createDisconnectedHTML('<div hx-get="/test"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
-        assert.equal(result, '/test');
+        assert.equal(result.val, '/test');
+        assert.equal(result.src, div);
     })
 
     it("__attributeValue returns inherited attribute from element", function() {
         const div = createDisconnectedHTML('<div hx-get:inherited="/inherited"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
-        assert.equal(result, '/inherited');
+        assert.equal(result.val, '/inherited');
+        assert.equal(result.src, div);
     })
 
     it("__attributeValue prefers direct attribute over inherited", function() {
         const div = createDisconnectedHTML('<div hx-get="/direct" hx-get:inherited="/inherited"></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
-        assert.equal(result, '/direct');
+        assert.equal(result.val, '/direct');
+        assert.equal(result.src, div);
     })
 
     it("__attributeValue finds inherited attribute on parent", function() {
         const parent = createDisconnectedHTML('<div hx-get:inherited="/parent"><div></div></div>');
         const child = parent.firstElementChild;
         const result = htmx.__attributeValue(child, 'hx-get', 'default');
-        assert.equal(result, '/parent');
+        assert.equal(result.val, '/parent');
+        assert.equal(result.src, parent);
     })
 
     it("__attributeValue returns default when attribute not found", function() {
         const div = createDisconnectedHTML('<div></div>');
         const result = htmx.__attributeValue(div, 'hx-get', 'default');
-        assert.equal(result, 'default');
+        assert.equal(result.val, 'default');
+        assert.equal(result.src, div);
     })
 
     it("__tokenize splits simple tokens by whitespace", function() {

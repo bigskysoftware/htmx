@@ -107,7 +107,6 @@ describe('hx-trigger attribute', function() {
 
 
     it('consume prevents event propagation', async function () {
-        debug(this)
         mockResponse('GET', '/foo', 'foo')
         mockResponse('GET', '/bar', 'bar')
         createProcessedHTML(
