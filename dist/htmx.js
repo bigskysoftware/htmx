@@ -72,7 +72,7 @@ var htmx = (() => {
             this.#initHtmxConfig();
             this.#initRequestIndicatorCss();
             this.#actionSelector = `[${this.#prefix("hx-action")}],[${this.#prefix("hx-get")}],[${this.#prefix("hx-post")}],[${this.#prefix("hx-put")}],[${this.#prefix("hx-patch")}],[${this.#prefix("hx-delete")}]`;
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.#prefix("hx-on:")}")]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.#prefix("hx-on")}")]]`);
             this.#internalAPI = {
                 attributeValue: this.#attributeValue.bind(this),
                 parseTriggerSpecs: this.#parseTriggerSpecs.bind(this),
@@ -110,6 +110,7 @@ var htmx = (() => {
                 },
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204],
+                implicitInheritance: false
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -176,29 +177,41 @@ var htmx = (() => {
 
         #attributeValue(elt, name, defaultVal) {
             name = this.#prefix(name);
-            let appendName = name + ":append";
-            let inheritName = name + ":inherited";
-            let inheritAppendName = name + ":inherited:append";
+            let appendName = name + this.#maybeAdjustMetaCharacter(":append");
+            let inheritName = name + (this.config.implicitInheritance ? "" : this.#maybeAdjustMetaCharacter(":inherited"));
+            let inheritAppendName = name + this.#maybeAdjustMetaCharacter(":inherited:append");
 
-            if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
-                return elt.getAttribute(name) || elt.getAttribute(inheritName);
+            if (elt.hasAttribute(name)) {
+                return{ val: elt.getAttribute(name), src: elt };
+            }
+
+            if (elt.hasAttribute(inheritName)) {
+                return{ val: elt.getAttribute(inheritName), src: elt };
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
-                    let inheritedValue = this.#attributeValue(parent, name);
-                    return inheritedValue ? inheritedValue + "," + appendValue : appendValue;
+                    let inherited = this.#attributeValue(parent, name);
+                    return {
+                        val: inherited.val ? inherited.val + "," + appendValue : appendValue,
+                        src: elt
+                    };
+                } else {
+                    return {val: appendValue, src: elt};
                 }
-                return appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                return this.#attributeValue(parent, name);
+                let valAndSrc = this.#attributeValue(parent, name);
+                if (valAndSrc && this.config.implicitInheritance) {
+                    this.#trigger(elt, "htmx:after:implicitInheritance", {elt, parent})
+                }
+                return valAndSrc;
             }
-            return defaultVal;
+            return{ val: defaultVal, src: elt };
         }
 
         #tokenize(str) {
@@ -263,13 +276,14 @@ var htmx = (() => {
             if (this.#isBoosted(elt)) {
                 return this.#boostedMethodAndAction(elt, evt)
             } else {
-                let method = this.#attributeValue(elt, "hx-method") || "get";
-                let action = this.#attributeValue(elt, "hx-action");
+                let valueAndElt = this.#attributeValue(elt, "hx-method")
+                let method = valueAndElt.val || "GET"
+                let {val: action} = this.#attributeValue(elt, "hx-action") || {};
                 if (!action) {
                     for (let verb of this.#verbs) {
-                        let verbAttribute = this.#attributeValue(elt, "hx-" + verb);
-                        if (verbAttribute) {
-                            action = verbAttribute;
+                        let {val: verbAction} = this.#attributeValue(elt, "hx-" + verb) || {};
+                        if (verbAction) {
+                            action = verbAction;
                             method = verb;
                             break;
                         }
@@ -319,15 +333,15 @@ var htmx = (() => {
                 sourceElement,
                 sourceEvent,
                 status: "created",
-                select: this.#attributeValue(sourceElement, "hx-select"),
-                selectOOB: this.#attributeValue(sourceElement, "hx-select-oob"),
-                target: this.#attributeValue(sourceElement, "hx-target"),
-                swap: this.#attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
-                push: this.#attributeValue(sourceElement, "hx-push-url"),
-                replace: this.#attributeValue(sourceElement, "hx-replace-url"),
+                select: this.#attributeValue(sourceElement, "hx-select")?.val,
+                selectOOB: this.#attributeValue(sourceElement, "hx-select-oob")?.val,
+                target: this.#attributeValue(sourceElement, "hx-target")?.val,
+                swap: this.#attributeValue(sourceElement, "hx-swap", this.config.defaultSwap)?.val,
+                push: this.#attributeValue(sourceElement, "hx-push-url")?.val,
+                replace: this.#attributeValue(sourceElement, "hx-replace-url")?.val,
                 transition: this.config.transitions,
                 request: {
-                    validate: "true" === this.#attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
+                    validate: "true" === this.#attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false")?.val,
                     action,
                     method,
                     headers: this.#determineHeaders(sourceElement)
@@ -335,7 +349,7 @@ var htmx = (() => {
             };
 
             // Apply hx-config overrides
-            let configAttr = this.#attributeValue(sourceElement, "hx-config");
+            let {val: configAttr} = this.#attributeValue(sourceElement, "hx-config") || {};
             if (configAttr) {
                 let configOverrides = JSON.parse(configAttr);
                 let requestConfig = ctx.request;
@@ -364,7 +378,7 @@ var htmx = (() => {
             if (this.#isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
-            let headersAttribute = this.#attributeValue(elt, "hx-headers");
+            let {val: headersAttribute} = this.#attributeValue(elt, "hx-headers") || {};
             if (headersAttribute) {
                 Object.assign(headers, JSON.parse(headersAttribute));
             }
@@ -375,11 +389,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector === 'this') {
-                if (elt.hasAttribute(this.#prefix("hx-target"))) {
-                    return elt;
-                } else {
-                    return elt.closest(`[${this.#prefix("hx-target")}\\:inherited='this']`)
-                }
+                return this.#attributeValue(elt, "hx-target").src
             } else if (selector != null) {
                 return this.find(elt, selector);
             } else if (this.#isBoosted(elt)) {
@@ -445,7 +455,7 @@ var htmx = (() => {
                 let params = new URLSearchParams(ctx.request.body);
                 if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
                 ctx.request.body = null
-            } else if (this.#attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+            } else if (this.#attributeValue(elt, "hx-encoding")?.val !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
@@ -462,14 +472,14 @@ var htmx = (() => {
             ctx.status = "issuing"
             this.#initTimeout(ctx);
 
-            let indicatorsSelector = this.#attributeValue(elt, "hx-indicator");
+            let {val: indicatorsSelector} = this.#attributeValue(elt, "hx-indicator") || {};
             let indicators = this.#showIndicators(elt, indicatorsSelector);
-            let disableSelector = this.#attributeValue(elt, "hx-disable");
+            let {val: disableSelector} = this.#attributeValue(elt, "hx-disable") || {};
             let disableElements = this.#disableElements(elt, disableSelector);
 
             try {
                 // Confirm dialog
-                let confirmVal = this.#attributeValue(elt, 'hx-confirm')
+                let {val: confirmVal} = this.#attributeValue(elt, 'hx-confirm') || {};
                 if (confirmVal) {
                     let js = this.#extractJavascriptContent(confirmVal);
                     if (js) {
@@ -700,12 +710,12 @@ var htmx = (() => {
         }
 
         #determineSyncStrategy(elt) {
-            let syncValue = this.#attributeValue(elt, "hx-sync");
+            let {val: syncValue} = this.#attributeValue(elt, "hx-sync") || {};
             return syncValue?.split(":")[1] || "queue first";
         }
 
         #getRequestQueue(elt) {
-            let syncValue = this.#attributeValue(elt, "hx-sync");
+            let {val: syncValue} = this.#attributeValue(elt, "hx-sync") || {};
             let syncElt = elt
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
@@ -742,7 +752,7 @@ var htmx = (() => {
         }
 
         #initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
-            let specString = this.#attributeValue(elt, "hx-trigger");
+            let {val: specString} = this.#attributeValue(elt, "hx-trigger") || {};
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
                     elt.matches("input:not([type=button]),select,textarea") ? "change" :
@@ -892,7 +902,7 @@ var htmx = (() => {
         }
 
         #initializeStreamConfig(elt) {
-            let streamSpec = this.#attributeValue(elt, 'hx-stream');
+            let {val: streamSpec} = this.#attributeValue(elt, 'hx-stream') || {};
             if (!streamSpec) return;
 
             // Start with global defaults
@@ -1002,7 +1012,7 @@ var htmx = (() => {
         }
 
         #maybeBoost(elt) {
-            if (this.#attributeValue(elt, "hx-boost") === "true") {
+            if (this.#attributeValue(elt, "hx-boost")?.val === "true") {
                 if (this.#shouldInitialize(elt)) {
                     elt._htmx = {eventHandler: this.#createHtmxEventHandler(elt), requests: [], boosted: true}
                     elt.setAttribute('data-htmx-powered', 'true');
@@ -1077,7 +1087,8 @@ var htmx = (() => {
 
         #makeFragment(text) {
             let response = text.replace(/<partial(\s+|>)/gi, '<template partial$1').replace(/<\/partial>/gi, '</template>');
-            // TODO - store any head tag content on the fragment for head extension
+            let title = '';
+            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (m, t) => (title = t, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -1092,10 +1103,11 @@ var htmx = (() => {
                 doc = this.#parseHTML(`<template>${responseWithNoHead}</template>`);
                 fragment = doc.querySelector('template').content;
             }
+            this.#processScripts(fragment);
 
             return {
                 fragment,
-                title: doc.title
+                title
             };
         }
 
@@ -1114,18 +1126,9 @@ var htmx = (() => {
             let swapSpec = this.#parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
-            let oobElementClone = elt.cloneNode(true);
-            let fragment;
-            if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
-                swapSpec.strip = true;
-            }
-            if (swapSpec.strip) {
-                fragment = oobElementClone.content || oobElementClone;
-            } else {
-                fragment = document.createDocumentFragment();
-                fragment.appendChild(oobElementClone);
-            }
-            elt.remove();
+            swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            let fragment = document.createDocumentFragment();
+            fragment.append(elt);
             if (!target && !oobValue.includes('target:')) return;
 
             tasks.push({
@@ -1255,6 +1258,7 @@ var htmx = (() => {
 
         async swap(ctx) {
             let {fragment, title} = this.#makeFragment(ctx.text);
+            ctx.title = title;
             let tasks = [];
 
             // Process OOB and partials
@@ -1263,7 +1267,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Process main swap
-            let mainSwap = this.#processMainSwap(ctx, fragment, partialTasks, title);
+            let mainSwap = this.#processMainSwap(ctx, fragment, partialTasks);
             if (mainSwap) {
                 tasks.push(mainSwap);
             }
@@ -1299,7 +1303,7 @@ var htmx = (() => {
             }
 
             this.#trigger(document, "htmx:after:swap", {ctx});
-            if (mainSwap?.title) document.title = mainSwap.title;
+            if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
@@ -1312,33 +1316,24 @@ var htmx = (() => {
             // if (ctx.hx?.triggerafterswap) this.#handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
-        #processMainSwap(ctx, fragment, partialTasks, title) {
+        #processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.#parseSwapSpec(ctx.swap || this.config.defaultSwap);
             // skip creating main swap if extracting partials resulted in empty response except for delete style
             if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML || '') || !partialTasks.length) {
-                let resultFragment = document.createDocumentFragment();
                 if (ctx.select) {
-                    let selected = fragment.querySelector(ctx.select);
-                    if (selected) {
-                        if (swapSpec.strip === false) {
-                            resultFragment.append(selected);
-                        } else {
-                            resultFragment.append(...selected.childNodes);
-                        }
-                    }
-                } else {
-                    resultFragment.append(...fragment.childNodes);
+                    let selected = fragment.querySelectorAll(ctx.select);
+                    fragment = document.createDocumentFragment();
+                    fragment.append(...selected);
                 }
 
                 let mainSwap = {
                     type: 'main',
-                    fragment: resultFragment,
+                    fragment,
                     target: swapSpec.target || ctx.target,
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
-                    title
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
                 };
                 return mainSwap;
             }
@@ -1350,8 +1345,13 @@ var htmx = (() => {
                 target = document.querySelector(target);
             }
             if (!target) return;
+            if (swapSpec.strip && fragment.firstElementChild) {
+                let strip = document.createDocumentFragment();
+                strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
+                fragment = strip;
+            }
+            
             let pantry = this.#handlePreservedElements(fragment);
-            this.#processScripts(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
             if (swapSpec.style === 'innerHTML') {
@@ -1407,6 +1407,8 @@ var htmx = (() => {
             if (this.config.logAll) {
                 console.log(eventName, detail, on)
             }
+            on = this.#normalizeElement(on)
+            this.#triggerExtensions(on, this.#maybeAdjustMetaCharacter(eventName), detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
@@ -1482,7 +1484,6 @@ var htmx = (() => {
 
         trigger(on, eventName, detail = {}, bubbles = true) {
             on = this.#normalizeElement(on)
-            this.#triggerExtensions(on, eventName, detail);
             let evt = new CustomEvent(eventName, {
                 detail,
                 cancelable: true,
@@ -1597,8 +1598,9 @@ var htmx = (() => {
 
         #handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                if (attr.startsWith(this.#prefix("hx-on:"))) {
-                    let evtName = attr.substring(this.#prefix("hx-on:").length)
+                var searchString = this.#maybeAdjustMetaCharacter(this.#prefix("hx-on:"));
+                if (attr.startsWith(searchString)) {
+                    let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
                     node.addEventListener(evtName, async (evt) => {
                         try {
@@ -1674,7 +1676,7 @@ var htmx = (() => {
                 formData.append(submitter.name, submitter.value)
                 included.add(submitter);
             }
-            let includeSelector = this.#attributeValue(elt, "hx-include");
+            let {val: includeSelector} = this.#attributeValue(elt, "hx-include") || {};
             if (includeSelector) {
                 let includeNodes = this.#findAllExt(elt, includeSelector);
                 for (let node of includeNodes) {
@@ -1715,7 +1717,7 @@ var htmx = (() => {
         }
 
         #handleHxVals(elt, body) {
-            let hxValsValue = this.#attributeValue(elt, "hx-vals");
+            let {val: hxValsValue} = this.#attributeValue(elt, "hx-vals") || {};
             if (hxValsValue) {
                 if (!hxValsValue.includes('{')) {
                     hxValsValue = `{${hxValsValue}}`
@@ -2065,7 +2067,7 @@ var htmx = (() => {
             }
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                let swap = this.#attributeValue(ctx.sourceElement, "hx-status:" + pattern);
+                let {val: swap} = this.#attributeValue(ctx.sourceElement, "hx-status:" + pattern) || {};
                 if (swap) {
                     ctx.swap = swap
                     return
@@ -2131,6 +2133,14 @@ var htmx = (() => {
                 return this.find(cssOrElement);
             } else {
                 return cssOrElement
+            }
+        }
+
+        #maybeAdjustMetaCharacter(string) {
+            if (this.config.metaCharacter) {
+                return string.replace(/:/g, this.config.metaCharacter);
+            } else {
+                return string;
             }
         }
     }
