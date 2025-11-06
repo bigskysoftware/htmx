@@ -155,12 +155,12 @@ function lastFetch() {
 // General test helper utilities
 //======================================================================
 
-function waitForEvent(eventName, timeout = 2000) {
+function waitForEvent(eventName, timeout = 200) {
   return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
 }
 
-function forRequest() {
-  return waitForEvent("htmx:finally:request");
+function forRequest(timeout = 200) {
+  return waitForEvent("htmx:finally:request", timeout);
 }
 
 function playground() {
