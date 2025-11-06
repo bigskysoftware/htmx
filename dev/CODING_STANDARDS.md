@@ -36,6 +36,7 @@ Tests for htmx are organized in the following manner:
   like set up a response mock using `mockResponse()`, create a live HTML button with the `createProcessedHTML` method, 
   invoke `click()` on the button, await the `"htmx:finally:request" event, and assert something about the updated DOM.
 * `/test/end2end` - These are end-to-end tests that do not fit in the other two categories
+* `/test/ext` - These tests are for the core extensions, which ship as part of htmx
 
 
 ## AI Policy
