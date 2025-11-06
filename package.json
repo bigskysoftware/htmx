@@ -15,7 +15,7 @@
   "scripts": {
     "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:compress",
     "build:iife": "sed 's/__/#/g' src/htmx.js > dist/htmx.js",
-    "build:esm": "sed 's/this\\.__/this.#/g; s/^        __/        #/g' src/htmx.js > dist/htmx.esm.js && echo '' >> dist/htmx.esm.js && echo 'export default htmx' >> dist/htmx.esm.js",
+    "build:esm": "sed 's/__/#/g' src/htmx.js > dist/htmx.esm.js && echo '' >> dist/htmx.esm.js && echo 'export default htmx' >> dist/htmx.esm.js",
     "build:minify": "terser --compress --mangle --source-map -o dist/htmx.min.js dist/htmx.js && terser --compress --mangle --source-map -o dist/htmx.esm.min.js dist/htmx.esm.js",
     "build:compress": "brotli-cli compress dist/*.js",
 
