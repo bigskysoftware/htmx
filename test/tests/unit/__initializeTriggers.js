@@ -158,8 +158,7 @@ describe('__initializeTriggers unit tests', function() {
 
     it('from modifier listens on different element', function() {
         let called = 0
-        const container = createDisconnectedHTML('<div><button id="source">Source</button><div id="target"></div></div>');
-        document.body.appendChild(container)
+        const container = createHTMLNoProcessing('<div><button id="source">Source</button><div id="target"></div></div>');
 
         const target = container.querySelector('#target')
         const source = container.querySelector('#source')
@@ -173,8 +172,6 @@ describe('__initializeTriggers unit tests', function() {
 
         source.click()
         assert.equal(1, called)
-
-        document.body.removeChild(container)
     });
 
     it('multiple triggers separated by comma', function() {
