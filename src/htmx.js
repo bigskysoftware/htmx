@@ -72,7 +72,7 @@ var htmx = (() => {
             this.__initHtmxConfig();
             this.__initRequestIndicatorCss();
             this.#actionSelector = `[${this.__prefix("hx-action")}],[${this.__prefix("hx-get")}],[${this.__prefix("hx-post")}],[${this.__prefix("hx-put")}],[${this.__prefix("hx-patch")}],[${this.__prefix("hx-delete")}]`;
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on:")}")]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.__prefix("hx-on")}")]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
@@ -177,9 +177,9 @@ var htmx = (() => {
 
         __attributeValue(elt, name, defaultVal) {
             name = this.__prefix(name);
-            let appendName = name + ":append";
-            let inheritName = name + (this.config.implicitInheritance ? "" : ":inherited");
-            let inheritAppendName = name + ":inherited:append";
+            let appendName = name + this.__maybeAdjustMetaCharacter(":append");
+            let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
+            let inheritAppendName = name + this.__maybeAdjustMetaCharacter(":inherited:append");
 
             if (elt.hasAttribute(name)) {
                 return{ val: elt.getAttribute(name), src: elt };
@@ -1407,6 +1407,8 @@ var htmx = (() => {
             if (this.config.logAll) {
                 console.log(eventName, detail, on)
             }
+            on = this.__normalizeElement(on)
+            this.__triggerExtensions(on, this.__maybeAdjustMetaCharacter(eventName), detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
@@ -1482,7 +1484,6 @@ var htmx = (() => {
 
         trigger(on, eventName, detail = {}, bubbles = true) {
             on = this.__normalizeElement(on)
-            this.__triggerExtensions(on, eventName, detail);
             let evt = new CustomEvent(eventName, {
                 detail,
                 cancelable: true,
@@ -1597,8 +1598,9 @@ var htmx = (() => {
 
         __handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                if (attr.startsWith(this.__prefix("hx-on:"))) {
-                    let evtName = attr.substring(this.__prefix("hx-on:").length)
+                var searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
+                if (attr.startsWith(searchString)) {
+                    let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
                     node.addEventListener(evtName, async (evt) => {
                         try {
@@ -2131,6 +2133,14 @@ var htmx = (() => {
                 return this.find(cssOrElement);
             } else {
                 return cssOrElement
+            }
+        }
+
+        __maybeAdjustMetaCharacter(string) {
+            if (this.config.metaCharacter) {
+                return string.replace(/:/g, this.config.metaCharacter);
+            } else {
+                return string;
             }
         }
     }
