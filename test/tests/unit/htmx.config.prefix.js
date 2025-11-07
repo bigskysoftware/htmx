@@ -38,10 +38,10 @@ describe('htmx.config.prefix functionality', function() {
         let btn = createDisconnectedHTML('<button data-hx-get="/custom" data-hx-target="#result">Click</button>');
 
         let getValue = htmx.__attributeValue(btn, "hx-get");
-        assert.equal(getValue.val, "/custom");
+        assert.equal(getValue, "/custom");
 
         let targetValue = htmx.__attributeValue(btn, "hx-target");
-        assert.equal(targetValue.val, "#result");
+        assert.equal(targetValue, "#result");
 
         htmx.config.prefix = "";
     });

@@ -2,7 +2,7 @@
     let api;
 
     function initializePreload(elt) {
-        let {val : preloadSpec} = api.attributeValue(elt, "hx-preload");
+        let preloadSpec = api.attributeValue(elt, "hx-preload");
         if (!preloadSpec) return;
 
         let specs = api.parseTriggerSpecs(preloadSpec);
@@ -58,7 +58,8 @@
             if (elt._htmx?.preload &&
                 elt._htmx.preload.action === ctx.request.action &&
                 Date.now() < elt._htmx.preload.expiresAt) {
-                ctx.fetchOverride = elt._htmx.preload.prefetch;
+                let prefetch = elt._htmx.preload.prefetch;
+                ctx.fetch = () => prefetch;
                 delete elt._htmx.preload;
             } else {
                 if (elt._htmx) delete elt._htmx.preload;
