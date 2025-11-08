@@ -97,15 +97,15 @@ major changes between htmx 2.x and htmx 4.x.
 - Overrides default swap behavior when status code matches
 
 ### Partial Tags
-- New `<partial>` tag for multiple targeted swaps in one response
+- New `<htmx-partial>` tag for multiple targeted swaps in one response
 - Provides explicit control over swap targets via `hx-target` attribute
 - Alternative to out-of-band swaps when you want explicit targeting
 - Example:
   ```html
-  <partial hx-target="#messages" hx-swap="beforeend">
+  <htmx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
   </partial>
-  <partial hx-target="#notifications">
+  <htmx-partial hx-target="#notifications">
     <span class="badge">5</span>
   </partial>
   ```
