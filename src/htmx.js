@@ -675,23 +675,56 @@ var htmx = (() => {
             }
         }
 
-        async* __parseSSE(res) {
-            let r = res.body.getReader(), d = new TextDecoder(), b = '', m = {data: '', event: '', id: '', retry: null},
-                ls, i, n, f, v;
+        async* __parseSSE(response) {
+            let reader = response.body.getReader();
+            let decoder = new TextDecoder();
+            let buffer = '';
+            let message = {data: '', event: '', id: '', retry: null};
+
             try {
-                while (1) {
-                    let {done, value} = await r.read();
+                while (true) {
+                    let {done, value} = await reader.read();
                     if (done) break;
-                    for (let l of (b += d.decode(value, {stream: 1}), ls = b.split('\n'), b = ls.pop() || '', ls))
-                        !l || l === '\r' ? m.data && (yield m, m = {data: '', event: '', id: '', retry: null}) :
-                            (i = l.indexOf(':')) > 0 && (f = l.slice(0, i), v = l.slice(i + 1).trimStart(),
-                                f === 'data' ? m.data += (m.data ? '\n' : '') + v :
-                                    f === 'event' ? m.event = v :
-                                        f === 'id' ? m.id = v :
-                                            f === 'retry' && (n = parseInt(v, 10), !isNaN(n)) ? m.retry = n : 0);
+
+                    // Decode chunk and add to buffer
+                    buffer += decoder.decode(value, {stream: true});
+                    let lines = buffer.split('\n');
+                    // Keep incomplete line in buffer
+                    buffer = lines.pop() || '';
+
+                    for (let line of lines) {
+                        // Empty line or carriage return indicates end of message
+                        if (!line || line === '\r') {
+                            if (message.data) {
+                                yield message;
+                                message = {data: '', event: '', id: '', retry: null};
+                            }
+                            continue;
+                        }
+
+                        // Parse field: value
+                        let colonIndex = line.indexOf(':');
+                        if (colonIndex <= 0) continue;
+
+                        let field = line.slice(0, colonIndex);
+                        let value = line.slice(colonIndex + 1).trimStart();
+
+                        if (field === 'data') {
+                            message.data += (message.data ? '\n' : '') + value;
+                        } else if (field === 'event') {
+                            message.event = value;
+                        } else if (field === 'id') {
+                            message.id = value;
+                        } else if (field === 'retry') {
+                            let retryValue = parseInt(value, 10);
+                            if (!isNaN(retryValue)) {
+                                message.retry = retryValue;
+                            }
+                        }
+                    }
                 }
             } finally {
-                r.releaseLock();
+                reader.releaseLock();
             }
         }
 
