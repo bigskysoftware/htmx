@@ -109,7 +109,7 @@ var htmx = (() => {
                     pauseHidden: false
                 },
                 morphIgnore: ["data-htmx-powered"],
-                noSwap: [204],
+                noSwap: [204, 304],
                 implicitInheritance: false
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
