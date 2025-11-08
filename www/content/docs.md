@@ -1358,7 +1358,7 @@ REMOVE: Old event names no longer fire
 - `htmx:after:cleanup`
 - `htmx:finally:request` (fires after request completes, success or failure)
 
-See the full event mapping in the [Changes in htmx 4.0](/changes-in-4#event-changes) document.
+See the full event mapping in the [Changes in htmx 4.0](/migration-guide-htmx-4#event-changes) document.
 
 **Note:** All events now provide a consistent `ctx` object with request/response information.
 

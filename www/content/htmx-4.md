@@ -2,14 +2,10 @@
 title = "Changes in htmx 4.0"
 +++
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux!</p>
-</aside>
+htmx 4.0 is a ground up rewrite of the implementation of htmx, using the `fetch()` API.  This document outlines the 
+major changes between htmx 2.x and htmx 4.x.
 
-This document outlines the major changes between htmx 2.x and htmx 4.x.
-
-## Major Breaking Changes
+## Major Changes
 
 ### fetch() API replaces XMLHttpRequest
 - All AJAX requests now use the native fetch() API instead of XMLHttpRequest
@@ -17,26 +13,38 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - Simplifies implementation of htmx significantly
 
 ### Explicit Attribute Inheritance
-- Attribute inheritance is now _explicit_, using the `:inherited` modifier
-- In htmx 4.x use `hx-attribute:inherited="value"` syntax to inherit
-- Applies to all inheritable attributes: `hx-boost:inherited`, `hx-target:inherited`, `hx-confirm:inherited`, etc.
-- Improves locality of behavior by making inheritance explicit
+- Attribute inheritance is now explicit by default, using the `:inherited` modifier
+- By default, in htmx 4.x you now use `hx-attribute:inherited="value"` syntax to inherit an attribute
+- This applies to all inheritable attributes: `hx-boost:inherited`, `hx-target:inherited`, `hx-confirm:inherited`, etc.
+- This improves locality of behavior by making inheritance explicit
+- You can revert to implicit inheritance by setting `htmx.config.implicitInheritance` to `true`
 
 ### Event Naming Convention Changed
-- New event naming convention: `htmx:phase:action` (colon-separated)
-- All event names updated (see Event Changes section below)
-- More consistent and predictable event naming
+- New event naming convention: `htmx:phase:action[:sub-action]` (colon-separated)
+- Many event names have changed (See the [migration guide](@migration-guide-htmx-4.md)
+- This provides more consistent & predictable event naming
 
 ### History Storage
-- History no longer uses localStorage
-- History now issues a full page refresh request on navigation
-- Much, much more reliable history restoration
-- This is more of a "fixing" change than a "breaking" change :)
+- History no longer uses `localStorage` to store snapshots of previous pages
+- History now issues a full page refresh request on history navigation
+- This is a much, much more reliable history restoration mechanic
+- We will be creating a caching history extension for people that want the old behavior
 
-## New Features (All Tentative!)
+### Non-200 Swapping Defaults
+- In htmx 2.0, responses with `4xx` and `5xx` response codes did not swap by default
+- In htmx 4.0, all responses will swap except for [`204 - No Content`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/204)
+  and [`304 - Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304)
+- If you wish to revert to the htmx 2.0 behavior of not swapping `4xx` and `5xx` responses, you can add this to the `body`
+  tag:
+  ```html
+  <body hx-swap-4xx="none" hx-swap-5xx="none">
+    ...
+  ```
+
+## New Features
 
 ### Morphing Swap
-- New morph swap styles are now available, based on the original `idiomorph` algorithm
+- htmx now ships with morph swap styles are now available, based on the original `idiomorph` algorithm
 - `innerMorph` - morphs the children of the target element
 - `outerMorph` - morphs the target element itself
 - Does a better job of preserving local state when targeting large DOM trees
@@ -167,19 +175,14 @@ This document outlines the major changes between htmx 2.x and htmx 4.x.
 - `htmx:after:process` - fires after element processing completes
 - `htmx:after:restore` - fires after restore tasks complete in swap
 - `htmx:finally:request` - fires in finally block after request (success or error)
-
-#### SSE/Streaming Events
 - `htmx:before:sse:stream` - fires before SSE stream begins
 - `htmx:after:sse:stream` - fires after SSE stream ends
 - `htmx:before:sse:message` - fires before processing SSE message
 - `htmx:after:sse:message` - fires after processing SSE message
 - `htmx:before:sse:reconnect` - fires before attempting SSE reconnection
-
-#### View Transition Events
 - `htmx:before:viewTransition` - fires before view transition starts
 - `htmx:after:viewTransition` - fires after view transition completes
 
 ### Extensions Are Now Globally Registered
 - Extensions no longer require an explicit `hx-ext` attribute
 - Simpler extension architecture
-
