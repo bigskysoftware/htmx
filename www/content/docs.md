@@ -12,7 +12,7 @@ title = "Documentation"
 <summary><strong>Contents</strong></summary>
 
 * [Introduction](#introduction)
-* [2.x to 4.x Migration Guide](#migration-guide)
+* [2.x to 4.x Migration Guide](#2-x-to-4-x-migration-guide)
 * [Installing](#installing)
 * [AJAX](#ajax)
   * [Configuring Requests](#config)

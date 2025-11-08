@@ -10,8 +10,6 @@ can trigger a single event or as many uniquely named events as you would like.
 The headers are:
 
 * `HX-Trigger` - trigger events as soon as the response is received.
-* `HX-Trigger-After-Settle` - trigger events after the [settling step](@/docs.md#request-operations).
-* `HX-Trigger-After-Swap` - trigger events after the [swap step](@/docs.md#request-operations).
 
 To trigger a single event with no additional details you can simply send the event name in a header like so:
 

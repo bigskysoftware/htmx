@@ -61,7 +61,6 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 
 ### Event - `htmx:afterSettle` {#htmx:afterSettle}
 
-This event is triggered after the DOM has [settled](@/docs.md#request-operations).
 
 ##### Details
 
@@ -138,7 +137,6 @@ Most values on `detail` can be set to override subsequent behavior, other than w
 If you call `preventDefault()` on the event to cancel it, no swap will occur.
 
 You can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.
-See the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.
 
 ##### Details
 
