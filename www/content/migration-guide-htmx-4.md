@@ -4,26 +4,27 @@ title = "htmx 2.x &rarr; htmx 4.x Migration Guide"
 
 The purpose of this guide is to provide instructions for migrations from htmx 2.x to htmx 4.x.
 
-**Note:** htmx 4 is a significant architectural rewrite with many breaking changes. While we have tried to maintain
-backwards compatibility where possible, this upgrade will require more work than previous htmx versions.
+htmx 4 is a _significant_ architectural rewrite which involves breaking changes. We have tried to maintain
+backwards compatibility where possible but this upgrade will require more work than the htmx 1 to htmx 2 migration.
 
 ## Biggest Changes
 
-The two most impactful changes in htmx 4 are switching to `fetch()` for issuing ajax requests and the removal 
-of implicit inheritance - inheritance now requires the `:inherited` modifier
+The three most impactful changes in htmx 4 are:
 
-The inheritance change, in particular, will likely affect most htmx applications and should be addressed first.
+* Switching to `fetch()` for issuing ajax requests 
+* Making attribute inheritance explicit by default
+* Adopting the [response targets extension](https://htmx.org/extensions/response-targets/) concept for retargeting based on
+  HTTP response codes, and making most HTTP response codes swap content (including `4xx` and `5xx` response codes)
 
-## New Features
+While there is no way to "undo" the first item in htmx 4, the second two changes can be undone by:
 
-* **Streaming Response Support** - By switching to `fetch()` we can now implement streaming response handling
-* **Optimistic Updates** - Built-in support for optimistic UI updates with `hx-optimistic`
-* **Server Actions (Partials)** - New `<htmx-action type="partial">` element system for cleaner multi-target responses
-* **Request Preloading** - Preload requests on events with `hx-preload` for better perceived performance
-* **View Transitions** - Enabled by default for smoother page updates
-* **Unified Request Context** - All events provide a consistent `ctx` object
-
----
+- Setting `htmx.config.implicitInheritance` to `true`, which will restore implicit attribute inheritance
+- Add the following to the `body` tag:
+  ```html
+  <body hx-swap-4xx="none" hx-swap-5xx="none">
+    ...
+  ```
+Making these to changes will make many htmx 2-based applications work with htmx 4 without further changes.
 
 ## Attribute Changes
 
@@ -56,7 +57,6 @@ The following attributes have been removed:
 | `hx-request`      | Use `hx-config`                                                   |
 | `hx-history`      | Removed (history is no longer stored in local storage)            |
 | `hx-history-elt`  | Removed (history uses target element)                             |
-| `hx-select-oob`   | Use `<htmx-action type="partial">` elements or standard OOB swaps |
 
 ### New Attributes
 
@@ -65,12 +65,10 @@ The following attributes have been removed:
 | `hx-action`     | Specifies URL (use with `hx-method`)               |
 | `hx-method`     | Specifies HTTP method (use with `hx-action`)       |
 | `hx-config`     | Configure request behavior with JSON               |
-| `hx-optimistic` | Show optimistic content while request is in flight |
-| `hx-preload`    | Preload a request on a trigger event               |
 
 ### Attribute Inheritance Changes
 
-Inheritance is now **explicit** using the `:inherited` modifier.
+Inheritance is now, by default, **explicit** using the `:inherited` modifier.
 
 Before (htmx 2):
 ```html
@@ -92,77 +90,138 @@ After (htmx 4):
 
 Any attribute can use the `:inherited` modifier: `hx-boost:inherited`, `hx-headers:inherited`, `hx-target:inherited`, etc.
 
+As mentioned above, you can revert this behavior by setting `htmx.config.implicitInheritance` to `true`
+
 ---
 
 ## Event Name Changes
 
-htmx 4 uses a new event naming convention: `htmx:phase:action`
+htmx 4 uses a new event naming convention: `htmx:phase:action[:sub-action]`, and so if you are using htmx events you
+need to rename the events that they are listening for.  Here is a complete table with the htmx 4 equivalent events:
 
-### Complete Event Mapping
 
-| htmx 2.x Event              | htmx 4.x Event                    |
-|-----------------------------|-----------------------------------|
-| `htmx:afterOnLoad`          | `htmx:after:init`                 |
-| `htmx:afterProcessNode`     | `htmx:after:init`                 |
-| `htmx:afterRequest`         | `htmx:after:request`              |
-| `htmx:afterSettle`          | `htmx:after:swap`                 |
-| `htmx:afterSwap`            | `htmx:after:swap`                 |
-| `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
-| `htmx:beforeHistorySave`    | `htmx:before:history:update`      |
-| `htmx:beforeOnLoad`         | `htmx:before:init`                |
-| `htmx:beforeProcessNode`    | `htmx:before:init`                |
-| `htmx:beforeRequest`        | `htmx:before:request`             |
-| `htmx:beforeSwap`           | `htmx:before:swap`                |
-| `htmx:configRequest`        | `htmx:config:request`             |
-| `htmx:historyCacheMiss`     | `htmx:before:restore:history`     |
-| `htmx:historyRestore`       | `htmx:after:restore:history`      |
-| `htmx:load`                 | `htmx:after:init`                 |
-| `htmx:oobAfterSwap`         | `htmx:after:oob:swap`             |
-| `htmx:oobBeforeSwap`        | `htmx:before:oob:swap`            |
-| `htmx:pushedIntoHistory`    | `htmx:after:push:into:history`    |
-| `htmx:replacedInHistory`    | `htmx:after:replace:into:history` |
-| `htmx:responseError`        | `htmx:error`                      |
-| `htmx:sendError`            | `htmx:error`                      |
-| `htmx:swapError`            | `htmx:error`                      |
-| `htmx:targetError`          | `htmx:error`                      |
-| `htmx:timeout`              | `htmx:error`                      |
+| htmx 2.x Event              | htmx 4.x Event                    | Notes                                |
+|-----------------------------|-----------------------------------|--------------------------------------|
+| `htmx:afterOnLoad`          | `htmx:after:init`                 |                                      |
+| `htmx:afterProcessNode`     | `htmx:after:init`                 |                                      |
+| `htmx:afterRequest`         | `htmx:after:request`              |                                      |
+| `htmx:afterSettle`          | `htmx:after:swap`                 |                                      |
+| `htmx:afterSwap`            | `htmx:after:swap`                 |                                      |
+| `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |                                      |
+| `htmx:beforeHistorySave`    | `htmx:before:history:update`      |                                      |
+| `htmx:beforeHistoryUpdate`  | `htmx:before:history:update`      |                                      |
+| `htmx:beforeOnLoad`         | `htmx:before:init`                |                                      |
+| `htmx:beforeProcessNode`    | `htmx:before:process`             |                                      |
+| `htmx:beforeRequest`        | `htmx:before:request`             |                                      |
+| `htmx:beforeSend`           | `htmx:before:request`             |                                      |
+| `htmx:beforeSwap`           | `htmx:before:swap`                |                                      |
+| `htmx:beforeTransition`     | `htmx:before:viewTransition`      |                                      |
+| `htmx:configRequest`        | `htmx:config:request`             |                                      |
+| `htmx:historyCacheMiss`     | `htmx:before:restore:history`     |                                      |
+| `htmx:historyRestore`       | `htmx:before:restore:history`     |                                      |
+| `htmx:load`                 | `htmx:after:init`                 |                                      |
+| `htmx:oobAfterSwap`         | `htmx:after:swap`                 | No separate OOB swap events          |
+| `htmx:oobBeforeSwap`        | `htmx:before:swap`                | No separate OOB swap events          |
+| `htmx:pushedIntoHistory`    | `htmx:after:push:into:history`    |                                      |
+| `htmx:replacedInHistory`    | `htmx:after:replace:into:history` |                                      |
+| `htmx:responseError`        | `htmx:error`                      | All errors consolidated              |
+| `htmx:sendError`            | `htmx:error`                      | All errors consolidated              |
+| `htmx:sendAbort`            | `htmx:error`                      | All errors consolidated              |
+| `htmx:swapError`            | `htmx:error`                      | All errors consolidated              |
+| `htmx:targetError`          | `htmx:error`                      | All errors consolidated              |
+| `htmx:timeout`              | `htmx:error`                      | All errors consolidated              |
+| `htmx:validation:validate`  | _Removed_                         | Use native form validation           |
+| `htmx:validation:failed`    | _Removed_                         | Use native form validation           |
+| `htmx:validation:halted`    | _Removed_                         | Use native form validation           |
+| `htmx:xhr:abort`            | _Removed_                         | Use `htmx:error` event               |
+| `htmx:xhr:loadstart`        | _Removed_                         | No fetch() equivalent                |
+| `htmx:xhr:loadend`          | _Removed_                         | Use `htmx:finally:request`           |
+| `htmx:xhr:progress`         | _Removed_                         | Use fetch() streams API if needed    |
+
+### XHR Upload Progress Events Removed
+
+In htmx 2.x, the following XHR upload progress events were available:
+
+- `htmx:xhr:loadstart`
+- `htmx:xhr:loadend`
+- `htmx:xhr:progress`
+- `htmx:xhr:abort`
+
+These events provided detailed upload progress information with `lengthComputable`, `loaded`, and `total` properties.
+
+In htmx 4.x these events have been removed because htmx now uses the `fetch()` API instead of `XMLHttpRequest`.
+
+
+If you need upload progress tracking in htmx 4:
+
+1. Use the `htmx:config:request` event to access the request context
+2. Implement custom fetch with progress tracking using fetch streams or a library
+3. Consider using a specialized upload library for complex upload scenarios
 
 ### New Events in htmx 4
 
-* `htmx:after:cleanup`
-* `htmx:after:history:update`
-* `htmx:after:main:swap`
-* `htmx:after:partial:swap`
-* `htmx:before:main:swap`
-* `htmx:before:partial:swap`
-* `htmx:finally:request`
-
-### Event Detail Changes
-
-TBD
+* `htmx:after:cleanup` - Triggered after element cleanup
+* `htmx:after:history:update` - Triggered after history is updated
+* `htmx:after:implicitInheritance` - Triggered when implicit inheritance occurs (when config enabled)
+* `htmx:after:process` - Triggered after processing an element
+* `htmx:after:restore` - Triggered after all restore tasks complete
+* `htmx:after:viewTransition` - Triggered after view transition completes
+* `htmx:after:sse:message` - Triggered after processing an SSE message
+* `htmx:after:sse:stream` - Triggered after an SSE stream ends
+* `htmx:before:sse:message` - Triggered before processing an SSE message
+* `htmx:before:sse:reconnect` - Triggered before reconnecting to SSE stream
+* `htmx:before:sse:stream` - Triggered before processing an SSE stream
+* `htmx:finally:request` - Always triggered after request completes (success or error)
 
 ---
 
-## Configuration Changes
+## JavaScript API Changes
 
-### Default Value Changes
+The htmx JavaScript API has changed significantly in htmx 4.
 
-| Config Option                                   | htmx 2.x Default | htmx 4.x Default |
-|-------------------------------------------------|------------------|------------------|
-| `viewTransitions` (was `globalViewTransitions`) | `false`          | `true`           |
+### Removed API Methods
 
-To restore htmx 2 behavior:
+The following JavaScript API methods have been removed in htmx 4:
 
-```javascript
-htmx.config.viewTransitions = false;
-```
+| htmx 2.x Method          | htmx 4 Alternative                                |
+|--------------------------|---------------------------------------------------|
+| `htmx.addClass()`        | Use native `element.classList.add()`              |
+| `htmx.closest()`         | Use native `element.closest()`                    |
+| `htmx.location()`        | Use `htmx.ajax()` instead                         |
+| `htmx.logAll()`          | Set `htmx.config.logAll = true`                   |
+| `htmx.logNone()`         | Set `htmx.config.logAll = false`                  |
+| `htmx.logger`            | Use browser DevTools or custom event listeners    |
+| `htmx.off()`             | Use native `removeEventListener()`                |
+| `htmx.remove()`          | Use native `element.remove()`                     |
+| `htmx.removeClass()`     | Use native `element.classList.remove()`           |
+| `htmx.removeExtension()` | Extensions are now event-based, no removal needed |
+| `htmx.toggleClass()`     | Use native `element.classList.toggle()`           |
 
-### Removed Config Options
+### Retained API Methods
 
-These config options have been removed from core:
+These methods continue to exist in htmx 4:
 
-* `wsReconnectDelay` - WebSocket extension only
-* `wsBinaryType` - WebSocket extension only
+* `htmx.ajax(verb, path, context)` - Issue AJAX requests programmatically
+* `htmx.config` - Configuration object (with new options)
+* `htmx.defineExtension(name, extension)` - Define extensions
+* `htmx.find(selector)` - Find elements (supports extended selectors)
+* `htmx.findAll(selector)` - Find all matching elements (supports extended selectors)
+* `htmx.onLoad(callback)` - a callback that will be called with the newly added content on every swap by htmx
+* `htmx.on(eventName, handler)` - Add event listener
+* `htmx.parseInterval(str)` - Parse interval strings like "1s", "500ms"
+* `htmx.process(element)` - Process htmx attributes on an element
+* `htmx.swap()` - Swap content into the DOM
+* `htmx.trigger(element, eventName, detail)` - Trigger custom events
+
+### New API Methods
+
+* `htmx.forEvent(eventName, timeout)` - Returns a promise that resolves when an event fires
+* `htmx.timeout(time)` - Returns a promise that resolves after specified time
+
+### Extension API Changes
+
+Extensions in htmx 4 work very differently and will almost certainly need a rewrite.  Please see our 
+[Extensions documentation](https://htmx.org/extensions/) for more information.
 
 ---
 

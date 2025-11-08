@@ -115,7 +115,7 @@ if(window.location.search=="?ads=true") {
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
   <p>htmx 4.0 is under construction, information here may be out of data/incorrect/changing!<p>
-  <p>Please see <a href="/changes-in-4/">Changes In 4</a> for a rough list of changes jump on the <a href="/discord">discord</a> if you need help! </p>
+  <p>Please see <a href="/htmx-4">Changes In 4</a> for a rough list of changes jump on the <a href="/discord">discord</a> if you need help! </p>
 </aside>
 <h2>introduction</h2>
 

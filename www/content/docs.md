@@ -5,7 +5,7 @@ title = "Documentation"
 
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/changes-in-4/">changes in htmx 4.0</a> </p>
+  <p>These docs are NOT guaranteed to be up to date with the latest htmx 4.0 changes and are in flux! See <a href="/htmx-4">changes in htmx 4.0</a> </p>
 </aside>
 
 <details id="contents">
@@ -126,7 +126,7 @@ of the web, using [Hypertext As The Engine Of Application State](https://en.wiki
 [Version 2](https://v2.htmx.org) (and [Version 1](https://v1.htmx.org)) of htmx are still supported, but the latest 
 version of htmx is 4.x.
 
-If you are migrating to htmx 4.x from [htmx 2.x](https://v1.htmx.org), please see the [htmx 2.x migration guide](@/migration-guide-htmx-2.md).
+If you are migrating to htmx 4.x from [htmx 2.x](https://v2.htmx.org), please see the [htmx 4.x migration guide](@/migration-guide-htmx-4.md).
 
 ## Installing
 

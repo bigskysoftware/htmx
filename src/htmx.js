@@ -1480,8 +1480,19 @@ var htmx = (() => {
             })
         }
 
-        // on(elt, evt, callback)
-        // on(evt, callback)
+        onLoad(callback) {
+            this.on("htmx:after:init", (evt) => {
+                callback(evt.target)
+            })
+        }
+
+        takeClass(element, className, container = element.parentElement) {
+            for (let elt of this.findAll(this.__normalizeElement(container), "." + className)) {
+                elt.classList.remove(className);
+            }
+            element.classList.add(className);
+        }
+
         on(eventOrElt, eventOrCallback, callback) {
             let event;
             let elt = document;
