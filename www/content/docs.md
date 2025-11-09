@@ -59,6 +59,7 @@ title = "Documentation"
   * [3rd Party Javascript](#3rd-party)
     * [Web Components](#web-components)
 * [Caching](#caching)
+  * [Etag Support](#etag-support)
 * [Security](#security)
   * [Rule 1: Escape All User Content](#rule-1-escape-all-user-content)
   * [htmx Security Tools](#htmx-security-tools)
@@ -726,13 +727,13 @@ So, in summary, all you need to do to use CSS transitions for an element is keep
 
 ### Partial Tags
 
-The `<htmx-partial>` tag (internally represented as `<template htmx-partial>`) allows you to include multiple targeted content
+The `<hx-partial>` tag (internally represented as `<template htmx-partial>`) allows you to include multiple targeted content
 fragments in a single server response. This provides a cleaner, more explicit alternative to [out-of-band swaps](#oob_swaps) 
 when you want to update multiple parts of the page from one request.
 
 #### Basic Usage
 
-A `<htmx-partial>` tag wraps content that should be swapped into a specific target on the page:
+A `<hx-partial>` tag wraps content that should be swapped into a specific target on the page:
 
 ```html
 <htmx-partial hx-target="#messages" hx-swap="beforeend">
@@ -744,11 +745,11 @@ A `<htmx-partial>` tag wraps content that should be swapped into a specific targ
 </htmx-partial>
 ```
 
-Each `<htmx-partial>` specifies:
+Each `<hx-partial>` specifies:
 - `hx-target` - A CSS selector identifying where to place the content (required)
 - `hx-swap` - (optional) The swap strategy to use (defaults to `innerHTML`)
 
-The content inside the `<htmx-partial>` tag will be extracted and swapped into the specified target using the specified swap method.
+The content inside the `<hx-partial>` tag will be extracted and swapped into the specified target using the specified swap method.
 
 #### Comparison with Out-of-Band Swaps
 
@@ -764,10 +765,10 @@ Use partials when you want explicit control over targeting, and out-of-band swap
 <details class="migration-note">
 <summary>htmx 2.0 to 4.0 Changes</summary>
 
-In htmx 2.0, out of band swaps were the only way to send additional content with a response.  In htmx 4.0 the `<htmx-partial>`
+In htmx 2.0, out of band swaps were the only way to send additional content with a response.  In htmx 4.0 the `<hx-partial>`
 tag provides a more general, cleaner mechanism for swapping new content in to targets.  Although the older syntax for
 more elaborate out-of-band swaps is still supported in htmx 4.0, we strongly recommend you only use out-of-band swaps
-for direct id replacement, and use `<htmx-partial>` for your other needs.
+for direct id replacement, and use `<hx-partial>` for your other needs.
 
 </details>
 
@@ -1492,7 +1493,7 @@ HTTP response header to the response for a given URL, the browser will automatic
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
 request HTTP header to the next requests to the same URL.
 
-## ETag support
+### ETag Support
 
 htmx supports [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)-based caching on a per-element 
 basis. When your server includes an `ETag` header in the response, htmx will store the ETag value and automatically 
