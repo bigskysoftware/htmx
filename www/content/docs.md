@@ -800,8 +800,6 @@ attribute on the elements you wish to be preserved.
 
 ### Parameters
 
-</details>
-
 By default, an element that causes a request will include its `value` if it has one.  If the element is a form it
 will include the values of all inputs within it.
 
@@ -1095,7 +1093,7 @@ You can override these settings per-element using the `hx-stream` attribute:
 
 ## Web Sockets
 
-Web Sockets are supported via and extensions.  Please see the [WebSocket extension](/extensions/ws)
+Web Sockets are supported via an extensions.  Please see the [WebSocket extension](/extensions/ws)
 page to learn more.
 
 ## History Support {#history}
@@ -1195,11 +1193,6 @@ htmx includes headers in the requests it makes:
 | `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
 
 ### Response Headers
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>which are we going to keep?</p>
-</aside>
 
 htmx supports htmx-specific response headers:
 
