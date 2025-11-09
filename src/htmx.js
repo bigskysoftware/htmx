@@ -486,7 +486,7 @@ var htmx = (() => {
                 if (confirmVal) {
                     let js = this.__extractJavascriptContent(confirmVal);
                     if (js) {
-                        if (!await this.__executeJavaScriptAsync(ctx.elt, {}, js, true)) {
+                        if (!await this.__executeJavaScriptAsync(elt, {}, js, true)) {
                             return
                         }
                     } else {
@@ -583,9 +583,9 @@ var htmx = (() => {
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
             }
-            if(ctx.response.headers.get("Etag")) {
-                ctx.elt._htmx ||= {}
-                ctx.elt._htmx.etag = ctx.response.headers.get("Etag");
+            if(ctx.response?.headers?.get?.("Etag")) {
+                ctx.sourceElement._htmx ||= {}
+                ctx.sourceElement._htmx.etag = ctx.response.headers.get("Etag");
             }
         }
 

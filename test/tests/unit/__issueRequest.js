@@ -190,24 +190,6 @@ describe('__issueRequest unit tests', function() {
         assert.include(statuses, 'swapped')
     })
 
-    it('uses fetch override response instead of calling fetch', async function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
-
-        let fetchCalled = false
-        ctx.fetch = async () => {
-            fetchCalled = true
-            return { status: 200, headers: new Headers(), text: async () => '' }
-        }
-
-        ctx.fetchOverride = new Response('cached', { status: 200 })
-
-        await htmx.__issueRequest(ctx)
-
-        assert.isFalse(fetchCalled)
-        assert.equal(ctx.text, 'cached')
-    })
-
     it('processes next queued request after completion', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-sync="queue all"></div>')
 

@@ -362,8 +362,14 @@ var htmx = (() => {
                         requestConfig[key] = configOverrides[key];
                     }
                 }
+                if (requestConfig.etag) {
+                    sourceElement._htmx ||= {}
+                    sourceElement._htmx.etag ||= requestConfig.etag
+                }
             }
-
+            if (sourceElement._htmx?.etag) {
+                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
+            }
             return ctx;
         }
 
@@ -480,7 +486,7 @@ var htmx = (() => {
                 if (confirmVal) {
                     let js = this.#extractJavascriptContent(confirmVal);
                     if (js) {
-                        if (!await this.#executeJavaScriptAsync(ctx.elt, {}, js, true)) {
+                        if (!await this.#executeJavaScriptAsync(elt, {}, js, true)) {
                             return
                         }
                     } else {
@@ -503,7 +509,7 @@ var htmx = (() => {
                 this.#extractHxHeaders(ctx);
                 if (!this.#trigger(elt, "htmx:after:request", {ctx})) return;
 
-                if(this.#handleHxHeadersAndMaybeReturnEarly(ctx)){
+                if(this.#handleHeadersAndMaybeReturnEarly(ctx)){
                     return
                 }
 
@@ -554,7 +560,7 @@ var htmx = (() => {
         }
 
         // returns true if the header aborts the current response handling
-        #handleHxHeadersAndMaybeReturnEarly(ctx) {
+        #handleHeadersAndMaybeReturnEarly(ctx) {
             if (ctx.hx.trigger) {
                 this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
             }
@@ -576,6 +582,10 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
+            }
+            if(ctx.response?.headers?.get?.("Etag")) {
+                ctx.sourceElement._htmx ||= {}
+                ctx.sourceElement._htmx.etag = ctx.response.headers.get("Etag");
             }
         }
 
