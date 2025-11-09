@@ -22,7 +22,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             sourceElement: container
         }
 
-        let result = htmx.__handleHxHeadersAndMaybeReturnEarly(ctx)
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx)
 
         assert.isNotOk(result)
         assert.isTrue(triggerFired)
@@ -34,7 +34,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             sourceElement: createProcessedHTML('<div></div>')
         }
 
-        let result = htmx.__handleHxHeadersAndMaybeReturnEarly(ctx)
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx)
 
         assert.isNotOk(result)
     })
@@ -49,7 +49,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             sourceElement: container
         }
 
-        let result = htmx.__handleHxHeadersAndMaybeReturnEarly(ctx)
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx)
 
         assert.isNotOk(result)
     })

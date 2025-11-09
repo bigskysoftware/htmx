@@ -362,8 +362,14 @@ var htmx = (() => {
                         requestConfig[key] = configOverrides[key];
                     }
                 }
+                if (requestConfig.etag) {
+                    sourceElement._htmx ||= {}
+                    sourceElement._htmx.etag ||= requestConfig.etag
+                }
             }
-
+            if (sourceElement._htmx?.etag) {
+                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
+            }
             return ctx;
         }
 
@@ -503,7 +509,7 @@ var htmx = (() => {
                 this.__extractHxHeaders(ctx);
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
-                if(this.__handleHxHeadersAndMaybeReturnEarly(ctx)){
+                if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
                     return
                 }
 
@@ -554,7 +560,7 @@ var htmx = (() => {
         }
 
         // returns true if the header aborts the current response handling
-        __handleHxHeadersAndMaybeReturnEarly(ctx) {
+        __handleHeadersAndMaybeReturnEarly(ctx) {
             if (ctx.hx.trigger) {
                 this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
             }
@@ -576,6 +582,10 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
+            }
+            if(ctx.response.headers.get("Etag")) {
+                ctx.elt._htmx ||= {}
+                ctx.elt._htmx.etag = ctx.response.headers.get("Etag");
             }
         }
 
