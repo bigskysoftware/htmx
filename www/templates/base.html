@@ -58,7 +58,7 @@
         <!-- Right side actions -->
         <div class="flex items-center gap-4">
             <!-- Search -->
-            <form action="https://google.com/search" role="search" aria-label="Sitewide" title="Search htmx.org (via Google)" class="hidden lg:flex group text-sm">
+            <form hx-boost="false" action="https://google.com/search" role="search" aria-label="Sitewide" title="Search htmx.org (via Google)" class="hidden lg:flex group text-sm">
                 <label class="relative os9-input cursor-text">
                     <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
                     <input type="text" name="q" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer"
