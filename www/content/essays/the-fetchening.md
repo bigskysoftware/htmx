@@ -54,12 +54,13 @@ The biggest internal change is that `fetch()` will replace `XMLHttpRequest` as t
 won't actually have a huge effect on most usages of htmx _except_ that the events model will necessarily change due
 to the differences between `fetch()` and `XMLHttpRequest`.
 
-### The Long National Nightmare of Implicit Attribute Inheritance Ends
+### Explicit Inheritance By Default
 
-I feel that my biggest mistake in htmx 1.0 & 2.0 was making attribute inheritance _implicit_.  I was inspired by CSS in
+I feel that the biggest mistake in htmx 1.0 & 2.0 was making attribute inheritance implicit.  I was inspired by CSS in
 doing this, and the results have been roughly the same as CSS: powerful & maddening.
 
-In htmx 4.0, attribute inheritance will be *explicit* rather than *implicit*, via the `:inherited` modifier: 
+In htmx 4.0, attribute inheritance will be explicit by default rather than implicit.  Explicit inheritance will
+be done via the `:inherited` modifier: 
 
 ```html
   <div hx-target:inherited="#output">
@@ -72,11 +73,11 @@ In htmx 4.0, attribute inheritance will be *explicit* rather than *implicit*, vi
 Here the `hx-target` attribute is explicitly declared as `inherited` on the enclosing `div` and, if it wasn't, the 
 `button` elements would not inherit the target from it.
 
-This will be the most significant upgrade change to deal with for most htmx users.
+You will be able to revert to htmx 2.0 implicit inheritance behavior via a configuration variable.
 
-### The Tyranny Of Locally Cached History Ends
+### No Locally Cached History
 
-Another constant source of pain for both us and for htmx users is history support.  htmx 2.0 stores history in local 
+Another source of pain for both us and for htmx users is history support.  htmx 2.0 stores history in local 
 cache to make navigation faster.  Unfortunately, snapshotting the DOM is often brittle because of third-party 
 modifications, hidden state, etc.  There is a terrible simplicity to the web 1.0 model of blowing everything away and
 starting over.  There are also security concerns storing history information in session storage.
@@ -99,29 +100,27 @@ Most things.
 The [core](https://dl.acm.org/doi/10.1145/3648188.3675127) functionality of htmx will remain the same, `hx-get`, `hx-post`,
 `hx-target`, `hx-boost`, `hx-swap`, `hx-trigger`, etc.
 
-Except for adding an `:inherited` modifier on a few attributes, many htmx projects will "just work" with htmx 4.  
+With a few configuration tweaks, most htmx 2.x based applications should work with htmx 4.x.
 
 These changes will make the long term maintenance & sustainability of the project much stronger.  It will also take
 pressure off the 2.0 releases, which can now focus on stability rather than contemplating new features.
 
 ## Upgrading
 
-That said, htmx 2.0 users _will_ face an upgrade project when moving to 4.0 in a way that they did not have to in moving
+htmx 2.0 users _will_ face an upgrade project when moving to 4.0 in a way that they did not have to in moving
 from 1.0 to 2.0.  
 
-I am sorry about that, and want to offer three things to address it:
+I am sorry about that, and want to offer two things to address it:
 
 * htmx 2.0 (like htmx 1.0 & intercooler.js 1.0) will be supported _in perpetuity_, so there is absolutely _no_ pressure to 
   upgrade your application: if htmx 2.0 is satisfying your hypermedia needs, you can stick with it.
-* We will create extensions that revert htmx 4 to htmx 2 behaviors as much as is feasible (e.g. Supporting the old implicit
-  attribute inheritance model, at least)
 * We will roll htmx 4.0 out slowly, over a multi-year period.  As with the htmx 1.0 -> 2.0 upgrade, there will be a long
   period where htmx 2.x is `latest` and htmx 4.x is `next`
 
 ## New Features
 
-Of course, it isn't all bad.  Beyond simplifying the implementation of htmx significantly, switching to fetch also gives 
-us the opportunity to add some nice new features to htmx
+Beyond simplifying the implementation of htmx significantly, switching to fetch also gives us the opportunity to add 
+some nice new features to htmx
 
 ### Streaming Responses & SSE in Core
 
@@ -150,7 +149,7 @@ htmx 2.0 had already grown larger than I wanted.
 In 4.0, with the complexity savings we achieved by moving to `fetch()`, we can now comfortably fit a `morphInner` and
 `morphOuter` swap into core, thanks to the excellent work of Michael West.
 
-### Explicit &lt;partial&gt; Tag Support
+### Explicit &lt;htmx-partial&gt; Tag Support
 
 htmx has, since very early on, supported a concept of "Out-of-band" swaps: content that is removed from the main HTML
 response and swapped into the DOM elsewhere.  I have always been a bit ambivalent about them, because they move away
@@ -169,7 +168,7 @@ filled by Out-of-band swaps:
 * A simple, id-based replacement
 * A more elaborate swap of partial content
 
-Therefore, we are introducing the notion of `<partial>`s in htmx 4.0
+Therefore, we are introducing the notion of `<htmx-partial>`s in htmx 4.0
 
 A partial element is, under the covers, a template element and, thus, can contain any sort of content you like.  It 
 specifies on itself all the standard htmx options regarding swapping, `hx-target` and `hx-swap` in particular, allowing
