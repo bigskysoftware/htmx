@@ -152,6 +152,18 @@ title = "Help"
   </div>
 
   <div class="team-card">
+    <img src="/img/team/deniz.png" alt="Deniz Akşimşek">
+    <div class="team-name">Deniz Akşimşek</div>
+    <div class="team-bio">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+  </div>
+
+<div class="team-card">
+    <img src="/img/team/alex.png" alt="Alex Petros">
+    <div class="team-name">Alex Petros</div>
+    <div class="team-bio">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+  </div>
+
+  <div class="team-card">
     <img src="/img/team/grug.png" alt="Carson Gross">
     <div class="team-name">Carson Gross</div>
     <div class="team-bio">Carson is an <a href="https://www.cs.montana.edu/users/grug/">academic</a> with no real-world coding experience.</div>
