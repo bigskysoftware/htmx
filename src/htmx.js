@@ -507,6 +507,10 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.__extractHxHeaders(ctx);
+                ctx.isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
+                if (!ctx.isSSE) {
+                    ctx.text = await response.text();
+                }
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
@@ -519,16 +523,13 @@ var htmx = (() => {
                     await this.__handleSSE(ctx, elt, response);
                 } else {
                     // HTTP response
-                    ctx.text = await response.text();
                     if (ctx.status === "issuing") {
                         if (ctx.hx.retarget) ctx.target = this.__resolveTarget(elt, ctx.hx.retarget);
                         if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
                         if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                         ctx.status = "response received";
                         this.__handleStatusCodes(ctx);
-                        this.__handleHistoryUpdate(ctx);
                         await this.swap(ctx);
-                        this.__handleAnchorScroll(ctx)
                         ctx.status = "swapped";
                     }
                 }
@@ -667,9 +668,7 @@ var htmx = (() => {
                         ctx.status = "stream message received";
 
                         if (!ctx.response.cancelled) {
-                            this.__handleHistoryUpdate(ctx);
                             await this.swap(ctx);
-                            this.__handleAnchorScroll(ctx);
                             ctx.status = "swapped";
                         }
                         this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
@@ -1282,6 +1281,7 @@ var htmx = (() => {
         //============================================================================================
 
         async swap(ctx) {
+            this.__handleHistoryUpdate(ctx);
             let {fragment, title} = this.__makeFragment(ctx.text);
             ctx.title = title;
             let tasks = [];
@@ -1329,6 +1329,7 @@ var htmx = (() => {
 
             this.__trigger(document, "htmx:after:swap", {ctx});
             if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+            this.__handleAnchorScroll(ctx);
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
