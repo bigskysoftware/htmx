@@ -55,7 +55,7 @@
 
 ## [2.0.3] - 2024-10-03
 * Added support for the experimental `moveBefore()` functionality in [Chrome Canary](https://www.google.com/chrome/canary/), 
-  see the [demo page](/examples/move-before) for more information.
+  see the [demo page](/patterns/move-before) for more information.
 * Fixed `revealed` event when a resize reveals an element
 * Enabled `hx-preserve` in oob-swaps
 * Better degredation of `hx-boost` on forms with query parameters in their `action`
@@ -86,7 +86,7 @@
 * Removed extensions and moved to their own repos linked off of <https://extensions.htmx.org>
 * The website now supports dark mode! (Thanks [@pokonski](https://github.com/pokonski)!)
 * The older, deprecated [SSE & WS](https://v1.htmx.org/docs/) attributes were removed TODO fix link
-* Better support for [Web Components & Shadow DOM](https://htmx.org/examples/web-components/)
+* Better support for [Web Components & Shadow DOM](https://htmx.org/patterns/web-components/)
 * HTTP `DELETE` requests now use parameters, rather than form encoded bodies, for their payload (This is in accordance w/ the spec.)
 * Module support was split into different files:
 * We now provide specific files in `/dist` for the various JavaScript module styles:
@@ -487,7 +487,7 @@
 
 ## [1.0.1] - 2020-12-04
 
-* AJAX file upload now correctly fires events, allowing for [a proper progress bar](https://htmx.org/examples/file-upload)
+* AJAX file upload now correctly fires events, allowing for [a proper progress bar](https://htmx.org/patterns/file-upload)
 * htmx api functions that expect an element now can accept a string selector instead:
    ```js
     htmx.on('#form', 'htmx:xhr:progress', function(evt) {

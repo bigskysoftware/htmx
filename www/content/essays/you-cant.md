@@ -75,7 +75,7 @@ Due to its association with the PWA trend, service workers are only ordinary amo
 to realize that this technology can also be used for regular Multi-Page Applications.
 
 <video controls>
-  <source src="/img/you-cant/log_exp_with_cache.mp4">
+  <source src="/img/you-cant/log-exp-with-cache.mp4">
 </video>
 
 In the video demonstration, we enable a service worker to cache and refresh the current page. You'll notice that there's

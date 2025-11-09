@@ -9,7 +9,7 @@ title = "Events"
 
 Htmx provides an extensive events system that can be used to modify and enhance behavior. Events are listed below.
 
-**Note:** htmx 4.x uses a new event naming convention with the pattern `htmx:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
+**Note:** htmx 4.x uses a new event naming convention with the pattern `htmx:[phase]:[action]` (e.g., `htmx:before:request`, `htmx:after:swap`).
 
 ## Control Events
 

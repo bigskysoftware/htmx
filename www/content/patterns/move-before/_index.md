@@ -35,7 +35,7 @@ the layout of a page while still preserving elements play state, focus, etc.
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
    <div>
-   <a hx-boost="true" href="/examples/move-before/details">View Details &rarr;</a>
+   <a hx-boost="true" href="/patterns/move-before/details">View Details &rarr;</a>
    </div>
 </div>
 

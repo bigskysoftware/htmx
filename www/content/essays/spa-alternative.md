@@ -115,4 +115,4 @@ efforts on what your application does, rather than on how it does it.
 
 From the [htmx developer's starter kit](https://twitter.com/htmx_org/status/1306234341056344065):
 
-![What if?](/img/what_if.png)
+![What if?](/img/what-if.png)

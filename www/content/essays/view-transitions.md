@@ -53,7 +53,7 @@ Unfortunately for HTML, CSS transitions are only available if you use JavaScript
 in order to trigger the transitions, which "vanilla" HTML can't do. In practice, this meant that only the cool kids
 using JavaScript to build SPAs got to use these tools, further cementing the _aesthetic superiority_ of SPAs.
 
-htmx, as you probably know, makes CSS Transitions [available in plain HTML](https://htmx.org/examples/animations/) via
+htmx, as you probably know, makes CSS Transitions [available in plain HTML](https://htmx.org/patterns/animations/) via
 a somewhat elaborate [swapping model](https://htmx.org/docs/#request-operations) where we take elements that are in both
 the old and new content and "settle" attributes on them. It's a neat trick and can be used to make hypermedia-driven
 application feel as buttery-smooth as well done SPA.

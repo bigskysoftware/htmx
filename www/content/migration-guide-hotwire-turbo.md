@@ -43,10 +43,9 @@ addEventListener("htmx:afterOnLoad", (event) => {
 * Intercepting or Pausing Events. `htmx:config-request` is equivalent to `turbo:before-fetch-request` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#pausing-requests)
   * `htmx:config-request` is the same as `htmx:configRequest`
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>fix or remove</p>
-</aside>
+{% construction_warning() %}
+    <p>Need to fix or remove</p>
+{% end %}
 
 See: [Event Naming](@/docs.md)
 

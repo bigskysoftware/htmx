@@ -1,6 +1,0 @@
-<svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
-  <rect width="300" height="450" fill="#ddd"/>
-  <rect x="20" y="30" width="260" height="390" fill="#fff" stroke="#999" stroke-width="2"/>
-  <text x="150" y="225" text-anchor="middle" font-family="Arial" font-size="24" fill="#666">htmx</text>
-  <text x="150" y="255" text-anchor="middle" font-family="Arial" font-size="16" fill="#999">Book Cover</text>
-</svg>

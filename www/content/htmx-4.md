@@ -1,5 +1,7 @@
 +++
 title = "Changes in htmx 4.0"
+[extra]
+table_of_contents = true
 +++
 
 htmx 4.0 is a ground up rewrite of the implementation of htmx, using the `fetch()` API.  This document outlines the 

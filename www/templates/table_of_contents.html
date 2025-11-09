@@ -1,0 +1,79 @@
+{# Table of Contents Sidebar #}
+{% set toc = page.toc | default(value=section.toc) | default(value=[]) %}
+{% if toc %}
+
+<aside id="table-of-contents" class="hidden lg:block w-64 shrink-0 sticky top-48 self-start"
+       _="init
+            -- Detect all headings (#, ##, ###) inside markdown content
+            set headings to <main :is(h2,h3,h4)/> as Array
+            js(me, headings)
+              const observer = new IntersectionObserver(
+                (entries) => entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                    _hyperscript.evaluate(`
+                      take [@data-active] from .toc-link for first of <[href*='#${entry.target.getAttribute('id')}']/>
+                    `);
+                  }
+                }),
+                { rootMargin: '-120px 0px -75% 0px', threshold: 0 }
+              );
+              headings.forEach(h => observer.observe(h));
+            end">
+    <nav class="max-h-[calc(100vh-16rem)] overflow-y-auto">
+        <h2 class="sticky top-0 z-10 text-sm font-bold text-neutral-900 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-900 mb-4 px-3 py-2">
+            Table of Contents
+        </h2>
+        <div class="space-y-0.5">
+            {% for h1 in toc %}
+            <a href="{{ h1.permalink | safe }}"
+               class="toc-link block py-1.5 px-3 text-sm
+                          text-neutral-700 dark:text-neutral-300
+                          hover:text-blue-600 dark:hover:text-blue-400
+                          hover:bg-neutral-50 dark:hover:bg-neutral-800
+                          data-active:text-blue-600
+                          data-active:dark:text-blue-400
+                          data-active:font-semibold
+                          data-active:border-l-2
+                          data-active:border-blue-600
+                          data-active:dark:border-blue-400">
+                {{ h1.title }}
+            </a>
+            {% if h1.children %}
+            {% for h2 in h1.children %}
+            <a href="{{ h2.permalink | safe }}"
+               class="toc-link block py-1.5 pl-6 pr-3 text-sm
+                                  text-neutral-700 dark:text-neutral-300
+                                  hover:text-blue-600 dark:hover:text-blue-400
+                                  hover:bg-neutral-50 dark:hover:bg-neutral-800
+                                  data-active:text-blue-600
+                                  data-active:dark:text-blue-400
+                                  data-active:font-semibold
+                                  data-active:border-l-2
+                                  data-active:border-blue-600
+                                  data-active:dark:border-blue-400">
+                {{ h2.title }}
+            </a>
+            {% if h2.children %}
+            {% for h3 in h2.children %}
+            <a href="{{ h3.permalink | safe }}"
+               class="toc-link block py-1.5 pl-9 pr-3 text-sm
+                                          text-neutral-700 dark:text-neutral-300
+                                          hover:text-blue-600 dark:hover:text-blue-400
+                                          hover:bg-neutral-50 dark:hover:bg-neutral-800
+                                          data-active:font-semibold
+                                          data-active:border-l-2
+                                          data-active:text-blue-600
+                                          data-active:dark:text-blue-400
+                                          data-active:border-blue-600
+                                          data-active:dark:border-blue-400">
+                {{ h3.title }}
+            </a>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+        </div>
+    </nav>
+</aside>
+{% endif %}

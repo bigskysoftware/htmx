@@ -41,7 +41,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 
 The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
 
-> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
+> When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response
 
 htmx is the successor to [intercooler.js](http://intercoolerjs.org)
 

@@ -72,7 +72,7 @@ var htmx = (() => {
             this.#initHtmxConfig();
             this.#initRequestIndicatorCss();
             this.#actionSelector = `[${this.#prefix("hx-action")}],[${this.#prefix("hx-get")}],[${this.#prefix("hx-post")}],[${this.#prefix("hx-put")}],[${this.#prefix("hx-patch")}],[${this.#prefix("hx-delete")}]`;
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.#prefix("hx-on:")}")]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[ starts-with(name(), "${this.#prefix("hx-on")}")]]`);
             this.#internalAPI = {
                 attributeValue: this.#attributeValue.bind(this),
                 parseTriggerSpecs: this.#parseTriggerSpecs.bind(this),
@@ -83,12 +83,13 @@ var htmx = (() => {
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.#initHistoryHandling();
-                this.process(document.body, false)
+                this.process(document.body)
             })
         }
 
         #initHtmxConfig() {
             this.config = {
+                version: '4.0.0-alpha2',
                 logAll: false,
                 prefix: "",
                 transitions: true,
@@ -109,7 +110,8 @@ var htmx = (() => {
                     pauseHidden: false
                 },
                 morphIgnore: ["data-htmx-powered"],
-                noSwap: [204],
+                noSwap: [204, 304],
+                implicitInheritance: false
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
@@ -174,31 +176,40 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        #attributeValue(elt, name, defaultVal) {
+        #attributeValue(elt, name, defaultVal, returnElt) {
             name = this.#prefix(name);
-            let appendName = name + ":append";
-            let inheritName = name + ":inherited";
-            let inheritAppendName = name + ":inherited:append";
+            let appendName = name + this.#maybeAdjustMetaCharacter(":append");
+            let inheritName = name + (this.config.implicitInheritance ? "" : this.#maybeAdjustMetaCharacter(":inherited"));
+            let inheritAppendName = name + this.#maybeAdjustMetaCharacter(":inherited:append");
 
-            if (elt.hasAttribute(name) || elt.hasAttribute(inheritName)) {
-                return elt.getAttribute(name) || elt.getAttribute(inheritName);
+            if (elt.hasAttribute(name)) {
+                return returnElt ? elt : elt.getAttribute(name);
+            }
+
+            if (elt.hasAttribute(inheritName)) {
+                return returnElt ? elt : elt.getAttribute(inheritName);
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
-                    let inheritedValue = this.#attributeValue(parent, name);
-                    return inheritedValue ? inheritedValue + "," + appendValue : appendValue;
+                    let inherited = this.#attributeValue(parent, name, undefined, returnElt);
+                    return returnElt ? inherited : (inherited ? inherited + "," + appendValue : appendValue);
+                } else {
+                    return returnElt ? elt : appendValue;
                 }
-                return appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                return this.#attributeValue(parent, name);
+                let val = this.#attributeValue(parent, name, undefined, returnElt);
+                if (!returnElt && val && this.config.implicitInheritance) {
+                    this.#triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, parent})
+                }
+                return val;
             }
-            return defaultVal;
+            return returnElt ? elt : defaultVal;
         }
 
         #tokenize(str) {
@@ -263,13 +274,13 @@ var htmx = (() => {
             if (this.#isBoosted(elt)) {
                 return this.#boostedMethodAndAction(elt, evt)
             } else {
-                let method = this.#attributeValue(elt, "hx-method") || "get";
+                let method = this.#attributeValue(elt, "hx-method") || "GET"
                 let action = this.#attributeValue(elt, "hx-action");
                 if (!action) {
                     for (let verb of this.#verbs) {
-                        let verbAttribute = this.#attributeValue(elt, "hx-" + verb);
-                        if (verbAttribute) {
-                            action = verbAttribute;
+                        let verbAction = this.#attributeValue(elt, "hx-" + verb);
+                        if (verbAction) {
+                            action = verbAction;
                             method = verb;
                             break;
                         }
@@ -351,8 +362,14 @@ var htmx = (() => {
                         requestConfig[key] = configOverrides[key];
                     }
                 }
+                if (requestConfig.etag) {
+                    sourceElement._htmx ||= {}
+                    sourceElement._htmx.etag ||= requestConfig.etag
+                }
             }
-
+            if (sourceElement._htmx?.etag) {
+                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
+            }
             return ctx;
         }
 
@@ -375,11 +392,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector === 'this') {
-                if (elt.hasAttribute(this.#prefix("hx-target"))) {
-                    return elt;
-                } else {
-                    return elt.closest(`[${this.#prefix("hx-target")}\\:inherited='this']`)
-                }
+                return this.#attributeValue(elt, "hx-target", undefined, true);
             } else if (selector != null) {
                 return this.find(elt, selector);
             } else if (this.#isBoosted(elt)) {
@@ -400,7 +413,7 @@ var htmx = (() => {
 
             if (this.#isModifierKeyClick(evt)) return
 
-            if (this.#shouldCancel(evt, elt)) evt.preventDefault()
+            if (this.#shouldCancel(evt)) evt.preventDefault()
 
             // Resolve swap target
             ctx.target = this.#resolveTarget(elt, ctx.target);
@@ -469,11 +482,11 @@ var htmx = (() => {
 
             try {
                 // Confirm dialog
-                let confirmVal = this.#attributeValue(elt, 'hx-confirm')
+                let confirmVal = this.#attributeValue(elt, 'hx-confirm');
                 if (confirmVal) {
                     let js = this.#extractJavascriptContent(confirmVal);
                     if (js) {
-                        if (!await this.#executeJavaScriptAsync(ctx.elt, {}, js, true)) {
+                        if (!await this.#executeJavaScriptAsync(elt, {}, js, true)) {
                             return
                         }
                     } else {
@@ -483,10 +496,10 @@ var htmx = (() => {
                     }
                 }
 
-                ctx.fetch ||= window.fetch
+                ctx.fetch ||= window.fetch.bind(window)
                 if (!this.#trigger(elt, "htmx:before:request", {ctx})) return;
 
-                let response = await (ctx.fetchOverride || ctx.fetch(ctx.request.action, ctx.request));
+                let response = await ctx.fetch(ctx.request.action, ctx.request);
 
                 ctx.response = {
                     raw: response,
@@ -496,7 +509,7 @@ var htmx = (() => {
                 this.#extractHxHeaders(ctx);
                 if (!this.#trigger(elt, "htmx:after:request", {ctx})) return;
 
-                if(this.#handleHxHeadersAndMaybeReturnEarly(ctx)){
+                if(this.#handleHeadersAndMaybeReturnEarly(ctx)){
                     return
                 }
 
@@ -547,7 +560,7 @@ var htmx = (() => {
         }
 
         // returns true if the header aborts the current response handling
-        #handleHxHeadersAndMaybeReturnEarly(ctx) {
+        #handleHeadersAndMaybeReturnEarly(ctx) {
             if (ctx.hx.trigger) {
                 this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
             }
@@ -569,6 +582,10 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
+            }
+            if(ctx.response?.headers?.get?.("Etag")) {
+                ctx.sourceElement._htmx ||= {}
+                ctx.sourceElement._htmx.etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -669,23 +686,56 @@ var htmx = (() => {
             }
         }
 
-        async* #parseSSE(res) {
-            let r = res.body.getReader(), d = new TextDecoder(), b = '', m = {data: '', event: '', id: '', retry: null},
-                ls, i, n, f, v;
+        async* #parseSSE(response) {
+            let reader = response.body.getReader();
+            let decoder = new TextDecoder();
+            let buffer = '';
+            let message = {data: '', event: '', id: '', retry: null};
+
             try {
-                while (1) {
-                    let {done, value} = await r.read();
+                while (true) {
+                    let {done, value} = await reader.read();
                     if (done) break;
-                    for (let l of (b += d.decode(value, {stream: 1}), ls = b.split('\n'), b = ls.pop() || '', ls))
-                        !l || l === '\r' ? m.data && (yield m, m = {data: '', event: '', id: '', retry: null}) :
-                            (i = l.indexOf(':')) > 0 && (f = l.slice(0, i), v = l.slice(i + 1).trimStart(),
-                                f === 'data' ? m.data += (m.data ? '\n' : '') + v :
-                                    f === 'event' ? m.event = v :
-                                        f === 'id' ? m.id = v :
-                                            f === 'retry' && (n = parseInt(v, 10), !isNaN(n)) ? m.retry = n : 0);
+
+                    // Decode chunk and add to buffer
+                    buffer += decoder.decode(value, {stream: true});
+                    let lines = buffer.split('\n');
+                    // Keep incomplete line in buffer
+                    buffer = lines.pop() || '';
+
+                    for (let line of lines) {
+                        // Empty line or carriage return indicates end of message
+                        if (!line || line === '\r') {
+                            if (message.data) {
+                                yield message;
+                                message = {data: '', event: '', id: '', retry: null};
+                            }
+                            continue;
+                        }
+
+                        // Parse field: value
+                        let colonIndex = line.indexOf(':');
+                        if (colonIndex <= 0) continue;
+
+                        let field = line.slice(0, colonIndex);
+                        let value = line.slice(colonIndex + 1).trimStart();
+
+                        if (field === 'data') {
+                            message.data += (message.data ? '\n' : '') + value;
+                        } else if (field === 'event') {
+                            message.event = value;
+                        } else if (field === 'id') {
+                            message.id = value;
+                        } else if (field === 'retry') {
+                            let retryValue = parseInt(value, 10);
+                            if (!isNaN(retryValue)) {
+                                message.retry = retryValue;
+                            }
+                        }
+                    }
                 }
             } finally {
-                r.releaseLock();
+                reader.releaseLock();
             }
         }
 
@@ -719,8 +769,8 @@ var htmx = (() => {
             return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
         }
 
-        #shouldCancel(evt, elt) {
-            elt = elt || evt.currentTarget
+        #shouldCancel(evt) {
+            let elt = evt.currentTarget
             let isSubmit = evt.type === 'submit' && elt?.tagName === 'FORM'
             if (isSubmit) return true
 
@@ -846,6 +896,7 @@ var htmx = (() => {
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
+                        if (this.#shouldCancel(evt)) evt.preventDefault()
                         if (this.#executeFilter(elt, evt, filter)) {
                             original(evt)
                         }
@@ -984,7 +1035,7 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt, processScripts = true) {
+        process(elt) {
             if (!elt || this.#ignore(elt)) return;
             if (!this.#trigger(elt, "htmx:before:process")) return
             for (let child of this.#queryEltAndDescendants(elt, this.#actionSelector)) {
@@ -997,9 +1048,6 @@ var htmx = (() => {
             let iter = this.#hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) this.#handleHxOnAttributes(node)
-            if (processScripts) {
-                this.#processScripts(elt)
-            }
             this.#trigger(elt, "htmx:after:process");
         }
 
@@ -1078,8 +1126,9 @@ var htmx = (() => {
         }
 
         #makeFragment(text) {
-            let response = text.replace(/<partial(\s+|>)/gi, '<template partial$1').replace(/<\/partial>/gi, '</template>');
-            // TODO - store any head tag content on the fragment for head extension
+            let response = text.replace(/<hx-partial(\s+|>)/gi, '<template partial$1').replace(/<\/hx-partial>/gi, '</template>');
+            let title = '';
+            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (m, t) => (title = t, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -1094,10 +1143,11 @@ var htmx = (() => {
                 doc = this.#parseHTML(`<template>${responseWithNoHead}</template>`);
                 fragment = doc.querySelector('template').content;
             }
+            this.#processScripts(fragment);
 
             return {
                 fragment,
-                title: doc.title
+                title
             };
         }
 
@@ -1116,18 +1166,9 @@ var htmx = (() => {
             let swapSpec = this.#parseSwapSpec(oobValue);
             if (swapSpec.target) target = swapSpec.target;
 
-            let oobElementClone = elt.cloneNode(true);
-            let fragment;
-            if (swapSpec.strip === undefined && swapSpec.style !== 'outerHTML') {
-                swapSpec.strip = true;
-            }
-            if (swapSpec.strip) {
-                fragment = oobElementClone.content || oobElementClone;
-            } else {
-                fragment = document.createDocumentFragment();
-                fragment.appendChild(oobElementClone);
-            }
-            elt.remove();
+            swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            let fragment = document.createDocumentFragment();
+            fragment.append(elt);
             if (!target && !oobValue.includes('target:')) return;
 
             tasks.push({
@@ -1182,8 +1223,7 @@ var htmx = (() => {
                 if (tokens[i + 1] === ':') {
                     let key = tokens[i], value = tokens[i = i + 2];
                     if (key === 'swap') config.swapDelay = this.parseInterval(value);
-                    else if (key === 'settle') config.settleDelay = this.parseInterval(value);
-                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip' || key === 'async') config[key] = value === 'true';
+                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip') config[key] = value === 'true';
                     else if (key === 'focus-scroll') config.focusScroll = value === 'true';
                     else if (key === 'scroll' || key === 'show') {
                         let parts = [value];
@@ -1244,6 +1284,9 @@ var htmx = (() => {
                 for (let attr of oldScript.attributes) {
                     newScript.setAttribute(attr.name, attr.value);
                 }
+                if (this.config.inlineScriptNonce) {
+                    newScript.nonce = this.config.inlineScriptNonce;
+                }
                 newScript.textContent = oldScript.textContent;
                 oldScript.replaceWith(newScript);
             }
@@ -1255,6 +1298,7 @@ var htmx = (() => {
 
         async swap(ctx) {
             let {fragment, title} = this.#makeFragment(ctx.text);
+            ctx.title = title;
             let tasks = [];
 
             // Process OOB and partials
@@ -1263,7 +1307,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Process main swap
-            let mainSwap = this.#processMainSwap(ctx, fragment, partialTasks, title);
+            let mainSwap = this.#processMainSwap(ctx, fragment, partialTasks);
             if (mainSwap) {
                 tasks.push(mainSwap);
             }
@@ -1279,9 +1323,13 @@ var htmx = (() => {
                 return
             }
 
-            // insert non-transition tasks immediately
+            // insert non-transition tasks immediately or with delay
             for (let task of nonTransitionTasks) {
-                this.#insertContent(task)
+                if (task.swapSpec?.swapDelay) {
+                    setTimeout(() => this.#insertContent(task), task.swapSpec.swapDelay);
+                } else {
+                    this.#insertContent(task)
+                }
             }
 
             // insert transition tasks in the transition queue
@@ -1295,6 +1343,7 @@ var htmx = (() => {
             }
 
             this.#trigger(document, "htmx:after:swap", {ctx});
+            if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
@@ -1307,75 +1356,72 @@ var htmx = (() => {
             // if (ctx.hx?.triggerafterswap) this.#handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
-        #processMainSwap(ctx, fragment, partialTasks, title) {
+        #processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.#parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // TODO explain this filter plz
-            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML) || !partialTasks.length) {
-                let resultFragment = document.createDocumentFragment();
+            // skip creating main swap if extracting partials resulted in empty response except for delete style
+            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML || '') || !partialTasks.length) {
                 if (ctx.select) {
-                    let selected = fragment.querySelector(ctx.select);
-                    if (selected) {
-                        if (swapSpec.strip === false) {
-                            resultFragment.append(selected);
-                        } else {
-                            resultFragment.append(...selected.childNodes);
-                        }
-                    }
-                } else {
-                    resultFragment.append(...fragment.childNodes);
+                    let selected = fragment.querySelectorAll(ctx.select);
+                    fragment = document.createDocumentFragment();
+                    fragment.append(...selected);
                 }
 
                 let mainSwap = {
                     type: 'main',
-                    fragment: resultFragment,
+                    fragment,
                     target: swapSpec.target || ctx.target,
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false),
-                    title
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
                 };
                 return mainSwap;
             }
         }
 
         #insertContent(task) {
-            if (typeof task.target === 'string') {
-                task.target = document.querySelector(task.target);
+            let {target, swapSpec, fragment} = task;
+            if (typeof target === 'string') {
+                target = document.querySelector(target);
             }
-            if (!task.target) return;
-            let swapSpec = task.swapSpec || task.modifiers;
-            let pantry = this.#handlePreservedElements(task.fragment);
-            let target = task.target, parentNode = target.parentNode;
-            let newContent = [...task.fragment.childNodes]
+            if (!target) return;
+            if (swapSpec.strip && fragment.firstElementChild) {
+                let strip = document.createDocumentFragment();
+                strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
+                fragment = strip;
+            }
+            
+            let pantry = this.#handlePreservedElements(fragment);
+            let parentNode = target.parentNode;
+            let newContent = [...fragment.childNodes]
             if (swapSpec.style === 'innerHTML') {
                 this.#captureCSSTransitions(task, target);
                 for (const child of target.children) {
                     this.#cleanup(child)
                 }
-                target.replaceChildren(...task.fragment.childNodes);
+                target.replaceChildren(...fragment.childNodes);
             } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
                     this.#captureCSSTransitions(task, parentNode);
-                    this.#insertNodes(parentNode, target, task.fragment);
+                    this.#insertNodes(parentNode, target, fragment);
                     this.#cleanup(target)
                     parentNode.removeChild(target);
                 }
             } else if (swapSpec.style === 'innerMorph') {
-                this.#morph(target, task.fragment, true);
+                this.#morph(target, fragment, true);
             } else if (swapSpec.style === 'outerMorph') {
-                this.#morph(target, task.fragment, false);
+                this.#morph(target, fragment, false);
             } else if (swapSpec.style === 'beforebegin') {
                 if (parentNode) {
-                    this.#insertNodes(parentNode, target, task.fragment);
+                    this.#insertNodes(parentNode, target, fragment);
                 }
             } else if (swapSpec.style === 'afterbegin') {
-                this.#insertNodes(target, target.firstChild, task.fragment);
+                this.#insertNodes(target, target.firstChild, fragment);
             } else if (swapSpec.style === 'beforeend') {
-                this.#insertNodes(target, null, task.fragment);
+                this.#insertNodes(target, null, fragment);
             } else if (swapSpec.style === 'afterend') {
                 if (parentNode) {
-                    this.#insertNodes(parentNode, target.nextSibling, task.fragment);
+                    this.#insertNodes(parentNode, target.nextSibling, fragment);
                 }
             } else if (swapSpec.style === 'delete') {
                 if (parentNode) {
@@ -1384,6 +1430,8 @@ var htmx = (() => {
                 }
                 return;
             } else if (swapSpec.style === 'none') {
+                return;
+            } else if (!this.#triggerExtensions(target, 'htmx:handle:swap', task)) {
                 return;
             } else {
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
@@ -1399,6 +1447,8 @@ var htmx = (() => {
             if (this.config.logAll) {
                 console.log(eventName, detail, on)
             }
+            on = this.#normalizeElement(on)
+            this.#triggerExtensions(on, this.#maybeAdjustMetaCharacter(eventName), detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
@@ -1441,8 +1491,19 @@ var htmx = (() => {
             })
         }
 
-        // on(elt, evt, callback)
-        // on(evt, callback)
+        onLoad(callback) {
+            this.on("htmx:after:init", (evt) => {
+                callback(evt.target)
+            })
+        }
+
+        takeClass(element, className, container = element.parentElement) {
+            for (let elt of this.findAll(this.#normalizeElement(container), "." + className)) {
+                elt.classList.remove(className);
+            }
+            element.classList.add(className);
+        }
+
         on(eventOrElt, eventOrCallback, callback) {
             let event;
             let elt = document;
@@ -1474,7 +1535,6 @@ var htmx = (() => {
 
         trigger(on, eventName, detail = {}, bubbles = true) {
             on = this.#normalizeElement(on)
-            this.#triggerExtensions(on, eventName, detail);
             let evt = new CustomEvent(eventName, {
                 detail,
                 cancelable: true,
@@ -1589,8 +1649,9 @@ var htmx = (() => {
 
         #handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                if (attr.startsWith(this.#prefix("hx-on:"))) {
-                    let evtName = attr.substring(this.#prefix("hx-on:").length)
+                var searchString = this.#maybeAdjustMetaCharacter(this.#prefix("hx-on:"));
+                if (attr.startsWith(searchString)) {
+                    let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
                     node.addEventListener(evtName, async (evt) => {
                         try {
@@ -2085,9 +2146,8 @@ var htmx = (() => {
 
             try {
                 if (document.startViewTransition) {
-                    let finished = document.startViewTransition(task).finished;
-                    this.#trigger(document, "htmx:before:viewTransition", {task, finished})
-                    await finished;
+                    this.#trigger(document, "htmx:before:viewTransition", {task})
+                    await document.startViewTransition(task).finished;
                     this.#trigger(document, "htmx:after:viewTransition", {task})
                 } else {
                     task();
@@ -2123,6 +2183,14 @@ var htmx = (() => {
                 return this.find(cssOrElement);
             } else {
                 return cssOrElement
+            }
+        }
+
+        #maybeAdjustMetaCharacter(string) {
+            if (this.config.metaCharacter) {
+                return string.replace(/:/g, this.config.metaCharacter);
+            } else {
+                return string;
             }
         }
     }

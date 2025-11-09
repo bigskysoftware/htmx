@@ -68,7 +68,7 @@ should feel comfortable that the htmx that they write in 2025 will look very sim
 beyond.
 
 We will consider new core features when new browser features become available, for example we
-are [already using](https://htmx.org/examples/move-before/) the experimental `moveBefore()` API on supported browsers.
+are [already using](https://htmx.org/patterns/move-before/) the experimental `moveBefore()` API on supported browsers.
 
 However, we expect most new functionality to be explored and delivered via the
 htmx [extensions API](https://htmx.org/extensions/), and will work to make the extensions API more capable where

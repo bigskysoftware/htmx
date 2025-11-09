@@ -224,8 +224,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ### elem-go
 
-- <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-counter>
-- <https://github.com/chasefleming/elem-go/tree/main/examples/htmx-fiber-todo>
+- <https://github.com/chasefleming/elem-go/tree/main/patterns/htmx-fiber-counter>
+- <https://github.com/chasefleming/elem-go/tree/main/patterns/htmx-fiber-todo>
 
 ### htmgo
 

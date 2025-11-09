@@ -1,29 +1,10 @@
 +++
 title = "Reference"
+[extra]
+table_of_contents = true
 +++
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/htmx-4">changes in htmx 4.0</a>
-</p>
-</aside>
-
-<details id="contents">
-<summary><strong>Contents</strong></summary>
-
-* [htmx Core Attributes](#attributes)
-* [htmx Additional Attributes](#attributes-additional)
-* [htmx CSS Classes](#classes)
-* [htmx Request Headers](#request_headers)
-* [htmx Response Headers](#response_headers)
-* [htmx Events](#events)
-* [htmx Extensions](/extensions)
-* [JavaScript API](#api)
-* [Configuration Options](#config)
-
-</details>
-
-## Core Attribute Reference {#attributes}
+## Core Attributes {#attributes}
 
 The most common attributes when using htmx.
 
@@ -43,7 +24,7 @@ The most common attributes when using htmx.
 
 </div>
 
-## Additional Attribute Reference {#attributes-additional}
+## Additional Attributes {#attributes-additional}
 
 All other attributes available in htmx.
 
@@ -74,7 +55,7 @@ All other attributes available in htmx.
 
 </div>
 
-## CSS Class Reference {#classes}
+## CSS Classes {#classes}
 
 <div class="info-table">
 
@@ -88,9 +69,9 @@ All other attributes available in htmx.
 
 </div>
 
-## HTTP Header Reference {#headers}
+## HTTP Headers {#headers}
 
-### Request Headers Reference {#request_headers}
+### Request Headers {#request_headers}
 
 <div class="info-table">
 
@@ -102,7 +83,7 @@ All other attributes available in htmx.
 
 </div>
 
-### Response Headers Reference {#response_headers}
+### Response Headers {#response_headers}
 
 <div class="info-table">
 
@@ -122,7 +103,7 @@ All other attributes available in htmx.
 
 </div>
 
-## Event Reference {#events}
+## Events {#events}
 
 **Note:** htmx 4 uses a new event naming convention with the pattern `htmx:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
 
@@ -164,7 +145,7 @@ All other attributes available in htmx.
 
 </div>
 
-## JavaScript API Reference {#api}
+## JavaScript API {#api}
 
 <div class="info-table">
 
@@ -188,7 +169,7 @@ All other attributes available in htmx.
 </div>
 
 
-## Configuration Reference {#config}
+## Configuration {#config}
 
 Htmx has some configuration options that can be accessed either programmatically or declaratively.  They are
 listed below:

@@ -1,0 +1,13 @@
+<aside class="max-w-3xl mx-auto p-8 mb-8 text-neutral-800 dark:text-neutral-900 bg-yellow-300 border-8 text-center [border-image:repeating-linear-gradient(45deg,#000,#000_10px,#ffcc00_10px,#ffcc00_20px)_8] not-prose">
+    <h2 class="!text-xl"><strong>🚧 Pardon our dust 🚧</strong></h2>
+    {% if body %}
+        {{ body|safe }}
+    {% else %}
+        <p class="mt-4">htmx 4.0 is under construction. Content may be outdated.</p>
+        <p class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 text-base">
+            <a href="/htmx-4/" class="os9-button">
+                View Changes
+            </a>
+        </p>
+    {% endif %}
+</aside>
