@@ -1390,7 +1390,7 @@ var htmx = (() => {
                 strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
                 fragment = strip;
             }
-            
+
             let pantry = this.__handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
@@ -1558,7 +1558,7 @@ var htmx = (() => {
             let targetElt = context.target ?
                 this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
-            if ((context.target && !targetElt) || (context.source && !sourceElt)) {
+            if ((context.target && !targetElt) && (context.source && !sourceElt)) {
                 return Promise.reject(new Error('Element not found'));
             }
 
@@ -1606,7 +1606,6 @@ var htmx = (() => {
                 } else {
                     this.ajax('GET', path, {
                         target: 'body',
-                        swap: 'outerHTML',
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
