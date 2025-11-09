@@ -66,11 +66,11 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | [`ic-indicator`](https://intercoolerjs.org/attributes/ic-indicator.html) | [`hx-indicator`](@/attributes/hx-indicator.md)
 | [`ic-limit-children`](https://intercoolerjs.org/attributes/ic-limit-children.html) | None. No direct equivalent functionality exists (TBC)
 | [`ic-local-vars`](https://intercoolerjs.org/attributes/ic-local-vars.html) | No direct equivalent. `hx-vars` could be used to facilitate.
-| [`ic-on-beforeSend`](https://intercoolerjs.org/attributes/ic-on-beforeSend.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
-| [`ic-on-beforeTrigger`](https://intercoolerjs.org/attributes/ic-on-beforeTrigger.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
-| [`ic-on-complete`](https://intercoolerjs.org/attributes/ic-on-complete.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
-| [`ic-on-error`](https://intercoolerjs.org/attributes/ic-on-error.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
-| [`ic-on-success`](https://intercoolerjs.org/attributes/ic-on-success.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:afterRequest)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-on-beforeSend`](https://intercoolerjs.org/attributes/ic-on-beforeSend.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:before:request)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-on-beforeTrigger`](https://intercoolerjs.org/attributes/ic-on-beforeTrigger.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:beforeRequest`](@/events.md#htmx:before:request)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-on-complete`](https://intercoolerjs.org/attributes/ic-on-complete.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:after:request)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-on-error`](https://intercoolerjs.org/attributes/ic-on-error.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:after:request)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
+| [`ic-on-success`](https://intercoolerjs.org/attributes/ic-on-success.html) | None. Use [Hyperscript][] in conjunction with events (e.g. [`htmx:afterRequest`](@/events.md#htmx:after:request)). See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-patch-to`](https://intercoolerjs.org/attributes/ic-patch-to.html) | [`hx-patch`](@/attributes/hx-patch.md)
 | [`ic-pause-polling`](https://intercoolerjs.org/attributes/ic-pause-polling.html) | None. Techniques like [`load polling`](@/docs.md#load_polling) could be used
 | [`ic-poll`](https://intercoolerjs.org/attributes/ic-poll.html) | None. The equivalent can be achieved by triggering a load on schedule, e.g. `<div hx-get="/news" hx-trigger="every 2s"></div>`. See the [documentation on polling](@/docs.md#polling)
@@ -148,19 +148,19 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | Intercooler | htmx |
 |-----------|-------------|
 | `log.ic` | None. Equivalent achieved via `htmx.logger`. See [`Events & Logging` documentation](@/docs.md#events)
-| `beforeAjaxSend.ic` | [`htmx:configRequest`](@/events.md#htmx:configRequest)
+| `beforeAjaxSend.ic` | [`htmx:configRequest`](@/events.md#htmx:config:request)
 | `beforeHeaders.ic` | None. No direct equivalent functionality exists (TBC)
 | `afterHeaders.ic` | None. No direct equivalent functionality exists (TBC)
-| `beforeSend.ic` | [`htmx:beforeRequest`](@/events.md#htmx:beforeRequest)
-| `success.ic` | [`htmx:afterOnLoad`](@/events.md#htmx:afterOnLoad)
-| `after.success.ic` | Approximate equivalent: [`htmx:beforeSwap`](@/events.md#htmx:beforeSwap)
-| `error.ic` | [`htmx:sendError`](@/events.md#htmx:sendError) or [`htmx:sseError`](@/events.md#htmx:sseError) or [`htmx:responseError`](@/events.md#htmx:responseError) or [`htmx:swapError`](@/events.md#htmx:swapError) or [`htmx:onLoadError`](@/events.md#htmx:onLoadError) (TBC)
-| `complete.ic` | [`htmx:afterRequest`](@/events.md#htmx:afterRequest)
+| `beforeSend.ic` | [`htmx:beforeRequest`](@/events.md#htmx:before:request)
+| `success.ic` | [`htmx:afterOnLoad`](@/events.md#htmx:after:init)
+| `after.success.ic` | Approximate equivalent: [`htmx:beforeSwap`](@/events.md#htmx:before:swap)
+| `error.ic` | [`htmx:error`](@/events.md#htmx:error)
+| `complete.ic` | [`htmx:afterRequest`](@/events.md#htmx:after:request)
 | `onPoll.ic` | No direct equivalent. When using [load polling](@/docs.md#load_polling), the [`htmx:load` event] could potentially be used
-| `handle.onpopstate.ic` | [`htmx:historyRestore`](@/events.md#htmx:historyRestore) (TBC)
-| `elementAdded.ic` | [`htmx:load`](@/events.md#htmx:load)
+| `handle.onpopstate.ic` | [`htmx:historyRestore`](@/events.md#htmx:before:restore:history) (TBC)
+| `elementAdded.ic` | [`htmx:load`](@/events.md#htmx:after:init)
 | `pushUrl.ic` | tbd
-| `beforeHistorySnapshot.ic` | [`htmx:beforeHistorySave`](@/events.md#htmx:beforeHistorySave)
+| `beforeHistorySnapshot.ic` | [`htmx:beforeHistorySave`](@/events.md#htmx:before:history:update)
 
 #### JavaScript API methods {#methods}
 
@@ -169,7 +169,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | `Intercooler.refresh(eltOrPath)` | `PathDeps.refresh()` (requires the [`path-deps`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md) extension)
 | `Intercooler.triggerRequest(elt, handler)` | [`htmx.trigger()`](@/api.md#trigger)
 | `Intercooler.processNodes(elt)` | [`htmx.process()`](@/api.md#process)
-| `Intercooler.closestAttrValue(elt, attr)` | [`htmx.closest()`](@/api.md#closest) can be used with any selector
+| `Intercooler.closestAttrValue(elt, attr)` | [`htmx.closest()`](@/api.md#) can be used with any selector
 | `Intercooler.verbFor(elt)` | None. No direct equivalent functionality exists (TBC)
 | `Intercooler.isDependent(elt1, elt2)` | None. No direct equivalent functionality exists (TBC)
 | `Intercooler.getTarget(elt1)` | None. No direct equivalent functionality exists (TBC)

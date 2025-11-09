@@ -6,7 +6,7 @@ template = "demo.html"
 This example shows how to easily reset user inputs using [`hx-on`](@/attributes/hx-on.md),
 allowing users to make multiple requests without having to manually delete their previous inputs.
 
-The inline script will run on the [`afterRequest`](@/events.md#htmx:afterRequest) event and ensures 
+The inline script will run on the [`afterRequest`](@/events.md#htmx:after:request) event and ensures 
 that the form will reset to its initial state as long as the response has a 20x status code:
 
 ```html

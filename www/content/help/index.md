@@ -146,6 +146,12 @@ title = "Help"
   </div>
 
   <div class="team-card">
+    <img src="/img/team/telroshan.png" alt="Vincent Thébaudl">
+    <div class="team-name">Vincent Thébaudl</div>
+    <div class="team-bio">A game developer who hasn't released any game yet</div>
+  </div>
+
+  <div class="team-card">
     <img src="/img/team/grug.png" alt="Carson Gross">
     <div class="team-name">Carson Gross</div>
     <div class="team-bio">Carson is an <a href="https://www.cs.montana.edu/users/grug/">academic</a> with no real-world coding experience.</div>

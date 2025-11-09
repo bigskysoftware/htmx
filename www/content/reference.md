@@ -141,12 +141,12 @@ All other attributes available in htmx.
 | [`htmx:finally:request`](@/events.md#htmx:finally:request) | triggered in the finally block after a request
 | [`htmx:before:swap`](@/events.md#htmx:before:swap) | triggered before a swap is done, allows you to configure the swap
 | [`htmx:after:swap`](@/events.md#htmx:after:swap) | triggered after new content has been swapped in
-| [`htmx:before:main:swap`](@/events.md#htmx:before:main:swap) | triggered before main content swap
-| [`htmx:after:main:swap`](@/events.md#htmx:after:main:swap) | triggered after main content swap
+| [`htmx:before:main:swap`](@/events.md#) | triggered before main content swap
+| [`htmx:after:main:swap`](@/events.md#) | triggered after main content swap
 | [`htmx:before:oob:swap`](@/events.md#htmx:before:oob:swap) | triggered before an out of band element swap
 | [`htmx:after:oob:swap`](@/events.md#htmx:after:oob:swap) | triggered after an out of band element swap
-| [`htmx:before:partial:swap`](@/events.md#htmx:before:partial:swap) | triggered before a partial element swap
-| [`htmx:after:partial:swap`](@/events.md#htmx:after:partial:swap) | triggered after a partial element swap
+| [`htmx:before:partial:swap`](@/events.md#) | triggered before a partial element swap
+| [`htmx:after:partial:swap`](@/events.md#) | triggered after a partial element swap
 | [`htmx:before:restore:history`](@/events.md#htmx:before:restore:history) | triggered before history restoration
 | [`htmx:before:history:update`](@/events.md#htmx:before:history:update) | triggered before history is updated
 | [`htmx:after:history:update`](@/events.md#htmx:after:history:update) | triggered after history has been updated
@@ -154,10 +154,13 @@ All other attributes available in htmx.
 | [`htmx:after:replace:into:history`](@/events.md#htmx:after:replace:into:history) | triggered after a url is replaced in history
 | [`htmx:error`](@/events.md#htmx:error) | triggered when an error occurs (network, response, swap, etc.)
 | [`htmx:confirm`](@/events.md#htmx:confirm) | triggered after a trigger occurs on an element, allows you to cancel (or delay) issuing the AJAX request
-| [`htmx:validation:validate`](@/events.md#htmx:validation:validate) | triggered before an element is validated
-| [`htmx:validation:failed`](@/events.md#htmx:validation:failed) | triggered when an element fails validation
-| [`htmx:validation:halted`](@/events.md#htmx:validation:halted) | triggered when a request is halted due to validation errors
-| [`htmx:trigger`](@/events.md#htmx:trigger) | triggered when a trigger condition is met
+| [`htmx:before:viewTransition`](@/events.md#htmx:before:viewTransition) | triggered before a view transition
+| [`htmx:after:viewTransition`](@/events.md#htmx:after:viewTransition) | triggered after a view transition
+| [`htmx:before:sse:stream`](@/events.md#htmx:before:sse:stream) | triggered before an SSE stream is processed
+| [`htmx:after:sse:stream`](@/events.md#htmx:after:sse:stream) | triggered after an SSE stream ends
+| [`htmx:before:sse:message`](@/events.md#htmx:before:sse:message) | triggered before an SSE message is processed
+| [`htmx:after:sse:message`](@/events.md#htmx:after:sse:message) | triggered after an SSE message is processed
+| [`htmx:before:sse:reconnect`](@/events.md#htmx:before:sse:reconnect) | triggered before reconnecting to an SSE stream
 
 </div>
 
@@ -167,30 +170,20 @@ All other attributes available in htmx.
 
 | Method | Description |
 |-------|-------------|
-| [`htmx.addClass()`](@/api.md#addClass)  | Adds a class to the given element
 | [`htmx.ajax()`](@/api.md#ajax)  | Issues an htmx-style ajax request
-| [`htmx.closest()`](@/api.md#closest)  | Finds the closest parent to the given element matching the selector
 | [`htmx.config`](@/api.md#config)  | A property that holds the current htmx config object
-| [`htmx.createEventSource`](@/api.md#createEventSource)  | A property holding the function to create SSE EventSource objects for htmx
-| [`htmx.createWebSocket`](@/api.md#createWebSocket)  | A property holding the function to create WebSocket objects for htmx
 | [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](https://htmx.org/extensions)
-| [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector
-| [`htmx.findAll()` `htmx.findAll(elt, selector)`](@/api.md#find)  | Finds all elements matching a given selector
-| [`htmx.logAll()`](@/api.md#logAll)  | Installs a logger that will log all htmx events
-| [`htmx.logger`](@/api.md#logger)  | A property set to the current logger (default is `null`)
-| [`htmx.off()`](@/api.md#off)  | Removes an event listener from the given element
-| [`htmx.on()`](@/api.md#on)  | Creates an event listener on the given element, returning it
-| [`htmx.onLoad()`](@/api.md#onLoad)  | Adds a callback handler for the `htmx:load` event
+| [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector (supports extended selectors)
+| [`htmx.findAll()`](@/api.md#findAll)  | Finds all elements matching a given selector (supports extended selectors)
+| [`htmx.forEvent()`](@/api.md#)  | Returns a promise that resolves when the specified event fires
+| [`htmx.on()`](@/api.md#on)  | Creates an event listener on the given element or document
+| [`htmx.onLoad()`](@/api.md#onLoad)  | Adds a callback handler for the `htmx:after:init` event
 | [`htmx.parseInterval()`](@/api.md#parseInterval)  | Parses an interval declaration into a millisecond value
 | [`htmx.process()`](@/api.md#process)  | Processes the given element and its children, hooking up any htmx behavior
-| [`htmx.remove()`](@/api.md#remove)  | Removes the given element
-| [`htmx.removeClass()`](@/api.md#removeClass)  | Removes a class from the given element
-| [`htmx.removeExtension()`](@/api.md#removeExtension)  | Removes an htmx [extension](https://htmx.org/extensions)
-| [`htmx.swap()`](@/api.md#swap)  | Performs swapping (and settling) of HTML content
+| [`htmx.swap()`](@/api.md#swap)  | Performs swapping of HTML content
 | [`htmx.takeClass()`](@/api.md#takeClass)  | Takes a class from other elements for the given element
-| [`htmx.toggleClass()`](@/api.md#toggleClass)  | Toggles a class from the given element
+| [`htmx.timeout()`](@/api.md#)  | Returns a promise that resolves after the specified time
 | [`htmx.trigger()`](@/api.md#trigger)  | Triggers an event on an element
-| [`htmx.values()`](@/api.md#values)  | Returns the input values associated with the given element
 
 </div>
 
@@ -202,42 +195,27 @@ listed below:
 
 <div class="info-table">
 
-| Config Variable                        | Info                                                                                                                                                                       |
-|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `htmx.config.historyEnabled`           | defaults to `true`, really only useful for testing                                                                                                                         |
-| `htmx.config.historyCacheSize`         | defaults to 10                                                                                                                                                             |
-| `htmx.config.refreshOnHistoryMiss`     | defaults to `false`, if set to `true` htmx will issue a full page refresh on history misses rather than use an AJAX request                                                |
-| `htmx.config.defaultSwapStyle`         | defaults to `outerHTML` in htmx 4                                                                                                                                          |
-| `htmx.config.defaultSwapDelay`         | defaults to 0                                                                                                                                                              |
-| `htmx.config.defaultSettleDelay`       | defaults to 20                                                                                                                                                             |
-| `htmx.config.includeIndicatorStyles`   | defaults to `true` (determines if the indicator styles are loaded)                                                                                                         |
-| `htmx.config.indicatorClass`           | defaults to `htmx-indicator`                                                                                                                                               |
-| `htmx.config.requestClass`             | defaults to `htmx-request`                                                                                                                                                 |
-| `htmx.config.addedClass`               | defaults to `htmx-added`                                                                                                                                                   |
-| `htmx.config.settlingClass`            | defaults to `htmx-settling`                                                                                                                                                |
-| `htmx.config.swappingClass`            | defaults to `htmx-swapping`                                                                                                                                                |
-| `htmx.config.allowEval`                | defaults to `true`, can be used to disable htmx's use of eval for certain features (e.g. trigger filters)                                                                  |
-| `htmx.config.allowScriptTags`          | defaults to `true`, determines if htmx will process script tags found in new content                                                                                       |
-| `htmx.config.inlineScriptNonce`        | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                    |
-| `htmx.config.inlineStyleNonce`         | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                     |
-| `htmx.config.attributesToSettle`       | defaults to `["class", "style", "width", "height"]`, the attributes to settle during the settling phase                                                                    |
-| `htmx.config.disableSelector`          | defaults to `[hx-disable], [data-hx-disable]`, htmx will not process elements with this attribute on it or a parent                                                        |
-| `htmx.config.disableInheritance`       | not applicable in htmx 4. Attribute inheritance is explicit using the `:inherited` modifier (e.g., `hx-confirm:inherited="Are you sure?"`)
-| `htmx.config.withCredentials`          | defaults to `false`, allow cross-site Access-Control requests using credentials such as cookies, authorization headers or TLS client certificates                          |
-| `htmx.config.timeout`                  | defaults to 0, the number of milliseconds a request can take before automatically being terminated                                                                         |
-| `htmx.config.scrollBehavior`           | defaults to 'instant', the scroll behavior when using the [show](@/attributes/hx-swap.md#scrolling-scroll-show) modifier with `hx-swap`. The allowed values are `instant` (scrolling should happen instantly in a single jump), `smooth` (scrolling should animate smoothly) and `auto` (scroll behavior is determined by the computed value of [scroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior)). |
-| `htmx.config.defaultFocusScroll`       | if the focused element should be scrolled into view, defaults to false and can be overridden using the [focus-scroll](@/attributes/hx-swap.md#focus-scroll) swap modifier. |
-| `htmx.config.getCacheBusterParam`      | defaults to false, if set to true htmx will append the target element to the `GET` request in the format `org.htmx.cache-buster=targetElementId`                           |
-| `htmx.config.viewTransitions`          | defaults to `true` in htmx 4, controls whether to use the [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API when swapping      |
-| `htmx.config.methodsThatUseUrlParams`  | defaults to `["get", "delete"]`, htmx will format requests with these methods by encoding their parameters in the URL, not the request body                                |
-| `htmx.config.selfRequestsOnly`         | defaults to `true`, whether to only allow AJAX requests to the same domain as the current document                                                             |
-| `htmx.config.ignoreTitle`              | defaults to `false`, if set to `true` htmx will not update the title of the document when a `title` tag is found in new content                                            |
-| `htmx.config.scrollIntoViewOnBoost`    | defaults to `true`, whether or not the target of a boosted element is scrolled into the viewport. If `hx-target` is omitted on a boosted element, the target defaults to `body`, causing the page to scroll to the top. |
-| `htmx.config.triggerSpecsCache`        | defaults to `null`, the cache to store evaluated trigger specifications into, improving parsing performance at the cost of more memory usage. You may define a simple object to use a never-clearing cache, or implement your own system using a [proxy object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy) |
-| `htmx.config.responseHandling`         | the default [Response Handling](@/docs.md#response-handling) behavior for response status codes can be configured here to either swap or error                             |
-| `htmx.config.allowNestedOobSwaps`      | defaults to `true`, whether to process OOB swaps on elements that are nested within the main response element. See [Nested OOB Swaps](@/attributes/hx-swap-oob.md#nested-oob-swaps). |
-| `htmx.config.historyRestoreAsHxRequest`| defaults to `true`, Whether to treat history cache miss full page reload requests as a "HX-Request" by returning this response header. This should always be disabled when using HX-Request header to optionally return partial responses                                                                                                         |
-| `htmx.config.reportValidityOfForms`    | defaults to `false`, Whether to report input validation errors to the end user and update focus to the first input that fails validation. This should always be enabled as this matches default browser form submit behaviour                                                                                                                     |
+| Config Variable                   | Info                                                                                                                                                                                                                                                                       |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `htmx.config.logAll`              | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                                                                                                                                |
+| `htmx.config.prefix`              | defaults to `""` (empty string), allows you to use a custom prefix for htmx attributes (e.g., `"data-hx-"` to use `data-hx-get` instead of `hx-get`)                                                                                                                       |
+| `htmx.config.transitions`         | defaults to `true`, whether to use view transitions when swapping content (if browser supports it)                                                                                                                                                                         |
+| `htmx.config.history`             | defaults to `true`, whether to enable history support (push/replace URL)                                                                                                                                                                                                   |
+| `htmx.config.historyReload`       | defaults to `false`, if set to `true` htmx will do a full page reload on history navigation instead of an AJAX request                                                                                                                                                     |
+| `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                                                                                                                            |
+| `htmx.config.defaultSwap`         | defaults to `innerHTML`                                                                                                                                                                                                                                                    |
+| `htmx.config.indicatorClass`      | defaults to `htmx-indicator`                                                                                                                                                                                                                                               |
+| `htmx.config.requestClass`        | defaults to `htmx-request`                                                                                                                                                                                                                                                 |
+| `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                                                                                                                         |
+| `htmx.config.defaultTimeout`      | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                                                                                                                      |
+| `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                    |
+| `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                     |
+| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                         |
+| `htmx.config.streams`             | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `mode` (`'once'` or `'continuous'`), `maxRetries` (default: `Infinity`), `initialDelay` (default: `500`ms), `maxDelay` (default: `30000`ms), `pauseHidden` (default: `false`) |
+| `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                             |
+| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
+| `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
+| `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                                   |
 
 
 </div>

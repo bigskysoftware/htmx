@@ -4,12 +4,14 @@ title = "Events"
 
 <aside class="under-construction">
   <strong>🚧 Pardon our dust 🚧</strong>
-  <p>These docs are NOT up to date with the htmx 4.0 changes and are in flux! See <a href="/htmx-4">changes in htmx 4.0</a>
-</p>
+  <p>These docs are being updated for htmx 4.0. See <a href="/migration-guide-htmx-4#event-name-changes">the migration guide</a> for a complete mapping of htmx 2.x event names to htmx 4.x event names.</p>
 </aside>
 
-Htmx provides an extensive events system that can be used to modify and enhance behavior.  Events
-are listed below.
+Htmx provides an extensive events system that can be used to modify and enhance behavior. Events are listed below.
+
+**Note:** htmx 4.x uses a new event naming convention with the pattern `htmx:phase:action` (e.g., `htmx:before:request`, `htmx:after:swap`).
+
+## Control Events
 
 ### Event - `htmx:abort` {#htmx:abort}
 
@@ -22,174 +24,6 @@ If you send an `htmx:abort` event to an element making a request, it will abort 
 <button onclick="htmx.trigger('#request-button', 'htmx:abort')">Cancel Request</button>
 ```
 
-### Event - `htmx:afterOnLoad` {#htmx:afterOnLoad}
-
-This event is triggered after an AJAX `onload` has finished.  Note that this does not mean that the content
-has been swapped or settled yet, only that the request has finished.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:afterProcessNode` {#htmx:afterProcessNode}
-
-This event is triggered after htmx has initialized a DOM node.  It can be useful for extensions to build additional features onto a node.
-
-##### Details
-
-* `detail.elt` - the element being initialized
-
-### Event - `htmx:afterRequest` {#htmx:afterRequest}
-
-This event is triggered after an AJAX request has finished either in the case of a successful request (although
-one that may have returned a remote error code such as a `404`) or in a network error situation.  This event
-can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the
-  `htmx:beforeSwap` event, else false
-* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the
-  `htmx:beforeSwap` event, else false
-
-### Event - `htmx:afterSettle` {#htmx:afterSettle}
-
-
-##### Details
-
-* `detail.elt` - the updated element
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:afterSwap` {#htmx:afterSwap}
-
-This event is triggered after new content has been [swapped into the DOM](@/docs.md#swapping).
-
-##### Details
-
-* `detail.elt` - the swapped in element
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:beforeCleanupElement` {#htmx:beforeCleanupElement}
-
-This event is triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM.
-
-##### Details
-
-* `detail.elt` - the element to be cleaned up
-
-### Event - `htmx:beforeOnLoad` {#htmx:beforeOnLoad}
-
-This event is triggered before any response processing occurs.  If you call `preventDefault()` on the event to cancel it, no swap will occur.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:beforeProcessNode` {#htmx:beforeProcessNode}
-
-This event is triggered before htmx initializes a DOM node and has processed all of its `hx-` attributes.  This gives extensions and other external code the ability to modify the contents of a DOM node before it is processed.
-
-##### Details
-
-* `detail.elt` - the element being initialized
-
-### Event - `htmx:beforeRequest` {#htmx:beforeRequest}
-
-This event is triggered before an AJAX request is issued.  If you call `preventDefault()` on the event to cancel it, no request will occur.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.boosted` - true if the request is via an element using boosting
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:beforeSend` {#htmx:beforeSend}
-
-This event is triggered right before a request is sent.  You may not cancel the request with this event.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:beforeSwap` {#htmx:beforeSwap}
-
-This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).
-Most values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.
-If you call `preventDefault()` on the event to cancel it, no swap will occur.
-
-You can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.
-
-##### Details
-
-* `detail.elt` - the target of the swap
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.boosted` - true if the request is via an element using boosting
-* `detail.requestConfig` - the configuration of the AJAX request
-* `detail.requestConfig.elt` - the element that dispatched the request
-* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
-* `detail.ignoreTitle` - if `true` any title tag in the response will be ignored
-* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events
-* `detail.serverResponse` - the server response as text to be used for the swap
-* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value
-* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value
-* `detail.target` - the target of the swap
-
-### Event - `htmx:beforeTransition` {#htmx:beforeTransition}
-
-This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) 
-wrapped swap occurs.  If you call `preventDefault()` on the event to cancel it, the View Transition will not occur and the normal swapping logic will
-happen instead.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.boosted` - true if the request is via an element using boosting
-* `detail.requestConfig` - the configuration of the AJAX request
-* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)
-* `detail.target` - the target of the swap
-
-### Event - `htmx:configRequest` {#htmx:configRequest}
-
-This event is triggered after htmx has collected parameters for inclusion in the request.  It can be
-used to include or update the parameters that htmx will send:
-
-```javascript
-document.body.addEventListener('htmx:configRequest', function(evt) {
-    evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
-});
-```
-
-Note that if an input value appears more than once the value in the `parameters` object will be an array, rather
-than a single value.
-
-##### Details
-
-* `detail.parameters` - the parameters that will be submitted in the request
-* `detail.headers` - the request headers
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.verb` - the HTTP verb in use
-
 ### Event - `htmx:confirm` {#htmx:confirm}
 
 This event is fired on every trigger for a request (not just on elements that have a hx-confirm attribute).
@@ -198,579 +32,340 @@ If you call `preventDefault()` on the event, it will not issue the given request
 The `detail` object contains a function, `evt.detail.issueRequest(skipConfirmation=false)`, that can be used to issue the actual AJAX request at a later point.
 Combining these two features allows you to create an asynchronous confirmation dialog.
 
-Here is a basic example that shows the basic usage of the `htmx:confirm` event without altering the default behavior:
-
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
-  // 0. To modify the behavior only for elements with the hx-confirm attribute,
-  //    check if evt.detail.target.hasAttribute('hx-confirm')
+  if (!evt.detail.target.hasAttribute('hx-confirm')) return;
 
-  // 1. Prevent the default behavior (this will prevent the request from being issued)
-  evt.preventDefault();
-  
-  // 2. Do your own logic here
-  console.log(evt.detail)
-
-  // 3. Manually issue the request when you are ready
-  evt.detail.issueRequest(); // or evt.detail.issueRequest(true) to skip the built-in window.confirm()
-});
-```
-
-And here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert="{question}"` attribute on it:
-
-```javascript
-document.body.addEventListener('htmx:confirm', function(evt) {
-  // 1. The requirement to show the sweet alert is that the element has a confirm-with-sweet-alert
-  //    attribute on it, if it doesn't we can return early and let the default behavior happen
-  if (!evt.detail.target.hasAttribute('confirm-with-sweet-alert')) return
-
-  // 2. Get the question from the attribute
-  const question = evt.detail.target.getAttribute('confirm-with-sweet-alert');
-
-  // 3. Prevent the default behavior (this will prevent the request from being issued)
   evt.preventDefault();
 
-  // 4. Show the sweet alert
-  swal({
-    title: "Are you sure?",
-    text: question || "Are you sure you want to continue?",
-    icon: "warning",
-    buttons: true,
-    dangerMode: true,
-  }).then((confirmed) => {
-    if (confirmed) {
-      // 5. If the user confirms, we can manually issue the request
-      evt.detail.issueRequest(true); // true to skip the built-in window.confirm()
-    }
-  });
-});
-```
-
-##### Details
-
-* `detail.elt` - the element in question
-* `detail.etc` - additional request information (mostly unused)
-* `detail.issueRequest(skipConfirmation=false)` - a function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!), if skipConfirmation is `true` the original `window.confirm()` is not executed
-* `detail.path` - the path of the request
-* `detail.target` - the element that triggered the request
-* `detail.triggeringEvent` - the original event that triggered this request
-* `detail.verb` - the verb of the request (e.g. `GET`)
-* `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present)
-
-### Event - `htmx:historyCacheError` {#htmx:historyCacheError}
-
-This event is triggered when an attempt to save the cache to `localStorage` fails
-
-##### Details
-
-* `detail.cause` - the `Exception` that was thrown when attempting to save history to `localStorage`
-
-### Event - `htmx:historyCacheHit` {#htmx:historyCacheHit}
-
-This event is triggered when a cache hit occurs when restoring history
-
-You can prevent the history restoration via `preventDefault()` to allow alternative restore handling.
-You can also override the details of the history restoration request in this event if required
-
-##### Details
-
-* `detail.historyElt` - the history element or body that will get replaced
-* `detail.item.content` - the content of the cache that will be swapped in
-* `detail.item.title` - the page title to update from the cache
-* `detail.path` - the path and query of the page being restored
-* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
-
-### Event - `htmx:historyCacheMiss` {#htmx:historyCacheMiss}
-
-This event is triggered when a cache miss occurs when restoring history
-
-You can prevent the history restoration via `preventDefault()` to allow alternative restore handling.
-You can also modify the xhr request or other details before it makes the the request to restore history
-
-##### Details
-
-* `detail.historyElt` - the history element or body that will get replaced
-* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration
-* `detail.path` - the path and query of the page being restored
-* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
-
-### Event - `htmx:historyCacheMissLoadError` {#htmx:historyCacheMissLoadError}
-
-This event is triggered when a cache miss occurs and a response has been retrieved from the server
-for the content to restore, but the response is an error (e.g. `404`)
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.path` - the path and query of the page being restored
-
-### Event - `htmx:historyCacheMissLoad` {#htmx:historyCacheMissLoad}
-
-This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server
-for the content to restore
-
-You can modify the details before it makes the swap to restore the history
-
-##### Details
-
-* `detail.historyElt` - the history element or body that will get replaced
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.path` - the path and query of the page being restored
-* `detail.response` - the response text that will be swapped in
-* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'
-
-### Event - `htmx:historyRestore` {#htmx:historyRestore}
-
-This event is triggered when htmx handles a history restoration action
-
-##### Details
-
-* `detail.path` - the path and query of the page being restored
-* `detail.cacheMiss` - set `true` if restore was a cache miss
-* `detail.serverResponse` - with cache miss has the response text replaced
-* `detail.item` - with cache hit the cache details that was restored
-
-### Event - `htmx:beforeHistorySave` {#htmx:beforeHistorySave}
-
-This event is triggered before the content is saved in the history cache.
-
-You can modify the contents of the historyElt to remove 3rd party javascript changes so a clean copy of the content can be backed up to the history cache
-
-##### Details
-
-* `detail.path` - the path and query of the page being saved
-* `detail.historyElt` - the history element about to be saved
-
-### Event - `htmx:load` {#htmx:load}
-
-This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
-
-##### Details
-
-* `detail.elt` - the newly added element
-
-### Event - `htmx:noSSESourceError` {#htmx:noSSESourceError}
-
-This event is triggered when an element refers to an SSE event in its trigger, but no parent SSE source has been defined
-
-##### Details
-
-* `detail.elt` - the element with the bad SSE trigger
-
-### Event - `htmx:oobAfterSwap` {#htmx:oobAfterSwap}
-
-This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to an [after swap event](#htmx:afterSwap)
-
-##### Details
-
-* `detail.elt` - the swapped in element
-* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
-* `detail.target` - the target of the swap
-* `detail.fragment` - the response fragment
-
-### Event - `htmx:oobBeforeSwap` {#htmx:oobBeforeSwap}
-
-This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to a [before swap event](#htmx:beforeSwap)
-
-##### Details
-
-* `detail.elt` - the target of the swap
-* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
-* `detail.target` - the target of the swap
-* `detail.fragment` - the response fragment
-
-### Event - `htmx:oobErrorNoTarget` {#htmx:oobErrorNoTarget}
-
-This event is triggered when an [out of band swap](@/docs.md#oob_swaps) does not have a corresponding element
-in the DOM to switch with.
-
-##### Details
-
-* `detail.content` - the element with the bad oob `id`
-
-### Event - `htmx:onLoadError` {#htmx:onLoadError}
-
-This event is triggered when an error occurs during the `load` handling of an AJAX call
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.exception` - the exception that occurred
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:prompt` {#htmx:prompt}
-
-This event is triggered after a prompt has been shown to the user with the `hx-prompt`
-attribute.  If this event is cancelled, the AJAX request will not occur.
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.prompt` - the user response to the prompt
-
-### Event - `htmx:beforeHistoryUpdate` {#htmx:beforeHistoryUpdate}
-
-This event is triggered before a history update is performed. It can be
-used to modify the `path` or `type` used to update the history.
-
-##### Details
-
-* `detail.history` - the `path` and `type` (push, replace) for the history update
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:pushedIntoHistory` {#htmx:pushedIntoHistory}
-
-This event is triggered after a URL has been pushed into history.
-
-##### Details
-
-* `detail.path` - the path and query of the URL that has been pushed into history
-
-### Event - `htmx:replacedInHistory` {#htmx:replacedInHistory}
-
-This event is triggered after a URL has been replaced in history.
-
-##### Details
-
-* `detail.path` - the path and query of the URL that has been replaced in history
-
-### Event - `htmx:responseError` {#htmx:responseError}
-
-This event is triggered when an HTTP error response occurs
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:sendAbort` {#htmx:sendAbort}
-
-This event is triggered when a request is aborted
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:sendError` {#htmx:sendError}
-
-This event is triggered when a network error prevents an HTTP request from occurring
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:sseError` {#htmx:sseError}
-
-This event is triggered when an error occurs with an SSE source
-
-##### Details
-
-* `detail.elt` - the element with the bad SSE source
-* `detail.error` - the error
-* `detail.source` - the SSE source
-
-### Event - `htmx:swapError` {#htmx:swapError}
-
-This event is triggered when an error occurs during the swap phase
-
-##### Details
-
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:targetError` {#htmx:targetError}
-
-This event is triggered when a bad selector is used for a [`hx-target`](@/attributes/hx-target.md) attribute (e.g. an
-element ID without a preceding `#`)
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-* `detail.target` - the bad CSS selector
-
-### Event - `htmx:timeout` {#htmx:timeout}
-
-This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.
-
-##### Details
-
-* `detail.elt` - the element that dispatched the request
-* `detail.xhr` - the `XMLHttpRequest`
-* `detail.target` - the target of the request
-* `detail.requestConfig` - the configuration of the AJAX request
-
-### Event - `htmx:trigger` {#htmx:trigger}
-
-This event is triggered whenever an AJAX request would be, even if no AJAX request is specified. It
-is primarily intended to allow `hx-trigger` to execute client-side scripts; AJAX requests have more
-granular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [`htmx:afterRequest`](#htmx:afterRequest).
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-
-### Event - `htmx:validateUrl` {#htmx:validateUrl}
-
-This event is triggered before a request is made, allowing you to validate the URL that htmx is going to request.  If
-`preventDefault()` is invoked on the event, the request will not be made.
-
-```javascript
-document.body.addEventListener('htmx:validateUrl', function (evt) {
-  // only allow requests to the current server as well as myserver.com
-  if (!evt.detail.sameHost && evt.detail.url.hostname !== "myserver.com") {
-    evt.preventDefault();
+  // Your custom confirmation logic here
+  if (confirm("Are you sure?")) {
+    evt.detail.issueRequest(true); // true to skip built-in confirm
   }
 });
 ```
 
 ##### Details
 
-* `detail.elt` - the element that triggered the request
-* `detail.url` - the URL Object representing the URL that a request will be sent to.
-* `detail.sameHost` - will be `true` if the request is to the same host as the document
+* `detail.elt` - the element in question
+* `detail.issueRequest(skipConfirmation=false)` - function to issue the request
+* `detail.path` - the path of the request
+* `detail.target` - the element that triggered the request
+* `detail.triggeringEvent` - the original event that triggered this request
+* `detail.verb` - the verb of the request (e.g. `GET`)
+* `detail.question` - the question from `hx-confirm` attribute (if present)
 
-### Event - `htmx:validation:validate` {#htmx:validation:validate}
+## Lifecycle Events
 
-This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method
-to implement custom validation rules.
+### Event - `htmx:before:init` {#htmx:before:init}
 
-```html
-<form hx-post="/test">
-  <input _="on htmx:validation:validate
-               if my.value != 'foo'
-                  call me.setCustomValidity('Please enter the value foo')
-               else
-                  call me.setCustomValidity('')"
-         name="example">
-</form>
+**Replaces:** `htmx:beforeProcessNode`, `htmx:beforeOnLoad`
+
+This event is triggered before htmx initializes a DOM node and processes its `hx-` attributes.
+
+##### Details
+
+* `detail.elt` - the element being initialized
+
+### Event - `htmx:after:init` {#htmx:after:init}
+
+**Replaces:** `htmx:afterProcessNode`, `htmx:afterOnLoad`, `htmx:load`
+
+This event is triggered after htmx has initialized a DOM node. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
+
+##### Details
+
+* `detail.elt` - the newly initialized element
+
+### Event - `htmx:before:cleanup` {#htmx:before:cleanup}
+
+**Replaces:** `htmx:beforeCleanupElement`
+
+This event is triggered before htmx disables or removes an element from the DOM.
+
+##### Details
+
+* `detail.elt` - the element to be cleaned up
+
+### Event - `htmx:after:cleanup` {#htmx:after:cleanup}
+
+This event is triggered after htmx has cleaned up an element.
+
+##### Details
+
+* `detail.elt` - the element that was cleaned up
+
+## Request Events
+
+### Event - `htmx:config:request` {#htmx:config:request}
+
+**Replaces:** `htmx:configRequest`
+
+This event is triggered before the request is made, allowing you to configure request parameters, headers, and other options.
+
+```javascript
+document.body.addEventListener('htmx:config:request', function(evt) {
+  let ctx = evt.detail.ctx;
+  // Modify request configuration
+  ctx.request.headers['X-Auth-Token'] = getToken();
+});
 ```
 
 ##### Details
 
-* `detail.elt` - the element to be validated
-
-### Event - `htmx:validation:failed` {#htmx:validation:failed}
-
-This event is triggered when an element fails validation. If `preventDefault()` is invoked on the event, the reportValidity() enabled by `htmx.config.reportValidityOfForms` will not be called.
-
-##### Details
-
-* `detail.elt` - the element that failed validation
-* `detail.message` - the validation error message
-* `detail.validity` - the validity object, which contains properties specifying how validation failed
-
-### Event - `htmx:validation:halted` {#htmx:validation:halted}
-
-This event is triggered when a request is halted due to validation errors.
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-* `detail.errors` - an array of error objects with the invalid elements and errors associated with them
-
-### Event - `htmx:xhr:abort` {#htmx:xhr:abort}
-
-This event is triggered when an ajax request aborts
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-
-### Event - `htmx:xhr:loadstart` {#htmx:xhr:loadstart}
-
-This event is triggered when an ajax request starts
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-
-### Event - `htmx:xhr:loadend` {#htmx:xhr:loadend}
-
-This event is triggered when an ajax request finishes
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-
-### Event - `htmx:xhr:progress` {#htmx:xhr:progress}
-
-This event is triggered periodically when an ajax request that supports progress is in flight
-
-##### Details
-
-* `detail.elt` - the element that triggered the request
-
----
-
-## New Events (htmx 4) {#new-events}
-
-The following events are new in htmx 4 and need documentation. They use the new `htmx:phase:action` naming convention.
-
-### Event - `htmx:before:init` {#htmx:before:init}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
-
-### Event - `htmx:after:init` {#htmx:after:init}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
-
-### Event - `htmx:before:cleanup` {#htmx:before:cleanup}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
-
-### Event - `htmx:after:cleanup` {#htmx:after:cleanup}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
-
-### Event - `htmx:config:request` {#htmx:config:request}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+* `detail.ctx` - the request context object containing:
+  * `ctx.sourceElement` - the element that triggered the request
+  * `ctx.request` - the request configuration with properties:
+    * `action` - the URL
+    * `method` - the HTTP method
+    * `headers` - headers object
+    * `body` - request body (FormData)
+    * `credentials`, `mode`, `cache`, etc. - fetch options
 
 ### Event - `htmx:before:request` {#htmx:before:request}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:beforeRequest`, `htmx:beforeSend`
+
+This event is triggered before an AJAX request is issued. If you call `preventDefault()`, no request will occur.
+
+##### Details
+
+* `detail.ctx` - the request context object
 
 ### Event - `htmx:after:request` {#htmx:after:request}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:afterRequest`
+
+This event is triggered after an AJAX request has completed (whether successful or not).
+
+##### Details
+
+* `detail.ctx` - the request context object
 
 ### Event - `htmx:finally:request` {#htmx:finally:request}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+This event is always triggered after a request completes, similar to a `finally` block. Useful for cleanup operations.
+
+##### Details
+
+* `detail.ctx` - the request context object
+
+## Swap Events
 
 ### Event - `htmx:before:swap` {#htmx:before:swap}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:beforeSwap`
+
+This event is triggered before any new content has been swapped into the DOM.
+If you call `preventDefault()`, no swap will occur.
+
+You can modify swap behavior by setting properties on `detail.ctx`:
+
+```javascript
+document.body.addEventListener('htmx:before:swap', function(evt) {
+  let ctx = evt.detail.ctx;
+  // Modify swap behavior
+  ctx.swap = 'outerHTML';
+  ctx.target = document.querySelector('#other-target');
+});
+```
+
+##### Details
+
+* `detail.ctx` - the request context object
 
 ### Event - `htmx:after:swap` {#htmx:after:swap}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:afterSwap`, `htmx:afterSettle`
 
-### Event - `htmx:before:main:swap` {#htmx:before:main:swap}
+This event is triggered after new content has been swapped into the DOM.
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+##### Details
 
-### Event - `htmx:after:main:swap` {#htmx:after:main:swap}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+* `detail.ctx` - the request context object
 
 ### Event - `htmx:before:oob:swap` {#htmx:before:oob:swap}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:oobBeforeSwap`
+
+This event is triggered before an out-of-band swap occurs.
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.fragment` - the OOB fragment being swapped
 
 ### Event - `htmx:after:oob:swap` {#htmx:after:oob:swap}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:oobAfterSwap`
 
-### Event - `htmx:before:partial:swap` {#htmx:before:partial:swap}
+This event is triggered after an out-of-band swap occurs.
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+##### Details
 
-### Event - `htmx:after:partial:swap` {#htmx:after:partial:swap}
+* `detail.ctx` - the request context object
+* `detail.fragment` - the OOB fragment that was swapped
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
-
-### Event - `htmx:before:restore:history` {#htmx:before:restore:history}
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+## History Events
 
 ### Event - `htmx:before:history:update` {#htmx:before:history:update}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:beforeHistoryUpdate`, `htmx:beforeHistorySave`
+
+This event is triggered before history is updated. You can modify the path or prevent the update.
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.path` - the path to be saved in history
 
 ### Event - `htmx:after:history:update` {#htmx:after:history:update}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+This event is triggered after history has been updated.
+
+##### Details
+
+* `detail.ctx` - the request context object
 
 ### Event - `htmx:after:push:into:history` {#htmx:after:push:into:history}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:pushedIntoHistory`
+
+This event is triggered after a URL has been pushed into history.
+
+##### Details
+
+* `detail.path` - the path that was pushed
 
 ### Event - `htmx:after:replace:into:history` {#htmx:after:replace:into:history}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:replacedInHistory`
+
+This event is triggered after a URL has been replaced in history.
+
+##### Details
+
+* `detail.path` - the path that was replaced
+
+### Event - `htmx:before:restore:history` {#htmx:before:restore:history}
+
+**Replaces:** `htmx:historyCacheMiss`, `htmx:historyRestore`
+
+This event is triggered before history restoration occurs (back/forward navigation).
+
+##### Details
+
+* `detail.path` - the path being restored
+
+## Error Event
 
 ### Event - `htmx:error` {#htmx:error}
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>Document this event</p>
-</aside>
+**Replaces:** `htmx:responseError`, `htmx:sendError`, `htmx:sendAbort`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`, `htmx:onLoadError`
+
+This event consolidates all error events into a single event. It is triggered when an error occurs during any phase of the htmx request lifecycle.
+
+```javascript
+document.body.addEventListener('htmx:error', function(evt) {
+  let ctx = evt.detail.ctx;
+  console.error('Error:', ctx.status, evt.detail.error);
+});
+```
+
+##### Details
+
+* `detail.ctx` - the request context object containing:
+  * `ctx.status` - a string describing the error
+  * `ctx.response` - the response object (if available)
+* `detail.error` - the error that occurred (if available)
+
+## View Transition Events
+
+### Event - `htmx:before:viewTransition` {#htmx:before:viewTransition}
+
+**Replaces:** `htmx:beforeTransition`
+
+This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) wrapped swap occurs. If you call `preventDefault()`, the View Transition will not occur and normal swapping will happen instead.
+
+##### Details
+
+* `detail.ctx` - the request context object
+
+### Event - `htmx:after:viewTransition` {#htmx:after:viewTransition}
+
+This event is triggered after a View Transition completes.
+
+##### Details
+
+* `detail.ctx` - the request context object
+
+## Server-Sent Events (SSE)
+
+### Event - `htmx:before:sse:stream` {#htmx:before:sse:stream}
+
+This event is triggered before an SSE (Server-Sent Events) stream is processed. You can call `preventDefault()` to cancel the stream processing.
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.stream` - the SSE stream configuration
+
+### Event - `htmx:after:sse:stream` {#htmx:after:sse:stream}
+
+This event is triggered after an SSE stream ends (either naturally or due to error/cancellation).
+
+##### Details
+
+* `detail.ctx` - the request context object
+
+### Event - `htmx:before:sse:message` {#htmx:before:sse:message}
+
+This event is triggered before each SSE message is processed. You can set `detail.message.cancelled = true` to skip processing this message.
+
+```javascript
+document.body.addEventListener('htmx:before:sse:message', function(evt) {
+  // Skip messages of certain type
+  if (evt.detail.message.event === 'heartbeat') {
+    evt.detail.message.cancelled = true;
+  }
+});
+```
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.message` - the SSE message object with properties:
+  * `data` - the message data
+  * `event` - the event type (if specified)
+  * `id` - the message ID (if specified)
+  * `cancelled` - set to `true` to skip this message
+
+### Event - `htmx:after:sse:message` {#htmx:after:sse:message}
+
+This event is triggered after an SSE message has been processed and swapped.
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.message` - the SSE message object
+
+### Event - `htmx:before:sse:reconnect` {#htmx:before:sse:reconnect}
+
+This event is triggered before reconnecting to an SSE stream (when using `continuous` mode). You can set `detail.reconnect.cancelled = true` to prevent the reconnection.
+
+```javascript
+document.body.addEventListener('htmx:before:sse:reconnect', function(evt) {
+  // Stop reconnecting after 10 attempts
+  if (evt.detail.reconnect.attempt > 10) {
+    evt.detail.reconnect.cancelled = true;
+  }
+});
+```
+
+##### Details
+
+* `detail.ctx` - the request context object
+* `detail.reconnect` - the reconnection configuration with properties:
+  * `attempt` - the reconnection attempt number
+  * `delay` - the delay before reconnection (in milliseconds)
+  * `cancelled` - set to `true` to cancel the reconnection
