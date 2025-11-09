@@ -22,7 +22,6 @@ The `queue` modifier can take an additional argument indicating exactly how to q
 
 ## Notes
 
-* `hx-sync` is inherited and can be placed on a parent element
 
 This example resolves a race condition between a form's submit request and an individual input's validation request. Normally, without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to `/validate` and `/store`. Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if a form request is present or starts while the input request is in flight.
 

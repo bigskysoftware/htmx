@@ -18,7 +18,3 @@ Here is an example that selects a subset of the response content:
 
 So this button will issue a `GET` to `/info` and then select the element with the id `info-detail`,
 which will replace the entire button in the DOM.
-
-## Notes
-
-* `hx-select` is inherited and can be placed on a parent element

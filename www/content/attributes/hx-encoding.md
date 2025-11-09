@@ -12,7 +12,3 @@ encoding to `multipart/form-data`, usually to support file uploads in an ajax re
 The value of this attribute should be `multipart/form-data`.
 
 The `hx-encoding` tag may be placed on parent elements.
-
-## Notes
-
-* `hx-encoding` is inherited and can be placed on a parent element

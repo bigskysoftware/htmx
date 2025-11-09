@@ -28,5 +28,4 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
 
 ## Notes
 
-* `hx-headers` is inherited and can be placed on a parent element.
 * A child declaration of a header overrides a parent declaration.

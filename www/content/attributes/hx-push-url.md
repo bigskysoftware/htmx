@@ -38,5 +38,4 @@ This will push the URL `/account/home' into the location history.
 
 ## Notes
 
-* `hx-push-url` is inherited and can be placed on a parent element
 * The [`HX-Push-Url` response header](@/headers/hx-push-url.md) has similar behavior and can override this attribute.

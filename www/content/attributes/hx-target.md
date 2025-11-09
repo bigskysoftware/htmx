@@ -39,7 +39,3 @@ This example uses `hx-target="this"` to make a link that updates itself when cli
 ```html
 <a hx-post="/new-link" hx-target="this" hx-swap="outerHTML">New link</a>
 ```
-
-## Notes
-
-* `hx-target` is inherited and can be placed on a parent element

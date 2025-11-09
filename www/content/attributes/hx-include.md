@@ -48,8 +48,6 @@ Finally, note that if you include a non-input element, all input elements enclos
 
 ## Notes
 
-* `hx-include` is inherited and can be placed on a parent element
-* While `hx-include` is inherited, it is evaluated from the element triggering the request. It is easy to get confused
   when working with the extended selectors such as `find` and `closest`.
   ```html
   <div hx-include="find input">

@@ -12,7 +12,6 @@ The response requires an element with the same `id`, but its type and other attr
 
 ## Notes
 
-* `hx-preserve` is not inherited
 * You can use `hx-preserve="true"` or use it as a boolean attribute with just `hx-preserve`
 * Some elements cannot unfortunately be preserved properly, such as `<input type="text">` (focus and caret position are lost), iframes or certain types of videos. To tackle some of these cases we recommend the [morphdom extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README.md), which does a more elaborate DOM
 reconciliation

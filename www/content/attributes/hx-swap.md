@@ -143,7 +143,6 @@ Alternatively, if you want the page to automatically scroll to the focused eleme
 
 ## Notes
 
-* `hx-swap` is inherited and can be placed on a parent element
 * The default value of this attribute is `innerHTML`
 * Due to DOM limitations, it’s not possible to use the `outerHTML` method on the `<body>` element.
   htmx will change `outerHTML` on `<body>` to use `innerHTML`.

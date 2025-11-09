@@ -19,7 +19,6 @@ This example will cause the `button` to issue a `POST` to `/account/enable` and 
  
 ## Notes
 
-* `hx-post` is not inherited
 * You can control the target of the swap using the [hx-target](@/attributes/hx-target.md) attribute
 * You can control the swap strategy by using the [hx-swap](@/attributes/hx-swap.md) attribute
 * You can control what event triggers the request with the [hx-trigger](@/attributes/hx-trigger.md) attribute
