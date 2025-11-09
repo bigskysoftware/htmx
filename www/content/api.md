@@ -107,7 +107,7 @@ Finds the closest matching element in the given elements parentage, inclusive of
 
 A property holding the configuration htmx uses at runtime.
 
-Note that using a [meta tag](@/docs.md#config) is the preferred mechanism for setting these properties.
+Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechanism for setting these properties.
 
 ##### Properties
 

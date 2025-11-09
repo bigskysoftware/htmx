@@ -40,7 +40,7 @@ and it becomes more difficult to understand what an element is doing.
 It is also possible to inadvertently change the behavior of elements by adding attributes to parents.
 
 Some people prefer to disable inheritance in htmx entirely, using the `htmx.config.disableInheritance`
-[configuration variable](@/docs.md#config).
+[configuration variable](@/docs.md#configuring-htmx).
 
 Here is a `meta` tag configuration that does so:
 
@@ -56,7 +56,7 @@ The [`hx-swap`](@/attributes/hx-swap.md) attribute allows you to control how a s
 Many people prefer to use the `outerHTML` strategy as the default instead.
 
 You can change this behavior using the `htmx.config.defaultSwapStyle`
-[configuration variable](@/docs.md#config).
+[configuration variable](@/docs.md#configuring-htmx).
 
 Here is a `meta` tag configuration that does so:
 

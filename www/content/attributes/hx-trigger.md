@@ -27,7 +27,7 @@ A standard event, such as `click` can be specified as the trigger like so:
 #### Standard Event Filters
 
 Events can be filtered by enclosing a boolean javascript expression in square brackets after the event name.  If
-this expression evaluates to `true` the event will be triggered, otherwise it will be ignored. Standard event filters [require eval](@/docs.md#configuration-options).
+this expression evaluates to `true` the event will be triggered, otherwise it will be ignored. Standard event filters [require eval](@/docs.md#configuring-htmx).
 
 ```html
 <div hx-get="/clicked" hx-trigger="click[ctrlKey]">Control Click Me</div>

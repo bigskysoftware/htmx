@@ -15,7 +15,7 @@ title = "Documentation"
 * [2.x to 4.x Migration Guide](#2-x-to-4-x-migration-guide)
 * [Installing](#installing)
 * [AJAX](#ajax)
-  * [Configuring Requests](#config)
+  * [Configuring Requests](#configuring-requests)
   * [Triggering Requests](#triggers)
     * [Trigger Modifiers](#trigger-modifiers)
     * [Trigger Filters](#trigger-filters)
@@ -49,6 +49,8 @@ title = "Documentation"
 * [Validation](#validation)
 * [Extensions](#extensions)
 * [Events & Logging](#events)
+  * [Initialize A 3rd Party Library With Events](#init_3rd_party_with_events)
+  * [Configure a Request With Events](#config_request_with_events)
 * [Debugging](#debugging)
 * [Scripting](#scripting)
   * [The hx-on* Attributes](#hx-on)
@@ -58,7 +60,11 @@ title = "Documentation"
     * [Web Components](#web-components)
 * [Caching](#caching)
 * [Security](#security)
-* [Configuring htmx](#config)
+  * [Rule 1: Escape All User Content](#rule-1-escape-all-user-content)
+  * [htmx Security Tools](#htmx-security-tools)
+  * [CSP Options](#csp-options)
+  * [CSRF Prevention](#csrf-prevention)
+* [Configuring htmx](#configuring-htmx)
 
 </details>
 
@@ -242,7 +248,7 @@ Here is the example above redone using `hx-post`:
 </button>
 ```
 
-### Configuring Requests {#config}
+### Configuring Requests
 
 You can configure requests that an element makes via the `hx-config` attribute.  This attribute is specified using
 JSON, and supports the following options:
@@ -1341,39 +1347,12 @@ You would most likely want to set a break point in the  methods to see what's go
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
 
-<!-- TODO RESTART HERE -->
-
 ## Scripting {#scripting}
 
 <details class="migration-note">
 <summary>htmx 2.0 to 4.0 Changes</summary>
 
-<!--
-ADD: New unified scripting API for hx-on handlers
-ADD: Helper methods like timeout(), forEvent(), find(), findAll()
-ADD: All public htmx methods available in hx-on handlers
-ADD: 'this' keyword refers to the element in JavaScript contexts
-KEEP: hx-on:* attributes work the same way
--->
-
-**New Feature:** Unified scripting API for `hx-on` handlers.
-
-**In htmx 4.x**, all `hx-on:*` handlers have access to:
-- **Helper methods**: `timeout()`, `forEvent()`, `find()`, `findAll()`, `parseInterval()`, `trigger()`, `waitATick()`
-- **htmx API methods**: All public htmx methods like `ajax()`, `swap()`, `process()`
-- **Special symbols**:
-  - `this` - the element with the `hx-on` attribute
-  - `event` - the event object
-  - `ctx` - request context (in request-related events)
-
-**Example:**
-```html
-<button hx-on:click="await timeout(100); console.log(this)">
-  Click me
-</button>
-```
-
-See [Scripting API](#htmx-scripting-api) section below for all available methods.
+The htmx JavaScript API has changed in htmx 4.0.  
 
 </details>
 
@@ -1430,9 +1409,11 @@ So, the string `hx-on`, followed by a colon (or a dash), then by the name of the
 
 htmx provides some top level helper methods in `hx-on` handlers that make async scripting more enjoyable:
 
-| function    | description                                                                                |
-|-------------|--------------------------------------------------------------------------------------------|
-| `timeout()` | allows you to wait for a given amount of time (e.g. `await timeout(100)` before continuing |
+| function    | description                                                                                                                          |
+|-------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `find()`    | allows you to find content relative to the current element (e.g. `find('next div')` will find the next div after the current element |
+| `findAll()` | allows you to find multiple elements relative to the current element                                                                 |
+| `timeout()` | allows you to wait for a given amount of time (e.g. `await timeout(100)` before continuing                                           |
 
 
 #### <a name="htmx-scripting-examples"></a>[Scripting Examples](#htmx-scripting-examples)
@@ -1446,7 +1427,7 @@ Here is an example that adds a parameter to an htmx request
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config:request="ctx.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config:request="ctx.request.parameters.example = 'Hello Scripting!'">
     Post Me!
 </button>
 ```
@@ -1458,7 +1439,7 @@ event:
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:after:request="find('#form').reset()">
+        hx-on:htmx:after:request="find('closest form').reset()">
     Post Me!
 </button>
 ```
@@ -1516,30 +1497,15 @@ If your server adds the
 [`Last-Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified)
 HTTP response header to the response for a given URL, the browser will automatically add the
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
-request HTTP header to the next requests to the same URL. Be mindful that if
-your server can render different content for the same URL depending on some other
+request HTTP header to the next requests to the same URL. 
+
+Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
-response HTTP header. For example, if your server renders the full HTML when the
-`HX-Request` header is missing or `false`, and it renders a fragment of that HTML
-when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be
-keyed based on a composite of the response URL and the `HX-Request` request header —
-rather than being based just on the response URL. Always disable `htmx.config.historyRestoreAsHxRequest`
-so that these history full HTML requests are not cached with partial fragment responses.
+response HTTP header. 
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>verify if still needed</p>
-</aside>
-
-If you are unable (or unwilling) to use the `Vary` header, you can alternatively set the configuration parameter
-`getCacheBusterParam` to `true`.  If this configuration variable is set, htmx will include a cache-busting parameter
-in `GET` requests that it makes, which will prevent browsers from caching htmx-based and non-htmx based responses
-in the same cache slot.
-
-htmx also works with [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
-as expected.  Be mindful that if your server can render different content for the same
-URL (for example, depending on the value of the `HX-Request` header), the server needs
-to generate a different `ETag` for each content.
+For example, if your server renders the full HTML when the `HX-Request` header is missing or `false`, and it renders a 
+fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed 
+based on a composite of the response URL and the `HX-Request` request header rather than being based just on the response URL. 
 
 ## Security
 
@@ -1596,45 +1562,6 @@ And htmx will not process any htmx-related attributes or features found in that 
 disabled by injecting further content: if an `hx-ignore` attribute is found anywhere in the parent hierarchy of an
 element, it will not be processed by htmx.
 
-#### Configuration Options
-
-htmx also provides configuration options related to security:
-
-* `htmx.config.selfRequestsOnly` - if set to `true`, only requests to the same domain as the current document will be allowed
-* `htmx.config.allowScriptTags` - htmx will process `<script>` tags found in new content it loads.  If you wish to disable
-   this behavior you can set this configuration variable to `false`
-* `htmx.config.allowEval` - can be set to `false` to disable all features of htmx that rely on eval:
-  * event filters
-  * `hx-on:` attributes
-  * `hx-vals` with the `js:` prefix
-  * `hx-headers` with the `js:` prefix
-
-Note that all features removed by disabling `eval()` can be reimplemented using your own custom javascript and the
-htmx event model.
-
-#### Events
-
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>rewrite</p>
-</aside>
-
-If you want to allow requests to some domains beyond the current host, but not leave things totally open, you can
-use the `htmx:validateUrl` event.  This event will have the request URL available in the `detail.url` slot, as well
-as a `sameHost` property.
-
-You can inspect these values and, if the request is not valid, invoke `preventDefault()` on the event to prevent the
-request from being issued.
-
-```javascript
-document.body.addEventListener('htmx:validateUrl', function (evt) {
-  // only allow requests to the current server as well as myserver.com
-  if (!evt.detail.sameHost && evt.detail.url.hostname !== "myserver.com") {
-    evt.preventDefault();
-  }
-});
-```
-
 ### CSP Options
 
 Browsers also provide tools for further securing your web application.  The most powerful tool available is a
@@ -1647,23 +1574,27 @@ Here is an example CSP in a `meta` tag:
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
 ```
 
-This tells the browser "Only allow connections to the original (source) domain".  This would be redundant with the
-`htmx.config.selfRequestsOnly`, but a layered approach to security is warranted and, in fact, ideal, when dealing
-with application security.
-
 A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
 for exploring this topic.
 
+#### htmx & Eval
+
+htmx uses eval for some functionality:
+
+* Event filters
+* The `hx-on` attribute
+* Handling most attribute values that starts with `js:` or `javascript:`
+
+All of these features can be replaced with standard event listeners and thus are not crucial to using htmx.
+
+Thus you can disable `eval()` via a CSP and continue to use htmx.
+
 ### CSRF Prevention
 
-<aside class="under-construction">
-  <strong>🚧 Pardon our dust 🚧</strong>
-  <p>verify</p>
-</aside>
-
-The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below. 
-
-Note: `hx-boost` does not update the `<html>` or `<body>` tags; if using this feature with `hx-boost`, make sure to include the CSRF token on an element that _will_ get replaced. Many web frameworks support automatically inserting the CSRF token as a hidden input in HTML forms. This is encouraged whenever possible.
+The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the 
+CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the
+element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective 
+global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below. 
 
 ```html
 <html lang="en" hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
@@ -1671,16 +1602,10 @@ Note: `hx-boost` does not update the `<html>` or `<body>` tags; if using this fe
 </html>
 ```
 
-```html
-    <body hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
-        :
-    </body>
-```
-
 The above elements are usually unique in an HTML document and should be easy to locate within templates. 
 
 
-## Configuring htmx {#config}
+## Configuring htmx
 
 Htmx has configuration options that can be accessed either programmatically or declaratively.
 
