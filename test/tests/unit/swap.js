@@ -197,19 +197,19 @@ describe('swap() unit tests', function() {
     })
 
     it('swaps partial with default target', async function () {
-        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#test-playground'>Partial</partial>"})
+        await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='#test-playground'>Partial</hx-partial>"})
         playground().innerText.should.equal("Partial");
     })
 
     it('swaps partial with custom target', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'></div>")
-        await htmx.swap({"target":"#d1", "text":"<partial hx-target='#d2'>Partial</partial>"})
+        await htmx.swap({"target":"#d1", "text":"<hx-partial hx-target='#d2'>Partial</hx-partial>"})
         find('#d2').innerText.should.equal("Partial");
     })
 
     it('swaps partial with custom swap style', async function () {
         createProcessedHTML("<div id='d1'>Existing</div>")
-        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#d1' hx-swap='beforeend'>Partial</partial>"})
+        await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='#d1' hx-swap='beforeend'>Partial</hx-partial>"})
         find('#d1').innerText.should.equal("ExistingPartial");
     })
 
@@ -223,7 +223,7 @@ describe('swap() unit tests', function() {
 
     it('executes script in partial', async function () {
         window.testVar = 0;
-        await htmx.swap({"target":"#test-playground", "text":"<partial hx-target='#test-playground'><script>window.testVar = 8</script></partial>"})
+        await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='#test-playground'><script>window.testVar = 8</script></hx-partial>"})
         window.testVar.should.equal(8);
         delete window.testVar;
     })
@@ -332,7 +332,7 @@ describe('swap() unit tests', function() {
     it('sets title with partial swap', async function () {
         let originalTitle = document.title;
         createProcessedHTML("<div id='d1'></div>")
-        await htmx.swap({"target":"#test-playground", "text":"<title>Partial Title</title><partial hx-target='#d1'>Partial Content</partial>"})
+        await htmx.swap({"target":"#test-playground", "text":"<title>Partial Title</title><hx-partial hx-target='#d1'>Partial Content</hx-partial>"})
         document.title.should.equal('Partial Title');
         document.title = originalTitle;
     })

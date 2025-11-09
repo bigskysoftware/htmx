@@ -1152,32 +1152,19 @@ var htmx = (() => {
         }
 
         __createOOBTask(tasks, elt, oobValue, sourceElement) {
-            // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
             let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                let colonIdx = oobValue.indexOf(':');
-                if (colonIdx !== -1) {
-                    target = oobValue.substring(colonIdx + 1);
-                    oobValue = oobValue.substring(0, colonIdx);
-                }
+                [oobValue, target = target] = oobValue.split(/:(.*)/);
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
             let swapSpec = this.__parseSwapSpec(oobValue);
-            if (swapSpec.target) target = swapSpec.target;
-
+            target = swapSpec.target || target;
             swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            if (!target) return;
             let fragment = document.createDocumentFragment();
             fragment.append(elt);
-            if (!target && !oobValue.includes('target:')) return;
-
-            tasks.push({
-                type: 'oob',
-                fragment,
-                target,
-                swapSpec,
-                sourceElement
-            });
+            tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
         }
 
         __processOOB(fragment, sourceElement, selectOOB) {
@@ -1186,9 +1173,7 @@ var htmx = (() => {
             // Process hx-select-oob first (select elements from response)
             if (selectOOB) {
                 for (let spec of selectOOB.split(',')) {
-                    let [selector, ...rest] = spec.split(':');
-                    let oobValue = rest.length ? rest.join(':') : 'true';
-
+                    let [selector, oobValue = 'true'] = spec.split(/:(.*)/);
                     for (let elt of fragment.querySelectorAll(selector)) {
                         this.__createOOBTask(tasks, elt, oobValue, sourceElement);
                     }
