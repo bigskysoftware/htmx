@@ -1329,7 +1329,6 @@ var htmx = (() => {
 
             this.__trigger(document, "htmx:after:swap", {ctx});
             if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
-            this.__handleAnchorScroll(ctx);
             await this.timeout(1);
             // invoke restore tasks
             for (let task of tasks) {
@@ -1337,7 +1336,8 @@ var htmx = (() => {
                     restore()
                 }
             }
-            this.__trigger(document, "htmx:after:restore", {ctx});
+            this.__trigger(document, "htmx:after:restore", { ctx });
+            this.__handleAnchorScroll(ctx);
             // TODO this stuff should be an extension
             // if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
