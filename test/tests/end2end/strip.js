@@ -193,7 +193,7 @@ describe('Strip Modifier', function() {
     // ========================================================================
 
     it('Partial with strip:true extracts children', async function() {
-        mockResponse('GET', '/api', '<div id="main">Main</div><partial hx-target="#target" hx-swap="innerHTML strip:true"><wrapper><span>A</span><span>B</span></wrapper></partial>');
+        mockResponse('GET', '/api', '<div id="main">Main</div><hx-partial hx-target="#target" hx-swap="innerHTML strip:true"><wrapper><span>A</span><span>B</span></wrapper></hx-partial>');
         createProcessedHTML('<button id="btn" hx-get="/api" hx-target="#main">Get</button><div id="target">Original</div>');
         find('#btn').click()
         await forRequest();
@@ -206,7 +206,7 @@ describe('Strip Modifier', function() {
     })
 
     it('Partial with strip:false keeps wrapper', async function() {
-        mockResponse('GET', '/api', '<div id="main">Main</div><partial hx-target="#target" hx-swap="innerHTML strip:false"><wrapper><span>A</span><span>B</span></wrapper></partial>');
+        mockResponse('GET', '/api', '<div id="main">Main</div><hx-partial hx-target="#target" hx-swap="innerHTML strip:false"><wrapper><span>A</span><span>B</span></wrapper></hx-partial>');
         createProcessedHTML('<button id="btn" hx-get="/api" hx-target="#main">Get</button><div id="target">Original</div>');
         find('#btn').click()
         await forRequest();
@@ -218,7 +218,7 @@ describe('Strip Modifier', function() {
     })
 
     it('Partial without strip modifier keeps wrapper (default)', async function() {
-        mockResponse('GET', '/api', '<div id="main">Main</div><partial hx-target="#target" hx-swap="innerHTML"><wrapper><span>A</span><span>B</span></wrapper></partial>');
+        mockResponse('GET', '/api', '<div id="main">Main</div><hx-partial hx-target="#target" hx-swap="innerHTML"><wrapper><span>A</span><span>B</span></wrapper></hx-partial>');
         createProcessedHTML('<button id="btn" hx-get="/api" hx-target="#main">Get</button><div id="target">Original</div>');
         find('#btn').click()
         await forRequest();
@@ -229,7 +229,7 @@ describe('Strip Modifier', function() {
     })
 
     it('Partial with SVG and strip:true extracts circles', async function() {
-        mockResponse('GET', '/api', '<div id="main">Main</div><partial hx-target="#canvas" hx-swap="innerHTML strip:true"><svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20"/><circle cx="100" cy="100" r="30"/></svg></partial>');
+        mockResponse('GET', '/api', '<div id="main">Main</div><hx-partial hx-target="#canvas" hx-swap="innerHTML strip:true"><svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20"/><circle cx="100" cy="100" r="30"/></svg></hx-partial>');
         createProcessedHTML('<button id="btn" hx-get="/api" hx-target="#main">Get</button><svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>');
         find('#btn').click()
         await forRequest();
