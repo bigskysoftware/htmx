@@ -1,5 +1,5 @@
 // noinspection ES6ConvertVarToLetConst
-var htmx = (() => {
+(() => {
 
     class ReqQ {
         #c = null
@@ -403,7 +403,7 @@ var htmx = (() => {
         }
 
         #isBoosted(elt) {
-            return elt._htmx?.boosted;
+            return elt?._htmx?.boosted;
         }
 
         async #handleTriggerEvent(ctx) {
@@ -1271,13 +1271,37 @@ var htmx = (() => {
             return tasks;
         }
 
-        #handleScroll(target, scroll) {
-            if (scroll === 'top') target.scrollTop = 0;
-            else if (scroll === 'bottom') target.scrollTop = target.scrollHeight;
+        #handleScroll(task) {
+            if (task.swapSpec.scroll) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.scroll.split(":");
+                if (value) {
+                    target = this.#findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                if (value === 'top') {
+                    target.scrollTop = 0;
+                } else if (value === 'bottom'){
+                    target.scrollTop = target.scrollHeight;
+                }
+            }
+            if (task.swapSpec.show) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.show.split(":");
+                if (value) {
+                    target = this.#findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                target.scrollIntoView(value === 'top')
+            }
         }
 
         #handleAnchorScroll(ctx) {
-            let anchor = ctx.request.originalAction?.split('#')[1];
+            let anchor = ctx.request?.originalAction?.split('#')[1];
             if (anchor) {
                 document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
             }
@@ -1374,7 +1398,9 @@ var htmx = (() => {
                     fragment = document.createDocumentFragment();
                     fragment.append(...selected);
                 }
-
+                if (this.#isBoosted(ctx.sourceElement)) {
+                    swapSpec.show ||= 'top';
+                }
                 let mainSwap = {
                     type: 'main',
                     fragment,
@@ -1448,7 +1474,7 @@ var htmx = (() => {
             for (const elt of newContent) {
                 this.process(elt); // maybe only if isConnected?
             }
-            if (swapSpec.scroll) this.#handleScroll(target, swapSpec.scroll);
+            this.#handleScroll(task);
         }
 
         #trigger(on, eventName, detail = {}, bubbles = true) {
@@ -1563,14 +1589,18 @@ var htmx = (() => {
 
             let sourceElt = typeof context.source === 'string' ?
                 document.querySelector(context.source) : context.source;
+
+            // TODO we have a contradiction here: the tests say that we should default to the source element
+            // but the logic here targets the source element
             let targetElt = context.target ?
                 this.#resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
-            if ((context.target && !targetElt) && (context.source && !sourceElt)) {
-                return Promise.reject(new Error('Element not found'));
+            if (!targetElt) {
+                return Promise.reject(new Error('Target not found'));
             }
 
-            sourceElt = sourceElt || targetElt || document.body;
+            // TODO is this logic correct?
+            sourceElt ||= targetElt || document.body;
 
             let ctx = this.#createRequestContext(sourceElt, context.event || {});
             Object.assign(ctx, context, {target: targetElt});

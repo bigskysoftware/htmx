@@ -29,6 +29,7 @@
     "test:all": "web-test-runner --browsers chromium firefox webkit --config test/web-test-runner.config.mjs --playwright --concurrency 1",
     "test:manual": "node test/manual/server.js",
 
+    "www": "bash scripts/www.sh",
     "site": "npm run site:css & npm run site:serve",
     "site:css": "cd www && npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
     "site:serve": "cd www && npx zola-bin serve --interface 0.0.0.0 --port 1111 --open",

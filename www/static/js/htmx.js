@@ -1,5 +1,5 @@
 // noinspection ES6ConvertVarToLetConst
-var htmx = (() => {
+(() => {
 
     class ReqQ {
         #c = null
@@ -403,7 +403,7 @@ var htmx = (() => {
         }
 
         #isBoosted(elt) {
-            return elt._htmx?.boosted;
+            return elt?._htmx?.boosted;
         }
 
         async #handleTriggerEvent(ctx) {
@@ -507,6 +507,10 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.#extractHxHeaders(ctx);
+                ctx.isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
+                if (!ctx.isSSE) {
+                    ctx.text = await response.text();
+                }
                 if (!this.#trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.#handleHeadersAndMaybeReturnEarly(ctx)){
@@ -519,16 +523,13 @@ var htmx = (() => {
                     await this.#handleSSE(ctx, elt, response);
                 } else {
                     // HTTP response
-                    ctx.text = await response.text();
                     if (ctx.status === "issuing") {
                         if (ctx.hx.retarget) ctx.target = this.#resolveTarget(elt, ctx.hx.retarget);
                         if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
                         if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                         ctx.status = "response received";
                         this.#handleStatusCodes(ctx);
-                        this.#handleHistoryUpdate(ctx);
                         await this.swap(ctx);
-                        this.#handleAnchorScroll(ctx)
                         ctx.status = "swapped";
                     }
                 }
@@ -667,9 +668,7 @@ var htmx = (() => {
                         ctx.status = "stream message received";
 
                         if (!ctx.response.cancelled) {
-                            this.#handleHistoryUpdate(ctx);
                             await this.swap(ctx);
-                            this.#handleAnchorScroll(ctx);
                             ctx.status = "swapped";
                         }
                         this.#trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
@@ -1052,20 +1051,42 @@ var htmx = (() => {
         }
 
         #maybeBoost(elt) {
-            if (this.#attributeValue(elt, "hx-boost") === "true") {
-                if (this.#shouldInitialize(elt)) {
-                    elt._htmx = {eventHandler: this.#createHtmxEventHandler(elt), requests: [], boosted: true}
-                    elt.setAttribute('data-htmx-powered', 'true');
-                    if (elt.matches('a') && !elt.hasAttribute("target")) {
-                        elt.addEventListener('click', (click) => {
-                            elt._htmx.eventHandler(click)
-                        })
-                    } else {
-                        elt.addEventListener('submit', (submit) => {
-                            elt._htmx.eventHandler(submit)
-                        })
-                    }
+            if (this.#attributeValue(elt, "hx-boost") === "true" && this.#shouldBoost(elt)) {
+                elt._htmx = {eventHandler: this.#createHtmxEventHandler(elt), requests: [], boosted: true}
+                elt.setAttribute('data-htmx-powered', 'true');
+                if (elt.matches('a') && !elt.hasAttribute("target")) {
+                    elt.addEventListener('click', (click) => {
+                        elt._htmx.eventHandler(click)
+                    })
+                } else {
+                    elt.addEventListener('submit', (submit) => {
+                        elt._htmx.eventHandler(submit)
+                    })
                 }
+                this.#trigger(elt, "htmx:after:init", {}, true)
+            }
+        }
+
+        #shouldBoost(elt) {
+            if (this.#shouldInitialize(elt)) {
+                if (elt.tagName === "A") {
+                    if (elt.target === '' || elt.target === '_self') {
+                        return !elt.getAttribute('href')?.startsWith?.("#") && this.#isSameOrigin(elt.href)
+                    }
+                } else if (elt.tagName === "FORM") {
+                    return elt.method !== 'dialog' &&  this.#isSameOrigin(elt.action);
+                }
+            }
+        }
+
+        #isSameOrigin(url) {
+            try {
+                // URL constructor handles both relative and absolute URLs
+                const parsed = new URL(url, window.location.href);
+                return parsed.origin === window.location.origin;
+            } catch (e) {
+                // If URL parsing fails, assume not same-origin
+                return false;
             }
         }
 
@@ -1152,32 +1173,19 @@ var htmx = (() => {
         }
 
         #createOOBTask(tasks, elt, oobValue, sourceElement) {
-            // Handle legacy format: swapStyle:target (only if no spaces, which indicate modifiers)
             let target = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                let colonIdx = oobValue.indexOf(':');
-                if (colonIdx !== -1) {
-                    target = oobValue.substring(colonIdx + 1);
-                    oobValue = oobValue.substring(0, colonIdx);
-                }
+                [oobValue, target = target] = oobValue.split(/:(.*)/);
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
             let swapSpec = this.#parseSwapSpec(oobValue);
-            if (swapSpec.target) target = swapSpec.target;
-
+            target = swapSpec.target || target;
             swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            if (!target) return;
             let fragment = document.createDocumentFragment();
             fragment.append(elt);
-            if (!target && !oobValue.includes('target:')) return;
-
-            tasks.push({
-                type: 'oob',
-                fragment,
-                target,
-                swapSpec,
-                sourceElement
-            });
+            tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
         }
 
         #processOOB(fragment, sourceElement, selectOOB) {
@@ -1186,9 +1194,7 @@ var htmx = (() => {
             // Process hx-select-oob first (select elements from response)
             if (selectOOB) {
                 for (let spec of selectOOB.split(',')) {
-                    let [selector, ...rest] = spec.split(':');
-                    let oobValue = rest.length ? rest.join(':') : 'true';
-
+                    let [selector, oobValue = 'true'] = spec.split(/:(.*)/);
                     for (let elt of fragment.querySelectorAll(selector)) {
                         this.#createOOBTask(tasks, elt, oobValue, sourceElement);
                     }
@@ -1265,13 +1271,37 @@ var htmx = (() => {
             return tasks;
         }
 
-        #handleScroll(target, scroll) {
-            if (scroll === 'top') target.scrollTop = 0;
-            else if (scroll === 'bottom') target.scrollTop = target.scrollHeight;
+        #handleScroll(task) {
+            if (task.swapSpec.scroll) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.scroll.split(":");
+                if (value) {
+                    target = this.#findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                if (value === 'top') {
+                    target.scrollTop = 0;
+                } else if (value === 'bottom'){
+                    target.scrollTop = target.scrollHeight;
+                }
+            }
+            if (task.swapSpec.show) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.show.split(":");
+                if (value) {
+                    target = this.#findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                target.scrollIntoView(value === 'top')
+            }
         }
 
         #handleAnchorScroll(ctx) {
-            let anchor = ctx.request.originalAction?.split('#')[1];
+            let anchor = ctx.request?.originalAction?.split('#')[1];
             if (anchor) {
                 document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
             }
@@ -1297,6 +1327,7 @@ var htmx = (() => {
         //============================================================================================
 
         async swap(ctx) {
+            this.#handleHistoryUpdate(ctx);
             let {fragment, title} = this.#makeFragment(ctx.text);
             ctx.title = title;
             let tasks = [];
@@ -1351,7 +1382,8 @@ var htmx = (() => {
                     restore()
                 }
             }
-            this.#trigger(document, "htmx:after:restore", {ctx});
+            this.#trigger(document, "htmx:after:restore", { ctx });
+            this.#handleAnchorScroll(ctx);
             // TODO this stuff should be an extension
             // if (ctx.hx?.triggerafterswap) this.#handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
@@ -1366,7 +1398,9 @@ var htmx = (() => {
                     fragment = document.createDocumentFragment();
                     fragment.append(...selected);
                 }
-
+                if (this.#isBoosted(ctx.sourceElement)) {
+                    swapSpec.show ||= 'top';
+                }
                 let mainSwap = {
                     type: 'main',
                     fragment,
@@ -1390,7 +1424,7 @@ var htmx = (() => {
                 strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
                 fragment = strip;
             }
-            
+
             let pantry = this.#handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
@@ -1440,7 +1474,7 @@ var htmx = (() => {
             for (const elt of newContent) {
                 this.process(elt); // maybe only if isConnected?
             }
-            if (swapSpec.scroll) this.#handleScroll(target, swapSpec.scroll);
+            this.#handleScroll(task);
         }
 
         #trigger(on, eventName, detail = {}, bubbles = true) {
@@ -1555,14 +1589,18 @@ var htmx = (() => {
 
             let sourceElt = typeof context.source === 'string' ?
                 document.querySelector(context.source) : context.source;
+
+            // TODO we have a contradiction here: the tests say that we should default to the source element
+            // but the logic here targets the source element
             let targetElt = context.target ?
                 this.#resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
-            if ((context.target && !targetElt) && (context.source && !sourceElt)) {
-                return Promise.reject(new Error('Element not found'));
+            if (!targetElt) {
+                return Promise.reject(new Error('Target not found'));
             }
 
-            sourceElt = sourceElt || targetElt || document.body;
+            // TODO is this logic correct?
+            sourceElt ||= targetElt || document.body;
 
             let ctx = this.#createRequestContext(sourceElt, context.event || {});
             Object.assign(ctx, context, {target: targetElt});
@@ -1609,6 +1647,8 @@ var htmx = (() => {
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
+            } else if (elt.tagName === "FORM") {
+                return elt.method !== 'dialog' &&  this.#isSameOrigin(elt.action);
             }
         }
 

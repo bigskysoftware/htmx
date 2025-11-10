@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx:config" content='{"logAll":true, "extensions": "hx-optimistic,preload"}'>
+    <title>htmx 4.0 Tests</title>
+
+    <!-- Mocha CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/mocha@11.7.4/mocha.css">
+
+    <style>
+        ::view-transition-group(*),
+        ::view-transition-old(*),
+        ::view-transition-new(*) {
+            animation-duration: 0s;
+        }
+
+        .playground-wrapper {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .playground-wrapper h3 {
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #4CAF50;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        #test-playground {
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+
+        .header {
+            padding: 20px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .run-all-btn {
+            display: inline-block;
+            margin: 0 20px 20px 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .run-all-btn:hover {
+            background-color: #45a049;
+        }
+
+        .run-all-btn:active {
+            background-color: #3d8b40;
+        }
+    </style>
+
+    <!-- Test infrastructure -->
+    <script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
+    <script src="https://unpkg.com/mocha@11.7.4/mocha.js"></script>
+
+    <script src="lib/fetch-mock.js"></script>
+
+    <!-- htmx after mocks are set up -->
+    <script src="../src/htmx.js"></script>
+    <script src="../src/ext/hx-optimistic.js"></script>
+    <script src="../src/ext/hx-preload.js"></script>
+
+    <script>
+        // Initialize Mocha
+        mocha.setup({
+            ui: 'bdd',
+            fullTrace: true
+        });
+        window.assert = chai.assert;
+        window.should = chai.should();
+    </script>
+
+    <!-- Test helpers -->
+    <script src="./lib/helpers.js"></script>
+
+    <!-- ============================================ -->
+    <!-- Unit Tests -->
+    <!-- ============================================ -->
+    <script src="./tests/unit/__attributeValue.js"></script>
+    <script src="./tests/unit/__collectFormData.js"></script>
+    <script src="./tests/unit/__disableEnableElements.js"></script>
+    <script src="./tests/unit/__extractFilter.js"></script>
+    <script src="./tests/unit/__extractHxHeaders.js"></script>
+    <script src="./tests/unit/__findAllExt.js"></script>
+    <script src="./tests/unit/__getRequestQueue.js"></script>
+    <script src="./tests/unit/__handleHistoryUpdate.js"></script>
+    <script src="./tests/unit/__handleHxHeadersAndMaybeReturnEarly.js"></script>
+    <script src="./tests/unit/__handleStatusCodes.js"></script>
+    <script src="./tests/unit/__handleTriggerEvent.js"></script>
+    <script src="./tests/unit/__handleTriggerHeader.js"></script>
+    <script src="./tests/unit/__initializeTriggers.js"></script>
+    <script src="./tests/unit/__issueRequest.js"></script>
+    <script src="./tests/unit/__makeFragment.js"></script>
+    <script src="./tests/unit/__normalizeSwapStyle.js"></script>
+    <script src="./tests/unit/__parseSwapSpec.js"></script>
+    <script src="./tests/unit/__parseTriggerSpecs.js"></script>
+    <script src="./tests/unit/__queryEltAndDescendants.js"></script>
+    <script src="./tests/unit/__resolveTarget.js"></script>
+    <script src="./tests/unit/__shouldCancel.js"></script>
+    <script src="./tests/unit/__showHideIndicators.js"></script>
+    <script src="./tests/unit/__tokenize.js"></script>
+    <script src="./tests/unit/_htmx.etag.js"></script>
+    <script src="./tests/unit/ajax.js"></script>
+    <script src="./tests/unit/bootstrap.js"></script>
+    <script src="./tests/unit/forEvent.js"></script>
+    <script src="./tests/unit/htmx.config.implicitInheritance.js"></script>
+    <script src="./tests/unit/htmx.config.metaCharacter.js"></script>
+    <script src="./tests/unit/htmx.config.prefix.js"></script>
+    <script src="./tests/unit/morph.js"></script>
+    <script src="./tests/unit/on.js"></script>
+    <script src="./tests/unit/parseInterval.js"></script>
+    <script src="./tests/unit/process.js"></script>
+    <script src="./tests/unit/swap.js"></script>
+    <script src="./tests/unit/timeout.js"></script>
+    <script src="./tests/unit/trigger.js"></script>
+
+    <!-- ============================================ -->
+    <!-- Attribute Tests -->
+    <!-- ============================================ -->
+    <script src="./tests/attributes/hx-boost.js"></script>
+    <script src="./tests/attributes/hx-config.js"></script>
+    <script src="./tests/attributes/hx-get.js"></script>
+    <script src="./tests/attributes/hx-include.js"></script>
+    <script src="./tests/attributes/hx-on.js"></script>
+    <script src="./tests/attributes/hx-preserve.js"></script>
+    <script src="./tests/attributes/hx-select.js"></script>
+    <script src="./tests/attributes/hx-select-oob.js"></script>
+    <script src="./tests/attributes/hx-swap.js"></script>
+    <script src="./tests/attributes/hx-swap-oob.js"></script>
+    <script src="./tests/attributes/hx-trigger.js"></script>
+    <script src="./tests/attributes/hx-vals.js"></script>
+
+    <!-- ============================================ -->
+    <!-- Extension Tests -->
+    <!-- ============================================ -->
+    <script src="./tests/ext/hx-optimistic.js"></script>
+    <script src="./tests/ext/hx-preload.js"></script>
+
+    <!-- ============================================ -->
+    <!-- End-to-End Tests -->
+    <!-- ============================================ -->
+    <script src="./tests/end2end/basic-history.js"></script>
+    <script src="./tests/end2end/cancel-behavior.js"></script>
+    <script src="./tests/end2end/core.js"></script>
+    <script src="./tests/end2end/oob.js"></script>
+    <script src="./tests/end2end/sse.js"></script>
+    <script src="./tests/end2end/strip.js"></script>
+
+    <script>
+        // Run tests on load
+        window.addEventListener('load', () => {
+            mocha.run();
+        });
+    </script>
+
+</head>
+<body>
+<div class="header">
+    <h1>htmx 4.0 Test Suite</h1>
+</div>
+
+<a href="test.html" class="run-all-btn">Run All</a>
+
+<!-- Mocha test output -->
+<div id="mocha"></div>
+
+<!-- Test playground (hidden by default) -->
+<div class="playground-wrapper">
+    <h3>Test Playground</h3>
+    <div id="test-playground"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,595 @@
+{
+  "$schema": "https://json.schemastore.org/web-types",
+  "name": "htmx",
+  "version": "2.0.8",
+  "default-icon": "./htmx.svg",
+  "js-types-syntax": "typescript",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "attributes": [
+        {
+          "name": "hx-boost",
+          "description": "The `hx-boost` attribute allows you to \"boost\" normal anchors and form tags to use AJAX instead.  This\nhas the [nice fallback](https://en.wikipedia.org/wiki/Progressive_enhancement) that, if the user does not \nhave javascript enabled, the site will continue to work.\n\nFor anchor tags, clicking on the anchor will issue a `GET` request to the url specified in the `href` and\nwill push the url so that a history entry is created.  The target is the `<body>` tag, and the `innerHTML`\nswap strategy is used by default.  All of these can be modified by using the appropriate attributes, except\nthe `click` trigger.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-boost/"
+        },
+        {
+          "name": "hx-confirm",
+          "description": "The `hx-confirm` attribute allows you to confirm an action before issuing a request.  This can be useful\nin cases where the action is destructive and you want to ensure that the user really wants to do it.\n\nHere is an example:\n\n```html\n<button hx-delete=\"/account\" hx-confirm=\"Are you sure you wish to delete your account?\">\n  Delete My Account\n</button>\n```",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-confirm/"
+        },
+        {
+          "name": "hx-delete",
+          "description": "The `hx-delete` attribute will cause an element to issue a `DELETE` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-delete=\"/account\" hx-target=\"body\">\n  Delete Your Account\n</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-delete/"
+        },
+        {
+          "name": "hx-disable",
+          "description": "The `hx-disable` attribute will disable htmx processing for a given element and all its children.  This can be \nuseful as a backup for HTML escaping, when you include user generated content in your site, and you want to \nprevent malicious scripting attacks.\n\nThe value of the tag is ignored, and it cannot be reversed by any content beneath it.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-disable/"
+        },
+        {
+          "name": "hx-disabled-elt",
+          "description": "The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute\nadded to them for the duration of the request. The value of this attribute can be:\n\n* A CSS query selector of the element to disable.\n* `this` to disable the element itself\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest fieldset` will disable the closest to the element `fieldset`).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector\n  (e.g. `next button` will disable the closest following sibling `button` element)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous input` will disable the closest previous sibling `input` element)",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-disabled-elt/"
+        },
+        {
+          "name": "hx-disinherit",
+          "description": "The default behavior for htmx is to \"inherit\" many attributes automatically: that is, an attribute such as\n[hx-target](@/attributes/hx-target.md) may be placed on a parent element, and all child elements will inherit\nthat target.\n\nThe `hx-disinherit` attribute allows you to control this automatic attribute inheritance. An example scenario is to \nallow you to place an `hx-boost` on the `body` element of a page, but overriding that behavior in a specific part\nof the page to allow for more specific behaviors.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-disinherit/"
+        },
+        {
+          "name": "hx-encoding",
+          "description": "The `hx-encoding` attribute allows you to switch the request encoding from the usual `application/x-www-form-urlencoded`\nencoding to `multipart/form-data`, usually to support file uploads in an ajax request.\n\nThe value of this attribute should be `multipart/form-data`.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-encoding/"
+        },
+        {
+          "name": "hx-ext",
+          "description": "The `hx-ext` attribute enables an htmx [extension](https://htmx.org/extensions) for an element and all its children.\n\nThe value can be a single extension name or a comma-separated list of extensions to apply.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-ext/"
+        },
+        {
+          "name": "hx-get",
+          "description": "The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n  <button hx-get=\"/example\">Get Some HTML</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-get/"
+        },
+        {
+          "name": "hx-headers",
+          "description": "The `hx-headers` attribute allows you to add to the headers that will be submitted with an AJAX request.\n\nBy default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html)\nformat.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-headers/"
+        },
+        {
+          "name": "hx-history-elt",
+          "description": "The `hx-history-elt` attribute allows you to specify the element that will be used to snapshot and\nrestore page state during navigation.  By default, the `body` tag is used.  This is typically\ngood enough for most setups, but you may want to narrow it down to a child element.  Just make\nsure that the element is always visible in your application, or htmx will not be able to restore\nhistory navigation properly.",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-history-elt/"
+        },
+        {
+          "name": "hx-history",
+          "description": "Set the `hx-history` attribute to `false` on any element in the current document, or any html fragment loaded into the current document by htmx, to prevent sensitive data being saved to the localStorage cache when htmx takes a snapshot of the page state.\n\nHistory navigation will work as expected, but on restoration the URL will be requested from the server instead of the history cache.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-history/"
+        },
+        {
+          "name": "hx-include",
+          "description": "The `hx-include` attribute allows you to include additional element values in an AJAX request. The value of this\nattribute can be:\n\n* A CSS query selector of the elements to include.\n* `this` which will include the descendants of the element.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the closest following sibling element with `error` class)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the closest previous sibling with `error` class)",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-include/"
+        },
+        {
+          "name": "hx-indicator",
+          "description": "The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class\nadded to it for the duration of the request. This can be used to show spinners or progress indicators\nwhile the request is in flight.\n\nThe value of this attribute is a CSS query selector of the element or elements to apply the class to,\nor the keyword [`closest`](https://developer.mozilla.org/docs/Web/API/Element/closest), followed by a CSS selector, \nwhich will find the closest ancestor element or itself, that matches the given CSS selector (e.g. `closest tr`);",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-indicator/"
+        },
+        {
+          "name": "hx-inherit",
+          "description": "The default behavior for htmx is to \"inherit\" many attributes automatically: that is, an attribute such as\n[hx-target](@/attributes/hx-target.md) may be placed on a parent element, and all child elements will inherit\nthat target.  Some people do not like this feature and instead prefer to explicitly specify inheritance for attributes.\n\nTo support this mode of development, htmx offers the `htmx.config.disableInheritance` setting, which can be set to\n`true` to prevent inheritance from being the default behavior for any of the htmx attributes.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-inherit/"
+        },
+        {
+          "name": "hx-on",
+          "pattern": {
+            "or": [
+              {
+                "items": [
+                  "/js/events"
+                ],
+                "template": [
+                  "hx-on:",
+                  "#...",
+                  "#item:JS event"
+                ]
+              },
+              {
+                "items": [
+                  "/js/htmx-events"
+                ],
+                "template": [
+                  "hx-on::",
+                  "#...",
+                  "#item:HTMX event"
+                ]
+              }
+            ]
+          },
+          "description": "The `hx-on*` attributes allow you to embed scripts inline to respond to events directly on an element; similar to the \n[`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.\n\nThe `hx-on*` attributes improve upon `onevent` by enabling the handling of any arbitrary JavaScript event,\nfor enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/) even when dealing with non-standard DOM events. For example, these\nattributes allow you to handle [htmx events](/reference#events).",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-on/"
+        },
+        {
+          "name": "hx-params",
+          "description": "The `hx-params` attribute allows you to filter the parameters that will be submitted with an AJAX request.\n\nThe possible values of this attribute are:\n\n* `*` - Include all parameters (default)\n* `none` - Include no parameters\n* `not <param-list>` - Include all except the comma separated list of parameter names\n* `<param-list>` - Include all the comma separated list of parameter names",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-params/"
+        },
+        {
+          "name": "hx-patch",
+          "description": "The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-patch=\"/account\" hx-target=\"body\">\n  Patch Your Account\n</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-patch/"
+        },
+        {
+          "name": "hx-post",
+          "description": "The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-post=\"/account/enable\" hx-target=\"body\">\n  Enable Your Account\n</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-post/"
+        },
+        {
+          "name": "hx-preserve",
+          "description": "The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.\nElements with `hx-preserve` set are preserved by `id` when htmx updates any ancestor element.\nYou *must* set an unchanging `id` on elements for `hx-preserve` to work.\nThe response requires an element with the same `id`, but its type and other attributes are ignored.\n\n## Notes",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-preserve/"
+        },
+        {
+          "name": "hx-prompt",
+          "description": "The `hx-prompt` attribute allows you to show a prompt before issuing a request.  The value of\nthe prompt will be included in the request in the `HX-Prompt` header.\n\nHere is an example:\n\n```html\n<button hx-delete=\"/account\" hx-prompt=\"Enter your account name to confirm deletion\">\n  Delete My Account\n</button>\n```",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-prompt/"
+        },
+        {
+          "name": "hx-push-url",
+          "description": "The `hx-push-url` attribute allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).\nThis creates a new history entry, allowing navigation with the browser’s back and forward buttons.\nhtmx snapshots the current DOM and saves it into its history cache, and restores from this cache on navigation.\n\nThe possible values of this attribute are:\n\n1. `true`, which pushes the fetched URL into history.\n2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-boost).\n3. A URL to be pushed into the location bar.\n   This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-push-url/"
+        },
+        {
+          "name": "hx-put",
+          "description": "The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-put=\"/account\" hx-target=\"body\">\n  Put Money In Your Account\n</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-put/"
+        },
+        {
+          "name": "hx-replace-url",
+          "description": "The `hx-replace-url` attribute allows you to replace the current url of the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).\n\nThe possible values of this attribute are:\n\n1. `true`, which replaces the fetched URL in the browser navigation bar.\n2. `false`, which disables replacing the fetched URL if it would otherwise be replaced due to inheritance.\n3. A URL to be replaced into the location bar.\n   This may be relative or absolute, as per [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState).",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-replace-url/"
+        },
+        {
+          "name": "hx-request",
+          "description": "The `hx-request` attribute allows you to configure various aspects of the request via the following attributes:\n \n* `timeout` - the timeout for the request, in milliseconds\n* `credentials` - if the request will send credentials\n* `noHeaders` - strips all headers from the request\n\nThese attributes are set using a JSON-like syntax:\n\n```html\n<div ... hx-request='{\"timeout\":100}'>\n  ...\n</div>\n```",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-request/"
+        },
+        {
+          "name": "hx-select-oob",
+          "description": "The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band swap.  \nThe value of this attribute is comma separated list of elements to be swapped out of band.  This attribute is almost\nalways paired with [hx-select](@/attributes/hx-select.md).\n\nHere is an example that selects a subset of the response content:\n\n```html\n<div>\n   <div id=\"alert\"></div>\n    <button hx-get=\"/info\" \n            hx-select=\"#info-details\" \n            hx-swap=\"outerHTML\"\n            hx-select-oob=\"#alert\">\n        Get Info!\n    </button>\n</div>\n```",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-select-oob/"
+        },
+        {
+          "name": "hx-select",
+          "description": "The `hx-select` attribute allows you to select the content you want swapped from a response.  The value of\nthis attribute is a CSS query selector of the element or elements to select from the response.\n\nHere is an example that selects a subset of the response content:\n\n```html\n<div>\n    <button hx-get=\"/info\" hx-select=\"#info-detail\" hx-swap=\"outerHTML\">\n        Get Info!\n    </button>\n</div>\n```",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-select/"
+        },
+        {
+          "name": "hx-swap-oob",
+          "description": "The `hx-swap-oob` attribute allows you to specify that some content in a response should be\nswapped into the DOM somewhere other than the target, that is \"Out of Band\".  This allows you to piggyback updates to other element updates on a response.\n\nConsider the following response HTML:\n\n```html\n<div>\n ...\n</div>\n<div id=\"alerts\" hx-swap-oob=\"true\">\n    Saved!\n</div>",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-swap-oob/"
+        },
+        {
+          "name": "hx-swap",
+          "description": "The `hx-swap` attribute allows you to specify how the response will be swapped in relative to the\n[target](@/attributes/hx-target.md) of an AJAX request. If you do not specify the option, the default is\n`htmx.config.defaultSwapStyle` (`innerHTML`).\n\nThe possible values of this attribute are:\n\n* `innerHTML` - Replace the inner html of the target element\n* `outerHTML` - Replace the entire target element with the response\n* `textContent` - Replace the text content of the target element, without parsing the response as HTML\n* `beforebegin` - Insert the response before the target element\n* `afterbegin` - Insert the response before the first child of the target element\n* `beforeend` - Insert the response after the last child of the target element\n* `afterend` - Insert the response after the target element\n* `delete` - Deletes the target element regardless of the response\n* `none`- Does not append content from response (out of band items will still be processed).",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-swap/"
+        },
+        {
+          "name": "hx-sync",
+          "description": "The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.\n\nThe `hx-sync` attribute consists of a CSS selector to indicate the element to synchronize on, followed optionally\nby a colon and then by an optional syncing strategy.  The available strategies are:\n\n* `drop` - drop (ignore) this request if an existing request is in flight (the default)\n* `abort` - drop (ignore) this request if an existing request is in flight, and, if that is not the case, \n            *abort* this request if another request occurs while it is still in flight\n* `replace` - abort the current request, if any, and replace it with this request\n* `queue` - place this request in the request queue associated with the given element",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-sync/"
+        },
+        {
+          "name": "hx-target",
+          "description": "The `hx-target` attribute allows you to target a different element for swapping than the one issuing the AJAX\nrequest.  The value of this attribute can be:\n\n* A CSS query selector of the element to target.\n* `this` which indicates that the element that the `hx-target` attribute is on is the target.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the closest following sibling element with `error` class)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the closest previous sibling with `error` class)",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-target/"
+        },
+        {
+          "name": "hx-trigger",
+          "description": "The `hx-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger\nvalue can be one of the following:\n\n* An event name (e.g. \"click\" or \"my-custom-event\") followed by an event filter and a set of event modifiers\n* A polling definition of the form `every <timing declaration>`\n* A comma-separated list of such events",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-trigger/"
+        },
+        {
+          "name": "hx-validate",
+          "description": "The `hx-validate` attribute will cause an element to validate itself by way of the [HTML5 Validation API](@/docs.md#validation)\nbefore it submits a request.\n\nOnly `<form>` elements validate data by default, but other elements do not. Adding `hx-validate=\"true\"` to `<input>`, `<textarea>` or `<select>` enables validation before sending requests.",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-validate/"
+        },
+        {
+          "name": "hx-vals",
+          "description": "The `hx-vals` attribute allows you to add to the parameters that will be submitted with an AJAX request.\n\nBy default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html)\nformat.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-vals/"
+        },
+        {
+          "name": "hx-vars",
+          "description": "**NOTE: `hx-vars` has been deprecated in favor of [`hx-vals`](@/attributes/hx-vals.md), which is safer by default.**\n\nThe `hx-vars` attribute allows you to dynamically add to the parameters that will be submitted with an AJAX request.",
+          "description-sections": {
+            "Inherited": ""
+          },
+          "deprecated": true,
+          "doc-url": "https://htmx.org/attributes/hx-vars/"
+        }
+      ]
+    },
+    "css": {
+      "classes": [
+        {
+          "name": "htmx-added",
+          "description": "Applied to a new piece of content before it is swapped, removed after it is settled.",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-indicator",
+          "description": "A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-request",
+          "description": "Applied to either the element or the element specified with [`hx-indicator`](@/attributes/hx-indicator.md) while a request is ongoing",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-settling",
+          "description": "Applied to a target after content is swapped, removed after it is settled. The duration can be modified via [`hx-swap`](@/attributes/hx-swap.md).",
+          "doc-url": "https://htmx.org/reference/#classes"
+        },
+        {
+          "name": "htmx-swapping",
+          "description": "Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via [`hx-swap`](@/attributes/hx-swap.md).",
+          "doc-url": "https://htmx.org/reference/#classes"
+        }
+      ]
+    },
+    "js": {
+      "events": [
+        {
+          "name": "HTMX event",
+          "pattern": {
+            "items": [
+              "/js/htmx-events"
+            ],
+            "template": [
+              "htmx:",
+              "$...",
+              "#item:HTMX event"
+            ]
+          }
+        }
+      ],
+      "htmx-events": [
+        {
+          "name": "abort",
+          "description": "This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.\n\nIf you send an `htmx:abort` event to an element making a request, it will abort the request:\n\n```html\n<button id=\"request-button\" hx-post=\"/example\">Issue Request</button>\n<button onclick=\"htmx.trigger('#request-button', 'htmx:abort')\">Cancel Request</button>\n```\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:abort"
+        },
+        {
+          "name": "afterOnLoad",
+          "description": "This event is triggered after an AJAX `onload` has finished.  Note that this does not mean that the content\nhas been swapped or settled yet, only that the request has finished.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:afterOnLoad"
+        },
+        {
+          "name": "afterProcessNode",
+          "description": "This event is triggered after htmx has initialized a DOM node.  It can be useful for extensions to build additional features onto a node.\n\n##### Details\n\n* `detail.elt` - the element being initialized\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:afterProcessNode"
+        },
+        {
+          "name": "afterRequest",
+          "description": "This event is triggered after an AJAX request has finished either in the case of a successful request (although\none that may have returned a remote error code such as a `404`) or in a network error situation.  This event\ncan be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the\n  `htmx:beforeSwap` event, else false\n* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the\n  `htmx:beforeSwap` event, else false\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:afterRequest"
+        },
+        {
+          "name": "afterSettle",
+          "description": "This event is triggered after the DOM has [settled](@/docs.md#request-operations).\n\n##### Details\n\n* `detail.elt` - the updated element\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:afterSettle"
+        },
+        {
+          "name": "afterSwap",
+          "description": "This event is triggered after new content has been [swapped into the DOM](@/docs.md#swapping).\n\n##### Details\n\n* `detail.elt` - the swapped in element\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:afterSwap"
+        },
+        {
+          "name": "beforeCleanupElement",
+          "description": "This event is triggered before htmx [disables](@/attributes/hx-disable.md) an element or removes it from the DOM.\n\n##### Details\n\n* `detail.elt` - the element to be cleaned up\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeCleanupElement"
+        },
+        {
+          "name": "beforeOnLoad",
+          "description": "This event is triggered before any response processing occurs.  If you call `preventDefault()` on the event to cancel it, no swap will occur.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeOnLoad"
+        },
+        {
+          "name": "beforeProcessNode",
+          "description": "This event is triggered before htmx initializes a DOM node and has processed all of its `hx-` attributes.  This gives extensions and other external code the ability to modify the contents of a DOM node before it is processed.\n\n##### Details\n\n* `detail.elt` - the element being initialized\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeProcessNode"
+        },
+        {
+          "name": "beforeRequest",
+          "description": "This event is triggered before an AJAX request is issued.  If you call `preventDefault()` on the event to cancel it, no request will occur.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeRequest"
+        },
+        {
+          "name": "beforeSend",
+          "description": "This event is triggered right before a request is sent.  You may not cancel the request with this event.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeSend"
+        },
+        {
+          "name": "beforeSwap",
+          "description": "This event is triggered before any new content has been [swapped into the DOM](@/docs.md#swapping).\nMost values on `detail` can be set to override subsequent behavior, other than where response headers take precedence.\nIf you call `preventDefault()` on the event to cancel it, no swap will occur.\n\nYou can modify the default swap behavior by modifying the `shouldSwap`, `selectOverride`, `swapOverride` and `target` properties of the event detail.\nSee the documentation on [configuring swapping](@/docs.md#modifying_swapping_behavior_with_events) for more details.\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.requestConfig.elt` - the element that dispatched the request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.ignoreTitle` - if `true` any title tag in the response will be ignored\n* `detail.isError` - whether error events should be triggered and also determines the values of `detail.successful` and `detail.failed` in later events\n* `detail.serverResponse` - the server response as text to be used for the swap\n* `detail.selectOverride` - add this to use instead of an [`hx-select`](@/attributes/hx-select.md) value\n* `detail.swapOverride` - add this to use instead of an [`hx-swap`](@/attributes/hx-swap.md) value\n* `detail.target` - the target of the swap\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeSwap"
+        },
+        {
+          "name": "beforeTransition",
+          "description": "This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) \nwrapped swap occurs.  If you call `preventDefault()` on the event to cancel it, the View Transition will not occur and the normal swapping logic will\nhappen instead.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.boosted` - true if the request is via an element using boosting\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.shouldSwap` - if the content will be swapped (defaults to `false` for non-200 response codes)\n* `detail.target` - the target of the swap\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeTransition"
+        },
+        {
+          "name": "configRequest",
+          "description": "This event is triggered after htmx has collected parameters for inclusion in the request.  It can be\nused to include or update the parameters that htmx will send:\n\n```javascript\ndocument.body.addEventListener('htmx:configRequest', function(evt) {\n    evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix\n});\n```\n\nNote that if an input value appears more than once the value in the `parameters` object will be an array, rather\nthan a single value.\n\n##### Details\n\n* `detail.parameters` - the parameters that will be submitted in the request\n* `detail.unfilteredParameters` - the parameters that were found before filtering by [`hx-params`](@/attributes/hx-params.md)\n* `detail.headers` - the request headers\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.verb` - the HTTP verb in use\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:configRequest"
+        },
+        {
+          "name": "confirm",
+          "description": "This event is fired on every trigger for a request (not just on elements that have a hx-confirm attribute).\nIt allows you to cancel (or delay) issuing the AJAX request.\nIf you call `preventDefault()` on the event, it will not issue the given request.\nThe `detail` object contains a function, `evt.detail.issueRequest(skipConfirmation=false)`, that can be used to issue the actual AJAX request at a later point.\nCombining these two features allows you to create an asynchronous confirmation dialog.\n\nHere is a basic example that shows the basic usage of the `htmx:confirm` event without altering the default behavior:\n\n```javascript\ndocument.body.addEventListener('htmx:confirm', function(evt) {\n  // 0. To modify the behavior only for elements with the hx-confirm attribute,\n  //    check if evt.detail.target.hasAttribute('hx-confirm')\n\n  // 1. Prevent the default behavior (this will prevent the request from being issued)\n  evt.preventDefault();\n  \n  // 2. Do your own logic here\n  console.log(evt.detail)\n\n  // 3. Manually issue the request when you are ready\n  evt.detail.issueRequest(); // or evt.detail.issueRequest(true) to skip the built-in window.confirm()\n});\n```\n\nAnd here is an example using [sweet alert](https://sweetalert.js.org/guides/) on any element with a `confirm-with-sweet-alert=\"{question}\"` attribute on it:\n\n```javascript\ndocument.body.addEventListener('htmx:confirm', function(evt) {\n  // 1. The requirement to show the sweet alert is that the element has a confirm-with-sweet-alert\n  //    attribute on it, if it doesn't we can return early and let the default behavior happen\n  if (!evt.detail.target.hasAttribute('confirm-with-sweet-alert')) return\n\n  // 2. Get the question from the attribute\n  const question = evt.detail.target.getAttribute('confirm-with-sweet-alert');\n\n  // 3. Prevent the default behavior (this will prevent the request from being issued)\n  evt.preventDefault();\n\n  // 4. Show the sweet alert\n  swal({\n    title: \"Are you sure?\",\n    text: question || \"Are you sure you want to continue?\",\n    icon: \"warning\",\n    buttons: true,\n    dangerMode: true,\n  }).then((confirmed) => {\n    if (confirmed) {\n      // 5. If the user confirms, we can manually issue the request\n      evt.detail.issueRequest(true); // true to skip the built-in window.confirm()\n    }\n  });\n});\n```\n\n##### Details\n\n* `detail.elt` - the element in question\n* `detail.etc` - additional request information (mostly unused)\n* `detail.issueRequest(skipConfirmation=false)` - a function that can be invoked to issue the request (should be paired with `evt.preventDefault()`!), if skipConfirmation is `true` the original `window.confirm()` is not executed\n* `detail.path` - the path of the request\n* `detail.target` - the element that triggered the request\n* `detail.triggeringEvent` - the original event that triggered this request\n* `detail.verb` - the verb of the request (e.g. `GET`)\n* `detail.question` - the question passed to `hx-confirm` attribute (only available if `hx-confirm` attribute is present)\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:confirm"
+        },
+        {
+          "name": "historyCacheError",
+          "description": "This event is triggered when an attempt to save the cache to `localStorage` fails\n\n##### Details\n\n* `detail.cause` - the `Exception` that was thrown when attempting to save history to `localStorage`\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheError"
+        },
+        {
+          "name": "historyCacheHit",
+          "description": "This event is triggered when a cache hit occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also override the details of the history restoration request in this event if required\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.item.content` - the content of the cache that will be swapped in\n* `detail.item.title` - the page title to update from the cache\n* `detail.path` - the path and query of the page being restored\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheHit"
+        },
+        {
+          "name": "historyCacheMiss",
+          "description": "This event is triggered when a cache miss occurs when restoring history\n\nYou can prevent the history restoration via `preventDefault()` to allow alternative restore handling.\nYou can also modify the xhr request or other details before it makes the the request to restore history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest` that will retrieve the remote content for restoration\n* `detail.path` - the path and query of the page being restored\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheMiss"
+        },
+        {
+          "name": "historyCacheMissLoadError",
+          "description": "This event is triggered when a cache miss occurs and a response has been retrieved from the server\nfor the content to restore, but the response is an error (e.g. `404`)\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheMissLoadError"
+        },
+        {
+          "name": "historyCacheMissLoad",
+          "description": "This event is triggered when a cache miss occurs and a response has been retrieved successfully from the server\nfor the content to restore\n\nYou can modify the details before it makes the swap to restore the history\n\n##### Details\n\n* `detail.historyElt` - the history element or body that will get replaced\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.path` - the path and query of the page being restored\n* `detail.response` - the response text that will be swapped in\n* `detail.swapSpec` - the swapSpec to be used containing the defatul swapStyle='innerHTML'\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyCacheMissLoad"
+        },
+        {
+          "name": "historyRestore",
+          "description": "This event is triggered when htmx handles a history restoration action\n\n##### Details\n\n* `detail.path` - the path and query of the page being restored\n* `detail.cacheMiss` - set `true` if restore was a cache miss\n* `detail.serverResponse` - with cache miss has the response text replaced\n* `detail.item` - with cache hit the cache details that was restored\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:historyRestore"
+        },
+        {
+          "name": "beforeHistorySave",
+          "description": "This event is triggered before the content is saved in the history cache.\n\nYou can modify the contents of the historyElt to remove 3rd party javascript changes so a clean copy of the content can be backed up to the history cache\n\n##### Details\n\n* `detail.path` - the path and query of the page being saved\n* `detail.historyElt` - the history element about to be saved\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeHistorySave"
+        },
+        {
+          "name": "load",
+          "description": "This event is triggered when a new node is loaded into the DOM by htmx. Note that this event is also triggered when htmx is first initialized, with the document body as the target.\n\n##### Details\n\n* `detail.elt` - the newly added element\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:load"
+        },
+        {
+          "name": "noSSESourceError",
+          "description": "This event is triggered when an element refers to an SSE event in its trigger, but no parent SSE source has been defined\n\n##### Details\n\n* `detail.elt` - the element with the bad SSE trigger\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:noSSESourceError"
+        },
+        {
+          "name": "oobAfterSwap",
+          "description": "This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to an [after swap event](#htmx:afterSwap)\n\n##### Details\n\n* `detail.elt` - the swapped in element\n* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:oobAfterSwap"
+        },
+        {
+          "name": "oobBeforeSwap",
+          "description": "This event is triggered as part of an [out of band swap](@/docs.md#oob_swaps) and behaves identically to a [before swap event](#htmx:beforeSwap)\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:oobBeforeSwap"
+        },
+        {
+          "name": "oobErrorNoTarget",
+          "description": "This event is triggered when an [out of band swap](@/docs.md#oob_swaps) does not have a corresponding element\nin the DOM to switch with.\n\n##### Details\n\n* `detail.content` - the element with the bad oob `id`\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:oobErrorNoTarget"
+        },
+        {
+          "name": "onLoadError",
+          "description": "This event is triggered when an error occurs during the `load` handling of an AJAX call\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.exception` - the exception that occurred\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:onLoadError"
+        },
+        {
+          "name": "prompt",
+          "description": "This event is triggered after a prompt has been shown to the user with the [`hx-prompt`](@/attributes/hx-prompt.md)\nattribute.  If this event is cancelled, the AJAX request will not occur.\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.prompt` - the user response to the prompt\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:prompt"
+        },
+        {
+          "name": "beforeHistoryUpdate",
+          "description": "This event is triggered before a history update is performed. It can be\nused to modify the `path` or `type` used to update the history.\n\n##### Details\n\n* `detail.history` - the `path` and `type` (push, replace) for the history update\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:beforeHistoryUpdate"
+        },
+        {
+          "name": "pushedIntoHistory",
+          "description": "This event is triggered after a URL has been pushed into history.\n\n##### Details\n\n* `detail.path` - the path and query of the URL that has been pushed into history\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:pushedIntoHistory"
+        },
+        {
+          "name": "replacedInHistory",
+          "description": "This event is triggered after a URL has been replaced in history.\n\n##### Details\n\n* `detail.path` - the path and query of the URL that has been replaced in history\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:replacedInHistory"
+        },
+        {
+          "name": "responseError",
+          "description": "This event is triggered when an HTTP error response occurs\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:responseError"
+        },
+        {
+          "name": "sendAbort",
+          "description": "This event is triggered when a request is aborted\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:sendAbort"
+        },
+        {
+          "name": "sendError",
+          "description": "This event is triggered when a network error prevents an HTTP request from occurring\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:sendError"
+        },
+        {
+          "name": "sseError",
+          "description": "This event is triggered when an error occurs with an SSE source\n\n##### Details\n\n* `detail.elt` - the element with the bad SSE source\n* `detail.error` - the error\n* `detail.source` - the SSE source\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:sseError"
+        },
+        {
+          "name": "swapError",
+          "description": "This event is triggered when an error occurs during the swap phase\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:swapError"
+        },
+        {
+          "name": "targetError",
+          "description": "This event is triggered when a bad selector is used for a [`hx-target`](@/attributes/hx-target.md) attribute (e.g. an\nelement ID without a preceding `#`)\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the bad CSS selector\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:targetError"
+        },
+        {
+          "name": "timeout",
+          "description": "This event is triggered when a request timeout occurs.  This wraps the typical `timeout` event of XMLHttpRequest.\n\nTimeout time can be set using `htmx.config.timeout` or per element using [`hx-request`](@/attributes/hx-request.md)\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:timeout"
+        },
+        {
+          "name": "trigger",
+          "description": "This event is triggered whenever an AJAX request would be, even if no AJAX request is specified. It\nis primarily intended to allow `hx-trigger` to execute client-side scripts; AJAX requests have more\ngranular events available, like [`htmx:beforeRequest`](#htmx:beforeRequest) or [`htmx:afterRequest`](#htmx:afterRequest).\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:trigger"
+        },
+        {
+          "name": "validateUrl",
+          "description": "This event is triggered before a request is made, allowing you to validate the URL that htmx is going to request.  If\n`preventDefault()` is invoked on the event, the request will not be made.\n\n```javascript\ndocument.body.addEventListener('htmx:validateUrl', function (evt) {\n  // only allow requests to the current server as well as myserver.com\n  if (!evt.detail.sameHost && evt.detail.url.hostname !== \"myserver.com\") {\n    evt.preventDefault();\n  }\n});\n```\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n* `detail.url` - the URL Object representing the URL that a request will be sent to.\n* `detail.sameHost` - will be `true` if the request is to the same host as the document\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:validateUrl"
+        },
+        {
+          "name": "validation:validate",
+          "description": "This event is triggered before an element is validated.  It can be used with the `elt.setCustomValidity()` method\nto implement custom validation rules.\n\n```html\n<form hx-post=\"/test\">\n  <input _=\"on htmx:validation:validate\n               if my.value != 'foo'\n                  call me.setCustomValidity('Please enter the value foo')\n               else\n                  call me.setCustomValidity('')\"\n         name=\"example\">\n</form>\n```\n\n##### Details\n\n* `detail.elt` - the element to be validated\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:validation:validate"
+        },
+        {
+          "name": "validation:failed",
+          "description": "This event is triggered when an element fails validation. If `preventDefault()` is invoked on the event, the reportValidity() enabled by `htmx.config.reportValidityOfForms` will not be called.\n\n##### Details\n\n* `detail.elt` - the element that failed validation\n* `detail.message` - the validation error message\n* `detail.validity` - the validity object, which contains properties specifying how validation failed\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:validation:failed"
+        },
+        {
+          "name": "validation:halted",
+          "description": "This event is triggered when a request is halted due to validation errors.\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n* `detail.errors` - an array of error objects with the invalid elements and errors associated with them\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:validation:halted"
+        },
+        {
+          "name": "xhr:abort",
+          "description": "This event is triggered when an ajax request aborts\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:xhr:abort"
+        },
+        {
+          "name": "xhr:loadstart",
+          "description": "This event is triggered when an ajax request starts\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:xhr:loadstart"
+        },
+        {
+          "name": "xhr:loadend",
+          "description": "This event is triggered when an ajax request finishes\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:xhr:loadend"
+        },
+        {
+          "name": "xhr:progress",
+          "description": "This event is triggered periodically when an ajax request that supports progress is in flight\n\n##### Details\n\n* `detail.elt` - the element that triggered the request\n",
+          "doc-url": "https://htmx.org/events/#htmx:xhr:progress"
+        }
+      ]
+    }
+  }
+}

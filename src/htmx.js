@@ -551,7 +551,7 @@ var htmx = (() => {
         }
 
         // Extract HX-* headers into ctx.hx
-        __extractHxHeaders(ctx, response) {
+        __extractHxHeaders(ctx) {
             ctx.hx = {}
             for (let [k, v] of ctx.response.raw.headers) {
                 if (k.toLowerCase().startsWith('hx-')) {
@@ -1271,9 +1271,33 @@ var htmx = (() => {
             return tasks;
         }
 
-        __handleScroll(target, scroll) {
-            if (scroll === 'top') target.scrollTop = 0;
-            else if (scroll === 'bottom') target.scrollTop = target.scrollHeight;
+        __handleScroll(task) {
+            if (task.swapSpec.scroll) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.scroll.split(":");
+                if (value) {
+                    target = this.__findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                if (value === 'top') {
+                    target.scrollTop = 0;
+                } else if (value === 'bottom'){
+                    target.scrollTop = target.scrollHeight;
+                }
+            }
+            if (task.swapSpec.show) {
+                let target;
+                let [selectorOrValue, value] = task.swapSpec.show.split(":");
+                if (value) {
+                    target = this.__findExt(selectorOrValue);
+                } else {
+                    target = task.target;
+                    value = selectorOrValue
+                }
+                target.scrollIntoView(value === 'top')
+            }
         }
 
         __handleAnchorScroll(ctx) {
@@ -1374,7 +1398,9 @@ var htmx = (() => {
                     fragment = document.createDocumentFragment();
                     fragment.append(...selected);
                 }
-
+                if (this.__isBoosted(ctx.sourceElement)) {
+                    swapSpec.show ||= 'top';
+                }
                 let mainSwap = {
                     type: 'main',
                     fragment,
@@ -1448,7 +1474,7 @@ var htmx = (() => {
             for (const elt of newContent) {
                 this.process(elt); // maybe only if isConnected?
             }
-            if (swapSpec.scroll) this.__handleScroll(target, swapSpec.scroll);
+            this.__handleScroll(task);
         }
 
         __trigger(on, eventName, detail = {}, bubbles = true) {

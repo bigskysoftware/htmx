@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="htmx:config" content='{"extensions":"preload"}'>
     <meta name="description" content="
     {%- block description -%}
     htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
@@ -21,21 +22,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/output.css">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
     <script src="/js/htmx.js"></script>
+    <script src="/js/ext/hx-preload.js"></script>
     <script src="/js/_hyperscript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@3.0.0/dist/iconify-icon.min.js"></script>
     {# Uncomment in development to be able to play with TailwindCSS utility classes directly from inspect #}
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <meta name="generator" content="Zola v.TODO">
 </head>
-<body class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
 
-{% set should_boost = not page or not page.path is starting_with("/patterns") %}
+<body hx-boost:inherited="true" class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
+
 {% set nav_names = ["docs", "reference", "patterns", "help", "essays"] %}
 {% set nav_descriptions = ["Complete guide and tutorials", "API reference (attributes, headers, etc.)", "Common patterns and examples", "Help and community questions", "Essays about hypermedia"] %}
 
 <!-- Header -->
-<header hx-boost:inherited="{{ should_boost }}" class="sticky top-0 z-20 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800">
+<header class="sticky top-0 z-20 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800">
     <div class="z-10 flex items-center justify-between max-w-[1680px] mx-auto px-4 py-3 sm:px-6 lg:px-6 xl:px-8 sm:py-4 gap-3 sm:gap-6 lg:gap-6 xl:gap-8">
         <!-- Logo -->
         <a href="/" title="Return to homepage" class="text-[28px] font-sans font-bold whitespace-nowrap inline-flex items-center text-neutral-900 dark:text-neutral-100 scan-lines shrink-0 -translate-y-[2px] scale-[80%] sm:scale-[100%] lg:scale-[85%] xl:scale-[100%]">
@@ -142,7 +145,7 @@
 </div>
 
 <!-- Footer -->
-<footer hx-boost:inherited="{{ should_boost }}" class="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 mt-16 sm:mt-24">
+<footer class="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 mt-16 sm:mt-24">
     <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <!-- Main footer grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
