@@ -2,7 +2,7 @@
 {% set toc = page.toc | default(value=section.toc) | default(value=[]) %}
 {% if toc %}
 
-<aside id="table-of-contents" class="hidden lg:block w-64 shrink-0 sticky top-48 self-start"
+<aside hx-boost:inherited="false" id="table-of-contents" class="hidden lg:block w-64 shrink-0 sticky top-48 self-start"
        _="init
             -- Detect all headings (#, ##, ###) inside markdown content
             set headings to <main :is(h2,h3,h4)/> as Array
