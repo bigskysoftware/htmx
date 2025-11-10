@@ -670,13 +670,13 @@ when you want to update multiple parts of the page from one request.
 A `<hx-partial>` tag wraps content that should be swapped into a specific target on the page:
 
 ```html
-<htmx-partial hx-target="#messages" hx-swap="beforeend">
+<hx-partial hx-target="#messages" hx-swap="beforeend">
   <div>New message content</div>
-</htmx-partial>
+</hx-partial>
 
-<htmx-partial hx-target="#notifications" hx-swap="innerHTML">
+<hx-partial hx-target="#notifications" hx-swap="innerHTML">
   <span class="badge">5</span>
-</htmx-partial>
+</hx-partial>
 ```
 
 Each `<hx-partial>` specifies:
