@@ -1,5 +1,5 @@
 // noinspection ES6ConvertVarToLetConst
-(() => {
+var htmx = (() => {
 
     class ReqQ {
         #c = null
@@ -551,7 +551,7 @@
         }
 
         // Extract HX-* headers into ctx.hx
-        #extractHxHeaders(ctx, response) {
+        #extractHxHeaders(ctx) {
             ctx.hx = {}
             for (let [k, v] of ctx.response.raw.headers) {
                 if (k.toLowerCase().startsWith('hx-')) {
