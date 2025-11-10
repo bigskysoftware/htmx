@@ -1,0 +1,19 @@
+{% for group in section.extra.pattern_groups %}
+    <h4 id="{{ group.name|lower }}" class="mt-8">
+        <a class="zola-anchor not-prose" href="#{{ group.name|lower }}" aria-label="Anchor link for: {{ group.name|lower }}">{{ group.name }}</a>
+    </h4>
+
+    <div class="mt-4 flex flex-col gap-1 border border-neutral-200 dark:border-neutral-800 rounded-[3px] p-1">
+        {% for pattern in group.patterns %}
+        <a href="{{ pattern.url }}" class="flex items-center gap-2 p-2 no-underline text-sm text-neutral-900 hover:text-white hover:bg-blue-600 dark:text-neutral-100 dark:hover:bg-blue-600 dark:hover:text-white bg-transparent rounded-[2px] transition">
+            <iconify-icon icon="{{ pattern.icon }}" class="size-4" height="none"></iconify-icon>
+            <strong class="font-semibold mr-2 min-w-[180px]">
+                {{ pattern.title }}
+            </strong>
+            <span>
+                {{ pattern.description }}
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+{% endfor %}
