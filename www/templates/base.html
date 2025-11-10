@@ -28,8 +28,11 @@
     <script src="/js/_hyperscript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@3.0.0/dist/iconify-icon.min.js"></script>
     {# Uncomment in development to be able to play with TailwindCSS utility classes directly from inspect #}
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {# <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> #}
     <meta name="generator" content="Zola v.TODO">
+    <script type="text/hyperscript">
+        on htmx:after:process from document call _hyperscript.processNode(document.body)
+    </script>
 </head>
 
 <body hx-boost:inherited="true" class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
@@ -124,15 +127,15 @@
 </a>
 
 <!-- Main Content -->
-{% set use_table_of_contents = (page and page.extra.table_of_contents) or (section and section.extra.table_of_contents) %}
+{% set table_of_contents = (page and page.extra.table_of_contents) or (section and section.extra.table_of_contents) %}
 
-<div class="group has-[#table-of-contents]:lg:flex has-[#table-of-contents]:lg:justify-center has-[#table-of-contents]:lg:gap-12 max-w-[1680px] mx-auto px-4 sm:px-8 mt-16 mb-8 sm:mt-20 sm:mb-16 min-w-0">
+<div class="{% if table_of_contents %}lg:flex lg:justify-center lg:gap-12{% endif %} max-w-[1680px] mx-auto px-4 sm:px-8 mt-16 mb-8 sm:mt-20 sm:mb-16 min-w-0">
 
-    {% if use_table_of_contents %}
+    {% if table_of_contents %}
         {% include "table_of_contents.html" %}
     {% endif %}
 
-    <main class="group-has-[#table-of-contents]:lg:flex-1 not-group-has-[#table-of-contents]:mx-auto prose dark:prose-invert sm:prose-lg prose-h1:text-4xl prose-a:no-underline prose-a:hover:underline prose-code:before:content-none prose-code:after:content-none [&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-28 lg:[&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-36">
+    <main class="{% if table_of_contents %}lg:flex-1{% else %}mx-auto{% endif %} prose dark:prose-invert sm:prose-lg prose-h1:text-4xl prose-a:no-underline prose-a:hover:underline prose-code:before:content-none prose-code:after:content-none [&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-28 lg:[&_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-36">
 
         {% block content %}
         <!--
