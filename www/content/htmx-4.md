@@ -23,7 +23,7 @@ major changes between htmx 2.x and htmx 4.x.
 
 ### Event Naming Convention Changed
 - New event naming convention: `htmx:phase:action[:sub-action]` (colon-separated)
-- Many event names have changed (See the [migration guide](@migration-guide-htmx-4.md)
+- Many event names have changed (See the [migration guide](/migration-guide-htmx-4#event-changes))
 - This provides more consistent & predictable event naming
 
 ### History Storage

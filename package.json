@@ -33,8 +33,6 @@
     "site": "npm run site:css & npm run site:serve",
     "site:css": "cd www && npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
     "site:serve": "cd www && npx zola-bin serve --interface 0.0.0.0 --port 1111 --open",
-
-    "publish": "npm publish --tag next --dry-run",
     "merge": "  (echo \"src/** merge=ours\ndist/** merge=ours\ntest/** merge=ours\n\" > .gitattributes && git add .gitattributes && git merge master); git reset HEAD .gitattributes 2>/dev/null; rm .gitattributes 2>/dev/null\n"
   },
   "repository": {
