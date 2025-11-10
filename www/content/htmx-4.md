@@ -36,12 +36,7 @@ major changes between htmx 2.x and htmx 4.x.
 - In htmx 2.0, responses with `4xx` and `5xx` response codes did not swap by default
 - In htmx 4.0, all responses will swap except for [`204 - No Content`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/204)
   and [`304 - Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304)
-- If you wish to revert to the htmx 2.0 behavior of not swapping `4xx` and `5xx` responses, you can add this to the `body`
-  tag:
-  ```html
-  <body hx-swap-4xx="none" hx-swap-5xx="none">
-    ...
-  ```
+- You can revert to not swapping `4xx` and `5xx` responses by setting `htmx.config.noSwap` to `[204, 304, '4xx', '5xx']`
 
 ## New Features
 

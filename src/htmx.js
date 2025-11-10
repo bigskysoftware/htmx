@@ -1,5 +1,5 @@
 // noinspection ES6ConvertVarToLetConst
-var htmx = (() => {
+var htmx = ((callbackfn, thisArg) => {
 
     class ReqQ {
         #c = null
@@ -2158,15 +2158,17 @@ var htmx = (() => {
 
         __handleStatusCodes(ctx) {
             let status = ctx.response.raw.status;
-            if (this.config.noSwap.includes(status)) {
-                ctx.swap = "none";
-            }
+            let noSwapStrings = this.config.noSwap.map(x => x + "");
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
                 let swap = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
-                if (swap) {
-                    ctx.swap = swap
+                if (noSwapStrings.includes(pattern)) {
+                    ctx.swap = "none";
                     return
+                }
+                if (swap) {
+                    ctx.swap = swap;
+                    return;
                 }
             }
         }

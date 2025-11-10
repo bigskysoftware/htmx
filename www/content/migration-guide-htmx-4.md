@@ -19,11 +19,8 @@ The three most impactful changes in htmx 4 are:
 While there is no way to "undo" the first item in htmx 4, the second two changes can be undone by:
 
 - Setting `htmx.config.implicitInheritance` to `true`, which will restore implicit attribute inheritance
-- Add the following to the `body` tag:
-  ```html
-  <body hx-swap-4xx="none" hx-swap-5xx="none">
-    ...
-  ```
+- Setting `htmx.config.noSwap` to `[204, 304, '4xx', '5xx']`
+
 Making these to changes will make many htmx 2-based applications work with htmx 4 without further changes.
 
 ## Attribute Changes
