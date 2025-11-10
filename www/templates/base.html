@@ -30,6 +30,9 @@
     {# Uncomment in development to be able to play with TailwindCSS utility classes directly from inspect #}
     {# <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> #}
     <meta name="generator" content="Zola v.TODO">
+    <script type="text/hyperscript">
+        on htmx:after:process from document call _hyperscript.processNode(document.body)
+    </script>
 </head>
 
 <body hx-boost:inherited="true" class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
