@@ -15,7 +15,7 @@ If you're migrating an extension from htmx 2.x, here's a quick reference:
 | `getSelectors()`                      | `htmx_after_init`     | Check `api.attributeValue(elt, "attr")` instead of returning selectors.                |
 | `onEvent(name, evt)`                  | Specific hooks        | Replace with `htmx_before_request`, `htmx_after_swap`, etc. (use underscores)          |
 | `transformResponse(text, xhr, elt)`   | `htmx_after_request`  | Modify `detail.ctx.text` directly (check if exists first as not set for SSE responses) |
-| `isInlineSwap(swapStyle)`             | Not needed            | Move logic into `htmx_handle_swap`                                                     |
+| `isInlineSwap(swapStyle)`             | Not needed            | Move logic into `htmx_handle_swap`. For OOB outer swaps, use `detail.unstripped`       |
 | `handleSwap(style, target, fragment)` | `htmx_handle_swap`    | Access via `detail.swapSpec.style` and `detail.fragment`, return false                 |
 | `encodeParameters(xhr, params, elt)`  | `htmx_config_request` | Modify `detail.ctx.request.body` (FormData) and headers directly                       |
 
@@ -46,14 +46,15 @@ htmx.defineExtension("my-ext", {
 
 ## Extension Approval
 
-Extensions must be approved via the `extensions` config option in a meta tag:
+Extensions can be approved via the `extensions` config option in a meta tag:
 
 ```html
 <meta name="htmx:config" content='{"extensions": "my-ext,another-ext"}'>
 ```
 
-Only approved extensions will be loaded. This prevents unauthorized extensions
-from running.
+If this is set then only approved extensions will be loaded. This prevents
+unauthorized extensions from running. By default without this config set in a
+meta tag all extensions will be approved.
 
 ## Event Hooks
 

@@ -1173,8 +1173,15 @@ the [`hx-validate`](@/attributes/hx-validate.md) attribute to "true".
 
 ## Extensions
 
-In htmx 4, extensions are just libraries that hook into the standard events and use the public API.  There is no longer
-a need for an explicit extension API.
+In htmx 4, extensions hook into standard events rather than callback extension points. They are lightweight with no performance penalty.
+
+Extensions apply page-wide without requiring `hx-ext` on parent elements. They activate via custom attributes where needed.
+
+To restrict which extensions can register, use an allow list:
+
+```html
+<meta name="htmx:config" content='{"extensions": "my-ext,another-ext"}'>
+```
 
 ### Core Extensions
 
