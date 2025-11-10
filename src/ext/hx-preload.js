@@ -3,14 +3,20 @@
 
     function initializePreload(elt) {
         let preloadSpec = api.attributeValue(elt, "hx-preload");
-        if (!preloadSpec) return;
+        if (!preloadSpec && !elt._htmx?.boosted) return;
 
-        let specs = api.parseTriggerSpecs(preloadSpec);
-        if (specs.length === 0) return;
-
-        let spec = specs[0];
-        let eventName = spec.name;
-        let timeout = spec.timeout ? htmx.parseInterval(spec.timeout) : 5000;
+        let eventName;
+        let timeout;
+        if (preloadSpec) {
+            let specs = api.parseTriggerSpecs(preloadSpec);
+            if (specs.length === 0) return;
+            let spec = specs[0];
+            eventName = spec.name;
+            timeout = spec.timeout ? htmx.parseInterval(spec.timeout) : 5000;
+        } else {
+            eventName = htmx.config?.preload?.boostEvent || "mousedown"
+            timeout = htmx.config?.preload?.boostTimeout ? htmx.parseInterval(htmx.config?.preload?.boostTimeout) : 5000;
+        }
 
         let preloadListener = async (evt) => {
             let {method} = api.determineMethodAndAction(elt, evt);
@@ -24,6 +30,8 @@
             api.handleHxVals(elt, body);
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
+
+
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
@@ -48,11 +56,11 @@
         init: (internalAPI) => {
             api = internalAPI;
         },
-        
+
         htmx_after_init: (elt) => {
             initializePreload(elt);
         },
-        
+
         htmx_before_request: (elt, detail) => {
             let {ctx} = detail;
             if (elt._htmx?.preload &&
@@ -65,7 +73,7 @@
                 if (elt._htmx) delete elt._htmx.preload;
             }
         },
-        
+
         htmx_before_cleanup: (elt) => {
             if (elt._htmx?.preloadListener) {
                 elt.removeEventListener(elt._htmx.preloadEvent, elt._htmx.preloadListener);
