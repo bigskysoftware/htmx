@@ -174,9 +174,9 @@ var htmx = (() => {
 
         #normalizeSwapStyle(style) {
             return style === 'before' ? 'beforebegin' :
-                style === 'after' ? 'afterend' :
-                    style === 'prepend' ? 'afterbegin' :
-                        style === 'append' ? 'beforeend' : style;
+                   style === 'after' ? 'afterend' :
+                   style === 'prepend' ? 'afterbegin' :
+                   style === 'append' ? 'beforeend' : style;
         }
 
         #attributeValue(elt, name, defaultVal, returnElt) {
@@ -1274,6 +1274,11 @@ var htmx = (() => {
             return tasks;
         }
 
+        #handleAutoFocus(elt) {
+            let autofocus = this.find(elt, "[autofocus]");
+            autofocus?.focus?.()
+        }
+
         #handleScroll(task) {
             if (task.swapSpec.scroll) {
                 let target;
@@ -1476,7 +1481,8 @@ var htmx = (() => {
             }
             this.#restorePreservedElements(pantry);
             for (const elt of newContent) {
-                this.process(elt); // maybe only if isConnected?
+                this.process(elt);
+                this.#handleAutoFocus(elt);
             }
             this.#handleScroll(task);
         }
@@ -1626,7 +1632,7 @@ var htmx = (() => {
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
                     this.#restoreHistory();
-                }
+                } 
             });
         }
 
@@ -2158,15 +2164,17 @@ var htmx = (() => {
 
         #handleStatusCodes(ctx) {
             let status = ctx.response.raw.status;
-            if (this.config.noSwap.includes(status)) {
-                ctx.swap = "none";
-            }
+            let noSwapStrings = this.config.noSwap.map(x => x + "");
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
                 let swap = this.#attributeValue(ctx.sourceElement, "hx-status:" + pattern);
-                if (swap) {
-                    ctx.swap = swap
+                if (noSwapStrings.includes(pattern)) {
+                    ctx.swap = "none";
                     return
+                }
+                if (swap) {
+                    ctx.swap = swap;
+                    return;
                 }
             }
         }

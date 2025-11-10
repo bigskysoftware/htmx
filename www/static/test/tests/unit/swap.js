@@ -344,9 +344,23 @@ describe('swap() unit tests', function() {
         document.title = originalTitle;
     })
 
+    it('decodes HTML entities in title', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<title>&lt;/&gt; htmx &amp; friends</title><div>Content</div>"})
+        document.title.should.equal('</> htmx & friends');
+        document.title = originalTitle;
+    })
+
     it('does not swap title tag into page content', async function () {
         await htmx.swap({"target":"#test-playground", "text":"<title>Test Title</title><div id='content'>Main Content</div>"})
         assert.isNull(playground().querySelector('title'));
         find('#content').innerText.should.equal('Main Content');
     })
+
+    it('supports autofocus', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<input id='i1' autofocus>"})
+        document.activeElement.id.should.equal("i1")
+    })
+
 })

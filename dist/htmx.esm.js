@@ -59,7 +59,8 @@ var htmx = (() => {
     class Htmx {
 
         #extMethods = new Map();
-        #approvedExt = new Set();
+        #approvedExt = '';
+        #registeredExt = new Set();
         #internalAPI;
         #actionSelector
         #boostSelector = "a,form";
@@ -126,7 +127,7 @@ var htmx = (() => {
                     }
                 }
             }
-            this.#approvedExt = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
+            this.#approvedExt = this.config.extensions;
         }
 
         #initRequestIndicatorCss() {
@@ -146,7 +147,9 @@ var htmx = (() => {
         }
 
         defineExtension(name, extension) {
-            if (!this.#approvedExt.delete(name)) return false;
+            if (this.#approvedExt && !this.#approvedExt.split(/,\s*/).includes(name)) return false;
+            if (this.#registeredExt.has(name)) return false;
+            this.#registeredExt.add(name);
             if (extension.init) extension.init(this.#internalAPI);
             Object.entries(extension).forEach(([key, value]) => {
                 if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
@@ -353,8 +356,8 @@ var htmx = (() => {
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
                         let actualKey = key.substring(1);
-                        if (requestConfig[actualKey] && typeof ctx[actualKey] === 'object') {
-                            Object.assign(ctx[actualKey], configOverrides[key]);
+                        if (requestConfig[actualKey] && typeof requestConfig[actualKey] === 'object') {
+                            Object.assign(requestConfig[actualKey], configOverrides[key]);
                         } else {
                             requestConfig[actualKey] = configOverrides[key];
                         }
@@ -1149,7 +1152,7 @@ var htmx = (() => {
         #makeFragment(text) {
             let response = text.replace(/<hx-partial(\s+|>)/gi, '<template partial$1').replace(/<\/hx-partial>/gi, '</template>');
             let title = '';
-            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (m, t) => (title = t, ''));
+            response = response.replace(/<title[^>]*>[\s\S]*?<\/title>/i, m => (title = this.#parseHTML(m).title, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
@@ -1269,6 +1272,11 @@ var htmx = (() => {
             }
 
             return tasks;
+        }
+
+        #handleAutoFocus(elt) {
+            let autofocus = this.find(elt, "[autofocus]");
+            autofocus?.focus?.()
         }
 
         #handleScroll(task) {
@@ -1420,9 +1428,9 @@ var htmx = (() => {
             }
             if (!target) return;
             if (swapSpec.strip && fragment.firstElementChild) {
-                let strip = document.createDocumentFragment();
-                strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
-                fragment = strip;
+                task.unstripped = fragment;
+                fragment = document.createDocumentFragment();
+                fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
             }
 
             let pantry = this.#handlePreservedElements(fragment);
@@ -1465,14 +1473,16 @@ var htmx = (() => {
                 return;
             } else if (swapSpec.style === 'none') {
                 return;
-            } else if (!this.#triggerExtensions(target, 'htmx:handle:swap', task)) {
-                return;
             } else {
+                task.target = target;
+                task.fragment = fragment;
+                if (!this.#triggerExtensions(target, 'htmx:handle:swap', task)) return;
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
             this.#restorePreservedElements(pantry);
             for (const elt of newContent) {
-                this.process(elt); // maybe only if isConnected?
+                this.process(elt);
+                this.#handleAutoFocus(elt);
             }
             this.#handleScroll(task);
         }
@@ -1616,11 +1626,13 @@ var htmx = (() => {
 
         #initHistoryHandling() {
             if (!this.config.history) return;
-            // Handle browser back/forward navigation
+            if (!history.state) {
+                history.replaceState({htmx: true}, '', location.pathname + location.search);
+            }
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
                     this.#restoreHistory();
-                }
+                } 
             });
         }
 
@@ -2152,15 +2164,17 @@ var htmx = (() => {
 
         #handleStatusCodes(ctx) {
             let status = ctx.response.raw.status;
-            if (this.config.noSwap.includes(status)) {
-                ctx.swap = "none";
-            }
+            let noSwapStrings = this.config.noSwap.map(x => x + "");
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
                 let swap = this.#attributeValue(ctx.sourceElement, "hx-status:" + pattern);
-                if (swap) {
-                    ctx.swap = swap
+                if (noSwapStrings.includes(pattern)) {
+                    ctx.swap = "none";
                     return
+                }
+                if (swap) {
+                    ctx.swap = swap;
+                    return;
                 }
             }
         }
@@ -2236,4 +2250,5 @@ var htmx = (() => {
 
     return new Htmx()
 })()
+
 export default htmx
