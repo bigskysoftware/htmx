@@ -190,19 +190,6 @@ describe('hx-config attribute', function() {
         assert.isFalse(ctx.request.validate)
     })
 
-    it('can set transition via config', async function () {
-        mockResponse('GET', '/test', 'New content')
-        let ctx = null
-        document.addEventListener('htmx:config:request', function(e) {
-            ctx = e.detail.ctx
-        }, {once: true})
-
-        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"+swapCfg": {"transition": true}}\'>Click</button>');
-        btn.click()
-        await forRequest()
-        assert.isTrue(ctx.transition)
-    })
-
     it('multiple elements with different configs work independently', async function () {
         mockResponse('GET', '/path1', 'Path 1')
         mockResponse('GET', '/path2', 'Path 2')
@@ -243,5 +230,19 @@ describe('hx-config attribute', function() {
         await forRequest()
         assert.isTrue(lastFetch().url.startsWith('/child'))
         assert.equal(ctx.request.action, '/child')
+    })
+
+    it('merges headers with + prefix', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"+headers": {"X-Custom": "value"}}\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.headers['X-Custom'], 'value')
+        assert.equal(ctx.request.headers['HX-Request'], 'true')
     })
 })
