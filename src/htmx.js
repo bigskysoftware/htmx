@@ -1620,13 +1620,13 @@ var htmx = (() => {
 
         __initHistoryHandling() {
             if (!this.config.history) return;
-            // Handle browser back/forward navigation
-             window.addEventListener('popstate', (event) => {
+            if (!history.state) {
+                history.replaceState({htmx: true}, '', location.pathname + location.search);
+            }
+            window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
                     this.__restoreHistory();
-                } else {
-                    window.location.reload();
-                }
+                } 
             });
         }
 
