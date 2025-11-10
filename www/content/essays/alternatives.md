@@ -66,6 +66,12 @@ a single, tidy package that is smaller than htmx.
 
 You can see many examples of Datastar in action [here](https://data-star.dev/examples).
 
+## Nomini
+
+[Nomini](https://github.com/nonnorm/nomini) is a hypermedia implementation that embraces writing JavaScript in the original and intended way, as a simple enhancement to mostly-static pages. Its goal is to add a minimal layer of LoB on top of HTML to allow for powerful server-driven web apps with easily implemented client-side features. Additionally, it is currently the smallest library existing that gives both reactive variables and partial page swaps (~2.8k minified, ~1.4k minzipped).
+
+In essence, Nomini is a tiny reimplementation of Datastar or a combination of Fixi and Alpine.js, intended to be a minimal, pragmatic building block for reactive server-driven UIs.
+
 ## Alpine-ajax
 
 Speaking of Alpine (which is a common library to use in conjunction with htmx) you should look at 
