@@ -45,7 +45,7 @@
             &lt;<b class="text-blue-600 dark:brightness-125">/</b>&gt; htm<b class="text-blue-600 dark:brightness-125">x</b>
         </a>
         <!-- Desktop Navigation -->
-        <nav class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1">
+        <nav class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1" hx-preload:inherited="mouseenter">
             <ul class="flex gap-3 xl:gap-4 justify-center text-base lg:text-base xl:text-lg font-os9 tracking-tight" preload="mouseover">
                 {% for name in nav_names %}
                 <li><a href="/{{ name }}/" class="block px-3 py-1 text-blue-600 dark:text-blue-400 hover:underline"
