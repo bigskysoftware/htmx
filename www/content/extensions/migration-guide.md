@@ -270,6 +270,33 @@ isInlineSwap: function(swapStyle) {
 - Not needed in new architecture
 - Custom swap logic handled in `htmx_handle_swap`
 
+**Important for OOB swaps:**
+
+In htmx 2.x, `isInlineSwap` was used to prevent automatic stripping of wrapper elements for custom outer swap styles. In htmx 4, OOB swaps automatically strip the wrapper element for non-outer swap styles (those not starting with "outer"). 
+
+If your custom swap style needs the wrapper element:
+
+**Option 1:** Name your swap style starting with "outer" (e.g., `outerMorph`, `outerCustom`)
+
+**Option 2:** Use `detail.unstripped` to access the original fragment:
+
+```javascript
+htmx_handle_swap: (target, detail) => {
+    if (detail.swapSpec.style === 'my-outer-swap') {
+        // For OOB swaps, use unstripped if available
+        let frag = (detail.type === 'oob' && detail.unstripped) || detail.fragment;
+        target.parentNode.replaceChild(frag.firstElementChild, target);
+        return true;
+    }
+    return false;
+}
+```
+
+**Notes:**
+- `detail.unstripped` contains the original fragment before stripping (only set when stripping occurs)
+- `detail.type` indicates if this is an 'oob', 'main', or 'partial' swap
+- For main swaps, stripping doesn't occur automatically
+
 ---
 
 ### `handleSwap(swapStyle, target, fragment, settleInfo)`

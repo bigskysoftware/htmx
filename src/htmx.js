@@ -1423,9 +1423,9 @@ var htmx = (() => {
             }
             if (!target) return;
             if (swapSpec.strip && fragment.firstElementChild) {
-                let strip = document.createDocumentFragment();
-                strip.append(...(fragment.firstElementChild.content || fragment.firstElementChild).childNodes);
-                fragment = strip;
+                task.unstripped = fragment;
+                fragment = document.createDocumentFragment();
+                fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
             }
 
             let pantry = this.__handlePreservedElements(fragment);
@@ -1468,9 +1468,10 @@ var htmx = (() => {
                 return;
             } else if (swapSpec.style === 'none') {
                 return;
-            } else if (!this.__triggerExtensions(target, 'htmx:handle:swap', task)) {
-                return;
             } else {
+                task.target = target;
+                task.fragment = fragment;
+                if (!this.__triggerExtensions(target, 'htmx:handle:swap', task)) return;
                 throw new Error(`Unknown swap style: ${swapSpec.style}`);
             }
             this.__restorePreservedElements(pantry);
