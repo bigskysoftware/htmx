@@ -1149,7 +1149,7 @@ var htmx = (() => {
         #makeFragment(text) {
             let response = text.replace(/<hx-partial(\s+|>)/gi, '<template partial$1').replace(/<\/hx-partial>/gi, '</template>');
             let title = '';
-            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (m, t) => (title = t, ''));
+            response = response.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, m => (title = this.#parseHTML(m).querySelector('title').textContent, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
             let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
