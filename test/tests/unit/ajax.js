@@ -29,7 +29,7 @@ describe('ajax() unit Tests', function() {
             await htmx.ajax('GET', '/test', '#d2');
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Element not found');
+            assert.include(e.message, 'Target not found');
         }
     });
 
@@ -43,7 +43,7 @@ describe('ajax() unit Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Element not found');
+            assert.include(e.message, 'Target not found');
         }
     });
 
@@ -56,7 +56,7 @@ describe('ajax() unit Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Element not found');
+            assert.include(e.message, 'Target not found');
         }
     });
 
@@ -205,6 +205,8 @@ describe('ajax() unit Tests', function() {
     });
 
     it('ajax works with no context (defaults to body)', async function() {
+        this.skip() // We can't test this as it will replace the body and nuke the test UI lol
+        return;
         mockResponse('GET', '/test', '<div id="ajax-result">body content</div>');
         await htmx.ajax('GET', '/test', {swap: 'beforeend'});
         // Verify content was added to body

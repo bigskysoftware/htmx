@@ -403,7 +403,7 @@ var htmx = (() => {
         }
 
         __isBoosted(elt) {
-            return elt._htmx?.boosted;
+            return elt?._htmx?.boosted;
         }
 
         async __handleTriggerEvent(ctx) {
@@ -507,6 +507,10 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.__extractHxHeaders(ctx);
+                ctx.isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
+                if (!ctx.isSSE) {
+                    ctx.text = await response.text();
+                }
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
@@ -519,16 +523,13 @@ var htmx = (() => {
                     await this.__handleSSE(ctx, elt, response);
                 } else {
                     // HTTP response
-                    ctx.text = await response.text();
                     if (ctx.status === "issuing") {
                         if (ctx.hx.retarget) ctx.target = this.__resolveTarget(elt, ctx.hx.retarget);
                         if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
                         if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                         ctx.status = "response received";
                         this.__handleStatusCodes(ctx);
-                        this.__handleHistoryUpdate(ctx);
                         await this.swap(ctx);
-                        this.__handleAnchorScroll(ctx)
                         ctx.status = "swapped";
                     }
                 }
@@ -667,9 +668,7 @@ var htmx = (() => {
                         ctx.status = "stream message received";
 
                         if (!ctx.response.cancelled) {
-                            this.__handleHistoryUpdate(ctx);
                             await this.swap(ctx);
-                            this.__handleAnchorScroll(ctx);
                             ctx.status = "swapped";
                         }
                         this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
@@ -1052,20 +1051,42 @@ var htmx = (() => {
         }
 
         __maybeBoost(elt) {
-            if (this.__attributeValue(elt, "hx-boost") === "true") {
-                if (this.__shouldInitialize(elt)) {
-                    elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
-                    elt.setAttribute('data-htmx-powered', 'true');
-                    if (elt.matches('a') && !elt.hasAttribute("target")) {
-                        elt.addEventListener('click', (click) => {
-                            elt._htmx.eventHandler(click)
-                        })
-                    } else {
-                        elt.addEventListener('submit', (submit) => {
-                            elt._htmx.eventHandler(submit)
-                        })
-                    }
+            if (this.__attributeValue(elt, "hx-boost") === "true" && this.__shouldBoost(elt)) {
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
+                elt.setAttribute('data-htmx-powered', 'true');
+                if (elt.matches('a') && !elt.hasAttribute("target")) {
+                    elt.addEventListener('click', (click) => {
+                        elt._htmx.eventHandler(click)
+                    })
+                } else {
+                    elt.addEventListener('submit', (submit) => {
+                        elt._htmx.eventHandler(submit)
+                    })
                 }
+                this.__trigger(elt, "htmx:after:init", {}, true)
+            }
+        }
+
+        __shouldBoost(elt) {
+            if (this.__shouldInitialize(elt)) {
+                if (elt.tagName === "A") {
+                    if (elt.target === '' || elt.target === '_self') {
+                        return !elt.getAttribute('href')?.startsWith?.("#") && this.__isSameOrigin(elt.href)
+                    }
+                } else if (elt.tagName === "FORM") {
+                    return elt.method !== 'dialog' &&  this.__isSameOrigin(elt.action);
+                }
+            }
+        }
+
+        __isSameOrigin(url) {
+            try {
+                // URL constructor handles both relative and absolute URLs
+                const parsed = new URL(url, window.location.href);
+                return parsed.origin === window.location.origin;
+            } catch (e) {
+                // If URL parsing fails, assume not same-origin
+                return false;
             }
         }
 
@@ -1256,7 +1277,7 @@ var htmx = (() => {
         }
 
         __handleAnchorScroll(ctx) {
-            let anchor = ctx.request.originalAction?.split('#')[1];
+            let anchor = ctx.request?.originalAction?.split('#')[1];
             if (anchor) {
                 document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
             }
@@ -1282,6 +1303,7 @@ var htmx = (() => {
         //============================================================================================
 
         async swap(ctx) {
+            this.__handleHistoryUpdate(ctx);
             let {fragment, title} = this.__makeFragment(ctx.text);
             ctx.title = title;
             let tasks = [];
@@ -1336,7 +1358,8 @@ var htmx = (() => {
                     restore()
                 }
             }
-            this.__trigger(document, "htmx:after:restore", {ctx});
+            this.__trigger(document, "htmx:after:restore", { ctx });
+            this.__handleAnchorScroll(ctx);
             // TODO this stuff should be an extension
             // if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
@@ -1540,14 +1563,18 @@ var htmx = (() => {
 
             let sourceElt = typeof context.source === 'string' ?
                 document.querySelector(context.source) : context.source;
+
+            // TODO we have a contradiction here: the tests say that we should default to the source element
+            // but the logic here targets the source element
             let targetElt = context.target ?
                 this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
 
-            if ((context.target && !targetElt) && (context.source && !sourceElt)) {
-                return Promise.reject(new Error('Element not found'));
+            if (!targetElt) {
+                return Promise.reject(new Error('Target not found'));
             }
 
-            sourceElt = sourceElt || targetElt || document.body;
+            // TODO is this logic correct?
+            sourceElt ||= targetElt || document.body;
 
             let ctx = this.__createRequestContext(sourceElt, context.event || {});
             Object.assign(ctx, context, {target: targetElt});
@@ -1594,6 +1621,8 @@ var htmx = (() => {
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
+            } else if (elt.tagName === "FORM") {
+                return elt.method !== 'dialog' &&  this.__isSameOrigin(elt.action);
             }
         }
 
