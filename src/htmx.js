@@ -356,8 +356,8 @@ var htmx = (() => {
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
                         let actualKey = key.substring(1);
-                        if (requestConfig[actualKey] && typeof ctx[actualKey] === 'object') {
-                            Object.assign(ctx[actualKey], configOverrides[key]);
+                        if (requestConfig[actualKey] && typeof requestConfig[actualKey] === 'object') {
+                            Object.assign(requestConfig[actualKey], configOverrides[key]);
                         } else {
                             requestConfig[actualKey] = configOverrides[key];
                         }
