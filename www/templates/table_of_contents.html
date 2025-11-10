@@ -25,7 +25,7 @@
         </h2>
         <div class="space-y-0.5">
             {% for h1 in toc %}
-            <a href="{{ h1.permalink | safe }}"
+            <a href="#{{ h1.id }}"
                class="toc-link block py-1.5 px-3 text-sm
                           text-neutral-700 dark:text-neutral-300
                           hover:text-blue-600 dark:hover:text-blue-400
@@ -40,7 +40,7 @@
             </a>
             {% if h1.children %}
             {% for h2 in h1.children %}
-            <a href="{{ h2.permalink | safe }}"
+            <a href="#{{ h2.id }}"
                class="toc-link block py-1.5 pl-6 pr-3 text-sm
                                   text-neutral-700 dark:text-neutral-300
                                   hover:text-blue-600 dark:hover:text-blue-400
@@ -55,7 +55,7 @@
             </a>
             {% if h2.children %}
             {% for h3 in h2.children %}
-            <a href="{{ h3.permalink | safe }}"
+            <a href="#{{ h3.id }}"
                class="toc-link block py-1.5 pl-9 pr-3 text-sm
                                           text-neutral-700 dark:text-neutral-300
                                           hover:text-blue-600 dark:hover:text-blue-400
