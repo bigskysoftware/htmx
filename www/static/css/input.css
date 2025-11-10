@@ -460,74 +460,6 @@
         content: " #";
     }
 
-    /* OS9 List View (Finder-inspired list component) */
-    .os9-list-view > div {
-        @apply flex flex-col gap-1 bg-white border border-neutral-300 rounded-[3px] p-1;
-        @apply dark:bg-neutral-800/50 dark:border-neutral-700/50;
-    }
-
-    .os9-list-view > div > a {
-        @apply flex items-center gap-2 p-2 no-underline text-sm text-neutral-900 hover:text-white hover:bg-blue-600 dark:text-neutral-100 dark:hover:bg-blue-600 dark:hover:text-white bg-transparent rounded-[2px] transition;
-    }
-
-    .os9-list-view > div > a > iconify-icon {
-        @apply text-base;
-    }
-
-    .os9-list-view > div > a > strong {
-        @apply font-semibold mr-2 min-w-[180px];
-    }
-
-    .os9-list-view > div > a:hover > strong {
-        @apply text-white;
-    }
-
-    /* OS9 Info Box */
-    .os9-info-box {
-        @apply mt-8 p-3 text-xs flex items-start gap-3;
-        @apply bg-white border border-[#999] rounded-[3px];
-        @apply dark:bg-[#2a2a2a] dark:border-[#555];
-        font-family: 'Lucida Grande', Geneva, Verdana, sans-serif;
-    }
-
-    .os9-info-box.hotwire-migration {
-        @apply items-center;
-        box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    .dark .os9-info-box.hotwire-migration {
-        box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .os9-info-box > .box-icon {
-        @apply text-2xl flex-shrink-0 text-[#333];
-        @apply dark:text-[#aaa];
-        filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6));
-    }
-
-    .dark .os9-info-box > .box-icon {
-        filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
-    }
-
-    .os9-info-box > .hotwire-logo {
-        @apply flex-shrink-0 w-8 h-8;
-    }
-
-    .os9-info-box h2 {
-        @apply text-xs font-bold mb-1 mt-0 text-black;
-        @apply dark:text-[#e8e8e8];
-    }
-
-    .os9-info-box p {
-        @apply m-0 text-black leading-[1.4];
-        @apply dark:text-[#d0d0d0];
-    }
-
-    .os9-info-box a {
-        @apply font-semibold text-[#0000ee] underline;
-        @apply dark:text-[#6ba3ff] dark:hover:text-[#8bb8ff];
-    }
-
     /* Info Table - Responsive tables */
     .info-table {
         @apply overflow-x-auto;
@@ -549,12 +481,6 @@
     .info-table td:last-child,
     .info-table th:last-child {
         width: 99%;
-    }
-}
-
-@layer utilities {
-    .wave-effect::before {
-        @apply absolute content-[''] h-[20vh] left-0 right-0 -z-10 animate-[wave_10s_infinite_ease-in-out] dark:animate-[wave-dark_10s_infinite_ease-in-out] opacity-30 dark:opacity-100
     }
 }
 
