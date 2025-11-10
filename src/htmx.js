@@ -1,5 +1,5 @@
 // noinspection ES6ConvertVarToLetConst
-var htmx = ((callbackfn, thisArg) => {
+var htmx = (() => {
 
     class ReqQ {
         #c = null
@@ -1274,6 +1274,11 @@ var htmx = ((callbackfn, thisArg) => {
             return tasks;
         }
 
+        __handleAutoFocus(elt) {
+            let autofocus = this.find(elt, "[autofocus]");
+            autofocus?.focus?.()
+        }
+
         __handleScroll(task) {
             if (task.swapSpec.scroll) {
                 let target;
@@ -1476,7 +1481,8 @@ var htmx = ((callbackfn, thisArg) => {
             }
             this.__restorePreservedElements(pantry);
             for (const elt of newContent) {
-                this.process(elt); // maybe only if isConnected?
+                this.process(elt);
+                this.__handleAutoFocus(elt);
             }
             this.__handleScroll(task);
         }

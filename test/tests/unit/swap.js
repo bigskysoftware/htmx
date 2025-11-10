@@ -356,4 +356,11 @@ describe('swap() unit tests', function() {
         assert.isNull(playground().querySelector('title'));
         find('#content').innerText.should.equal('Main Content');
     })
+
+    it('supports autofocus', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<input id='i1' autofocus>"})
+        document.activeElement.id.should.equal("i1")
+    })
+
 })
