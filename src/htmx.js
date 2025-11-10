@@ -59,7 +59,8 @@ var htmx = (() => {
     class Htmx {
 
         #extMethods = new Map();
-        #approvedExt = new Set();
+        #approvedExt = '';
+        #registeredExt = new Set();
         #internalAPI;
         #actionSelector
         #boostSelector = "a,form";
@@ -126,7 +127,7 @@ var htmx = (() => {
                     }
                 }
             }
-            this.#approvedExt = new Set(this.config.extensions.split(',').map(s => s.trim()).filter(Boolean));
+            this.#approvedExt = this.config.extensions;
         }
 
         __initRequestIndicatorCss() {
@@ -146,7 +147,9 @@ var htmx = (() => {
         }
 
         defineExtension(name, extension) {
-            if (!this.#approvedExt.delete(name)) return false;
+            if (this.#approvedExt && !this.#approvedExt.split(/,\s*/).includes(name)) return false;
+            if (this.#registeredExt.has(name)) return false;
+            this.#registeredExt.add(name);
             if (extension.init) extension.init(this.#internalAPI);
             Object.entries(extension).forEach(([key, value]) => {
                 if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
