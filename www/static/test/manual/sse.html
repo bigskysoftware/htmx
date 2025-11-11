@@ -39,7 +39,7 @@
             hx-get="/events"
             hx-target="#events-output"
             hx-swap="innerHTML"
-            hx-stream="continuous maxRetries:3 initialDelay:0 maxDelay:10s pauseHidden:true"
+            hx-config='{"streams": {"reconnect": true, "reconnectMaxAttempts": 3, "reconnectDelay": 0, "reconnectMaxDelay": 10000, "pauseInBackground": true}}'
             class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 mb-4">
         Connect
     </button>
