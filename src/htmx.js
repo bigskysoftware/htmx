@@ -112,11 +112,12 @@ var htmx = (() => {
                 },
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204, 304],
-                implicitInheritance: false
+                implicitInheritance: false,
+                relaxedJSON: true
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
-                let overrides = JSON.parse(metaConfig.content);
+                let overrides = this.parseJSON(metaConfig.content);
                 // Deep merge nested config objects
                 for (let key in overrides) {
                     let val = overrides[key];
@@ -351,7 +352,7 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                let configOverrides = JSON.parse(configAttr);
+                let configOverrides = this.parseJSON(configAttr);
                 let requestConfig = ctx.request;
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
@@ -1575,6 +1576,15 @@ var htmx = (() => {
             let [, n, u] = str?.match(/^([\d.]+)(ms|s|m)?$/) || [];
             let v = parseFloat(n) * (m[u] || 1);
             return isNaN(v) ? undefined : v;
+        }
+
+        parseJSON(s) {
+            if (this.config.relaxedJSON !== false) { // Auto-wrap with braces & convert unquoted keys to quoted
+                s = s.trim();
+                if (s[0] != '{') s = '{' + s + '}';
+                s = s.replace(/([{,]\s*)([a-zA-Z_$][\w$]*)\s*:/g, '$1"$2":');
+            }
+            return JSON.parse(s);
         }
 
         trigger(on, eventName, detail = {}, bubbles = true) {

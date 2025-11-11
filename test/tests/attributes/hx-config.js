@@ -245,4 +245,203 @@ describe('hx-config attribute', function() {
         assert.equal(ctx.request.headers['X-Custom'], 'value')
         assert.equal(ctx.request.headers['HX-Request'], 'true')
     })
+
+    // JSON5-lite syntax tests
+    it('supports unwrapped config with unquoted keys', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'timeout: 5000\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.timeout, 5000)
+    })
+
+    it('supports multiple unwrapped properties', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'timeout: 5000, cache: "no-cache"\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.timeout, 5000)
+        assert.equal(ctx.request.cache, 'no-cache')
+    })
+
+    it('supports wrapped config with unquoted keys', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{timeout: 5000}\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.timeout, 5000)
+    })
+
+    it('supports nested objects with unquoted keys', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'streams: {reconnect: true, reconnectDelay: 50}\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.isTrue(ctx.request.streams.reconnect)
+        assert.equal(ctx.request.streams.reconnectDelay, 50)
+    })
+
+    it('supports action override with unquoted key', async function () {
+        mockResponse('GET', '/override', 'Overridden!')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'action: "/override"\'>Click</button>');
+        btn.click()
+        await forRequest()
+        playground().innerText.should.equal('Overridden!')
+        assert.isTrue(lastFetch().url.startsWith('/override'))
+        assert.equal(ctx.request.action, '/override')
+    })
+
+    it('supports method override with unquoted key', async function () {
+        mockResponse('PUT', '/test', 'Put request')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'method: "PUT"\'>Click</button>');
+        btn.click()
+        await forRequest()
+        lastFetch().request.method.should.equal('PUT')
+    })
+
+    it('supports validate config with unquoted key', async function () {
+        mockResponse('POST', '/test', 'Submitted')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let form = createProcessedHTML('<form hx-post="/test" hx-config=\'validate: false\'><input required name="test" value="filled"><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest()
+        assert.isFalse(ctx.request.validate)
+    })
+
+    it('supports complex unwrapped config', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'timeout: 5000, validate: false, cache: "no-cache"\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.timeout, 5000)
+        assert.isFalse(ctx.request.validate)
+        assert.equal(ctx.request.cache, 'no-cache')
+    })
+
+    it('supports + prefix with unquoted keys', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"+headers": {Accept: "application/json"}}\'>Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.headers.Accept, 'application/json')
+        assert.equal(ctx.request.headers['HX-Request'], 'true')
+    })
+
+    it('maintains backward compatibility with standard JSON', async function () {
+        mockResponse('GET', '/override', 'JSON works')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"action": "/override"}\'>Click</button>');
+        btn.click()
+        await forRequest()
+        playground().innerText.should.equal('JSON works')
+        assert.isTrue(lastFetch().url.startsWith('/override'))
+        assert.equal(ctx.request.action, '/override')
+    })
+
+    it('supports inherited config with unquoted keys', async function () {
+        mockResponse('GET', '/inherited', 'Inherited config')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+        createProcessedHTML('<div hx-config:inherited=\'action: "/inherited"\'><button hx-get="/original" hx-trigger="click">Click</button></div>')
+        find('button').click()
+        await forRequest()
+        playground().innerText.should.equal('Inherited config')
+        assert.isTrue(lastFetch().url.startsWith('/inherited'))
+        assert.equal(ctx.request.action, '/inherited')
+    })
+
+    // relaxedJSON config option tests
+    it('respects config.relaxedJSON = false and requires strict JSON', function () {
+        const originalValue = htmx.config.relaxedJSON
+        try {
+            htmx.config.relaxedJSON = false
+
+            // parseJSON should throw with relaxed syntax when config is false
+            assert.throws(() => htmx.parseJSON('timeout: 5000'))
+            assert.throws(() => htmx.parseJSON('{timeout: 5000}'))
+        } finally {
+            htmx.config.relaxedJSON = originalValue
+        }
+    })
+
+    it('works with strict JSON when config.relaxedJSON = false', async function () {
+        const originalValue = htmx.config.relaxedJSON
+        try {
+            htmx.config.relaxedJSON = false
+            mockResponse('GET', '/test', 'Done')
+            let ctx = null
+            document.addEventListener('htmx:config:request', function(e) {
+                ctx = e.detail.ctx
+            }, {once: true})
+
+            // Strict JSON should work
+            let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"timeout": 5000}\'>Click</button>')
+            btn.click()
+            await forRequest()
+            assert.equal(ctx.request.timeout, 5000)
+        } finally {
+            htmx.config.relaxedJSON = originalValue
+        }
+    })
+
+    it('defaults to relaxed JSON syntax by default', async function () {
+        // Verify default behavior (relaxedJSON should be true by default)
+        assert.isTrue(htmx.config.relaxedJSON !== false)
+
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'timeout: 5000\'>Click</button>')
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.timeout, 5000)
+    })
 })

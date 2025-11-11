@@ -244,6 +244,7 @@ describe('bootstrap unit tests', function() {
             'on',
             'onLoad',
             'parseInterval',
+            'parseJSON',
             'process',
             'swap',
             'takeClass',
@@ -275,4 +276,5 @@ describe('bootstrap unit tests', function() {
             'Public properties have changed. Expected: ' + JSON.stringify(expectedPublicProperties) +
             ', Got: ' + JSON.stringify(ownProperties));
     })
+
 })
