@@ -2,7 +2,6 @@
 title = "Keyboard Shortcuts"
 template = "demo.html"
 +++
-
 In this example we show how to create a keyboard shortcut for an action.
 
 We start with a simple button that loads some content from the server:
@@ -22,7 +21,7 @@ You can find out the conditions needed for a given keyboard shortcut here:
 
 [https://javascript.info/keyboard-events](https://javascript.info/keyboard-events)
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
 

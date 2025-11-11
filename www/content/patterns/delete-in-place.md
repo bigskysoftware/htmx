@@ -1,8 +1,7 @@
 +++
-title = "Delete Row"
+title = "Delete in Place"
 template = "demo.html"
 +++
-
 This example shows how to implement a delete button that removes a table row upon completion.  First let's look at the
 table body:
 

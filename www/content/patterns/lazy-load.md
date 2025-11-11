@@ -1,8 +1,7 @@
 +++
-title = "Lazy Loading"
+title = "Lazy Load"
 template = "demo.html"
 +++
-
 This example shows how to lazily load an element on a page.  We start with an initial
 state that looks like this:
 

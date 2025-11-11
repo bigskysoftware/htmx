@@ -1,8 +1,7 @@
 +++
-title = "Click to Edit"
+title = "Edit in Place"
 template = "demo.html"
 +++
-
 <style type="text/tailwindcss">
 /* macOS 9 Platinum Demo Window */
 .demo-window {
@@ -87,7 +86,7 @@ The endpoints follow REST conventions:
 
 The URL represents the resource (`/users/1`), and the HTTP method indicates the action.
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
 const user = { name: "Joe Smith" };

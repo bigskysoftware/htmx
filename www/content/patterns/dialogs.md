@@ -1,8 +1,7 @@
 +++
-title = "Modals"
+title = "Dialogs"
 template = "demo.html"
 +++
-
 htmx provides several approaches for working with modals and dialogs, from simple browser-native dialogs to custom implementations and framework integrations.
 
 **Jump to:**

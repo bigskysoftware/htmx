@@ -1,8 +1,7 @@
 +++
-title = "Bulk Update"
+title = "Bulk Actions"
 template = "demo.html"
 +++
-
 This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is
 accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
 values in the form submission (`POST` request):
@@ -72,7 +71,7 @@ You can see a working example of this code below.
 }
 </style>
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
     //=========================================================================

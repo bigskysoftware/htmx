@@ -1,8 +1,7 @@
 +++
-title = "Cascading Selects"
+title = "Linked Selects"
 template = "demo.html"
 +++
-
 In this example we show how to make the values in one `select` depend on the value selected in another `select`.
 
 To begin we start with a default value for the `make` select: Audi.  We render the `model` select for this make.  We

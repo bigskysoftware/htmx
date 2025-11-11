@@ -75,7 +75,7 @@ Another area where hypermedia has a long track-record of success is [CRUD](https
 web applications, in the [Ruby on Rails](https://rubyonrails.org/) style.  If your main application mechanic is showing
 forms and saving the forms into a database, hypermedia can work very well.  
 
-And, with htmx, it can also be [very smooth](@/patterns/click-to-edit.md), and not just constrained
+And, with htmx, it can also be [very smooth](@/patterns/edit-in-place.md), and not just constrained
 to the simple [list view/detail view](@/patterns/edit-row.md) approach many server side applications take.
 
 ### _...If your UI is "nested", with updates mostly taking place within well-defined blocks_
@@ -180,7 +180,7 @@ style!
 We should note, however, that it is typically easier to embed SPA components _within_ a larger hypermedia
 architecture, than vice-versa.  Isolated client-side components can communicate with a broader hypermedia application
 via [events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events), in the manner demonstrated
-in the [drag-and-drop Sortable.js + htmx](@/patterns/sortable.md) example.
+in the [drag-and-drop Sortable.js + htmx](@/patterns/drag-to-reorder.md) example.
 
 ### _...If you want integrated copy & paste components_
 
