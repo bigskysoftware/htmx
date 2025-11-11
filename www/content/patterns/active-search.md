@@ -2,7 +2,6 @@
 title = "Active Search"
 template = "demo.html"
 +++
-
 This example actively searches a contacts database as the user enters text.
 
 We start with a search input and an empty table:
@@ -46,7 +45,7 @@ We can use multiple triggers by separating them with a comma, this way we add 2 
 
 Finally, we show an indicator when the search is in flight with the `hx-indicator` attribute.
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
     

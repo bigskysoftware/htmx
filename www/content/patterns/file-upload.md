@@ -1,95 +1,155 @@
 +++
-title = "File Upload"
+title = "File Uploads"
 template = "demo.html"
 +++
+Upload files with progress tracking and validation handling. Use `multipart/form-data` encoding.
 
-In this example we show how to create a file upload form that will be submitted via ajax, along with a progress bar.
+## Upload with Progress
 
-**Jump to:**
-1. [File Upload with Progress Bar](#file-upload-with-progress-bar)
-2. [Preserving File Inputs After Errors](#preserving-file-inputs-after-errors)
-
-## File Upload with Progress Bar
-
-We will show two different implementation, one in pure javascript (using some utility methods in htmx) and one in [hyperscript](https://hyperscript.org).
-
-First the pure javascript version.
-
-* We have a form of type `multipart/form-data` so that the file will be properly encoded
-* We post the form to `/upload`
-* We have a `progress` element
-* We listen for the `htmx:xhr:progress` event and update the `value` attribute of the progress bar based on the `loaded` and `total` properties in the event detail.
+Create a form with multipart encoding:
 
 ```html
-    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload'>
-        <input type='file' name='file'>
-        <button>
-            Upload
-        </button>
-        <progress id='progress' value='0' max='100'></progress>
-    </form>
-    <script>
-        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
-          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
-        });
-    </script>
-```
-
-The Hyperscript version is very similar, except:
- 
- * The script is embedded directly on the form element
- * Hyperscript offers nicer syntax (although the htmx API is pretty nice too!)
-
-```html
-    <form hx-encoding='multipart/form-data' hx-post='/upload'
-          _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
-        <input type='file' name='file'>
-        <button>
-            Upload
-        </button>
-        <progress id='progress' value='0' max='100'></progress>
-    </form>
-```
-
-Note that hyperscript allows you to destructure properties from `details` directly into variables.
-
-## Preserving File Inputs After Errors
-
-When using server-side error handling and validation with forms that include both primitive values and file inputs, the file input's value is lost when the form returns with error messages. Consequently, users are required to re-upload the file, resulting in a less user-friendly experience.
-
-To overcome the problem of losing the file input value, you can use the `hx-preserve` attribute on the `input` element:
-
-```html
-<form method="POST" id="binaryForm" enctype="multipart/form-data" hx-swap="outerHTML" hx-target="#binaryForm">
-    <input hx-preserve id="someId" type="file" name="binaryFile">
-    <!-- Other code here, such as input error handling. -->
-    <button type="submit">Submit</button>
+<form hx-encoding="multipart/form-data" hx-post="/upload">
+  <input type="file" name="file">
+  <button>Upload</button>
+  <progress id="progress" value="0" max="100"></progress>
 </form>
 ```
 
-If the file field is returned with errors on it, they will be displayed provided that `hx-preserve` was placed in the `input` only and not the element that would show the errors (e.g. `ol.errorlist`). If in a given circumstance you want the file upload input to return *without* preserving the user's chosen file (for example, because the file was an invalid type), you can manage that on the server side by omitting the `hx-preserve` attribute when the field has the relevant errors.
-
-Alternatively, you can preserve file inputs after form errors by restructuring the form so that the file input is located outside the area that will be swapped.
-
-Before:
+Listen for progress events and update the progress bar:
 
 ```html
-<form method="POST" id="binaryForm" enctype="multipart/form-data" hx-swap="outerHTML" hx-target="#binaryForm">
-    <input type="file" name="binaryFile">
-    <button type="submit">Submit</button>
+<script>
+  htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+    htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
+  });
+</script>
+```
+
+[//]: # ({{ demo_environment&#40;&#41; }})
+
+<form id="upload-form" hx-encoding="multipart/form-data" hx-post="/upload"
+      class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
+  <div>
+    <label class="block text-sm font-medium mb-2">Choose file</label>
+    <input type="file" name="file"
+           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
+  </div>
+  <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    Upload
+  </button>
+  <progress id="progress" value="0" max="100"
+            class="w-full h-2 [&::-webkit-progress-bar]:bg-neutral-200 [&::-webkit-progress-value]:bg-blue-600 [&::-moz-progress-bar]:bg-blue-600"></progress>
+  <div id="upload-result" class="text-sm text-neutral-600 dark:text-neutral-400"></div>
+</form>
+
+<script>
+  htmx.on('#upload-form', 'htmx:xhr:progress', function(evt) {
+    htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
+  });
+
+  onPost("/upload", function(req) {
+    return `<div class="text-green-600">File uploaded successfully!</div>`;
+  });
+</script>
+
+### With Hyperscript
+
+Use hyperscript for cleaner syntax:
+
+```html
+<form hx-encoding="multipart/form-data" hx-post="/upload"
+      _="on htmx:xhr:progress(loaded, total)
+         set #progress.value to (loaded/total)*100">
+  <input type="file" name="file">
+  <button>Upload</button>
+  <progress id="progress" value="0" max="100"></progress>
 </form>
 ```
 
-After:
+Hyperscript lets you destructure event details directly into variables.
+
+## Keep File Selection on Errors
+
+When forms return with validation errors, file inputs lose their selection. Preserve them with `hx-preserve` or by moving the input outside the swap target.
+
+### Using hx-preserve
+
+Add `hx-preserve` to keep the file selection:
 
 ```html
-<input form="binaryForm" type="file" name="binaryFile">
-
-<form method="POST" id="binaryForm" enctype="multipart/form-data" hx-swap="outerHTML" hx-target="#binaryForm">
-    <button type="submit">Submit</button>
+<form enctype="multipart/form-data" hx-post="/submit">
+  <input hx-preserve type="file" name="file">
+  <button>Submit</button>
 </form>
 ```
 
-1. Form Restructuring: Move the binary file input outside the main form element in the HTML structure.
+The file stays selected when the form swaps with error messages.
 
-2. Using the form Attribute: Enhance the binary file input by adding the form attribute and setting its value to the ID of the main form. This linkage associates the binary file input with the form, even when it resides outside the form element.
+**Important:** Only add `hx-preserve` to the input itself, not error containers. The server can conditionally remove `hx-preserve` when the file has errors (like invalid type).
+
+<form id="preserve-form" enctype="multipart/form-data" hx-post="/validate"
+      hx-swap="outerHTML"
+      class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
+  <div>
+    <label class="block text-sm font-medium mb-2">Upload file</label>
+    <input type="file" name="file"
+           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
+    <p class="text-xs text-neutral-500 mt-1">Try submitting without selecting a file</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-2">Name</label>
+    <input type="text" name="name" placeholder="Enter your name"
+           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
+  </div>
+  <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    Submit
+  </button>
+</form>
+
+<script>
+  onPost("/validate", function(req) {
+    const name = new URLSearchParams(req.requestBody).get('name');
+    if (!name) {
+      return `
+        <form id="preserve-form" enctype="multipart/form-data" hx-post="/validate"
+              hx-swap="outerHTML"
+              class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
+          <div>
+            <label class="block text-sm font-medium mb-2">Upload file</label>
+            <input hx-preserve type="file" name="file"
+                   class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
+            <p class="text-xs text-neutral-500 mt-1">Try submitting without selecting a file</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Name</label>
+            <input type="text" name="name" placeholder="Enter your name"
+                   class="block w-full text-sm border border-red-300 rounded px-3 py-2">
+            <p class="text-sm text-red-600 mt-1">Name is required</p>
+          </div>
+          <button type="submit"
+                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Submit
+          </button>
+        </form>
+      `;
+    }
+    return `<div class="p-4 bg-green-50 text-green-700 rounded">Form submitted successfully! Your file selection was preserved.</div>`;
+  });
+</script>
+
+### Move Input Outside Form
+
+Place the file input outside the swap target:
+
+```html
+<input form="form-id" type="file" name="file">
+
+<form id="form-id" enctype="multipart/form-data" hx-post="/submit">
+  <button>Submit</button>
+</form>
+```
+
+The `form` attribute links the input to the form. Since the input is outside the swap target, it never gets replaced.

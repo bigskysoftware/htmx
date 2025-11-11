@@ -445,7 +445,7 @@ elements for the duration of a request by using the [hx-disable](@/attributes/hx
 ### Targets
 
 If you want the response to be loaded into a different element other than the one that made the request, you can
-use the [hx-target](@/attributes/hx-target.md) attribute, which takes a CSS selector.  
+use the [`hx-target`](@/attributes/hx-target.md) attribute, which takes a CSS selector.  
 
 Looking back at our Live Search example:
 
@@ -1378,7 +1378,7 @@ Here is an example that adds a parameter to an htmx request
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another use case is to [reset user input](@/patterns/reset-user-input.md) on successful requests using the `htmx:after:swap`
+Another use case is to [reset user input](@/patterns/reset-on-submit.md) on successful requests using the `htmx:after:swap`
 event:
 
 ```html
@@ -1394,7 +1394,7 @@ Htmx integrates well with third party libraries.
 
 If the library fires events on the DOM, you can use those events to trigger requests from htmx.
 
-A good example of this is the [SortableJS demo](@/patterns/sortable.md):
+A good example of this is the [SortableJS demo](@/patterns/drag-to-reorder.md):
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
@@ -1427,10 +1427,55 @@ htmx.onLoad((content) => {
 
 This will ensure that as new content is added to the DOM by htmx, sortable elements are properly initialized.
 
-#### Web Components {#web-components}
+### Web Components {#web-components}
 
-Please see the [Web Components Pattern](@/patterns/web-components.md) page for examples on how to integrate htmx
-with web components.
+htmx doesn't automatically scan inside web components' shadow DOM. You must manually initialize it.
+
+After creating your shadow DOM, call [`htmx.process`](@/api.md#process):
+```javascript
+customElements.define('my-counter', class extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' })
+        shadow.innerHTML = `
+          <button hx-post="/increment" hx-target="#count">+1</button>
+          <div id="count">0</div>
+        `
+        htmx.process(shadow) // Initialize htmx for this shadow DOM
+    }
+})
+
+```
+
+#### Targeting Elements Outside Shadow DOM
+
+Selectors like [`hx-target`](@/attributes/hx-target.md) only see elements inside the same shadow DOM. 
+
+To break out:
+
+1. Target the host element, using `host`:
+   ```html
+   <button hx-get="..." hx-target="host">
+     ...
+   </button>
+   ```
+2. Target elements in main document, using `global:<selector>`:
+   ```html
+   <button hx-get="..." hx-target="global:#target">
+     ...
+   </button>
+   ```
+
+#### Components Without Shadow DOM
+
+Still call [`htmx.process`](@/api.md#process) on the component:
+```javascript
+customElements.define('simple-widget', class extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `Load`
+    htmx.process(this)
+  }
+})
+```
 
 ## Caching
 

@@ -1,8 +1,7 @@
 +++
-title = "Inline Validation"
+title = "Active Validation"
 template = "demo.html"
 +++
-
 This example shows how to do inline field validation, in this case of an email address.  To do this
 we need to create a form with an input that `POST`s back to the server with the value to be validated
 and updates the DOM with the validation results.

@@ -2,7 +2,6 @@
 title = "Animations"
 template = "demo.html"
 +++
-
 htmx is designed to allow you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
 to add smooth animations and transitions to your web page using only CSS and HTML.  Below are a few examples of
 various animation techniques.
@@ -46,28 +45,47 @@ This div will poll every second and will get replaced with new content which cha
 Because the div has a stable id, `color-demo`, htmx will structure the swap such that a CSS transition, defined on the
 `.smooth` class, applies to the style update from `red` to `blue`, and smoothly transitions between them.
 
-#### Demo {#throb-demo}
+[//]: # (#### Demo {#throb-demo})
 
-<style>
-.smooth {
-  transition: all 1s ease-in;
-}
-</style>
-<div id="color-demo" class="smooth" style="color:red"
-      hx-get="/colors" hx-swap="outerHTML" hx-trigger="every 1s">
-  Color Swap Demo
-</div>
+[//]: # ()
+[//]: # (<style>)
 
-<script>
-    var colors = ['blue', 'green', 'orange', 'red'];
-    onGet("/colors", function () {
-      var color = colors.shift();
-      colors.push(color);
-      return '<div id="color-demo" hx-get="/colors" hx-swap="outerHTML" class="smooth" hx-trigger="every 1s" style="color:' + color + '">\n'+
-             '  Color Swap Demo\n'+
-             '</div>\n'
-    });
-</script>
+[//]: # (.smooth {)
+
+[//]: # (  transition: all 1s ease-in;)
+
+[//]: # (})
+
+[//]: # (</style>)
+
+[//]: # (<div id="color-demo" class="smooth" style="color:red")
+
+[//]: # (      hx-get="/colors" hx-swap="outerHTML" hx-trigger="every 1s">)
+
+[//]: # (  Color Swap Demo)
+
+[//]: # (</div>)
+
+[//]: # ()
+[//]: # (<script>)
+
+[//]: # (    var colors = ['blue', 'green', 'orange', 'red'];)
+
+[//]: # (    onGet&#40;"/colors", function &#40;&#41; {)
+
+[//]: # (      var color = colors.shift&#40;&#41;;)
+
+[//]: # (      colors.push&#40;color&#41;;)
+
+[//]: # (      return '<div id="color-demo" hx-get="/colors" hx-swap="outerHTML" class="smooth" hx-trigger="every 1s" style="color:' + color + '">\n'+)
+
+[//]: # (             '  Color Swap Demo\n'+)
+
+[//]: # (             '</div>\n')
+
+[//]: # (    }&#41;;)
+
+[//]: # (</script>)
 
 ### Smooth Progress Bar
 
@@ -96,24 +114,38 @@ complete.  This can be done like so:
 </button>
 ```
 
-#### Demo {#fade-swap-demo}
+[//]: # (#### Demo {#fade-swap-demo})
 
-<style>
-.fade-me-out.htmx-swapping {
-  opacity: 0;
-  transition: opacity 1s ease-out;
-}
-</style>
+[//]: # ()
+[//]: # (<style>)
 
-<button class="fade-me-out"
-        hx-delete="/fade_out_demo"
-        hx-swap="outerHTML swap:1s">
-        Delete Me
-</button>
+[//]: # (.fade-me-out.htmx-swapping {)
 
-<script>
-    onDelete("/fade_out_demo", function () {return ""});
-</script>
+[//]: # (  opacity: 0;)
+
+[//]: # (  transition: opacity 1s ease-out;)
+
+[//]: # (})
+
+[//]: # (</style>)
+
+[//]: # ()
+[//]: # (<button class="fade-me-out")
+
+[//]: # (        hx-delete="/fade_out_demo")
+
+[//]: # (        hx-swap="outerHTML swap:1s">)
+
+[//]: # (        Delete Me)
+
+[//]: # (</button>)
+
+[//]: # ()
+[//]: # (<script>)
+
+[//]: # (    onDelete&#40;"/fade_out_demo", function &#40;&#41; {return ""}&#41;;)
+
+[//]: # (</script>)
 
 ## Settling Transitions {#settling}
 
@@ -141,33 +173,56 @@ class.
 </button>
 ```
 
-#### Demo {#fade-settle-demo}
+[//]: # (#### Demo {#fade-settle-demo})
 
-<style>
-#fade-me-in.htmx-added {
-  opacity: 0;
-}
-#fade-me-in {
-  opacity: 1;
-  transition: opacity 1s ease-out;
-}
-</style>
+[//]: # ()
+[//]: # (<style>)
 
-<button id="fade-me-in"
-        class="btn primary"
-        hx-post="/fade_me_in"
-        hx-swap="outerHTML settle:1s">
-        Fade Me In
-</button>
+[//]: # (#fade-me-in.htmx-added {)
 
-<script>
-    onPost("/fade_me_in", function () {return "<button id=\"fade-me-in\"\n"+
-                                               "        class=\"btn primary\"\n"+
-                                               "        hx-post=\"/fade_me_in\"\n"+
-                                               "        hx-swap=\"outerHTML settle:1s\">\n"+
-                                               "        Fade Me In\n"+
-                                               "</button>"});
-</script>
+[//]: # (  opacity: 0;)
+
+[//]: # (})
+
+[//]: # (#fade-me-in {)
+
+[//]: # (  opacity: 1;)
+
+[//]: # (  transition: opacity 1s ease-out;)
+
+[//]: # (})
+
+[//]: # (</style>)
+
+[//]: # ()
+[//]: # (<button id="fade-me-in")
+
+[//]: # (        class="btn primary")
+
+[//]: # (        hx-post="/fade_me_in")
+
+[//]: # (        hx-swap="outerHTML settle:1s">)
+
+[//]: # (        Fade Me In)
+
+[//]: # (</button>)
+
+[//]: # ()
+[//]: # (<script>)
+
+[//]: # (    onPost&#40;"/fade_me_in", function &#40;&#41; {return "<button id=\"fade-me-in\"\n"+)
+
+[//]: # (                                               "        class=\"btn primary\"\n"+)
+
+[//]: # (                                               "        hx-post=\"/fade_me_in\"\n"+)
+
+[//]: # (                                               "        hx-swap=\"outerHTML settle:1s\">\n"+)
+
+[//]: # (                                               "        Fade Me In\n"+)
+
+[//]: # (                                               "</button>"}&#41;;)
+
+[//]: # (</script>)
 
 ## Request In Flight Animation {#request}
 
@@ -187,25 +242,40 @@ is a form that on submit will change its look to indicate that a request is bein
 </form>
 ```
 
-#### Demo {#request-demo}
+[//]: # (#### Demo {#request-demo})
 
-<style>
-  form.htmx-request {
-    opacity: .5;
-    transition: opacity 300ms linear;
-  }
-</style>
+[//]: # ()
+[//]: # (<style>)
 
-<div aria-live="polite">
-<form hx-post="/name" hx-swap="outerHTML">
-<label>Name:</label><input name="name"><br/>
-<button class="btn primary">Submit</button>
-</form>
-</div>
+[//]: # (  form.htmx-request {)
 
-<script>
-  onPost("/name", function(){ return "Submitted!"; });
-</script>
+[//]: # (    opacity: .5;)
+
+[//]: # (    transition: opacity 300ms linear;)
+
+[//]: # (  })
+
+[//]: # (</style>)
+
+[//]: # ()
+[//]: # (<div aria-live="polite">)
+
+[//]: # (<form hx-post="/name" hx-swap="outerHTML">)
+
+[//]: # (<label>Name:</label><input name="name"><br/>)
+
+[//]: # (<button class="btn primary">Submit</button>)
+
+[//]: # (</form>)
+
+[//]: # (</div>)
+
+[//]: # ()
+[//]: # (<script>)
+
+[//]: # (  onPost&#40;"/name", function&#40;&#41;{ return "Submitted!"; }&#41;;)
+
+[//]: # (</script>)
 
 ## Using the htmx `class-tools` Extension
 
@@ -296,57 +366,97 @@ implement this feature in the near future.
 </div>
 ```
 
-#### Demo
+[//]: # (#### Demo)
 
-<style>
-   @keyframes fade-in {
-     from { opacity: 0; }
-   }
+[//]: # ()
+[//]: # (<style>)
 
-   @keyframes fade-out {
-     to { opacity: 0; }
-   }
+[//]: # (   @keyframes fade-in {)
 
-   @keyframes slide-from-right {
-     from { transform: translateX(90px); }
-   }
+[//]: # (     from { opacity: 0; })
 
-   @keyframes slide-to-left {
-     to { transform: translateX(-90px); }
-   }
+[//]: # (   })
 
-   .slide-it {
-     view-transition-name: slide-it;
-   }
+[//]: # ()
+[//]: # (   @keyframes fade-out {)
 
-   ::view-transition-old(slide-it) {
-     animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
-   }
-   ::view-transition-new(slide-it) {
-     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
-     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
-   }
-</style>
+[//]: # (     to { opacity: 0; })
 
-<div class="slide-it">
-   <h1>Initial Content</h1>
-   <button class="btn primary" hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
-     Swap It!
-   </button>
-</div>
+[//]: # (   })
 
-<script>
-    var originalContent = htmx.find(".slide-it").innerHTML;
+[//]: # ()
+[//]: # (   @keyframes slide-from-right {)
 
-    this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>New Content</h1> <button class='btn danger' hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
-    });
+[//]: # (     from { transform: translateX&#40;90px&#41;; })
 
-    this.server.respondWith("GET", "/original-content", function(xhr){
-        xhr.respond(200,  {}, originalContent)
-    });
-</script>
+[//]: # (   })
+
+[//]: # ()
+[//]: # (   @keyframes slide-to-left {)
+
+[//]: # (     to { transform: translateX&#40;-90px&#41;; })
+
+[//]: # (   })
+
+[//]: # ()
+[//]: # (   .slide-it {)
+
+[//]: # (     view-transition-name: slide-it;)
+
+[//]: # (   })
+
+[//]: # ()
+[//]: # (   ::view-transition-old&#40;slide-it&#41; {)
+
+[//]: # (     animation: 180ms cubic-bezier&#40;0.4, 0, 1, 1&#41; both fade-out,)
+
+[//]: # (     600ms cubic-bezier&#40;0.4, 0, 0.2, 1&#41; both slide-to-left;)
+
+[//]: # (   })
+
+[//]: # (   ::view-transition-new&#40;slide-it&#41; {)
+
+[//]: # (     animation: 420ms cubic-bezier&#40;0, 0, 0.2, 1&#41; 90ms both fade-in,)
+
+[//]: # (     600ms cubic-bezier&#40;0.4, 0, 0.2, 1&#41; both slide-from-right;)
+
+[//]: # (   })
+
+[//]: # (</style>)
+
+[//]: # ()
+[//]: # (<div class="slide-it">)
+
+[//]: # (   <h1>Initial Content</h1>)
+
+[//]: # (   <button class="btn primary" hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">)
+
+[//]: # (     Swap It!)
+
+[//]: # (   </button>)
+
+[//]: # (</div>)
+
+[//]: # ()
+[//]: # (<script>)
+
+[//]: # (    var originalContent = htmx.find&#40;".slide-it"&#41;.innerHTML;)
+
+[//]: # ()
+[//]: # (    this.server.respondWith&#40;"GET", "/new-content", function&#40;xhr&#41;{)
+
+[//]: # (        xhr.respond&#40;200,  {}, "<h1>New Content</h1> <button class='btn danger' hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>"&#41;)
+
+[//]: # (    }&#41;;)
+
+[//]: # ()
+[//]: # (    this.server.respondWith&#40;"GET", "/original-content", function&#40;xhr&#41;{)
+
+[//]: # (        xhr.respond&#40;200,  {}, originalContent&#41;)
+
+[//]: # (    }&#41;;)
+
+[//]: # (</script>)
 
 ## Conclusion
 

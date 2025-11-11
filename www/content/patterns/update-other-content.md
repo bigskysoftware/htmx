@@ -1,8 +1,7 @@
 +++
-title = "Updating Other Content"
+title = "Multiple Swaps"
 template = "demo.html"
 +++
-
 A question that often comes up when people are first working with htmx is: 
 
 > "I need to update other content on the screen.  How do I do this?" 

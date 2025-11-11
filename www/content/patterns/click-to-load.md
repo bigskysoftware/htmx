@@ -2,7 +2,6 @@
 title = "Click to Load"
 template = "demo.html"
 +++
-
 This example shows how to implement click-to-load the next page in a table of data.  The crux of the demo is
 the final row:
 
@@ -21,7 +20,7 @@ the final row:
 This row contains a button that will replace the entire row with the next page of
 results (which will contain a button to load the *next* page of results).  And so on.
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
     //=========================================================================

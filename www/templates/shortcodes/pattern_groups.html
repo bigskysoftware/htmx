@@ -3,16 +3,30 @@
         <a class="zola-anchor not-prose" href="#{{ group.name|lower }}" aria-label="Anchor link for: {{ group.name|lower }}">{{ group.name }}</a>
     </h4>
 
-    <div class="mt-4 flex flex-col gap-1 border border-neutral-200 dark:border-neutral-800 rounded-[3px] p-1">
+    <div class="mt-4 flex flex-col gap-1.5 border border-neutral-200 dark:border-neutral-800 rounded-[3px] p-1.5">
         {% for pattern in group.patterns %}
-        <a href="{{ pattern.url }}" class="flex items-center gap-2 p-2 no-underline text-sm text-neutral-900 hover:text-white hover:bg-blue-600 dark:text-neutral-100 dark:hover:bg-blue-600 dark:hover:text-white bg-transparent rounded-[2px] transition">
-            <iconify-icon icon="{{ pattern.icon }}" class="size-4" height="none"></iconify-icon>
-            <strong class="font-semibold mr-2 min-w-[180px]">
-                {{ pattern.title }}
-            </strong>
-            <span>
-                {{ pattern.description }}
+        {% set_global pattern_path = "content" ~ pattern.url ~ ".md" %}
+        {% set_global file_exists = load_data(path=pattern_path, required=false) %}
+        <a href="{{ pattern.url }}" {% if not file_exists %}data-disabled{% endif %} class="group flex items-center gap-5 px-3 py-2 no-underline text-sm text-neutral-800 dark:text-neutral-200 not-data-disabled:hover:text-white not-data-disabled:hover:bg-blue-600 dark:not-data-disabled:hover:bg-blue-600 data-disabled:cursor-not-allowed data-disabled:pointer-events-none data-disabled:opacity-50 rounded-[2px] transition">
+            <!-- Icon -->
+            <iconify-icon icon="{{ pattern.icon }}" class="size-5 shrink-0 mt-0.5 sm:mt-0 -translate-y-px" height="none"></iconify-icon>
+
+            <!-- Title + Description wrapper -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
+                <h6 class="text-xs sm:min-w-[20ch]{% if not file_exists %} font-semibold{% endif %}">
+                    {{- pattern.title -}}
+                </h6>
+                <span class="text-xs sm:text-sm">
+                    {{- pattern.description -}}
+                </span>
+            </div>
+
+            <!-- Soon badge -->
+            {% if not file_exists %}
+            <span class="text-[9px] font-os9 px-1.5 py-0.5 shrink-0 self-start sm:self-center rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">
+                Soon
             </span>
+            {% endif %}
         </a>
         {% endfor %}
     </div>

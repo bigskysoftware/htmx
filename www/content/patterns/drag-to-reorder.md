@@ -1,8 +1,7 @@
 +++
-title = "Sortable"
+title = "Drag to Reorder"
 template = "demo.html"
 +++
-
 In this example we show how to integrate the [Sortable](https://sortablejs.github.io/Sortable/)
 javascript library with htmx.
 
@@ -58,7 +57,7 @@ the item ids in the new order to `/items`, to be persisted by the server.
 
 That's it!
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>

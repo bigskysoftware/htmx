@@ -5,43 +5,54 @@ insert_anchor_links = "heading"
 [[extra.pattern_groups]]
 name = "Loading"
 patterns = [
-    { url = "/patterns/click-to-load", icon = "mdi:cursor-pointer", title = "Load on Click", description = "Load more content when user clicks" },
-    { url = "/patterns/infinite-scroll", icon = "mdi:arrow-expand-down", title = "Infinite Scroll", description = "Load more content when user scrolls to bottom" },
-    { url = "/patterns/lazy-load", icon = "bitcoin-icons:visible-filled", title = "Lazy Load", description = "Defer loading content until after page renders" },
-    { url = "/patterns/progress-bar", icon = "vaadin:progressbar", title = "Progress Bar", description = "Show progress for long-running operations" }
+    { url = "/patterns/click-to-load", icon = "mdi:cursor-pointer", title = "Click to Load", description = "Load content when you click an element"},
+    { url = "/patterns/infinite-scroll", icon = "mdi:arrow-expand-down", title = "Infinite Scroll", description = "Load content when you scroll to bottom" },
+    { url = "/patterns/lazy-load", icon = "bitcoin-icons:visible-filled", title = "Lazy Load", description = "Load content after the page renders" },
+    { url = "/patterns/progress-bar", icon = "vaadin:progressbar", title = "Progress Bar", description = "Show progress bar during background job" }
 ]
 
 [[extra.pattern_groups]]
-name = "Interaction"
+name = "Forms"
 patterns = [
-    { url = "/patterns/inline-validation", icon = "mdi:check-circle-outline", title = "Inline Validate", description = "Validate field as user types" },
-    { url = "/patterns/active-search", icon = "mdi:magnify", title = "Active Search", description = "Search & filter content as user types" },
-    { url = "/patterns/value-select", icon = "mdi:form-dropdown", title = "Dependent Inputs", description = "Update select options based on another select" },
-    { url = "/patterns/file-upload", icon = "mdi:upload", title = "File Upload", description = "Upload files and preserve inputs after errors" },
-    { url = "/patterns/click-to-edit", icon = "mdi:pencil", title = "Inline Edit", description = "Edit a record in place, without a page refresh" },
-    { url = "/patterns/delete-row", icon = "mdi:trash-can", title = "Inline Delete", description = "Remove a row from the table with animation" },
-    { url = "/patterns/bulk-update", icon = "mdi:checkbox-multiple-marked", title = "Bulk Actions", description = "Select & update multiple rows at once" },
-    { url = "/patterns/sortable", icon = "tabler:drag-drop-2", title = "Drag to Reorder", description = "Reorder items by dragging them to new positions" },
-    { url = "/patterns/reset-user-input", icon = "mdi:eraser", title = "Reset on Submit", description = "Clear form inputs after user submission" }
+    { url = "/patterns/active-search", icon = "mdi:magnify", title = "Active Search", description = "Filter search results as you type" },
+    { url = "/patterns/active-validation", icon = "mdi:check", title = "Active Validation", description = "Validate form input as you type" },
+    { url = "/patterns/value-select", icon = "mdi:form-dropdown", title = "Linked Selects", description = "Update select options via another select" },
+    { url = "/patterns/file-upload", icon = "ic:round-file-upload", title = "File Upload", description = "Upload files with progress and validation" },
+    { url = "/patterns/reset-on-submit", icon = "mdi:eraser", title = "Reset on Submit", description = "Clear form inputs after submission" }
+]
+
+[[extra.pattern_groups]]
+name = "Records"
+patterns = [
+    { url = "/patterns/edit-in-place", icon = "material-symbols:edit", title = "Edit in Place", description = "Update a record without page refresh" },
+    { url = "/patterns/delete-in-place", icon = "material-symbols:delete", title = "Delete in Place", description = "Remove a record without page refresh" },
+    { url = "/patterns/bulk-actions", icon = "mdi:checkbox-multiple-marked", title = "Bulk Actions", description = "Perform actions on multiple records" },
+    { url = "/patterns/drag-to-reorder", icon = "solar:reorder-linear", title = "Drag to Reorder", description = "Change order of records with drag and drop" }
 ]
 
 [[extra.pattern_groups]]
 name = "Display"
 patterns = [
-    { url = "/patterns/dialogs", icon = "mdi:window-maximize", title = "Modal Dialog", description = "Display content in overlay dialogs" },
-    { url = "/patterns/confirm", icon = "mdi:alert-circle-outline", title = "Confirm Dialog", description = "Ask user to confirm before taking action" },
-    { url = "/patterns/tabs-hateoas", icon = "mdi:tab", title = "Tabs", description = "Switch between content panels using tabs" },
-    { url = "/patterns/animations", icon = "mdi:animation", title = "View Transitions", description = "Add smooth animations when content changes" }
+    { url = "/patterns/dialogs", icon = "vaadin:modal-list", title = "Dialogs", description = "Show modals and popups on demand" },
+    { url = "/patterns/animations", icon = "mdi:animation", title = "Animations", description = "Animate content as it swaps in" },
+    { url = "/patterns/tabs", icon = "mdi:tab", title = "Tabs", description = "Switch between content panels using tabs" }
+]
+
+[[extra.pattern_groups]]
+name = "Real-time"
+patterns = [
+    { url = "/patterns/one-off-streams", icon = "cil:stream", title = "One-Off Streams", description = "Stream incremental updates until completion" },
+    { url = "/patterns/continuous-streams", icon = "circum:stream-on", title = "Continuous Streams", description = "Push updates to page via persistent connection" },
+    { url = "/patterns/polling", icon = "bi:arrow-repeat", title = "Polling", description = "Check for updates at regular intervals" },
+    { url = "/patterns/websocket-sync", icon = "fluent:cloud-bidirectional-20-regular", title = "Bidirectional Sync", description = "Exchange data in real-time with server" }
 ]
 
 [[extra.pattern_groups]]
 name = "Advanced"
 patterns = [
-    { url = "/patterns/update-other-content", icon = "mdi:sync", title = "Multiple Swaps", description = "Update multiple page elements from one request" },
+    { url = "/patterns/update-other-content", icon = "mdi:sync", title = "Multiple Swaps", description = "Update multiple elements on the page at once" },
     { url = "/patterns/keyboard-shortcuts", icon = "mdi:keyboard", title = "Keyboard Shortcuts", description = "Bind keyboard shortcuts to interactive elements" },
-    { url = "/patterns/async-auth", icon = "mdi:lock", title = "Async Authentication", description = "Refresh authentication tokens before requests" },
-    { url = "/patterns/web-components", icon = "mdi:puzzle", title = "Web Components", description = "Use htmx with web components and shadow DOM" },
-    { url = "/patterns/move-before", icon = "mdi:flask-outline", title = "DOM Preservation", description = "Preserve elements using new DOM moveBefore API" }
+    { url = "/patterns/modify-requests", icon = "mdi:globe-arrow-right", title = "Modify Requests", description = "Customize requests before they send" }
 ]
 +++
 
