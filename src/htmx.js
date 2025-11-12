@@ -1669,35 +1669,29 @@ var htmx = (() => {
         }
 
         __collectFormData(elt, form, submitter) {
-            let formData = new FormData()
-            let included = new Set()
-            if (form) {
-                this.__addInputValues(form, included, formData)
-            } else if (elt.name) {
+            let formData = form ? new FormData(form) : new FormData()
+            if (!form && elt.name) {
                 formData.append(elt.name, elt.value)
-                included.add(elt);
             }
             if (submitter && submitter.name) {
                 formData.append(submitter.name, submitter.value)
-                included.add(submitter);
             }
             let includeSelector = this.__attributeValue(elt, "hx-include");
             if (includeSelector) {
                 let includeNodes = this.__findAllExt(elt, includeSelector);
                 for (let node of includeNodes) {
-                    this.__addInputValues(node, included, formData);
+                    this.__addInputValues(node, formData);
                 }
             }
             return formData
         }
 
-        __addInputValues(elt, included, formData) {
+        __addInputValues(elt, formData) {
             let inputs = this.__queryEltAndDescendants(elt, 'input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
 
             for (let input of inputs) {
                 // Skip elements without a name or already seen
-                if (!input.name || included.has(input)) continue;
-                included.add(input);
+                if (!input.name || formData.has(input.name)) continue;
 
                 if (input.matches('input[type=checkbox], input[type=radio]')) {
                     // Only add if checked
