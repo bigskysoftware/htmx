@@ -103,7 +103,7 @@ var htmx = (() => {
                 includeIndicatorCSS: true,
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
-                streams: {
+                sse: {
                     mode: 'once',
                     maxRetries: Infinity,
                     initialDelay: 500,
@@ -116,7 +116,8 @@ var htmx = (() => {
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
-                let overrides = JSON.parse(metaConfig.content);
+                let content = metaConfig.content;
+                let overrides = this.__parseConfig(content);
                 // Deep merge nested config objects
                 for (let key in overrides) {
                     let val = overrides[key];
@@ -215,62 +216,29 @@ var htmx = (() => {
             return returnElt ? elt : defaultVal;
         }
 
-        __tokenize(str) {
-            let tokens = [], i = 0;
-            while (i < str.length) {
-                let c = str[i];
-                if (c === '"' || c === "'") {
-                    let q = c, s = c;
-                    i++;
-                    while (i < str.length) {
-                        c = str[i];
-                        s += c;
-                        i++;
-                        if (c === '\\' && i < str.length) {
-                            s += str[i];
-                            i++;
-                        } else if (c === q) break;
-                    }
-                    tokens.push(s);
-                } else if (/\s/.test(c)) {
-                    while (i < str.length && /\s/.test(str[i])) i++;
-                } else if (c === ':' || c === ',') {
-                    tokens.push(c);
-                    i++;
-                } else {
-                    let t = '';
-                    while (i < str.length && !/[\s"':,]/.test(str[i])) t += str[i++];
-                    tokens.push(t);
-                }
-            }
-            return tokens;
+        __parseConfig(configString) {
+            if (configString[0] === '{') return JSON.parse(configString);
+            let configPattern = /([^\s,]+?)(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            return [...configString.matchAll(configPattern)].reduce((result, match) => {
+                let keyPath = match[1].split('.');
+                let value = (match[2] ?? match[3] ?? match[4] ?? match[5] ?? 'true').trim();
+                if (value === 'true') value = true;
+                else if (value === 'false') value = false;
+                else if (/^\d+$/.test(value)) value = parseInt(value);
+                keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
+                return result;
+            }, {});
         }
 
         __parseTriggerSpecs(spec) {
-            let specs = []
-            let currentSpec = null
-            let tokens = this.__tokenize(spec);
-            for (let i = 0; i < tokens.length; i++) {
-                let token = tokens[i];
-                if (token === ",") {
-                    currentSpec = null;
-                } else if (!currentSpec) {
-                    while (token.includes("[") && !token.includes("]") && i + 1 < tokens.length) {
-                        token += tokens[++i];
-                    }
-                    if (token.includes("[") && !token.includes("]")) {
-                        throw "unterminated:" + token;
-                    }
-                    currentSpec = {name: token};
-                    specs.push(currentSpec);
-                } else if (tokens[i + 1] === ":") {
-                    currentSpec[token] = tokens[i += 2];
-                } else {
-                    currentSpec[token] = true;
-                }
-            }
-
-            return specs;
+            return spec.split(',').map(s => {
+                let m = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/);
+                if (!m || !m[1]) return null;
+                if (m[1].includes('[') && !m[1].includes(']')) throw "unterminated:" + m[1];
+                let result = m[2] ? this.__parseConfig(m[2]) : {};
+                result.name = m[1];
+                return result;
+            }).filter(s => s);
         }
 
         __determineMethodAndAction(elt, evt) {
@@ -309,7 +277,6 @@ var htmx = (() => {
                 elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.__initializeTriggers(elt);
-                this.__initializeStreamConfig(elt);
                 this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
                 this.__trigger(elt, "load", {}, false)
@@ -351,23 +318,22 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                let configOverrides = JSON.parse(configAttr);
-                let requestConfig = ctx.request;
+                let configOverrides = this.__parseConfig(configAttr);
+                let req = ctx.request;
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
                         let actualKey = key.substring(1);
-                        if (requestConfig[actualKey] && typeof requestConfig[actualKey] === 'object') {
-                            Object.assign(requestConfig[actualKey], configOverrides[key]);
+                        if (req[actualKey] && typeof req[actualKey] === 'object') {
+                            Object.assign(req[actualKey], configOverrides[key]);
                         } else {
-                            requestConfig[actualKey] = configOverrides[key];
+                            req[actualKey] = configOverrides[key];
                         }
                     } else {
-                        requestConfig[key] = configOverrides[key];
+                        req[key] = configOverrides[key];
                     }
                 }
-                if (requestConfig.etag) {
-                    sourceElement._htmx ||= {}
-                    sourceElement._htmx.etag ||= requestConfig.etag
+                if (req.etag) {
+                    (sourceElement._htmx ||= {}).etag ||= req.etag
                 }
             }
             if (sourceElement._htmx?.etag) {
@@ -386,7 +352,7 @@ var htmx = (() => {
             }
             let headersAttribute = this.__attributeValue(elt, "hx-headers");
             if (headersAttribute) {
-                Object.assign(headers, JSON.parse(headersAttribute));
+                Object.assign(headers, this.__parseConfig(headersAttribute));
             }
             return headers;
         }
@@ -578,8 +544,8 @@ var htmx = (() => {
             }
             if (ctx.hx.location) {
                 let path = ctx.hx.location, opts = {};
-                if (path[0] === '{') {
-                    opts = JSON.parse(path);
+                if (path[0] === '{' || /[\s,]/.test(path)) {
+                    opts = this.__parseConfig(path);
                     path = opts.path;
                     delete opts.path;
                 }
@@ -594,7 +560,9 @@ var htmx = (() => {
         }
 
         async __handleSSE(ctx, elt, response) {
-            let config = elt._htmx?.streamConfig || {...this.config.streams};
+            let config = {...this.config.sse, ...ctx.request.sse};
+            if (config.once) config.mode = 'once';
+            if (config.continuous) config.mode = 'continuous';
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
@@ -613,7 +581,7 @@ var htmx = (() => {
                         if (!elt.isConnected) break;
                     }
 
-                    let delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
+                    let delay = Math.min(this.parseInterval(config.initialDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.maxDelay));
                     let reconnect = {attempt, delay, lastEventId, cancelled: false};
 
                     ctx.status = "reconnecting to stream";
@@ -744,7 +712,7 @@ var htmx = (() => {
         __initTimeout(ctx) {
             let timeoutInterval;
             if (ctx.request.timeout) {
-                timeoutInterval = typeof ctx.request.timeout == "string" ? this.parseInterval(ctx.request.timeout) : ctx.request.timeout;
+                timeoutInterval = this.parseInterval(ctx.request.timeout);
             } else {
                 timeoutInterval = this.config.defaultTimeout;
             }
@@ -943,35 +911,7 @@ var htmx = (() => {
             }
         }
 
-        __initializeStreamConfig(elt) {
-            let streamSpec = this.__attributeValue(elt, 'hx-stream');
-            if (!streamSpec) return;
 
-            // Start with global defaults
-            let streamConfig = {...this.config.streams};
-            let tokens = this.__tokenize(streamSpec);
-
-            for (let i = 0; i < tokens.length; i++) {
-                let token = tokens[i];
-                // Main value: once or continuous
-                if (token === 'once' || token === 'continuous') {
-                    streamConfig.mode = token;
-                } else if (token === 'pauseHidden') {
-                    streamConfig.pauseHidden = true;
-                } else if (tokens[i + 1] === ':') {
-                    let key = token, value = tokens[i + 2];
-                    if (key === 'mode') streamConfig.mode = value;
-                    else if (key === 'maxRetries') streamConfig.maxRetries = parseInt(value);
-                    else if (key === 'initialDelay') streamConfig.initialDelay = this.parseInterval(value);
-                    else if (key === 'maxDelay') streamConfig.maxDelay = this.parseInterval(value);
-                    else if (key === 'pauseHidden') streamConfig.pauseHidden = value === 'true';
-                    i += 2;
-                }
-            }
-
-            if (!elt._htmx) elt._htmx = {};
-            elt._htmx.streamConfig = streamConfig;
-        }
 
         __extractFilter(str) {
             let match = str.match(/^([^\[]*)\[([^\]]*)]/);
@@ -981,7 +921,7 @@ var htmx = (() => {
 
         __handleTriggerHeader(value, elt) {
             if (value[0] === '{') {
-                let triggers = JSON.parse(value);
+                let triggers = this.__parseConfig(value);
                 for (let name in triggers) {
                     let detail = triggers[name];
                     if (detail?.target) elt = this.find(detail.target) || elt;
@@ -1223,36 +1163,14 @@ var htmx = (() => {
         }
 
         __parseSwapSpec(swapStr) {
-            let tokens = this.__tokenize(swapStr);
-            let config = {style: tokens[1] === ':' ? this.config.defaultSwap : (tokens[0] || this.config.defaultSwap)};
-            config.style = this.__normalizeSwapStyle(config.style);
-            let startIdx = tokens[1] === ':' ? 0 : 1;
-
-            for (let i = startIdx; i < tokens.length; i++) {
-                if (tokens[i + 1] === ':') {
-                    let key = tokens[i], value = tokens[i = i + 2];
-                    if (key === 'swap') config.swapDelay = this.parseInterval(value);
-                    else if (key === 'transition' || key === 'ignoreTitle' || key === 'strip') config[key] = value === 'true';
-                    else if (key === 'focus-scroll') config.focusScroll = value === 'true';
-                    else if (key === 'scroll' || key === 'show') {
-                        let parts = [value];
-                        while (tokens[i + 1] === ':') {
-                            parts.push(tokens[i + 2]);
-                            i += 2;
-                        }
-                        config[key] = parts.length === 1 ? parts[0] : parts.pop();
-                        if (parts.length > 1) config[key + 'Target'] = parts.join(':');
-                    } else if (key === 'target') {
-                        let parts = [value];
-                        while (i + 1 < tokens.length && tokens[i + 1] !== ':' && tokens[i + 2] !== ':') {
-                            parts.push(tokens[i + 1]);
-                            i++;
-                        }
-                        config[key] = parts.join(' ');
-                    }
-                }
+            swapStr = swapStr.trim();
+            let style = this.config.defaultSwap
+            if (swapStr && !/^\S*:/.test(swapStr)) {
+                let m = swapStr.match(/^(\S+)\s*(.*)$/);
+                style = m[1];
+                swapStr = m[2];
             }
-            return config;
+            return {style: this.__normalizeSwapStyle(style), ...this.__parseConfig(swapStr)};
         }
 
         __processPartials(fragment, sourceElement) {
@@ -1281,30 +1199,16 @@ var htmx = (() => {
 
         __handleScroll(task) {
             if (task.swapSpec.scroll) {
-                let target;
-                let [selectorOrValue, value] = task.swapSpec.scroll.split(":");
-                if (value) {
-                    target = this.__findExt(selectorOrValue);
-                } else {
-                    target = task.target;
-                    value = selectorOrValue
-                }
-                if (value === 'top') {
+                let target = task.swapSpec.scrollTarget ? this.__findExt(task.swapSpec.scrollTarget) : task.target;
+                if (task.swapSpec.scroll === 'top') {
                     target.scrollTop = 0;
-                } else if (value === 'bottom'){
+                } else if (task.swapSpec.scroll === 'bottom'){
                     target.scrollTop = target.scrollHeight;
                 }
             }
             if (task.swapSpec.show) {
-                let target;
-                let [selectorOrValue, value] = task.swapSpec.show.split(":");
-                if (value) {
-                    target = this.__findExt(selectorOrValue);
-                } else {
-                    target = task.target;
-                    value = selectorOrValue
-                }
-                target.scrollIntoView(value === 'top')
+                let target = task.swapSpec.showTarget ? this.__findExt(task.swapSpec.showTarget) : task.target;
+                target.scrollIntoView(task.swapSpec.show === 'top')
             }
         }
 
@@ -1364,8 +1268,8 @@ var htmx = (() => {
 
             // insert non-transition tasks immediately or with delay
             for (let task of nonTransitionTasks) {
-                if (task.swapSpec?.swapDelay) {
-                    setTimeout(() => this.__insertContent(task), task.swapSpec.swapDelay);
+                if (task.swapSpec?.swap) {
+                    setTimeout(() => this.__insertContent(task), this.parseInterval(task.swapSpec.swap));
                 } else {
                     this.__insertContent(task)
                 }
@@ -1511,9 +1415,7 @@ var htmx = (() => {
         }
 
         timeout(time) {
-            if (typeof time === "string") {
-                time = this.parseInterval(time)
-            }
+            time = this.parseInterval(time);
             if (time > 0) {
                 return new Promise(resolve => setTimeout(resolve, time));
             }
@@ -1571,6 +1473,7 @@ var htmx = (() => {
         }
 
         parseInterval(str) {
+            if (typeof str === 'number') return str;
             let m = {ms: 1, s: 1000, m: 60000};
             let [, n, u] = str?.match(/^([\d.]+)(ms|s|m)?$/) || [];
             let v = parseFloat(n) * (m[u] || 1);
@@ -1821,10 +1724,7 @@ var htmx = (() => {
         __handleHxVals(elt, body) {
             let hxValsValue = this.__attributeValue(elt, "hx-vals");
             if (hxValsValue) {
-                if (!hxValsValue.includes('{')) {
-                    hxValsValue = `{${hxValsValue}}`
-                }
-                let obj = JSON.parse(hxValsValue);
+                let obj = this.__parseConfig(hxValsValue);
                 for (let key in obj) {
                     body.append(key, obj[key])
                 }

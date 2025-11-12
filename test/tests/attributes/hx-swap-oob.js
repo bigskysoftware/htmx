@@ -50,7 +50,7 @@ describe('hx-swap-oob', function() {
     })
 
     it('swaps oob with target: modifier and multi-word selector', async function () {
-        mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:.foo .bar">Multi Selector</div>')
+        mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:&quot;.foo .bar&quot;">Multi Selector</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div class="foo"><div class="bar">Original</div></div>');
         find('[hx-get]').click()
         await forRequest()

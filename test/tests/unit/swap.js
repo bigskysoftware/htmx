@@ -19,9 +19,9 @@ describe('swap() unit tests', function() {
 
     it('new terminology works with modifiers', function () {
         assert.equal(htmx.__parseSwapSpec('prepend swap:10').style, 'afterbegin')
-        assert.equal(htmx.__parseSwapSpec('prepend swap:10').swapDelay, 10)
+        assert.equal(htmx.__parseSwapSpec('prepend swap:10').swap, "10")
         assert.equal(htmx.__parseSwapSpec('append swap:20').style, 'beforeend')
-        assert.equal(htmx.__parseSwapSpec('append swap:20').swapDelay, 20)
+        assert.equal(htmx.__parseSwapSpec('append swap:20').swap, "20")
     })
     // end TODO move to __parseSwapSpec unit test
 
