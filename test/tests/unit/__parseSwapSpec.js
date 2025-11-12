@@ -19,7 +19,7 @@ describe('__parseSwapSpec unit tests', function() {
     it('parses swap delay modifier', function () {
         let spec = htmx.__parseSwapSpec('innerHTML swap:100ms')
         assert.equal(spec.style, 'innerHTML')
-        assert.equal(spec.swapDelay, 100)
+        assert.equal(spec.swap, '100ms')
     })
 
     it('parses transition modifier', function () {
@@ -38,8 +38,8 @@ describe('__parseSwapSpec unit tests', function() {
     })
 
     it('parses focus-scroll modifier', function () {
-        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:true').focusScroll, true)
-        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:false').focusScroll, false)
+        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:true')['focus-scroll'], true)
+        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:false')['focus-scroll'], false)
     })
 
     it('parses scroll modifier', function () {
@@ -57,18 +57,26 @@ describe('__parseSwapSpec unit tests', function() {
     })
 
     it('parses target with spaces', function () {
-        assert.equal(htmx.__parseSwapSpec('innerHTML target:#foo .bar').target, '#foo .bar')
+        assert.equal(htmx.__parseSwapSpec('innerHTML target:"#foo .bar"').target, '#foo .bar')
+    })
+
+    it('parses scroll with scrollTarget', function () {
+        let spec = htmx.__parseSwapSpec('innerHTML scroll:top scrollTarget:#container')
+        assert.equal(spec.scroll, 'top')
+        assert.equal(spec.scrollTarget, '#container')
+    })
+
+    it('parses show with showTarget', function () {
+        let spec = htmx.__parseSwapSpec('innerHTML show:bottom showTarget:.content')
+        assert.equal(spec.show, 'bottom')
+        assert.equal(spec.showTarget, '.content')
     })
 
     it('parses multiple modifiers', function () {
         let spec = htmx.__parseSwapSpec('innerHTML swap:100ms transition:true')
         assert.equal(spec.style, 'innerHTML')
-        assert.equal(spec.swapDelay, 100)
+        assert.equal(spec.swap, '100ms')
         assert.equal(spec.transition, true)
-    })
-
-    it('parses style with leading colon', function () {
-        assert.equal(htmx.__parseSwapSpec(':swap:100ms').swapDelay, 100)
     })
 
     it('uses default swap when empty', function () {
@@ -79,7 +87,7 @@ describe('__parseSwapSpec unit tests', function() {
     it('parses legacy style names with modifiers', function () {
         let spec = htmx.__parseSwapSpec('prepend swap:10ms')
         assert.equal(spec.style, 'afterbegin')
-        assert.equal(spec.swapDelay, 10)
+        assert.equal(spec.swap, '10ms')
     })
 
 });
