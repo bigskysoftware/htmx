@@ -117,7 +117,7 @@ var htmx = (() => {
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
                 let content = metaConfig.content;
-                let overrides = content[0] === '{' ? JSON.parse(content) : this.__parseConfig(content);
+                let overrides = this.__parseConfig(content);
                 // Deep merge nested config objects
                 for (let key in overrides) {
                     let val = overrides[key];
@@ -217,6 +217,7 @@ var htmx = (() => {
         }
 
         __parseConfig(configString) {
+            if (configString[0] === '{') return JSON.parse(configString);
             let configPattern = /([^\s,]+?)(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
             return [...configString.matchAll(configPattern)].reduce((result, match) => {
                 let keyPath = match[1].split('.');
@@ -317,7 +318,7 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                let configOverrides = configAttr[0] === '{' ? JSON.parse(configAttr) : this.__parseConfig(configAttr);
+                let configOverrides = this.__parseConfig(configAttr);
                 let req = ctx.request;
                 for (let key in configOverrides) {
                     if (key.startsWith('+')) {
@@ -351,7 +352,7 @@ var htmx = (() => {
             }
             let headersAttribute = this.__attributeValue(elt, "hx-headers");
             if (headersAttribute) {
-                Object.assign(headers, JSON.parse(headersAttribute));
+                Object.assign(headers, this.__parseConfig(headersAttribute));
             }
             return headers;
         }
@@ -543,8 +544,8 @@ var htmx = (() => {
             }
             if (ctx.hx.location) {
                 let path = ctx.hx.location, opts = {};
-                if (path[0] === '{') {
-                    opts = JSON.parse(path);
+                if (path[0] === '{' || /[\s,]/.test(path)) {
+                    opts = this.__parseConfig(path);
                     path = opts.path;
                     delete opts.path;
                 }
@@ -920,7 +921,7 @@ var htmx = (() => {
 
         __handleTriggerHeader(value, elt) {
             if (value[0] === '{') {
-                let triggers = JSON.parse(value);
+                let triggers = this.__parseConfig(value);
                 for (let name in triggers) {
                     let detail = triggers[name];
                     if (detail?.target) elt = this.find(detail.target) || elt;
@@ -1723,10 +1724,7 @@ var htmx = (() => {
         __handleHxVals(elt, body) {
             let hxValsValue = this.__attributeValue(elt, "hx-vals");
             if (hxValsValue) {
-                if (!hxValsValue.includes('{')) {
-                    hxValsValue = `{${hxValsValue}}`
-                }
-                let obj = JSON.parse(hxValsValue);
+                let obj = this.__parseConfig(hxValsValue);
                 for (let key in obj) {
                     body.append(key, obj[key])
                 }
