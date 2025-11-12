@@ -334,10 +334,6 @@ var htmx = (() => {
                 if (req.etag) {
                     (sourceElement._htmx ||= {}).etag ||= req.etag
                 }
-                if (req.sse) {
-                    if (req.sse.once) req.sse.mode = 'once';
-                    if (req.sse.continuous) req.sse.mode = 'continuous';
-                }
             }
             if (sourceElement._htmx?.etag) {
                 ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
@@ -564,6 +560,8 @@ var htmx = (() => {
 
         async __handleSSE(ctx, elt, response) {
             let config = {...this.config.sse, ...ctx.request.sse};
+            if (config.once) config.mode = 'once';
+            if (config.continuous) config.mode = 'continuous';
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
