@@ -1737,11 +1737,13 @@ var htmx = (() => {
         }
 
         __findAllExt(eltOrSelector, maybeSelector, global) {
-            let [elt, selector] = this.__normalizeElementAndSelector(eltOrSelector, maybeSelector)
+            let selector = maybeSelector ?? eltOrSelector;
+            let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
             if (selector.startsWith('global ')) {
                 return this.__findAllExt(elt, selector.slice(7), true);
             }
-            let parts = this.__tokenizeExtendedSelector(selector);
+            let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
+                .split(',').map(p => p.replace(/%2C/g, ',')) : [];
             let result = []
             let unprocessedParts = []
             for (const part of parts) {
@@ -1785,28 +1787,6 @@ var htmx = (() => {
             }
 
             return result
-        }
-
-        __normalizeElementAndSelector(eltOrSelector, selector) {
-            if (selector === undefined) {
-                return [document, eltOrSelector];
-            } else {
-                return [this.__normalizeElement(eltOrSelector), selector];
-            }
-        }
-
-        __tokenizeExtendedSelector(selector) {
-            let parts = [], depth = 0, start = 0;
-            for (let i = 0; i <= selector.length; i++) {
-                let c = selector[i];
-                if (c === '<') depth++;
-                else if (c === '/' && selector[i + 1] === '>') depth--;
-                else if ((c === ',' && !depth) || i === selector.length) {
-                    if (i > start) parts.push(selector.substring(start, i));
-                    start = i + 1;
-                }
-            }
-            return parts;
         }
 
         __scanForwardQuery(start, match, global) {
