@@ -1670,6 +1670,7 @@ var htmx = (() => {
 
         __collectFormData(elt, form, submitter) {
             let formData = form ? new FormData(form) : new FormData()
+            let included = form ? new Set(form.elements) : new Set()
             if (!form && elt.name) {
                 formData.append(elt.name, elt.value)
             }
@@ -1680,36 +1681,27 @@ var htmx = (() => {
             if (includeSelector) {
                 let includeNodes = this.__findAllExt(elt, includeSelector);
                 for (let node of includeNodes) {
-                    this.__addInputValues(node, formData);
+                    this.__addInputValues(node, included, formData);
                 }
             }
             return formData
         }
 
-        __addInputValues(elt, formData) {
+        __addInputValues(elt, included, formData) {
             let inputs = this.__queryEltAndDescendants(elt, 'input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
 
             for (let input of inputs) {
-                // Skip elements without a name or already seen
-                if (!input.name || formData.has(input.name)) continue;
+                if (!input.name || included.has(input)) continue;
+                included.add(input);
 
-                if (input.matches('input[type=checkbox], input[type=radio]')) {
-                    // Only add if checked
-                    if (input.checked) {
-                        formData.append(input.name, input.value);
-                    }
-                } else if (input.matches('input[type=file]')) {
-                    // Add all selected files
-                    for (let file of input.files) {
-                        formData.append(input.name, file);
-                    }
-                } else if (input.matches('select[multiple]')) {
-                    // Add all selected options
-                    for (let option of input.selectedOptions) {
-                        formData.append(input.name, option.value);
-                    }
-                } else if (input.matches('select, textarea, input')) {
-                    // Regular inputs, single selects, textareas
+                let type = input.type;
+                if (type === 'checkbox' || type === 'radio') {
+                    if (input.checked) formData.append(input.name, input.value);
+                } else if (type === 'file') {
+                    for (let file of input.files) formData.append(input.name, file);
+                } else if (type === 'select-multiple') {
+                    for (let option of input.selectedOptions) formData.append(input.name, option.value);
+                } else {
                     formData.append(input.name, input.value);
                 }
             }
