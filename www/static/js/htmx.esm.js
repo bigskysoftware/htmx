@@ -104,11 +104,12 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 streams: {
-                    mode: 'once',
-                    maxRetries: Infinity,
-                    initialDelay: 500,
-                    maxDelay: 30000,
-                    pauseHidden: false
+                    reconnect: false,
+                    reconnectDelay: 500,
+                    reconnectMaxDelay: 60000,
+                    reconnectMaxAttempts: 10,
+                    reconnectJitter: 0.3,
+                    pauseInBackground: false
                 },
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204, 304],
@@ -309,7 +310,6 @@ var htmx = (() => {
                 elt._htmx = {eventHandler: this.#createHtmxEventHandler(elt)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 this.#initializeTriggers(elt);
-                this.#initializeStreamConfig(elt);
                 this.#initializeAbortListener(elt)
                 this.#trigger(elt, "htmx:after:init", {}, true)
                 this.#trigger(elt, "load", {}, false)
@@ -594,7 +594,10 @@ var htmx = (() => {
         }
 
         async #handleSSE(ctx, elt, response) {
-            let config = elt._htmx?.streamConfig || {...this.config.streams};
+            let config = {...this.config.streams}
+            if (ctx.request.streams) {
+                Object.assign(config, ctx.request.streams)
+            }
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
@@ -606,14 +609,14 @@ var htmx = (() => {
             while (elt.isConnected) {
                 // Handle reconnection for subsequent iterations
                 if (attempt > 0) {
-                    if (config.mode !== 'continuous' || attempt > config.maxRetries) break;
+                    if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.pauseHidden && document.hidden) {
+                    if (config.pauseInBackground && document.hidden) {
                         await waitForVisible();
                         if (!elt.isConnected) break;
                     }
 
-                    let delay = Math.min(config.initialDelay * Math.pow(2, attempt - 1), config.maxDelay);
+                    let delay = Math.min(config.reconnectDelay * Math.pow(2, attempt - 1), config.reconnectMaxDelay);
                     let reconnect = {attempt, delay, lastEventId, cancelled: false};
 
                     ctx.status = "reconnecting to stream";
@@ -646,7 +649,7 @@ var htmx = (() => {
                     for await (const sseMessage of this.#parseSSE(currentResponse)) {
                         if (!elt.isConnected) break;
 
-                        if (config.pauseHidden && document.hidden) {
+                        if (config.pauseInBackground && document.hidden) {
                             await waitForVisible();
                             if (!elt.isConnected) break;
                         }
@@ -941,36 +944,6 @@ var htmx = (() => {
                     fromElt.addEventListener(eventName, spec.handler);
                 }
             }
-        }
-
-        #initializeStreamConfig(elt) {
-            let streamSpec = this.#attributeValue(elt, 'hx-stream');
-            if (!streamSpec) return;
-
-            // Start with global defaults
-            let streamConfig = {...this.config.streams};
-            let tokens = this.#tokenize(streamSpec);
-
-            for (let i = 0; i < tokens.length; i++) {
-                let token = tokens[i];
-                // Main value: once or continuous
-                if (token === 'once' || token === 'continuous') {
-                    streamConfig.mode = token;
-                } else if (token === 'pauseHidden') {
-                    streamConfig.pauseHidden = true;
-                } else if (tokens[i + 1] === ':') {
-                    let key = token, value = tokens[i + 2];
-                    if (key === 'mode') streamConfig.mode = value;
-                    else if (key === 'maxRetries') streamConfig.maxRetries = parseInt(value);
-                    else if (key === 'initialDelay') streamConfig.initialDelay = this.parseInterval(value);
-                    else if (key === 'maxDelay') streamConfig.maxDelay = this.parseInterval(value);
-                    else if (key === 'pauseHidden') streamConfig.pauseHidden = value === 'true';
-                    i += 2;
-                }
-            }
-
-            if (!elt._htmx) elt._htmx = {};
-            elt._htmx.streamConfig = streamConfig;
         }
 
         #extractFilter(str) {

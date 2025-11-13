@@ -23,7 +23,7 @@ describe('Server-Sent Events', function() {
 
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
-        createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.continuous:true sse.initialDelay:50ms sse.maxRetries:3" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         let reconnectDelays = [];
@@ -47,7 +47,7 @@ describe('Server-Sent Events', function() {
         await reconnectPromise;
 
         assert.equal(reconnectAttempts, 1, 'Should attempt to reconnect');
-        assert.equal(reconnectDelays[0], 50, 'First reconnect should use initialDelay');
+        assert.equal(reconnectDelays[0], 50, 'First reconnect should use initial delay (reconnectDelay)');
 
         await waitForEvent('htmx:before:sse:stream');
 
@@ -61,7 +61,7 @@ describe('Server-Sent Events', function() {
     it('Last-Event-ID header sent on reconnect', async function() {
         this.timeout(5000);
         const stream = mockStreamResponse('/with-id');
-        createProcessedHTML('<button hx-get="/with-id" hx-config="sse.continuous:true sse.initialDelay:50ms sse.maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/with-id" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:2" hx-swap="innerHTML">Connect</button>');
 
         let lastEventIdSent = null;
         document.addEventListener('htmx:before:sse:reconnect', (e) => {
@@ -122,7 +122,7 @@ describe('Server-Sent Events', function() {
 
     it('element removal stops streaming', async function() {
         const stream = mockStreamResponse('/removable');
-        createProcessedHTML('<div id="container"><button hx-get="/removable" hx-config="sse.continuous:true sse.initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
+        createProcessedHTML('<div id="container"><button hx-get="/removable" hx-config="sse.reconnect:true sse.reconnectDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
 
         find('button').click();
         await htmx.timeout(1);
@@ -176,9 +176,9 @@ describe('Server-Sent Events', function() {
         stream.close();
     });
 
-    it('maxRetries configuration works', async function() {
+    it('reconnectMaxAttempts configuration works', async function() {
         let fetchCount = 0;
-        fetchMock.mockResponse('GET', '/max-retries', () => {
+        fetchMock.mockResponse('GET', '/max-attempts', () => {
             fetchCount++;
             if (fetchCount === 1) {
                 let ctrl;
@@ -193,7 +193,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        createProcessedHTML('<button hx-get="/max-retries" hx-config="sse.continuous:true sse.initialDelay:20ms sse.maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-attempts" hx-config="sse.reconnect:true sse.reconnectDelay:20ms sse.reconnectMaxAttempts:2" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         document.addEventListener('htmx:before:sse:reconnect', () => {
@@ -205,11 +205,11 @@ describe('Server-Sent Events', function() {
 
         await new Promise(r => setTimeout(r, 150));
 
-        assert.equal(reconnectAttempts, 2, 'Should attempt reconnect maxRetries (2) times');
+        assert.equal(reconnectAttempts, 2, 'Should attempt reconnecting 2 times');
         assert.equal(fetchCount, 3, 'Should fetch 3 times total (initial + 2 retries)');
     });
 
-    it('maxDelay configuration caps backoff', async function() {
+    it('reconnectMaxDelay configuration caps backoff', async function() {
         let fetchCount = 0;
         fetchMock.mockResponse('GET', '/max-delay', () => {
             fetchCount++;
@@ -226,7 +226,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        createProcessedHTML('<button hx-get="/max-delay" hx-config="sse.continuous:true sse.initialDelay:20ms sse.maxDelay:60ms" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-delay" hx-config="sse.reconnect:true sse.reconnectDelay:20ms sse.reconnectMaxDelay:60ms sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
         document.addEventListener('htmx:before:sse:reconnect', (e) => {
@@ -241,11 +241,95 @@ describe('Server-Sent Events', function() {
         assert.isAtLeast(reconnectDelays.length, 4, 'Should have at least 4 reconnect attempts');
         assert.equal(reconnectDelays[0], 20, 'First delay: 20ms');
         assert.equal(reconnectDelays[1], 40, 'Second delay: 40ms (20 * 2)');
-        assert.equal(reconnectDelays[2], 60, 'Third delay: 60ms (capped at maxDelay)');
+        assert.equal(reconnectDelays[2], 60, 'Third delay: 60ms (capped at reconnectMaxDelay)');
         assert.equal(reconnectDelays[3], 60, 'Fourth delay: 60ms (still capped)');
     });
 
-    it('pauseHidden configuration works', async function() {
+    it('reconnectJitter randomizes reconnect delays', async function() {
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/jitter-test', () => {
+            fetchCount++;
+            if (fetchCount === 1) {
+                let ctrl;
+                const body = new ReadableStream({ start(c) { ctrl = c; } });
+                const response = new MockResponse(body, {
+                    headers: { 'Content-Type': 'text/event-stream' }
+                });
+                response.body = body;
+                setTimeout(() => ctrl.close(), 10);
+                return response;
+            }
+            throw new Error('Network error');
+        });
+
+        // Use a jitter of 0.5 (50%) and a reconnectDelay of 100ms
+        createProcessedHTML('<button hx-get="/jitter-test" hx-config="sse.reconnect:true, sse.reconnectDelay:100ms, sse.reconnectJitter:0.5, sse.reconnectMaxAttempts: 5" hx-swap="innerHTML">Connect</button>');
+
+        let reconnectDelays = [];
+        document.addEventListener('htmx:before:sse:reconnect', (e) => {
+            reconnectDelays.push(e.detail.reconnect.delay);
+        });
+
+        find('button').click();
+        await waitForEvent('htmx:after:sse:stream');
+
+        // Wait for multiple reconnects
+        await new Promise(r => setTimeout(r, 800));
+
+        // Verify we have multiple reconnects
+        assert.isAtLeast(reconnectDelays.length, 3, 'Should have at least 3 reconnect attempts');
+
+        // Check that delays are within the jitter range
+        // First attempt: base = 100ms, jitter range = ±50ms, so 50-150ms
+        assert.isAtLeast(reconnectDelays[0], 50, 'First delay should be >= 50ms (100 - 50)');
+        assert.isAtMost(reconnectDelays[0], 150, 'First delay should be <= 150ms (100 + 50)');
+
+        // Second attempt: base = 200ms (100 * 2), jitter range = ±100ms, so 100-300ms
+        assert.isAtLeast(reconnectDelays[1], 100, 'Second delay should be >= 100ms (200 - 100)');
+        assert.isAtMost(reconnectDelays[1], 300, 'Second delay should be <= 300ms (200 + 100)');
+
+        // Verify delays are not all identical (showing randomness)
+        let allIdentical = reconnectDelays.every((delay, i, arr) => i === 0 || Math.abs(delay - arr[i-1]) < 1);
+        assert.isFalse(allIdentical, 'Delays should vary due to jitter');
+    });
+
+    it('reconnectJitter of 0 disables jitter', async function() {
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/no-jitter', () => {
+            fetchCount++;
+            if (fetchCount === 1) {
+                let ctrl;
+                const body = new ReadableStream({ start(c) { ctrl = c; } });
+                const response = new MockResponse(body, {
+                    headers: { 'Content-Type': 'text/event-stream' }
+                });
+                response.body = body;
+                setTimeout(() => ctrl.close(), 10);
+                return response;
+            }
+            throw new Error('Network error');
+        });
+
+        createProcessedHTML('<button hx-get="/no-jitter" hx-config="sse.reconnect:true, sse.reconnectDelay:100ms, sse.reconnectJitter:0, sse.reconnectMaxAttempts:3" hx-swap="innerHTML">Connect</button>');
+
+        let reconnectDelays = [];
+        document.addEventListener('htmx:before:sse:reconnect', (e) => {
+            reconnectDelays.push(e.detail.reconnect.delay);
+        });
+
+        find('button').click();
+        await waitForEvent('htmx:after:sse:stream');
+
+        await new Promise(r => setTimeout(r, 450));
+
+        assert.isAtLeast(reconnectDelays.length, 2, 'Should have at least 2 reconnect attempts');
+
+        // With jitter of 0, delays should match exponential backoff exactly
+        assert.equal(reconnectDelays[0], 100, 'First delay should be exactly 100ms');
+        assert.equal(reconnectDelays[1], 200, 'Second delay should be exactly 200ms (100 * 2)');
+    });
+
+    it('pauseInBackground configuration works', async function() {
         this.skip(); // Skip - complex visibility API testing
     });
 

@@ -48,11 +48,28 @@ major changes between htmx 2.x and htmx 4.x.
 
 ### Built-in Streaming Response Support
 - Streaming functionality/SSE now built into core htmx
-- Improved event handling and reconnection logic
-- Configure via `hx-stream` attribute with options:
-  - `mode`: 'once' or 'continuous'
-  - `maxRetries`, `initialDelay`, `maxDelay`, `pauseHidden`
-- Example: `hx-stream="continuous maxRetries:5 initialDelay:1s"`
+- Improved event handling and reconnection logic 
+- Configure globally using `<meta name="htmx:config">`
+   ```html
+   <!-- Global defaults -->
+   <meta name="htmx:config" content="{
+       streams:{
+         reconnect: false,
+         reconnectDelay: 500,
+         reconnectMaxDelay: 60000,
+         reconnectMaxAttempts: 10,
+         reconnectJitter: 0.3,
+         pauseInBackground: false
+       }
+   }">
+   ```
+- Or per-element using `hx-config` attribute
+  ```html
+  <!-- Overrides global default -->
+  <div hx-get="/events" 
+       hx-trigger="load"
+       hx-config="{stream: {reconnect: true}}"
+  ```
 
 ### View Transitions
 - View Transitions API enabled by default (maybe not!)
