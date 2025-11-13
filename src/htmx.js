@@ -1712,7 +1712,7 @@ var htmx = (() => {
                     for (let option of input.selectedOptions) {
                         formData.append(input.name, option.value);
                     }
-                } else {
+                } else if (input.matches('select, textarea, input')) {
                     // Regular inputs, single selects, textareas
                     formData.append(input.name, input.value);
                 }
