@@ -1673,9 +1673,11 @@ var htmx = (() => {
             let included = form ? new Set(form.elements) : new Set()
             if (!form && elt.name) {
                 formData.append(elt.name, elt.value)
+                included.add(elt);
             }
             if (submitter && submitter.name) {
                 formData.append(submitter.name, submitter.value)
+                included.add(submitter);
             }
             let includeSelector = this.__attributeValue(elt, "hx-include");
             if (includeSelector) {
@@ -1696,12 +1698,22 @@ var htmx = (() => {
 
                 let type = input.type;
                 if (type === 'checkbox' || type === 'radio') {
-                    if (input.checked) formData.append(input.name, input.value);
+                    // Only add if checked
+                    if (input.checked) {
+                        formData.append(input.name, input.value);
+                    }
                 } else if (type === 'file') {
-                    for (let file of input.files) formData.append(input.name, file);
+                    // Add all selected files
+                    for (let file of input.files) {
+                        formData.append(input.name, file);
+                    }
                 } else if (type === 'select-multiple') {
-                    for (let option of input.selectedOptions) formData.append(input.name, option.value);
+                    // Add all selected options
+                    for (let option of input.selectedOptions) {
+                        formData.append(input.name, option.value);
+                    }
                 } else {
+                    // Regular inputs, single selects, textareas
                     formData.append(input.name, input.value);
                 }
             }
