@@ -23,8 +23,8 @@ You can use specific status codes or wildcards:
 ```html
 <button hx-get="/data"
         hx-status:404="select:#not-found"
-        hx-status:5*="select:#server-error"
-        hx-status:*="select:#fallback">
+        hx-status:50x="select:#server-error"
+        hx-status:5xx="select:#fallback">
   Load Data
 </button>
 ```
@@ -71,7 +71,7 @@ The value can include:
 
 ```html
 <button hx-post="/process"
-        hx-status:5*="select:#server-error-message">
+        hx-status:5xx="select:#server-error-message">
   Process
 </button>
 ```

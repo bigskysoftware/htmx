@@ -98,4 +98,23 @@ describe('__handleStatusCodes unit tests', function() {
         assert.equal(ctx.swap, 'outerHTML')
     })
 
+    it('parses target modifier in hx-status value', function () {
+        createProcessedHTML('<div id="error-target"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:4xx="innerHTML target:#error-target"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            target: div,
+            response: {
+                raw: { status: 404 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        // The full swap spec should be assigned to ctx.swap
+        // It will be parsed later by __processMainSwap
+        assert.equal(ctx.swap, 'innerHTML target:#error-target')
+    })
+
 });
