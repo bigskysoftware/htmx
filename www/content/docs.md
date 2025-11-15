@@ -934,11 +934,11 @@ integration (using the `pauseHidden` modifier).
 ### Basic Usage
 
 ```html
-<button hx-get="/stream" hx-target="#llm-output" hx-swap="innerHTML">
-    Stream LLM Response
+<button hx-get="/stream" hx-target="#stream-output" hx-swap="innerHTML">
+    Stream Response
 </button>
 
-<div id="llm-output"></div>
+<div id="stream-output"></div>
 ```
 
 The server sends SSE messages with `data:` lines:
