@@ -390,7 +390,8 @@ var htmx = (() => {
             // Build request body
             let form = elt.form || elt.closest("form")
             let body = this.__collectFormData(elt, form, evt.submitter)
-            await this.__handleHxVals(elt, body)
+            let valsResult = this.__handleHxVals(elt, body)
+            if (valsResult) await valsResult  // Only await if it returned a promise
             if (ctx.values) {
                 for (let k in ctx.values) {
                     body.delete(k);
@@ -1721,18 +1722,23 @@ var htmx = (() => {
             }
         }
 
-        async __handleHxVals(elt, body) {
+        __handleHxVals(elt, body) {
             let hxValsValue = this.__attributeValue(elt, "hx-vals");
             if (hxValsValue) {
                 let javascriptContent = this.__extractJavascriptContent(hxValsValue);
-                let obj;
                 if (javascriptContent) {
-                    obj = await this.__executeJavaScriptAsync(elt, {}, javascriptContent, true);
+                    // Return promise for async evaluation
+                    return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
+                        for (let key in obj) {
+                            body.append(key, obj[key])
+                        }
+                    });
                 } else {
-                    obj = this.__parseConfig(hxValsValue);
-                }
-                for (let key in obj) {
-                    body.append(key, obj[key])
+                    // Synchronous path
+                    let obj = this.__parseConfig(hxValsValue);
+                    for (let key in obj) {
+                        body.append(key, obj[key])
+                    }
                 }
             }
         }
