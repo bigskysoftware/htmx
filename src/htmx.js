@@ -390,7 +390,7 @@ var htmx = (() => {
             // Build request body
             let form = elt.form || elt.closest("form")
             let body = this.__collectFormData(elt, form, evt.submitter)
-            this.__handleHxVals(elt, body)
+            await this.__handleHxVals(elt, body)
             if (ctx.values) {
                 for (let k in ctx.values) {
                     body.delete(k);
@@ -1721,10 +1721,16 @@ var htmx = (() => {
             }
         }
 
-        __handleHxVals(elt, body) {
+        async __handleHxVals(elt, body) {
             let hxValsValue = this.__attributeValue(elt, "hx-vals");
             if (hxValsValue) {
-                let obj = this.__parseConfig(hxValsValue);
+                let javascriptContent = this.__extractJavascriptContent(hxValsValue);
+                let obj;
+                if (javascriptContent) {
+                    obj = await this.__executeJavaScriptAsync(elt, {}, javascriptContent, true);
+                } else {
+                    obj = this.__parseConfig(hxValsValue);
+                }
                 for (let key in obj) {
                     body.append(key, obj[key])
                 }
