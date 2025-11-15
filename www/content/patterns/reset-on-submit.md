@@ -1,8 +1,7 @@
 +++
-title = "Reset user input"
+title = "Reset on Submit"
 template = "demo.html"
 +++
-
 This example shows how to easily reset user inputs using [`hx-on`](@/attributes/hx-on.md),
 allowing users to make multiple requests without having to manually delete their previous inputs.
 
@@ -44,7 +43,7 @@ The following code is functionally equivalent:
 <ul id="notes"><!-- Response will go here --></ul>
 ```
 
-{{ demo_environment() }}
+[//]: # ({{ demo_environment&#40;&#41; }})
 
 <script>
 

@@ -23,7 +23,7 @@ describe('Server-Sent Events', function() {
 
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
-        createProcessedHTML('<button hx-get="/reconnect" hx-stream="continuous initialDelay:50ms maxRetries:3" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.continuous:true sse.initialDelay:50ms sse.maxRetries:3" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         let reconnectDelays = [];
@@ -61,7 +61,7 @@ describe('Server-Sent Events', function() {
     it('Last-Event-ID header sent on reconnect', async function() {
         this.timeout(5000);
         const stream = mockStreamResponse('/with-id');
-        createProcessedHTML('<button hx-get="/with-id" hx-stream="continuous initialDelay:50ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/with-id" hx-config="sse.continuous:true sse.initialDelay:50ms sse.maxRetries:2" hx-swap="innerHTML">Connect</button>');
 
         let lastEventIdSent = null;
         document.addEventListener('htmx:before:sse:reconnect', (e) => {
@@ -122,7 +122,7 @@ describe('Server-Sent Events', function() {
 
     it('element removal stops streaming', async function() {
         const stream = mockStreamResponse('/removable');
-        createProcessedHTML('<div id="container"><button hx-get="/removable" hx-stream="continuous initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
+        createProcessedHTML('<div id="container"><button hx-get="/removable" hx-config="sse.continuous:true sse.initialDelay:50ms" hx-swap="innerHTML">Connect</button></div>');
 
         find('button').click();
         await htmx.timeout(1);
@@ -193,7 +193,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        createProcessedHTML('<button hx-get="/max-retries" hx-stream="continuous initialDelay:20ms maxRetries:2" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-retries" hx-config="sse.continuous:true sse.initialDelay:20ms sse.maxRetries:2" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
         document.addEventListener('htmx:before:sse:reconnect', () => {
@@ -226,7 +226,7 @@ describe('Server-Sent Events', function() {
             throw new Error('Network error');
         });
 
-        createProcessedHTML('<button hx-get="/max-delay" hx-stream="continuous initialDelay:20ms maxDelay:60ms" hx-swap="innerHTML">Connect</button>');
+        createProcessedHTML('<button hx-get="/max-delay" hx-config="sse.continuous:true sse.initialDelay:20ms sse.maxDelay:60ms" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
         document.addEventListener('htmx:before:sse:reconnect', (e) => {

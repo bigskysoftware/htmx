@@ -77,54 +77,6 @@ describe('bootstrap unit tests', function() {
         assert.equal(result, 'default');
     })
 
-    it("__tokenize splits simple tokens by whitespace", function() {
-        const result = htmx.__tokenize('click submit change');
-
-        assert.deepEqual(result, ['click', 'submit', 'change']);
-    })
-
-    it("__tokenize handles quoted strings", function() {
-        const result = htmx.__tokenize('click "my event" change');
-
-        assert.deepEqual(result, ['click', '"my event"', 'change']);
-    })
-
-    it("__tokenize handles single quoted strings", function() {
-        const result = htmx.__tokenize("click 'my event' change");
-
-        assert.deepEqual(result, ['click', "'my event'", 'change']);
-    })
-
-    it("__tokenize handles escaped characters in quotes", function() {
-        const result = htmx.__tokenize('click "my \\"event\\"" change');
-
-        assert.deepEqual(result, ['click', '"my \\"event\\""', 'change']);
-    })
-
-    it("__tokenize preserves colons and commas as separate tokens", function() {
-        const result = htmx.__tokenize('click delay:500 , submit');
-
-        assert.deepEqual(result, ['click', 'delay', ':', '500', ',', 'submit']);
-    })
-
-    it("__tokenize handles complex trigger specification", function() {
-        const result = htmx.__tokenize('click delay:1s, keyup changed from:body');
-
-        assert.deepEqual(result, ['click', 'delay', ':', '1s', ',', 'keyup', 'changed', 'from', ':', 'body']);
-    })
-
-    it("__tokenize handles empty string", function() {
-        const result = htmx.__tokenize('');
-
-        assert.deepEqual(result, []);
-    })
-
-    it("__tokenize handles multiple consecutive spaces", function() {
-        const result = htmx.__tokenize('click    submit     change');
-
-        assert.deepEqual(result, ['click', 'submit', 'change']);
-    })
-
     it("__parseTriggerSpecs parses simple event", function() {
         const result = htmx.__parseTriggerSpecs('click');
 
@@ -197,7 +149,7 @@ describe('bootstrap unit tests', function() {
         const result = htmx.__parseTriggerSpecs('click[target.value == "test"]');
 
         assert.equal(result.length, 1);
-        assert.equal(result[0].name, 'click[target.value=="test"]');
+        assert.equal(result[0].name, 'click[target.value == "test"]');
     })
 
     it("__parseTriggerSpecs parses event with from option", function() {
@@ -218,7 +170,7 @@ describe('bootstrap unit tests', function() {
         const result = htmx.__parseTriggerSpecs('keyup[target.value.length > 3] changed delay:500ms from:input');
 
         assert.equal(result.length, 1);
-        assert.equal(result[0].name, 'keyup[target.value.length>3]');
+        assert.equal(result[0].name, 'keyup[target.value.length > 3]');
         assert.equal(result[0].changed, true);
         assert.equal(result[0].delay, '500ms');
         assert.equal(result[0].from, 'input');
@@ -228,7 +180,7 @@ describe('bootstrap unit tests', function() {
         const result = htmx.__parseTriggerSpecs('keyup[target.value == "hello world"] changed delay:500ms from:input');
 
         assert.equal(result.length, 1);
-        assert.equal(result[0].name, 'keyup[target.value=="hello world"]');
+        assert.equal(result[0].name, 'keyup[target.value == "hello world"]');
         assert.equal(result[0].changed, true);
         assert.equal(result[0].delay, '500ms');
         assert.equal(result[0].from, 'input');

@@ -10,20 +10,20 @@ describe('hx-swap modifiers', function() {
 
     it('properly parses various swap specifications', function() {
         assert.equal(htmx.__parseSwapSpec('innerHTML').style, 'innerHTML')
-        assert.equal(htmx.__parseSwapSpec('innerHTML').swapDelay, undefined)
-        assert.equal(htmx.__parseSwapSpec('innerHTML swap:10').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('innerHTML swap:0').swapDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('innerHTML swap:0ms').swapDelay, 0)
+        assert.equal(htmx.__parseSwapSpec('innerHTML').swap, undefined)
+        assert.equal(htmx.__parseSwapSpec('innerHTML swap:10').swap, '10')
+        assert.equal(htmx.__parseSwapSpec('innerHTML swap:0').swap, '0')
+        assert.equal(htmx.__parseSwapSpec('innerHTML swap:0ms').swap, '0ms')
 
         assert.equal(htmx.__parseSwapSpec('swap:10').style, 'innerHTML')
-        assert.equal(htmx.__parseSwapSpec('swap:10').swapDelay, 10)
-        assert.equal(htmx.__parseSwapSpec('swap:0').swapDelay, 0)
-        assert.equal(htmx.__parseSwapSpec('swap:0s').swapDelay, 0)
+        assert.equal(htmx.__parseSwapSpec('swap:10').swap, '10')
+        assert.equal(htmx.__parseSwapSpec('swap:0').swap, '0')
+        assert.equal(htmx.__parseSwapSpec('swap:0s').swap, '0s')
 
         assert.equal(htmx.__parseSwapSpec('transition:true').transition, true)
         assert.equal(htmx.__parseSwapSpec('strip:true').strip, true)
-        assert.equal(htmx.__parseSwapSpec('target:#table tbody').target, '#table tbody')
-        assert.equal(htmx.__parseSwapSpec('target:#table tbody swap:10s').target, '#table tbody')
+        assert.equal(htmx.__parseSwapSpec('target:"#table tbody"').target, '#table tbody')
+        assert.equal(htmx.__parseSwapSpec('target:"#table tbody" swap:10s').target, '#table tbody')
         assert.equal(htmx.__parseSwapSpec('customstyle swap:10').style, 'customstyle')
     })
 

@@ -99,10 +99,10 @@ major changes between htmx 2.x and htmx 4.x.
 - Alternative to out-of-band swaps when you want explicit targeting
 - Example:
   ```html
-  <htmx-partial hx-target="#messages" hx-swap="beforeend">
+  <hx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
   </partial>
-  <htmx-partial hx-target="#notifications">
+  <hx-partial hx-target="#notifications">
     <span class="badge">5</span>
   </partial>
   ```

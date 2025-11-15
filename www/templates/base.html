@@ -69,8 +69,9 @@
                     <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
                     <input type="text" name="q" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer"
                            _="on keydown[key=='Meta'] from document or keydown[key=='CTRL'] from document
-                            on keydown[key=='k'] from document
-                              call me.focus()">
+                                on keydown[key=='k'] from document
+                                  event.preventDefault()
+                                  call me.focus()">
                     <iconify-icon icon="pixel:search" class="peer-placeholder-shown:opacity-50 opacity-0 absolute left-4 top-1/2 -translate-y-1/2 text-xs block pointer-events-none"></iconify-icon>
                     <kbd class="absolute right-4 top-1/2 -translate-y-1/2 opacity-50 font-os9 text-xs block pointer-events-none delay-100 starting:opacity-0 group-has-focus:opacity-0 transition"
                          _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me">
@@ -113,7 +114,7 @@
         <form action="https://google.com/search" role="search" aria-label="Sitewide" title="Search htmx.org (via Google)" class="text-base flex group py-2 mt-1">
             <label class="relative os9-input cursor-text flex-1">
                 <input type="hidden" name="q" value="+[inurl:https://htmx.org]">
-                <input type="text" name="q" id="search-input" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer" autofocus>
+                <input type="text" name="q" id="search-input" aria-label="Search htmx.org (via Google)" placeholder="     Search" class="peer">
                 <iconify-icon icon="pixel:search" class="peer-placeholder-shown:opacity-50 opacity-0 absolute left-4 top-1/2 -translate-y-1/2 block pointer-events-none"></iconify-icon>
             </label>
         </form>
