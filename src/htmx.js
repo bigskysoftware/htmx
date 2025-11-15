@@ -700,9 +700,10 @@ var htmx = (function() {
    * @property {ListenerInfo[]} [listenerInfos]
    * @property {boolean} [cancelled]
    * @property {boolean} [triggeredOnce]
-   * @property {number} [delayed]
+   * @property {WeakMap<HtmxTriggerSpecification,number>} [delayed]
    * @property {number|null} [throttle]
    * @property {WeakMap<HtmxTriggerSpecification,WeakMap<EventTarget,string>>} [lastValue]
+   * @property {WeakMap<HtmxTriggerSpecification,Map<EventTarget,string>>} [pendingValue]
    * @property {boolean} [loaded]
    * @property {string} [path]
    * @property {string} [verb]
@@ -2503,6 +2504,14 @@ var htmx = (function() {
     } else {
       eltsToListenOn = [elt]
     }
+    if (triggerSpec.delay > 0) {
+      if (!('delayed' in elementData)) {
+        elementData.delayed = new WeakMap()
+      }
+      if (!('pendingValue' in elementData)) {
+        elementData.pendingValue = new WeakMap()
+      }
+    }
     // store the initial values of the elements, so we can tell if they change
     if (triggerSpec.changed) {
       if (!('lastValue' in elementData)) {
@@ -2559,13 +2568,22 @@ var htmx = (function() {
             // @ts-ignore value will be undefined for non-input elements, which is fine
             const value = node.value
             const lastValue = elementData.lastValue.get(triggerSpec)
-            if (lastValue.has(node) && lastValue.get(node) === value) {
-              return
+            if (triggerSpec.delay > 0) {
+              if (!elementData.pendingValue.has(triggerSpec)) {
+                elementData.pendingValue.set(triggerSpec, new Map())
+              }
+              const pendingValue = elementData.pendingValue.get(triggerSpec)
+              pendingValue.set(node, value)
+            } else {
+              if (lastValue.has(node) && lastValue.get(node) === value) {
+                return
+              }
+              lastValue.set(node, value)
             }
-            lastValue.set(node, value)
           }
-          if (elementData.delayed) {
-            clearTimeout(elementData.delayed)
+          if (elementData.delayed && elementData.delayed.has(triggerSpec)) {
+            clearTimeout(elementData.delayed.get(triggerSpec))
+            elementData.delayed.delete(triggerSpec)
           }
           if (elementData.throttle) {
             return
@@ -2580,10 +2598,27 @@ var htmx = (function() {
               }, triggerSpec.throttle)
             }
           } else if (triggerSpec.delay > 0) {
-            elementData.delayed = getWindow().setTimeout(function() {
+            elementData.delayed.set(triggerSpec, getWindow().setTimeout(function() {
+              elementData.delayed.delete(triggerSpec)
+              if (triggerSpec.changed) {
+                const lastValue = elementData.lastValue.get(triggerSpec) || new WeakMap()
+                const pendingValue = elementData.pendingValue.get(triggerSpec) || new Map()
+                elementData.pendingValue.set(triggerSpec, new Map())
+
+                let changed = false
+                pendingValue.forEach((new_value, new_node) => {
+                  if (lastValue.get(new_node) !== new_value) {
+                    changed = true
+                    lastValue.set(new_node, new_value)
+                  }
+                })
+                if (!changed) {
+                  return
+                }
+              }
               triggerEvent(elt, 'htmx:trigger')
               handler(elt, evt)
-            }, triggerSpec.delay)
+            }, triggerSpec.delay))
           } else {
             triggerEvent(elt, 'htmx:trigger')
             handler(elt, evt)
