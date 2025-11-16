@@ -29,17 +29,21 @@ You can use specific status codes or wildcards:
 </button>
 ```
 
-## Swap Configuration
+## Configuration Options
 
-The value can include:
+The value uses htmx's configuration syntax to set request context properties:
 
-* `select:` - CSS selector to pick content from response
-* `swap:` - swap strategy (innerHTML, outerHTML, etc.)
+* `swap:` - swap strategy (innerHTML, outerHTML, delete, none, etc.)
 * `target:` - target element for the swap
+* `select:` - CSS selector to pick content from response
+* `push:` - push URL to history (true/false or a URL)
+* `replace:` - replace URL in history (true/false or a URL)
+* `transition:` - whether to use view transitions (true/false)
 
 ```html
 <form hx-post="/save"
-      hx-status:422="select:#validation-errors,swap:innerHTML,target:#errors"
+      hx-status:422="swap:innerHTML target:#errors select:#validation-errors"
+      hx-status:500="swap:none push:false"
       hx-status:200="select:#success-message">
   <!-- form fields -->
 </form>
@@ -51,7 +55,7 @@ The value can include:
 
 ```html
 <form hx-post="/register"
-      hx-status:422="select:#errors,target:#error-container">
+      hx-status:422="select:#errors target:#error-container">
   <input name="email" type="email">
   <div id="error-container"></div>
   <button type="submit">Register</button>
@@ -71,16 +75,37 @@ The value can include:
 
 ```html
 <button hx-post="/process"
-        hx-status:5xx="select:#server-error-message">
+        hx-status:5xx="swap:innerHTML target:#error-display select:#server-error push:false">
   Process
 </button>
 ```
 
+### Preventing History Updates on Errors
+
+```html
+<button hx-get="/data"
+        hx-push-url="true"
+        hx-status:4xx="push:false"
+        hx-status:5xx="push:false">
+  Load Data
+</button>
+```
+
+### Custom History URL on Success
+
+```html
+<form hx-post="/items"
+      hx-status:201="push:/items/new">
+  <!-- form fields -->
+</form>
+```
+
 ## Notes
 
-* Status code patterns are evaluated in order of specificity (specific codes before wildcards)
-* Without `hx-status`, htmx uses default behavior (swap on 2xx, error events on others)
-* The `hx-status` attribute allows you to customize responses for specific status codes
+* Status code patterns are evaluated in order of specificity (exact match → 2-digit wildcard → 1-digit wildcard)
+* The configuration can set any request context property, not just swap behavior
+* Values override any previous settings including response headers (HX-Retarget, HX-Reswap, etc.)
+* Without `hx-status`, htmx uses default behavior (swap on 2xx, no swap on 204/304)
 * Can be combined with other `hx-` attributes
 
 ## See Also

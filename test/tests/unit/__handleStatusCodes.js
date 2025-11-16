@@ -39,7 +39,7 @@ describe('__handleStatusCodes unit tests', function() {
     })
 
     it('applies hx-status:404 override', function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="outerHTML"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="swap:outerHTML"></div>')
         let ctx = {
             sourceElement: div,
             swap: 'innerHTML',
@@ -54,7 +54,7 @@ describe('__handleStatusCodes unit tests', function() {
     })
 
     it('applies hx-status:4xx pattern match', function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-status:4xx="delete"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:4xx="swap:delete"></div>')
         let ctx = {
             sourceElement: div,
             swap: 'innerHTML',
@@ -69,7 +69,7 @@ describe('__handleStatusCodes unit tests', function() {
     })
 
     it('applies hx-status:5xx pattern match', function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-status:5xx="none"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:5xx="swap:none"></div>')
         let ctx = {
             sourceElement: div,
             swap: 'innerHTML',
@@ -84,7 +84,7 @@ describe('__handleStatusCodes unit tests', function() {
     })
 
     it('prefers exact match over pattern match', function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="outerHTML" hx-status:4xx="delete"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="swap:outerHTML" hx-status:4xx="swap:delete"></div>')
         let ctx = {
             sourceElement: div,
             swap: 'innerHTML',
@@ -100,10 +100,10 @@ describe('__handleStatusCodes unit tests', function() {
 
     it('parses target modifier in hx-status value', function () {
         createProcessedHTML('<div id="error-target"></div>')
-        let div = createProcessedHTML('<div hx-get="/test" hx-status:4xx="innerHTML target:#error-target"></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:4xx="swap:innerHTML target:#error-target"></div>')
         let ctx = {
             sourceElement: div,
-            swap: 'innerHTML',
+            swap: 'outerHTML',
             target: div,
             response: {
                 raw: { status: 404 }
@@ -112,9 +112,47 @@ describe('__handleStatusCodes unit tests', function() {
 
         htmx.__handleStatusCodes(ctx)
 
-        // The full swap spec should be assigned to ctx.swap
-        // It will be parsed later by __processMainSwap
-        assert.equal(ctx.swap, 'innerHTML target:#error-target')
+        // Object.assign sets both swap and target on ctx
+        assert.equal(ctx.swap, 'innerHTML')
+        assert.equal(ctx.target, '#error-target')
+    })
+
+    it('can set multiple ctx properties with hx-status', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:500="swap:none select:#error push:false"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            select: null,
+            push: 'true',
+            response: {
+                raw: { status: 500 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.swap, 'none')
+        assert.equal(ctx.select, '#error')
+        assert.equal(ctx.push, false)
+    })
+
+    it('hx-status can override any ctx property', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="target:#alt swap:outerHTML transition:false"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            target: '#main',
+            transition: true,
+            response: {
+                raw: { status: 404 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.target, '#alt')
+        assert.equal(ctx.swap, 'outerHTML')
+        assert.equal(ctx.transition, false)
     })
 
 });

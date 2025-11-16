@@ -384,9 +384,6 @@ var htmx = (() => {
 
             if (this.__shouldCancel(evt)) evt.preventDefault()
 
-            // Resolve swap target
-            ctx.target = this.__resolveTarget(elt, ctx.target);
-
             // Build request body
             let form = elt.form || elt.closest("form")
             let body = this.__collectFormData(elt, form, evt.submitter)
@@ -494,7 +491,7 @@ var htmx = (() => {
                 } else {
                     // HTTP response
                     if (ctx.status === "issuing") {
-                        if (ctx.hx.retarget) ctx.target = this.__resolveTarget(elt, ctx.hx.retarget);
+                        if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
                         if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
                         if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                         ctx.status = "response received";
@@ -1317,7 +1314,7 @@ var htmx = (() => {
                 let mainSwap = {
                     type: 'main',
                     fragment,
-                    target: swapSpec.target || ctx.target,
+                    target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
                     transition: (ctx.transition !== false) && (swapSpec.transition !== false)
@@ -1504,20 +1501,21 @@ var htmx = (() => {
             let sourceElt = typeof context.source === 'string' ?
                 document.querySelector(context.source) : context.source;
 
-            // TODO we have a contradiction here: the tests say that we should default to the source element
-            // but the logic here targets the source element
-            let targetElt = context.target ?
-                this.__resolveTarget(sourceElt || document.body, context.target) : sourceElt;
+            // If source selector was provided but didn't match, reject
+            if (typeof context.source === 'string' && !sourceElt) {
+                return Promise.reject(new Error('Source not found'));
+            }
 
-            if (!targetElt) {
+            // Resolve target, defaulting to body only if no source or target provided
+            let target = this.__resolveTarget(document.body, context.target || sourceElt);
+            if (!target) {
                 return Promise.reject(new Error('Target not found'));
             }
 
-            // TODO is this logic correct?
-            sourceElt ||= targetElt || document.body;
+            sourceElt ||= target;
 
             let ctx = this.__createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context, {target: targetElt});
+            Object.assign(ctx, context, {target});
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (context.headers) Object.assign(ctx.request.headers, context.headers);
 
@@ -1580,7 +1578,7 @@ var htmx = (() => {
             }
 
             let path = push || replace;
-            if (!path || path === 'false') return;
+            if (!path || path === 'false' || path === false) return;
 
             if (path === 'true') {
                 path = ctx.request.originalAction;
@@ -2059,13 +2057,13 @@ var htmx = (() => {
             let noSwapStrings = this.config.noSwap.map(x => x + "");
             let str = status + ""
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                let swap = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (noSwapStrings.includes(pattern)) {
                     ctx.swap = "none";
                     return
                 }
-                if (swap) {
-                    ctx.swap = swap;
+                let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
+                if (statusValue) {
+                    Object.assign(ctx, this.__parseConfig(statusValue));
                     return;
                 }
             }
