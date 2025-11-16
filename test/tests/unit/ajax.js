@@ -47,7 +47,7 @@ describe('ajax() unit Tests', function() {
         }
     });
 
-    it('ajax rejects when source invalid and no target set', async function() {
+    it('ajax rejects when source selector invalid', async function() {
         mockResponse('GET', '/test', 'foo!');
         createProcessedHTML('<div id="d1"></div>');
         try {
@@ -56,7 +56,7 @@ describe('ajax() unit Tests', function() {
             });
             assert.fail('Should have rejected');
         } catch (e) {
-            assert.include(e.message, 'Target not found');
+            assert.include(e.message, 'Source not found');
         }
     });
 

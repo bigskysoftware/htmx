@@ -33,12 +33,12 @@ describe('__handleTriggerEvent unit tests', function() {
         assert.isTrue(evt.defaultPrevented)
     })
 
-    it('resolves target from ctx.target', async function () {
+    it('preserves target selector in ctx.target', async function () {
         createProcessedHTML('<div id="target"></div><button hx-get="js:" hx-target="#target"></button>')
         let button = document.querySelector('button')
         let ctx = htmx.__createRequestContext(button, new Event('click'))
         await htmx.__handleTriggerEvent(ctx)
-        assert.equal(ctx.target.id, 'target')
+        assert.equal(ctx.target, '#target')
     })
 
     it('collects form data from element', async function () {
