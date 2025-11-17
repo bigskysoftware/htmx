@@ -302,7 +302,7 @@ var htmx = (() => {
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
-                target: this.__attributeValue(sourceElement, "hx-target"),
+                target: this.__resolveTarget(sourceElement, this.__attributeValue(sourceElement, "hx-target")),
                 swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
@@ -339,12 +339,19 @@ var htmx = (() => {
             if (sourceElement._htmx?.etag) {
                 ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
+            if (ctx.target !== document.body) {
+                ctx.request.headers["HX-Request-Type"] = ctx.select 
+                    ? 'hx-select:' + ctx.select + (ctx.selectOOB ? ',' + ctx.selectOOB : '')
+                    : 'partial';
+            }
             return ctx;
         }
 
         __determineHeaders(elt) {
             let headers = {
                 "HX-Request": "true",
+                "HX-Source": elt.id || elt.name,
+                "HX-Current-URL": location.href,
                 "Accept": "text/html, text/event-stream"
             };
             if (this.__isBoosted(elt)) {
