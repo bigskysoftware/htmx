@@ -234,6 +234,12 @@ var htmx = (function() {
        */
       methodsThatUseUrlParams: ['get', 'delete'],
       /**
+       * Custom HTTP verbs allowed to be parsed as attribute in form hx-custom-verb-XXX or data-hx-custom-verb-XXX where XXX is the custom verb
+       * @type {(String)[]}
+       * @default []
+       */
+      customVerbs: [],
+      /**
        * If set to true, disables htmx-based requests to non-origin hosts.
        * @type boolean
        * @default false
@@ -354,7 +360,11 @@ var htmx = (function() {
   const VERBS = ['get', 'post', 'put', 'delete', 'patch']
   const VERB_SELECTOR = VERBS.map(function(verb) {
     return '[hx-' + verb + '], [data-hx-' + verb + ']'
-  }).join(', ')
+  }).concat(
+    htmx.config.customVerbs.map(function(verb) {
+      return '[hx-custom-verb-' + verb + '], [data-hx-custom-verb-' + verb + ']'
+    })
+  ).join(', ')
 
   //= ===================================================================
   // Utilities
@@ -2669,9 +2679,11 @@ var htmx = (function() {
    */
   function processVerbs(elt, nodeData, triggerSpecs) {
     let explicitAction = false
-    forEach(VERBS, function(verb) {
-      if (hasAttribute(elt, 'hx-' + verb)) {
-        const path = getAttributeValue(elt, 'hx-' + verb)
+    const verbsWithAssociatedAttributes = VERBS.map(function(verb) { return [verb, 'hx-' + verb] })
+    const customVerbsWithAssociatedAttributes = htmx.config.customVerbs.map(function(verb) { return [verb, 'hx-custom-verb-' + verb] })
+    forEach(verbsWithAssociatedAttributes.concat(customVerbsWithAssociatedAttributes), function([verb, attribute]) {
+      if (hasAttribute(elt, attribute)) {
+        const path = getAttributeValue(elt, attribute)
         explicitAction = true
         nodeData.path = path
         nodeData.verb = verb
