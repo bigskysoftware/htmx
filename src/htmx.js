@@ -1088,7 +1088,7 @@ var htmx = (() => {
         }
 
         __makeFragment(text) {
-            let response = text.replace(/<hx-partial(\s+|>)/gi, '<template partial$1').replace(/<\/hx-partial>/gi, '</template>');
+            let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
             let title = '';
             response = response.replace(/<title[^>]*>[\s\S]*?<\/title>/i, m => (title = this.__parseHTML(m).title, ''));
             let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
@@ -1171,20 +1171,26 @@ var htmx = (() => {
             return {style: this.__normalizeSwapStyle(style), ...this.__parseConfig(swapStr)};
         }
 
-        __processPartials(fragment, sourceElement) {
+        __processPartials(fragment, ctx) {
             let tasks = [];
 
-            for (let partialElt of fragment.querySelectorAll('template[partial]')) {
-                let swapSpec = this.__parseSwapSpec(partialElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap);
+            for (let templateElt of fragment.querySelectorAll('template[hx]')) {
+                let type = templateElt.getAttribute('type');
+                
+                if (type === 'partial') {
+                    let swapSpec = this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap);
 
-                tasks.push({
-                    type: 'partial',
-                    fragment: partialElt.content.cloneNode(true),
-                    target: partialElt.getAttribute(this.__prefix('hx-target')),
-                    swapSpec,
-                    sourceElement
-                });
-                partialElt.remove();
+                    tasks.push({
+                        type: 'partial',
+                        fragment: templateElt.content.cloneNode(true),
+                        target: templateElt.getAttribute(this.__prefix('hx-target')),
+                        swapSpec,
+                        sourceElement: ctx.sourceElement
+                    });
+                } else {
+                    this.__triggerExtensions(templateElt, 'htmx:process:' + type, { ctx, tasks });
+                }
+                templateElt.remove();
             }
 
             return tasks;
@@ -1244,7 +1250,7 @@ var htmx = (() => {
 
             // Process OOB and partials
             let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
-            let partialTasks = this.__processPartials(fragment, ctx.sourceElement);
+            let partialTasks = this.__processPartials(fragment, ctx);
             tasks.push(...oobTasks, ...partialTasks);
 
             // Process main swap
