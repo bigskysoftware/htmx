@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.0.0-alpha3] - 2025-11-18
+
+* Added `HX-Source` request header containing element `id` or `name` ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
+  * Format may change!
+* Re-added `HX-Current-URL` request header ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
+* Extensions can now handle custom `<hx-*>` template tags via `htmx:process:*` events ([#3537](https://github.com/bigskysoftware/htmx/pull/3537))
+* `hx-confirm` now fires `htmx:confirm` event with async `issueRequest()` callback for custom confirmation dialogs ([#3532](https://github.com/bigskysoftware/htmx/pull/3532))
+* `hx-status` can now set multiple context properties using config syntax ([#3528](https://github.com/bigskysoftware/htmx/pull/3528))
+* `hx-vals` now supports `js:` prefix for JavaScript expressions ([#3516](https://github.com/bigskysoftware/htmx/pull/3516))
+* Unified configuration parser across all attributes, removed separate tokenizer ([#3516](https://github.com/bigskysoftware/htmx/pull/3516))
+* Form data collection now uses native `FormData(form)` to support Web Components ([#3523](https://github.com/bigskysoftware/htmx/pull/3523))
+* Fixed `htmx.ajax()` API target/source resolution issues ([#3528](https://github.com/bigskysoftware/htmx/pull/3528))
+* Thanks to @MichaelWest22 for the majority of this release!
+
+## [4.0.0-alpha1] - 2025-11-3
+
+* See https://four.htmx.org/htmx-4/
+
 ## [2.0.8] - 2025-10-24
 
 * [Updated](https://github.com/bigskysoftware/htmx/commit/b9336a96fbdcf28550699971dc2218a90c7a4e01) `parseHTML` to use to use the (unfortunately named) [`Document.parseHTMLUnsafe()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/parseHTMLUnsafe_static) 
