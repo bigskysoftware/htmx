@@ -78,8 +78,10 @@ All other attributes available in htmx.
 | Header | Description |
 |--------|-------------|
 | `HX-Boosted` | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)
+| `HX-Current-URL` | the current URL of the browser
 | `HX-History-Restore-Request` | "true" if the request is for history restoration
 | `HX-Request` | always "true" for htmx-initiated requests
+| `HX-Source` | the `id` or `name` of the element that triggered the request
 
 </div>
 

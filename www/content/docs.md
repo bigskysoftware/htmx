@@ -1134,8 +1134,10 @@ htmx includes headers in the requests it makes:
 | Header                       | Description                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------|
 | `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)              |
+| `HX-Current-URL`             | the current URL of the browser                                                                       |
 | `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
 | `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
+| `HX-Source`                  | the `id` or `name` of the element that triggered the request                                         |
 
 ### Response Headers
 

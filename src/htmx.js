@@ -302,7 +302,7 @@ var htmx = (() => {
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
-                target: this.__attributeValue(sourceElement, "hx-target"),
+                target: this.__resolveTarget(sourceElement, this.__attributeValue(sourceElement, "hx-target")),
                 swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
@@ -346,6 +346,8 @@ var htmx = (() => {
         __determineHeaders(elt) {
             let headers = {
                 "HX-Request": "true",
+                "HX-Source": elt.id || elt.name,
+                "HX-Current-URL": location.href,
                 "Accept": "text/html, text/event-stream"
             };
             if (this.__isBoosted(elt)) {
