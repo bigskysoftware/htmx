@@ -1,5 +1,35 @@
 describe('__collectFormData unit tests', function() {
 
+    before(function() {
+        // Define a form-associated custom element for testing
+        if (!customElements.get('test-input')) {
+            class TestInput extends HTMLElement {
+                static formAssociated = true;
+
+                constructor() {
+                    super();
+                    this._internals = this.attachInternals();
+                    this._value = '';
+                }
+
+                connectedCallback() {
+                    this._value = this.getAttribute('value') || '';
+                    this._internals.setFormValue(this._value);
+                }
+
+                get value() {
+                    return this._value;
+                }
+
+                set value(val) {
+                    this._value = val;
+                    this._internals.setFormValue(val);
+                }
+            }
+            customElements.define('test-input', TestInput);
+        }
+    });
+
     it('collects text input from form', function () {
         let form = createProcessedHTML('<form><input type="text" name="foo" value="bar"></form>')
         let formData = htmx.__collectFormData(form, form, null)
@@ -110,4 +140,38 @@ describe('__collectFormData unit tests', function() {
         assert.equal([...formData.keys()].length, 0)
     })
 
+    it('collects form-associated custom element value', function () {
+        let form = createProcessedHTML('<form><test-input name="custom" value="test-value"></test-input></form>');
+        let formData = htmx.__collectFormData(form, form, null);
+        assert.equal(formData.get('custom'), 'test-value');
+    });
+
+    it('collects both regular and custom element values', function () {
+        let form = createProcessedHTML('<form><input name="regular" value="reg-val"><test-input name="custom" value="cust-val"></test-input></form>');
+        let formData = htmx.__collectFormData(form, form, null);
+        assert.equal(formData.get('regular'), 'reg-val');
+        assert.equal(formData.get('custom'), 'cust-val');
+    });
+
+    it('collects custom element with form attribute outside form', function () {
+        createProcessedHTML('<form id="myform"><input name="inside" value="in"></form><test-input form="myform" name="outside" value="out"></test-input>');
+        let form = document.getElementById('myform');
+        let formData = htmx.__collectFormData(form, form, null);
+        assert.equal(formData.get('inside'), 'in');
+        assert.equal(formData.get('outside'), 'out');
+    });
+
+    it('does not duplicate custom element in hx-include', function () {
+        let container = createProcessedHTML('<div><form><test-input name="custom" value="val"></test-input></form></div>');
+        let form = container.querySelector('form');
+        form.setAttribute('hx-include', 'test-input[name="custom"]');
+        let formData = htmx.__collectFormData(form, form, null);
+        assert.deepEqual(formData.getAll('custom'), ['val']);
+    });
+
+    it('collects multiple custom elements with same name', function () {
+        let form = createProcessedHTML('<form><test-input name="items" value="a"></test-input><test-input name="items" value="b"></test-input></form>');
+        let formData = htmx.__collectFormData(form, form, null);
+        assert.deepEqual(formData.getAll('items'), ['a', 'b']);
+    });
 });

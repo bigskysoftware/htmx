@@ -1667,11 +1667,9 @@ var htmx = (() => {
         }
 
         __collectFormData(elt, form, submitter) {
-            let formData = new FormData()
-            let included = new Set()
-            if (form) {
-                this.__addInputValues(form, included, formData)
-            } else if (elt.name) {
+            let formData = form ? new FormData(form) : new FormData()
+            let included = form ? new Set(form.elements) : new Set()
+            if (!form && elt.name) {
                 formData.append(elt.name, elt.value)
                 included.add(elt);
             }
@@ -1693,21 +1691,21 @@ var htmx = (() => {
             let inputs = this.__queryEltAndDescendants(elt, 'input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
 
             for (let input of inputs) {
-                // Skip elements without a name or already seen
                 if (!input.name || included.has(input)) continue;
                 included.add(input);
 
-                if (input.matches('input[type=checkbox], input[type=radio]')) {
+                let type = input.type;
+                if (type === 'checkbox' || type === 'radio') {
                     // Only add if checked
                     if (input.checked) {
                         formData.append(input.name, input.value);
                     }
-                } else if (input.matches('input[type=file]')) {
+                } else if (type === 'file') {
                     // Add all selected files
                     for (let file of input.files) {
                         formData.append(input.name, file);
                     }
-                } else if (input.matches('select[multiple]')) {
+                } else if (type === 'select-multiple') {
                     // Add all selected options
                     for (let option of input.selectedOptions) {
                         formData.append(input.name, option.value);
