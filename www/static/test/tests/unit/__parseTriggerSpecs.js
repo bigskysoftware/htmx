@@ -73,13 +73,13 @@ describe('__parseTriggerSpecs unit tests', function() {
     it('parses event with filter containing spaces', function () {
         let specs = htmx.__parseTriggerSpecs('click[event.detail > 5]')
         assert.equal(specs.length, 1)
-        assert.equal(specs[0].name, 'click[event.detail>5]')
+        assert.equal(specs[0].name, 'click[event.detail > 5]')
     })
 
     it('preserves whitespace in string literals in filters', function () {
         let specs = htmx.__parseTriggerSpecs('click[event.detail === "hello world"]')
         assert.equal(specs.length, 1)
-        assert.equal(specs[0].name, 'click[event.detail==="hello world"]')
+        assert.equal(specs[0].name, 'click[event.detail === "hello world"]')
     })
 
     it('parses multiple events with different modifiers', function () {

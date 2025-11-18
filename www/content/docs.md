@@ -99,13 +99,13 @@ The fastest way to get going with htmx is to load it via a CDN.
 Just add this to your head tag and you can get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha2/dist/htmx.min.js" integrity="sha384-R6aiRJnQG2X5DMQnF4VAsYMZcAVNxOUoKW5AGq/3QD79h/RZWsb+EAt8DiyCjFe3" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha3/dist/htmx.min.js" integrity="sha384-R6aiRJnQG2X5DMQnF4VAsYMZcAVNxOUoKW5AGq/3QD79h/RZWsb+EAt8DiyCjFe3" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha2/dist/htmx.js" integrity="sha384-dvV6/qHoLaZSBd7pyxGlWuZIMoQ3w4cnRxd9KQDn1TOxev3oWEeU1766r3KjKhhm" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha3/dist/htmx.js" integrity="sha384-dvV6/qHoLaZSBd7pyxGlWuZIMoQ3w4cnRxd9KQDn1TOxev3oWEeU1766r3KjKhhm" crossorigin="anonymous"></script>
 ```
 
 While this CDN-based approach is quick and easy, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -114,7 +114,7 @@ While this CDN-based approach is quick and easy, you may want to consider [not u
 
 The next easiest way to install htmx is to copy it into your project, an option called [vendoring](@/essays/vendoring.md).
 
-Download `htmx.min.js` <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha2/dist/htmx.min.js">from jsDelivr</a> 
+Download `htmx.min.js` <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha3/dist/htmx.min.js">from jsDelivr</a> 
 and hen add it to the appropriate directory in your project and include it where necessary with a `<script>` tag:
 
 ```html
@@ -126,7 +126,7 @@ and hen add it to the appropriate directory in your project and include it where
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@4.0.0-alpha2
+npm install htmx.org@4.0.0-alpha3
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
