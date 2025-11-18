@@ -896,7 +896,7 @@ You would then need to update the form with an `hx-post` that mirrored the `acti
 on it.
 
 You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
+regular request, to determine exactly what to render to the client. For more fine-grained control over whether to return full pages or partial fragments, use the [`HX-Request-Type`](@/headers/hx-request-type.md) header.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
 
@@ -1080,6 +1080,8 @@ document, matched with a [hx-select](@/attributes/hx-select.md) tag can be usefu
 
 Htmx will then swap the returned HTML into the document at the target specified and with the swap strategy specified.
 
+**Server-Side Response Strategy:** Your server can use the [`HX-Request-Type`](@/headers/hx-request-type.md) request header to determine whether to return a full page or a partial HTML fragment. This header distinguishes between full page requests (header not set), partial updates (`"partial"`), and selective content requests (`"hx-select:..."`).
+
 Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side event ([see below](#response-headers)).
 
 For this situation, by default, you can return a `204 - No Content` response code, and htmx will ignore the content of
@@ -1130,12 +1132,14 @@ In this example:
 
 htmx includes headers in the requests it makes:
 
-
 | Header                       | Description                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------|
 | `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)              |
+| `HX-Current-URL`             | the current URL of the browser                                                                       |
 | `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
 | `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
+| [`HX-Request-Type`](@/headers/hx-request-type.md) | distinguishes between full page and partial requests ("partial", "hx-select:...", or not set) |
+| `HX-Source`                  | the `id` or `name` of the element that triggered the request                                         |
 
 ### Response Headers
 
@@ -1516,8 +1520,7 @@ headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/W
 response HTTP header.
 
 For example, if your server renders the full HTML when the `HX-Request` header is missing or `false`, and it renders a 
-fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed 
-based on a composite of the response URL and the `HX-Request` request header rather than being based just on the response URL. 
+fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. For more precise caching based on whether the request expects a full page or partial fragment, use `Vary: HX-Request-Type` (see [`HX-Request-Type`](@/headers/hx-request-type.md) for details). 
 
 ## Security
 
