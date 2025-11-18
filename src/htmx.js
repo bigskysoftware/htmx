@@ -307,6 +307,7 @@ var htmx = (() => {
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.transitions,
+                confirm: this.__attributeValue(sourceElement, "hx-confirm"),
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
                     action,
@@ -448,21 +449,19 @@ var htmx = (() => {
             let disableElements = this.__disableElements(elt, disableSelector);
 
             try {
-                // Confirm dialog
-                let confirmVal = this.__attributeValue(elt, 'hx-confirm');
-                if (confirmVal) {
-                    let js = this.__extractJavascriptContent(confirmVal);
-                    if (js) {
-                        if (!await this.__executeJavaScriptAsync(elt, {}, js, true)) {
-                            return
+                // Handle confirmation
+                if (ctx.confirm) {
+                    let issueRequest = null;
+                    let confirmed = await new Promise(resolve => {
+                        issueRequest = resolve;
+                        if (this.__trigger(elt, "htmx:confirm", {ctx, issueRequest: (skip) => issueRequest?.(skip !== false)})) {
+                            let js = this.__extractJavascriptContent(ctx.confirm);
+                            resolve(js ? this.__executeJavaScriptAsync(elt, {}, js, true) : window.confirm(ctx.confirm));
                         }
-                    } else {
-                        if (!window.confirm(confirmVal)) {
-                            return;
-                        }
-                    }
+                    });
+                    if (!confirmed) return;
                 }
-
+                
                 ctx.fetch ||= window.fetch.bind(window)
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
