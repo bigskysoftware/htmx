@@ -4,14 +4,13 @@
 * updated website design - @scriptogre
 * etags - @1cg/@latent
 * document new extensions architecture - @latent
+* `websockets.js` - web sockets - @tbd
 
 # Backlog
 
 * extensions
-  * `ws` - web sockets - @tbd
   * `upgrade` - identifiers implicit inheritance - @1cg
   * `head-support` - @tbd
-* Unify __parseTriggerSpecs and __parseSwapModifiers somehow
 * Audits
   * Headers: request & response
       * Michael has thoughts on request headers
