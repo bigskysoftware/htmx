@@ -2,18 +2,17 @@
 
 * complete port of examples to patterns - @scriptogre
 * updated website design - @scriptogre
-* etags - @1cg/@latent
 * document new extensions architecture - @latent
 * `websockets.js` - web sockets - @tbd
+* Determine final request headers (https://github.com/bigskysoftware/htmx/issues/3496)
+* Determine how to handle form actions that have query parameters (https://github.com/bigskysoftware/htmx/issues/2151)
 
 # Backlog
 
 * extensions
-  * `upgrade` - identifiers implicit inheritance - @1cg
-  * `head-support` - @tbd
-* Audits
-  * Headers: request & response
-      * Michael has thoughts on request headers
+  * `head-support` - @latent?
+  * `compat.js` - backwards compatibility extension that allows auditing inheritance issues
+* ~~etags - @1cg/@latent~~
 * ~~Optimistic response support (would be easy now)~~
 * ~~Preload support?~~
 * ~~Add in extended selectors (1cg)~~
