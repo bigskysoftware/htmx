@@ -335,11 +335,12 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
 * `inlineStyleNonce` - string: nonce to add to inline styles (default: `''`)
 * `extensions` - string: comma-separated list of extensions to load (default: `''`)
 * `streams` - object: SSE stream configuration with properties:
-  * `mode` - `'once'` or `'continuous'` (default: `'once'`)
-  * `maxRetries` - number (default: `Infinity`)
-  * `initialDelay` - number in ms (default: `500`)
-  * `maxDelay` - number in ms (default: `30000`)
-  * `pauseHidden` - boolean (default: `false`)
+  * `reconnect` - boolean: whether to reconnect on disconnect (default: `false`)
+  * `reconnectMaxAttempts` - number (default: `10`)
+  * `reconnectDelay` - number in ms (default: `500`)
+  * `reconnectMaxDelay` - number in ms (default: `60000`)
+  * `reconnectJitter` - number: jitter factor for reconnect delay (default: `0.3`)
+  * `pauseInBackground` - boolean (default: `false`)
 * `morphIgnore` - array: attribute names to ignore when morphing (default: `["data-htmx-powered"]`)
 * `noSwap` - array: HTTP status codes that should not trigger a swap (default: `[204, 304]`)
 * `implicitInheritance` - boolean: inherit attributes automatically without `:inherited` (default: `false`)
@@ -359,9 +360,9 @@ htmx.config.prefix = 'data-hx-';
 
 // configure SSE streams
 htmx.config.streams = {
-  mode: 'continuous',
-  maxRetries: 10,
-  initialDelay: 1000
+  reconnect: true,
+  reconnectMaxAttempts: 10,
+  reconnectDelay: 1000
 };
 ```
 

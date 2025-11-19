@@ -104,11 +104,12 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 sse: {
-                    mode: 'once',
-                    maxRetries: Infinity,
-                    initialDelay: 500,
-                    maxDelay: 30000,
-                    pauseHidden: false
+                    reconnect: false,
+                    reconnectDelay: 500,
+                    reconnectMaxDelay: 60000,
+                    reconnectMaxAttempts: 10,
+                    reconnectJitter: 0.3,
+                    pauseInBackground: false
                 },
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204, 304],
@@ -559,9 +560,7 @@ var htmx = (() => {
         }
 
         async __handleSSE(ctx, elt, response) {
-            let config = {...this.config.sse, ...ctx.request.sse};
-            if (config.once) config.mode = 'once';
-            if (config.continuous) config.mode = 'continuous';
+            let config = {...this.config.sse, ...ctx.request.sse}
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
@@ -573,14 +572,19 @@ var htmx = (() => {
             while (elt.isConnected) {
                 // Handle reconnection for subsequent iterations
                 if (attempt > 0) {
-                    if (config.mode !== 'continuous' || attempt > config.maxRetries) break;
+                    if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.pauseHidden && document.hidden) {
+                    if (config.pauseInBackground && document.hidden) {
                         await waitForVisible();
                         if (!elt.isConnected) break;
                     }
 
-                    let delay = Math.min(this.parseInterval(config.initialDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.maxDelay));
+                    let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
+                    if (config.reconnectJitter > 0) {
+                        let jitterRange = delay * config.reconnectJitter;
+                        let jitter = (Math.random() * 2 - 1) * jitterRange;
+                        delay = Math.max(0, delay + jitter);
+                    }
                     let reconnect = {attempt, delay, lastEventId, cancelled: false};
 
                     ctx.status = "reconnecting to stream";
@@ -613,7 +617,7 @@ var htmx = (() => {
                     for await (const sseMessage of this.__parseSSE(currentResponse)) {
                         if (!elt.isConnected) break;
 
-                        if (config.pauseHidden && document.hidden) {
+                        if (config.pauseInBackground && document.hidden) {
                             await waitForVisible();
                             if (!elt.isConnected) break;
                         }
@@ -909,8 +913,6 @@ var htmx = (() => {
                 }
             }
         }
-
-
 
         __extractFilter(str) {
             let match = str.match(/^([^\[]*)\[([^\]]*)]/);

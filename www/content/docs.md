@@ -927,9 +927,9 @@ handles the stream.
 Each SSE message with a `data:` line (and no `event:` line) is processed like a regular htmx response, respecting 
 `hx-target`, `hx-select`, and `hx-swap` attributes.
 
-Like [fetch-event-source](https://github.com/Azure/fetch-event-source), htmx's custom SSE implementation supports 
-request bodies, custom headers, and all HTTP methods (not just GET), and Page Visibility API 
-integration (using the `pauseHidden` modifier).
+Like [fetch-event-source](https://github.com/Azure/fetch-event-source), htmx's custom SSE implementation supports
+request bodies, custom headers, and all HTTP methods (not just GET), and Page Visibility API
+integration (using the `pauseInBackground` option).
 
 ### Basic Usage
 
@@ -956,20 +956,21 @@ data: Hello partner!
 Each message replaces the target element's content. The stream processes until the connection closes, then stops. 
 No reconnection occurs by default.
 
-### Stream Modes
+### Stream Reconnection
 
-The `hx-stream` attribute controls reconnection behavior. The default mode is `once`, so it doesn't need to be specified.
+Stream reconnection behavior is controlled via `hx-config`. By default, reconnection is disabled (`reconnect: false`).
 
-- `once` (default): Process stream until connection closes. No reconnection.
-- `continuous`: Reconnect automatically if connection drops. Retries with exponential backoff.
+To enable automatic reconnection when the connection drops:
 
 ```html
-<body hx-get="/updates" hx-stream="continuous" hx-trigger="load">
+<body hx-get="/updates" hx-config='{ "streams": { "reconnect": true } }' hx-trigger="load">
     ...
 </body>
 ```
 
-**Note:** `hx-stream="continuous"` is primarily intended for use with `<htmx-action type="partial">` to enable real-time 
+When enabled, htmx will reconnect automatically with exponential backoff.
+
+**Note:** Reconnection is primarily intended for use with `<hx-partial>` to enable real-time
 updates to multiple parts of the page via a permanently open SSE connection.
 
 ### Custom Events
@@ -1004,26 +1005,28 @@ You can configure the global streaming config in `htmx.config.streams`:
 ```html
 <meta name="htmx:config" content='{
   "streams": {
-    "mode": "once",
-    "maxRetries": 3,
-    "initialDelay": 500,
-    "maxDelay": 30000,
-    "pauseHidden": false
+    "reconnect": false,
+    "reconnectMaxAttempts": 10,
+    "reconnectDelay": 500,
+    "reconnectMaxDelay": 60000,
+    "reconnectJitter": 0.3,
+    "pauseInBackground": false
   }
 }'>
 ```
 
-- `mode`: `'once'` or `'continuous'`
-- `maxRetries`: Maximum reconnection attempts (default: `Infinity`)
-- `initialDelay`: First reconnect delay in ms (default: `500`)
-- `maxDelay`: Max backoff delay in ms (default: `30000`)
-- `pauseHidden`: Pause stream when page is hidden (default: `false`). Uses the Page Visibility API to pause the stream when the browser window is minimized or the tab is in the background.
+- `reconnect`: Boolean to enable/disable reconnection (default: `false`)
+- `reconnectMaxAttempts`: Maximum reconnection attempts (default: `10`)
+- `reconnectDelay`: Initial reconnect delay in ms (default: `500`)
+- `reconnectMaxDelay`: Max backoff delay in ms (default: `60000`)
+- `reconnectJitter`: Jitter factor for randomizing delays (default: `0.3`)
+- `pauseInBackground`: Pause stream when page is hidden (default: `false`). Uses the Page Visibility API to pause the stream when the browser window is minimized or the tab is in the background.
 
 
-You can override these settings per-element using the `hx-stream` attribute:
+You can override these settings per-element using `hx-config`:
 ```html
 <button hx-get="/stream"
-        hx-stream="continuous maxRetries:10 initialDelay:1s pauseHidden:true">
+        hx-config='{"streams": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "pauseInBackground": true}}'>
     Start
 </button>
 ```
@@ -1643,7 +1646,7 @@ They are listed below:
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                    |
 | `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                     |
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                         |
-| `htmx.config.streams`             | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `mode` (`'once'` or `'continuous'`), `maxRetries` (default: `Infinity`), `initialDelay` (default: `500`ms), `maxDelay` (default: `30000`ms), `pauseHidden` (default: `false`) |
+| `htmx.config.streams`             | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `pauseInBackground` (default: `false`) |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                             |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
