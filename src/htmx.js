@@ -1445,7 +1445,7 @@ var htmx = (() => {
         }
 
         onLoad(callback) {
-            this.on("htmx:after:init", (evt) => {
+            this.on("htmx:after:process", (evt) => {
                 callback(evt.target)
             })
         }
