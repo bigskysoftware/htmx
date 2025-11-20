@@ -34,14 +34,14 @@ Combining these two features allows you to create an asynchronous confirmation d
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
-  if (!evt.detail.target.hasAttribute('hx-confirm')) return;
+    if (!evt.detail.target.hasAttribute('hx-confirm')) return;
 
-  evt.preventDefault();
+    evt.preventDefault();
 
-  // Your custom confirmation logic here
-  if (confirm("Are you sure?")) {
-    evt.detail.issueRequest(true); // true to skip built-in confirm
-  }
+    // Your custom confirmation logic here
+    if (confirm("Are you sure?")) {
+      evt.detail.issueRequest(true); // true to skip built-in confirm
+    }
 });
 ```
 
@@ -105,9 +105,9 @@ This event is triggered before the request is made, allowing you to configure re
 
 ```javascript
 document.body.addEventListener('htmx:config:request', function(evt) {
-  let ctx = evt.detail.ctx;
-  // Modify request configuration
-  ctx.request.headers['X-Auth-Token'] = getToken();
+    let ctx = evt.detail.ctx;
+    // Modify request configuration
+    ctx.request.headers['X-Auth-Token'] = getToken();
 });
 ```
 
@@ -163,10 +163,10 @@ You can modify swap behavior by setting properties on `detail.ctx`:
 
 ```javascript
 document.body.addEventListener('htmx:before:swap', function(evt) {
-  let ctx = evt.detail.ctx;
-  // Modify swap behavior
-  ctx.swap = 'outerHTML';
-  ctx.target = document.querySelector('#other-target');
+    let ctx = evt.detail.ctx;
+    // Modify swap behavior
+    ctx.swap = 'outerHTML';
+    ctx.target = document.querySelector('#other-target');
 });
 ```
 
@@ -267,8 +267,8 @@ This event consolidates all error events into a single event. It is triggered wh
 
 ```javascript
 document.body.addEventListener('htmx:error', function(evt) {
-  let ctx = evt.detail.ctx;
-  console.error('Error:', ctx.status, evt.detail.error);
+    let ctx = evt.detail.ctx;
+    console.error('Error:', ctx.status, evt.detail.error);
 });
 ```
 
@@ -324,10 +324,10 @@ This event is triggered before each SSE message is processed. You can set `detai
 
 ```javascript
 document.body.addEventListener('htmx:before:sse:message', function(evt) {
-  // Skip messages of certain type
-  if (evt.detail.message.event === 'heartbeat') {
-    evt.detail.message.cancelled = true;
-  }
+    // Skip messages of certain type
+    if (evt.detail.message.event === 'heartbeat') {
+      evt.detail.message.cancelled = true;
+    }
 });
 ```
 
@@ -355,10 +355,10 @@ This event is triggered before reconnecting to an SSE stream (when using `contin
 
 ```javascript
 document.body.addEventListener('htmx:before:sse:reconnect', function(evt) {
-  // Stop reconnecting after 10 attempts
-  if (evt.detail.reconnect.attempt > 10) {
-    evt.detail.reconnect.cancelled = true;
-  }
+    // Stop reconnecting after 10 attempts
+    if (evt.detail.reconnect.attempt > 10) {
+      evt.detail.reconnect.cancelled = true;
+    }
 });
 ```
 

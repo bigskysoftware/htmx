@@ -12,7 +12,7 @@ The value is a comma-separated list of CSS selectors. Each selector can optional
 
 ```html
 <button hx-get="/example" hx-select-oob="#alert,#sidebar:afterbegin">
-  Click Me
+    Click Me
 </button>
 ```
 
@@ -20,7 +20,7 @@ The value is a comma-separated list of CSS selectors. Each selector can optional
 
 ```html
 <button hx-get="/update" hx-select-oob="#notification">
-  Update
+    Update
 </button>
 
 <!-- Response would contain: -->
@@ -36,7 +36,7 @@ You can specify different swap strategies for each selected element:
 ```html
 <button hx-get="/update"
         hx-select-oob="#alert:afterbegin,#count:innerHTML">
-  Update Multiple
+    Update Multiple
 </button>
 ```
 

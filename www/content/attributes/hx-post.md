@@ -10,13 +10,13 @@ the HTML into the DOM using a swap strategy:
 
 ```html
 <button hx-post="/account/enable" hx-target="body">
-  Enable Your Account
+    Enable Your Account
 </button>
 ```
 
 This example will cause the `button` to issue a `POST` to `/account/enable` and swap the returned HTML into
  the `innerHTML` of the `body`.
- 
+
 ## Notes
 
 * You can control the target of the swap using the [hx-target](@/attributes/hx-target.md) attribute

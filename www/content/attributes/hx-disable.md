@@ -48,9 +48,9 @@ disabled element CSS selectors:
 ```html
 <main hx-disable="#logout-button">
     ...
-  <form hx-post="/example" hx-disable:merge="find input[type='text'], find button">
-    <input type="text" placeholder="Type here...">
-    <button type="submit">Send</button>
-  </form>
+    <form hx-post="/example" hx-disable:merge="find input[type='text'], find button">
+        <input type="text" placeholder="Type here...">
+        <button type="submit">Send</button>
+    </form>
 </main>
 ```

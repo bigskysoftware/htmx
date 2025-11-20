@@ -28,7 +28,7 @@ specification.
 So in this code:
 
 ```html
-  <div hx-get="/example" hx-swap="afterend">Get Some HTML & Append It</div>
+<div hx-get="/example" hx-swap="afterend">Get Some HTML & Append It</div>
 ```
 
 The `div` will issue a request to `/example` and append the returned content after the `div`
@@ -49,16 +49,16 @@ You can modify the amount of time that htmx will wait after receiving a response
 by including a `swap` modifier:
 
 ```html
-  <!-- this will wait 1s before doing the swap after it is received -->
-  <div hx-get="/example" hx-swap="innerHTML swap:1s">Get Some HTML & Append It</div>
+<!-- this will wait 1s before doing the swap after it is received -->
+<div hx-get="/example" hx-swap="innerHTML swap:1s">Get Some HTML & Append It</div>
 ```
 
 Similarly, you can modify the time between the swap and the settle logic by including a `settle`
 modifier:
 
 ```html
-  <!-- this will wait 1s before doing the settle after it is received -->
-  <div hx-get="/example" hx-swap="innerHTML settle:1s">Get Some HTML & Append It</div>
+<!-- this will wait 1s before doing the settle after it is received -->
+<div hx-get="/example" hx-swap="innerHTML settle:1s">Get Some HTML & Append It</div>
 ```
 
 These attributes can be used to synchronize htmx with the timing of CSS transition effects.
@@ -74,46 +74,46 @@ You can also change the scrolling behavior of the target element by using the `s
 of which take the values `top` and `bottom`:
 
 ```html
-  <!-- this fixed-height div will scroll to the bottom of the div after content is appended -->
-  <div style="height:200px; overflow: scroll" 
-       hx-get="/example" 
-       hx-swap="beforeend scroll:bottom">
-     Get Some HTML & Append It & Scroll To Bottom
-  </div>
+<!-- this fixed-height div will scroll to the bottom of the div after content is appended -->
+<div style="height:200px; overflow: scroll" 
+     hx-get="/example" 
+     hx-swap="beforeend scroll:bottom">
+    Get Some HTML & Append It & Scroll To Bottom
+</div>
 ```
 
 ```html
-  <!-- this will get some content and add it to #another-div, then ensure that the top of #another-div is visible in the 
-       viewport -->
-  <div hx-get="/example" 
-       hx-swap="innerHTML show:top"
-       hx-target="#another-div">
+<!-- this will get some content and add it to #another-div, then ensure that the top of #another-div is visible in the 
+     viewport -->
+<div hx-get="/example" 
+     hx-swap="innerHTML show:top"
+     hx-target="#another-div">
     Get Some Content
-  </div>
+</div>
 ```
 
 If you wish to target a different element for scrolling or showing, you may place a CSS selector after the `scroll:`
 or `show:`, followed by `:top` or `:bottom`:
 
 ```html
-  <!-- this will get some content and swap it into the current div, then ensure that the top of #another-div is visible in the 
-       viewport -->
-  <div hx-get="/example" 
-       hx-swap="innerHTML show:#another-div:top">
+<!-- this will get some content and swap it into the current div, then ensure that the top of #another-div is visible in the 
+     viewport -->
+<div hx-get="/example" 
+     hx-swap="innerHTML show:#another-div:top">
     Get Some Content
-  </div>
+</div>
 ```
 
 You may also use `window:top` and `window:bottom` to scroll to the top and bottom of the current window.
 
 
 ```html
-  <!-- this will get some content and swap it into the current div, then ensure that the viewport is scrolled to the
-       very top -->
-  <div hx-get="/example" 
-       hx-swap="innerHTML show:window:top">
+<!-- this will get some content and swap it into the current div, then ensure that the viewport is scrolled to the
+     very top -->
+<div hx-get="/example" 
+     hx-swap="innerHTML show:window:top">
     Get Some Content
-  </div>
+</div>
 ```
 
 For boosted links and forms the default behaviour is `show:top`. You can disable it globally with
@@ -121,7 +121,7 @@ For boosted links and forms the default behaviour is `show:top`. You can disable
 
 ```html
 <form action="/example" hx-swap="show:none">
-  ...
+    ...
 </form>
 ```
 
@@ -130,14 +130,16 @@ For boosted links and forms the default behaviour is `show:top`. You can disable
 htmx preserves focus between requests for inputs that have a defined id attribute. By default htmx prevents auto-scrolling to focused inputs between requests which can be unwanted behavior on longer requests when the user has already scrolled away. To enable focus scroll you can use `focus-scroll:true`.
 
 ```html
-  <input id="name" hx-get="/validation" 
+<input id="name"
+       hx-get="/validation" 
        hx-swap="outerHTML focus-scroll:true"/>
 ```
 
 Alternatively, if you want the page to automatically scroll to the focused element after each request you can change the htmx global configuration value `htmx.config.defaultFocusScroll` to true. Then disable it for specific requests using `focus-scroll:false`.
 
 ```html
-  <input id="name" hx-get="/validation" 
+<input id="name"
+       hx-get="/validation" 
        hx-swap="outerHTML focus-scroll:false"/>
 ```
 

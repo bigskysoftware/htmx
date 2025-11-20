@@ -91,7 +91,8 @@ and the user hasn't typed anything new for 1 second:
 
 ```html
 <input name="q"
-       hx-get="/search" hx-trigger="input changed delay:1s"
+       hx-get="/search"
+       hx-trigger="input changed delay:1s"
        hx-target="#search-results"/>
 ```
 
@@ -114,9 +115,9 @@ use the `from:body` modifier.  E.g. if you send a header like this <code>HX-Trig
 with a response, an element would likely need to look like this:
 
 ```html
-  <div hx-get="/example" hx-trigger="my-custom-event from:body">
+<div hx-get="/example" hx-trigger="my-custom-event from:body">
     Triggered by HX-Trigger header...
-  </div>
+</div>
 ```
 
 in order to fire.
@@ -130,7 +131,7 @@ By using the syntax `every <timing declaration>` you can have an element poll pe
 
 ```html
 <div hx-get="/latest_updates" hx-trigger="every 1s">
-  Nothing Yet!
+    Nothing Yet!
 </div>
 ```
 
@@ -141,16 +142,18 @@ If you want to add a filter to polling, it should be added *after* the poll decl
 
 ```html
 <div hx-get="/latest_updates" hx-trigger="every 1s [someConditional]">
-  Nothing Yet!
+    Nothing Yet!
 </div>
 ```
 
 ### Multiple Triggers
 
 Multiple triggers can be provided, separated by commas.  Each trigger gets its own options.
+
 ```html
-  <div hx-get="/news" hx-trigger="load, click delay:1s"></div>
+<div hx-get="/news" hx-trigger="load, click delay:1s"></div>
 ```
+
 This example will load `/news` immediately on page load, and then again with a delay of one second after each click.
 
 ### Via JavaScript

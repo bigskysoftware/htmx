@@ -9,7 +9,7 @@ The `hx-get` attribute will cause an element to issue a `GET` to the specified U
 the HTML into the DOM using a swap strategy:
 
 ```html
-  <button hx-get="/example">Get Some HTML</button>
+<button hx-get="/example">Get Some HTML</button>
 ```
 
 This example will cause the `button` to issue a `GET` to `/example` and swap the returned HTML into

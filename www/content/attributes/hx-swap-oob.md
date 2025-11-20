@@ -13,12 +13,11 @@ Consider the following response HTML:
 
 ```html
 <div>
- ...
+    ...
 </div>
 <div id="alerts" hx-swap-oob="true">
     Saved!
 </div>
-
 ```
 
 The first div will be swapped into the target the usual manner.  The second div, however, will be swapped in as a replacement for the element with the id `alerts`, and will not end up in the target.
@@ -40,34 +39,38 @@ If a selector is given, all elements matched by that selector will be swapped.  
 As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped, as such you need to encapsulate the returned data with the correct tags for the context.
 
 When trying to insert a `<tr>` in a table that uses `<tbody>`:
+
 ```html
 <tbody hx-swap-oob="beforeend:#table tbody">
-	<tr>
-		...
-	</tr>
+    <tr>
+        ...
+    </tr>
 </tbody>
 ```
 
 A "plain" table:
+
 ```html
 <table hx-swap-oob="beforeend:#table2">
-	<tr>
-		...
-	</tr>
+    <tr>
+        ...
+    </tr>
 </table>
 ```
 
 A `<li>` may be encapsulated in `<ul>`, `<ol>`, `<div>` or `<span>`, for example:
+
 ```html
 <ul hx-swap-oob="beforeend:#list1">
-	<li>...</li>
+    <li>...</li>
 </ul>
 ```
 
 A `<p>` can be encapsulated in `<div>` or `<span>`:
+
 ```html
 <span hx-swap-oob="beforeend:#text">
-	<p>...</p>
+    <p>...</p>
 </span>
 ```
 
@@ -101,13 +104,18 @@ Here is an example with an out-of-band swap of svg elements being encapsulated i
 <div>
     ...
 </div>
-<template><svg>
-    <circle hx-swap-oob="true" id="circle1" r="35" cx="50" cy="50" fill="red" /> 
-</svg></template>
-<template><svg hx-swap-oob="beforebegin:#circle1">
-    <circle id="circle2" r="45" cx="50" cy="50" fill="blue" /> 
-</svg></template>
+<template>
+    <svg>
+        <circle hx-swap-oob="true" id="circle1" r="35" cx="50" cy="50" fill="red" /> 
+    </svg>
+</template>
+<template>
+    <svg hx-swap-oob="beforebegin:#circle1">
+        <circle id="circle2" r="45" cx="50" cy="50" fill="blue" /> 
+    </svg>
+</template>
 ```
+
 This will replace circle1 inline and then insert circle2 before circle1. 
 
 Note that these `template` and `svg` wrapping tags will be removed from the final content of the page.

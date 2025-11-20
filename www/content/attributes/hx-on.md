@@ -38,7 +38,6 @@ events, and omit the "htmx" part:
 <button hx-get="/info" hx-on::before-request="alert('Making a request!')">
     Get Info!
 </button>
-
 ```
 
 If you wish to handle multiple different events, you can simply add multiple attributes to an element:
@@ -62,7 +61,6 @@ in HTML attributes, you may use dashes in the place of colons for both the long 
 <button hx-get="/info" hx-on--before-request="alert('Making a request!')">
     Get Info!
 </button>
-
 ```
 
 ### hx-on (deprecated)
@@ -81,7 +79,6 @@ Multiple handlers can be defined by putting them on new lines:
     Get Info!
 </button>
 ```
-
 
 ### Symbols
 

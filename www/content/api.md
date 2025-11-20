@@ -59,7 +59,7 @@ htmx.ajax('GET', '/example', {target:'#myDiv', swap:'outerHTML'})
 
 // execute some code after the content has been inserted into the DOM
 htmx.ajax('GET', '/example', '#myDiv').then(() => {
-  console.log('Content inserted successfully!');
+    console.log('Content inserted successfully!');
 });
 ```
 
@@ -138,7 +138,7 @@ htmx.on("#my-div", "click", function(evt){ console.log(evt); });
 
 // listen for htmx events
 htmx.on("htmx:after:swap", function(evt){
-  console.log("Content swapped!", evt.detail);
+    console.log("Content swapped!", evt.detail);
 });
 ```
 
@@ -304,9 +304,9 @@ Defines a new htmx [extension](https://htmx.org/extensions).
 ```js
 // defines a simple extension that logs events
 htmx.defineExtension("event-logger", {
-  onEvent : function(name, evt) {
-    console.log("Event " + name + " was triggered!")
-  }
+    onEvent: function(name, evt) {
+        console.log("Event " + name + " was triggered!")
+    }
 });
 ```
 
@@ -360,9 +360,9 @@ htmx.config.prefix = 'data-hx-';
 
 // configure SSE streams
 htmx.config.streams = {
-  reconnect: true,
-  reconnectMaxAttempts: 10,
-  reconnectDelay: 1000
+    reconnect: true,
+    reconnectMaxAttempts: 10,
+    reconnectDelay: 1000
 };
 ```
 

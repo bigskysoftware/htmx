@@ -10,13 +10,13 @@ the HTML into the DOM using a swap strategy:
 
 ```html
 <button hx-put="/account" hx-target="body">
-  Put Money In Your Account
+    Put Money In Your Account
 </button>
 ```
 
 This example will cause the `button` to issue a `PUT` to `/account` and swap the returned HTML into
  the `innerHTML` of the `body`.
- 
+
 ## Notes
 
 * You can control the target of the swap using the [hx-target](@/attributes/hx-target.md) attribute

@@ -12,7 +12,7 @@ This attribute uses a pattern matching syntax where you specify the status code(
 <button hx-post="/submit"
         hx-status:422="select:#errors"
         hx-status:500="select:#server-error">
-  Submit
+    Submit
 </button>
 ```
 
@@ -25,7 +25,7 @@ You can use specific status codes or wildcards:
         hx-status:404="select:#not-found"
         hx-status:50x="select:#server-error"
         hx-status:5xx="select:#fallback">
-  Load Data
+    Load Data
 </button>
 ```
 
@@ -45,7 +45,7 @@ The value uses htmx's configuration syntax to set request context properties:
       hx-status:422="swap:innerHTML target:#errors select:#validation-errors"
       hx-status:500="swap:none push:false"
       hx-status:200="select:#success-message">
-  <!-- form fields -->
+    <!-- form fields -->
 </form>
 ```
 
@@ -56,9 +56,9 @@ The value uses htmx's configuration syntax to set request context properties:
 ```html
 <form hx-post="/register"
       hx-status:422="select:#errors target:#error-container">
-  <input name="email" type="email">
-  <div id="error-container"></div>
-  <button type="submit">Register</button>
+    <input name="email" type="email">
+    <div id="error-container"></div>
+    <button type="submit">Register</button>
 </form>
 ```
 
@@ -76,7 +76,7 @@ The value uses htmx's configuration syntax to set request context properties:
 ```html
 <button hx-post="/process"
         hx-status:5xx="swap:innerHTML target:#error-display select:#server-error push:false">
-  Process
+    Process
 </button>
 ```
 
@@ -87,7 +87,7 @@ The value uses htmx's configuration syntax to set request context properties:
         hx-push-url="true"
         hx-status:4xx="push:false"
         hx-status:5xx="push:false">
-  Load Data
+    Load Data
 </button>
 ```
 
@@ -96,7 +96,7 @@ The value uses htmx's configuration syntax to set request context properties:
 ```html
 <form hx-post="/items"
       hx-status:201="push:/items/new">
-  <!-- form fields -->
+    <!-- form fields -->
 </form>
 ```
 

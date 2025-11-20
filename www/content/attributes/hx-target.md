@@ -21,7 +21,6 @@ request.  The value of this attribute can be:
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
   (e.g. `previous .error` will target the closest previous sibling with `error` class)
 
-
 Here is an example that targets a div:
 
 ```html
@@ -36,6 +35,7 @@ Here is an example that targets a div:
 The response from the `/register` url will be appended to the `div` with the id `response-div`.
 
 This example uses `hx-target="this"` to make a link that updates itself when clicked:
+
 ```html
 <a hx-post="/new-link" hx-target="this" hx-swap="outerHTML">New link</a>
 ```

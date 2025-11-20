@@ -10,7 +10,7 @@ the HTML into the DOM using a swap strategy:
 
 ```html
 <button hx-delete="/account" hx-target="body">
-  Delete Your Account
+    Delete Your Account
 </button>
 ```
 

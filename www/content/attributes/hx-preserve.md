@@ -18,16 +18,19 @@ reconciliation
 * When using [History Support](@/docs.md#history) for actions like the back button `hx-preserve` elements will also have their state preserved
 * Avoid using [hx-swap](@/attributes/hx-swap.md) set to `none` with requests that could contain a `hx-preserve` element to avoid losing it
 * `hx-preserve` can cause elements to be removed from their current location and relocated to a new location when swapping in a partial/oob response
+
   ```html
   <div id="new_location">
-    Just relocated the video here
-    <div id="video" hx-preserve></div>
+      Just relocated the video here
+      <div id="video" hx-preserve></div>
   </div>
   ```
+
 * Can be used on the inside content of a [hx-swap-oob](@/attributes/hx-swap-oob.md) element
+
   ```html
   <div id="notify" hx-swap-oob="true">
-    Notification updated but keep the same retain
-    <div id="retain" hx-preserve></div>
+      Notification updated but keep the same retain
+      <div id="retain" hx-preserve></div>
   </div>
   ```

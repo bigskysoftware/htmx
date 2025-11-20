@@ -10,13 +10,13 @@ the HTML into the DOM using a swap strategy:
 
 ```html
 <button hx-patch="/account" hx-target="body">
-  Patch Your Account
+    Patch Your Account
 </button>
 ```
 
 This example will cause the `button` to issue a `PATCH` to `/account` and swap the returned HTML into
  the `innerHTML` of the `body`.
- 
+
 ## Notes
 
 * You can control the target of the swap using the [hx-target](@/attributes/hx-target.md) attribute

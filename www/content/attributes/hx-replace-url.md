@@ -17,7 +17,7 @@ Here is an example:
 
 ```html
 <div hx-get="/account" hx-replace-url="true">
-  Go to My Account
+    Go to My Account
 </div>
 ```
 
@@ -27,7 +27,7 @@ Another example:
 
 ```html
 <div hx-get="/account" hx-replace-url="/account/home">
-  Go to My Account
+    Go to My Account
 </div>
 ```
 

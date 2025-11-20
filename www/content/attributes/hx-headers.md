@@ -12,9 +12,13 @@ format.
 If you wish for `hx-headers` to *evaluate* the values given, you can prefix the values with `javascript:` or `js:`.
 
 ```html
-  <div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>Get Some HTML, Including A Custom Header in the Request</div>
+<div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>
+    Get Some HTML, Including A Custom Header in the Request
+</div>
 
-  <div hx-get="/example" hx-headers='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Custom Header from Javascript in the Request</div>
+<div hx-get="/example" hx-headers='js:{myVal: calculateValue()}'>
+    Get Some HTML, Including a Dynamic Custom Header from Javascript in the Request
+</div>
 ```
 
 ## Security Considerations

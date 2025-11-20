@@ -43,22 +43,24 @@ Note that you can also use the `inherit` keyword to inherit parent values for in
 </main>
 ```
 
-
 Finally, note that if you include a non-input element, all input elements enclosed in that element will be included.
 
 ## Notes
 
-  when working with the extended selectors such as `find` and `closest`.
-  ```html
-  <div hx-include="find input">
-      <button hx-post="/register">
-          Register!
-      </button>
-      Enter email: <input name="email" type="email"/>
-  </div>
-  ```
-  In the above example, when clicking on the button, the `find input` selector is resolved from the button itself, which
-  does not return any element here, since the button doesn't have any `input` child, thus in this case, raises an error.
+When working with the extended selectors such as `find` and `closest`.
+
+```html
+<div hx-include="find input">
+  <button hx-post="/register">
+      Register!
+  </button>
+  Enter email: <input name="email" type="email"/>
+</div>
+```
+
+In the above example, when clicking on the button, the `find input` selector is resolved from the button itself, which
+does not return any element here, since the button doesn't have any `input` child, thus in this case, raises an error.
+
 * A standard CSS selector resolves
   to [document.querySelectorAll](https://developer.mozilla.org/docs/Web/API/Document/querySelectorAll) and will include
   multiple elements, while the extended selectors such as `find` or `next` only return a single element at most to

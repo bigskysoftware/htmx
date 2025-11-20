@@ -20,7 +20,7 @@ Here is an example:
 
 ```html
 <div hx-get="/account" hx-push-url="true">
-  Go to My Account
+    Go to My Account
 </div>
 ```
 
@@ -30,7 +30,7 @@ Another example:
 
 ```html
 <div hx-get="/account" hx-push-url="/account/home">
-  Go to My Account
+    Go to My Account
 </div>
 ```
 

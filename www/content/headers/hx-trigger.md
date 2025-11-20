@@ -52,9 +52,9 @@ And handle this event like so:
 
 ```javascript
 document.body.addEventListener("showMessage", function(evt){
-   if(evt.detail.level === "info"){
-     alert(evt.detail.message);   
-   }
+    if(evt.detail.level === "info"){
+        alert(evt.detail.message);
+    }
 })
 ```
 

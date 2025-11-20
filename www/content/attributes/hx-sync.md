@@ -22,15 +22,16 @@ The `queue` modifier can take an additional argument indicating exactly how to q
 
 ## Notes
 
-
 This example resolves a race condition between a form's submit request and an individual input's validation request. Normally, without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to `/validate` and `/store`. Using `hx-sync="closest form:abort"` on the input will watch for requests on the form and abort the input's request if a form request is present or starts while the input request is in flight.
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
-        hx-trigger="change"
-        hx-sync="closest form:abort">
+    <input id="title"
+           name="title"
+           type="text"
+           hx-post="/validate"
+           hx-trigger="change"
+           hx-sync="closest form:abort">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -39,11 +40,12 @@ If you'd rather prioritize the validation request over the submit request, you c
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
-        hx-trigger="change"
-        hx-sync="closest form:drop"
-    >
+    <input id="title"
+           name="title"
+           type="text"
+           hx-post="/validate"
+           hx-trigger="change"
+           hx-sync="closest form:drop">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -52,7 +54,11 @@ When dealing with forms that contain many inputs, you can prioritize the submit 
 
 ```html
 <form hx-post="/store" hx-sync="this:replace">
-    <input id="title" name="title" type="text" hx-post="/validate" hx-trigger="change" />
+    <input id="title"
+           name="title"
+           type="text"
+           hx-post="/validate"
+           hx-trigger="change">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -60,9 +66,9 @@ When dealing with forms that contain many inputs, you can prioritize the submit 
 When implementing active search functionality the hx-trigger attribute's `delay` modifier can be used to debounce the user's input and avoid making multiple requests while the user types. However, once a request is made, if the user begins typing again a new request will begin even if the previous one has not finished processing. This example will cancel any in-flight requests and use only the last request. In cases where the search input is contained within the target, then using `hx-sync` like this also helps reduce the chances that the input will be replaced while the user is still typing.
 
 ```html
-<input type="search" 
-    hx-get="/search" 
-    hx-trigger="keyup changed delay:500ms, search" 
-    hx-target="#search-results"
-    hx-sync="this:replace">
+<input type="search"
+       hx-get="/search"
+       hx-trigger="keyup changed delay:500ms, search"
+       hx-target="#search-results"
+       hx-sync="this:replace">
 ```
