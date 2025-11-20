@@ -42,7 +42,7 @@ rather than replacing the entire page:
     <button type="submit">Submit</button>
 </form>
 <iframe name="iframe1">
-  <!-- The response will be placed here-->
+    <!-- The response will be placed here-->
 </iframe>
 ```
 
@@ -53,9 +53,9 @@ With these ideas in mind, consider the following bit of htmx-powered HTML:
 
 ```html
 <button hx-post="/clicked"
-    hx-trigger="click"
-    hx-target="#ouput-elt"
-    hx-swap="outerHTML">
+        hx-trigger="click"
+        hx-target="#ouput-elt"
+        hx-swap="outerHTML">
     Click Me!
 </button>
 <output id="output-elt">
@@ -115,7 +115,7 @@ While this CDN-based approach is quick and easy, you may want to consider [not u
 The next easiest way to install htmx is to copy it into your project, an option called [vendoring](@/essays/vendoring.md).
 
 Download `htmx.min.js` <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha3/dist/htmx.min.js">from jsDelivr</a> 
-and hen add it to the appropriate directory in your project and include it where necessary with a `<script>` tag:
+and then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag:
 
 ```html
 <script src="/path/to/htmx.min.js"></script>
@@ -208,7 +208,7 @@ Setting Request Timeout
 
 <button hx-get="/slow-endpoint"
         hx-config='{"timeout": 10000}'>
-Load (10s timeout)
+    Load (10s timeout)
 </button>
 ```
 #### Merging Config Information
@@ -223,7 +223,7 @@ You can merge configuration objects into nested properties using the + prefix:
 ```html
 <button hx-get="/data"
         hx-config='{"+headers": {"X-Custom": "value"}}'>
-  Load with Custom Header
+    Load with Custom Header
 </button>
 ```
 
@@ -375,8 +375,8 @@ a `load` trigger along with a delay, and replaces itself with the response:
 
 ```html
 <div hx-get="/messages"
-    hx-trigger="load delay:1s"
-    hx-swap="outerHTML">
+     hx-trigger="load delay:1s"
+     hx-swap="outerHTML">
 </div>
 ```
 
@@ -554,7 +554,7 @@ example, by default htmx will swap in the title of a title tag found anywhere in
 behavior off by setting the `ignoreTitle` modifier to true:
 
 ```html
-    <button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
+<button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
 ```
 
 The modifiers available on `hx-swap` are:
@@ -587,8 +587,8 @@ Consider a race condition between a form submission and an individual input's va
 ```html
 <form hx-post="/store">
     <input id="title" name="title" type="text"
-        hx-post="/validate"
-        hx-trigger="change">
+           hx-post="/validate"
+           hx-trigger="change">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -602,9 +602,9 @@ and abort an input's in flight request:
 ```html
 <form hx-post="/store" hx-sync="this:replace">
     <input id="title" name="title" type="text"
-        hx-post="/validate"
-        hx-trigger="change"
-        hx-sync="closest form">
+           hx-post="/validate"
+           hx-trigger="change"
+           hx-sync="closest form">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -671,11 +671,11 @@ A `<hx-partial>` tag wraps content that should be swapped into a specific target
 
 ```html
 <hx-partial hx-target="#messages" hx-swap="beforeend">
-  <div>New message content</div>
+    <div>New message content</div>
 </hx-partial>
 
 <hx-partial hx-target="#notifications" hx-swap="innerHTML">
-  <span class="badge">5</span>
+    <span class="badge">5</span>
 </hx-partial>
 ```
 
@@ -882,11 +882,11 @@ However, you could wrap the htmx-enhanced input in a form element:
 ```html
 <form action="/search" method="POST">
     <input class="form-control" type="search"
-        name="search" placeholder="Begin typing to search users..."
-        hx-post="/search"
-        hx-trigger="keyup changed delay:500ms, search"
-        hx-target="#search-results"
-        hx-indicator=".htmx-indicator">
+           name="search" placeholder="Begin typing to search users..."
+           hx-post="/search"
+           hx-trigger="keyup changed delay:500ms, search"
+           hx-target="#search-results"
+           hx-indicator=".htmx-indicator">
 </form>
 ```
 
@@ -1442,8 +1442,8 @@ customElements.define('my-counter', class extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' })
         shadow.innerHTML = `
-          <button hx-post="/increment" hx-target="#count">+1</button>
-          <div id="count">0</div>
+            <button hx-post="/increment" hx-target="#count">+1</button>
+            <div id="count">0</div>
         `
         htmx.process(shadow) // Initialize htmx for this shadow DOM
     }
@@ -1460,13 +1460,13 @@ To break out:
 1. Target the host element, using `host`:
    ```html
    <button hx-get="..." hx-target="host">
-     ...
+       ...
    </button>
    ```
 2. Target elements in main document, using `global:<selector>`:
    ```html
    <button hx-get="..." hx-target="global:#target">
-     ...
+       ...
    </button>
    ```
 
@@ -1475,10 +1475,10 @@ To break out:
 Still call [`htmx.process`](@/api.md#process) on the component:
 ```javascript
 customElements.define('simple-widget', class extends HTMLElement {
-  connectedCallback() {
-    this.innerHTML = `Load`
-    htmx.process(this)
-  }
+    connectedCallback() {
+        this.innerHTML = `Load`
+        htmx.process(this)
+    }
 })
 ```
 
@@ -1508,7 +1508,7 @@ You can set an etag on an element initially by using the `hx-config` attribute:
 ```html
 <div id="news" hx-get="/news" 
      hx-trigger="every 3s"
-    hx-config='"etag":"1762656750"'>
+     hx-config='"etag":"1762656750"'>
     Latest News...
 </div>
 ```
@@ -1588,7 +1588,7 @@ browser to, for example, not issue requests to non-origin hosts, to not evaluate
 Here is an example CSP in a `meta` tag:
 
 ```html
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
 ```
 
 A full discussion of CSPs is beyond the scope of this document, but the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
