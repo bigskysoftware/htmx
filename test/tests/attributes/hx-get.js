@@ -64,4 +64,52 @@ describe('hx-get attribute', function() {
         // TODO: Add assertion for scroll behavior to #foo
     })
 
+    it('GET merges URL params with form data - form data overwrites URL params', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test?foo=url&bar=keep" hx-swap="outerHTML"><input name="foo" value="form"/><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?bar=keep&foo=form');
+    })
+
+    it('GET preserves URL params not in form data', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test?a=1&b=2&c=3" hx-swap="outerHTML"><input name="b" value="new"/><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?a=1&c=3&b=new');
+    })
+
+    it('GET handles array parameters correctly when merging', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test?tags=url1&tags=url2" hx-swap="outerHTML"><input name="tags" value="form1"/><input name="tags" value="form2"/><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?tags=form1&tags=form2');
+    })
+
+    it('GET with no URL params just adds form data', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="outerHTML"><input name="foo" value="bar"/><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?foo=bar');
+    })
+
+    it('GET with URL params but no form data keeps URL params', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test?foo=bar&baz=qux" hx-swap="outerHTML"><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?foo=bar&baz=qux');
+    })
+
+    it('GET merges params with anchor - form data overwrites, anchor stripped from request', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let form = createProcessedHTML('<form hx-get="/test?foo=url&keep=yes#section" hx-swap="outerHTML"><input name="foo" value="form"/><button>Submit</button></form>');
+        form.requestSubmit()
+        await forRequest();
+        lastFetch().url.should.equal('/test?keep=yes&foo=form');
+    })
+
 })

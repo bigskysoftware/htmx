@@ -23,7 +23,7 @@ describe('__handleHistoryUpdate unit tests', function() {
             push: 'false',
             replace: 'false',
             response: { headers: new Headers() },
-            request: { originalAction: '/test' }
+            request: { action: '/test' }
         }
 
         htmx.__handleHistoryUpdate(ctx)
@@ -37,7 +37,7 @@ describe('__handleHistoryUpdate unit tests', function() {
             sourceElement: div,
             push: 'true',
             response: { headers: new Headers() },
-            request: { originalAction: '/test-path' }
+            request: { action: '/test-path' }
         }
 
         htmx.__handleHistoryUpdate(ctx)
@@ -51,7 +51,7 @@ describe('__handleHistoryUpdate unit tests', function() {
             sourceElement: div,
             replace: 'true',
             response: { headers: new Headers() },
-            request: { originalAction: '/replace-path' }
+            request: { action: '/replace-path' }
         }
 
         htmx.__handleHistoryUpdate(ctx)
@@ -65,7 +65,7 @@ describe('__handleHistoryUpdate unit tests', function() {
             sourceElement: div,
             push: '/custom-path',
             response: { headers: new Headers() },
-            request: { originalAction: '/test' }
+            request: { action: '/test' }
         }
 
         htmx.__handleHistoryUpdate(ctx)
