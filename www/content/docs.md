@@ -132,6 +132,21 @@ npm install htmx.org@4.0.0-alpha3
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
 For example, you might bundle htmx with some extensions and project-specific code.
 
+### Module Imports
+
+When using htmx with module bundlers, you can import it as an ES module:
+
+```javascript
+import htmx from 'htmx.org';
+```
+
+This makes `htmx` available both as a module import and globally as `window.htmx`. Extensions can be imported alongside htmx and will auto-register:
+
+```javascript
+import htmx from 'htmx.org';
+import 'htmx.org/dist/ext/preload';
+```
+
 ## AJAX
 
 <details class="migration-note">
