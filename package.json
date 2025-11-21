@@ -4,11 +4,13 @@
   "description": "A hypermedia-oriented JavaScript library",
   "main": "dist/htmx.js",
   "module": "dist/htmx.esm.js",
+  "types": "dist/htmx.d.ts",
   "files": [
     "LICENSE",
     "README.md",
     "dist/*.js",
     "dist/*.map",
+    "dist/*.d.ts",
     "dist/ext/*.js",
     "dist/ext/*.map",
     "dist/editors"
@@ -16,7 +18,7 @@
   "scripts": {
     "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:editors && npm run build:compress",
     "build:iife": "sed 's/__/#/g' src/htmx.js > dist/htmx.js",
-    "build:esm": "sed 's/__/#/g' src/htmx.js > dist/htmx.esm.js && echo '' >> dist/htmx.esm.js && echo 'export default htmx' >> dist/htmx.esm.js",
+    "build:esm": "sed 's/__/#/g' src/htmx.js > dist/htmx.esm.js && echo '\\nif (typeof window !== \"undefined\") window.htmx = htmx;\\nexport default htmx;' >> dist/htmx.esm.js",
     "build:minify": "terser --compress --mangle --source-map -o dist/htmx.min.js dist/htmx.js && terser --compress --mangle --source-map -o dist/htmx.esm.min.js dist/htmx.esm.js",
     "build:ext": "mkdir -p dist/ext && for file in src/ext/*.js; do name=$(basename \"$file\" .js); cp \"$file\" \"dist/ext/$name.js\" && terser --compress --mangle --source-map -o \"dist/ext/$name.min.js\" \"dist/ext/$name.js\"; done",
     "build:editors": "mkdir -p dist/editors && cp -r src/editors/* dist/editors/",
