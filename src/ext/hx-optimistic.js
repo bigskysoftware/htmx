@@ -67,7 +67,7 @@
         }
     }
 
-    htmx.defineExtension('hx-optimistic', {
+    htmx.registerExtension('hx-optimistic', {
         htmx_before_request : (elt, detail) => {
             insertOptimisticContent(detail.ctx);
         },

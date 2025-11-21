@@ -290,9 +290,9 @@ var milliseconds = htmx.parseInterval("500ms");
 
 ## Extension Methods
 
-### Method - `htmx.defineExtension()` {#defineExtension}
+### Method - `htmx.registerExtension()` {#registerExtension}
 
-Defines a new htmx [extension](https://htmx.org/extensions).
+Registers a new htmx [extension](https://htmx.org/extensions).
 
 ##### Parameters
 
@@ -303,9 +303,17 @@ Defines a new htmx [extension](https://htmx.org/extensions).
 
 ```js
 // defines a simple extension that logs events
-htmx.defineExtension("event-logger", {
-  onEvent : function(name, evt) {
-    console.log("Event " + name + " was triggered!")
+htmx.registerExtension("event-logger", {
+  init: (api) => {
+    // Store API reference if needed
+  },
+  
+  htmx_before_request: (elt, detail) => {
+    console.log("Request starting on", elt);
+  },
+  
+  htmx_after_swap: (elt, detail) => {
+    console.log("Content swapped!");
   }
 });
 ```

@@ -29,7 +29,7 @@ describe('Basic Functionality', () => {
         // fill in the required value
         find("#i1").value = "foo"
         find('#b1').click()
-        await forRequest();
+        await forRequestWithDelay();
 
         assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");
@@ -43,7 +43,7 @@ describe('Basic Functionality', () => {
 
         // Click the button
         find('#b1').click()
-        await forRequest();
+        await forRequestWithDelay();
 
         assert.isUndefined(find('#target'));
         assertTextContentIs("#result", "Success!");

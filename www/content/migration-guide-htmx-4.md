@@ -200,7 +200,7 @@ These methods continue to exist in htmx 4:
 
 * `htmx.ajax(verb, path, context)` - Issue AJAX requests programmatically
 * `htmx.config` - Configuration object (with new options)
-* `htmx.defineExtension(name, extension)` - Define extensions
+* `htmx.registerExtension(name, extension)` - Register extensions
 * `htmx.find(selector)` - Find elements (supports extended selectors)
 * `htmx.findAll(selector)` - Find all matching elements (supports extended selectors)
 * `htmx.onLoad(callback)` - a callback that will be called with the newly added content on every swap by htmx
@@ -217,8 +217,16 @@ These methods continue to exist in htmx 4:
 
 ### Extension API Changes
 
-Extensions in htmx 4 work very differently and will almost certainly need a rewrite.  Please see our 
-[Extensions documentation](https://htmx.org/extensions/) for more information.
+Extensions in htmx 4 use a new event-based hook system instead of the callback-based API. The method name has also changed from `defineExtension()` to `registerExtension()` to avoid conflicts with htmx 2.x.
+
+**Key changes:**
+- Method renamed: `htmx.defineExtension()` → `htmx.registerExtension()`
+- Event-based hooks instead of callback methods
+- Hook names use underscores: `htmx_before_request` instead of `onEvent`
+- Extensions must be approved via config
+- Full request context available via `detail.ctx`
+
+Extensions will almost certainly need a rewrite. Please see our [Extensions documentation](https://htmx.org/extensions/) and [Extension Migration Guide](https://htmx.org/extensions/migration-guide) for more information.
 
 ---
 

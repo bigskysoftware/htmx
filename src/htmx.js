@@ -58,9 +58,9 @@ var htmx = (() => {
 
     class Htmx {
 
-        #extMethods = new Map();
-        #approvedExt = '';
-        #registeredExt = new Set();
+        __extMethods = new Map();
+        __approvedExt = '';
+        __registeredExt = new Set();
         #internalAPI;
         #actionSelector
         #boostSelector = "a,form";
@@ -129,7 +129,7 @@ var htmx = (() => {
                     }
                 }
             }
-            this.#approvedExt = this.config.extensions;
+            this.__approvedExt = this.config.extensions;
         }
 
         __initRequestIndicatorCss() {
@@ -148,13 +148,13 @@ var htmx = (() => {
             }
         }
 
-        defineExtension(name, extension) {
-            if (this.#approvedExt && !this.#approvedExt.split(/,\s*/).includes(name)) return false;
-            if (this.#registeredExt.has(name)) return false;
-            this.#registeredExt.add(name);
+        registerExtension(name, extension) {
+            if (this.__approvedExt && !this.__approvedExt.split(/,\s*/).includes(name)) return false;
+            if (this.__registeredExt.has(name)) return false;
+            this.__registeredExt.add(name);
             if (extension.init) extension.init(this.#internalAPI);
             Object.entries(extension).forEach(([key, value]) => {
-                if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
+                if(!this.__extMethods.get(key)?.push(value)) this.__extMethods.set(key, [value]);
             });
         }
 
@@ -1408,7 +1408,7 @@ var htmx = (() => {
         }
 
         __triggerExtensions(elt, eventName, detail = {}) {
-            let methods = this.#extMethods.get(eventName.replace(/:/g, '_'))
+            let methods = this.__extMethods.get(eventName.replace(/:/g, '_'))
             if (methods) {
                 detail.cancelled = false;
                 for (const fn of methods) {
