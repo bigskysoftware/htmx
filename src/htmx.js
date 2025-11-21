@@ -1403,7 +1403,7 @@ var htmx = (() => {
                 console.log(eventName, detail, on)
             }
             on = this.__normalizeElement(on)
-            this.__triggerExtensions(on, this.__maybeAdjustMetaCharacter(eventName), detail);
+            this.__triggerExtensions(on, eventName, detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
