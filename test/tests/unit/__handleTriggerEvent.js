@@ -82,11 +82,11 @@ describe('__handleTriggerEvent unit tests', function() {
         assert.equal(ctx.request.action, 'js:')
     })
 
-    it('stores originalAction before stripping anchor', async function () {
+    it('stores anchor separately from action', async function () {
         let div = createProcessedHTML('<div hx-get="js:#anchor"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
         await htmx.__handleTriggerEvent(ctx)
-        assert.equal(ctx.request.originalAction, 'js:#anchor')
+        assert.equal(ctx.request.anchor, 'anchor')
     })
 
     it('returns early if htmx:config:request cancelled', async function () {
@@ -146,9 +146,11 @@ describe('__handleTriggerEvent unit tests', function() {
     })
 
     it('converts body to URLSearchParams for POST', async function () {
-        let form = createProcessedHTML('<form><input name="field" value="test"><button hx-post="js:"></button></form>')
+        let form = createProcessedHTML('<form><input name="field" value="test"><button hx-post="/test"></button></form>')
         let button = form.querySelector('button')
         let ctx = htmx.__createRequestContext(button, new Event('click'))
+        let originalFetch = ctx.fetch
+        ctx.fetch = async () => ({ status: 200, headers: new Headers(), text: async () => '' })
         await htmx.__handleTriggerEvent(ctx)
         assert.instanceOf(ctx.request.body, URLSearchParams)
     })
