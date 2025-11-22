@@ -24,10 +24,10 @@ For detailed migration examples, see the
 
 ## Defining an Extension
 
-Extensions are defined using `htmx.defineExtension()`:
+Extensions are defined using `htmx.registerExtension()`:
 
 ```javascript
-htmx.defineExtension("my-ext", {
+htmx.registerExtension("my-ext", {
     init: (internalAPI) => {
         // Called once when extension is registered
         // Store internalAPI reference if needed
@@ -129,7 +129,7 @@ of colons:
 Return `false` or set `detail.cancelled = true` to cancel an event:
 
 ```javascript
-htmx.defineExtension("validator", {
+htmx.registerExtension("validator", {
     htmx_before_request: (elt, detail) => {
         if (!isValid(detail.ctx)) {
             return false; // Cancel request
@@ -145,7 +145,7 @@ The `init` hook receives an internal API object with helper methods:
 ```javascript
 let api;
 
-htmx.defineExtension("my-ext", {
+htmx.registerExtension("my-ext", {
     init: (internalAPI) => {
         api = internalAPI;
     },
@@ -204,7 +204,7 @@ The `detail.ctx` object contains request information:
 Extensions can implement custom swap strategies:
 
 ```javascript
-htmx.defineExtension("my-swap", {
+htmx.registerExtension("my-swap", {
     htmx_handle_swap: (target, detail) => {
         let { swapSpec, fragment } = detail;
         if (swapSpec.style === "my-custom-swap") {
@@ -223,7 +223,7 @@ htmx.defineExtension("my-swap", {
 (() => {
     let api;
 
-    htmx.defineExtension("preload", {
+    htmx.registerExtension("preload", {
         init: (internalAPI) => {
             api = internalAPI;
         },
@@ -269,7 +269,7 @@ The htmx 4 extension API is completely different from htmx 2.x:
 **Old API (htmx 2.x):**
 
 ```javascript
-htmx.defineExtension("old", {
+htmx.defineExtension("old", {  // Note: htmx 2.x used defineExtension with different format
     onEvent: function (name, evt) {},
     transformResponse: function (text, xhr, elt) {},
     handleSwap: function (swapStyle, target, fragment, settleInfo) {},
@@ -279,7 +279,7 @@ htmx.defineExtension("old", {
 **New API (htmx 4):**
 
 ```javascript
-htmx.defineExtension("new", {
+htmx.registerExtension("new", {
     htmx_before_request: (elt, detail) => {},
     htmx_after_request: (elt, detail) => {},
     htmx_handle_swap: (elt, detail) => {},

@@ -200,7 +200,7 @@ describe('bootstrap unit tests', function() {
             'swap',
             'takeClass',
             'timeout',
-            'defineExtension',
+            'registerExtension',
             'trigger',
         ].sort();
 

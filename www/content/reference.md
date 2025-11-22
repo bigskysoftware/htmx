@@ -155,7 +155,7 @@ All other attributes available in htmx.
 |-------|-------------|
 | [`htmx.ajax()`](@/api.md#ajax)  | Issues an htmx-style ajax request
 | [`htmx.config`](@/api.md#config)  | A property that holds the current htmx config object
-| [`htmx.defineExtension()`](@/api.md#defineExtension)  | Defines an htmx [extension](https://htmx.org/extensions)
+| [`htmx.registerExtension()`](@/api.md#registerExtension)  | Registers an htmx [extension](https://htmx.org/extensions)
 | [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector (supports extended selectors)
 | [`htmx.findAll()`](@/api.md#findAll)  | Finds all elements matching a given selector (supports extended selectors)
 | [`htmx.forEvent()`](@/api.md#)  | Returns a promise that resolves when the specified event fires
