@@ -58,9 +58,9 @@ var htmx = (() => {
 
     class Htmx {
 
-        #extMethods = new Map();
-        #approvedExt = '';
-        #registeredExt = new Set();
+        __extMethods = new Map();
+        __approvedExt = '';
+        __registeredExt = new Set();
         #internalAPI;
         #actionSelector
         #boostSelector = "a,form";
@@ -129,7 +129,7 @@ var htmx = (() => {
                     }
                 }
             }
-            this.#approvedExt = this.config.extensions;
+            this.__approvedExt = this.config.extensions;
         }
 
         __initRequestIndicatorCss() {
@@ -148,13 +148,13 @@ var htmx = (() => {
             }
         }
 
-        defineExtension(name, extension) {
-            if (this.#approvedExt && !this.#approvedExt.split(/,\s*/).includes(name)) return false;
-            if (this.#registeredExt.has(name)) return false;
-            this.#registeredExt.add(name);
+        registerExtension(name, extension) {
+            if (this.__approvedExt && !this.__approvedExt.split(/,\s*/).includes(name)) return false;
+            if (this.__registeredExt.has(name)) return false;
+            this.__registeredExt.add(name);
             if (extension.init) extension.init(this.#internalAPI);
             Object.entries(extension).forEach(([key, value]) => {
-                if(!this.#extMethods.get(key)?.push(value)) this.#extMethods.set(key, [value]);
+                if(!this.__extMethods.get(key)?.push(value)) this.__extMethods.set(key, [value]);
             });
         }
 
@@ -297,6 +297,8 @@ var htmx = (() => {
 
         __createRequestContext(sourceElement, sourceEvent) {
             let {action, method} = this.__determineMethodAndAction(sourceElement, sourceEvent);
+            let [fullAction, anchor] = (action || '').split('#');
+            let ac = new AbortController();
             let ctx = {
                 sourceElement,
                 sourceEvent,
@@ -311,9 +313,14 @@ var htmx = (() => {
                 confirm: this.__attributeValue(sourceElement, "hx-confirm"),
                 request: {
                     validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
-                    action,
+                    action: fullAction,
+                    anchor,
                     method,
-                    headers: this.__determineHeaders(sourceElement)
+                    headers: this.__determineHeaders(sourceElement),
+                    abort: ac.abort.bind(ac),
+                    credentials: "same-origin",
+                    signal: ac.signal,
+                    mode: this.config.mode
                 }
             };
 
@@ -400,20 +407,11 @@ var htmx = (() => {
                 }
             }
 
-            // Setup abort controller and action
-            let ac = new AbortController()
-            let action = ctx.request.action.replace?.(/#.*$/, '')
-            // TODO - consider how this works with hx-config, move most to __createRequestContext?
+            // Setup event-dependent request details
             Object.assign(ctx.request, {
-                originalAction: ctx.request.action,
-                action,
                 form,
                 submitter: evt.submitter,
-                abort: ac.abort.bind(ac),
-                body,
-                credentials: "same-origin",
-                signal: ac.signal,
-                mode: this.config.mode
+                body
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
@@ -421,14 +419,22 @@ var htmx = (() => {
             if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
-            if (javascriptContent) {
+            if (javascriptContent != null) {
                 let data = Object.fromEntries(ctx.request.body);
                 await this.__executeJavaScriptAsync(ctx.sourceElement, data, javascriptContent, false);
                 return
             } else if (/GET|DELETE/.test(ctx.request.method)) {
-                let params = new URLSearchParams(ctx.request.body);
-                if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
-                ctx.request.body = null
+                let url = new URL(ctx.request.action, document.baseURI);
+                
+                for (let key of ctx.request.body.keys()) {
+                    url.searchParams.delete(key);
+                }
+                for (let [key, value] of ctx.request.body) {
+                    url.searchParams.append(key, value);
+                }
+                
+                ctx.request.action = url.pathname + url.search;
+                ctx.request.body = null;
             } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
@@ -1220,9 +1226,8 @@ var htmx = (() => {
         }
 
         __handleAnchorScroll(ctx) {
-            let anchor = ctx.request?.originalAction?.split('#')[1];
-            if (anchor) {
-                document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
+            if (ctx.request?.anchor) {
+                document.getElementById(ctx.request.anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
             }
         }
 
@@ -1403,12 +1408,12 @@ var htmx = (() => {
                 console.log(eventName, detail, on)
             }
             on = this.__normalizeElement(on)
-            this.__triggerExtensions(on, this.__maybeAdjustMetaCharacter(eventName), detail);
+            this.__triggerExtensions(on, eventName, detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
         __triggerExtensions(elt, eventName, detail = {}) {
-            let methods = this.#extMethods.get(eventName.replace(/:/g, '_'))
+            let methods = this.__extMethods.get(eventName.replace(/:/g, '_'))
             if (methods) {
                 detail.cancelled = false;
                 for (const fn of methods) {
@@ -1590,7 +1595,7 @@ var htmx = (() => {
             if (!path || path === 'false' || path === false) return;
 
             if (path === 'true') {
-                path = ctx.request.originalAction;
+                path = ctx.request.action + (ctx.request.anchor ? '#' + ctx.request.anchor : '');
             }
 
             let type = push ? 'push' : 'replace';

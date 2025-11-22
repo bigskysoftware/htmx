@@ -69,7 +69,7 @@
         (() => {
             let api;
 
-            htmx.defineExtension('custom-tags', {
+            htmx.registerExtension('custom-tags', {
                 init: (internalAPI) => {
                     api = internalAPI;
                     log('Custom tags extension initialized', 'success');

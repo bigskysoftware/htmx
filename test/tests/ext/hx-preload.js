@@ -1,5 +1,22 @@
 describe('hx-preload attribute', function() {
 
+    let extBackup;
+
+    before(async () => {
+        extBackup = backupExtensions();
+        clearExtensions();
+        let script = document.createElement('script');
+        script.src = '../src/ext/hx-preload.js';
+        await new Promise(resolve => {
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    })
+
+    after(() => {
+        restoreExtensions(extBackup);
+    })
+
     beforeEach(() => {
         setupTest(this.currentTest)
     })
