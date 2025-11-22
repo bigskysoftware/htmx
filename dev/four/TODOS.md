@@ -11,7 +11,7 @@
 
 * extensions
   * `head-support` - @latent?
-  * `compat.js` - backwards compatibility extension that allows auditing inheritance issues
+  * `hx-compat.js` - backwards compatibility extension that allows auditing inheritance issues
 * ~~etags - @1cg/@latent~~
 * ~~Optimistic response support (would be easy now)~~
 * ~~Preload support?~~
