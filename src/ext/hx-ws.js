@@ -27,6 +27,22 @@
     }
     
     // ========================================
+    // CONFIGURATION
+    // ========================================
+    
+    function getConfig() {
+        const defaults = {
+            reconnect: true,
+            reconnectDelay: 1000,
+            reconnectMaxDelay: 30000,
+            reconnectJitter: true,
+            autoConnect: false,
+            pauseInBackground: true
+        };
+        return { ...defaults, ...(htmx.config.websockets || {}) };
+    }
+    
+    // ========================================
     // CONNECTION REGISTRY
     // ========================================
     
@@ -85,19 +101,7 @@
                 // Check if entry is still valid (not cleared)
                 if (!connectionRegistry.has(url)) return;
                 
-                // Re-read config to handle dynamic changes
-                let defaults = {
-                    reconnect: true,
-                    reconnectDelay: 1000,
-                    reconnectMaxDelay: 30000,
-                    reconnectJitter: true,
-                    autoConnect: false,
-                    pauseInBackground: true
-                };
-                let config = { ...defaults, ...(htmx.config.websockets || {}) };
-                
-                console.log('Close handler config:', JSON.stringify(config), 'htmx.config.websockets:', JSON.stringify(htmx.config.websockets));
-
+                let config = getConfig();
                 if (config.reconnect && entry.refCount > 0) {
                     scheduleReconnect(url, entry);
                 } else {
@@ -118,18 +122,7 @@
     }
     
     function scheduleReconnect(url, entry) {
-        let defaults = {
-            reconnect: true,
-            reconnectDelay: 1000,
-            reconnectMaxDelay: 30000,
-            reconnectJitter: true,
-            autoConnect: false,
-            pauseInBackground: true
-        };
-        let config = { ...defaults, ...(htmx.config.websockets || {}) };
-        
-        console.log('scheduleReconnect config:', JSON.stringify(config), 'htmx.config.websockets:', JSON.stringify(htmx.config.websockets));
-
+        let config = getConfig();
         let delay = Math.min(
             (config.reconnectDelay || 1000) * Math.pow(2, entry.reconnectAttempts),
             config.reconnectMaxDelay || 30000
@@ -139,8 +132,6 @@
             delay = delay * (0.75 + Math.random() * 0.5);
         }
         
-        // console.log('Scheduling reconnect in', delay, 'ms');
-
         entry.reconnectTimer = setTimeout(() => {
             if (entry.refCount > 0) {
                 let firstElement = entry.elements.values().next().value;
@@ -235,7 +226,6 @@
             
             triggerEvent(element, 'htmx:after:ws:send', { message: detail.message, url });
         } catch (error) {
-            console.log('sendMessage error:', error);
             triggerEvent(element, 'htmx:wsSendError', { url, error });
         }
     }
@@ -260,10 +250,7 @@
             // Not JSON, emit unknown message event
             let firstElement = entry.elements.values().next().value;
             if (firstElement) {
-                console.log('Emitting htmx:wsUnknownMessage on', firstElement, 'data:', event.data);
                 triggerEvent(firstElement, 'htmx:wsUnknownMessage', { data: event.data });
-            } else {
-                console.warn('No element found to emit htmx:wsUnknownMessage');
             }
             return;
         }
@@ -395,18 +382,7 @@
     
     function triggerEvent(element, eventName, detail = {}) {
         if (!element) return true;
-        
-        // Use htmx.trigger if available, otherwise fall back to direct dispatch
-        if (htmx && htmx.trigger) {
-            return htmx.trigger(element, eventName, detail);
-        } else {
-            let event = new CustomEvent(eventName, {
-                detail: detail,
-                bubbles: true,
-                cancelable: true
-            });
-            return element.dispatchEvent(event);
-        }
+        return htmx.trigger(element, eventName, detail);
     }
     
     // ========================================
@@ -422,19 +398,8 @@
         element._htmx = element._htmx || {};
         element._htmx.wsInitialized = true;
         
-        // Check if we should auto-connect
-        let defaults = {
-            reconnect: true,
-            reconnectDelay: 1000,
-            reconnectMaxDelay: 30000,
-            reconnectJitter: true,
-            autoConnect: false,
-            pauseInBackground: true
-        };
-        let config = { ...defaults, ...(htmx.config.websockets || {}) };
+        let config = getConfig();
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
-        
-        console.log('initializeElement config:', JSON.stringify(config), 'triggerSpec:', triggerSpec, 'element:', element);
         
         if (!triggerSpec && config.autoConnect === true) {
             // Auto-connect on element initialization
@@ -550,16 +515,9 @@
         init: (internalAPI) => {
             api = internalAPI;
             
-            // Initialize default config
+            // Initialize default config if not set
             if (!htmx.config.websockets) {
-                htmx.config.websockets = {
-                    reconnect: true,
-                    reconnectDelay: 1000,
-                    reconnectMaxDelay: 30000,
-                    reconnectJitter: true,
-                    autoConnect: false,
-                    pauseInBackground: true
-                };
+                htmx.config.websockets = {};
             }
         },
         
