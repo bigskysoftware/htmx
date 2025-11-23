@@ -84,6 +84,9 @@ describe('hx-ws WebSocket extension', function() {
     beforeEach(() => {
         setupTest(this.currentTest);
         mockWebSocketInstances = [];
+        if (htmx.ext && htmx.ext.ws && htmx.ext.ws.getRegistry) {
+            htmx.ext.ws.getRegistry().clear();
+        }
     });
     
     afterEach(() => {

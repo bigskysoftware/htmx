@@ -242,7 +242,7 @@
             handleHtmlMessage(targetElement, envelope);
         } else {
             // Custom channel - emit event for extensions to handle
-            triggerEvent(targetElement, 'htmx:wsMessage', { envelope, element: targetElement });
+            triggerEvent(targetElement, 'htmx:wsMessage', { ...envelope, element: targetElement });
         }
         
         triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, element: targetElement });
@@ -353,8 +353,13 @@
     // ========================================
     
     function initializeElement(element) {
+        if (element._htmx?.wsInitialized) return;
+
         let connectUrl = getWsAttribute(element, 'connect');
         if (!connectUrl) return;
+
+        element._htmx = element._htmx || {};
+        element._htmx.wsInitialized = true;
         
         // Check if we should auto-connect
         let config = htmx.config.websockets || {};
@@ -389,6 +394,8 @@
     }
     
     function initializeSendElement(element) {
+        if (element._htmx?.wsSendInitialized) return;
+
         let sendUrl = getWsAttribute(element, 'send');
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
         
@@ -423,6 +430,7 @@
             
             element.addEventListener(spec.name, handler);
             element._htmx = element._htmx || {};
+            element._htmx.wsSendInitialized = true;
             element._htmx.wsSendHandler = handler;
             element._htmx.wsSendEvent = spec.name;
         }
@@ -450,11 +458,15 @@
             // Map legacy attributes to new ones (prefer hyphen variant for broader compatibility)
             if (element.hasAttribute('ws-connect')) {
                 let url = element.getAttribute('ws-connect');
-                element.setAttribute('hx-ws-connect', url);
+                if (!element.hasAttribute('hx-ws-connect')) {
+                    element.setAttribute('hx-ws-connect', url);
+                }
             }
             
             if (element.hasAttribute('ws-send')) {
-                element.setAttribute('hx-ws-send', '');
+                if (!element.hasAttribute('hx-ws-send')) {
+                    element.setAttribute('hx-ws-send', '');
+                }
             }
         }
     }
@@ -480,19 +492,27 @@
             }
         },
         
-        htmx_after_init: (element) => {
-            // Check for legacy attributes
-            checkLegacyAttributes(element);
+        htmx_after_process: (element) => {
+            const processNode = (node) => {
+                // Check for legacy attributes
+                checkLegacyAttributes(node);
+                
+                // Initialize WebSocket connection elements (check both variants)
+                if (hasWsAttribute(node, 'connect')) {
+                    initializeElement(node);
+                }
+                
+                // Initialize send elements (check both variants)
+                if (hasWsAttribute(node, 'send')) {
+                    initializeSendElement(node);
+                }
+            };
+
+            // Process the element itself
+            processNode(element);
             
-            // Initialize WebSocket connection elements (check both variants)
-            if (hasWsAttribute(element, 'connect')) {
-                initializeElement(element);
-            }
-            
-            // Initialize send elements (check both variants)
-            if (hasWsAttribute(element, 'send')) {
-                initializeSendElement(element);
-            }
+            // Process descendants
+            element.querySelectorAll('[hx-ws\\:connect], [hx-ws-connect], [hx-ws\\:send], [hx-ws-send], [hx-ws], [ws-connect], [ws-send]').forEach(processNode);
         },
         
         htmx_before_cleanup: (element) => {
