@@ -181,7 +181,7 @@ title = "Help"
         <span class="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Stuart Kennedy</span>
     </h3>
     <p class="text-sm text-center text-neutral-600 dark:text-neutral-400 leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Full-Stack Human, Part-Time AI Whisperer, and HTMX Preacher at Large.
     </p>
   </a>
 
