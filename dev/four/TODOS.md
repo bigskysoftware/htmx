@@ -2,16 +2,23 @@
 
 * complete port of examples to patterns - @scriptogre
 * updated website design - @scriptogre
-* document new extensions architecture - @latent
-* `websockets.js` - web sockets - @tbd
 * Determine final request headers (https://github.com/bigskysoftware/htmx/issues/3496)
-* Determine how to handle form actions that have query parameters (https://github.com/bigskysoftware/htmx/issues/2151)
+* `hx-compat.js` - backwards compatibility extension that allows auditing inheritance issues @alex
 
 # Backlog
 
-* extensions
-  * `head-support` - @latent?
-  * `hx-compat.js` - backwards compatibility extension that allows auditing inheritance issues
+* Documentation scrub
+  * Final, complete upgrade guide
+  * Remove all stale references
+* Community Extensions setup
+  * Port old extensions?
+
+# Done
+
+* ~~document new extensions architecture - @latent~~
+* ~~* Determine how to handle form actions that have query parameters (https://github.com/bigskysoftware/htmx/issues/2151)~~
+* ~~`websockets.js` - web sockets - @stu~~
+* ~~`head-support` - @latent?~~
 * ~~etags - @1cg/@latent~~
 * ~~Optimistic response support (would be easy now)~~
 * ~~Preload support?~~
