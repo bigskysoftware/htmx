@@ -172,7 +172,20 @@ title = "Help"
     </p>
   </div>
 
-  <a href="https://www.cs.montana.edu/users/grug/" class="scan-lines group flex flex-col items-center p-6 border border-neutral-200 dark:border-neutral-800 hover:border-blue-500/40 dark:hover:border-blue-500/50 rounded-[3px] transition">
+  <a class="scan-lines group flex flex-col items-center p-6 border border-neutral-200 dark:border-neutral-800 hover:border-blue-500/40 dark:hover:border-blue-500/50 rounded-[3px] transition">
+    <div class="relative mb-4">
+      <img src="/img/team/stu.png" alt="Stuart Kennedy" class="w-32 h-32 rounded-full object-cover ring-4 ring-neutral-200 dark:ring-neutral-800 group-hover:ring-blue-500/30 transition-all duration-300">
+      <div class="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/5 transition-all duration-300"></div>
+    </div>
+    <h3 class="font-bold text-xl mb-2 text-neutral-900 dark:text-neutral-100">
+        <span class="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Stuart Kennedy</span>
+    </h3>
+    <p class="text-sm text-center text-neutral-600 dark:text-neutral-400 leading-relaxed">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </p>
+  </a>
+
+<a href="https://www.cs.montana.edu/users/grug/" class="scan-lines group flex flex-col items-center p-6 border border-neutral-200 dark:border-neutral-800 hover:border-blue-500/40 dark:hover:border-blue-500/50 rounded-[3px] transition">
     <div class="relative mb-4">
       <img src="/img/team/grug.png" alt="Carson Gross" class="w-32 h-32 rounded-full object-cover ring-4 ring-neutral-200 dark:ring-neutral-800 group-hover:ring-blue-500/30 transition-all duration-300">
       <div class="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/5 transition-all duration-300"></div>
