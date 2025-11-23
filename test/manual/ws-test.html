@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../src/htmx.js"></script>
+    <script>
+        // CRITICAL: Approve extension BEFORE loading it
+        htmx.config.extensions = 'ws';
+        htmx.__approvedExt = 'ws';
+        console.log('Extension approved BEFORE loading');
+    </script>
+    <script src="../../src/ext/hx-ws.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <button onclick="testExtension()">Test Extension</button>
+    
+    <script>
+        // Mock WebSocket
+        window.WebSocket = class MockWebSocket {
+            constructor(url) {
+                console.log('✅ MockWebSocket created with URL:', url);
+                this.url = url;
+                this.readyState = 1; // OPEN
+                this.listeners = {};
+                setTimeout(() => {
+                    if (this.listeners['open']) {
+                        this.listeners['open'].forEach(h => h({}));
+                    }
+                }, 10);
+            }
+            addEventListener(event, handler) {
+                if (!this.listeners[event]) this.listeners[event] = [];
+                this.listeners[event].push(handler);
+            }
+            send(data) {
+                console.log('MockWebSocket send:', data);
+            }
+            close() {
+                console.log('MockWebSocket close');
+            }
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('htmx.ext:', htmx.ext);
+            console.log('htmx.config.websockets:', htmx.config.websockets);
+            console.log('htmx.__registeredExt:', htmx.__registeredExt);
+        });
+        
+        function testExtension() {
+            console.log('Creating test element...');
+            const container = document.getElementById('container');
+            container.innerHTML = '<div id="test" hx-ext="ws" hx-ws:connect="/ws/test" hx-trigger="load">Test</div>';
+            
+            // Process the new element
+            console.log('Processing element...');
+            htmx.process(container);
+            
+            setTimeout(() => {
+                console.log('Registry after processing:', htmx.ext.ws.getRegistry());
+            }, 100);
+        }
+    </script>
+</body>
+</html>
