@@ -55,20 +55,22 @@
     }
     
     function createWebSocket(url, entry) {
-        let config = htmx.config.websockets || {};
-        
-        // Emit before:connect event
         let firstElement = entry.elements.values().next().value;
-        if (!triggerEvent(firstElement, 'htmx:before:ws:connect', { url })) {
-            return;
+        if (firstElement) {
+            if (!triggerEvent(firstElement, 'htmx:before:ws:connect', { url })) {
+                return;
+            }
         }
         
         try {
             entry.socket = new WebSocket(url);
             
             entry.socket.addEventListener('open', () => {
-                entry.reconnectAttempts = 0;
-                triggerEvent(firstElement, 'htmx:after:ws:connect', { url, socket: entry.socket });
+                // Don't reset reconnectAttempts immediately - allow backoff to persist across quick reconnections
+                // It will naturally decrease as the connection remains stable
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:after:ws:connect', { url, socket: entry.socket });
+                }
             });
             
             entry.socket.addEventListener('message', (event) => {
@@ -76,8 +78,26 @@
             });
             
             entry.socket.addEventListener('close', () => {
-                triggerEvent(firstElement, 'htmx:ws:close', { url });
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:ws:close', { url });
+                }
                 
+                // Check if entry is still valid (not cleared)
+                if (!connectionRegistry.has(url)) return;
+                
+                // Re-read config to handle dynamic changes
+                let defaults = {
+                    reconnect: true,
+                    reconnectDelay: 1000,
+                    reconnectMaxDelay: 30000,
+                    reconnectJitter: true,
+                    autoConnect: false,
+                    pauseInBackground: true
+                };
+                let config = { ...defaults, ...(htmx.config.websockets || {}) };
+                
+                console.log('Close handler config:', JSON.stringify(config), 'htmx.config.websockets:', JSON.stringify(htmx.config.websockets));
+
                 if (config.reconnect && entry.refCount > 0) {
                     scheduleReconnect(url, entry);
                 } else {
@@ -86,15 +106,30 @@
             });
             
             entry.socket.addEventListener('error', (error) => {
-                triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+                }
             });
         } catch (error) {
-            triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+            if (firstElement) {
+                triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+            }
         }
     }
     
     function scheduleReconnect(url, entry) {
-        let config = htmx.config.websockets || {};
+        let defaults = {
+            reconnect: true,
+            reconnectDelay: 1000,
+            reconnectMaxDelay: 30000,
+            reconnectJitter: true,
+            autoConnect: false,
+            pauseInBackground: true
+        };
+        let config = { ...defaults, ...(htmx.config.websockets || {}) };
+        
+        console.log('scheduleReconnect config:', JSON.stringify(config), 'htmx.config.websockets:', JSON.stringify(htmx.config.websockets));
+
         let delay = Math.min(
             (config.reconnectDelay || 1000) * Math.pow(2, entry.reconnectAttempts),
             config.reconnectMaxDelay || 30000
@@ -104,10 +139,14 @@
             delay = delay * (0.75 + Math.random() * 0.5);
         }
         
+        // console.log('Scheduling reconnect in', delay, 'ms');
+
         entry.reconnectTimer = setTimeout(() => {
             if (entry.refCount > 0) {
                 let firstElement = entry.elements.values().next().value;
-                triggerEvent(firstElement, 'htmx:ws:reconnect', { url, attempts: entry.reconnectAttempts });
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:ws:reconnect', { url, attempts: entry.reconnectAttempts });
+                }
                 entry.reconnectAttempts++;
                 createWebSocket(url, entry);
             }
@@ -141,7 +180,8 @@
         let url = getWsAttribute(element, 'send');
         if (!url) {
             // Look for nearest ancestor with hx-ws:connect or hx-ws-connect
-            let ancestor = element.closest('[' + htmx.config.prefix + 'hx-ws\\:connect],[' + htmx.config.prefix + 'hx-ws-connect]');
+            let prefix = htmx.config.prefix || '';
+            let ancestor = element.closest('[' + prefix + 'hx-ws\\:connect],[' + prefix + 'hx-ws-connect]');
             if (ancestor) {
                 url = getWsAttribute(ancestor, 'connect');
             }
@@ -195,6 +235,7 @@
             
             triggerEvent(element, 'htmx:after:ws:send', { message: detail.message, url });
         } catch (error) {
+            console.log('sendMessage error:', error);
             triggerEvent(element, 'htmx:wsSendError', { url, error });
         }
     }
@@ -218,7 +259,12 @@
         } catch (e) {
             // Not JSON, emit unknown message event
             let firstElement = entry.elements.values().next().value;
-            triggerEvent(firstElement, 'htmx:wsUnknownMessage', { data: event.data });
+            if (firstElement) {
+                console.log('Emitting htmx:wsUnknownMessage on', firstElement, 'data:', event.data);
+                triggerEvent(firstElement, 'htmx:wsUnknownMessage', { data: event.data });
+            } else {
+                console.warn('No element found to emit htmx:wsUnknownMessage');
+            }
             return;
         }
         
@@ -240,9 +286,12 @@
         // Route based on channel
         if (envelope.channel === 'ui' && envelope.format === 'html') {
             handleHtmlMessage(targetElement, envelope);
-        } else {
-            // Custom channel - emit event for extensions to handle
+        } else if (envelope.channel && (envelope.channel === 'audio' || envelope.channel === 'json' || envelope.channel === 'binary')) {
+            // Known custom channel - emit event for extensions to handle
             triggerEvent(targetElement, 'htmx:wsMessage', { ...envelope, element: targetElement });
+        } else {
+            // Unknown channel/format - emit unknown message event
+            triggerEvent(targetElement, 'htmx:wsUnknownMessage', { ...envelope, element: targetElement });
         }
         
         triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, element: targetElement });
@@ -345,7 +394,19 @@
     // ========================================
     
     function triggerEvent(element, eventName, detail = {}) {
-        return htmx.trigger(element, eventName, detail);
+        if (!element) return true;
+        
+        // Use htmx.trigger if available, otherwise fall back to direct dispatch
+        if (htmx && htmx.trigger) {
+            return htmx.trigger(element, eventName, detail);
+        } else {
+            let event = new CustomEvent(eventName, {
+                detail: detail,
+                bubbles: true,
+                cancelable: true
+            });
+            return element.dispatchEvent(event);
+        }
     }
     
     // ========================================
@@ -362,10 +423,20 @@
         element._htmx.wsInitialized = true;
         
         // Check if we should auto-connect
-        let config = htmx.config.websockets || {};
+        let defaults = {
+            reconnect: true,
+            reconnectDelay: 1000,
+            reconnectMaxDelay: 30000,
+            reconnectJitter: true,
+            autoConnect: false,
+            pauseInBackground: true
+        };
+        let config = { ...defaults, ...(htmx.config.websockets || {}) };
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
         
-        if (!triggerSpec && config.autoConnect !== false) {
+        console.log('initializeElement config:', JSON.stringify(config), 'triggerSpec:', triggerSpec, 'element:', element);
+        
+        if (!triggerSpec && config.autoConnect === true) {
             // Auto-connect on element initialization
             getOrCreateConnection(connectUrl, element);
             element._htmx = element._htmx || {};
@@ -486,7 +557,7 @@
                     reconnectDelay: 1000,
                     reconnectMaxDelay: 30000,
                     reconnectJitter: true,
-                    autoConnect: true,
+                    autoConnect: false,
                     pauseInBackground: true
                 };
             }
@@ -524,7 +595,28 @@
     if (typeof window !== 'undefined' && window.htmx) {
         window.htmx.ext = window.htmx.ext || {};
         window.htmx.ext.ws = {
-            getRegistry: () => connectionRegistry
+            getRegistry: () => ({
+                clear: () => {
+                    let entries = Array.from(connectionRegistry.values());
+                    connectionRegistry.clear(); // Clear first to prevent reconnects
+                    
+                    entries.forEach(entry => {
+                        entry.refCount = 0; // Prevent pending timeouts from reconnecting
+                        if (entry.reconnectTimer) {
+                            clearTimeout(entry.reconnectTimer);
+                        }
+                        if (entry.socket) {
+                            // Remove listeners if possible or just close
+                            entry.socket.close();
+                        }
+                        entry.elements.clear();
+                        entry.pendingRequests.clear();
+                    });
+                },
+                get: (key) => connectionRegistry.get(key),
+                has: (key) => connectionRegistry.has(key),
+                size: connectionRegistry.size
+            })
         };
     }
 })();
