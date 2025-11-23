@@ -52,7 +52,7 @@
         elt._htmx.preloadEvent = eventName;
     }
 
-    htmx.defineExtension('preload', {
+    htmx.registerExtension('preload', {
         init: (internalAPI) => {
             api = internalAPI;
         },

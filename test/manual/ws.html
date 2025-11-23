@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX WebSocket Extension - Demo</title>
+    <script src="/dist/htmx.js"></script>
+    <script src="/src/ext/hx-ws.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .demo-card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-indicator.connected {
+            background: #10b981;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .chat-container {
+            height: 300px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f9fafb;
+            scroll-behavior: smooth;
+        }
+        
+        .notifications-container {
+            max-height: 300px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        .message {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .message.sent {
+            background: #dbeafe;
+            text-align: right;
+            margin-left: 20%;
+        }
+        
+        .message.received {
+            background: #f3e8ff;
+            margin-right: 20%;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 0.25rem;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .notification {
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            background: #f0f4ff;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 0.25rem;
+        }
+        
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+        
+        .ticker-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ticker-symbol {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .ticker-price {
+            font-size: 1.1rem;
+        }
+        
+        .ticker-change {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .ticker-change.up {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .ticker-change.down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .log-entry {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .log-time {
+            color: #6b7280;
+        }
+        
+        .log-event {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .controls button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 HTMX WebSocket Extension</h1>
+            <p>Real-time bidirectional communication made simple</p>
+        </header>
+
+        <div class="demo-grid">
+            <!-- Chat Demo -->
+            <div class="demo-card" hx-ws:connect="ws://localhost:8080/chat" hx-trigger="load" hx-target="#chat" hx-swap="beforeend">
+                <h2>
+                    <span class="status-indicator connected"></span>
+                    Live Chat
+                </h2>
+                <div id="chat" class="chat-container"></div>
+                <form hx-ws:send hx-trigger="submit" hx-target="#chat" hx-swap="beforeend">
+                    <input type="text" name="message" placeholder="Type a message..." autocomplete="off" required>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Notifications -->
+            <div class="demo-card" hx-ws:connect="ws://localhost:8080/notifications" hx-trigger="load" hx-target="#notifications" hx-swap="afterbegin">
+                <h2>
+                    <span class="status-indicator connected"></span>
+                    Live Notifications
+                </h2>
+                <div id="notifications" class="notifications-container"></div>
+            </div>
+
+            <!-- Counter -->
+            <div class="demo-card" hx-ws:connect="ws://localhost:8080/counter" hx-trigger="load">
+                <h2>
+                    <span class="status-indicator connected"></span>
+                    Shared Counter
+                </h2>
+                <div class="counter" id="counter">0</div>
+                <div class="controls">
+                    <button hx-ws:send hx-vals='{"action":"increment"}' hx-trigger="click">➕ Increment</button>
+                    <button hx-ws:send hx-vals='{"action":"decrement"}' hx-trigger="click">➖ Decrement</button>
+                    <button hx-ws:send hx-vals='{"action":"reset"}' hx-trigger="click">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- Stock Ticker -->
+            <div class="demo-card" hx-ws:connect="ws://localhost:8080/ticker" hx-trigger="load">
+                <h2>
+                    <span class="status-indicator connected"></span>
+                    Stock Ticker
+                </h2>
+                <div id="ticker"></div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="demo-card" hx-ws:connect="ws://localhost:8080/dashboard" hx-trigger="load">
+                <h2>
+                    <span class="status-indicator connected"></span>
+                    System Dashboard
+                </h2>
+                <div id="cpu">CPU: 0%</div>
+                <div id="memory">Memory: 0%</div>
+                <div id="disk">Disk: 0%</div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="demo-card">
+                <h2>
+                    <span class="status-indicator"></span>
+                    Event Log
+                </h2>
+                <div id="event-log" style="max-height: 300px; overflow-y: auto; font-size: 0.875rem;">
+                    <div class="log-entry">
+                        <span class="log-time">00:00:00</span>
+                        <span class="log-event">SYSTEM</span>
+                        Extension loaded
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                <strong>Demo Instructions:</strong> Start the WebSocket server with 
+                <code>node test/manual/ws-server.js</code>
+            </p>
+            <p>
+                Learn more: <a href="https://htmx.org/extensions/websockets/">htmx.org/extensions/websockets/</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        console.log('HTMX loaded:', typeof htmx !== 'undefined');
+        console.log('WS extension loaded:', typeof htmx !== 'undefined' && htmx.ext && htmx.ext.ws);
+        
+        // Event logging
+        function logEvent(type, detail) {
+            const log = document.getElementById('event-log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">${time}</span> <span class="log-event">${type}</span> ${detail}`;
+            log.insertBefore(entry, log.firstChild);
+            
+            // Keep only last 20 entries
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // Listen to WebSocket events
+        document.addEventListener('htmx:before:ws:connect', (e) => {
+            logEvent('CONNECT', `Connecting to ${e.detail.url}`);
+        });
+
+        document.addEventListener('htmx:after:ws:connect', (e) => {
+            logEvent('CONNECTED', `Connected to ${e.detail.url}`);
+        });
+
+        document.addEventListener('htmx:ws:close', (e) => {
+            logEvent('CLOSE', `Connection closed: ${e.detail.url}`);
+        });
+
+        document.addEventListener('htmx:ws:error', (e) => {
+            logEvent('ERROR', `WebSocket error: ${e.detail.url}`);
+        });
+
+        document.addEventListener('htmx:ws:reconnect', (e) => {
+            logEvent('RECONNECT', `Attempting reconnection (attempt ${e.detail.attempts + 1})`);
+        });
+
+        document.addEventListener('htmx:before:ws:send', (e) => {
+            logEvent('SEND', `Sending message`);
+        });
+
+        document.addEventListener('htmx:after:ws:message', (e) => {
+            logEvent('MESSAGE', `Received message`);
+        });
+
+        // Clear chat input after sending
+        document.addEventListener('htmx:after:ws:send', (e) => {
+            if (e.target.matches('form')) {
+                const input = e.target.querySelector('input[name="message"]');
+                if (input) {
+                    input.value = '';
+                }
+            }
+        });
+
+        // Auto-scroll chat and notifications after new messages
+        document.addEventListener('htmx:after:ws:message', (e) => {
+            // Scroll chat to bottom
+            const chatContainer = document.getElementById('chat');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Scroll notifications to top (since we use afterbegin)
+            const notificationsContainer = document.getElementById('notifications');
+            if (notificationsContainer) {
+                notificationsContainer.scrollTop = 0;
+            }
+        });
+        
+        // Also scroll after sending (for immediate feedback)
+        document.addEventListener('htmx:after:ws:send', (e) => {
+            setTimeout(() => {
+                const chatContainer = document.getElementById('chat');
+                if (chatContainer) {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }, 50);
+        });
+    </script>
+</body>
+</html>
