@@ -5,17 +5,26 @@
         let preloadSpec = api.attributeValue(elt, "hx-preload");
         if (!preloadSpec && !elt._htmx?.boosted) return;
 
-        let eventName;
-        let timeout;
+        let preloadEvents = []
+        let timeout = 5000;
         if (preloadSpec) {
             let specs = api.parseTriggerSpecs(preloadSpec);
             if (specs.length === 0) return;
-            let spec = specs[0];
-            eventName = spec.name;
-            timeout = spec.timeout ? htmx.parseInterval(spec.timeout) : 5000;
+            for (const spec of specs) {
+                preloadEvents.push(spec.name)
+                if (spec.timeout) {
+                    timeout = htmx.parseInterval(spec.timeout)
+                }
+            }
         } else {
-            eventName = htmx.config?.preload?.boostEvent || "mousedown"
-            timeout = htmx.config?.preload?.boostTimeout ? htmx.parseInterval(htmx.config?.preload?.boostTimeout) : 5000;
+            //only boosted links are supported
+            if (elt.tagName === "A") {
+                if(htmx.config?.preload?.boostTimeout) {
+                    timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
+                }
+                preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
+                preloadEvents.push("touchstart");
+            }
         }
 
         let preloadListener = async (evt) => {
@@ -47,9 +56,11 @@
                 delete elt._htmx.preload;
             }
         };
-        elt.addEventListener(eventName, preloadListener);
+        for (let eventName of preloadEvents) {
+            elt.addEventListener(eventName, preloadListener);
+        }
         elt._htmx.preloadListener = preloadListener;
-        elt._htmx.preloadEvent = eventName;
+        elt._htmx.preloadEvents = preloadEvents;
     }
 
     htmx.registerExtension('preload', {
@@ -76,7 +87,9 @@
 
         htmx_before_cleanup: (elt) => {
             if (elt._htmx?.preloadListener) {
-                elt.removeEventListener(elt._htmx.preloadEvent, elt._htmx.preloadListener);
+                for (let eventName of elt._htmx.preloadEvents) {
+                    elt.removeEventListener(eventName, elt._htmx.preloadListener);
+                }
             }
         }
     });

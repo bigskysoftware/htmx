@@ -75,6 +75,14 @@ describe('hx-preload attribute', function() {
         assert.isDefined(btn._htmx.preload)
     })
 
+    it('works with multiple event types', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-preload="focus, foo">Click</button>');
+        btn.dispatchEvent(new Event('foo'))
+        await htmx.timeout(20)
+        assert.isDefined(btn._htmx.preload)
+    })
+
     it('builds URL with form params', async function () {
         mockResponse('GET', '/test?name=test', 'Response')
         let form = createProcessedHTML('<form><input name="name" value="test"><button hx-get="/test" hx-preload="mouseenter">Click</button></form>');
