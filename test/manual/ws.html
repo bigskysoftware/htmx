@@ -423,29 +423,27 @@
             }
         });
 
-        // Auto-scroll chat and notifications after new messages
-        document.addEventListener('htmx:after:ws:message', (e) => {
-            // Scroll chat to bottom
-            const chatContainer = document.getElementById('chat');
-            if (chatContainer) {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-            
-            // Scroll notifications to top (since we use afterbegin)
-            const notificationsContainer = document.getElementById('notifications');
-            if (notificationsContainer) {
-                notificationsContainer.scrollTop = 0;
-            }
-        });
-        
-        // Also scroll after sending (for immediate feedback)
-        document.addEventListener('htmx:after:ws:send', (e) => {
-            setTimeout(() => {
+        // Auto-scroll chat and notifications after new content is swapped in
+        document.body.addEventListener('htmx:afterSwap', (e) => {
+            // Scroll chat to bottom when new messages arrive
+            if (e.target.id === 'chat' || e.target.closest('#chat')) {
                 const chatContainer = document.getElementById('chat');
                 if (chatContainer) {
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    setTimeout(() => {
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }, 10);
                 }
-            }, 50);
+            }
+            
+            // Scroll notifications to top when new notifications arrive (afterbegin = newest at top)
+            if (e.target.id === 'notifications' || e.target.closest('#notifications')) {
+                const notificationsContainer = document.getElementById('notifications');
+                if (notificationsContainer) {
+                    setTimeout(() => {
+                        notificationsContainer.scrollTop = 0;
+                    }, 10);
+                }
+            }
         });
     </script>
 </body>
