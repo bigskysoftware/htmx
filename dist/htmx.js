@@ -104,11 +104,12 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 sse: {
-                    mode: 'once',
-                    maxRetries: Infinity,
-                    initialDelay: 500,
-                    maxDelay: 30000,
-                    pauseHidden: false
+                    reconnect: false,
+                    reconnectDelay: 500,
+                    reconnectMaxDelay: 60000,
+                    reconnectMaxAttempts: 10,
+                    reconnectJitter: 0.3,
+                    pauseInBackground: false
                 },
                 morphIgnore: ["data-htmx-powered"],
                 noSwap: [204, 304],
@@ -147,7 +148,7 @@ var htmx = (() => {
             }
         }
 
-        defineExtension(name, extension) {
+        registerExtension(name, extension) {
             if (this.#approvedExt && !this.#approvedExt.split(/,\s*/).includes(name)) return false;
             if (this.#registeredExt.has(name)) return false;
             this.#registeredExt.add(name);
@@ -296,6 +297,8 @@ var htmx = (() => {
 
         #createRequestContext(sourceElement, sourceEvent) {
             let {action, method} = this.#determineMethodAndAction(sourceElement, sourceEvent);
+            let [fullAction, anchor] = (action || '').split('#');
+            let ac = new AbortController();
             let ctx = {
                 sourceElement,
                 sourceEvent,
@@ -310,9 +313,14 @@ var htmx = (() => {
                 confirm: this.#attributeValue(sourceElement, "hx-confirm"),
                 request: {
                     validate: "true" === this.#attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
-                    action,
+                    action: fullAction,
+                    anchor,
                     method,
-                    headers: this.#determineHeaders(sourceElement)
+                    headers: this.#determineHeaders(sourceElement),
+                    abort: ac.abort.bind(ac),
+                    credentials: "same-origin",
+                    signal: ac.signal,
+                    mode: this.config.mode
                 }
             };
 
@@ -399,20 +407,11 @@ var htmx = (() => {
                 }
             }
 
-            // Setup abort controller and action
-            let ac = new AbortController()
-            let action = ctx.request.action.replace?.(/#.*$/, '')
-            // TODO - consider how this works with hx-config, move most to #createRequestContext?
+            // Setup event-dependent request details
             Object.assign(ctx.request, {
-                originalAction: ctx.request.action,
-                action,
                 form,
                 submitter: evt.submitter,
-                abort: ac.abort.bind(ac),
-                body,
-                credentials: "same-origin",
-                signal: ac.signal,
-                mode: this.config.mode
+                body
             })
 
             if (!this.#trigger(elt, "htmx:config:request", {ctx: ctx})) return
@@ -420,14 +419,22 @@ var htmx = (() => {
             if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.#extractJavascriptContent(ctx.request.action);
-            if (javascriptContent) {
+            if (javascriptContent != null) {
                 let data = Object.fromEntries(ctx.request.body);
                 await this.#executeJavaScriptAsync(ctx.sourceElement, data, javascriptContent, false);
                 return
             } else if (/GET|DELETE/.test(ctx.request.method)) {
-                let params = new URLSearchParams(ctx.request.body);
-                if (params.size) ctx.request.action += (/\?/.test(ctx.request.action) ? "&" : "?") + params
-                ctx.request.body = null
+                let url = new URL(ctx.request.action, document.baseURI);
+                
+                for (let key of ctx.request.body.keys()) {
+                    url.searchParams.delete(key);
+                }
+                for (let [key, value] of ctx.request.body) {
+                    url.searchParams.append(key, value);
+                }
+                
+                ctx.request.action = url.pathname + url.search;
+                ctx.request.body = null;
             } else if (this.#attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
@@ -559,9 +566,7 @@ var htmx = (() => {
         }
 
         async #handleSSE(ctx, elt, response) {
-            let config = {...this.config.sse, ...ctx.request.sse};
-            if (config.once) config.mode = 'once';
-            if (config.continuous) config.mode = 'continuous';
+            let config = {...this.config.sse, ...ctx.request.sse}
 
             let waitForVisible = () => new Promise(r => {
                 let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
@@ -573,14 +578,19 @@ var htmx = (() => {
             while (elt.isConnected) {
                 // Handle reconnection for subsequent iterations
                 if (attempt > 0) {
-                    if (config.mode !== 'continuous' || attempt > config.maxRetries) break;
+                    if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.pauseHidden && document.hidden) {
+                    if (config.pauseInBackground && document.hidden) {
                         await waitForVisible();
                         if (!elt.isConnected) break;
                     }
 
-                    let delay = Math.min(this.parseInterval(config.initialDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.maxDelay));
+                    let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
+                    if (config.reconnectJitter > 0) {
+                        let jitterRange = delay * config.reconnectJitter;
+                        let jitter = (Math.random() * 2 - 1) * jitterRange;
+                        delay = Math.max(0, delay + jitter);
+                    }
                     let reconnect = {attempt, delay, lastEventId, cancelled: false};
 
                     ctx.status = "reconnecting to stream";
@@ -613,7 +623,7 @@ var htmx = (() => {
                     for await (const sseMessage of this.#parseSSE(currentResponse)) {
                         if (!elt.isConnected) break;
 
-                        if (config.pauseHidden && document.hidden) {
+                        if (config.pauseInBackground && document.hidden) {
                             await waitForVisible();
                             if (!elt.isConnected) break;
                         }
@@ -909,8 +919,6 @@ var htmx = (() => {
                 }
             }
         }
-
-
 
         #extractFilter(str) {
             let match = str.match(/^([^\[]*)\[([^\]]*)]/);
@@ -1218,9 +1226,8 @@ var htmx = (() => {
         }
 
         #handleAnchorScroll(ctx) {
-            let anchor = ctx.request?.originalAction?.split('#')[1];
-            if (anchor) {
-                document.getElementById(anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
+            if (ctx.request?.anchor) {
+                document.getElementById(ctx.request.anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
             }
         }
 
@@ -1401,7 +1408,7 @@ var htmx = (() => {
                 console.log(eventName, detail, on)
             }
             on = this.#normalizeElement(on)
-            this.#triggerExtensions(on, this.#maybeAdjustMetaCharacter(eventName), detail);
+            this.#triggerExtensions(on, eventName, detail);
             return this.trigger(on, eventName, detail, bubbles)
         }
 
@@ -1443,7 +1450,7 @@ var htmx = (() => {
         }
 
         onLoad(callback) {
-            this.on("htmx:after:init", (evt) => {
+            this.on("htmx:after:process", (evt) => {
                 callback(evt.target)
             })
         }
@@ -1588,7 +1595,7 @@ var htmx = (() => {
             if (!path || path === 'false' || path === false) return;
 
             if (path === 'true') {
-                path = ctx.request.originalAction;
+                path = ctx.request.action + (ctx.request.anchor ? '#' + ctx.request.anchor : '');
             }
 
             let type = push ? 'push' : 'replace';

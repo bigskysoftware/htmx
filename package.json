@@ -23,14 +23,12 @@
     "build:ext": "mkdir -p dist/ext && for file in src/ext/*.js; do name=$(basename \"$file\" .js); cp \"$file\" \"dist/ext/$name.js\" && terser --compress --mangle --source-map -o \"dist/ext/$name.min.js\" \"dist/ext/$name.js\"; done",
     "build:editors": "mkdir -p dist/editors && cp -r src/editors/* dist/editors/",
     "build:compress": "brotli-cli compress dist/*.js dist/ext/*.js",
-
     "test": "npm run test:chrome",
     "test:chrome": "web-test-runner --browsers chromium --config test/web-test-runner.config.mjs --playwright",
     "test:firefox": "web-test-runner --browsers firefox --config test/web-test-runner.config.mjs --playwright",
     "test:webkit": "web-test-runner --browsers webkit --config test/web-test-runner.config.mjs --playwright",
     "test:all": "web-test-runner --browsers chromium firefox webkit --config test/web-test-runner.config.mjs --playwright --concurrency 1",
     "test:manual": "node test/manual/server.js",
-
     "www": "bash scripts/www.sh",
     "site": "npm run site:css & npm run site:serve",
     "site:css": "cd www && npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
@@ -53,12 +51,15 @@
   "author": "Big Sky Software",
   "license": "BSD-0-Clause",
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@web/test-runner": "^0.20.2",
     "@web/test-runner-playwright": "^0.11.0",
     "brotli-cli": "^2.1.1",
     "chai": "^4.5.0",
     "mocha": "^11.7.4",
-    "terser": "^5.36.0",
-    "@tailwindcss/typography": "^0.5.19"
+    "terser": "^5.36.0"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
   }
 }

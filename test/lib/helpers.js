@@ -105,7 +105,7 @@ function createProcessedHTML(innerHTML) {
     pg.innerHTML = innerHTML
     htmx.process(pg)
   }
-  return pg.childNodes[0]
+  return pg.firstElementChild
 }
 
 // This function waits for the mutation observer to process the new content
