@@ -82,8 +82,8 @@ Messages from the server should be JSON objects with this structure:
 
 ```json
 {
-    "channel": "ui",           // Channel identifier
-    "format": "html",          // Message format
+    "channel": "ui",           // Optional: Channel identifier (default: "ui")
+    "format": "html",          // Optional: Message format (default: "html")
     "target": "#element-id",   // Optional: specific target selector
     "swap": "innerHTML",       // Optional: swap strategy
     "payload": "<div>...</div>", // The actual content
@@ -91,9 +91,16 @@ Messages from the server should be JSON objects with this structure:
 }
 ```
 
+**Minimal Example** (using defaults):
+```json
+{
+    "payload": "<div>Hello World</div>"
+}
+```
+
 **Standard Channels:**
-- **`ui`**: UI updates (HTML content swapping)
-  - `format: "html"`: Swap HTML content into target element
+- **`ui`** (default): UI updates (HTML content swapping)
+  - `format: "html"` (default): Swap HTML content into target element
 - **Custom channels**: Emit `htmx:wsMessage` event for application handling
 
 **Legacy Format (Deprecated):**

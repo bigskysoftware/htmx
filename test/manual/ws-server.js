@@ -118,8 +118,6 @@ wss.on('connection', (ws, req) => {
 function handleChatConnection(ws) {
     // Send welcome message (no hx-partial, let hx-swap handle it)
     ws.send(JSON.stringify({
-        channel: 'ui',
-        format: 'html',
         payload: '<div class="message received"><div>👋 Welcome to the chat!</div><div class="message-time">' + new Date().toLocaleTimeString() + '</div></div>'
     }));
 }
@@ -145,8 +143,6 @@ function handleNotificationsConnection(ws) {
         const html = `<div class="notification">${notification}<div class="notification-time">${new Date().toLocaleTimeString()}</div></div>`;
         
         broadcast('notifications', {
-            channel: 'ui',
-            format: 'html',
             payload: html
         });
 
@@ -160,8 +156,6 @@ function handleNotificationsConnection(ws) {
 function handleCounterConnection(ws) {
     // Send current counter value
     ws.send(JSON.stringify({
-        channel: 'ui',
-        format: 'html',
         payload: `<hx-partial id="counter">${counter}</hx-partial>`
     }));
 }
@@ -178,8 +172,6 @@ function handleTickerConnection(ws) {
     ).join('');
     
     ws.send(JSON.stringify({
-        channel: 'ui',
-        format: 'html',
         payload: `<hx-partial id="ticker">${html}</hx-partial>`
     }));
 
@@ -204,8 +196,6 @@ function handleTickerConnection(ws) {
         }).join('');
 
         broadcast('ticker', {
-            channel: 'ui',
-            format: 'html',
             payload: `<hx-partial id="ticker">${html}</hx-partial>`
         });
 
@@ -224,8 +214,6 @@ function handleDashboardConnection(ws) {
         const disk = Math.floor(Math.random() * 100);
 
         broadcast('dashboard', {
-            channel: 'ui',
-            format: 'html',
             payload: `
                 <hx-partial id="cpu">CPU: ${cpu}%</hx-partial>
                 <hx-partial id="memory">Memory: ${memory}%</hx-partial>
@@ -252,8 +240,6 @@ function handleMessage(ws, data) {
             
             // Echo back to sender
             ws.send(JSON.stringify({
-                channel: 'ui',
-                format: 'html',
                 payload: html,
                 request_id: data.request_id
             }));
@@ -273,8 +259,6 @@ function handleMessage(ws, data) {
                 const botHtml = `<div class="message received"><div>🤖 ${botResponse}</div><div class="message-time">${new Date().toLocaleTimeString()}</div></div>`;
                 
                 broadcast('chat', {
-                    channel: 'ui',
-                    format: 'html',
                     payload: botHtml
                 });
             }, 1000);
@@ -293,8 +277,6 @@ function handleMessage(ws, data) {
 
         // Broadcast new counter value to all clients
         broadcast('counter', {
-            channel: 'ui',
-            format: 'html',
             payload: `<hx-partial id="counter">${counter}</hx-partial>`,
             request_id: data.request_id
         });

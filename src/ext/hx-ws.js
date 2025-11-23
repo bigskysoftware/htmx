@@ -259,6 +259,10 @@
             return;
         }
         
+        // Apply defaults for channel and format
+        envelope.channel = envelope.channel || 'ui';
+        envelope.format = envelope.format || 'html';
+        
         // Find target element for this message
         let targetElement = null;
         if (envelope.request_id && entry.pendingRequests.has(envelope.request_id)) {
