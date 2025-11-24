@@ -911,7 +911,7 @@ You would then need to update the form with an `hx-post` that mirrored the `acti
 on it.
 
 You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
+regular request, and the `HX-Request-Type` header to determine whether to return a partial fragment or full page content.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
 
@@ -1155,7 +1155,34 @@ htmx includes headers in the requests it makes:
 | `HX-Current-URL`             | the current URL of the browser                                                                       |
 | `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
 | `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
-| `HX-Source`                  | the `id` or `name` of the element that triggered the request                                         |
+| `HX-Request-Type`            | "partial" for targeted swaps, "full" when targeting `body` or using `hx-select`                      |
+| `HX-Source`                  | identifier of the triggering element in format `tag#id?name` (e.g., `button#submit?send`)            |
+| `HX-Target`                  | identifier of the target element in format `tag#id?name` (e.g., `div#results?`)                      |
+
+#### Request Type Header
+
+The `HX-Request-Type` header indicates whether htmx is requesting a partial page update or full page content:
+
+- **`partial`**: The request targets a specific element on the page (most common case)
+- **`full`**: The request targets the entire `body` element (including via [hx-boost](@/attributes/hx-boost.md)) or uses `hx-select` to extract content
+
+This allows servers to optimize responses by returning only the necessary HTML fragment for partial updates.
+
+#### Source and Target Headers
+
+The `HX-Source` and `HX-Target` headers identify elements using a simple format: `tag#id?name`
+
+- **tag**: The element's tag name (e.g., `button`, `div`, `form`)
+- **id**: The element's `id` attribute (empty if not present)
+- **name**: The element's `name` attribute (empty if not present)
+
+Delimiters (`#` and `?`) are always present for easy parsing.
+
+Examples:
+- `button#submit?send` - A button with `id="submit"` and `name="send"`
+- `div#results?` - A div with `id="results"` and no name
+- `form#?contact` - A form with no id and `name="contact"`
+- `input#?email` - An input with no id and `name="email"`
 
 ### Response Headers
 
@@ -1535,9 +1562,33 @@ Be mindful that if your server can render different content for the same URL dep
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
 response HTTP header.
 
-For example, if your server renders the full HTML when the `HX-Request` header is missing or `false`, and it renders a 
-fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed 
-based on a composite of the response URL and the `HX-Request` request header rather than being based just on the response URL. 
+#### Vary Header for htmx Requests
+
+When your server returns different content based on htmx request headers, use the `Vary` header to ensure proper caching:
+
+**Basic Usage** - If your server renders different content for partial vs. full requests:
+
+```
+Vary: HX-Request-Type
+```
+
+This is the most common case and ensures caches distinguish between partial and full page responses.
+
+**Advanced Usage** - If your responses also vary based on the target or source element:
+
+```
+Vary: HX-Request-Type, HX-Target
+```
+
+or
+
+```
+Vary: HX-Request-Type, HX-Source, HX-Target
+```
+
+For example, if your `/search` endpoint returns different HTML based on whether it's targeting a sidebar vs. main content area, include `HX-Target` in the `Vary` header.
+
+**Note**: The `HX-Request` header (which is always "true" for htmx requests) is typically not needed in `Vary` headers since you would serve completely different content (full HTML page vs. fragment) based on its presence, which usually means different URLs or routing logic. 
 
 ## Security
 

@@ -81,7 +81,9 @@ All other attributes available in htmx.
 | `HX-Current-URL` | the current URL of the browser
 | `HX-History-Restore-Request` | "true" if the request is for history restoration
 | `HX-Request` | always "true" for htmx-initiated requests
-| `HX-Source` | the `id` or `name` of the element that triggered the request
+| `HX-Request-Type` | "partial" for targeted swaps, "full" when targeting body or using hx-select
+| `HX-Source` | identifier of the triggering element in format `tag#id?name` (e.g., `button#submit?send`)
+| `HX-Target` | identifier of the target element in format `tag#id?name` (e.g., `div#results?`)
 
 </div>
 
