@@ -75,15 +75,15 @@ All other attributes available in htmx.
 
 <div class="info-table">
 
-| Header | Description |
-|--------|-------------|
-| `HX-Boosted` | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)
-| `HX-Current-URL` | the current URL of the browser
-| `HX-History-Restore-Request` | "true" if the request is for history restoration
-| `HX-Request` | always "true" for htmx-initiated requests
-| `HX-Request-Type` | "partial" for targeted swaps, "full" when targeting body or using hx-select
-| `HX-Source` | identifier of the triggering element in format `tag#id?name` (e.g., `button#submit?send`)
-| `HX-Target` | identifier of the target element in format `tag#id?name` (e.g., `div#results?`)
+| Header                       | Description                                                                             |
+|------------------------------|-----------------------------------------------------------------------------------------|
+| `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md) |
+| `HX-Current-URL`             | the current URL of the browser                                                          |
+| `HX-History-Restore-Request` | "true" if the request is for history restoration                                        |
+| `HX-Request`                 | always "true" for htmx-initiated requests                                               |
+| `HX-Request-Type`            | "partial" for targeted swaps, "full" when targeting body or using hx-select             |
+| `HX-Source`                  | identifier of the triggering element in format `tag#id` (e.g., `button#submit`)         |
+| `HX-Target`                  | identifier of the target element in format `tag#id` (e.g., `div#results`)               |
 
 </div>
 
@@ -91,19 +91,19 @@ All other attributes available in htmx.
 
 <div class="info-table">
 
-| Header                                               | Description |
-|------------------------------------------------------|-------------|
-| [`HX-Location`](@/headers/hx-location.md)            | allows you to do a client-side redirect that does not do a full page reload
-| [`HX-Push-Url`](@/headers/hx-push-url.md)            | pushes a new url into the history stack
-| [`HX-Redirect`](@/headers/hx-redirect.md)            | can be used to do a client-side redirect to a new location
-| `HX-Refresh`                                         | if set to "true" the client-side will do a full refresh of the page
-| [`HX-Replace-Url`](@/headers/hx-replace-url.md)      | replaces the current URL in the location bar
-| `HX-Reswap`                                          | allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values
-| `HX-Retarget`                                        | a CSS selector that updates the target of the content update to a different element on the page
-| `HX-Reselect`                                        | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](@/attributes/hx-select.md) on the triggering element
-| [`HX-Trigger`](@/headers/hx-trigger.md)              | allows you to trigger client-side events
-| [`HX-Trigger-After-Settle`](@/headers/hx-trigger.md) | allows you to trigger client-side events after the settle step
-| [`HX-Trigger-After-Swap`](@/headers/hx-trigger.md)   | allows you to trigger client-side events after the swap step
+| Header                                               | Description                                                                                                                                                                            |
+|------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`HX-Location`](@/headers/hx-location.md)            | allows you to do a client-side redirect that does not do a full page reload                                                                                                            |
+| [`HX-Push-Url`](@/headers/hx-push-url.md)            | pushes a new url into the history stack                                                                                                                                                |
+| [`HX-Redirect`](@/headers/hx-redirect.md)            | can be used to do a client-side redirect to a new location                                                                                                                             |
+| `HX-Refresh`                                         | if set to "true" the client-side will do a full refresh of the page                                                                                                                    |
+| [`HX-Replace-Url`](@/headers/hx-replace-url.md)      | replaces the current URL in the location bar                                                                                                                                           |
+| `HX-Reswap`                                          | allows you to specify how the response will be swapped. See [hx-swap](@/attributes/hx-swap.md) for possible values                                                                     |
+| `HX-Retarget`                                        | a CSS selector that updates the target of the content update to a different element on the page                                                                                        |
+| `HX-Reselect`                                        | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](@/attributes/hx-select.md) on the triggering element |
+| [`HX-Trigger`](@/headers/hx-trigger.md)              | allows you to trigger client-side events                                                                                                                                               |
+| [`HX-Trigger-After-Settle`](@/headers/hx-trigger.md) | allows you to trigger client-side events after the settle step                                                                                                                         |
+| [`HX-Trigger-After-Swap`](@/headers/hx-trigger.md)   | allows you to trigger client-side events after the swap step                                                                                                                           |
 
 </div>
 

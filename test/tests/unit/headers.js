@@ -13,37 +13,25 @@ describe('Request Headers', function() {
         it('formats element with id', function() {
             let btn = createProcessedHTML('<button id="test-btn" hx-get="/test"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button#test-btn?');
-        });
-
-        it('formats element with name', function() {
-            let btn = createProcessedHTML('<button name="action" hx-get="/test"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button#?action');
-        });
-
-        it('formats element with both id and name', function() {
-            let btn = createProcessedHTML('<button id="save-btn" name="action" hx-get="/test"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button#save-btn?action');
+            ctx.request.headers['HX-Source'].should.equal('button#test-btn');
         });
 
         it('formats element with neither id nor name', function() {
             let btn = createProcessedHTML('<button hx-get="/test"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button#?');
+            ctx.request.headers['HX-Source'].should.equal('button');
         });
 
         it('formats div element', function() {
             let div = createProcessedHTML('<div id="content" hx-get="/test"></div>');
             let ctx = htmx.__createRequestContext(div, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('div#content?');
+            ctx.request.headers['HX-Source'].should.equal('div#content');
         });
 
         it('formats form element', function() {
             let form = createProcessedHTML('<form id="my-form" name="contact" hx-post="/test"></form>');
             let ctx = htmx.__createRequestContext(form, new Event('submit'));
-            ctx.request.headers['HX-Source'].should.equal('form#my-form?contact');
+            ctx.request.headers['HX-Source'].should.equal('form#my-form');
         });
 
     });
@@ -55,21 +43,21 @@ describe('Request Headers', function() {
             let btn = document.querySelector('button');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('div#result?');
+            ctx.request.headers['HX-Target'].should.equal('div#result');
         });
 
         it('formats target when targeting self', async function() {
             let btn = createProcessedHTML('<button id="self-btn" hx-get="js:"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('button#self-btn?');
+            ctx.request.headers['HX-Target'].should.equal('button#self-btn');
         });
 
         it('formats body target', async function() {
             let btn = createProcessedHTML('<button hx-get="js:" hx-target="body"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('body#?');
+            ctx.request.headers['HX-Target'].should.equal('body');
         });
 
     });
@@ -119,29 +107,16 @@ describe('Request Headers', function() {
         it('builds identifier with id only', function() {
             let div = document.createElement('div');
             div.id = 'test';
-            htmx.__buildIdentifier(div).should.equal('div#test?');
-        });
-
-        it('builds identifier with name only', function() {
-            let input = document.createElement('input');
-            input.name = 'email';
-            htmx.__buildIdentifier(input).should.equal('input#?email');
-        });
-
-        it('builds identifier with both id and name', function() {
-            let input = document.createElement('input');
-            input.id = 'email-input';
-            input.name = 'email';
-            htmx.__buildIdentifier(input).should.equal('input#email-input?email');
+            htmx.__buildIdentifier(div).should.equal('div#test');
         });
 
         it('builds identifier with neither id nor name', function() {
             let span = document.createElement('span');
-            htmx.__buildIdentifier(span).should.equal('span#?');
+            htmx.__buildIdentifier(span).should.equal('span');
         });
 
         it('handles body element', function() {
-            htmx.__buildIdentifier(document.body).should.equal('body#?');
+            htmx.__buildIdentifier(document.body).should.equal('body');
         });
 
     });

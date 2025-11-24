@@ -2,8 +2,7 @@
 
 ## [4.0.0-alpha3] - 2025-11-18
 
-* Added `HX-Source` request header containing element `id` or `name` ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
-  * Format may change!
+* Added `HX-Source` request header containing element `id` ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
 * Re-added `HX-Current-URL` request header ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
 * Extensions can now handle custom `<hx-*>` template tags via `htmx:process:*` events ([#3537](https://github.com/bigskysoftware/htmx/pull/3537))
 * `hx-confirm` now fires `htmx:confirm` event with async `issueRequest()` callback for custom confirmation dialogs ([#3532](https://github.com/bigskysoftware/htmx/pull/3532))

@@ -352,7 +352,7 @@ var htmx = (() => {
         }
 
         __buildIdentifier(elt) {
-            return `${elt.tagName.toLowerCase()}#${elt.id || ''}?${elt.name || ''}`;
+            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + elt.id : ''}`;
         }
 
         __determineHeaders(elt) {

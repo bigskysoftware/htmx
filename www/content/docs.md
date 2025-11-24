@@ -1156,8 +1156,8 @@ htmx includes headers in the requests it makes:
 | `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
 | `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
 | `HX-Request-Type`            | "partial" for targeted swaps, "full" when targeting `body` or using `hx-select`                      |
-| `HX-Source`                  | identifier of the triggering element in format `tag#id?name` (e.g., `button#submit?send`)            |
-| `HX-Target`                  | identifier of the target element in format `tag#id?name` (e.g., `div#results?`)                      |
+| `HX-Source`                  | identifier of the triggering element in format `tag#id` (e.g., `button#submit`)                      |
+| `HX-Target`                  | identifier of the target element in format `tag#id` (e.g., `div#results`)                            |
 
 #### Request Type Header
 
