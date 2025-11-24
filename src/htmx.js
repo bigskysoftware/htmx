@@ -351,10 +351,14 @@ var htmx = (() => {
             return ctx;
         }
 
+        __buildIdentifier(elt) {
+            return `${elt.tagName.toLowerCase()}#${elt.id || ''}?${elt.name || ''}`;
+        }
+
         __determineHeaders(elt) {
             let headers = {
                 "HX-Request": "true",
-                "HX-Source": elt.id || elt.name,
+                "HX-Source": this.__buildIdentifier(elt),
                 "HX-Current-URL": location.href,
                 "Accept": "text/html, text/event-stream"
             };
@@ -405,6 +409,12 @@ var htmx = (() => {
                     body.delete(k);
                     body.append(k, ctx.values[k]);
                 }
+            }
+
+            // Add HX-Request-Type and HX-Target headers
+            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+            if (ctx.target) {
+                ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
             }
 
             // Setup event-dependent request details
