@@ -10,7 +10,7 @@
         }
     }
 
-    htmx.defineExtension('compat', {
+    htmx.registerExtension('compat', {
         init: (internalAPI) => {
             api = internalAPI;
 
