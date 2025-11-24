@@ -40,6 +40,31 @@ Here is an example of a boosted form:
 ```
 This form will issue an ajax `POST` to the given URL and replace the body's inner content with it.
 
+## Advanced Syntax
+
+You can configure boost behavior using an advanced syntax that combines multiple settings:
+
+```html
+<body hx-boost:inherited="swap:innerHTML target:#main select:#content">
+  <div id="main">
+    <!-- Boosted links use the config -->
+    <a href="/page1">Go To Page 1</a>
+    <a href="/page2">Go To Page 2</a>
+    
+    <!-- Non-boosted elements are unaffected -->
+    <div hx-get="/data" hx-trigger="load">Loading...</div>
+  </div>
+</body>
+```
+
+The key advantage is that the boost config only applies to boosted elements (links and forms), unlike inherited `hx-*` attributes which would affect all descendant elements.
+
+Supported modifiers:
+- `swap:STYLE` - Swap strategy (innerHTML, outerHTML, etc.)
+- `target:SELECTOR` - Target element selector
+- `select:SELECTOR` - Content selection from response
+
+Explicit `hx-*` attributes on individual links/forms will override the boost config.
 
 ## Notes
 

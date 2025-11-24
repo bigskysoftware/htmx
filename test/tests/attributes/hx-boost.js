@@ -88,6 +88,57 @@ describe('hx-boost attribute', async function() {
         fetchMock.calls.length.should.equal(0)
     })
 
+    it('hx-boost with advanced syntax applies swap config', async function() {
+        mockResponse('GET', '/test', 'Clicked')
+        createProcessedHTML('<a hx-boost="swap:outerHTML" hx-target="this" id="a1" href="/test">Click Me</a>')
+        find('#a1').click()
+        await forRequest()
+        should.equal(document.querySelector('#a1'), null)
+    })
+
+    it('hx-boost with advanced syntax applies target config', async function() {
+        mockResponse('GET', '/test', 'New Content')
+        createProcessedHTML('<div id="target">Old</div><a hx-boost="target:#target" id="a1" href="/test">Click</a>')
+        find('#a1').click()
+        await forRequest()
+        find('#target').innerHTML.should.equal('New Content')
+    })
+
+    it('hx-boost with advanced syntax applies select config', async function() {
+        mockResponse('GET', '/test', '<div><span id="keep">Keep</span><span>Ignore</span></div>')
+        createProcessedHTML('<div id="result"></div><a hx-boost="select:#keep" hx-target="#result" id="a1" href="/test">Click</a>')
+        find('#a1').click()
+        await forRequest()
+        find('#result').innerHTML.should.contain('Keep')
+        find('#result').innerHTML.should.not.contain('Ignore')
+    })
+
+    it('hx-boost with multiple advanced configs', async function() {
+        mockResponse('GET', '/test', '<div id="main"><span id="result">Success</span></div>')
+        createProcessedHTML('<div id="main">Old</div><a hx-boost="swap:outerHTML target:#main select:#result" id="a1" href="/test">Click</a>')
+        find('#a1').click()
+        await forRequest()
+        should.equal(document.querySelector('#main'), null)
+        find('#result').innerHTML.should.equal('Success')
+    })
+
+    it('explicit attributes override boost config', async function() {
+        mockResponse('GET', '/test', 'Clicked')
+        createProcessedHTML('<a hx-boost="swap:outerHTML" hx-swap="innerHTML" hx-target="this" id="a1" href="/test">Click</a>')
+        find('#a1').click()
+        await forRequest()
+        should.not.equal(document.querySelector('#a1'), null)
+        find('#a1').innerHTML.should.equal('Clicked')
+    })
+
+    it('hx-boost true still works as before', async function() {
+        mockResponse('GET', '/test', 'Clicked')
+        createProcessedHTML('<div id="result"></div><a hx-boost="true" hx-target="#result" id="a1" href="/test">Click Me</a>')
+        find('#a1').click()
+        await forRequest()
+        find('#result').innerHTML.should.equal('Clicked')
+    })
+
     // // it('overriding default swap style does not effect boosting', async function() {
     // //     htmx.config.defaultSwapStyle = 'afterend'
     // //     try {
@@ -212,4 +263,5 @@ describe('hx-boost attribute', async function() {
     //         playground().innerHTML.should.not.equal('Boosted')
     //     })
     // }
+
 })

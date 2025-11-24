@@ -296,6 +296,7 @@ var htmx = (() => {
         }
 
         __createRequestContext(sourceElement, sourceEvent) {
+            let boosted = sourceElement._htmx?.boosted;
             let {action, method} = this.__determineMethodAndAction(sourceElement, sourceEvent);
             let [fullAction, anchor] = (action || '').split('#');
             let ac = new AbortController();
@@ -303,10 +304,10 @@ var htmx = (() => {
                 sourceElement,
                 sourceEvent,
                 status: "created",
-                select: this.__attributeValue(sourceElement, "hx-select"),
+                select: this.__attributeValue(sourceElement, "hx-select") ?? boosted?.select,
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
-                target: this.__resolveTarget(sourceElement, this.__attributeValue(sourceElement, "hx-target")),
-                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
+                target: this.__resolveTarget(sourceElement, this.__attributeValue(sourceElement, "hx-target") ?? boosted?.target),
+                swap: this.__attributeValue(sourceElement, "hx-swap") ?? boosted?.swap ?? this.config.defaultSwap,
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.transitions,
@@ -1001,8 +1002,9 @@ var htmx = (() => {
         }
 
         __maybeBoost(elt) {
-            if (this.__attributeValue(elt, "hx-boost") === "true" && this.__shouldBoost(elt)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
+            let boostValue = this.__attributeValue(elt, "hx-boost");
+            if (boostValue && this.__shouldBoost(elt)) {
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: this.__parseConfig(boostValue)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 if (elt.matches('a') && !elt.hasAttribute("target")) {
                     elt.addEventListener('click', (click) => {
