@@ -1198,13 +1198,11 @@ var htmx = (() => {
                 let type = templateElt.getAttribute('type');
                 
                 if (type === 'partial') {
-                    let swapSpec = this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap);
-
                     tasks.push({
                         type: 'partial',
                         fragment: templateElt.content.cloneNode(true),
                         target: templateElt.getAttribute(this.__prefix('hx-target')),
-                        swapSpec,
+                        swapSpec: this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap),
                         sourceElement: ctx.sourceElement
                     });
                 } else {
@@ -1221,18 +1219,18 @@ var htmx = (() => {
             autofocus?.focus?.()
         }
 
-        __handleScroll(task) {
-            if (task.swapSpec.scroll) {
-                let target = task.swapSpec.scrollTarget ? this.__findExt(task.swapSpec.scrollTarget) : task.target;
-                if (task.swapSpec.scroll === 'top') {
-                    target.scrollTop = 0;
-                } else if (task.swapSpec.scroll === 'bottom'){
-                    target.scrollTop = target.scrollHeight;
+        __handleScroll(swapSpec, target) {
+            if (swapSpec.scroll) {
+                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(swapSpec.scrollTarget) : target;
+                if (swapSpec.scroll === 'top') {
+                    scrollTarget.scrollTop = 0;
+                } else if (swapSpec.scroll === 'bottom'){
+                    scrollTarget.scrollTop = scrollTarget.scrollHeight;
                 }
             }
-            if (task.swapSpec.show) {
-                let target = task.swapSpec.showTarget ? this.__findExt(task.swapSpec.showTarget) : task.target;
-                target.scrollIntoView(task.swapSpec.show === 'top')
+            if (swapSpec.show) {
+                let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
+                showTarget.scrollIntoView(swapSpec.show === 'top')
             }
         }
 
@@ -1354,8 +1352,10 @@ var htmx = (() => {
                 target = document.querySelector(target);
             }
             if (!target) return;
+            if (typeof swapSpec === 'string') {
+                swapSpec = this.__parseSwapSpec(swapSpec);
+            }
             if (swapSpec.strip && fragment.firstElementChild) {
-                task.unstripped = fragment;
                 fragment = document.createDocumentFragment();
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
             }
@@ -1418,7 +1418,7 @@ var htmx = (() => {
                 this.process(elt);
                 this.__handleAutoFocus(elt);
             }
-            this.__handleScroll(task);
+            this.__handleScroll(swapSpec, target);
         }
 
         __trigger(on, eventName, detail = {}, bubbles = true) {
