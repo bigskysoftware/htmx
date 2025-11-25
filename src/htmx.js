@@ -80,7 +80,8 @@ var htmx = (() => {
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
                 createRequestContext: this.__createRequestContext.bind(this),
                 collectFormData: this.__collectFormData.bind(this),
-                handleHxVals: this.__handleHxVals.bind(this)
+                handleHxVals: this.__handleHxVals.bind(this),
+                insertContent: this.__insertContent.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
@@ -1400,10 +1401,17 @@ var htmx = (() => {
             } else if (swapSpec.style === 'none') {
                 return;
             } else {
-                task.target = target;
-                task.fragment = fragment;
-                if (!this.__triggerExtensions(target, 'htmx:handle:swap', task)) return;
-                throw new Error(`Unknown swap style: ${swapSpec.style}`);
+                let methods = this.__extMethods.get('handle_swap')
+                let handled = false;
+                for (const method of methods) {
+                    if (method(swapSpec.style, target, fragment)) {
+                        handled = true;
+                        break;
+                    }
+                }
+                if (!handled) {
+                    throw new Error(`Unknown swap style: ${swapSpec.style}`);
+                }
             }
             this.__restorePreservedElements(pantry);
             for (const elt of newContent) {
