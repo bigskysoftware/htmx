@@ -122,13 +122,12 @@ describe('hx-boost attribute', async function() {
         find('#result').innerHTML.should.equal('Success')
     })
 
-    it('explicit attributes override boost config', async function() {
+    it('boost config overrides explicit attributes', async function() {
         mockResponse('GET', '/test', 'Clicked')
         createProcessedHTML('<a hx-boost="swap:outerHTML" hx-swap="innerHTML" hx-target="this" id="a1" href="/test">Click</a>')
         find('#a1').click()
         await forRequest()
-        should.not.equal(document.querySelector('#a1'), null)
-        find('#a1').innerHTML.should.equal('Clicked')
+        should.equal(document.querySelector('#a1'), null)
     })
 
     it('hx-boost true still works as before', async function() {
