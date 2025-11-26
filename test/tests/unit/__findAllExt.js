@@ -89,13 +89,6 @@ describe('__findAllExt unit tests', function() {
         assert.equal(results[0], document.body)
     })
 
-    it('handles root keyword', function () {
-        let div = createProcessedHTML('<div></div>')
-        let results = htmx.__findAllExt(div, 'root')
-        assert.equal(results.length, 1)
-        assert.equal(results[0], document)
-    })
-
     it('handles hyperscript-style selector', function () {
         createProcessedHTML('<div class="foo"></div>')
         let results = htmx.__findAllExt(document, '<.foo/>')
@@ -159,6 +152,53 @@ describe('__findAllExt unit tests', function() {
         assert.equal(results.length, 2)
         assert.equal(results[0].id, 'b')
         assert.equal(results[1], document)
+    })
+
+    it('handles find keyword - returns first match within element', function () {
+        let parent = createProcessedHTML('<div id="parent"><span class="target"></span><span class="target"></span></div>')
+        let results = htmx.__findAllExt(parent, 'find .target')
+        assert.equal(results.length, 1)
+        assert.equal(results[0].className, 'target')
+    })
+
+    it('handles find keyword - scopes to element not document', function () {
+        createProcessedHTML('<div class="outside"></div><div id="parent"><div class="inside"></div></div>')
+        let parent = document.getElementById('parent')
+        let results = htmx.__findAllExt(parent, 'find .inside')
+        assert.equal(results.length, 1)
+        assert.equal(results[0].className, 'inside')
+        // Should not find .outside
+        let results2 = htmx.__findAllExt(parent, 'find .outside')
+        assert.equal(results2.length, 0)
+    })
+
+    it('handles findAll keyword - returns all matches within element', function () {
+        let parent = createProcessedHTML('<div id="parent"><span class="target"></span><span class="target"></span><span class="target"></span></div>')
+        let results = htmx.__findAllExt(parent, 'findAll .target')
+        assert.equal(results.length, 3)
+        results.forEach(el => assert.equal(el.className, 'target'))
+    })
+
+    it('handles findAll keyword - scopes to element not document', function () {
+        createProcessedHTML('<div class="outside"></div><div class="outside"></div><div id="parent"><div class="inside"></div><div class="inside"></div></div>')
+        let parent = document.getElementById('parent')
+        let results = htmx.__findAllExt(parent, 'findAll .inside')
+        assert.equal(results.length, 2)
+        // Should not find .outside elements
+        let results2 = htmx.__findAllExt(parent, 'findAll .outside')
+        assert.equal(results2.length, 0)
+    })
+
+    it('handles find with no matches', function () {
+        let parent = createProcessedHTML('<div id="parent"><span></span></div>')
+        let results = htmx.__findAllExt(parent, 'find .nonexistent')
+        assert.equal(results.length, 0)
+    })
+
+    it('handles findAll with no matches', function () {
+        let parent = createProcessedHTML('<div id="parent"><span></span></div>')
+        let results = htmx.__findAllExt(parent, 'findAll .nonexistent')
+        assert.equal(results.length, 0)
     })
 
 });

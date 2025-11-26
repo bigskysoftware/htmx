@@ -1792,7 +1792,9 @@ var htmx = (() => {
                 if (selector.startsWith('closest ')) {
                     item = elt.closest(selector.slice(8))
                 } else if (selector.startsWith('find ')) {
-                    item = document.querySelector(elt, selector.slice(5))
+                    item = elt.querySelector(selector.slice(5))
+                } else if (selector.startsWith('findAll ')) {
+                    result.push(...elt.querySelectorAll(selector.slice(8)))
                 } else if (selector === 'next' || selector === 'nextElementSibling') {
                     item = elt.nextElementSibling
                 } else if (selector.startsWith('next ')) {
@@ -1807,8 +1809,6 @@ var htmx = (() => {
                     item = window
                 } else if (selector === 'body') {
                     item = document.body
-                } else if (selector === 'root') {
-                    item = this.__getRootNode(elt, !!global)
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
                 } else {
