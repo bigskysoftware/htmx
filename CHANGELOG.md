@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.0-alpha4] - 2025-11-27
+
+* WebSocket extension for htmx 4.0 ([#3547](https://github.com/bigskysoftware/htmx/pull/3547))
+* Allow string swapSpecs in `insertContent()` ([#3551](https://github.com/bigskysoftware/htmx/pull/3551))
+* Added `HX-Target`, `HX-Source`, and `HX-Request-Type` request headers ([#3548](https://github.com/bigskysoftware/htmx/pull/3548))
+* Handle duplicates in action query params and form data ([#3543](https://github.com/bigskysoftware/htmx/pull/3543))
+* Changed extension registration to `registerExtension()` to avoid upgrade confusion ([#3546](https://github.com/bigskysoftware/htmx/pull/3546))
+
 ## [4.0.0-alpha3] - 2025-11-18
 
 * Added `HX-Source` request header containing element `id` ([#3533](https://github.com/bigskysoftware/htmx/pull/3533))
