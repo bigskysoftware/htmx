@@ -721,16 +721,6 @@ for direct id replacement, and use `<hx-partial>` for your other needs.
 
 </details>
 
-<details class="migration-note">
-<summary>htmx 2.0 to 4.0 Changes</summary>
-
-In htmx 2.0, out of band swaps were the only way to send additional content with a response.  In htmx 4.0 the `<hx-partial>`
-tag provides a more general, cleaner mechanism for swapping new content in to targets.  Although the older syntax for
-more elaborate out-of-band swaps is still supported in htmx 4.0, we strongly recommend you only use out-of-band swaps
-for direct id replacement, and use `<hx-partial>` for your other needs.
-
-</details>
-
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute in the *response* html:
 
