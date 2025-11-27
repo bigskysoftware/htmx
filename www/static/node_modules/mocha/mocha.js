@@ -1,4 +1,4 @@
-// mocha@11.7.4 in javascript ES2018
+// mocha@11.7.5 in javascript ES2018
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -20108,7 +20108,7 @@
   };
 
   var name = "mocha";
-  var version = "11.7.4";
+  var version = "11.7.5";
   var homepage = "https://mochajs.org/";
   var notifyLogo = "https://ibin.co/4QuRuGjXvl36.png";
   var require$$17 = {

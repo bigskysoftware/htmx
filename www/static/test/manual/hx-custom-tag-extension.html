@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom HX Tag Extension Test</title>
+    <script src="../../src/htmx.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-left: 3px solid #007bff; }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>Custom HX Tag Extension Test</h1>
+    
+    <button hx-get="/test" hx-target="#result">
+        Trigger Request
+    </button>
+    
+    <div id="result">
+        <p>Click the button to test custom hx-* tags</p>
+    </div>
+    
+    <div id="log">
+        <h3>Extension Log:</h3>
+    </div>
+
+    <script>
+        // Helper to log messages
+        function log(message, type = '') {
+            const logDiv = document.createElement('div');
+            logDiv.className = 'log ' + type;
+            logDiv.textContent = message;
+            document.getElementById('log').appendChild(logDiv);
+            console.log(message);
+        }
+
+        // Mock fetch to return custom hx-* tags
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            console.log('Mocked fetch called:', url);
+            
+            const mockResponse = `
+                <div>
+                    <h2>Response Content</h2>
+                    <p>This is the main content</p>
+                    <hx-toast message="Hello from server!" duration="3000"></hx-toast>
+                    <hx-modal title="Server Modal" hx-target="body">
+                        <p>This is modal content from the server</p>
+                    </hx-modal>
+                    <hx-script>
+                        console.log('Custom script from hx-script tag');
+                    </hx-script>
+                </div>
+            `;
+            
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                headers: new Headers(),
+                text: () => Promise.resolve(mockResponse),
+                json: () => Promise.resolve({}),
+                clone: function() { return this; }
+            });
+        };
+
+        // Register extension using htmx4 format
+        (() => {
+            let api;
+
+            htmx.registerExtension('custom-tags', {
+                init: (internalAPI) => {
+                    api = internalAPI;
+                    log('Custom tags extension initialized', 'success');
+                },
+
+                htmx_process_toast: (templateElt, detail) => {
+                    const { ctx, tasks } = detail;
+                    
+                    log('Toast tag detected!', 'success');
+                    log('Message: ' + templateElt.getAttribute('message'));
+                    log('Duration: ' + templateElt.getAttribute('duration'));
+                    
+                    // Create a toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'log success';
+                    toast.textContent = '🍞 Toast: ' + templateElt.getAttribute('message');
+                    
+                    // Add as a task to be inserted
+                    const fragment = document.createDocumentFragment();
+                    fragment.appendChild(toast);
+                    
+                    tasks.push({
+                        type: 'oob',
+                        fragment: fragment,
+                        target: '#log',
+                        swapSpec: { style: 'beforeend' },
+                        sourceElement: ctx.sourceElement
+                    });
+                },
+
+                htmx_process_modal: (templateElt, detail) => {
+                    const { ctx, tasks } = detail;
+                    
+                    log('Modal tag detected!', 'success');
+                    log('Title: ' + templateElt.getAttribute('title'));
+                    log('Target: ' + templateElt.getAttribute('hx-target'));
+                    
+                    // Create modal overlay
+                    const modal = document.createElement('div');
+                    modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:2px solid #007bff;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:1000;';
+                    modal.innerHTML = `
+                        <h3>${templateElt.getAttribute('title')}</h3>
+                        ${templateElt.content.querySelector('p').outerHTML}
+                        <button onclick="this.parentElement.remove()">Close</button>
+                    `;
+                    
+                    const fragment = document.createDocumentFragment();
+                    fragment.appendChild(modal);
+                    
+                    tasks.push({
+                        type: 'oob',
+                        fragment: fragment,
+                        target: 'body',
+                        swapSpec: { style: 'beforeend' },
+                        sourceElement: ctx.sourceElement
+                    });
+                },
+
+                htmx_process_script: (templateElt, detail) => {
+                    const { ctx, tasks } = detail;
+                    
+                    log('Script tag detected!', 'success');
+                    
+                    // Execute the script content
+                    const scriptContent = templateElt.content.textContent.trim();
+                    log('Executing: ' + scriptContent);
+                    
+                    try {
+                        eval(scriptContent);
+                        log('Script executed successfully', 'success');
+                    } catch (e) {
+                        log('Script error: ' + e.message, 'error');
+                    }
+                }
+            });
+        })();
+        
+        log('Extension loaded and ready');
+    </script>
+</body>
+</html>

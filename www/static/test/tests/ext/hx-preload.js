@@ -1,5 +1,22 @@
 describe('hx-preload attribute', function() {
 
+    let extBackup;
+
+    before(async () => {
+        extBackup = backupExtensions();
+        clearExtensions();
+        let script = document.createElement('script');
+        script.src = '../src/ext/hx-preload.js';
+        await new Promise(resolve => {
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    })
+
+    after(() => {
+        restoreExtensions(extBackup);
+    })
+
     beforeEach(() => {
         setupTest(this.currentTest)
     })
@@ -54,6 +71,14 @@ describe('hx-preload attribute', function() {
         mockResponse('GET', '/test', 'Response')
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="focus">Click</button>');
         btn.dispatchEvent(new Event('focus'))
+        await htmx.timeout(20)
+        assert.isDefined(btn._htmx.preload)
+    })
+
+    it('works with multiple event types', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-preload="focus, foo">Click</button>');
+        btn.dispatchEvent(new Event('foo'))
         await htmx.timeout(20)
         assert.isDefined(btn._htmx.preload)
     })

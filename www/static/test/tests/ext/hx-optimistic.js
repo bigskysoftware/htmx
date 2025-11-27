@@ -1,5 +1,22 @@
 describe('hx-optimistic attribute', function() {
 
+    let extBackup;
+
+    before(async () => {
+        extBackup = backupExtensions();
+        clearExtensions();
+        let script = document.createElement('script');
+        script.src = '../src/ext/hx-optimistic.js';
+        await new Promise(resolve => {
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    })
+
+    after(() => {
+        restoreExtensions(extBackup);
+    })
+
     beforeEach(() => {
         setupTest(this.currentTest)
     })
@@ -189,7 +206,7 @@ describe('hx-optimistic attribute', function() {
 
     it('works with hx-config override', async function () {
         mockResponse('POST', '/submit', 'Final')
-        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-config=\'{"optimistic": "#opt"}\'>Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-config=\'{\"optimistic\": \"#opt\"}\'>Go</button>');
         find('button').click()
         await forRequest()
         assert.equal(find('#result').textContent.trim(), 'Final');
@@ -197,7 +214,7 @@ describe('hx-optimistic attribute', function() {
 
     it('hx-optimistic attribute takes precedence over hx-config', async function () {
         mockResponse('POST', '/submit', 'Final')
-        createProcessedHTML('<div id="result">Original</div><div id="opt1" style="display:none">Opt1</div><div id="opt2" style="display:none">Opt2</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt1" hx-config=\'{"optimistic": "#opt2"}\'>Go</button>');
+        createProcessedHTML('<div id="result">Original</div><div id="opt1" style="display:none">Opt1</div><div id="opt2" style="display:none">Opt2</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt1" hx-config=\'{\"optimistic\": \"#opt2\"}\'>Go</button>');
         find('button').click()
         await forRequest()
         assert.equal(find('#result').textContent.trim(), 'Final');

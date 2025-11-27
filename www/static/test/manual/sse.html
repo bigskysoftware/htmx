@@ -39,7 +39,7 @@
             hx-get="/events"
             hx-target="#events-output"
             hx-swap="innerHTML"
-            hx-config="sse.continuous:true sse.maxRetries:3 sse.initialDelay:0 sse.maxDelay:10s sse.pauseHidden:true"
+            hx-config="sse.reconnect:true sse.reconnectAttempts:3 sse.reconnectDelay:0 sse.reconnectMaxDelay:10s sse.pauseInBackground:true"
             class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 mb-4">
         Connect
     </button>
