@@ -423,7 +423,7 @@ on it to transition to an opacity of `1`, showing the indicator.
 Here we have a button.  When it is clicked the `htmx-request` class will be added to it, which will reveal the spinner
 gif element.
 
-Rhe `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another 
+The `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another 
 mechanism you can create your own CSS transition like so:
 
 ```css
@@ -643,7 +643,7 @@ More examples and details can be found on the [`hx-sync` attribute page.](@/attr
 ### CSS Transitions {#css_transitions}
 
 htmx makes it easy to use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without
-javascript.  Consider this HTML content:
+JavaScript.  Consider this HTML content:
 
 ```html
 <div id="div1">Original Content</div>
@@ -721,16 +721,6 @@ for direct id replacement, and use `<hx-partial>` for your other needs.
 
 </details>
 
-<details class="migration-note">
-<summary>htmx 2.0 to 4.0 Changes</summary>
-
-In htmx 2.0, out of band swaps were the only way to send additional content with a response.  In htmx 4.0 the `<hx-partial>`
-tag provides a more general, cleaner mechanism for swapping new content in to targets.  Although the older syntax for
-more elaborate out-of-band swaps is still supported in htmx 4.0, we strongly recommend you only use out-of-band swaps
-for direct id replacement, and use `<hx-partial>` for your other needs.
-
-</details>
-
 If you want to swap content from a response directly into the DOM by using the `id` attribute you can use the
 [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute in the *response* html:
 
@@ -786,7 +776,7 @@ differently.
 ### Confirming Requests {#confirming}
 
 Often you will want to confirm an action before issuing a request.  htmx supports the [`hx-confirm`](@/attributes/hx-confirm.md)
-attribute, which allows you to confirm an action using a simple javascript dialog:
+attribute, which allows you to confirm an action using a simple JavaScript dialog:
 
 ```html
 <button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
@@ -879,7 +869,7 @@ Note that `hx-boost` is using the `inherited` modifier here.
 
 ### Progressive Enhancement {#progressive_enhancement}
 
-A nice feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
+A nice feature of `hx-boost` is that it degrades gracefully if JavaScript is not enabled: the links and forms continue
 to work, they simply don't use ajax requests.  
 
 This is known as
@@ -889,7 +879,7 @@ a wider audience to use your site's functionality.
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
 Consider the [active search](@/patterns/active-search.md) example.  As it is written, it will not degrade gracefully:
-someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity’s sake,
+someone who does not have JavaScript enabled will not be able to use this feature. This is done for simplicity’s sake,
 to keep the example as brief as possible.
 
 However, you could wrap the htmx-enhanced input in a form element:
@@ -905,7 +895,7 @@ However, you could wrap the htmx-enhanced input in a form element:
 </form>
 ```
 
-With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
+With this in place, JavaScript-enabled clients would still get the nice active-search UX, but non-JavaScript enabled
 clients would be able to hit the enter key and still search.  Even better, you could add a "Search" button as well.
 You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
@@ -1258,7 +1248,7 @@ See the full event mapping in the [Changes in htmx 4.0](/migration-guide-htmx-4#
 
 Htmx has an extensive [events mechanism](@/reference.md#events), which doubles as the logging system.
 
-If you want to register for a given htmx event you can use
+If you want to register for a given htmx event you can use:
 
 ```js
 document.body.addEventListener('htmx:after:init', function(evt) {
@@ -1385,7 +1375,7 @@ doesn't provide a generalized mechanism for responding to arbitrary events on el
 In order to address this shortcoming, htmx offers [`hx-on:*`](/attributes/hx-on) attributes.  
 
 These attributes allow you to respond to any event in a manner that preserves the LoB of the standard `on*` properties,
-and provide some nice quality of life improvements over the standard javascript API.
+and provide some nice quality of life improvements over the standard JavaScript API.
 
 If you want to respond to the `click` event using an `hx-on` attribute, we would write this:
 
@@ -1435,7 +1425,7 @@ event:
 </button>
 ```
 
-### 3rd Party Javascript {#3rd-party}
+### 3rd Party JavaScript {#3rd-party}
 
 Htmx integrates well with third party libraries.  
 
@@ -1452,7 +1442,7 @@ A good example of this is the [SortableJS demo](@/patterns/drag-to-reorder.md):
 </form>
 ```
 
-With Sortable, as with most javascript libraries, you need to initialize content at some point.
+With Sortable, as with most JavaScript libraries, you need to initialize content at some point.
 
 In htmx, the cleanest way to do this is using the `htmx.onLoad()` method to register a callback.
 
@@ -1719,7 +1709,7 @@ They are listed below:
 | `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                                   |
 </div>
 
-You can set them directly in javascript, or you can use a `meta` tag:
+You can set them directly in JavaScript, or you can use a `meta` tag:
 
 ```html
 <meta name="htmx:config" content='{"defaultSwap":"innerHTML"}'>
