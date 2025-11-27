@@ -118,10 +118,10 @@ major changes between htmx 2.x and htmx 4.x.
   ```html
   <hx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
-  </partial>
+  </hx-partial>
   <hx-partial hx-target="#notifications">
     <span class="badge">5</span>
-  </partial>
+  </hx-partial>
   ```
 - Each partial specifies its own target and swap strategy
 - More explicit than OOB swaps which rely on matching `id` attributes
