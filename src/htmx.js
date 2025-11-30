@@ -313,7 +313,7 @@ var htmx = (() => {
                 transition: this.config.transitions,
                 confirm: this.__attributeValue(sourceElement, "hx-confirm"),
                 request: {
-                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') ? "true" : "false"),
+                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') && !sourceElement.noValidate && !sourceEvent.submitter?.formNoValidate ? "true" : "false"),
                     action: fullAction,
                     anchor,
                     method,
@@ -402,7 +402,8 @@ var htmx = (() => {
 
             // Build request body
             let form = elt.form || elt.closest("form")
-            let body = this.__collectFormData(elt, form, evt.submitter)
+            let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
+            if (!body) return  // Validation failed
             let valsResult = this.__handleHxVals(elt, body)
             if (valsResult) await valsResult  // Only await if it returned a promise
             if (ctx.values) {
@@ -427,7 +428,6 @@ var htmx = (() => {
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
             if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
-            if (ctx.request.validate && ctx.request.form && !ctx.request.form.reportValidity()) return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
@@ -1699,10 +1699,13 @@ var htmx = (() => {
             }
         }
 
-        __collectFormData(elt, form, submitter) {
+        __collectFormData(elt, form, submitter, validate) {
+            if (validate && form && !form.reportValidity()) return
+            
             let formData = form ? new FormData(form) : new FormData()
             let included = form ? new Set(form.elements) : new Set()
             if (!form && elt.name) {
+                if (validate && elt.reportValidity && !elt.reportValidity()) return
                 formData.append(elt.name, elt.value)
                 included.add(elt);
             }
@@ -1712,8 +1715,8 @@ var htmx = (() => {
             }
             let includeSelector = this.__attributeValue(elt, "hx-include");
             if (includeSelector) {
-                let includeNodes = this.__findAllExt(elt, includeSelector);
-                for (let node of includeNodes) {
+                for (let node of this.__findAllExt(elt, includeSelector)) {
+                    if (validate && node.reportValidity && !node.reportValidity()) return
                     this.__addInputValues(node, included, formData);
                 }
             }
