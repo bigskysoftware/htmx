@@ -2,11 +2,12 @@
 
 * complete port of examples to patterns - @scriptogre
 * updated website design - @scriptogre
-* Determine final request headers (https://github.com/bigskysoftware/htmx/issues/3496)
-* `hx-compat.js` - backwards compatibility extension that allows auditing inheritance issues @alex
+* `hx-compat.js` - backwards compatibility extension that allows auditing inheritance issues - @1cg
+* Fix issues in https://gist.github.com/dienhoa/af44af16ee91f5a1c8a01c6bfcf53af5
 
 # Backlog
 
+* Port old websocket and sse extensions as `legacy-wc` & `legacy-sse`
 * Documentation scrub
   * Final, complete upgrade guide
   * Remove all stale references
@@ -15,6 +16,7 @@
 
 # Done
 
+* ~~Determine final request headers (https://github.com/bigskysoftware/htmx/issues/3496)~~
 * ~~document new extensions architecture - @latent~~
 * ~~* Determine how to handle form actions that have query parameters (https://github.com/bigskysoftware/htmx/issues/2151)~~
 * ~~`websockets.js` - web sockets - @stu~~
