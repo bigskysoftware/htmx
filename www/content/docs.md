@@ -144,7 +144,7 @@ This makes `htmx` available both as a module import and globally as `window.htmx
 
 ```javascript
 import htmx from 'htmx.org';
-import 'htmx.org/dist/ext/preload';
+import 'htmx.org/dist/ext/hx-preload';
 ```
 
 ## AJAX
