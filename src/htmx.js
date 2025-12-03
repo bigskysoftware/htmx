@@ -211,7 +211,7 @@ var htmx = (() => {
             if (parent) {
                 let val = this.__attributeValue(parent, name, undefined, returnElt);
                 if (!returnElt && val && this.config.implicitInheritance) {
-                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, parent})
+                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
