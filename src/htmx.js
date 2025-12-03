@@ -306,8 +306,8 @@ var htmx = (() => {
                 status: "created",
                 select: this.__attributeValue(sourceElement, "hx-select"),
                 selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
-                target: this.__resolveTarget(sourceElement, this.__attributeValue(sourceElement, "hx-target")),
-                swap: this.__attributeValue(sourceElement, "hx-swap", this.config.defaultSwap),
+                target: this.__attributeValue(sourceElement, "hx-target"),
+                swap: this.__attributeValue(sourceElement, "hx-swap") ?? this.config.defaultSwap,
                 push: this.__attributeValue(sourceElement, "hx-push-url"),
                 replace: this.__attributeValue(sourceElement, "hx-replace-url"),
                 transition: this.config.transitions,
@@ -322,8 +322,10 @@ var htmx = (() => {
                     credentials: "same-origin",
                     signal: ac.signal,
                     mode: this.config.mode
-                }
+                },
+                ...sourceElement._htmx?.boosted
             };
+            ctx.target = this.__resolveTarget(sourceElement, ctx.target);
 
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
@@ -1012,8 +1014,9 @@ var htmx = (() => {
         }
 
         __maybeBoost(elt) {
-            if (this.__attributeValue(elt, "hx-boost") === "true" && this.__shouldBoost(elt)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: true}
+            let boostValue = this.__attributeValue(elt, "hx-boost");
+            if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: this.__parseConfig(boostValue)}
                 elt.setAttribute('data-htmx-powered', 'true');
                 if (elt.matches('a') && !elt.hasAttribute("target")) {
                     elt.addEventListener('click', (click) => {

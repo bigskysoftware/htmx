@@ -40,6 +40,52 @@ Here is an example of a boosted form:
 ```
 This form will issue an ajax `POST` to the given URL and replace the body's inner content with it.
 
+## Advanced Syntax
+
+You can configure boost behavior using an advanced syntax that combines multiple settings:
+
+```html
+<body hx-boost:inherited="swap:innerHTML target:#main select:#content">
+  <div id="main">
+    <!-- Boosted links inherit the config -->
+    <a href="/page1">Go To Page 1</a>
+    <a href="/page2">Go To Page 2</a>
+    
+    <!-- Override with different boost config -->
+    <div hx-boost:inherited="swap:outerHTML target:#result">
+      <a href="/page3">Page 3 (uses div config)</a>
+      
+      <!-- Disable boost for specific link -->
+      <a href="/external" hx-boost="false">External</a>
+      
+      <!-- Custom boost config overrides all -->
+      <a href="/page4" hx-boost="swap:beforeend target:#list">Page 4</a>
+    </div>
+    
+    <!-- Non-boosted elements are unaffected -->
+    <div hx-get="/data" hx-trigger="load">Loading...</div>
+  </div>
+</body>
+```
+
+The key advantage is that boost config only applies to boosted elements (links and forms), unlike inherited `hx-*` attributes which would affect all descendant elements.
+
+### Priority Order
+
+Boost config **overrides** explicit `hx-*` attributes:
+1. Boost config (highest priority)
+2. Explicit `hx-*` attributes
+3. Default values (lowest priority)
+
+This allows you to:
+- Set base defaults with `hx-target`, `hx-swap` on elements
+- Override them with `hx-boost:inherited` at any level
+- Use `hx-boost="true"` or `hx-boost="false"` to enable/disable
+
+Supported modifiers:
+- `swap:STYLE` - Swap strategy (innerHTML, outerHTML, etc.)
+- `target:SELECTOR` - Target element selector
+- `select:SELECTOR` - Content selection from response
 
 ## Notes
 
