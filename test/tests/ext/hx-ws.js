@@ -10,15 +10,20 @@ describe('hx-ws WebSocket extension', function() {
         
         // Mock WebSocket
         mockWebSocket = class MockWebSocket {
+            static CONNECTING = 0;
+            static OPEN = 1;
+            static CLOSING = 2;
+            static CLOSED = 3;
+            
             constructor(url) {
                 this.url = url;
-                this.readyState = WebSocket.CONNECTING;
+                this.readyState = MockWebSocket.CONNECTING;
                 this.listeners = {};
                 mockWebSocketInstances.push(this);
                 
                 // Simulate connection after a short delay
                 setTimeout(() => {
-                    this.readyState = WebSocket.OPEN;
+                    this.readyState = MockWebSocket.OPEN;
                     this.triggerEvent('open', {});
                 }, 10);
             }
@@ -34,17 +39,22 @@ describe('hx-ws WebSocket extension', function() {
             }
             
             send(data) {
+                if (this.readyState !== MockWebSocket.OPEN) {
+                    throw new Error('WebSocket is not open');
+                }
                 this.lastSent = data;
             }
             
             close() {
-                this.readyState = WebSocket.CLOSED;
+                this.readyState = MockWebSocket.CLOSED;
                 this.triggerEvent('close', {});
             }
             
             triggerEvent(event, data) {
                 if (this.listeners[event]) {
-                    this.listeners[event].forEach(handler => handler(data));
+                    // Add target property to event object for proper event handling
+                    const eventObj = { ...data, target: this };
+                    this.listeners[event].forEach(handler => handler(eventObj));
                 }
             }
             
@@ -93,7 +103,7 @@ describe('hx-ws WebSocket extension', function() {
         cleanupTest(this.currentTest);
         // Close all mock WebSocket connections
         mockWebSocketInstances.forEach(ws => {
-            if (ws.readyState === WebSocket.OPEN) {
+            if (ws.readyState === mockWebSocket.OPEN) {
                 ws.close();
             }
         });
@@ -176,10 +186,15 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(mockWebSocketInstances.length, 1);
             
             let ws = mockWebSocketInstances[0];
-            document.getElementById('div1').remove();
+            
+            await htmx.swap({
+                text: '',
+                target: document.getElementById('container'),
+                swap: 'innerHTML'
+            });
             await htmx.timeout(50);
             
-            assert.equal(ws.readyState, WebSocket.CLOSED);
+            assert.equal(ws.readyState, mockWebSocket.CLOSED);
         });
         
         it('keeps connection open when one of multiple elements is removed', async function() {
@@ -192,10 +207,15 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
             
             let ws = mockWebSocketInstances[0];
-            document.getElementById('div1').remove();
+            
+            await htmx.swap({
+                text: '',
+                target: document.getElementById('div1'),
+                swap: 'delete'
+            });
             await htmx.timeout(50);
             
-            assert.equal(ws.readyState, WebSocket.OPEN);
+            assert.equal(ws.readyState, mockWebSocket.OPEN);
         });
     });
     
@@ -632,19 +652,26 @@ describe('hx-ws WebSocket extension', function() {
                 reconnectTimes.push(Date.now());
             });
             
-            // Close and trigger multiple reconnects
-            for (let i = 0; i < 3; i++) {
-                let ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
-                ws.close();
-                await htmx.timeout(300);
-            }
+            // First close
+            let ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(200);
+            
+            // Second close
+            ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(300);
+            
+            // Third close
+            ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(500);
             
             // Verify delays are increasing
-            if (reconnectTimes.length >= 2) {
-                let firstDelay = reconnectTimes[1] - reconnectTimes[0];
-                let secondDelay = reconnectTimes[2] - reconnectTimes[1];
-                assert.isTrue(secondDelay >= firstDelay, 'Second delay should be >= first delay');
-            }
+            assert.isTrue(reconnectTimes.length >= 3, 'Should have at least 3 reconnect attempts');
+            let firstDelay = reconnectTimes[1] - reconnectTimes[0];
+            let secondDelay = reconnectTimes[2] - reconnectTimes[1];
+            assert.isTrue(secondDelay >= firstDelay, 'Second delay should be >= first delay');
         });
         
         it('emits htmx:wsSendError when send fails', async function() {
@@ -1003,6 +1030,141 @@ describe('hx-ws WebSocket extension', function() {
             assert.include(document.getElementById('widget1').innerHTML, 'Data 1');
             assert.include(document.getElementById('widget2').innerHTML, 'Data 2');
             assert.include(document.getElementById('widget3').innerHTML, 'Data 3');
+        });
+    });
+
+    // ========================================
+    // 10. TARGET AND SWAP OVERRIDE TESTS
+    // ========================================
+    
+    describe('Target and Swap Overrides', function() {
+        
+        it('respects target override from message envelope', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#default-target">
+                    <div id="default-target">Default</div>
+                    <div id="override-target">Override</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<div>New Content</div>',
+                target: '#override-target'
+            });
+            await htmx.timeout(20);
+            
+            assert.equal(document.getElementById('default-target').textContent, 'Default');
+            assert.include(document.getElementById('override-target').innerHTML, 'New Content');
+        });
+        
+        it('respects swap override from message envelope', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content" hx-swap="innerHTML">
+                    <div id="content"><p>Item 1</p></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<p>Item 2</p>',
+                swap: 'beforeend'
+            });
+            await htmx.timeout(20);
+            
+            let content = document.getElementById('content');
+            assert.include(content.innerHTML, 'Item 1');
+            assert.include(content.innerHTML, 'Item 2');
+        });
+        
+        it('uses element hx-target when message has no target', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#element-target">
+                    <div id="element-target"></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<div>Content</div>'
+            });
+            await htmx.timeout(20);
+            
+            assert.include(document.getElementById('element-target').innerHTML, 'Content');
+        });
+        
+        it('uses element hx-swap when message has no swap', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content" hx-swap="beforeend">
+                    <div id="content"><p>Item 1</p></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<p>Item 2</p>'
+            });
+            await htmx.timeout(20);
+            
+            let content = document.getElementById('content');
+            assert.include(content.innerHTML, 'Item 1');
+            assert.include(content.innerHTML, 'Item 2');
+        });
+        
+        it('message target overrides element hx-target', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#element-target">
+                    <div id="element-target">Element Target</div>
+                    <div id="message-target">Message Target</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<div>New</div>',
+                target: '#message-target'
+            });
+            await htmx.timeout(20);
+            
+            assert.equal(document.getElementById('element-target').textContent, 'Element Target');
+            assert.include(document.getElementById('message-target').innerHTML, 'New');
+        });
+        
+        it('message swap overrides element hx-swap', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content" hx-swap="innerHTML">
+                    <div id="content"><p>Original</p></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<p>Appended</p>',
+                swap: 'beforeend'
+            });
+            await htmx.timeout(20);
+            
+            let content = document.getElementById('content');
+            assert.include(content.innerHTML, 'Original');
+            assert.include(content.innerHTML, 'Appended');
         });
     });
 });
