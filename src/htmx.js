@@ -1325,7 +1325,7 @@ var htmx = (() => {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
             // skip creating main swap if extracting partials resulted in empty response except for delete style
-            if (swapSpec.style === 'delete' || /\S/.test(fragment.innerHTML || '') || !partialTasks.length) {
+            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
                     fragment = document.createDocumentFragment();
