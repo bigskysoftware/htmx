@@ -325,9 +325,12 @@ var htmx = (() => {
                     credentials: "same-origin",
                     signal: ac.signal,
                     mode: this.config.mode
-                },
-                ...sourceElement._htmx?.boosted
+                }
             };
+            // Apply boost config overrides
+            if (sourceElement._htmx?.boosted) {
+                this.__mergeConfig(sourceElement._htmx.boosted, ctx);
+            }
             ctx.target = this.__resolveTarget(sourceElement, ctx.target);
 
             // Apply hx-config overrides
@@ -1006,7 +1009,7 @@ var htmx = (() => {
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
             if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: this.__parseConfig(boostValue)}
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: boostValue}
                 elt.setAttribute('data-htmx-powered', 'true');
                 if (elt.matches('a') && !elt.hasAttribute("target")) {
                     elt.addEventListener('click', (click) => {
