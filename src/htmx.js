@@ -118,17 +118,7 @@ var htmx = (() => {
             }
             let metaConfig = document.querySelector('meta[name="htmx:config"]');
             if (metaConfig) {
-                let content = metaConfig.content;
-                let overrides = this.__parseConfig(content);
-                // Deep merge nested config objects
-                for (let key in overrides) {
-                    let val = overrides[key];
-                    if (val && typeof val === 'object' && !Array.isArray(val) && this.config[key]) {
-                        Object.assign(this.config[key], val);
-                    } else {
-                        this.config[key] = val;
-                    }
-                }
+                this.__mergeConfig(metaConfig.content, this.config);
             }
             this.__approvedExt = this.config.extensions;
         }
@@ -232,6 +222,19 @@ var htmx = (() => {
             }, {});
         }
 
+        __mergeConfig(configString, target) {
+            let parsed = this.__parseConfig(configString);
+            for (let key in parsed) {
+                let val = parsed[key];
+                if (val && typeof val === 'object' && !Array.isArray(val) && target[key]) {
+                    Object.assign(target[key], val);
+                } else {
+                    target[key] = val;
+                }
+            }
+            return target;
+        }
+
         __parseTriggerSpecs(spec) {
             return spec.split(',').map(s => {
                 let m = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/);
@@ -330,22 +333,9 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                let configOverrides = this.__parseConfig(configAttr);
-                let req = ctx.request;
-                for (let key in configOverrides) {
-                    if (key.startsWith('+')) {
-                        let actualKey = key.substring(1);
-                        if (req[actualKey] && typeof req[actualKey] === 'object') {
-                            Object.assign(req[actualKey], configOverrides[key]);
-                        } else {
-                            req[actualKey] = configOverrides[key];
-                        }
-                    } else {
-                        req[key] = configOverrides[key];
-                    }
-                }
-                if (req.etag) {
-                    (sourceElement._htmx ||= {}).etag ||= req.etag
+                this.__mergeConfig(configAttr, ctx.request);
+                if (ctx.request.etag) {
+                    (sourceElement._htmx ||= {}).etag ||= ctx.request.etag
                 }
             }
             if (sourceElement._htmx?.etag) {
@@ -370,7 +360,7 @@ var htmx = (() => {
             }
             let headersAttribute = this.__attributeValue(elt, "hx-headers");
             if (headersAttribute) {
-                Object.assign(headers, this.__parseConfig(headersAttribute));
+                this.__mergeConfig(headersAttribute, headers);
             }
             return headers;
         }
@@ -2096,7 +2086,7 @@ var htmx = (() => {
                 }
                 let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (statusValue) {
-                    Object.assign(ctx, this.__parseConfig(statusValue));
+                    this.__mergeConfig(statusValue, ctx);
                     return;
                 }
             }

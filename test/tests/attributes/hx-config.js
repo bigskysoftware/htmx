@@ -136,20 +136,6 @@ describe('hx-config attribute', function() {
         assert.isNull(ctx.request.select)
     })
 
-    it('merges non-object values with + prefix', async function () {
-        mockResponse('GET', '/newpath', 'Done')
-        let ctx = null
-        document.addEventListener('htmx:config:request', function(e) {
-            ctx = e.detail.ctx
-        }, {once: true})
-
-        // When using + on a non-object (action is a string), it should set it on request
-        let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click" hx-config=\'{"+action": "/newpath"}\'>Click</button>');
-        btn.click()
-        await forRequest()
-        assert.isTrue(ctx.request.action.startsWith('/newpath'))
-    })
-
     it('handles complex nested JSON structures', async function () {
         mockResponse('GET', '/test', 'Done')
         let ctx = null
@@ -232,14 +218,14 @@ describe('hx-config attribute', function() {
         assert.equal(ctx.request.action, '/child')
     })
 
-    it('merges headers with + prefix', async function () {
+    it('merges headers by default', async function () {
         mockResponse('GET', '/test', 'Done')
         let ctx = null
         document.addEventListener('htmx:config:request', function(e) {
             ctx = e.detail.ctx
         }, {once: true})
 
-        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"+headers": {"X-Custom": "value"}}\'>Click</button>');
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"headers": {"X-Custom": "value"}}\'>Click</button>');
         btn.click()
         await forRequest()
         assert.equal(ctx.request.headers['X-Custom'], 'value')
