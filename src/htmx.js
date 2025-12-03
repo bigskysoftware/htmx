@@ -1280,8 +1280,8 @@ var htmx = (() => {
             if (tasks.length === 0) return;
 
             // Separate transition/nonTransition tasks
-            let transitionTasks = tasks.filter(t => t.transition);
-            let nonTransitionTasks = tasks.filter(t => !t.transition);
+            let transitionTasks = tasks.filter(t => (t.swapSpec?.transition ?? t.transition) === true);
+            let nonTransitionTasks = tasks.filter(t => (t.swapSpec?.transition ?? t.transition) !== true);
 
             if(!this.__trigger(document, "htmx:before:swap", {ctx, tasks})){
                 return
@@ -1340,7 +1340,7 @@ var htmx = (() => {
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
+                    transition: ctx.transition !== false
                 };
                 return mainSwap;
             }
