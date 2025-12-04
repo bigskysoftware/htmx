@@ -49,6 +49,82 @@ describe('Basic Functionality', () => {
         assertTextContentIs("#result", "Success!");
     })
 
+    it('validation errors prevent submission of a single input with hx-validate=true', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<input id="i1" required hx-post="/demo" hx-validate="true" name="test" hx-trigger="click"/>');
+        
+        find('#i1').click();
+        assert.equal(fetchMock.pendingRequests.length, 0);
+        
+        find("#i1").value = "foo"
+        find('#i1').click()
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
+    it('validation errors prevent submission of hx-included inputs', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<input id="i1" required name="test1"/><button id="b1" hx-post="/demo" hx-validate="true" hx-include="#i1">Submit</button>');
+        
+        find('#b1').click();
+        assert.equal(fetchMock.pendingRequests.length, 0);
+        
+        find("#i1").value = "foo"
+        find('#b1').click()
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
+    it('form with noValidate does not validate by default', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<form novalidate><input id="i1" required name="test"/><button id="b1" hx-post="/demo">Submit</button></form>');
+        
+        find('#b1').click();
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
+    it('form with noValidate can be overridden with hx-validate=true', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<form novalidate><input id="i1" required name="test"/><button id="b1" hx-post="/demo" hx-validate="true">Submit</button></form>');
+        
+        find('#b1').click();
+        assert.equal(fetchMock.pendingRequests.length, 0);
+        
+        find("#i1").value = "foo"
+        find('#b1').click()
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
+    it('submit button with formNoValidate skips validation', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<form><input id="i1" required name="test"/><button id="b1" hx-post="/demo" formnovalidate>Submit</button></form>');
+        
+        find('#b1').click();
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
+    it('form validates by default without hx-validate attribute', async function() {
+        mockResponse('POST', '/demo', '<div id="result">Success!</div>');
+        createProcessedHTML('<form hx-post="/demo"><input id="i1" required name="test"/><button id="b1" type="submit">Submit</button></form>');
+        
+        find('#b1').click();
+        assert.equal(fetchMock.pendingRequests.length, 0);
+        
+        find("#i1").value = "foo"
+        find('#b1').click()
+        await forRequestWithDelay();
+        
+        assertTextContentIs("#result", "Success!");
+    })
+
 //     it('Button added dynamically still triggers fetch and swaps', async function() {
 //         // Set up mock response
 //         fetchMock.mockResponse('/demo', new MockResponse('<div id="d1">Foo</div>'));
