@@ -2009,8 +2009,8 @@ var htmx = (() => {
             let type = newNode.nodeType;
 
             if (type === 1) {
-                let noMorph = this.config.morphIgnore || [];
-                this.__copyAttributes(oldNode, newNode, noMorph);
+                if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
+                this.__copyAttributes(oldNode, newNode);
                 if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
                     oldNode.value = newNode.value;
                 }
@@ -2019,10 +2019,13 @@ var htmx = (() => {
             if ((type === 8 || type === 3) && oldNode.nodeValue !== newNode.nodeValue) {
                 oldNode.nodeValue = newNode.nodeValue;
             }
-            if (!oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
+            
+            let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
+            if (!skipChildren && !oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
         }
 
-        __copyAttributes(destination, source, attributesToIgnore = []) {
+        __copyAttributes(destination, source) {
+            let attributesToIgnore = this.config.morphIgnore || [];
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
                     destination.setAttribute(attr.name, attr.value);
