@@ -442,4 +442,103 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(result.textContent, 'Clicked!', 'htmx functionality should still work');
         });
     });
+
+    describe('morphSkip config', function() {
+        afterEach(function() {
+            htmx.config.morphSkip = null;
+        });
+
+        it('skips morphing elements matching selector', async function() {
+            htmx.config.morphSkip = '.no-morph';
+            mockResponse('GET', '/test', '<div class="no-morph" data-value="new">new content</div>');
+            const div = createProcessedHTML('<div id="target"><div class="no-morph" data-value="old">old content</div></div>');
+            const noMorph = div.querySelector('.no-morph');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(noMorph.getAttribute('data-value'), 'old', 'Attributes should not be updated');
+            assert.equal(noMorph.textContent, 'old content', 'Content should not be updated');
+        });
+
+        it('skips morphing custom elements', async function() {
+            htmx.config.morphSkip = 'custom-element';
+            mockResponse('GET', '/test', '<custom-element id="ce" data-value="new"><span>new</span></custom-element>');
+            const div = createProcessedHTML('<div id="target"><custom-element id="ce" data-value="old"><span>old</span></custom-element></div>');
+            const ce = div.querySelector('custom-element');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(ce.getAttribute('data-value'), 'old');
+            assert.equal(ce.querySelector('span').textContent, 'old');
+        });
+
+        it('morphs other elements when some are skipped', async function() {
+            htmx.config.morphSkip = '.skip';
+            mockResponse('GET', '/test', '<div class="skip" data-value="new">skip</div><div class="morph" data-value="new">morph</div>');
+            const div = createProcessedHTML('<div id="target"><div class="skip" data-value="old">skip</div><div class="morph" data-value="old">morph</div></div>');
+            const skip = div.querySelector('.skip');
+            const morph = div.querySelector('.morph');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(skip.getAttribute('data-value'), 'old');
+            assert.equal(morph.getAttribute('data-value'), 'new');
+        });
+    });
+
+    describe('morphSkipChildren config', function() {
+        afterEach(function() {
+            htmx.config.morphSkipChildren = null;
+        });
+
+        it('updates attributes but skips children morphing', async function() {
+            htmx.config.morphSkipChildren = '.skip-children';
+            mockResponse('GET', '/test', '<div class="skip-children" data-value="new"><span>new child</span></div>');
+            const div = createProcessedHTML('<div id="target"><div class="skip-children" data-value="old"><span>old child</span></div></div>');
+            const skipChildren = div.querySelector('.skip-children');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(skipChildren.getAttribute('data-value'), 'new', 'Attributes should be updated');
+            assert.equal(skipChildren.querySelector('span').textContent, 'old child', 'Children should not be morphed');
+        });
+
+        it('preserves Light DOM children in custom elements', async function() {
+            htmx.config.morphSkipChildren = 'lit-component';
+            mockResponse('GET', '/test', '<lit-component id="lc" value="new"><div class="internal">new</div></lit-component>');
+            const div = createProcessedHTML('<div id="target"><lit-component id="lc" value="old"><div class="internal">old</div></lit-component></div>');
+            const lc = div.querySelector('lit-component');
+            const internal = lc.querySelector('.internal');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(lc.getAttribute('value'), 'new', 'Attributes should update');
+            assert.equal(internal.textContent, 'old', 'Light DOM children should be preserved');
+        });
+
+        it('works with multiple selectors', async function() {
+            htmx.config.morphSkipChildren = '.skip1, .skip2';
+            mockResponse('GET', '/test', '<div class="skip1" data-value="new"><span>new1</span></div><div class="skip2" data-value="new"><span>new2</span></div>');
+            const div = createProcessedHTML('<div id="target"><div class="skip1" data-value="old"><span>old1</span></div><div class="skip2" data-value="old"><span>old2</span></div></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(div.querySelector('.skip1').getAttribute('data-value'), 'new');
+            assert.equal(div.querySelector('.skip1 span').textContent, 'old1');
+            assert.equal(div.querySelector('.skip2').getAttribute('data-value'), 'new');
+            assert.equal(div.querySelector('.skip2 span').textContent, 'old2');
+        });
+
+        it('allows normal morphing for non-matching elements', async function() {
+            htmx.config.morphSkipChildren = '.skip-children';
+            mockResponse('GET', '/test', '<div class="normal" data-value="new"><span>new</span></div><div class="skip-children" data-value="new"><span>new</span></div>');
+            const div = createProcessedHTML('<div id="target"><div class="normal" data-value="old"><span>old</span></div><div class="skip-children" data-value="old"><span>old</span></div></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(div.querySelector('.normal span').textContent, 'new', 'Normal elements should morph children');
+            assert.equal(div.querySelector('.skip-children span').textContent, 'old', 'Skip elements should preserve children');
+        });
+    });
+    
 });
