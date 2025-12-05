@@ -368,10 +368,9 @@ var htmx = (() => {
         __resolveTarget(elt, selector) {
             if (selector instanceof Element) {
                 return selector;
-            } else if (selector === 'this') {
-                return this.__attributeValue(elt, "hx-target", undefined, true);
             } else if (selector != null) {
-                return this.find(elt, selector);
+                let thisElt = this.__attributeValue(elt, "hx-target", undefined, true);
+                return this.__findAllExt(elt, selector, false, thisElt)[0];
             } else if (this.__isBoosted(elt)) {
                 return document.body
             } else {
@@ -455,10 +454,8 @@ var htmx = (() => {
             ctx.status = "issuing"
             this.__initTimeout(ctx);
 
-            let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
-            let indicators = this.__showIndicators(elt, indicatorsSelector);
-            let disableSelector = this.__attributeValue(elt, "hx-disable");
-            let disableElements = this.__disableElements(elt, disableSelector);
+            let indicators = this.__showIndicators(elt);
+            let disableElements = this.__disableElements(elt);
 
             try {
                 // Handle confirmation
@@ -1642,15 +1639,19 @@ var htmx = (() => {
             }
         }
 
-        __showIndicators(elt, indicatorsSelector) {
-            let indicatorElements = []
-            if (indicatorsSelector) {
-                indicatorElements = [elt, ...this.__queryEltAndDescendants(elt, indicatorsSelector)];
-                for (const indicator of indicatorElements) {
-                    indicator._htmxReqCount ||= 0
-                    indicator._htmxReqCount++
-                    indicator.classList.add(this.config.requestClass)
-                }
+        __showIndicators(elt) {
+            let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
+            let indicatorElements;
+            if (!indicatorsSelector) {
+                indicatorElements = [elt]
+            } else {
+                let thisElt = this.__attributeValue(elt, "hx-indicator", undefined, true);
+                indicatorElements = this.__findAllExt(elt, indicatorsSelector, false, thisElt);
+            }
+            for (const indicator of indicatorElements) {
+                indicator._htmxReqCount ||= 0
+                indicator._htmxReqCount++
+                indicator.classList.add(this.config.requestClass)
             }
             return indicatorElements
         }
@@ -1667,7 +1668,8 @@ var htmx = (() => {
             }
         }
 
-        __disableElements(elt, disabledSelector) {
+        __disableElements(elt) {
+            let disabledSelector = this.__attributeValue(elt, "hx-disable");
             let disabledElements = []
             if (disabledSelector) {
                 disabledElements = this.__queryEltAndDescendants(elt, disabledSelector);
@@ -1769,11 +1771,11 @@ var htmx = (() => {
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
-        __findAllExt(eltOrSelector, maybeSelector, global) {
+        __findAllExt(eltOrSelector, maybeSelector, global, thisElt) {
             let selector = maybeSelector ?? eltOrSelector;
             let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
             if (selector.startsWith('global ')) {
-                return this.__findAllExt(elt, selector.slice(7), true);
+                return this.__findAllExt(elt, selector.slice(7), true,  thisElt);
             }
             let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
                 .split(',').map(p => p.replace(/%2C/g, ',')) : [];
@@ -1804,6 +1806,8 @@ var htmx = (() => {
                     item = document.body
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
+                } else if (selector === 'this') {
+                    item = thisElt || elt
                 } else {
                     unprocessedParts.push(selector)
                 }
@@ -1847,7 +1851,7 @@ var htmx = (() => {
             }
         }
 
-        __findExt(eltOrSelector, selector) {
+        __findExt(eltOrSelector, selector, thisElt) {
             return this.__findAllExt(eltOrSelector, selector)[0]
         }
 
