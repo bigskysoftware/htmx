@@ -94,7 +94,7 @@ var htmx = (() => {
                 version: '4.0.0-alpha4',
                 logAll: false,
                 prefix: "",
-                transitions: true,
+                transitions: false,
                 history: true,
                 historyReload: false,
                 mode: 'same-origin',
