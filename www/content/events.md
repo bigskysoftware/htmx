@@ -95,6 +95,31 @@ This event is triggered after htmx has cleaned up an element.
 
 * `detail.elt` - the element that was cleaned up
 
+### Event - `htmx:before:process` {#htmx:before:process}
+
+This event is triggered before htmx processes an element and its descendants, setting up htmx behavior (triggers, boosting, hx-on attributes, etc.).
+
+If you call `preventDefault()`, htmx will not process the element.
+
+##### Details
+
+* `detail.elt` - the element about to be processed
+
+### Event - `htmx:after:process` {#htmx:after:process}
+
+This event is triggered after htmx has finished processing an element and its descendants. This is useful for performing actions after htmx has set up all behaviors on new content.
+
+```javascript
+document.body.addEventListener('htmx:after:process', function(evt) {
+  // Initialize 3rd party libraries on newly processed content
+  initializeWidgets(evt.detail.elt);
+});
+```
+
+##### Details
+
+* `detail.elt` - the element that was processed
+
 ## Request Events
 
 ### Event - `htmx:config:request` {#htmx:config:request}
@@ -179,6 +204,16 @@ document.body.addEventListener('htmx:before:swap', function(evt) {
 **Replaces:** `htmx:afterSwap`, `htmx:afterSettle`
 
 This event is triggered after new content has been swapped into the DOM.
+
+##### Details
+
+* `detail.ctx` - the request context object
+
+### Event - `htmx:after:restore` {#htmx:after:restore}
+
+This event is triggered after all content has been restored to the DOM following a swap operation. This includes after any restore tasks (like CSS transitions) have been completed.
+
+This is useful for performing final cleanup or initialization after all swap-related operations are complete.
 
 ##### Details
 
