@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.0-alpha5] - 2025-12-06
+
+* **BREAKING**: View transitions now default to `false` (previously `true`)
+* **BREAKING**: Moved the htmx meta config name from `htmx:config` back to `htmx-config`
+* Fixed `hx-indicator` attribute handling
+* Added support for transition overrides on OOB and partial swaps ([#3570](https://github.com/bigskysoftware/htmx/pull/3570))
+* Added morph skip support for Web Components ([#3573](https://github.com/bigskysoftware/htmx/pull/3573))
+* Implemented advanced `hx-boost` configuration overrides ([#3549](https://github.com/bigskysoftware/htmx/pull/3549), [#3572](https://github.com/bigskysoftware/htmx/pull/3572))
+* Added `mergeConfig` support and improved `hx-config` merging ([#3561](https://github.com/bigskysoftware/htmx/pull/3561))
+* Fixed `hx-validate` to respect `noValidate` and validate inputs outside of forms ([#3562](https://github.com/bigskysoftware/htmx/pull/3562))
+* Fixed bug with empty response after partial removal detection ([#3569](https://github.com/bigskysoftware/htmx/pull/3569))
+
 ## [4.0.0-alpha4] - 2025-11-27
 
 * WebSocket extension for htmx 4.0 ([#3547](https://github.com/bigskysoftware/htmx/pull/3547))
