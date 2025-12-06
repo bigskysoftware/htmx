@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-alpha5] - 2025-12-06
+## [4.0.0-alpha5] - 2025-12-08
 
 * **BREAKING**: View transitions now default to `false` (previously `true`)
 * **BREAKING**: Moved the htmx meta config name from `htmx:config` back to `htmx-config`
