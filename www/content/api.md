@@ -381,7 +381,7 @@ htmx.config.defaultSwap = 'outerHTML';
 htmx.config.prefix = 'data-hx-';
 
 // configure SSE streams
-htmx.config.streams = {
+htmx.config.sse = {
   reconnect: true,
   reconnectMaxAttempts: 10,
   reconnectDelay: 1000

@@ -1032,7 +1032,7 @@ data: 100
 
 ### Configuration
 
-You can configure the global streaming config in `htmx.config.streams`:
+You can configure the global streaming config in `htmx.config.sse`:
 
 ```html
 <meta name="htmx-config" content='{
@@ -1729,7 +1729,7 @@ They are listed below:
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                    |
 | `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                     |
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                         |
-| `htmx.config.streams`             | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `pauseInBackground` (default: `false`) |
+| `htmx.config.sse`                 | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `pauseInBackground` (default: `false`) |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                             |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
