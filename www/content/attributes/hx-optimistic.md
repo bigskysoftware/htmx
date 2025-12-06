@@ -2,7 +2,7 @@
 title = "hx-optimistic"
 +++
 
-**Note:** This is an extension attribute. To use it, you must include the optimistic extension.
+**Note:** This is an extension attribute. To use it, you must include the optimistic extension found at `ext/hx-optimistic.js`.
 
 The `hx-optimistic` attribute allows you to show optimistic content immediately while a request is in flight, providing instant user feedback before the server responds.
 

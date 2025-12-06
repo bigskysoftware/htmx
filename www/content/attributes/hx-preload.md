@@ -2,7 +2,7 @@
 title = "hx-preload"
 +++
 
-**Note:** This is an extension attribute. To use it, you must include the preload extension.
+**Note:** This is an extension attribute. To use it, you must include the preload extension found at `ext/hx-preload.js`.
 
 The `hx-preload` attribute allows you to preload content before the user actually triggers the request, improving perceived performance.
 
