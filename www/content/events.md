@@ -219,28 +219,6 @@ This is useful for performing final cleanup or initialization after all swap-rel
 
 * `detail.ctx` - the request context object
 
-### Event - `htmx:before:oob:swap` {#htmx:before:oob:swap}
-
-**Replaces:** `htmx:oobBeforeSwap`
-
-This event is triggered before an out-of-band swap occurs.
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.fragment` - the OOB fragment being swapped
-
-### Event - `htmx:after:oob:swap` {#htmx:after:oob:swap}
-
-**Replaces:** `htmx:oobAfterSwap`
-
-This event is triggered after an out-of-band swap occurs.
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.fragment` - the OOB fragment that was swapped
-
 ## History Events
 
 ### Event - `htmx:before:history:update` {#htmx:before:history:update}
