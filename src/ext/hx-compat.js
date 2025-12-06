@@ -29,7 +29,7 @@
             if (!htmx.config.compat?.suppressInheritanceLogs) {
                 console.log("IMPLICIT INHERITANCE DETECTED, attribute: " + detail.name + ", elt: ", elt, ", inherited from: ", detail.parent)
                 let evt = new CustomEvent("htmxImplicitInheritace", {
-                    detail,turn
+                    detail,
                     cancelable: true,
                     bubbles : true,
                     composed: true,
