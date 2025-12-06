@@ -56,27 +56,24 @@ describe('hx-swap modifiers', function() {
 
     it('swap with delay (blocking - default behavior) waits for delay before completing request', async function () {
         mockResponse('GET', '/test', '<div>New Content</div>')
-        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms">Old Content</div>');
+        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms transistion:false">Old Content</div>');
         
         find('#test-div').click()
         await forRequest()
         assertTextContentIs('#test-div', 'New Content')
     })
 
-    it('swap with delay (non-blocking) completes request immediately but delays swap', async function () {
-        mockResponse('GET', '/test', '<div>New Content</div>')
-        createProcessedHTML('<div id="test-div" hx-get="/test" hx-swap="innerHTML swap:100ms transition:false">Old Content</div>');
-
-        find('#test-div').click()
+    it('main swap with delay respects blocking behavior', async function () {
+        mockResponse('GET', '/test', 'Main Content')
+        createProcessedHTML('<div id="main" hx-get="/test" hx-swap="innerHTML swap:100ms">Original</div>');
+        
+        let startTime = Date.now();
+        find('#main').click()
         await forRequest()
-
-        // Should still be old content immediately after request completes
-        assertTextContentIs('#test-div', 'Old Content')
-
-        // Wait for the delayed swap to complete
-        await new Promise(resolve => setTimeout(resolve, 150));
-
-        // Now should be updated
-        assertTextContentIs('#test-div', 'New Content')
+        let elapsed = Date.now() - startTime;
+        
+        // Should have waited for the delay (blocking)
+        assert.isAtLeast(elapsed, 100, 'Should wait at least 100ms')
+        assertTextContentIs('#main', 'Main Content')
     })
 })

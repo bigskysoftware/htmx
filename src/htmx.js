@@ -1279,25 +1279,34 @@ var htmx = (() => {
             // TODO - can we remove this and just let the function complete?
             if (tasks.length === 0) return;
 
-            // Separate transition/nonTransition tasks
-            let transitionTasks = tasks.filter(t => (t.swapSpec?.transition ?? t.transition) === true);
-            let nonTransitionTasks = tasks.filter(t => (t.swapSpec?.transition ?? t.transition) !== true);
-
             if(!this.__trigger(document, "htmx:before:swap", {ctx, tasks})){
                 return
             }
 
-            // insert non-transition tasks immediately or with delay
-            for (let task of nonTransitionTasks) {
-                if (task.swapSpec?.swap) {
-                    setTimeout(() => this.__insertContent(task), this.parseInterval(task.swapSpec.swap));
-                } else {
+            // insert non-transition tasks immediately or with delay, collect transition tasks
+            let transitionTasks = [];
+            for (let task of tasks) {
+                // OOB/partial tasks with swap delays should be non-transition (non-blocking)
+                if (!(task.swapSpec?.transition ?? mainSwap?.transition) || (task.swapSpec?.swap && task !== mainSwap)) {
+                    if (task.swapSpec?.swap) {
+                        if (task === mainSwap) {
+                            await this.timeout(mainSwap.swapSpec.swap);
+                        } else {
+                            setTimeout(() => this.__insertContent(task), this.parseInterval(task.swapSpec.swap));
+                            continue;
+                        }
+                    }
                     this.__insertContent(task)
+                } else {
+                    transitionTasks.push(task);
                 }
             }
 
             // insert transition tasks in the transition queue
             if (transitionTasks.length > 0) {
+                if (mainSwap?.transition && mainSwap?.swapSpec?.swap) {
+                    await this.timeout(mainSwap.swapSpec.swap);
+                }
                 let tasksWrapper = ()=> {
                     for (let task of transitionTasks) {
                         this.__insertContent(task)
@@ -1340,7 +1349,7 @@ var htmx = (() => {
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: ctx.transition !== false
+                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
                 };
                 return mainSwap;
             }
