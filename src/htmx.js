@@ -91,7 +91,7 @@ var htmx = (() => {
 
         __initHtmxConfig() {
             this.config = {
-                version: '4.0.0-alpha4',
+                version: '4.0.0-alpha5',
                 logAll: false,
                 prefix: "",
                 transitions: false,
