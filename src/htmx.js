@@ -1287,12 +1287,13 @@ var htmx = (() => {
             let transitionTasks = [];
             for (let task of tasks) {
                 // OOB/partial tasks with swap delays should be non-transition (non-blocking)
-                if (!(task.swapSpec?.transition ?? mainSwap?.transition) || (task.swapSpec?.swap && task !== mainSwap)) {
-                    if (task.swapSpec?.swap) {
+                let swapDelay = task.swapSpec?.swap;
+                if (!(task.swapSpec?.transition ?? mainSwap?.transition) || (swapDelay && task !== mainSwap)) {
+                    if (swapDelay) {
                         if (task === mainSwap) {
-                            await this.timeout(mainSwap.swapSpec.swap);
+                            await this.timeout(swapDelay);
                         } else {
-                            setTimeout(() => this.__insertContent(task), this.parseInterval(task.swapSpec.swap));
+                            setTimeout(() => this.__insertContent(task), this.parseInterval(swapDelay));
                             continue;
                         }
                     }
