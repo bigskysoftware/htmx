@@ -33,9 +33,14 @@
     <script type="text/hyperscript">
         on htmx:after:process from document call _hyperscript.processNode(document.body)
     </script>
+    <style>
+        ::view-transition-group(*) {
+            animation-duration: 80ms;
+        }
+    </style>
 </head>
 
-<body hx-boost:inherited="true" class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
+<body hx-boost:inherited="transition:true" class="group/body font-hyperlegible text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition overflow-x-hidden">
 
 {% set nav_names = ["docs", "reference", "patterns", "help", "essays"] %}
 {% set nav_descriptions = ["Complete guide and tutorials", "API reference (attributes, headers, etc.)", "Common patterns and examples", "Help and community questions", "Essays about hypermedia"] %}
@@ -48,7 +53,7 @@
             &lt;<b class="text-blue-600 dark:brightness-125">/</b>&gt; htm<b class="text-blue-600 dark:brightness-125">x</b>
         </a>
         <!-- Desktop Navigation -->
-        <nav class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1" hx-preload:inherited="mouseenter">
+        <nav class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1" hx-preload:inherited="mouseenter, touchstart">
             <ul class="flex gap-3 xl:gap-4 justify-center text-base lg:text-base xl:text-lg font-os9 tracking-tight" preload="mouseover">
                 {% for name in nav_names %}
                 <li><a href="/{{ name }}/" class="block px-3 py-1 text-blue-600 dark:text-blue-400 hover:underline"
