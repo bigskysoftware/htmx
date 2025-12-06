@@ -13,11 +13,13 @@ The possible values of this attribute are:
 
 * `innerHTML` - Replace the inner html of the target element
 * `outerHTML` - Replace the entire target element with the response
+* `innerMorph` - Morphs the inner HTML of the target to the new content
+* `outerMorph` - Morphs the outer HTML of the target to the new content
 * `textContent` - Replace the text content of the target element, without parsing the response as HTML
-* `beforebegin` - Insert the response before the target element
-* `afterbegin` - Insert the response before the first child of the target element
-* `beforeend` - Insert the response after the last child of the target element
-* `afterend` - Insert the response after the target element
+* `before` or `beforebegin` - Insert the response before the target element
+* `prepend` or `afterbegin` - Insert the response before the first child of the target element
+* `append` or `beforeend` - Insert the response after the last child of the target element
+* `after` or `afterend` - Insert the response after the target element
 * `delete` - Deletes the target element regardless of the response
 * `none`- Does not append content from response (out of band items will still be processed).
 
