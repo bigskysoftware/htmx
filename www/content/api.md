@@ -176,23 +176,36 @@ htmx.process(document.body);
 
 ### Method - `htmx.swap()` {#swap}
 
-Performs swapping of HTML content into the DOM.
+Performs swapping of HTML content into the DOM. This is an internal method primarily used by htmx itself and extension developers.
+
+**Note:** For most use cases, `htmx.ajax()` is the recommended approach for making requests and swapping content, as it handles the full request lifecycle.
 
 ##### Parameters
 
-* `target` - the HTML element or string selector of swap target
-* `content` - string representation of content to be swapped
-* `swapSpec` - swapping specification object with properties:
-  * `swapStyle` (required) - swapping style (`innerHTML`, `outerHTML`, `beforebegin` etc)
-  * `transition` (bool) - whether to use view transitions for swap
-  * `ignoreTitle` (bool) - disables page title updates
-  * `scroll`, `show` - specifies scroll handling after swap
+* `ctx` - a context object containing:
+  * `text` (required) - the HTML content to swap as a string
+  * `target` - the target element to swap into (defaults to `document.body`)
+  * `swap` - swap style string (e.g., `'innerHTML'`, `'outerHTML'`, etc.)
+  * `select` - CSS selector to extract content from response
+  * `selectOOB` - selector for out-of-band swaps
+  * `sourceElement` - the element that triggered the swap
+  * `transition` - boolean, whether to use view transitions
 
 ##### Example
 
 ```js
-// swap #output element inner HTML with div element with "Swapped!" text
-htmx.swap("#output", "<div>Swapped!</div>", {swapStyle: 'innerHTML'});
+// Swap content into an element
+htmx.swap({
+  text: "<div>Swapped!</div>",
+  target: document.querySelector("#output"),
+  swap: 'innerHTML'
+});
+
+// For most cases, use htmx.ajax() instead:
+htmx.ajax('GET', '/example', {
+  target: '#output',
+  swap: 'innerHTML'
+});
 ```
 
 ### Method - `htmx.takeClass()` {#takeClass}
