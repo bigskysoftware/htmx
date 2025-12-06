@@ -128,11 +128,26 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
 ```html
   <!-- this will get some content and swap it into the current div, then ensure that the viewport is scrolled to the
        very top -->
-  <div hx-get="/example" 
+  <div hx-get="/example"
        hx-swap="innerHTML show:window:top">
     Get Some Content
   </div>
 ```
+
+#### Unwrapping: `strip`
+
+The `strip` modifier allows you to control whether the outer element of the response content should be removed before swapping. This is useful when you want to swap only the children of the response's root element.
+
+If the server response is:
+```html
+<div class="wrapper">
+  <p>Content 1</p>
+  <p>Content 2</p>
+</div>
+```
+
+With `strip:true`, only the `<p>` elements are swapped in.
+With `strip:false`, the entire `<div class="wrapper">` and its contents are swapped in.
 
 ## Notes
 
