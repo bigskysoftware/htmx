@@ -96,7 +96,6 @@ var htmx = (() => {
                 prefix: "",
                 transitions: false,
                 history: true,
-                historyReload: false,
                 mode: 'same-origin',
                 defaultSwap: "innerHTML",
                 indicatorClass: "htmx-indicator",
@@ -1588,7 +1587,7 @@ var htmx = (() => {
         #restoreHistory(path) {
             path = path || location.pathname + location.search;
             if (this.#trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
-                if (this.config.historyReload) {
+                if (this.config.history === "reload") {
                     location.reload();
                 } else {
                     this.ajax('GET', path, {
